@@ -26,19 +26,15 @@ abstract class ElasticEndPoints {
   static final getProvincesByIsoEP = "get-provinces-by-iso".addressesScope();
   static String countryBoundaryByIsoEP(String iso) =>
       "CountryBoundaryByIso/$iso".addressesScope();
-  static final getAddressByCoordinatesEP =
-      "get-address-by-coordinates".addressesScope();
+  static final getAddressByCoordinatesEP = "get-address-by-coordinates"
+      .addressesScope();
 }
 
 abstract class ElasticUrls {
   static String get baseUrl => _baseUrlDev;
 
-  static String get baseUrlWithHttp => _baseUrlDevWithHttp;
-
   static Uri get baseUri => Uri.parse(_baseUrlDev);
   static set setBaseUrl(String url) => _baseUrlDev = url;
 
   static String _baseUrlDev = dotenv.env['ELASTIC_URL']!;
-  static const String _baseUrlDevWithHttp =
-      'https://recomende_elasticsearch_engin.trydos.dev';
 }

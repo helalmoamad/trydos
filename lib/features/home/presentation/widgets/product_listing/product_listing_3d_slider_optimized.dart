@@ -796,14 +796,14 @@ class _ProductListing3DSliderOptimizedState
                                       child: AutoSizeText(
                                         HelperFunctions.formatNumber(
                                           number:
-                                              (HelperFunctions.truncateToDecimalPlaces(
+                                              ((HelperFunctions.truncateToDecimalPlaces(
                                                 price,
                                                 state
                                                     .getCurrencyForCountryModel!
                                                     .data!
                                                     .currency!
                                                     .decimalDigits!,
-                                              ) *
+                                              )) *
                                               exchangeRate),
                                         ),
                                         /* .toStringAsFixed(state.startingSetting
@@ -831,21 +831,21 @@ class _ProductListing3DSliderOptimizedState
                                   HelperFunctions.formatNumber(
                                     number:
                                         (((isFlashDealEnded ||
-                                                (widget
-                                                            .productItem
-                                                            .flashDealPrice ??
-                                                        0) ==
-                                                    0)
-                                            ? HelperFunctions.truncateToDecimalPlaces(
-                                                    offerPrice,
-                                                    state
-                                                        .getCurrencyForCountryModel!
-                                                        .data!
-                                                        .currency!
-                                                        .decimalDigits!,
-                                                  ) *
-                                                  exchangeRate
-                                            : HelperFunctions.truncateToDecimalPlaces(
+                                            (widget
+                                                        .productItem
+                                                        .flashDealPrice ??
+                                                    0) ==
+                                                0)
+                                        ? ((HelperFunctions.truncateToDecimalPlaces(
+                                                offerPrice,
+                                                state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .decimalDigits!,
+                                              )) *
+                                              exchangeRate)
+                                        : ((HelperFunctions.truncateToDecimalPlaces(
                                                 widget
                                                         .productItem
                                                         .flashDealPrice ??
@@ -855,8 +855,8 @@ class _ProductListing3DSliderOptimizedState
                                                     .data!
                                                     .currency!
                                                     .decimalDigits!,
-                                              )) *
-                                        exchangeRate),
+                                              ))) *
+                                              exchangeRate)),
                                   ),
                                   /*.toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
@@ -950,7 +950,10 @@ class _ProductListing3DSliderOptimizedState
           final exchangeRate =
               state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ??
               1;
-          double redeemPrice = widget.productItem.redeemPrice ?? 0;
+          double redeemPrice = HelperFunctions.truncateToDecimalPlaces(
+            widget.productItem.redeemPrice ?? 0,
+            state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!,
+          );
           bool isRedeem =
               (GetIt.I<PrefsRepository>()
                           .getRedeemDateForProduct(
@@ -992,7 +995,7 @@ class _ProductListing3DSliderOptimizedState
                         constraints: const BoxConstraints(maxWidth: 25),
                         child: AutoSizeText(
                           HelperFunctions.formatNumber(
-                            number: redeemPrice * exchangeRate,
+                            number: (redeemPrice * exchangeRate),
                           ),
                           minFontSize: 2,
                           //      .toStringAsFixed(widget.decimalPoint),

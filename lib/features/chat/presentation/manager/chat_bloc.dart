@@ -6,9 +6,11 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mime/mime.dart';
 import 'package:stream_transform/stream_transform.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/chat/domain/use_cases/block_user_id_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/change_chat_property_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/delete_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_contacts_usecase.dart';
@@ -75,6 +77,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     this.shareProductWithContactsOrChannelsUsecase,
     this.getMediaCountUseCase,
     this.getDateTimeUseCase,
+    this.blockOrDeleteBlockUserUseCase,
     this.sendErrorToServerUseCase,
   ) : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
@@ -94,6 +97,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<AddChannelToChannels>(_onAddChannelToChannels);
     on<AddUserConntctSatuseEvent>(_onAddUserConntctSatuseEvent);
     on<SendMessageEvent>(_onSendMessageEvent);
+    on<BlockOrDeleteBlockUserEvent>(_onBlockOrDeleteBlockUserEvent);
     on<ShareProductWithContactsOrChannelsEvent>(
       _onShareProductWithContactsOrChannelsEvent,
     );
@@ -144,7 +148,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final GetContactsUseCase getContactsUseCase;
   final GetSharedProductCountUseCase getSharedProductCountUseCase;
   final GetDateTimeUseCase getDateTimeUseCase;
-
+  final BlockOrDeleteBlockUserUseCase blockOrDeleteBlockUserUseCase;
   final GetMyChatsUseCase getMyChatsUseCase;
   final GetOrderRecipientIdUseCase getOrderRecipientIdUseCase;
   final SendErrorToServerUseCase sendErrorToServerUseCase;
@@ -181,6 +185,72 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     );
   }
 
+  FutureOr<void> _onBlockOrDeleteBlockUserEvent(
+    BlockOrDeleteBlockUserEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        blockOrDeleteBlockUserStatus: BlockOrDeleteBlockUserStatus.loading,
+      ),
+    );
+    final result = await blockOrDeleteBlockUserUseCase.call(
+      BlockUserParams(
+        ReceiveUserId: event.receiverUserId!,
+        isBlock: event.isBlock!,
+      ),
+    );
+    result.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            blockOrDeleteBlockUserStatus: BlockOrDeleteBlockUserStatus.failure,
+          ),
+        );
+        showMessage(l.message, hasError: true);
+      },
+      (r) {
+        bool fromPinned = false;
+        List<Chat> chats;
+        List<ChannelMember> channelMembers = [];
+        if (state.chats.any((e) => e.id == event.channelId)) {
+          chats = state.chats;
+        }
+        //todo the same but from the pinned channels
+        else {
+          fromPinned = true;
+          chats = state.pinnedChats;
+        }
+        int index = chats.indexWhere(
+          (element) => element.id == event.channelId,
+        );
+        if (index != -1) {
+          channelMembers = chats[index].channelMembers ?? [];
+          int channelMemberIndex = channelMembers.indexWhere(
+            (element) => element.userId.toString() == event.receiverUserId,
+          );
+          ChannelMember channelMember = channelMembers.firstWhere(
+            (element) => element.userId.toString() == event.receiverUserId,
+          );
+          channelMember = channelMember.copyWith(
+            isBlocked: ((event.isBlock ?? false) ? 1 : 0),
+          );
+          channelMembers[channelMemberIndex] = channelMember;
+          chats[index] = chats[index].copyWith(channelMembers: channelMembers);
+        }
+
+        emit(
+          state.copyWith(
+            chats: fromPinned ? state.chats : chats,
+            pinnedChats: !fromPinned ? state.pinnedChats : chats,
+            blockOrDeleteBlockUserStatus: BlockOrDeleteBlockUserStatus.success,
+          ),
+        );
+        showMessage(r.message ?? "");
+      },
+    );
+  }
+
   FutureOr<void> _onSendMessageEvent(
     SendMessageEvent event,
     Emitter<ChatState> emit,
@@ -190,14 +260,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     List<String> ids = List.of(state.currentMessage);
     List<Message> messages;
     bool fromPinned = false;
+    List<Chat> pinnedChats = List.of(state.pinnedChats);
+    List<Chat> chats = List.of(state.chats);
+    String? parentMessageId;
 
     //todo ---if-----
     //todo check if the channel exist and get the messages of this channel
-    if (state.chats.any((e) => e.id == event.channelId)) {
+    if (chats.any((e) => e.id == event.channelId)) {
       messages = List.of(
-        state.chats
-                .firstWhere((element) => element.id == event.channelId)
-                .messages ??
+        chats.firstWhere((element) => element.id == event.channelId).messages ??
             [],
       );
     }
@@ -205,13 +276,12 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     else {
       fromPinned = true;
       messages = List.of(
-        state.pinnedChats
+        pinnedChats
                 .firstWhere((element) => element.id == event.channelId)
                 .messages ??
             [],
       );
     }
-    String? parentMessageId;
 
     //todo just add the message to the waiting list and give it the local info like localParentMessageId
     if (!ids.contains(event.messageId)) {
@@ -229,7 +299,6 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         parentMessageId = messages[index].id;
       }
 
-      //todo insert the new message in the first of the list
       messages.insert(
         0,
         Message(
@@ -271,7 +340,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               : null,
         ),
       );
+      //todo insert the new message in the first of the list
     }
+
     if (event.messageType != 'TextMessage') {
       int index = messages.indexWhere(
         (element) =>
@@ -285,11 +356,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
 
     //todo remove the chat  and reinsert it in the first of the List<Chat>
-    List<Chat> chats;
     if (fromPinned) {
-      chats = sortChats(state.pinnedChats, event.channelId, messages);
+      pinnedChats = sortChats(pinnedChats, event.channelId, messages);
     } else {
-      chats = sortChats(state.chats, event.channelId, messages);
+      chats = sortChats(chats, event.channelId, messages);
     }
 
     //todo  createAnewChat  so if the condition true that's mean the message from the local
@@ -299,13 +369,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         currentMessage: ids,
         createAnewChat: int.tryParse(event.channelId) == null,
         newSortedChatsByDate: groupReceivedMessageOnDays(
-          chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)],
+          chats: [...chats, ...pinnedChats],
         ),
-        chats: fromPinned ? state.chats : chats,
-        pinnedChats: !fromPinned ? state.pinnedChats : chats,
+        pinnedChats: pinnedChats,
+        chats: chats,
+
         channelId: event.channelId,
       ),
     );
+
     final response = await sendMessageUseCase(
       SendMessageParams(
         content: event.content,
@@ -333,16 +405,12 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         );
       },
       (r) {
-        print("///-------------------------------------*${r.channel?.id}");
-
-        //        debugPrint('count  ${messages.length}');
-        print('mediaMessageContent ${r.mediaMessageContent}');
         if (currentOpenedChatId == event.channelId) {
           currentOpenedChatId = r.channel!.id;
         }
-        print("ddddddddddddddddddddddddddddddddddddd${ids}");
+
         ids.remove(event.messageId);
-        print("1111111111111ddddddddddddddddddddddddddddddddddddd${ids}");
+
         List<Chat> pinnedChats = state.pinnedChats.map((e) {
           if (e.localId == event.channelId &&
               int.tryParse(event.channelId) == null) {
@@ -391,19 +459,21 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             );
           } else if (e.id == event.channelId) {
             List<Message> messages = List.of(e.messages ?? []);
+
             int index = messages.indexWhere(
-              (element) =>
-                  (element.id == event.messageId ||
-                  element.localId == event.messageId),
+              (element) => (element.localId == event.messageId),
             );
+
             messages[index] = r.copyWith(
               file: event.file,
               localId: event.messageId,
             );
+
             return e.copyWith(messages: messages);
           }
           return e;
         }).toList();
+
         if (event.file != null) {
           _prefsRepository.setAFilePathExist(
             event.mediaContent![0]['file_path'] + ' ' + event.file!.path,
@@ -676,11 +746,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     GetChatsEvent event,
     Emitter<ChatState> emit,
   ) async {
+    print(
+      "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH8${state.getChatsStatus}${(_prefsRepository.chatToken?.length ?? 0) < 10}${event.getWithPagination ?? false}888",
+    );
     if (state.getChatsStatus == GetChatsStatus.loading ||
         (_prefsRepository.chatToken?.length ?? 0) < 10 ||
         ((event.getWithPagination ?? false) && (state.getAllChat ?? false))) {
       return;
     }
+    print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH822");
     emit(
       state.copyWith(
         getChatsStatus: GetChatsStatus.loading,
@@ -703,19 +777,25 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     );
     response.fold(
       (l) {
+        emit(state.copyWith(getChatsStatus: GetChatsStatus.failure));
         if (ErrorManager.shouldRetry('GetChatsEvent', l.statusCode)) {
           add(const GetChatsEvent(limit: 10));
           ErrorManager.incrementRetry('GetChatsEvent');
         }
-
-        emit(state.copyWith(getChatsStatus: GetChatsStatus.failure));
       },
       (r) {
         try {
+          print(
+            "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH866622${state.sendMessageStatus}${state.receiveMessageStatus}",
+          );
           if (state.sendMessageStatus == SendMessageStatus.loading ||
               state.receiveMessageStatus == ReceiveMessageStatus.loading) {
+            emit(state.copyWith(getChatsStatus: GetChatsStatus.success));
             return;
           }
+          print(
+            "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH82772",
+          );
           enableRequestGetChats = false;
           /* if (r.data!.missedFcmToken) {
             GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
@@ -772,14 +852,17 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               chats: newChats,
               getAllChat:
                   (event.getWithPagination ?? false) &&
-                  (r.data?.chats?.length == 0 &&
-                      r.data?.pinnedChats?.length == 0),
+                  ((r.data?.chats?.length ?? 0) < 10 &&
+                      (r.data?.pinnedChats?.length ?? 0) < 10),
               pinnedChats: newPinnedChats,
               newSortedChatsByDate: groupReceivedMessageOnDays(
                 chats: [...newChats, ...newPinnedChats],
               ),
               unReadMessagesFromAllChats: unReadMessagesFromAllChats,
             ),
+          );
+          print(
+            "FFFFFFFFFFFFFFFFFFFFFFFFFFFFF/////////****${state.getAllChat}",
           );
         } catch (e, st) {
           print(e);
@@ -924,8 +1007,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       },
       (r) {
         ErrorManager.resetRetry('GetOrderRecipientIdEvent');
-        List<Chat> newChats = [];
-        newChats.removeWhere((element) => element.isPrivate ?? false);
+        List<Chat> newChats = state.chats;
+        newChats.removeWhere((element) => (element.isPrivate ?? false));
+
         //bool changed = false;
         /*  List<Chat> chats = List.of(state.chats);
         chats.addAll(state.pinnedChats);
@@ -1067,9 +1151,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         newSortedChatsByDate: groupReceivedMessageOnDays(
           chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)],
         ),
-        chats: fromPinned ? state.chats : chats,
-        pinnedChats: !fromPinned ? state.pinnedChats : chats,
+
         channelId: event.channelId,
+        pinnedChats: fromPinned ? chats : state.pinnedChats,
+        chats: fromPinned ? state.chats : chats,
       ),
     );
     final response;
@@ -1106,6 +1191,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       (r) {
         add(
           SendMessageEvent(
+            isMedia: true,
             messageId: event.messageId,
             extraFields: event.extraFields,
             isForward: event.isForward,
@@ -1144,70 +1230,78 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     print('_onReceiveMessageEvent_onReceiveMessageEvent');
 
     emit(state.copyWith(receiveMessageStatus: ReceiveMessageStatus.loading));
-    List<Message> messages = [];
-    bool fromPinned = false;
-    List<Chat> chats;
-    if (state.chats.any((e) => e.id == event.message.channelId)) {
-      chats = List.of(state.chats);
-    } else {
-      fromPinned = true;
-      chats = List.of(state.pinnedChats);
-    }
-    Chat chat = chats.firstWhere(
-      (element) => element.id == event.message.channelId,
-      orElse: () => Chat(id: '-1'),
-    );
-    if (chat.messages?.any((element) => element.id == event.message.id) ??
-        false) {
-      return;
-    }
-    chats.removeWhere((element) => element.id == chat.id);
-    chats.insert(
-      0,
-      chat.copyWith(
-        totalUnreadMessageCount: event.increaseUnReadMessages
-            ? ((chat.totalUnreadMessageCount ?? 0) +
-                  (event.message.senderUserId! != _prefsRepository.myChatId
-                      ? 1
-                      : 0))
-            : chat.totalUnreadMessageCount,
-      ),
-    );
-    messages = List.of(chat.messages ?? []);
-    messages.insert(0, event.message);
-    int index = messages.indexWhere(
-      (element) => element.id == event.prevMessageId,
-    );
-    chats[0] = chats[0].copyWith(messages: messages);
-    emit(
-      state.copyWith(
-        receiveMessageStatus: ReceiveMessageStatus.success,
-        unReadMessagesFromAllChats: event.increaseUnReadMessages
-            ? (state.unReadMessagesFromAllChats +
-                  ((event.message.senderUserId! != _prefsRepository.myChatId)
-                      ? 1
-                      : 0))
-            : state.unReadMessagesFromAllChats,
-        newSortedChatsByDate: groupReceivedMessageOnDays(
-          chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)],
-        ),
-        currentChannelReceivedMessage: chat.localId ?? chat.id,
-        channelId: event.message.channelId,
-        chats: fromPinned ? state.chats : chats,
-        pinnedChats: !fromPinned ? state.pinnedChats : chats,
-      ),
-    );
-    // add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
-
-    if (index == -1 && event.prevMessageId != null) {
-      add(
-        GetAllMessagesBetweenEvent(
-          firstMessageId: event.prevMessageId!,
-          secondMessageId: event.message.id.toString(),
-          scrollToParentMessage: false,
-          channelId: event.message.channelId.toString(),
+    try {
+      List<Message> messages = [];
+      bool fromPinned = false;
+      List<Chat> chats;
+      if (state.chats.any((e) => e.id == event.message.channelId)) {
+        chats = List.of(state.chats);
+      } else {
+        fromPinned = true;
+        chats = List.of(state.pinnedChats);
+      }
+      Chat chat = chats.firstWhere(
+        (element) => element.id == event.message.channelId,
+        orElse: () => Chat(id: '-1'),
+      );
+      if (chat.messages?.any((element) => element.id == event.message.id) ??
+          false) {
+        return;
+      }
+      chats.removeWhere((element) => element.id == chat.id);
+      chats.insert(
+        0,
+        chat.copyWith(
+          isPrivate: event.isPrivate,
+          totalUnreadMessageCount: event.increaseUnReadMessages
+              ? ((chat.totalUnreadMessageCount ?? 0) +
+                    (event.message.senderUserId! != _prefsRepository.myChatId
+                        ? 1
+                        : 0))
+              : chat.totalUnreadMessageCount,
         ),
       );
+      messages = List.of(chat.messages ?? []);
+      messages.insert(0, event.message);
+      int index = messages.indexWhere(
+        (element) => element.id == event.prevMessageId,
+      );
+      chats[0] = chats[0].copyWith(messages: messages);
+      emit(
+        state.copyWith(
+          receiveMessageStatus: ReceiveMessageStatus.success,
+          unReadMessagesFromAllChats: event.increaseUnReadMessages
+              ? (state.unReadMessagesFromAllChats +
+                    ((event.message.senderUserId! != _prefsRepository.myChatId)
+                        ? 1
+                        : 0))
+              : state.unReadMessagesFromAllChats,
+          newSortedChatsByDate: groupReceivedMessageOnDays(
+            chats: [
+              ...chats,
+              ...(fromPinned ? state.chats : state.pinnedChats),
+            ],
+          ),
+          currentChannelReceivedMessage: chat.localId ?? chat.id,
+          channelId: event.message.channelId,
+          chats: fromPinned ? state.chats : chats,
+          pinnedChats: !fromPinned ? state.pinnedChats : chats,
+        ),
+      );
+      // add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
+
+      if (index == -1 && event.prevMessageId != null) {
+        add(
+          GetAllMessagesBetweenEvent(
+            firstMessageId: event.prevMessageId!,
+            secondMessageId: event.message.id.toString(),
+            scrollToParentMessage: false,
+            channelId: event.message.channelId.toString(),
+          ),
+        );
+      }
+    } catch (e) {
+      emit(state.copyWith(receiveMessageStatus: ReceiveMessageStatus.failure));
     }
   }
 
@@ -2165,10 +2259,12 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         1;
     emit(
       state.copyWith(
-        chats: isPinned ? state.chats : [chat, ...state.chats],
+        chats: isPinned
+            ? state.chats
+            : [chat.copyWith(isPrivate: event.isPrivate), ...state.chats],
         pinnedChats: !isPinned
             ? state.pinnedChats
-            : [chat, ...state.pinnedChats],
+            : [chat.copyWith(isPrivate: event.isPrivate), ...state.pinnedChats],
       ),
     );
   }

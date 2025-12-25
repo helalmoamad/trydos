@@ -195,7 +195,9 @@ class _ProductDetailsBottomSheetNewState
           previous.currentSelectedColorForEveryProductStatus !=
               current.currentSelectedColorForEveryProductStatus ||
           previous.currentHeightWhenAddToBag !=
-              current.currentHeightWhenAddToBag,
+              current.currentHeightWhenAddToBag ||
+          previous.currentColorSizeForCart?["choiceOption"] !=
+              current.currentColorSizeForCart?["choiceOption"],
       builder: (context, state) {
         Future.delayed(const Duration(milliseconds: 100), () {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -313,7 +315,7 @@ class _ProductDetailsBottomSheetNewState
                             maxHeight: currentTab == -1
                                 ? 45
                                 : currentTab == 3
-                                ? 620
+                                ? 621
                                       .h //330.h + 70.w + 305
                                 : 433,
                             minHeight: (widget.fromListingPage ?? false)
@@ -1180,7 +1182,15 @@ class _ProductDetailsBottomSheetNewState
                                       number: double.parse(
                                         (offPriceInCart > 0 &&
                                                 (!(widget.isRedeem)))
-                                            ? (offPriceInCart *
+                                            ? (HelperFunctions.truncateToDecimalPlaces(
+                                                        (offPriceInCart),
+                                                        homeBloc
+                                                            .state
+                                                            .getCurrencyForCountryModel!
+                                                            .data!
+                                                            .currency!
+                                                            .decimalDigits!,
+                                                      ) *
                                                       state
                                                           .getCurrencyForCountryModel!
                                                           .data!
@@ -1371,15 +1381,15 @@ class _ProductDetailsBottomSheetNewState
             SizedBox(height: 10.h),
             SizedBox(
               width: 1.sw,
-              height: 88.h,
+              height: 90.h,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 itemCount: widget.productItem.syncColorImages?.length ?? 0,
                 itemBuilder: (context, index) {
                   return SizedBox(
-                    width: 52,
-                    height: 88.h,
+                    width: 54,
+                    height: 90.h,
                     child: GestureDetector(
                       onTap: () {
                         if (index ==
@@ -1468,9 +1478,17 @@ class _ProductDetailsBottomSheetNewState
                             ),
                           ),
                           const Spacer(),
-                          ((widget.initOfferPrice) >
-                                      (widget.productItem.offerPrice ?? 0) &&
-                                  (index ==
+                          ((widget.productItem.variation?.firstWhere(
+                                                (element) {
+                                                  return element.type ==
+                                                      "${widget.productItem.syncColorImages?[index].colorOption}${(state.currentColorSizeForCart?["choiceOption"] ?? "") == "" ? "" : "-"}${state.currentColorSizeForCart?["choiceOption"] ?? ""}";
+                                                },
+                                                orElse: () => Variation(),
+                                              ).qty ??
+                                              0)
+                                          .round() <
+                                      11 &&
+                                  (index !=
                                       ((state.currentSelectedColorForEveryProduct[widget
                                                   .productItem
                                                   .slug
@@ -1483,7 +1501,38 @@ class _ProductDetailsBottomSheetNewState
                                                 .slug
                                                 .toString()])))
                               ? MyTextWidget(
-                                  "${LocaleKeys.get.tr()} ${(((widget.initOfferPrice - (widget.productItem.offerPrice ?? 0)) / widget.initOfferPrice) * 100).toStringAsFixed(1)}%",
+                                  "${LocaleKeys.last.tr()} ${(widget.productItem.variation?.firstWhere((element) {
+                                        return element.type == "${widget.productItem.syncColorImages?[index].colorOption}${(state.currentColorSizeForCart?["choiceOption"] ?? "") == "" ? "" : "-"}${state.currentColorSizeForCart?["choiceOption"] ?? ""}";
+                                      }, orElse: () => Variation()).qty ?? 0).round()}",
+                                  style: context.textTheme.titleLarge?.rq
+                                      .copyWith(
+                                        height: 1.1,
+                                        fontSize: 7.sp,
+                                        color: const Color(0xffFF6200),
+                                      ),
+                                )
+                              : ((widget.initOfferPrice) >
+                                        ((widget.productItem.variation
+                                                ?.firstWhere((element) {
+                                                  return element.type ==
+                                                      "${widget.productItem.syncColorImages?[index].colorOption}${(state.currentColorSizeForCart?["choiceOption"] ?? "") == "" ? "" : "-"}${state.currentColorSizeForCart?["choiceOption"] ?? ""}";
+                                                }, orElse: () => Variation())
+                                                .offerPrice ??
+                                            0)) &&
+                                    (index !=
+                                        ((state.currentSelectedColorForEveryProduct[widget
+                                                    .productItem
+                                                    .slug
+                                                    .toString()] ==
+                                                null)
+                                            ? 0
+                                            : state
+                                                  .currentSelectedColorForEveryProduct[widget
+                                                  .productItem
+                                                  .slug
+                                                  .toString()])))
+                              ? MyTextWidget(
+                                  "${LocaleKeys.get.tr()} ${(((widget.initOfferPrice - (widget.productItem.variation?.firstWhere((element) => element.type == "${widget.productItem.syncColorImages?[index].colorOption}${(state.currentColorSizeForCart?["choiceOption"] ?? "") == "" ? "" : "-"}${state.currentColorSizeForCart?["choiceOption"] ?? ""}", orElse: () => Variation()).offerPrice ?? 0)) / widget.initOfferPrice) * 100).toStringAsFixed(0)}%",
                                   style: context.textTheme.titleLarge?.bq
                                       .copyWith(
                                         color: const Color(0xff513AAF),
@@ -1509,25 +1558,6 @@ class _ProductDetailsBottomSheetNewState
                 },
               ),
             ),
-            (sizesForEachProduct.length != 0)
-                ? const SizedBox.shrink()
-                : const SizedBox(height: 10),
-            (sizesForEachProduct.length != 0)
-                ? const SizedBox.shrink()
-                : colorsQuantityForEachProduct.isEmpty
-                ? const SizedBox.shrink()
-                : (tapIndex < colorsQuantityForEachProduct.length &&
-                      colorsQuantityForEachProduct[tapIndex] < 11 &&
-                      (!widget.collectedAfterOrdering))
-                ? MyTextWidget(
-                    "${LocaleKeys.last.tr()} ${colorsQuantityForEachProduct[tapIndex]}",
-                    style: context.textTheme.titleLarge?.rq.copyWith(
-                      height: 1.1,
-                      fontSize: 11,
-                      color: const Color(0xffFF6200),
-                    ),
-                  )
-                : const SizedBox.shrink(),
           ],
         ),
       ),

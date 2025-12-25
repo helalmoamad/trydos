@@ -2035,7 +2035,7 @@ Widget addressInfoWithContactInfoCart({
               ),
               const SizedBox(width: 5),
               Text(
-                '+${customerAddressesInfo.contactInfo?.phone ?? ""}',
+                '+${(customerAddressesInfo.contactInfo?.phone ?? "").replaceAll("+", "")}',
                 style: context.textTheme.bodyMedium?.mq.copyWith(
                   color: isDelete
                       ? const Color(0xffFFFFFF)
@@ -2064,17 +2064,20 @@ Widget addressInfoWithContactInfoCart({
                       width: 12,
                     ),
                     const SizedBox(width: 5),
-                    Text(
-                      '${customerAddressesInfo.contactInfo?.name ?? ""}',
-                      style: context.textTheme.bodyMedium?.mq.copyWith(
-                        color: isDelete
-                            ? const Color(0xffFFFFFF)
-                            : index != indexTap
-                            ? const Color(0xff8D8D8D)
-                            : const Color(0xff1D1D1D),
-                        letterSpacing: 0.18,
-                        fontSize: 12,
-                        height: 1.3,
+                    SizedBox(
+                      width: 130,
+                      child: Text(
+                        '${customerAddressesInfo.contactInfo?.name ?? ""}',
+                        style: context.textTheme.bodyMedium?.mq.copyWith(
+                          color: isDelete
+                              ? const Color(0xffFFFFFF)
+                              : index != indexTap
+                              ? const Color(0xff8D8D8D)
+                              : const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 12,
+                          height: 1.3,
+                        ),
                       ),
                     ),
                   ],

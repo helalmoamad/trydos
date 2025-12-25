@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as dev;
 
 import 'dart:io';
 import 'dart:math';
@@ -50,31 +51,38 @@ class LocalNotificationService {
       iOS: iosInitializationSettings,
     );
     try {
-      await _localNotificationPlugin
-          .getNotificationAppLaunchDetails()
-          .then((value) {
+      await _localNotificationPlugin.getNotificationAppLaunchDetails().then((
+        value,
+      ) {
         if (value?.notificationResponse?.payload?.contains("###") ?? false) {
           GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
-              value?.notificationResponse?.payload?.split('###')[0] ?? "");
-        } else if (value?.notificationResponse?.payload
-                ?.contains("#prevMessageId#") ??
+            value?.notificationResponse?.payload?.split('###')[0] ?? "",
+          );
+        } else if (value?.notificationResponse?.payload?.contains(
+              "#prevMessageId#",
+            ) ??
             false) {
-          GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(((value
-                      ?.notificationResponse?.payload
-                      ?.split('#prevMessageId#')[0] ??
-                  "") +
-              ("chatNotification") +
-              (value?.notificationResponse?.payload
-                      ?.split('#prevMessageId#')[1] ??
-                  "")));
+          GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
+            ((value?.notificationResponse?.payload?.split(
+                      '#prevMessageId#',
+                    )[0] ??
+                    "") +
+                ("chatNotification") +
+                (value?.notificationResponse?.payload?.split(
+                      '#prevMessageId#',
+                    )[1] ??
+                    "")),
+          );
         }
       });
     } catch (e) {}
     await _localNotificationPlugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(
-            LocalNotificationService().getAndroidChannel);
+          LocalNotificationService().getAndroidChannel,
+        );
 
     await _localNotificationPlugin.initialize(
       settings,
@@ -84,85 +92,92 @@ class LocalNotificationService {
   }
 
   @pragma('vm:entry-point')
-  Future<void> showNotificationWithPayload(
-      {required RemoteMessage message, required int fromBackGround}) async {
+  Future<void> showNotificationWithPayload({
+    required RemoteMessage message,
+    required int fromBackGround,
+  }) async {
     final Random random = Random();
     final int notificationId = random.nextInt(1000000);
 
     if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
-        message)) {
+      message,
+    )) {
       Map? data = convert.jsonDecode(message.data["body"] ?? "") ?? {};
       print(
-          "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ${data?["type"]}");
+        "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ${data?["type"]}",
+      );
       if (data?["type"] ==
-          typeOfNotificationForMarket[
-              TypeOfNotificationForMarketEnum.order_status_changed]) {
+          typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+              .order_status_changed]) {
         GetIt.I<OrderBloc>().add(
           GetOrdersByOrderGroupIDEvent(
-              fromNotification: true,
-              status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
-              orderGroupId: data?["order_group_id"].toString() ?? ""),
+            fromNotification: true,
+            status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
+            orderGroupId: data?["order_group_id"].toString() ?? "",
+          ),
         );
         return;
       }
       String imageUrl = "";
 
       if (data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_cart_expiration] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_cart_expiration] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_hurry_up_quantity] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_hurry_up_quantity] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_hurry_up_time_left]) {
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_hurry_up_time_left]) {
         prefsRepository.setNotificationIdsToRemoveAfterplaceOrder(
-            notificationId.toString());
+          notificationId.toString(),
+        );
       }
 
       if (data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_availability] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_availability] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_comment] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_comment] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.category_created] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .category_created] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_discount] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_discount] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_cart_expiration] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_cart_expiration] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.remember_abandon_cart] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .remember_abandon_cart] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_hurry_up_quantity] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_hurry_up_quantity] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_hurry_up_time_left] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_hurry_up_time_left] ||
           data?["type"] ==
               typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                   .product_when_change_in_price] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.seller_comment_added] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .seller_comment_added] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.seller_product_stock_out] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .seller_product_stock_out] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_before_stock_out]) {
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_before_stock_out]) {
         imageUrl = data?["image"] ?? "";
       }
       if (data?["type"] ==
-          typeOfNotificationForMarket[
-              TypeOfNotificationForMarketEnum.boutique_created]) {
+          typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+              .boutique_created]) {
         List<BunnerBoutique>? boutiqueBannerList = List<BunnerBoutique>.from(
-            data?["banner"]!.map((x) => BunnerBoutique.fromJson(x)));
+          data?["banner"]!.map((x) => BunnerBoutique.fromJson(x)),
+        );
         imageUrl = boutiqueBannerList[0].filePath ?? "";
       }
 
@@ -170,101 +185,118 @@ class LocalNotificationService {
 
       try {
         if (imageUrl != "" && imageUrl.split(".").length > 0) {
-          final ByteData bytes = await NetworkAssetBundle(Uri.parse(imageUrl))
-              .load("")
-              .onError((error, stackTrace) => ByteData(0));
+          final ByteData bytes = await NetworkAssetBundle(
+            Uri.parse(imageUrl),
+          ).load("").onError((error, stackTrace) => ByteData(0));
 
           final Uint8List buffer = bytes.buffer.asUint8List();
           final ui.Codec codec = await ui.instantiateImageCodec(buffer);
           final ui.FrameInfo fi = await codec.getNextFrame();
           final ui.Image image = fi.image;
 
-          final ByteData? byteData =
-              await image.toByteData(format: ui.ImageByteFormat.png);
+          final ByteData? byteData = await image.toByteData(
+            format: ui.ImageByteFormat.png,
+          );
           pngImage = byteData!.buffer.asUint8List();
         }
       } catch (e) {}
       String title = "${data?["showed_type"]}";
       String body = "${data?["description"]}";
-      await _localNotificationPlugin.show(notificationId, title, body,
-          _notificationDetails(pngImage, null, body),
-          payload: '${message.data["body"] ?? ""}###${fromBackGround}');
+      await _localNotificationPlugin.show(
+        notificationId,
+        title,
+        body,
+        _notificationDetails(pngImage, null, body),
+        payload: '${message.data["body"] ?? ""}###${fromBackGround}',
+      );
 
       return;
     }
     Map RemoteMessage = convert.jsonDecode(message.data['data']);
+    dev.log("GGGGGGGGGGGGGGGGGF ${convert.jsonEncode(RemoteMessage)} llll");
     chat.Message myMessage = chat.Message.fromJson(RemoteMessage["message"]);
     String prevMessageId = (RemoteMessage['prev_message_id'] ?? "").toString();
 
     String orderId = (RemoteMessage['order_id'] ?? "").toString();
-    String parentOrderId = RemoteMessage["parent_order_id"] == null ||
+    String parentOrderId =
+        RemoteMessage["parent_order_id"] == null ||
             RemoteMessage["parent_order_id"] == ""
         ? "-1"
         : RemoteMessage["parent_order_id"].toString();
     String orderGroupId = (RemoteMessage['order_group_id'] ?? "").toString();
     String type = myMessage.messageType!.name.toString();
     await _localNotificationPlugin.show(
-        notificationId,
-        (parentOrderId != "-1" || orderId != "")
-            ? (GetIt.I<PrefsRepository>().language == "ar"
+      notificationId,
+      (parentOrderId != "-1" || orderId != "")
+          ? (GetIt.I<PrefsRepository>().language == "ar"
                 ? "عامل التوصيل"
                 : GetIt.I<PrefsRepository>().language == "en"
-                    ? "Delivery Worker"
-                    : GetIt.I<PrefsRepository>().language == "tr"
-                        ? "Teslimat Çalışanı"
-                        : GetIt.I<PrefsRepository>().language == "ku"
-                            ? "کارمەندی گەیاندن"
-                            : "Delivery Worker")
-            : myMessage.channel?.channelName ?? 'No Channel Name',
+                ? "Delivery Worker"
+                : GetIt.I<PrefsRepository>().language == "tr"
+                ? "Teslimat Çalışanı"
+                : GetIt.I<PrefsRepository>().language == "ku"
+                ? "کارمەندی گەیاندن"
+                : "Delivery Worker")
+          : myMessage.channel?.channelName ?? 'No Channel Name',
+      type == 'TextMessage'
+          ? myMessage.messageContent!.content.toString()
+          : type == 'ImageMessage'
+          ? 'Photo'
+          : type == 'VoiceMessage'
+          ? 'Voice'
+          : type == 'VideoMessage'
+          ? 'Video'
+          : 'File',
+      _notificationDetails(
+        null,
+        myMessage.channel?.id,
         type == 'TextMessage'
             ? myMessage.messageContent!.content.toString()
             : type == 'ImageMessage'
-                ? 'Photo'
-                : type == 'VoiceMessage'
-                    ? 'Voice'
-                    : type == 'VideoMessage'
-                        ? 'Video'
-                        : 'File',
-        _notificationDetails(
-            null,
-            myMessage.channel?.id,
-            type == 'TextMessage'
-                ? myMessage.messageContent!.content.toString()
-                : type == 'ImageMessage'
-                    ? 'Photo'
-                    : type == 'VoiceMessage'
-                        ? 'Voice'
-                        : type == 'VideoMessage'
-                            ? 'Video'
-                            : 'File'),
-        payload:
-            '${convert.jsonEncode(RemoteMessage['message'])}#prevMessageId#${prevMessageId}#orderId#${orderId}#groupeOrderId#${orderGroupId}#parentOrderId#${parentOrderId}');
+            ? 'Photo'
+            : type == 'VoiceMessage'
+            ? 'Voice'
+            : type == 'VideoMessage'
+            ? 'Video'
+            : 'File',
+      ),
+      payload:
+          '${convert.jsonEncode(RemoteMessage['message'])}#prevMessageId#${prevMessageId}#orderId#${orderId}#groupeOrderId#${orderGroupId}#parentOrderId#${parentOrderId}',
+    );
   }
 
   static void sendIReceivedTheMessage(String channelId) async {
     HttpOverrides.global = MyHttpOverrides();
-    GetIt.I<ChatBloc>()
-        .add(NotifyThatIReceivedMessageEvent(channelId: channelId));
+    GetIt.I<ChatBloc>().add(
+      NotifyThatIReceivedMessageEvent(channelId: channelId),
+    );
   }
 
   @pragma('vm:entry-point')
   Future<void> uploadingNotification(
-      maxProgress, progress, isUploading, bool isUploadingSuccess) async {
+    maxProgress,
+    progress,
+    isUploading,
+    bool isUploadingSuccess,
+  ) async {
     if (isUploading) {
       final AndroidNotificationDetails androidPlatformChannelSpecifics =
           AndroidNotificationDetails(
-              "uploading files", "Uploading Files Notifications",
-              channelDescription: "show to user progress for uploading files",
-              channelShowBadge: false,
-              importance: Importance.max,
-              priority: Priority.max,
-              onlyAlertOnce: true,
-              showProgress: true,
-              maxProgress: maxProgress,
-              progress: progress);
+            "uploading files",
+            "Uploading Files Notifications",
+            channelDescription: "show to user progress for uploading files",
+            channelShowBadge: false,
+            importance: Importance.max,
+            priority: Priority.max,
+            onlyAlertOnce: true,
+            showProgress: true,
+            maxProgress: maxProgress,
+            progress: progress,
+          );
 
-      NotificationDetails platformChannelSpecifics =
-          NotificationDetails(android: androidPlatformChannelSpecifics);
+      NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+      );
       await _localNotificationPlugin.show(
         5,
         'Uploading story',
@@ -276,18 +308,19 @@ class LocalNotificationService {
       _localNotificationPlugin.cancel(5);
       AndroidNotificationDetails androidPlatformChannelSpecifics =
           const AndroidNotificationDetails(
-        "files",
-        "Files Notifications",
-        channelDescription: "Inform user files uploaded",
-        channelShowBadge: false,
-        importance: Importance.max,
-        priority: Priority.high,
-        onlyAlertOnce: true,
-      );
+            "files",
+            "Files Notifications",
+            channelDescription: "Inform user files uploaded",
+            channelShowBadge: false,
+            importance: Importance.max,
+            priority: Priority.high,
+            onlyAlertOnce: true,
+          );
 
       NotificationDetails platformChannelSpecifics = NotificationDetails(
-          android: androidPlatformChannelSpecifics,
-          iOS: IosNotificationDetails);
+        android: androidPlatformChannelSpecifics,
+        iOS: IosNotificationDetails,
+      );
       await _localNotificationPlugin.show(
         5,
         isUploadingSuccess ? 'upload story success' : 'upload story failed',
@@ -301,50 +334,67 @@ class LocalNotificationService {
   static void _onSelectNotification(NotificationResponse notificationResponse) {
     if (notificationResponse.payload!.split("###").toList().length > 1) {
       HandlingMarketNotifications.dealWithNotificationFromMarket(
-          convert.jsonDecode(notificationResponse.payload!.split('###')[0]),
-          notificationResponse.payload!.split('###')[1] == "1");
+        convert.jsonDecode(notificationResponse.payload!.split('###')[0]),
+        notificationResponse.payload!.split('###')[1] == "1",
+      );
       return;
     }
-    chat.Message myMessage = chat.Message.fromJson(convert
-        .jsonDecode(notificationResponse.payload!.split('#prevMessageId#')[0]));
+    chat.Message myMessage = chat.Message.fromJson(
+      convert.jsonDecode(
+        notificationResponse.payload!.split('#prevMessageId#')[0],
+      ),
+    );
     String info = notificationResponse.payload!.split('#prevMessageId#')[1];
     String prevMessageId = info.split('#orderId#')[0];
     String orderInfo = info.split('#orderId#')[1];
     String orderId = orderInfo.split('#groupeOrderId#')[0];
-    String orderGroupIdWithReturnRequestId =
-        orderInfo.split('#groupeOrderId#')[1];
-    String orderGroupId =
-        orderGroupIdWithReturnRequestId.split('#parentOrderId#')[0];
-    String parentOrderId =
-        orderGroupIdWithReturnRequestId.split('#parentOrderId#')[1];
+    String orderGroupIdWithReturnRequestId = orderInfo.split(
+      '#groupeOrderId#',
+    )[1];
+    String orderGroupId = orderGroupIdWithReturnRequestId.split(
+      '#parentOrderId#',
+    )[0];
+    String parentOrderId = orderGroupIdWithReturnRequestId.split(
+      '#parentOrderId#',
+    )[1];
 
-    handleOpenChatPageFromNotificationInBackground(prevMessageId, orderId,
-        orderGroupId, ((parentOrderId == "-1") ? null : parentOrderId),
-        message: myMessage);
+    handleOpenChatPageFromNotificationInBackground(
+      prevMessageId,
+      orderId,
+      orderGroupId,
+      ((parentOrderId == "-1") ? null : parentOrderId),
+      message: myMessage,
+    );
   }
 
   _notificationDetails(Uint8List? pngImage, String? tag, String body) {
     final channel = LocalNotificationService().getAndroidChannel;
 
     AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(channel.id, channel.name,
-            channelDescription: channel.description,
-            ticker: 'ticker',
-            importance: Importance.max,
-            tag: tag,
-            priority: Priority.max,
-            playSound: channel.playSound,
-            enableVibration: channel.enableVibration,
-            largeIcon:
-                (pngImage == null) ? null : ByteArrayAndroidBitmap(pngImage),
-            styleInformation: (pngImage == null)
-                ? BigTextStyleInformation(body)
-                : BigPictureStyleInformation(ByteArrayAndroidBitmap(pngImage)));
+        AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channelDescription: channel.description,
+          ticker: 'ticker',
+          importance: Importance.max,
+          tag: tag,
+          priority: Priority.max,
+          playSound: channel.playSound,
+          enableVibration: channel.enableVibration,
+          largeIcon: (pngImage == null)
+              ? null
+              : ByteArrayAndroidBitmap(pngImage),
+          styleInformation: (pngImage == null)
+              ? BigTextStyleInformation(body)
+              : BigPictureStyleInformation(ByteArrayAndroidBitmap(pngImage)),
+        );
     const DarwinNotificationDetails iosNotificationDetails =
         DarwinNotificationDetails();
 
     return NotificationDetails(
-        android: androidNotificationDetails, iOS: iosNotificationDetails);
+      android: androidNotificationDetails,
+      iOS: iosNotificationDetails,
+    );
   }
 
   AndroidNotificationChannel get getAndroidChannel =>

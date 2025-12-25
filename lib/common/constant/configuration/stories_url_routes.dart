@@ -15,7 +15,7 @@ abstract class StoriesEndPoints {
   static final loginEP = 'login'.usersScope();
 
   static final updateUserEP = 'update'.usersScope();
-// ----<stories scope>----
+  // ----<stories scope>----
   static final getStoriesEP = 'users_stories'.storiesScope();
   static String getStoriesForProsuctEP(String productId) =>
       'product_stories/$productId'.storiesScope();
@@ -29,12 +29,9 @@ abstract class StoriesEndPoints {
 
 abstract class StoriesUrls {
   static String get baseUrl => _baseUrlDev;
-  static String get baseUrlWithHttp => _baseUrlDevWithHttp;
 
   static Uri get baseUri => Uri.parse(_baseUrlDev);
   static set setBaseUrl(String url) => _baseUrlDev = url;
 
   static String _baseUrlDev = dotenv.env['STORY_URL']!;
-  static const String _baseUrlDevWithHttp =
-      'https://stories_staging.trydos.dev/';
 }

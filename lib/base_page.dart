@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-
+import 'dart:developer' as dev;
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 
 import 'package:easy_localization/easy_localization.dart' as transform;
@@ -999,7 +999,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             error: 'VideoCallEvent Error ${e.toString()}',
           );
         }
-        chatBloc.add(AddChannelToChannels(message: message!));
+        chatBloc.add(
+          AddChannelToChannels(
+            message: message!,
+            isPrivate: remoteMessage['is_private'] == 1,
+          ),
+        );
         chatBloc.add(
           ReceiveMessageEvent(message: message, increaseUnReadMessages: false),
         );
@@ -1016,7 +1021,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           ),
         );
       } else if (remoteMessage['type'] == 'VoiceCallEvent') {
-        print(remoteMessage);
+        dev.log("VoiceCallEvent ForeGround Message${remoteMessage}");
         GetIt.I<PrefsRepository>().saveRequestsData(
           null,
           null,
@@ -1046,7 +1051,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             error: 'VoiceCallEvent Error ${e.toString()}',
           );
         }
-        chatBloc.add(AddChannelToChannels(message: message!));
+        chatBloc.add(
+          AddChannelToChannels(
+            message: message!,
+            isPrivate: remoteMessage['is_private'] == 1,
+          ),
+        );
         chatBloc.add(
           ReceiveMessageEvent(message: message, increaseUnReadMessages: false),
         );
@@ -1096,6 +1106,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         );
       } else if (remoteMessage['type'] == 'UpdatingMessageEvent') {
         Map<String, dynamic> data = remoteMessage['message'];
+        dev.log("****** ${data} llll");
         GetIt.I<CallsBloc>().add(
           DeleteMessageNotificationReceivedInCallsEvent(
             channelId: data["channel_id"],
@@ -1106,7 +1117,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             type: !data["message_type"]["name"].toString().contains('Call')
                 ? "message"
                 : "call",
-            deleteFromId: data["deleted_by_user_id"] ?? 0,
+            deleteFromId:
+                int.tryParse((data["deleted_by_user_id"] ?? "0").toString()) ??
+                0,
           ),
         );
       } else if (remoteMessage['type'] == 'ChannelUpdatedEvent') {
@@ -1143,9 +1156,17 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(0, 100)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
         );
         print(
-          "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(100)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
+          "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(100, 200)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
         );
-        chatBloc.add(AddChannelToChannels(message: message));
+        print(
+          "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(200, 300)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
+        );
+        chatBloc.add(
+          AddChannelToChannels(
+            message: message,
+            isPrivate: remoteMessage['is_private'] == 1,
+          ),
+        );
         chatBloc.add(
           ReceiveMessageEvent(message: message, prevMessageId: prevMessageId),
         );

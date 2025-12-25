@@ -14,6 +14,7 @@ import 'package:trydos/features/chat/data/models/shared_product_count_model.dart
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
 
 import 'package:trydos/features/chat/domain/repositories/chat_repository.dart';
+import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 import '../../../../core/api/handling_exception.dart';
 import '../models/ImageDetail.dart';
 import '../models/media_count.dart';
@@ -73,6 +74,15 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getOrderRecipientId(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> blockOrDeleteBlockUser(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.blockOrDeleteBlockUser(params),
     );
   }
 

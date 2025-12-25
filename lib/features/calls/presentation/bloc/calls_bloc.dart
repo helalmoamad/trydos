@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
@@ -13,6 +15,7 @@ import 'package:trydos/features/calls/domain/useCase/end_call_usecase.dart';
 import 'package:trydos/features/calls/domain/useCase/get_missed_call_count.dart';
 import 'package:trydos/features/calls/domain/useCase/get_my_calls.dart';
 import 'package:trydos/features/calls/domain/useCase/watch_missed_call.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../data/models/my_calls.dart';
 import 'package:injectable/injectable.dart';
 
@@ -135,6 +138,22 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     MakeCallEvent event,
     Emitter<CallsState> emit,
   ) async {
+    if (GetIt.I<ChatBloc>().state.chats
+            .firstWhere(
+              (element) => element.id == event.chatId,
+              orElse: () => GetIt.I<ChatBloc>().state.pinnedChats.firstWhere(
+                (element) => element.id == event.chatId,
+              ),
+            )
+            .channelMembers
+            ?.any((element) => element.isBlocked == 1) ??
+        false) {
+      showMessage(
+        LocaleKeys.You_cannot_send_messages_or_calls_to_this_user.tr(),
+        hasError: true,
+      );
+      return;
+    }
     emit(
       state.copyWith(
         makeCallStatus: MakeCallStatus.loading,

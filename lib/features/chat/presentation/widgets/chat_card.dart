@@ -162,34 +162,12 @@ class _ChatCardState extends ThemeState<ChatCard> {
     bool isDeleteForAll = false;
     bool deleteFromMyId = false;
     if (!widget.chat.messages.isNullOrEmpty) {
-      messageType =
-          (widget.chat.messages!
-                  .firstWhere(
-                    (element) =>
-                        element.authMessageStatus!.isDeleted == 0 ||
-                        element.authMessageStatus!.deleteForAll!,
-                  )
-                  .messageType
-                  ?.name)
-              .toString();
+      messageType = (widget.chat.messages!.first.messageType?.name).toString();
       deleteFromMyId =
-          (widget.chat.messages!
-              .firstWhere(
-                (element) =>
-                    element.authMessageStatus!.isDeleted == 0 ||
-                    element.authMessageStatus!.deleteForAll!,
-              )
-              .deletedByUserId ==
+          (widget.chat.messages!.first.deletedByUserId ==
           _prefsRepository.myChatId!);
       isDeleteForAll =
-          (widget.chat.messages!
-              .firstWhere(
-                (element) =>
-                    element.authMessageStatus!.isDeleted == 0 ||
-                    element.authMessageStatus!.deleteForAll!,
-              )
-              .authMessageStatus!
-              .deleteForAll ??
+          (widget.chat.messages!.first.authMessageStatus!.deleteForAll ??
           false);
     }
     return Column(

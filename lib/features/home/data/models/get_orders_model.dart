@@ -25,34 +25,32 @@ class OrderModel {
     String? message,
     dynamic detailedError,
     OrderDataModel? data,
-  }) =>
-      OrderModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => OrderModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
-        isSuccessful: json["isSuccessful"],
-        hasContent: json["hasContent"],
-        code: json["code"],
-        message: json["message"],
-        detailedError: json["detailed_error"],
-        data:
-            json["data"] == null ? null : OrderDataModel.fromJson(json["data"]),
-      );
+    isSuccessful: json["isSuccessful"],
+    hasContent: json["hasContent"],
+    code: json["code"],
+    message: json["message"],
+    detailedError: json["detailed_error"],
+    data: json["data"] == null ? null : OrderDataModel.fromJson(json["data"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class OrderDataModel {
@@ -61,44 +59,39 @@ class OrderDataModel {
   final int? offset;
   final List<OrderListModel>? orders;
 
-  OrderDataModel({
-    this.total,
-    this.limit,
-    this.offset,
-    this.orders,
-  });
+  OrderDataModel({this.total, this.limit, this.offset, this.orders});
 
   OrderDataModel copyWith({
     int? total,
     int? limit,
     int? offset,
     List<OrderListModel>? orders,
-  }) =>
-      OrderDataModel(
-        total: total ?? this.total,
-        limit: limit ?? this.limit,
-        offset: offset ?? this.offset,
-        orders: orders ?? this.orders,
-      );
+  }) => OrderDataModel(
+    total: total ?? this.total,
+    limit: limit ?? this.limit,
+    offset: offset ?? this.offset,
+    orders: orders ?? this.orders,
+  );
 
   factory OrderDataModel.fromJson(Map<String, dynamic> json) => OrderDataModel(
-        total: json["total"],
-        limit: json["limit"],
-        offset: json["offset"],
-        orders: json["orders"] == null
-            ? []
-            : List<OrderListModel>.from(
-                json["orders"]!.map((x) => OrderListModel.fromJson(x))),
-      );
+    total: json["total"],
+    limit: json["limit"],
+    offset: json["offset"],
+    orders: json["orders"] == null
+        ? []
+        : List<OrderListModel>.from(
+            json["orders"]!.map((x) => OrderListModel.fromJson(x)),
+          ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-        "orders": orders == null
-            ? []
-            : List<dynamic>.from(orders!.map((x) => x.toJson())),
-      };
+    "total": total,
+    "limit": limit,
+    "offset": offset,
+    "orders": orders == null
+        ? []
+        : List<dynamic>.from(orders!.map((x) => x.toJson())),
+  };
 }
 
 class OrderListModel {
@@ -216,149 +209,147 @@ class OrderListModel {
     bool? canCanceleOrder,
     bool? canChangeVariant,
     List<OrderListDetailModel>? details,
-  }) =>
-      OrderListModel(
-        id: id ?? this.id,
-        customerId: customerId ?? this.customerId,
-        canUpdateAddress: canUpdateAddress ?? this.canUpdateAddress,
-        canCanceleOrder: canCanceleOrder ?? this.canCanceleOrder,
-        paymentStatus: paymentStatus ?? this.paymentStatus,
-        orderStatus: orderStatus ?? this.orderStatus,
-        orderGroupStatus: orderGroupStatus ?? this.orderGroupStatus,
-        paymentMethod: paymentMethod ?? this.paymentMethod,
-        transactionRef: transactionRef ?? this.transactionRef,
-        orderAmount: orderAmount ?? this.orderAmount,
-        canChangeVariant: canChangeVariant ?? this.canChangeVariant,
-        partialPaymentByWallet:
-            partialPaymentByWallet ?? this.partialPaymentByWallet,
-        discountAmount: discountAmount ?? this.discountAmount,
-        canReturnOrder: canReturnOrder ?? this.canReturnOrder,
-        shippingCost: shippingCost ?? this.shippingCost,
-        shippingAddress: shippingAddress ?? this.shippingAddress,
-        shippingAddressData: shippingAddressData ?? this.shippingAddressData,
-        billingAddress: billingAddress ?? this.billingAddress,
-        billingAddressData: billingAddressData ?? this.billingAddressData,
-        discountType: discountType ?? this.discountType,
-        couponCode: couponCode ?? this.couponCode,
-        shippingMethodId: shippingMethodId ?? this.shippingMethodId,
-        orderGroupId: orderGroupId ?? this.orderGroupId,
-        verificationCode: verificationCode ?? this.verificationCode,
-        orderNote: orderNote ?? this.orderNote,
-        ownerType: ownerType ?? this.ownerType,
-        ownerId: ownerId ?? this.ownerId,
-        sellerId: sellerId ?? this.sellerId,
-        createdAt: createdAt ?? this.createdAt,
-        orderCanReturn: orderCanReturn ?? this.orderCanReturn,
-        orderHasReturnRequest:
-            orderHasReturnRequest ?? this.orderHasReturnRequest,
-        returnRequestId: returnRequestId ?? this.returnRequestId,
-        showReturnRequest: showReturnRequest ?? this.showReturnRequest,
-        editReturnRequest: editReturnRequest ?? this.editReturnRequest,
-        orderCanExchange: orderCanExchange ?? this.orderCanExchange,
-        details: details ?? this.details,
-      );
+  }) => OrderListModel(
+    id: id ?? this.id,
+    customerId: customerId ?? this.customerId,
+    canUpdateAddress: canUpdateAddress ?? this.canUpdateAddress,
+    canCanceleOrder: canCanceleOrder ?? this.canCanceleOrder,
+    paymentStatus: paymentStatus ?? this.paymentStatus,
+    orderStatus: orderStatus ?? this.orderStatus,
+    orderGroupStatus: orderGroupStatus ?? this.orderGroupStatus,
+    paymentMethod: paymentMethod ?? this.paymentMethod,
+    transactionRef: transactionRef ?? this.transactionRef,
+    orderAmount: orderAmount ?? this.orderAmount,
+    canChangeVariant: canChangeVariant ?? this.canChangeVariant,
+    partialPaymentByWallet:
+        partialPaymentByWallet ?? this.partialPaymentByWallet,
+    discountAmount: discountAmount ?? this.discountAmount,
+    canReturnOrder: canReturnOrder ?? this.canReturnOrder,
+    shippingCost: shippingCost ?? this.shippingCost,
+    shippingAddress: shippingAddress ?? this.shippingAddress,
+    shippingAddressData: shippingAddressData ?? this.shippingAddressData,
+    billingAddress: billingAddress ?? this.billingAddress,
+    billingAddressData: billingAddressData ?? this.billingAddressData,
+    discountType: discountType ?? this.discountType,
+    couponCode: couponCode ?? this.couponCode,
+    shippingMethodId: shippingMethodId ?? this.shippingMethodId,
+    orderGroupId: orderGroupId ?? this.orderGroupId,
+    verificationCode: verificationCode ?? this.verificationCode,
+    orderNote: orderNote ?? this.orderNote,
+    ownerType: ownerType ?? this.ownerType,
+    ownerId: ownerId ?? this.ownerId,
+    sellerId: sellerId ?? this.sellerId,
+    createdAt: createdAt ?? this.createdAt,
+    orderCanReturn: orderCanReturn ?? this.orderCanReturn,
+    orderHasReturnRequest: orderHasReturnRequest ?? this.orderHasReturnRequest,
+    returnRequestId: returnRequestId ?? this.returnRequestId,
+    showReturnRequest: showReturnRequest ?? this.showReturnRequest,
+    editReturnRequest: editReturnRequest ?? this.editReturnRequest,
+    orderCanExchange: orderCanExchange ?? this.orderCanExchange,
+    details: details ?? this.details,
+  );
 
   factory OrderListModel.fromJson(Map<String, dynamic> json) => OrderListModel(
-        id: json["id"],
-        customerId: json["customer_id"],
-        paymentStatus: json["payment_status"],
-        orderStatus: json["order_status"] == null
-            ? null
-            : OrderStatus.fromJson(json["order_status"]),
-        orderGroupStatus: json["order_group_status"] == null
-            ? null
-            : OrderStatus.fromJson(json["order_group_status"]),
-        canReturnOrder: json["can_return_order"],
-        paymentMethod: json["payment_method"] == null
-            ? null
-            : OrderStatus.fromJson(json["payment_method"]),
-        transactionRef: json["transaction_ref"],
-        orderAmount: json["order_amount"] == null
-            ? 0
-            : double.parse(json["order_amount"].toString()),
-        partialPaymentByWallet: json["partial_payment_by_wallet"] == null
-            ? 0
-            : double.parse(json["partial_payment_by_wallet"].toString()),
-        discountAmount: json["discount_amount"] == null
-            ? 0
-            : double.parse(json["discount_amount"].toString()),
-        shippingCost: json["shipping_cost"] == null
-            ? 0
-            : double.parse(json["shipping_cost"].toString()),
-        shippingAddress: json["shipping_address"],
-        shippingAddressData: json["shipping_address_data"] == null
-            ? null
-            : ShippingAddressData.fromJson(json["shipping_address_data"]),
-        billingAddress: json["billing_address"],
-        billingAddressData: json["billing_address_data"],
-        discountType: json["discount_type"],
-        couponCode: json["coupon_code"],
-        shippingMethodId: json["shipping_method_id"],
-        ownerType: json["owner_type"],
-        ownerId: json["owner_id"].toString(),
-        orderGroupId: json["order_group_id"],
-        canUpdateAddress: json["can_update_address"],
-        canChangeVariant: json["can_change_variant"],
-        canCanceleOrder: json["can_cancele_order"],
-        verificationCode: json["verification_code"],
-        orderNote: json["order_note"],
-        sellerId:
-            json["seller_id"] == null ? null : json["seller_id"].toString(),
-        createdAt: json["created_at"] ?? '',
-        orderCanReturn: json["order_can_return"],
-        orderHasReturnRequest: json["order_has_return_request"],
-        returnRequestId: json["return_request_id"] == null
-            ? null
-            : json["return_request_id"].toString(),
-        showReturnRequest: json["show_return_request"],
-        editReturnRequest: json["edit_return_request"],
-        orderCanExchange: json["order_can_exchange"],
-        details: json["details"] == null
-            ? []
-            : List<OrderListDetailModel>.from(
-                json["details"]!.map((x) => OrderListDetailModel.fromJson(x))),
-      );
+    id: json["id"],
+    customerId: json["customer_id"],
+    paymentStatus: json["payment_status"],
+    orderStatus: json["order_status"] == null
+        ? null
+        : OrderStatus.fromJson(json["order_status"]),
+    orderGroupStatus: json["order_group_status"] == null
+        ? null
+        : OrderStatus.fromJson(json["order_group_status"]),
+    canReturnOrder: json["can_return_order"],
+    paymentMethod: json["payment_method"] == null
+        ? null
+        : OrderStatus.fromJson(json["payment_method"]),
+    transactionRef: json["transaction_ref"],
+    orderAmount: json["order_amount"] == null
+        ? 0
+        : double.parse(json["order_amount"].toString()),
+    partialPaymentByWallet: json["partial_payment_by_wallet"] == null
+        ? 0
+        : double.parse(json["partial_payment_by_wallet"].toString()),
+    discountAmount: json["discount_amount"] == null
+        ? 0
+        : double.parse(json["discount_amount"].toString()),
+    shippingCost: json["shipping_cost"] == null
+        ? 0
+        : double.parse(json["shipping_cost"].toString()),
+    shippingAddress: json["shipping_address"],
+    shippingAddressData: json["shipping_address_data"] == null
+        ? null
+        : ShippingAddressData.fromJson(json["shipping_address_data"]),
+    billingAddress: json["billing_address"],
+    billingAddressData: json["billing_address_data"],
+    discountType: json["discount_type"],
+    couponCode: json["coupon_code"],
+    shippingMethodId: json["shipping_method_id"],
+    ownerType: json["owner_type"],
+    ownerId: json["owner_id"].toString(),
+    orderGroupId: json["order_group_id"],
+    canUpdateAddress: json["can_update_address"],
+    canChangeVariant: json["can_change_variant"],
+    canCanceleOrder: json["can_cancele_order"],
+    verificationCode: json["verification_code"],
+    orderNote: json["order_note"],
+    sellerId: json["seller_id"] == null ? null : json["seller_id"].toString(),
+    createdAt: json["created_at"] ?? '',
+    orderCanReturn: json["order_can_return"],
+    orderHasReturnRequest: json["order_has_return_request"],
+    returnRequestId: json["return_request_id"] == null
+        ? null
+        : json["return_request_id"].toString(),
+    showReturnRequest: json["show_return_request"],
+    editReturnRequest: json["edit_return_request"],
+    orderCanExchange: json["order_can_exchange"],
+    details: json["details"] == null
+        ? []
+        : List<OrderListDetailModel>.from(
+            json["details"]!.map((x) => OrderListDetailModel.fromJson(x)),
+          ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "customer_id": customerId,
-        "payment_status": paymentStatus,
-        "order_status": orderStatus?.toJson(),
-        "order_group_status": orderGroupStatus?.toJson(),
-        "payment_method": paymentMethod?.toJson(),
-        "transaction_ref": transactionRef,
-        "order_amount": orderAmount,
-        "can_change_variant": canChangeVariant,
-        "can_return_order": canReturnOrder,
-        "partial_payment_by_wallet": partialPaymentByWallet,
-        "discount_amount": discountAmount,
-        "owner_type": ownerType,
-        "owner_id": ownerId,
-        "shipping_cost": shippingCost,
-        "shipping_address": shippingAddress,
-        "can_update_address": canUpdateAddress,
-        "can_cancele_order": canCanceleOrder,
-        "shipping_address_data": shippingAddressData?.toJson(),
-        "billing_address": billingAddress,
-        "billing_address_data": billingAddressData,
-        "discount_type": discountType,
-        "coupon_code": couponCode,
-        "shipping_method_id": shippingMethodId,
-        "order_group_id": orderGroupId,
-        "verification_code": verificationCode,
-        "order_note": orderNote,
-        "seller_id": sellerId,
-        "created_at": createdAt,
-        "order_can_return": orderCanReturn,
-        "order_has_return_request": orderHasReturnRequest,
-        "return_request_id": returnRequestId.toString(),
-        "show_return_request": showReturnRequest,
-        "edit_return_request": editReturnRequest,
-        "order_can_exchange": orderCanExchange,
-        "details": details == null
-            ? []
-            : List<dynamic>.from(details!.map((x) => x.toJson())),
-      };
+    "id": id,
+    "customer_id": customerId,
+    "payment_status": paymentStatus,
+    "order_status": orderStatus?.toJson(),
+    "order_group_status": orderGroupStatus?.toJson(),
+    "payment_method": paymentMethod?.toJson(),
+    "transaction_ref": transactionRef,
+    "order_amount": orderAmount,
+    "can_change_variant": canChangeVariant,
+    "can_return_order": canReturnOrder,
+    "partial_payment_by_wallet": partialPaymentByWallet,
+    "discount_amount": discountAmount,
+    "owner_type": ownerType,
+    "owner_id": ownerId,
+    "shipping_cost": shippingCost,
+    "shipping_address": shippingAddress,
+    "can_update_address": canUpdateAddress,
+    "can_cancele_order": canCanceleOrder,
+    "shipping_address_data": shippingAddressData?.toJson(),
+    "billing_address": billingAddress,
+    "billing_address_data": billingAddressData,
+    "discount_type": discountType,
+    "coupon_code": couponCode,
+    "shipping_method_id": shippingMethodId,
+    "order_group_id": orderGroupId,
+    "verification_code": verificationCode,
+    "order_note": orderNote,
+    "seller_id": sellerId,
+    "created_at": createdAt,
+    "order_can_return": orderCanReturn,
+    "order_has_return_request": orderHasReturnRequest,
+    "return_request_id": returnRequestId.toString(),
+    "show_return_request": showReturnRequest,
+    "edit_return_request": editReturnRequest,
+    "order_can_exchange": orderCanExchange,
+    "details": details == null
+        ? []
+        : List<dynamic>.from(details!.map((x) => x.toJson())),
+  };
 }
 
 class OrderListDetailModel {
@@ -443,35 +434,34 @@ class OrderListDetailModel {
     int? odooId,
     int? odooOrderId,
     String? image,
-  }) =>
-      OrderListDetailModel(
-        id: id ?? this.id,
-        orderId: orderId ?? this.orderId,
-        productId: productId ?? this.productId,
-        // comments: comments ?? this.comments,
-        productDetails: productDetails ?? this.productDetails,
-        qty: qty ?? this.qty,
-        price: price ?? this.price,
-        productSlug: productSlug ?? this.productSlug,
-        discount: discount ?? this.discount,
-        priceAfterDiscount: priceAfterDiscount ?? this.priceAfterDiscount,
-        tax: tax ?? this.tax,
-        deliveryStatus: deliveryStatus ?? this.deliveryStatus,
-        paymentStatus: paymentStatus ?? this.paymentStatus,
-        shippingMethodId: shippingMethodId ?? this.shippingMethodId,
-        variant: variant ?? this.variant,
-        collectProductAfterOrdering:
-            collectProductAfterOrdering ?? this.collectProductAfterOrdering,
-        variation: variation ?? this.variation,
-        discountType: discountType ?? this.discountType,
-        isStockDecreased: isStockDecreased ?? this.isStockDecreased,
-        refundRequest: refundRequest ?? this.refundRequest,
-        refundRequestStatus: refundRequestStatus ?? this.refundRequestStatus,
-        isOdooProduct: isOdooProduct ?? this.isOdooProduct,
-        odooId: odooId ?? this.odooId,
-        odooOrderId: odooOrderId ?? this.odooOrderId,
-        image: image ?? this.image,
-      );
+  }) => OrderListDetailModel(
+    id: id ?? this.id,
+    orderId: orderId ?? this.orderId,
+    productId: productId ?? this.productId,
+    // comments: comments ?? this.comments,
+    productDetails: productDetails ?? this.productDetails,
+    qty: qty ?? this.qty,
+    price: price ?? this.price,
+    productSlug: productSlug ?? this.productSlug,
+    discount: discount ?? this.discount,
+    priceAfterDiscount: priceAfterDiscount ?? this.priceAfterDiscount,
+    tax: tax ?? this.tax,
+    deliveryStatus: deliveryStatus ?? this.deliveryStatus,
+    paymentStatus: paymentStatus ?? this.paymentStatus,
+    shippingMethodId: shippingMethodId ?? this.shippingMethodId,
+    variant: variant ?? this.variant,
+    collectProductAfterOrdering:
+        collectProductAfterOrdering ?? this.collectProductAfterOrdering,
+    variation: variation ?? this.variation,
+    discountType: discountType ?? this.discountType,
+    isStockDecreased: isStockDecreased ?? this.isStockDecreased,
+    refundRequest: refundRequest ?? this.refundRequest,
+    refundRequestStatus: refundRequestStatus ?? this.refundRequestStatus,
+    isOdooProduct: isOdooProduct ?? this.isOdooProduct,
+    odooId: odooId ?? this.odooId,
+    odooOrderId: odooOrderId ?? this.odooOrderId,
+    image: image ?? this.image,
+  );
 
   factory OrderListDetailModel.fromJson(Map<String, dynamic> json) {
     return OrderListDetailModel(
@@ -505,13 +495,16 @@ class OrderListDetailModel {
       variation: json["variation"] == null
           ? []
           : (json["variation"] is List)
-              ? (json["variation"] as List).isEmpty
-                  ? []
-                  : json["variation"]?.first.isEmpty
-                      ? []
-                      : List<GetOrderVariationModel>.from(json["variation"]
-                          .map((x) => GetOrderVariationModel.fromJson(x)))
-              : [],
+          ? (json["variation"] as List).isEmpty
+                ? []
+                : json["variation"]?.first.isEmpty
+                ? []
+                : List<GetOrderVariationModel>.from(
+                    json["variation"].map(
+                      (x) => GetOrderVariationModel.fromJson(x),
+                    ),
+                  )
+          : [],
       discountType: json["discount_type"],
       isStockDecreased: json["is_stock_decreased"],
       refundRequest: json["refund_request"].toString(),
@@ -524,38 +517,38 @@ class OrderListDetailModel {
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "order_id": orderId,
-        "product_id": productId,
-        "product_details": productDetails?.toJson(),
-        "qty": qty,
-        "price": price,
-        "discount": discount,
-        "price_after_discount": priceAfterDiscount,
-        "tax": tax,
-        "delivery_status": deliveryStatus,
-        "payment_status": paymentStatus,
-        "product_slug": productSlug,
-        "shipping_method_id": shippingMethodId,
-        "variant": variant,
-        // "comments": comments == null
-        //    ? []
-        //    : List<dynamic>.from(comments!.map((x) => x.toJson())),
-        "collect_product_after_ordering": collectProductAfterOrdering,
-        "variation": variation.isNullOrEmpty
-            ? []
-            : (variation?.first is List)
-                ? []
-                : List<dynamic>.from(variation!.map((x) => x.toJson())),
-        "discount_type": discountType,
-        "is_stock_decreased": isStockDecreased,
-        "refund_request": refundRequest.toString(),
-        "refund_request_status": refundRequestStatus,
-        "is_odoo_product": isOdooProduct,
-        "odoo_id": odooId,
-        "odoo_order_id": odooOrderId,
-        "image": image,
-      };
+    "id": id,
+    "order_id": orderId,
+    "product_id": productId,
+    "product_details": productDetails?.toJson(),
+    "qty": qty,
+    "price": price,
+    "discount": discount,
+    "price_after_discount": priceAfterDiscount,
+    "tax": tax,
+    "delivery_status": deliveryStatus,
+    "payment_status": paymentStatus,
+    "product_slug": productSlug,
+    "shipping_method_id": shippingMethodId,
+    "variant": variant,
+    // "comments": comments == null
+    //    ? []
+    //    : List<dynamic>.from(comments!.map((x) => x.toJson())),
+    "collect_product_after_ordering": collectProductAfterOrdering,
+    "variation": variation.isNullOrEmpty
+        ? []
+        : (variation?.first is List)
+        ? []
+        : List<dynamic>.from(variation!.map((x) => x.toJson())),
+    "discount_type": discountType,
+    "is_stock_decreased": isStockDecreased,
+    "refund_request": refundRequest.toString(),
+    "refund_request_status": refundRequestStatus,
+    "is_odoo_product": isOdooProduct,
+    "odoo_id": odooId,
+    "odoo_order_id": odooOrderId,
+    "image": image,
+  };
 }
 
 class OrderRatingAndComment {
@@ -563,22 +556,17 @@ class OrderRatingAndComment {
   final String? comment;
   final String? starRating;
 
-  OrderRatingAndComment({
-    this.id,
-    this.comment,
-    this.starRating,
-  });
+  OrderRatingAndComment({this.id, this.comment, this.starRating});
 
   OrderRatingAndComment copyWith({
     int? id,
     String? comment,
     String? starRating,
-  }) =>
-      OrderRatingAndComment(
-        id: id ?? this.id,
-        comment: comment ?? this.comment,
-        starRating: starRating ?? this.starRating,
-      );
+  }) => OrderRatingAndComment(
+    id: id ?? this.id,
+    comment: comment ?? this.comment,
+    starRating: starRating ?? this.starRating,
+  );
 
   factory OrderRatingAndComment.fromJson(Map<String, dynamic> json) =>
       OrderRatingAndComment(
@@ -588,10 +576,10 @@ class OrderRatingAndComment {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "comment": comment,
-        "star_rating": starRating,
-      };
+    "id": id,
+    "comment": comment,
+    "star_rating": starRating,
+  };
 }
 
 class OrderProductDetailsModel {
@@ -603,8 +591,8 @@ class OrderProductDetailsModel {
   final int? countOfPieces;
   final String? thumbnail;
   final List<String>? images;
-  final double? price;
-  final double? offerPrice;
+  //final double? price;
+  // final double? offerPrice;
   final bool? isFavourite;
   final bool? inStock;
   final GetOrderRatingModel? rating;
@@ -617,9 +605,9 @@ class OrderProductDetailsModel {
     this.details,
     this.thumbnail,
     this.images,
-    this.price,
+    // this.price,
     this.countOfPieces,
-    this.offerPrice,
+    //  this.offerPrice,
     this.isFavourite,
     this.inStock,
     this.rating,
@@ -639,22 +627,21 @@ class OrderProductDetailsModel {
     bool? isFavourite,
     bool? inStock,
     GetOrderRatingModel? rating,
-  }) =>
-      OrderProductDetailsModel(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        slug: slug ?? this.slug,
-        shareLink: shareLink ?? this.shareLink,
-        details: details ?? this.details,
-        thumbnail: thumbnail ?? this.thumbnail,
-        images: images ?? this.images,
-        price: price ?? this.price,
-        offerPrice: offerPrice ?? this.offerPrice,
-        isFavourite: isFavourite ?? this.isFavourite,
-        inStock: inStock ?? this.inStock,
-        countOfPieces: countOfPieces ?? this.countOfPieces,
-        rating: rating ?? this.rating,
-      );
+  }) => OrderProductDetailsModel(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    slug: slug ?? this.slug,
+    shareLink: shareLink ?? this.shareLink,
+    details: details ?? this.details,
+    thumbnail: thumbnail ?? this.thumbnail,
+    images: images ?? this.images,
+    //  price: price ?? this.price,
+    //offerPrice: offerPrice ?? this.offerPrice,
+    isFavourite: isFavourite ?? this.isFavourite,
+    inStock: inStock ?? this.inStock,
+    countOfPieces: countOfPieces ?? this.countOfPieces,
+    rating: rating ?? this.rating,
+  );
 
   factory OrderProductDetailsModel.fromJson(Map<String, dynamic> json) =>
       OrderProductDetailsModel(
@@ -668,11 +655,11 @@ class OrderProductDetailsModel {
         images: json["images"] == null
             ? []
             : List<String>.from(json["images"]!.map((x) => x)),
-        price:
-            json["price"] == null ? 0 : double.parse(json["price"].toString()),
-        offerPrice: json["offer_price"] == null
-            ? 0
-            : double.parse(json["offer_price"].toString()),
+        //  price:
+        //   json["price"] == null ? 0 : double.parse(json["price"].toString()),
+        //  offerPrice: json["offer_price"] == null
+        //    ? 0
+        //: double.parse(json["offer_price"].toString()),
         isFavourite: json["is_favourite"],
         inStock: json["in_stock"],
         rating: json["rating"] == null
@@ -681,36 +668,29 @@ class OrderProductDetailsModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "slug": slug,
-        "share_link": shareLink,
-        "details": details,
-        "thumbnail": thumbnail,
-        "count_of_pieces": countOfPieces,
-        "images":
-            images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
-        "price": price,
-        "offer_price": offerPrice,
-        "is_favourite": isFavourite,
-        "in_stock": inStock,
-        "rating": rating?.toJson(),
-      };
+    "id": id,
+    "name": name,
+    "slug": slug,
+    "share_link": shareLink,
+    "details": details,
+    "thumbnail": thumbnail,
+    "count_of_pieces": countOfPieces,
+    "images": images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
+    // "price": price,
+    // "offer_price": offerPrice,
+    "is_favourite": isFavourite,
+    "in_stock": inStock,
+    "rating": rating?.toJson(),
+  };
 }
 
 class GetOrderRatingModel {
   final int? overallRating;
   final int? totalRating;
 
-  GetOrderRatingModel({
-    this.overallRating,
-    this.totalRating,
-  });
+  GetOrderRatingModel({this.overallRating, this.totalRating});
 
-  GetOrderRatingModel copyWith({
-    int? overallRating,
-    int? totalRating,
-  }) =>
+  GetOrderRatingModel copyWith({int? overallRating, int? totalRating}) =>
       GetOrderRatingModel(
         overallRating: overallRating ?? this.overallRating,
         totalRating: totalRating ?? this.totalRating,
@@ -723,9 +703,9 @@ class GetOrderRatingModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "overall_rating": overallRating,
-        "total_rating": totalRating,
-      };
+    "overall_rating": overallRating,
+    "total_rating": totalRating,
+  };
 }
 
 class GetOrderVariationModel {
@@ -745,64 +725,50 @@ class GetOrderVariationModel {
     String? colorOption,
     String? size,
     String? color,
-  }) =>
-      GetOrderVariationModel(
-        sizeOption: sizeOption ?? this.sizeOption,
-        colorOption: colorOption ?? this.colorOption,
-        size: size ?? this.size,
-        color: color ?? this.color,
-      );
+  }) => GetOrderVariationModel(
+    sizeOption: sizeOption ?? this.sizeOption,
+    colorOption: colorOption ?? this.colorOption,
+    size: size ?? this.size,
+    color: color ?? this.color,
+  );
 
   factory GetOrderVariationModel.fromJson(Map<String, dynamic> json) =>
       GetOrderVariationModel(
-          sizeOption: json["size_options"] == null
-              ? null
-              : json["size_options"].toString().replaceAll("-", "_"),
-          colorOption: json["color_options"] == null
-              ? null
-              : json["color_options"].toString().replaceAll("-", "_"),
-          size: json["Size"] == null
-              ? null
-              : json["Size"].toString().replaceAll("-", "_"),
-          color: json["color"] == null
-              ? null
-              : json["color"].toString().replaceAll("-", "_"));
+        sizeOption: json["size_options"] == null
+            ? null
+            : json["size_options"].toString().replaceAll("-", "_"),
+        colorOption: json["color_options"] == null
+            ? null
+            : json["color_options"].toString().replaceAll("-", "_"),
+        size: json["Size"] == null
+            ? null
+            : json["Size"].toString().replaceAll("-", "_"),
+        color: json["color"] == null
+            ? null
+            : json["color"].toString().replaceAll("-", "_"),
+      );
 
   Map<String, dynamic> toJson() => {
-        "size_options": sizeOption,
-        "color_options": colorOption,
-        "Size": size,
-        "color": color,
-      };
+    "size_options": sizeOption,
+    "color_options": colorOption,
+    "Size": size,
+    "color": color,
+  };
 }
 
 class OrderStatus {
   final String? value;
   final String? label;
 
-  OrderStatus({
-    this.value,
-    this.label,
-  });
+  OrderStatus({this.value, this.label});
 
-  OrderStatus copyWith({
-    String? value,
-    String? label,
-  }) =>
-      OrderStatus(
-        value: value ?? this.value,
-        label: label ?? this.label,
-      );
+  OrderStatus copyWith({String? value, String? label}) =>
+      OrderStatus(value: value ?? this.value, label: label ?? this.label);
 
-  factory OrderStatus.fromJson(Map<String, dynamic> json) => OrderStatus(
-        value: json["value"],
-        label: json["label"],
-      );
+  factory OrderStatus.fromJson(Map<String, dynamic> json) =>
+      OrderStatus(value: json["value"], label: json["label"]);
 
-  Map<String, dynamic> toJson() => {
-        "value": value,
-        "label": label,
-      };
+  Map<String, dynamic> toJson() => {"value": value, "label": label};
 }
 
 class ShippingAddressData {
@@ -886,34 +852,33 @@ class ShippingAddressData {
     dynamic email,
     String? cost,
     dynamic duration,
-  }) =>
-      ShippingAddressData(
-        id: id ?? this.id,
-        countryIso: countryIso ?? this.countryIso,
-        customerId: customerId ?? this.customerId,
-        contactPersonName: contactPersonName ?? this.contactPersonName,
-        addressType: addressType ?? this.addressType,
-        address: address ?? this.address,
-        addressDetail: addressDetail ?? this.addressDetail,
-        country: country ?? this.country,
-        province: province ?? this.province,
-        city: city ?? this.city,
-        town: town ?? this.town,
-        street: street ?? this.street,
-        building: building ?? this.building,
-        zip: zip ?? this.zip,
-        phone: phone ?? this.phone,
-        alternativePhone: alternativePhone ?? this.alternativePhone,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-        latitude: latitude ?? this.latitude,
-        longitude: longitude ?? this.longitude,
-        isBilling: isBilling ?? this.isBilling,
-        isDefault: isDefault ?? this.isDefault,
-        email: email ?? this.email,
-        cost: cost ?? this.cost,
-        duration: duration ?? this.duration,
-      );
+  }) => ShippingAddressData(
+    id: id ?? this.id,
+    countryIso: countryIso ?? this.countryIso,
+    customerId: customerId ?? this.customerId,
+    contactPersonName: contactPersonName ?? this.contactPersonName,
+    addressType: addressType ?? this.addressType,
+    address: address ?? this.address,
+    addressDetail: addressDetail ?? this.addressDetail,
+    country: country ?? this.country,
+    province: province ?? this.province,
+    city: city ?? this.city,
+    town: town ?? this.town,
+    street: street ?? this.street,
+    building: building ?? this.building,
+    zip: zip ?? this.zip,
+    phone: phone ?? this.phone,
+    alternativePhone: alternativePhone ?? this.alternativePhone,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    latitude: latitude ?? this.latitude,
+    longitude: longitude ?? this.longitude,
+    isBilling: isBilling ?? this.isBilling,
+    isDefault: isDefault ?? this.isDefault,
+    email: email ?? this.email,
+    cost: cost ?? this.cost,
+    duration: duration ?? this.duration,
+  );
 
   factory ShippingAddressData.fromJson(Map<String, dynamic> json) =>
       ShippingAddressData(
@@ -945,30 +910,30 @@ class ShippingAddressData {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "country_iso": countryIso,
-        "customer_id": customerId,
-        "contact_person_name": contactPersonName,
-        "address_type": addressType,
-        "address": address,
-        "address_detail": addressDetail,
-        "country": country,
-        "province": province,
-        "city": city,
-        "town": town,
-        "street": street,
-        "building": building,
-        "zip": zip,
-        "phone": phone,
-        "alternative_phone": alternativePhone,
-        "created_at": createdAt,
-        "updated_at": updatedAt,
-        "latitude": latitude,
-        "longitude": longitude,
-        "is_billing": isBilling,
-        "is_default": isDefault,
-        "email": email,
-        "cost": cost.toString(),
-        "duration": duration,
-      };
+    "id": id,
+    "country_iso": countryIso,
+    "customer_id": customerId,
+    "contact_person_name": contactPersonName,
+    "address_type": addressType,
+    "address": address,
+    "address_detail": addressDetail,
+    "country": country,
+    "province": province,
+    "city": city,
+    "town": town,
+    "street": street,
+    "building": building,
+    "zip": zip,
+    "phone": phone,
+    "alternative_phone": alternativePhone,
+    "created_at": createdAt,
+    "updated_at": updatedAt,
+    "latitude": latitude,
+    "longitude": longitude,
+    "is_billing": isBilling,
+    "is_default": isDefault,
+    "email": email,
+    "cost": cost.toString(),
+    "duration": duration,
+  };
 }

@@ -350,6 +350,7 @@ class _CartPageState extends State<CartPage> {
             }
 
             double totlalPrice = 0;
+            double totlalPriceWithDiscount = 0;
             String? priceSymbol;
             double totlalQuantity = 0;
             double totlalPriceWithoutShipping = 0;
@@ -380,6 +381,24 @@ class _CartPageState extends State<CartPage> {
             print(
               "totlalPriceWithoutShipping ${state.getCartShippingItemsModel?.data?.productsDiscount}",
             );
+            totlalPriceWithDiscount =
+                (((state.getCartShippingItemsModel?.data?.productsDiscount ?? 0)
+                    .abs()) +
+                (state.getCartShippingItemsModel?.data?.total ?? 0));
+            totlalPriceWithDiscount =
+                ((HelperFunctions.truncateToDecimalPlaces(
+                  totlalPriceWithDiscount,
+                  state
+                      .getCurrencyForCountryModel!
+                      .data!
+                      .currency!
+                      .decimalDigits!,
+                )) *
+                state
+                    .getCurrencyForCountryModel!
+                    .data!
+                    .currency!
+                    .exchangeRate!);
             totlalDiscount =
                 HelperFunctions.truncateToDecimalPlaces(
                   (state.getCartShippingItemsModel?.data?.productsDiscount ?? 0)
@@ -1780,7 +1799,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     0)
                                                                                 ? const SizedBox.shrink()
                                                                                 : Text(
-                                                                                    "${HelperFunctions.formatNumber(number: (totlalPrice + totlalDiscount), isNeedRounding: false)}  ",
+                                                                                    "${HelperFunctions.formatNumber(number: totlalPriceWithDiscount, isNeedRounding: false)}  ",
                                                                                     style: context.textTheme.bodyMedium?.rq.copyWith(
                                                                                       decoration: TextDecoration.lineThrough,
                                                                                       fontSize: 16,

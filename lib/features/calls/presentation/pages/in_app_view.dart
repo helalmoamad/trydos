@@ -1,6 +1,7 @@
 import 'dart:async';
+import 'package:flutter/services.dart';
 import 'dart:developer';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audioplayers.dart' hide AVAudioSessionCategory;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
@@ -42,6 +43,15 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   late Uri source;
   Timer? timer;
   final AudioPlayer _audioPlayer = AudioPlayer();
+  static const platform = MethodChannel('com.trydos.audio/settings');
+
+  Future<void> _setCallAudioMode(bool enable) async {
+    try {
+      await platform.invokeMethod('setCallAudioMode', enable);
+    } on PlatformException catch (e) {
+      debugPrint("Failed to set audio mode: '${e.message}'.");
+    }
+  }
 
   Future<void> playIncomingCall() async {
     try {
@@ -82,7 +92,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     debugPrint("asdafsd{${widget.type}");
     debugPrint("asdafsd{${widget.action}");
     debugPrint("asdafsd{${widget.auth_token}");
-    Uri baseUrl = Uri.parse(dotenv.env['WEB_CALLS_NEST_URL']!);
+    Uri baseUrl = Uri.parse(dotenv.env['WEB_CALLS_URL']!);
     source = Uri(
       queryParameters: {
         'uid': widget.uId,
@@ -106,6 +116,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
   @override
   void dispose() {
+    _setCallAudioMode(false);
     Vibration.cancel();
     timer?.cancel();
     if (_audioPlayer.state == PlayerState.playing) {
@@ -116,17 +127,42 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
   ValueNotifier<int> loadingNotifier = ValueNotifier(0);
   void _performAction1(List<dynamic> args) {
-    print('Received message from web: $args');
-    // أضف المنطق الخاص بك هنا
-    if (args.isNotEmpty) {
-      final action = args[0];
-      print("action://///////////// $action");
-      if (action == 'stop-ring') {
-        Vibration.cancel();
-        timer?.cancel();
-        if (_audioPlayer.state == PlayerState.playing) {
-          _audioPlayer.dispose();
+    debugPrint('Received message from web: $args');
+    if (args.isEmpty) return;
+
+    final action = args[0];
+    print("action: $action");
+
+    // 1. معالجة إيقاف الرنين
+    if (action == 'stop-ring') {
+      Vibration.cancel();
+      timer?.cancel();
+      if (_audioPlayer.state == PlayerState.playing) {
+        _audioPlayer.stop(); // استخدم stop بدلاً من dispose للحفاظ على الكائن
+      }
+      // إذا كانت المكالمة صوتية ولم يتم تحديد حالة مكبر الصوت بعد، نضبطها على Earpiece افتراضياً
+      // أما في مكالمات الفيديو فتكون Speaker افتراضياً
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (widget.type == 'voice') {
+          _setCallAudioMode(true); // Earpiece
+        } else {
+          _setCallAudioMode(false); // Speaker
         }
+      });
+    }
+
+    // 2. معالجة حالة مكبر الصوت (Speaker)
+    for (var arg in args) {
+      if (arg == 'IsSpeaker') {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _setCallAudioMode(false);
+        });
+        break;
+      } else if (arg == 'IsEarpiece') {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _setCallAudioMode(true);
+        });
+        break;
       }
     }
   }
@@ -234,53 +270,46 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     initialSettings: InAppWebViewSettings(
                       mediaPlaybackRequiresUserGesture: false,
                       javaScriptCanOpenWindowsAutomatically: true,
+                      allowsInlineMediaPlayback: true, // مهم جداً لـ iOS
                     ),
 
-                    // onPermissionRequest: (controller, permissionRequest) async {
-                    //   return await PermissionResponse(
-                    //       action: PermissionResponseAction.GRANT,
-                    //       resources: [
-                    //         PermissionResourceType.CAMERA_AND_MICROPHONE,
-                    //         PermissionResourceType.PROTECTED_MEDIA_ID,
-                    //   ]);
-                    // },
                     initialUrlRequest: URLRequest(
                       url: WebUri(source.toString()),
                     ),
                     onPermissionRequest: (controller, request) async {
-                      print(
-                        "///////*************111111111111111117777777777777777777777777////////////////////////////////////////44/",
+                      debugPrint(
+                        "Processing permission request for: ${request.resources}",
                       );
 
                       final resources = <PermissionResourceType>[];
-                      if (request.resources.contains(
-                        PermissionResourceType.CAMERA,
-                      )) {
-                        final cameraStatus = await Permission.camera.request();
-                        if (!cameraStatus.isDenied) {
-                          resources.add(PermissionResourceType.CAMERA);
-                        }
-                      }
-                      if (request.resources.contains(
-                        PermissionResourceType.MICROPHONE,
-                      )) {
-                        final microphoneStatus = await Permission.microphone
-                            .request();
-                        if (!microphoneStatus.isDenied) {
-                          resources.add(PermissionResourceType.MICROPHONE);
-                        }
-                      }
-                      // only for iOS and macOS
-                      if (request.resources.contains(
-                        PermissionResourceType.CAMERA_AND_MICROPHONE,
-                      )) {
-                        final cameraStatus = await Permission.camera.request();
-                        final microphoneStatus = await Permission.microphone
-                            .request();
-                        if (!cameraStatus.isDenied &&
-                            !microphoneStatus.isDenied) {
+
+                      for (var resource in request.resources) {
+                        if (resource == PermissionResourceType.CAMERA) {
+                          final status = await Permission.camera.request();
+                          if (status.isGranted)
+                            resources.add(PermissionResourceType.CAMERA);
+                        } else if (resource ==
+                            PermissionResourceType.MICROPHONE) {
+                          final status = await Permission.microphone.request();
+                          if (status.isGranted)
+                            resources.add(PermissionResourceType.MICROPHONE);
+                        } else if (resource ==
+                            PermissionResourceType.CAMERA_AND_MICROPHONE) {
+                          final cameraStatus = await Permission.camera
+                              .request();
+                          final microphoneStatus = await Permission.microphone
+                              .request();
+                          if (cameraStatus.isGranted &&
+                              microphoneStatus.isGranted) {
+                            resources.add(
+                              PermissionResourceType.CAMERA_AND_MICROPHONE,
+                            );
+                          }
+                        } else if (resource ==
+                            PermissionResourceType.PROTECTED_MEDIA_ID) {
+                          // مطلوب لبعض خدمات الـ RTC على أندرويد
                           resources.add(
-                            PermissionResourceType.CAMERA_AND_MICROPHONE,
+                            PermissionResourceType.PROTECTED_MEDIA_ID,
                           );
                         }
                       }

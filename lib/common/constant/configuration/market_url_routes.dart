@@ -181,13 +181,9 @@ abstract class MarketEndPoints {
 abstract class MarketUrls {
   static String get baseUrl => _baseUrlDev;
 
-  static String get baseUrlWithHttp => _baseUrlDevWithHttp;
-
   static Uri get baseUri => Uri.parse(_baseUrlDev);
 
   static set setBaseUrl(String url) => _baseUrlDev = url;
 
   static String _baseUrlDev = dotenv.env['MARKET_URL']!;
-  static const String _baseUrlDevWithHttp =
-      'http://market_under_dev_backend.trydos.dev';
 }

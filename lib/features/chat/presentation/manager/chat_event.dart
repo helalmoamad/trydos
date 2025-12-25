@@ -14,8 +14,11 @@ class LoadWidthAndHeightForImage extends ChatEvent {
   final int message_id;
   final int channel_id;
 
-  LoadWidthAndHeightForImage(
-      {required this.channel_id, required this.message_id, required this.file});
+  LoadWidthAndHeightForImage({
+    required this.channel_id,
+    required this.message_id,
+    required this.file,
+  });
 
   @override
   // TODO: implement props
@@ -27,11 +30,12 @@ class SearchTextInChatEvent extends ChatEvent {
   final String channel_id;
   final bool getWithPagination;
   final bool clearSearch;
-  SearchTextInChatEvent(
-      {required this.channel_id,
-      required this.searchText,
-      this.clearSearch = false,
-      this.getWithPagination = false});
+  SearchTextInChatEvent({
+    required this.channel_id,
+    required this.searchText,
+    this.clearSearch = false,
+    this.getWithPagination = false,
+  });
 
   @override
   // TODO: implement props
@@ -50,11 +54,7 @@ class CreateUserEvent extends ChatEvent {
   final String? mobilePhone;
   final String? password;
 
-  const CreateUserEvent({
-    this.name,
-    this.mobilePhone,
-    this.password,
-  });
+  const CreateUserEvent({this.name, this.mobilePhone, this.password});
 
   @override
   // TODO: implement props
@@ -65,10 +65,7 @@ class LoginEvent extends ChatEvent {
   final String? mobilePhone;
   final String? password;
 
-  const LoginEvent({
-    this.mobilePhone,
-    this.password,
-  });
+  const LoginEvent({this.mobilePhone, this.password});
 
   @override
   // TODO: implement props
@@ -98,11 +95,12 @@ class GetOrderRecipientIdEvent extends ChatEvent {
   final String orderId;
   final bool changeStatusToInit;
   final String? parentOrderId;
-  const GetOrderRecipientIdEvent(
-      {required this.originalUserId,
-      required this.orderId,
-      this.parentOrderId,
-      this.changeStatusToInit = false});
+  const GetOrderRecipientIdEvent({
+    required this.originalUserId,
+    required this.orderId,
+    this.parentOrderId,
+    this.changeStatusToInit = false,
+  });
 
   @override
   // TODO: implement props
@@ -115,11 +113,12 @@ class UpdateProfileInChatEvent extends ChatEvent {
   final String photo;
   final String name;
 
-  const UpdateProfileInChatEvent(
-      {required this.userId,
-      required this.name,
-      required this.phone,
-      required this.photo});
+  const UpdateProfileInChatEvent({
+    required this.userId,
+    required this.name,
+    required this.phone,
+    required this.photo,
+  });
 
   @override
   // TODO: implement props
@@ -132,12 +131,13 @@ class GetChatsEvent extends ChatEvent {
   final int? limit;
   final bool? getWithPagination;
   final int? messagesLimit;
-  const GetChatsEvent(
-      {this.chatToNavigateFromTerminated,
-      this.timeStamp,
-      this.getWithPagination,
-      this.limit,
-      this.messagesLimit});
+  const GetChatsEvent({
+    this.chatToNavigateFromTerminated,
+    this.timeStamp,
+    this.getWithPagination,
+    this.limit,
+    this.messagesLimit,
+  });
   @override
   // TODO: implement props
   List<Object?> get props => [];
@@ -157,41 +157,60 @@ class SendMessageEvent extends ChatEvent {
   final File? file;
   final int? senderParentMessageId;
   final bool createNewChat;
+  final bool isMedia;
   final double? imageWidth;
   final double? imageHeight;
 
-  const SendMessageEvent(
-      {this.receiverUserId,
-      this.content,
-      required this.messageId,
-      this.mediaContent,
-      this.parentMessageId,
-      this.file,
-      this.imageWidth,
-      this.imageHeight,
-      this.senderParentMessageId,
-      this.messageType,
-      this.parentMessageContent,
-      this.isForward,
-      this.createNewChat = false,
-      this.extraFields,
-      required this.channelId});
+  const SendMessageEvent({
+    this.receiverUserId,
+    this.content,
+    required this.messageId,
+    this.mediaContent,
+    this.isMedia = false,
+    this.parentMessageId,
+    this.file,
+    this.imageWidth,
+    this.imageHeight,
+    this.senderParentMessageId,
+    this.messageType,
+    this.parentMessageContent,
+    this.isForward,
+    this.createNewChat = false,
+    this.extraFields,
+    required this.channelId,
+  });
 
   @override
   // TODO: implement props
   List<Object?> get props => [
-        receiverUserId,
-        content,
-        mediaContent,
-        parentMessageId,
-        file,
-        messageType,
-        parentMessageContent,
-        isForward,
-        extraFields,
-        channelId,
-        messageId
-      ];
+    receiverUserId,
+    content,
+    mediaContent,
+    parentMessageId,
+    isMedia,
+    file,
+    messageType,
+    parentMessageContent,
+    isForward,
+    extraFields,
+    channelId,
+    messageId,
+  ];
+}
+
+class BlockOrDeleteBlockUserEvent extends ChatEvent {
+  final String? receiverUserId;
+  final bool? isBlock;
+  final String channelId;
+  const BlockOrDeleteBlockUserEvent({
+    required this.receiverUserId,
+    required this.isBlock,
+    required this.channelId,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [receiverUserId, channelId, isBlock];
 }
 
 class UploadFileEvent extends ChatEvent {
@@ -232,20 +251,20 @@ class UploadFileEvent extends ChatEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [
-        filePath,
-        file,
-        receiverUserId,
-        content,
-        mediaContent,
-        parentMessageId,
-        messageType,
-        isForward,
-        extraFields,
-        fileName,
-        parentMessageContent,
-        messageId,
-        channelId
-      ];
+    filePath,
+    file,
+    receiverUserId,
+    content,
+    mediaContent,
+    parentMessageId,
+    messageType,
+    isForward,
+    extraFields,
+    fileName,
+    parentMessageContent,
+    messageId,
+    channelId,
+  ];
 }
 
 class SaveContactsEvent extends ChatEvent {
@@ -260,10 +279,13 @@ class ReceiveMessageEvent extends ChatEvent {
   final Message message;
   final String? prevMessageId;
   final bool increaseUnReadMessages;
-  const ReceiveMessageEvent(
-      {required this.message,
-      this.prevMessageId,
-      this.increaseUnReadMessages = true});
+  final bool isPrivate;
+  const ReceiveMessageEvent({
+    required this.message,
+    this.prevMessageId,
+    this.increaseUnReadMessages = true,
+    this.isPrivate = false,
+  });
 
   @override
   // TODO: implement props
@@ -277,7 +299,11 @@ class ReceiveMessageFromPusherEvent extends ChatEvent {
   final DateTime receivedAt;
 
   const ReceiveMessageFromPusherEvent(
-      this.channelId, this.userId, this.lastMessageId, this.receivedAt);
+    this.channelId,
+    this.userId,
+    this.lastMessageId,
+    this.receivedAt,
+  );
 
   @override
   // TODO: implement props
@@ -302,7 +328,11 @@ class WatchedMessageFromPusherEvent extends ChatEvent {
   final int lastMessageId;
 
   const WatchedMessageFromPusherEvent(
-      this.channelId, this.userId, this.lastMessageId, this.watchedAt);
+    this.channelId,
+    this.userId,
+    this.lastMessageId,
+    this.watchedAt,
+  );
 
   @override
   // TODO: implement props
@@ -345,8 +375,10 @@ class AddUserConntctSatuseEvent extends ChatEvent {
 class ReceiveMissCallEvent extends ChatEvent {
   final String channelId;
   final bool increaseUnReadMessages;
-  const ReceiveMissCallEvent(this.increaseUnReadMessages,
-      {required this.channelId});
+  const ReceiveMissCallEvent(
+    this.increaseUnReadMessages, {
+    required this.channelId,
+  });
 
   @override
   // TODO: implement props
@@ -359,8 +391,12 @@ class ChangeChatPropertyEvent extends ChatEvent {
   final int? pin;
   final int? archive;
 
-  const ChangeChatPropertyEvent(
-      {required this.channelId, this.archive, this.mute, this.pin});
+  const ChangeChatPropertyEvent({
+    required this.channelId,
+    this.archive,
+    this.mute,
+    this.pin,
+  });
 
   @override
   // TODO: implement props
@@ -384,16 +420,21 @@ class GetAllMessagesBetweenEvent extends ChatEvent {
   final String secondMessageId;
   final bool scrollToParentMessage;
 
-  const GetAllMessagesBetweenEvent(
-      {required this.firstMessageId,
-      required this.secondMessageId,
-      required this.scrollToParentMessage,
-      required this.channelId});
+  const GetAllMessagesBetweenEvent({
+    required this.firstMessageId,
+    required this.secondMessageId,
+    required this.scrollToParentMessage,
+    required this.channelId,
+  });
 
   @override
   // TODO: implement props
-  List<Object?> get props =>
-      [firstMessageId, secondMessageId, channelId, scrollToParentMessage];
+  List<Object?> get props => [
+    firstMessageId,
+    secondMessageId,
+    channelId,
+    scrollToParentMessage,
+  ];
 }
 
 class AddAMessageToAChannel extends ChatEvent {
@@ -425,11 +466,12 @@ class IncreaseSharedProductCountOnSocialAppEvent extends ChatEvent {
   final String socialMediaName;
   final int sharedCount;
 
-  const IncreaseSharedProductCountOnSocialAppEvent(
-      {required this.socialMediaName,
-      required this.productId,
-      required this.product,
-      required this.sharedCount});
+  const IncreaseSharedProductCountOnSocialAppEvent({
+    required this.socialMediaName,
+    required this.productId,
+    required this.product,
+    required this.sharedCount,
+  });
 
   @override
   // TODO: implement props
@@ -452,8 +494,11 @@ class AddMediaCountEvent extends ChatEvent {
 
   final int file;
 
-  AddMediaCountEvent(
-      {required this.images, required this.videos, required this.file});
+  AddMediaCountEvent({
+    required this.images,
+    required this.videos,
+    required this.file,
+  });
 
   @override
   // TODO: implement props
@@ -471,10 +516,11 @@ class ChangeSlop extends ChatEvent {
 
 class AddChannelToChannels extends ChatEvent {
   final Message message;
-  const AddChannelToChannels({required this.message});
+  final bool isPrivate;
+  const AddChannelToChannels({required this.message, this.isPrivate = false});
   @override
   // TODO: implement props
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, isPrivate];
 }
 
 class UpdateChannelObjectFromNotificationEvent extends ChatEvent {
@@ -497,8 +543,11 @@ class ResendMessageEvent extends ChatEvent {
   final String messageId;
   final String channelId;
   final String? messageType;
-  ResendMessageEvent(
-      {required this.messageId, required this.channelId, this.messageType});
+  ResendMessageEvent({
+    required this.messageId,
+    required this.channelId,
+    this.messageType,
+  });
   @override
   // TODO: implement props
   List<Object?> get props => [messageId, channelId];
@@ -510,12 +559,13 @@ class DeleteMessageNotificationReceivedInChatsEvent extends ChatEvent {
   final bool deleteForAll;
   final int isDelete;
   final int deletedByUserId;
-  DeleteMessageNotificationReceivedInChatsEvent(
-      {required this.messageId,
-      required this.deletedByUserId,
-      required this.channelId,
-      required this.deleteForAll,
-      required this.isDelete});
+  DeleteMessageNotificationReceivedInChatsEvent({
+    required this.messageId,
+    required this.deletedByUserId,
+    required this.channelId,
+    required this.deleteForAll,
+    required this.isDelete,
+  });
   @override
   // TODO: implement props
   List<Object?> get props => [messageId, channelId, deleteForAll];
@@ -523,9 +573,7 @@ class DeleteMessageNotificationReceivedInChatsEvent extends ChatEvent {
 
 class DeleteChatFromNotificationEvent extends ChatEvent {
   final String channelId;
-  DeleteChatFromNotificationEvent({
-    required this.channelId,
-  });
+  DeleteChatFromNotificationEvent({required this.channelId});
   @override
   // TODO: implement props
   List<Object?> get props => [channelId];
@@ -572,13 +620,13 @@ class ShareProductWithContactsOrChannelsEvent extends ChatEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [
-        productId,
-        productSlug,
-        productName,
-        productDescription,
-        productImageUrl,
-        channelIds,
-        originalImageWidth,
-        originalImageHeight,
-      ];
+    productId,
+    productSlug,
+    productName,
+    productDescription,
+    productImageUrl,
+    channelIds,
+    originalImageWidth,
+    originalImageHeight,
+  ];
 }

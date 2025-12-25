@@ -82,4 +82,7 @@ abstract class PrefsKey {
   static const redeemDateForProducts = r'__$__redeemDateForProduct$__';
   static const redeemSecondRemainForProducts =
       r'__$__redeemSecondRemainForProducts$__';
+  static const xSellerId = r'__$__xSellerId__$__';
+  static const isCallkitPermissionRequested =
+      r'__$__isCallkitPermissionRequested__$__';
 }

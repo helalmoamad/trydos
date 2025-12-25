@@ -765,7 +765,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
             ),
             child: Row(
               children: [
-                SizedBox(width: 29.w),
+                SizedBox(width: 28.w),
                 SvgPicture.asset(
                   AppAssets.detectedSvg,
                   // ignore: deprecated_member_use
@@ -774,13 +774,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       : const Color(0xff8E8E8E),
                 ),
                 const SizedBox(width: 20),
-                SizedBox(width: 10.w),
+
                 Text(
                   "${LocaleKeys.i_read_and_agree_to_the.tr()}",
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.33,
                   ),
                 ),

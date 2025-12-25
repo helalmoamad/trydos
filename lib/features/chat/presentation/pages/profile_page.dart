@@ -117,76 +117,158 @@ class _ProfilePageState extends State<ProfilePage> {
               ? AlignmentDirectional.topEnd
               : AlignmentDirectional.topStart,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    50.verticalSpace,
-                    widget.receiverPhoto != null
-                        ? Container(
-                            decoration: const BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color.fromARGB(2, 0, 0, 0),
-                                  //                            colorScheme.black.withOpacity(0.16)
-                                  offset: Offset(0, 3),
-                                  blurRadius: 10,
-                                ),
-                              ],
-                            ),
-                            child: MyCachedNetworkImage(
-                              imageUrl:
-                                  (widget.receiverPhoto.toString().contains(
-                                        "cloudinary",
-                                      )
-                                      ? ""
-                                      : "${dotenv.env['Images_Url']}") +
-                                  widget.receiverPhoto!,
-                              imageFit: BoxFit.cover,
-                              progressIndicatorBuilderWidget: TrydosLoader(),
+            SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      50.verticalSpace,
+                      widget.receiverPhoto != null
+                          ? Container(
+                              decoration: const BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color.fromARGB(2, 0, 0, 0),
+                                    //                            colorScheme.black.withOpacity(0.16)
+                                    offset: Offset(0, 3),
+                                    blurRadius: 10,
+                                  ),
+                                ],
+                              ),
+                              child: MyCachedNetworkImage(
+                                imageUrl:
+                                    (widget.receiverPhoto.toString().contains(
+                                          "cloudinary",
+                                        )
+                                        ? ""
+                                        : "${dotenv.env['Images_Url']}") +
+                                    widget.receiverPhoto!,
+                                imageFit: BoxFit.cover,
+                                progressIndicatorBuilderWidget: TrydosLoader(),
+                                height: 150.h,
+                                width: 150.w,
+                              ),
+                            )
+                          : NoImageWidget(
                               height: 150.h,
                               width: 150.w,
+                              textStyle: context.textTheme.bodyMedium?.bq
+                                  .copyWith(
+                                    color: const Color(0xff6638FF),
+                                    letterSpacing: 0.18,
+                                    height: 1.33,
+                                  ),
+                              name: widget.receiverName,
                             ),
-                          )
-                        : NoImageWidget(
-                            height: 150.h,
-                            width: 150.w,
-                            textStyle: context.textTheme.bodyMedium?.bq
-                                .copyWith(
-                                  color: const Color(0xff6638FF),
-                                  letterSpacing: 0.18,
-                                  height: 1.33,
+                      17.verticalSpace,
+                      MyTextWidget(
+                        widget.fullReceiverName,
+                        style: textTheme.headlineSmall?.rq.copyWith(
+                          color: const Color(0xff5D5C5D),
+                        ),
+                      ),
+                      8.verticalSpace,
+                      MyTextWidget(
+                        widget.receiverPhone,
+                        style: textTheme.titleLarge?.rq.copyWith(
+                          color: const Color(0xff5D5C5D),
+                        ),
+                      ),
+                    ],
+                  ),
+                  50.verticalSpace,
+                  Padding(
+                    padding: HWEdgeInsets.symmetric(horizontal: 70.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () async {
+                            try {
+                              List<Map<String, dynamic>> info = callerInfo(
+                                channelId: widget.chatId,
+                              );
+                              PermissionStatus microphone = await Permission
+                                  .microphone
+                                  .request();
+                              var status2 = await Permission.mediaLibrary
+                                  .request();
+                              if (microphone.isGranted && status2.isGranted) {
+                                //todo we have the receiver id so the chat dose not exist
+                                if (info[0].containsKey('currentReceiver')) {
+                                  debugPrint(
+                                    'currentReceiver${info[0]['currentReceiver']}',
+                                  );
+
+                                  GetIt.I<CallsBloc>().add(
+                                    MakeCallEvent(
+                                      receiverUserId: info[0]['currentReceiver']
+                                          .toString(),
+                                      receiverCallName: widget.fullReceiverName,
+                                      chatId: info[1]['channelId'],
+                                      isVideo: false,
+                                      payload: info[1],
+                                    ),
+                                  );
+
+                                  // GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                  //     receiverUserId: info[0]['currentReceiver'],
+                                  //     payload: info[1]));
+                                  //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+                                }
+                                //todo else the chat already exist so we don't have the receiver id just the chat id
+                                else {
+                                  debugPrint('widget.chatId${widget.chatId}');
+                                  debugPrint('info[0]${info[0]}');
+
+                                  GetIt.I<CallsBloc>().add(
+                                    MakeCallEvent(
+                                      isVideo: false,
+                                      receiverCallName: widget.fullReceiverName,
+                                      chatId: info[0]['channelId'],
+                                      payload: info[0],
+                                    ),
+                                  );
+                                  //todo we have the id of the chat so we can move to the call immediately
+                                }
+                              } else if (microphone.isDenied ||
+                                  status2.isDenied) {
+                                showWarningMessage(
+                                  context,
+                                  LocaleKeys.permission_denied.tr(),
+                                );
+                                openAppSettings();
+                              }
+                            } catch (e, st) {
+                              print(e);
+                              print(st);
+                            }
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                AppAssets.callingSvg,
+                                // ignore: deprecated_member_use
+                                color: const Color(0xff388CFF),
+                                width: 25.sp,
+                                height: 25.sp,
+                              ),
+                              10.verticalSpace,
+                              MyTextWidget(
+                                LocaleKeys.call.tr(),
+                                style: textTheme.titleMedium?.rq.copyWith(
+                                  color: const Color(0xff5D5C5D),
                                 ),
-                            name: widget.receiverName,
+                              ),
+                            ],
                           ),
-                    17.verticalSpace,
-                    MyTextWidget(
-                      widget.fullReceiverName,
-                      style: textTheme.headlineSmall?.rq.copyWith(
-                        color: const Color(0xff5D5C5D),
-                      ),
-                    ),
-                    8.verticalSpace,
-                    MyTextWidget(
-                      widget.receiverPhone,
-                      style: textTheme.titleLarge?.rq.copyWith(
-                        color: const Color(0xff5D5C5D),
-                      ),
-                    ),
-                  ],
-                ),
-                50.verticalSpace,
-                Padding(
-                  padding: HWEdgeInsets.symmetric(horizontal: 70.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InkWell(
-                        onTap: () async {
-                          try {
+                        ),
+                        InkWell(
+                          onTap: () async {
                             List<Map<String, dynamic>> info = callerInfo(
                               channelId: widget.chatId,
                             );
@@ -195,37 +277,26 @@ class _ProfilePageState extends State<ProfilePage> {
                                 .request();
                             var status2 = await Permission.mediaLibrary
                                 .request();
-                            if (microphone.isGranted && status2.isGranted) {
-                              //todo we have the receiver id so the chat dose not exist
+                            PermissionStatus camera = await Permission.camera
+                                .request();
+                            if (microphone.isGranted &&
+                                status2.isGranted &&
+                                camera.isGranted) {
                               if (info[0].containsKey('currentReceiver')) {
-                                debugPrint(
-                                  'currentReceiver${info[0]['currentReceiver']}',
-                                );
-
                                 GetIt.I<CallsBloc>().add(
                                   MakeCallEvent(
                                     receiverUserId: info[0]['currentReceiver']
                                         .toString(),
                                     receiverCallName: widget.fullReceiverName,
                                     chatId: info[1]['channelId'],
-                                    isVideo: false,
+                                    isVideo: true,
                                     payload: info[1],
                                   ),
                                 );
-
-                                // GetIt.I<CallsBloc>().add(VideoCallEvent(
-                                //     receiverUserId: info[0]['currentReceiver'],
-                                //     payload: info[1]));
-                                //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
-                              }
-                              //todo else the chat already exist so we don't have the receiver id just the chat id
-                              else {
-                                debugPrint('widget.chatId${widget.chatId}');
-                                debugPrint('info[0]${info[0]}');
-
+                              } else {
                                 GetIt.I<CallsBloc>().add(
                                   MakeCallEvent(
-                                    isVideo: false,
+                                    isVideo: true,
                                     receiverCallName: widget.fullReceiverName,
                                     chatId: info[0]['channelId'],
                                     payload: info[0],
@@ -234,397 +305,557 @@ class _ProfilePageState extends State<ProfilePage> {
                                 //todo we have the id of the chat so we can move to the call immediately
                               }
                             } else if (microphone.isDenied ||
-                                status2.isDenied) {
+                                status2.isDenied ||
+                                camera.isDenied) {
                               showWarningMessage(
                                 context,
                                 LocaleKeys.permission_denied.tr(),
                               );
                               openAppSettings();
                             }
-                          } catch (e, st) {
-                            print(e);
-                            print(st);
-                          }
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              AppAssets.callingSvg,
-                              // ignore: deprecated_member_use
-                              color: const Color(0xff388CFF),
-                              width: 25.sp,
-                              height: 25.sp,
-                            ),
-                            10.verticalSpace,
-                            MyTextWidget(
-                              LocaleKeys.call.tr(),
-                              style: textTheme.titleMedium?.rq.copyWith(
-                                color: const Color(0xff5D5C5D),
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                AppAssets.videoCallSvg,
+                                width: 25.sp,
+                                height: 25.sp,
                               ),
-                            ),
-                          ],
+                              10.verticalSpace,
+                              MyTextWidget(
+                                LocaleKeys.video.tr(),
+                                style: textTheme.titleMedium?.rq.copyWith(
+                                  color: const Color(0xff5D5C5D),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          List<Map<String, dynamic>> info = callerInfo(
-                            channelId: widget.chatId,
-                          );
-                          PermissionStatus microphone = await Permission
-                              .microphone
-                              .request();
-                          var status2 = await Permission.mediaLibrary.request();
-                          PermissionStatus camera = await Permission.camera
-                              .request();
-                          if (microphone.isGranted &&
-                              status2.isGranted &&
-                              camera.isGranted) {
-                            if (info[0].containsKey('currentReceiver')) {
-                              GetIt.I<CallsBloc>().add(
-                                MakeCallEvent(
-                                  receiverUserId: info[0]['currentReceiver']
-                                      .toString(),
-                                  receiverCallName: widget.fullReceiverName,
-                                  chatId: info[1]['channelId'],
-                                  isVideo: true,
-                                  payload: info[1],
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => SinglePageChat(
+                                  chatId: widget.chatId,
+                                  fullReceiverName: widget.fullReceiverName,
+                                  receiverName: widget.receiverName,
+                                  senderName: widget.senderName,
+                                  dataLength: widget.dataLength,
+                                  senderPhoto: widget.senderPhoto,
+                                  receiverPhoto: widget.receiverPhoto,
+                                  fromSearch: true,
+                                  receiverPhone: widget.receiverPhone,
                                 ),
-                              );
-                            } else {
-                              GetIt.I<CallsBloc>().add(
-                                MakeCallEvent(
-                                  isVideo: true,
-                                  receiverCallName: widget.fullReceiverName,
-                                  chatId: info[0]['channelId'],
-                                  payload: info[0],
-                                ),
-                              );
-                              //todo we have the id of the chat so we can move to the call immediately
-                            }
-                          } else if (microphone.isDenied ||
-                              status2.isDenied ||
-                              camera.isDenied) {
-                            showWarningMessage(
-                              context,
-                              LocaleKeys.permission_denied.tr(),
+                              ),
                             );
-                            openAppSettings();
-                          }
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              AppAssets.videoCallSvg,
-                              width: 25.sp,
-                              height: 25.sp,
-                            ),
-                            10.verticalSpace,
-                            MyTextWidget(
-                              LocaleKeys.video.tr(),
-                              style: textTheme.titleMedium?.rq.copyWith(
-                                color: const Color(0xff5D5C5D),
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                AppAssets.searchSvg,
+                                // ignore: deprecated_member_use
+                                color: const Color(0xff388CFF),
+                                width: 25.sp,
+                                height: 25.sp,
                               ),
-                            ),
-                          ],
+                              10.verticalSpace,
+                              MyTextWidget(
+                                LocaleKeys.search.tr(),
+                                style: textTheme.titleMedium?.rq.copyWith(
+                                  color: const Color(0xff5D5C5D),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).pushReplacement(
+                      ],
+                    ),
+                  ),
+                  50.verticalSpace,
+                  Container(
+                    height: 95.h,
+                    width: 1.sw,
+                    decoration: BoxDecoration(
+                      color: const Color(0xffF4F4F4),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: HWEdgeInsets.fromLTRB(15, 15, 20, 15),
+                    margin: HWEdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          AppAssets.gallerySvg,
+                          width: 25.sp,
+                          height: 25.sp,
+                        ),
+                        20.horizontalSpace,
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              MyTextWidget(
+                                LocaleKeys.media_files.tr(),
+                                style: textTheme.displayMedium?.rq.copyWith(
+                                  color: const Color(0xff5D5C5D),
+                                ),
+                              ),
+                              10.verticalSpace,
+                              BlocBuilder<ChatBloc, ChatState>(
+                                buildWhen: (p, c) =>
+                                    p.imageCountInEachChat !=
+                                        c.imageCountInEachChat ||
+                                    p.fileCountInEachChat !=
+                                        c.fileCountInEachChat ||
+                                    p.videoCountInEachChat !=
+                                        c.videoCountInEachChat,
+                                builder: (context, state) {
+                                  return Flexible(
+                                    child: Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                              AppAssets.imageGallerySvg,
+                                              width: 15.sp,
+                                              height: 15.sp,
+                                            ),
+                                            5.horizontalSpace,
+                                            MyTextWidget(
+                                              key: TestVariables.kTestMode
+                                                  ? const Key(
+                                                      WidgetsKeys
+                                                          .imageCountInEachChatKey,
+                                                    )
+                                                  : null,
+                                              state.imageCountInEachChat
+                                                  .toString(),
+                                              style: textTheme.titleMedium?.lq
+                                                  .copyWith(
+                                                    color: const Color(
+                                                      0xff5D5C5D,
+                                                    ),
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const Spacer(),
+                                        Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                              AppAssets.videoGallerySvg,
+                                              width: 15.sp,
+                                              height: 15.sp,
+                                            ),
+                                            5.horizontalSpace,
+                                            MyTextWidget(
+                                              key: TestVariables.kTestMode
+                                                  ? const Key(
+                                                      WidgetsKeys
+                                                          .videoCountInEachChatKey,
+                                                    )
+                                                  : null,
+                                              state.videoCountInEachChat
+                                                  .toString(),
+                                              style: textTheme.titleMedium?.lq
+                                                  .copyWith(
+                                                    color: const Color(
+                                                      0xff5D5C5D,
+                                                    ),
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const Spacer(),
+                                        Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                              AppAssets.fileGallerySvg,
+                                              width: 15.sp,
+                                              height: 15.sp,
+                                            ),
+                                            5.horizontalSpace,
+                                            MyTextWidget(
+                                              key: TestVariables.kTestMode
+                                                  ? const Key(
+                                                      WidgetsKeys
+                                                          .fileCountInEachChatKey,
+                                                    )
+                                                  : null,
+                                              state.fileCountInEachChat
+                                                  .toString(),
+                                              style: textTheme.titleMedium?.lq
+                                                  .copyWith(
+                                                    color: const Color(
+                                                      0xff5D5C5D,
+                                                    ),
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const Spacer(flex: 4),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        InkWell(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(LocaleKeys.see_all.tr()),
+                              SizedBox(width: 2.w),
+                              SvgPicture.asset(
+                                AppAssets.forwardArrowRight,
+                                width: 10.w,
+                                height: 20.h,
+                              ),
+                            ],
+                          ),
+                          onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => SinglePageChat(
-                                chatId: widget.chatId,
-                                fullReceiverName: widget.fullReceiverName,
-                                receiverName: widget.receiverName,
-                                senderName: widget.senderName,
-                                dataLength: widget.dataLength,
-                                senderPhoto: widget.senderPhoto,
-                                receiverPhoto: widget.receiverPhoto,
-                                fromSearch: true,
-                                receiverPhone: widget.receiverPhone,
+                              builder: (context) =>
+                                  MediaInProfile(files: images ?? []),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  10.verticalSpace,
+                  Container(
+                    alignment: Alignment.center,
+                    width: 1.sw - 20.w,
+                    height: 150.h,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: images!.length,
+                      itemBuilder: (context, index) {
+                        String mimeStr = images![index].split(" ")[0];
+                        if (mimeStr.split('/').contains("video") &&
+                            !mimeStr.split('.').contains("aac")) {
+                          return Container(
+                            margin: const EdgeInsets.all(2),
+                            width: 200.w,
+                            child: MYVideoPlayer(
+                              videoFile: File(images![index].split(" ")[1]),
+                              chatId: widget.chatId,
+                            ),
+                          );
+                        }
+                        if (mimeStr.split('/').contains("image")) {
+                          return FullScreenWidget(
+                            backgroundColor: const Color(0xffB4FFD9),
+                            child: Hero(
+                              tag: "hero${DateTime.now()}",
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 2,
+                                ),
+                                width: 150.w,
+                                height: 400.h,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: FileImage(
+                                      File(images![index].split(" ")[1]),
+                                    ),
+                                    fit: BoxFit.fill,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  border: Border.all(
+                                    width: 3.0,
+                                    color: const Color(0xffB4FFD9),
+                                  ),
+                                ),
                               ),
                             ),
                           );
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              AppAssets.searchSvg,
-                              // ignore: deprecated_member_use
-                              color: const Color(0xff388CFF),
-                              width: 25.sp,
-                              height: 25.sp,
-                            ),
-                            10.verticalSpace,
-                            MyTextWidget(
-                              LocaleKeys.search.tr(),
-                              style: textTheme.titleMedium?.rq.copyWith(
-                                color: const Color(0xff5D5C5D),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                50.verticalSpace,
-                Container(
-                  height: 95.h,
-                  width: 1.sw,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffF4F4F4),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: HWEdgeInsets.fromLTRB(15, 15, 20, 15),
-                  margin: HWEdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        AppAssets.gallerySvg,
-                        width: 25.sp,
-                        height: 25.sp,
-                      ),
-                      20.horizontalSpace,
-                      Flexible(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            MyTextWidget(
-                              LocaleKeys.media_files.tr(),
-                              style: textTheme.displayMedium?.rq.copyWith(
-                                color: const Color(0xff5D5C5D),
-                              ),
-                            ),
-                            10.verticalSpace,
-                            BlocBuilder<ChatBloc, ChatState>(
-                              buildWhen: (p, c) =>
-                                  p.imageCountInEachChat !=
-                                      c.imageCountInEachChat ||
-                                  p.fileCountInEachChat !=
-                                      c.fileCountInEachChat ||
-                                  p.videoCountInEachChat !=
-                                      c.videoCountInEachChat,
-                              builder: (context, state) {
-                                return Flexible(
-                                  child: Row(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          SvgPicture.asset(
-                                            AppAssets.imageGallerySvg,
-                                            width: 15.sp,
-                                            height: 15.sp,
-                                          ),
-                                          5.horizontalSpace,
-                                          MyTextWidget(
-                                            key: TestVariables.kTestMode
-                                                ? const Key(
-                                                    WidgetsKeys
-                                                        .imageCountInEachChatKey,
-                                                  )
-                                                : null,
-                                            state.imageCountInEachChat
-                                                .toString(),
-                                            style: textTheme.titleMedium?.lq
-                                                .copyWith(
-                                                  color: const Color(
-                                                    0xff5D5C5D,
-                                                  ),
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                      const Spacer(),
-                                      Row(
-                                        children: [
-                                          SvgPicture.asset(
-                                            AppAssets.videoGallerySvg,
-                                            width: 15.sp,
-                                            height: 15.sp,
-                                          ),
-                                          5.horizontalSpace,
-                                          MyTextWidget(
-                                            key: TestVariables.kTestMode
-                                                ? const Key(
-                                                    WidgetsKeys
-                                                        .videoCountInEachChatKey,
-                                                  )
-                                                : null,
-                                            state.videoCountInEachChat
-                                                .toString(),
-                                            style: textTheme.titleMedium?.lq
-                                                .copyWith(
-                                                  color: const Color(
-                                                    0xff5D5C5D,
-                                                  ),
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                      const Spacer(),
-                                      Row(
-                                        children: [
-                                          SvgPicture.asset(
-                                            AppAssets.fileGallerySvg,
-                                            width: 15.sp,
-                                            height: 15.sp,
-                                          ),
-                                          5.horizontalSpace,
-                                          MyTextWidget(
-                                            key: TestVariables.kTestMode
-                                                ? const Key(
-                                                    WidgetsKeys
-                                                        .fileCountInEachChatKey,
-                                                  )
-                                                : null,
-                                            state.fileCountInEachChat
-                                                .toString(),
-                                            style: textTheme.titleMedium?.lq
-                                                .copyWith(
-                                                  color: const Color(
-                                                    0xff5D5C5D,
-                                                  ),
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                      const Spacer(flex: 4),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      InkWell(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(LocaleKeys.see_all.tr()),
-                            SizedBox(width: 2.w),
-                            SvgPicture.asset(
-                              AppAssets.forwardArrowRight,
-                              width: 10.w,
-                              height: 20.h,
-                            ),
-                          ],
-                        ),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                MediaInProfile(files: images ?? []),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                10.verticalSpace,
-                Container(
-                  alignment: Alignment.center,
-                  width: 1.sw - 20.w,
-                  height: 150.h,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: images!.length,
-                    itemBuilder: (context, index) {
-                      String mimeStr = images![index].split(" ")[0];
-                      if (mimeStr.split('/').contains("video") &&
-                          !mimeStr.split('.').contains("aac")) {
-                        return Container(
-                          margin: const EdgeInsets.all(2),
-                          width: 200.w,
-                          child: MYVideoPlayer(
-                            videoFile: File(images![index].split(" ")[1]),
-                            chatId: widget.chatId,
-                          ),
-                        );
-                      }
-                      if (mimeStr.split('/').contains("image")) {
-                        return FullScreenWidget(
-                          backgroundColor: const Color(0xffB4FFD9),
-                          child: Hero(
-                            tag: "hero${DateTime.now()}",
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 2),
-                              width: 150.w,
-                              height: 400.h,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: FileImage(
-                                    File(images![index].split(" ")[1]),
-                                  ),
-                                  fit: BoxFit.fill,
-                                ),
-                                borderRadius: BorderRadius.circular(12.0),
-                                border: Border.all(
-                                  width: 3.0,
-                                  color: const Color(0xffB4FFD9),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }
+                        }
 
-                      return const SizedBox.shrink();
-                    },
+                        return const SizedBox.shrink();
+                      },
+                    ),
                   ),
-                ),
-                10.verticalSpace,
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xffF4F4F4),
-                    borderRadius: BorderRadius.circular(20),
+                  10.verticalSpace,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xffF4F4F4),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: HWEdgeInsets.fromLTRB(15, 15, 20, 15),
+                    margin: HWEdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          AppAssets.saveToGallerySvg,
+                          width: 25.sp,
+                          height: 25.sp,
+                        ),
+                        20.horizontalSpace,
+                        MyTextWidget(
+                          LocaleKeys.save_to_gallery.tr(),
+                          style: textTheme.displayMedium?.rq.copyWith(
+                            color: const Color(0xff5D5C5D),
+                          ),
+                        ),
+                        const Spacer(),
+                        MyTextWidget(
+                          LocaleKeys.never.tr(),
+                          style: textTheme.displayMedium?.lq.copyWith(
+                            color: const Color(0xff5D5C5D),
+                          ),
+                        ),
+                        36.horizontalSpace,
+                        Transform(
+                          alignment: Alignment.center,
+                          transform: (Matrix4.identity()
+                            // ignore: deprecated_member_use
+                            ..scale(
+                              LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
+                              1.0,
+                              1.0,
+                            )),
+                          child: SvgPicture.asset(
+                            AppAssets.forwardArrowRight,
+                            width: 3.w,
+                            height: 12.h,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  padding: HWEdgeInsets.fromLTRB(15, 15, 20, 15),
-                  margin: HWEdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        AppAssets.saveToGallerySvg,
-                        width: 25.sp,
-                        height: 25.sp,
-                      ),
-                      20.horizontalSpace,
-                      MyTextWidget(
-                        LocaleKeys.save_to_gallery.tr(),
-                        style: textTheme.displayMedium?.rq.copyWith(
-                          color: const Color(0xff5D5C5D),
+                  SizedBox(
+                    height: 90,
+                    width: 1.sw,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        BlocListener<ChatBloc, ChatState>(
+                          listenWhen: (previous, current) =>
+                              previous.deleteChatStatus !=
+                              current.deleteChatStatus,
+
+                          listener: (context, state) {
+                            if (state.deleteChatStatus ==
+                                DeleteChatStatus.success) {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: BlocBuilder<ChatBloc, ChatState>(
+                            buildWhen: (previous, current) =>
+                                previous.deleteChatStatus !=
+                                current.deleteChatStatus,
+                            builder: (context, state) {
+                              return SizedBox(
+                                width: 80,
+                                height: 80,
+                                child:
+                                    state.deleteChatStatus ==
+                                        DeleteChatStatus.loading
+                                    ? Center(child: TrydosLoader(size: 20))
+                                    : InkWell(
+                                        onTap: () {
+                                          chatBloc.add(
+                                            DeleteChatEvent(
+                                              channelId: widget.chatId,
+                                            ),
+                                          );
+                                        },
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              height: 80,
+                                              width: 80,
+                                              child: Column(
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    AppAssets.deletecartSvg,
+
+                                                    // ignore: deprecated_member_use
+                                                    color: const Color.fromARGB(
+                                                      255,
+                                                      255,
+                                                      3,
+                                                      3,
+                                                    ),
+                                                    height: 30,
+                                                  ),
+                                                  const SizedBox(height: 5),
+                                                  MyTextWidget(
+                                                    LocaleKeys.delete_chat.tr(),
+                                                    style: textTheme
+                                                        .displayMedium
+                                                        ?.lq
+                                                        .copyWith(
+                                                          color: const Color(
+                                                            0xff5D5C5D,
+                                                          ),
+                                                        ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      const Spacer(),
-                      MyTextWidget(
-                        LocaleKeys.never.tr(),
-                        style: textTheme.displayMedium?.lq.copyWith(
-                          color: const Color(0xff5D5C5D),
+                        const SizedBox(width: 20),
+                        BlocBuilder<ChatBloc, ChatState>(
+                          buildWhen: (previous, current) =>
+                              previous.blockOrDeleteBlockUserStatus !=
+                              current.blockOrDeleteBlockUserStatus,
+                          builder: (context, state) {
+                            return SizedBox(
+                              width: 80,
+                              height: 80,
+                              child:
+                                  state.blockOrDeleteBlockUserStatus ==
+                                      BlockOrDeleteBlockUserStatus.loading
+                                  ? Center(child: TrydosLoader(size: 20))
+                                  : InkWell(
+                                      onTap: () {
+                                        chatBloc.add(
+                                          BlockOrDeleteBlockUserEvent(
+                                            receiverUserId: state.chats
+                                                .firstWhere(
+                                                  (element) =>
+                                                      element.id ==
+                                                      widget.chatId,
+                                                  orElse: () => state
+                                                      .pinnedChats
+                                                      .firstWhere(
+                                                        (element) =>
+                                                            element.id ==
+                                                            widget.chatId,
+                                                      ),
+                                                )
+                                                .channelMembers
+                                                ?.firstWhere(
+                                                  (element) =>
+                                                      element.userId !=
+                                                      GetIt.I<PrefsRepository>()
+                                                          .myChatId,
+                                                )
+                                                .userId
+                                                .toString(),
+                                            isBlock:
+                                                state.chats
+                                                    .firstWhere(
+                                                      (element) =>
+                                                          element.id ==
+                                                          widget.chatId,
+                                                      orElse: () => state
+                                                          .pinnedChats
+                                                          .firstWhere(
+                                                            (element) =>
+                                                                element.id ==
+                                                                widget.chatId,
+                                                          ),
+                                                    )
+                                                    .channelMembers
+                                                    ?.firstWhere(
+                                                      (element) =>
+                                                          element.userId !=
+                                                          GetIt.I<
+                                                                PrefsRepository
+                                                              >()
+                                                              .myChatId,
+                                                    )
+                                                    .isBlocked ==
+                                                0,
+                                            channelId: widget.chatId,
+                                          ),
+                                        );
+                                      },
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            height: 80,
+                                            width: 80,
+                                            child: Column(
+                                              children: [
+                                                SvgPicture.asset(
+                                                  AppAssets.blockSvg,
+                                                  // ignore: deprecated_member_use
+                                                  color: const Color.fromARGB(
+                                                    255,
+                                                    255,
+                                                    3,
+                                                    3,
+                                                  ),
+                                                  height: 30,
+                                                ),
+                                                const SizedBox(height: 5),
+                                                MyTextWidget(
+                                                  state.chats
+                                                              .firstWhere(
+                                                                (element) =>
+                                                                    element
+                                                                        .id ==
+                                                                    widget
+                                                                        .chatId,
+                                                                orElse: () => state
+                                                                    .pinnedChats
+                                                                    .firstWhere(
+                                                                      (
+                                                                        element,
+                                                                      ) =>
+                                                                          element
+                                                                              .id ==
+                                                                          widget
+                                                                              .chatId,
+                                                                    ),
+                                                              )
+                                                              .channelMembers
+                                                              ?.firstWhere(
+                                                                (element) =>
+                                                                    element
+                                                                        .userId !=
+                                                                    GetIt.I<
+                                                                          PrefsRepository
+                                                                        >()
+                                                                        .myChatId,
+                                                              )
+                                                              .isBlocked ==
+                                                          1
+                                                      ? LocaleKeys.un_block.tr()
+                                                      : LocaleKeys.block.tr(),
+                                                  style: textTheme
+                                                      .displayMedium
+                                                      ?.lq
+                                                      .copyWith(
+                                                        fontSize: 14,
+                                                        color: const Color(
+                                                          0xff5D5C5D,
+                                                        ),
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                            );
+                          },
                         ),
-                      ),
-                      36.horizontalSpace,
-                      Transform(
-                        alignment: Alignment.center,
-                        transform: (Matrix4.identity()
-                          // ignore: deprecated_member_use
-                          ..scale(
-                            LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
-                            1.0,
-                            1.0,
-                          )),
-                        child: SvgPicture.asset(
-                          AppAssets.forwardArrowRight,
-                          width: 3.w,
-                          height: 12.h,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Padding(
               padding: EdgeInsetsDirectional.fromSTEB(20.w, 15.h, 20.w, 0),

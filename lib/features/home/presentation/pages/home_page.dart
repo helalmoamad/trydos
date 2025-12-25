@@ -1959,6 +1959,10 @@ class _HomePageState extends State<HomePage> {
                                                                               .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
                                                                               .product
                                                                               ?.offerPrice,
+                                                                    variation: state
+                                                                        .authProductDetailsModel
+                                                                        ?.data
+                                                                        ?.variation,
                                                                     priceFormatted:
                                                                         currentVariation?.priceFormated !=
                                                                             null

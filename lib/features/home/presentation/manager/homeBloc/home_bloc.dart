@@ -1952,12 +1952,21 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         // إنشاء خريطة لترتيب الألوان
         List<SyncColorImageProduct> syncColorImage =
             r.product?.syncColorImages ?? [];
-        final syncColorImageOrder = {
-          for (var i = 0; i < syncColorImage.length; i++)
-            syncColorImage[i].colorOption: i,
-        };
-
+        List<SyncColorImageProduct> syncColorImageReally = [];
         List<ProductColor> productColor = r.product?.colors ?? [];
+        List<String> colorFound = [];
+        productColor.forEach((element) => colorFound.add(element.option ?? ""));
+
+        for (var i = 0; i < syncColorImage.length; i++) {
+          if ((colorFound.contains(syncColorImage[i].colorOption))) {
+            syncColorImageReally.add(syncColorImage[i]);
+          }
+        }
+
+        final syncColorImageOrder = {
+          for (var i = 0; i < syncColorImageReally.length; i++)
+            syncColorImageReally[i].colorOption: i,
+        };
 
         // ترتيب syncColorImages حسب ترتيب colors
         productColor.sort(
@@ -1972,6 +1981,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           event.productId!: r.copyWith(
             data: r.product?.copyWith(
               colors: productColor,
+              syncColorImages: syncColorImageReally,
               slug: event.productSlug ?? r.product?.slug,
             ),
           ),
@@ -4915,12 +4925,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
         List<SyncColorImageProduct> syncColorImage =
             r.productItem?.syncColorImages ?? [];
+        List<SyncColorImageProduct> syncColorImageReally = [];
+        List<ProductColor> productColor = r.productItem?.colors ?? [];
+        List<String> colorFound = [];
+        productColor.forEach((element) => colorFound.add(element.option ?? ""));
+        for (var i = 0; i < syncColorImage.length; i++) {
+          if ((colorFound.contains(syncColorImage[i].colorOption))) {
+            syncColorImageReally.add(syncColorImage[i]);
+          }
+        }
         final syncColorImageOrder = {
-          for (var i = 0; i < syncColorImage.length; i++)
-            syncColorImage[i].colorOption: i,
+          for (var i = 0; i < syncColorImageReally.length; i++)
+            syncColorImageReally[i].colorOption: i,
         };
 
-        List<ProductColor> productColor = r.productItem?.colors ?? [];
         // ترتيب syncColorImages حسب ترتيب colors
         productColor.sort(
           (a, b) => (syncColorImageOrder[a.option] ?? 999).compareTo(
@@ -4969,7 +4987,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             .getProductDetailWithoutRelatedProductsModel
             ?.copyWith(
               data: r.getProductDetailWithoutRelatedProductsModel?.product
-                  ?.copyWith(slug: event.productSlug, colors: productColor),
+                  ?.copyWith(
+                    slug: event.productSlug,
+                    syncColorImages: syncColorImageReally,
+                    colors: productColor,
+                  ),
             );
         cachedData.removeWhere(
           (key, value) => key == r.productItem!.productId.toString(),
@@ -5030,7 +5052,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             //     getCommentsFromAnalyticsPaginationModel,
             productContentForStatusOfOpeningProductDetailsDirectly: r
                 .productItem
-                ?.copyWith(colors: productColor, slug: event.productSlug),
+                ?.copyWith(
+                  colors: productColor,
+                  syncColorImages: syncColorImageReally,
+                  slug: event.productSlug,
+                ),
           ),
         );
 

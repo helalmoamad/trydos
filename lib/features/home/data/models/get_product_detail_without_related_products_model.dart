@@ -534,9 +534,9 @@ class BuyersCommentModel {
 }
 
 class SizeAnalysis {
-  final int? smallPercentage;
-  final int? largePercentage;
-  final int? truePercentage;
+  final double? smallPercentage;
+  final double? largePercentage;
+  final double? truePercentage;
 
   SizeAnalysis({
     this.smallPercentage,
@@ -545,9 +545,9 @@ class SizeAnalysis {
   });
 
   SizeAnalysis copyWith({
-    int? smallPercentage,
-    int? largePercentage,
-    int? truePercentage,
+    double? smallPercentage,
+    double? largePercentage,
+    double? truePercentage,
   }) => SizeAnalysis(
     smallPercentage: smallPercentage ?? this.smallPercentage,
     largePercentage: largePercentage ?? this.largePercentage,
@@ -555,9 +555,9 @@ class SizeAnalysis {
   );
 
   factory SizeAnalysis.fromJson(Map<String, dynamic> json) => SizeAnalysis(
-    smallPercentage: json["small_percentage"],
-    largePercentage: json["large_percentage"],
-    truePercentage: json["true_percentage"],
+    smallPercentage: double.tryParse(json["small_percentage"].toString()),
+    largePercentage: double.tryParse(json["large_percentage"].toString()),
+    truePercentage: double.tryParse(json["true_percentage"].toString()),
   );
 
   Map<String, dynamic> toJson() => {

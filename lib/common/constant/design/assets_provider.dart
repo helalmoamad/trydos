@@ -240,6 +240,7 @@ abstract class AppAssets {
   static String get editIconSvg => 'edit_icon'.svg;
   static String get removeCartSvg => 'remove_cart'.svg;
   static String get deletecartSvg => 'delete_cart'.svg;
+  static String get blockSvg => 'block'.svg;
   static String get chatWithQuestionSvg => 'chat_with_question'.svg;
   static String get towCartSvg => 'tow_cart'.svg;
   static String get addCartSvg => 'add_cart'.svg;
@@ -337,8 +338,8 @@ abstract class AppAssets {
 
   ///endregion
 
-//...
-//...
+  //...
+  //...
 
   ///! JPG  Section
   ///! PNG  Section

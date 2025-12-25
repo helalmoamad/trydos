@@ -17,6 +17,10 @@ import 'package:trydos/features/authentication/presentation/manager/auth_bloc.da
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart'
+    show CallsBloc, CallsState, MakeCallStatus;
+import 'package:trydos/features/calls/presentation/pages/in_app_view.dart'
+    show AgoraInAppWebView;
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
@@ -134,6 +138,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
     if (fromNotification &&
         widget.orderIdFormNotification != null &&
         widget.orderIdFormNotification != "") {
+      print(
+        "FDDDDDDDDDDDDDDDDDDDDDDDddddd${widget.parentOrderIdFormNotification}  //${widget.orderIdFormNotification}",
+      );
       requestReturnApiFromNotification = true;
       indexTapPackage.value = orders.indexWhere(
         (element) =>
@@ -1186,7 +1193,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       style: context.textTheme.bodyMedium?.mq.copyWith(
                         color: Colors.white,
                         letterSpacing: 0.18,
-                        fontSize: 40,
+                        fontSize: 40.sp,
                         height: 1.3,
                       ),
                     ),
@@ -1198,7 +1205,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: Colors.white,
                         letterSpacing: 0.18,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         height: 1.3,
                       ),
                     ),
@@ -1208,7 +1215,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: Colors.white,
                         letterSpacing: 0.18,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         height: 1.3,
                       ),
                     ),
@@ -1220,7 +1227,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: Colors.white,
                               letterSpacing: 0.18,
-                              fontSize: 16,
+                              fontSize: 16.sp,
                               height: 1.3,
                             ),
                           ),
@@ -1233,7 +1240,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: Colors.white,
                           letterSpacing: 0.18,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           height: 1.3,
                         ),
                       ),
@@ -1246,7 +1253,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: Colors.white,
                         letterSpacing: 0.18,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                         height: 1.3,
                       ),
                     ),
@@ -1255,7 +1262,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       builder: (context, _agreeToPolicies, _) {
                         return Container(
                           alignment: Alignment.center,
-                          height: 40,
+                          height: 40.h,
                           width: 1.sw,
                           child: InkWell(
                             onTap: () =>
@@ -1289,7 +1296,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         decoration: TextDecoration.underline,
                                         color: Colors.white,
                                         letterSpacing: 0.18,
-                                        fontSize: 16,
+                                        fontSize: 16.sp,
                                         height: 1.3,
                                       ),
                                 ),
@@ -1421,7 +1428,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                               .copyWith(
                                                 color: Colors.white,
                                                 letterSpacing: 0.18,
-                                                fontSize: 16,
+                                                fontSize: 16.sp,
                                                 height: 1.3,
                                               ),
                                         ),
@@ -1435,7 +1442,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     SizedBox(height: 20.h),
                     Container(
                       width: 200,
-                      height: 40,
+                      height: 40.h,
                       child: BlocBuilder<OrderBloc, OrderState>(
                         buildWhen: (previous, current) =>
                             previous.cancelOrderStatus !=
@@ -1465,7 +1472,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                 decorationColor: Colors.white,
                                 decoration: TextDecoration.underline,
                                 letterSpacing: 0.18,
-                                fontSize: 16,
+                                fontSize: 16.sp,
                                 height: 1.3,
                               ),
                             ),
@@ -1513,7 +1520,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.mq.copyWith(
                             color: Colors.white,
                             letterSpacing: 0.18,
-                            fontSize: 40,
+                            fontSize: 40.h,
                             height: 1.3,
                           ),
                         ),
@@ -1523,7 +1530,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: Colors.white,
                             letterSpacing: 0.18,
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             height: 1.3,
                           ),
                         ),
@@ -1540,7 +1547,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.mq.copyWith(
                             color: const Color(0xffD3D3D3),
                             letterSpacing: 0.18,
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             height: 1.3,
                           ),
                         ),
@@ -1637,7 +1644,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.mq.copyWith(
                             color: Colors.white,
                             letterSpacing: 0.18,
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             height: 1.3,
                           ),
                         ),
@@ -1675,7 +1682,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.mq.copyWith(
                             color: Colors.white,
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -1687,7 +1694,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: Colors.white,
                             letterSpacing: 0.18,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             height: 1.3,
                           ),
                         ),
@@ -1718,7 +1725,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           .copyWith(
                                             color: Colors.white,
                                             letterSpacing: 0.18,
-                                            fontSize: 14,
+                                            fontSize: 14.sp,
                                             height: 1.3,
                                           ),
                                     ),
@@ -1731,7 +1738,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                 TextDecoration.underline,
                                             color: Colors.white,
                                             letterSpacing: 0.18,
-                                            fontSize: 16,
+                                            fontSize: 16.sp,
                                             height: 1.3,
                                           ),
                                     ),
@@ -1784,7 +1791,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         ),
                                         alignment: Alignment.center,
                                         width: 1.sw,
-                                        height: 50,
+                                        height: 50.h,
                                         decoration: BoxDecoration(
                                           color: agreeToPolicies.value == true
                                               ? const Color(0xff3066CC)
@@ -1879,7 +1886,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                               )
                                                             : Colors.white,
                                                         letterSpacing: 0.18,
-                                                        fontSize: 16,
+                                                        fontSize: 16.sp,
                                                         height: 1.3,
                                                       ),
                                                 ),
@@ -1926,7 +1933,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         decorationColor: Colors.white,
                                         decoration: TextDecoration.underline,
                                         letterSpacing: 0.18,
-                                        fontSize: 16,
+                                        fontSize: 16.sp,
                                         height: 1.3,
                                       ),
                                 ),
@@ -1960,7 +1967,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
       //         ? 125
       //         : 90,
       width: 1.sw,
-      height: 100,
+      height: 100.h,
       padding: EdgeInsets.only(
         right: LanguageService.languageCode == "ar" ? 20 : 10,
         left: LanguageService.languageCode != "ar" ? 20 : 10,
@@ -1986,7 +1993,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
           const SizedBox(height: 5),
           Container(
             width: 360.w,
-            height: 16,
+            height: 16.h,
             child: Row(
               children: [
                 SvgPicture.asset(
@@ -1999,7 +2006,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       : index != indexTap
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
-                  height: 12,
+                  height: 12.h,
                   width: 12,
                 ),
                 const SizedBox(width: 5),
@@ -2014,7 +2021,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         ? const Color(0xff8D8D8D)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.3,
                   ),
                 ),
@@ -2026,10 +2033,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         child: Container(
                           margin: const EdgeInsets.only(top: 5),
                           width: 20,
-                          height: 30,
+                          height: 30.h,
                           child: SvgPicture.asset(
                             AppAssets.editSvg,
-                            height: 30,
+                            height: 30.h,
                             width: 20,
                           ),
                         ),
@@ -2059,7 +2066,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
           ),
           Container(
             width: 350.w,
-            height: 16,
+            height: 16.h,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
@@ -2074,7 +2081,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         ? const Color(0xff8D8D8D)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.3,
                   ),
                 ),
@@ -2083,7 +2090,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
           ),
           Container(
             width: 350.w,
-            height: 16,
+            height: 16.h,
             child: Row(
               children: [
                 Text(
@@ -2097,7 +2104,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         ? const Color(0xff8D8D8D)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.3,
                   ),
                 ),
@@ -2106,7 +2113,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
           ),
           Container(
             width: 350.w,
-            height: 16,
+            height: 16.h,
             child: Row(
               children: [
                 SvgPicture.asset(
@@ -2119,12 +2126,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       : index != indexTap
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
-                  height: 12,
+                  height: 12.h,
                   width: 12,
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  '+${customerAddressesInfo.contactInfo?.phone ?? ""}',
+                  '+${(customerAddressesInfo.contactInfo?.phone ?? "").replaceAll("+", "")}',
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: (isChange && index != indexTap)
                         ? const Color(0xffD3D3D3)
@@ -2134,13 +2141,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         ? const Color(0xff8D8D8D)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.3,
                   ),
                 ),
                 const SizedBox(width: 40),
                 Container(
-                  height: 16,
+                  height: 16.h,
                   child: Row(
                     children: [
                       SvgPicture.asset(
@@ -2153,23 +2160,28 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             : index != indexTap
                             ? const Color(0xff8D8D8D)
                             : const Color(0xff1D1D1D),
-                        height: 12,
+                        height: 12.h,
                         width: 12,
                       ),
                       const SizedBox(width: 5),
-                      Text(
-                        '${customerAddressesInfo.contactInfo?.name ?? ""}',
-                        style: context.textTheme.bodyMedium?.mq.copyWith(
-                          color: (isChange && index != indexTap)
-                              ? const Color(0xffD3D3D3)
-                              : isChange
-                              ? const Color(0xffFFFFFF)
-                              : index != indexTap
-                              ? const Color(0xff8D8D8D)
-                              : const Color(0xff1D1D1D),
-                          letterSpacing: 0.18,
-                          fontSize: 12,
-                          height: 1.3,
+                      SizedBox(
+                        width: 130,
+                        child: Text(
+                          '${customerAddressesInfo.contactInfo?.name ?? ""}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.textTheme.bodyMedium?.mq.copyWith(
+                            color: (isChange && index != indexTap)
+                                ? const Color(0xffD3D3D3)
+                                : isChange
+                                ? const Color(0xffFFFFFF)
+                                : index != indexTap
+                                ? const Color(0xff8D8D8D)
+                                : const Color(0xff1D1D1D),
+                            letterSpacing: 0.18,
+                            fontSize: 12.sp,
+                            height: 1.3,
+                          ),
                         ),
                       ),
                     ],
@@ -2401,7 +2413,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12.sp,
+                            fontSize: 11.sp,
                             height: 1.3,
                           ),
                         ),
@@ -2532,7 +2544,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
               style: context.textTheme.bodyMedium?.mq.copyWith(
                 color: const Color(0xff1D1D1D),
                 letterSpacing: 0.18,
-                fontSize: 14,
+                fontSize: 14.sp,
                 height: 1.3,
               ),
             ),
@@ -2603,7 +2615,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xff8D8D8D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.3,
                   ),
                 ),
@@ -2633,7 +2645,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             Column(
               children: [
                 Row(
@@ -2679,7 +2691,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Row(
                   children: [
                     optionOfCanselOrReturnOrder(
@@ -2723,7 +2735,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Row(
                   children: [
                     optionOfCanselOrReturnOrder(
@@ -2753,7 +2765,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
             Container(
               width: 1.sw,
               alignment: Alignment.center,
-              height: 53,
+              height: 53.h,
               decoration: BoxDecoration(
                 color: const Color(0xff388CFF),
                 borderRadius: BorderRadius.circular(20),
@@ -2763,12 +2775,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 style: context.textTheme.bodyMedium?.mq.copyWith(
                   color: Colors.white,
                   letterSpacing: 0.18,
-                  fontSize: 14,
+                  fontSize: 14.sp,
                   height: 1.3,
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             ValueListenableBuilder<List<String>?>(
               valueListenable: optionCanselOrReturn,
               builder: (context, _optionCanselOrReturn, _) {
@@ -2781,7 +2793,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   child: Container(
                     width: 1.sw,
                     alignment: Alignment.center,
-                    height: 53,
+                    height: 53.h,
                     decoration: BoxDecoration(
                       color: (_optionCanselOrReturn?.length ?? 0) > 0
                           ? const Color(0xffFF5F61)
@@ -2793,7 +2805,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       style: context.textTheme.bodyMedium?.mq.copyWith(
                         color: Colors.white,
                         letterSpacing: 0.18,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         height: 1.3,
                       ),
                     ),
@@ -2801,7 +2813,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 );
               },
             ),
-            const SizedBox(height: 25),
+            SizedBox(height: 25.h),
           ],
         ),
       ),
@@ -3026,7 +3038,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         .copyWith(
                                           color: const Color(0xff1D1D1D),
                                           letterSpacing: 0.18,
-                                          fontSize: 12,
+                                          fontSize: 12.sp,
                                           height: 1.3,
                                         ),
                                   ),
@@ -3042,7 +3054,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         .copyWith(
                                           color: const Color(0xff1D1D1D),
                                           letterSpacing: 0.18,
-                                          fontSize: 12,
+                                          fontSize: 12.sp,
                                           height: 1.3,
                                         ),
                                   ),
@@ -3071,7 +3083,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         .copyWith(
                                           color: const Color(0xff1D1D1D),
                                           letterSpacing: 0.18,
-                                          fontSize: 12,
+                                          fontSize: 12.sp,
                                           height: 1.3,
                                         ),
                                   ),
@@ -3094,7 +3106,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         .copyWith(
                                           color: const Color(0xff1D1D1D),
                                           letterSpacing: 0.18,
-                                          fontSize: 12,
+                                          fontSize: 12.sp,
                                           height: 1.3,
                                         ),
                                   ),
@@ -3105,7 +3117,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         .copyWith(
                                           color: const Color(0xff1D1D1D),
                                           letterSpacing: 0.18,
-                                          fontSize: 12,
+                                          fontSize: 12.sp,
                                           height: 1.3,
                                         ),
                                   ),
@@ -3135,7 +3147,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         .copyWith(
                                           color: const Color(0xff1D1D1D),
                                           letterSpacing: 0.18,
-                                          fontSize: 12,
+                                          fontSize: 12.sp,
                                           height: 1.3,
                                         ),
                                   ),
@@ -3151,7 +3163,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         .copyWith(
                                           color: const Color(0xff1D1D1D),
                                           letterSpacing: 0.18,
-                                          fontSize: 12,
+                                          fontSize: 12.sp,
                                           height: 1.3,
                                         ),
                                   ),
@@ -3218,7 +3230,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         style: context.textTheme.bodyMedium?.mq.copyWith(
                           color: const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 14,
+                          fontSize: 14.sp,
                           height: 1.3,
                         ),
                       ),
@@ -3229,22 +3241,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           height: 1.3,
                         ),
                       ),
-                      SizedBox(height: 10.h),
-                      Container(
-                        width: 1.sw,
-                        height: 0.5,
-                        margin: const EdgeInsets.symmetric(horizontal: 24),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffC4C2C2),
-                          border: Border.all(color: const Color(0xffC4C2C2)),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(2),
-                          ),
-                        ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24),
+                        child: Divider(color: Color(0xffC4C2C2)),
                       ),
                       SizedBox(height: 10.h),
                       Padding(
@@ -3266,7 +3269,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                 horizontal: 24,
                               ),
                               width: 1.sw,
-                              height: 53,
+                              height: 53.h,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 color: _enableChangeAddress
@@ -3280,7 +3283,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                     .copyWith(
                                       color: const Color(0xffFFFFFF),
                                       letterSpacing: 0.18,
-                                      fontSize: 16,
+                                      fontSize: 16.sp,
                                       height: 1.33,
                                     ),
                               ),
@@ -3390,190 +3393,198 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   state.editAddressToOrderStatus ==
                       EditAddressToOrderStatus.loading
               ? const SizedBox.shrink()
-              : Container(
-                  height: 295.h,
-                  width: 1.sw,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    itemBuilder: (context, index) =>
-                        index == state.listOfAddressInfoClassToSave!.length
-                        ? InkWell(
-                            onTap: () {
-                              // panelController.close();
-                              HelperFunctions.slidingNavigation(
-                                context,
-                                const AddShippingAdress(),
-                              );
-                            },
-                            child: Container(
-                              height: 40,
-                              width: 1.sw,
-                              decoration: BoxDecoration(
-                                color: const Color(0xffE8FFED),
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                  color: const Color(0xffC4C2C2),
+              : Stack(
+                  children: [
+                    Container(
+                      height: 295.h,
+                      width: 1.sw,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        itemBuilder: (context, index) =>
+                            index == state.listOfAddressInfoClassToSave!.length
+                            ? SizedBox(height: 50, width: 1.sw)
+                            : InkWell(
+                                onTap: () {
+                                  if (index != firstAddressChoosed ||
+                                      (state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .address !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.address ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .addressDetail !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.addressDetail ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .contactInfo
+                                                  ?.name !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.contactPersonName ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .contactInfo
+                                                  ?.phone !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.phone ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .regionDetails
+                                                  ?.country !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.country ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .regionDetails
+                                                  ?.city !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.city ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .regionDetails
+                                                  ?.province !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.province ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .regionDetails
+                                                  ?.street !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.street ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .regionDetails
+                                                  ?.building !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.building ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .regionDetails
+                                                  ?.town !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.town ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .location
+                                                  ?.latitude !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.latitude ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .location
+                                                  ?.longitude !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.longitude ||
+                                          state
+                                                  .listOfAddressInfoClassToSave![index]
+                                                  .contactInfo
+                                                  ?.alternativePhone !=
+                                              orders[indexTapPackage.value]
+                                                  .shippingAddressData
+                                                  ?.alternativePhone)) {
+                                    enableChangeAddress.value = true;
+                                  } else {
+                                    enableChangeAddress.value = false;
+                                  }
+                                  indexTapAddress.value = index;
+                                },
+                                child: addressInfoWithContactInfoCart(
+                                  isChange: false,
+                                  customerAddressesInfo: state
+                                      .listOfAddressInfoClassToSave![index],
+                                  context: context,
+                                  index: index,
+                                  indexTap: _indexTap,
+                                  onTapDelete: () {},
+                                  onTapEdit: () {
+                                    //   panelController.close();
+                                    HelperFunctions.slidingNavigation(
+                                      context,
+                                      AddShippingAdress(
+                                        addressInfoClassToEdid: state
+                                            .listOfAddressInfoClassToSave![index],
+                                        fromEdid: true,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Center(
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          AppAssets.addShippingAddressSvg,
-                                        ),
-                                        Positioned(
-                                          top: 2,
-                                          child: SvgPicture.asset(
-                                            AppAssets
-                                                .addShippingAddressWhiteSvg,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 3),
-                                  Text(
-                                    "${LocaleKeys.add_new_shipping_address.tr()} ",
-                                    style: context.textTheme.bodyMedium?.mq
-                                        .copyWith(
-                                          color: const Color(0xff1D1D1D),
-                                          letterSpacing: 0.18,
-                                          fontSize: 12,
-                                          height: 1.33,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        : InkWell(
-                            onTap: () {
-                              if (index != firstAddressChoosed ||
-                                  (state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .address !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.address ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .addressDetail !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.addressDetail ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .contactInfo
-                                              ?.name !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.contactPersonName ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .contactInfo
-                                              ?.phone !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.phone ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .regionDetails
-                                              ?.country !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.country ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .regionDetails
-                                              ?.city !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.city ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .regionDetails
-                                              ?.province !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.province ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .regionDetails
-                                              ?.street !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.street ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .regionDetails
-                                              ?.building !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.building ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .regionDetails
-                                              ?.town !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.town ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .location
-                                              ?.latitude !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.latitude ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .location
-                                              ?.longitude !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.longitude ||
-                                      state
-                                              .listOfAddressInfoClassToSave![index]
-                                              .contactInfo
-                                              ?.alternativePhone !=
-                                          orders[indexTapPackage.value]
-                                              .shippingAddressData
-                                              ?.alternativePhone)) {
-                                enableChangeAddress.value = true;
-                              } else {
-                                enableChangeAddress.value = false;
-                              }
-                              indexTapAddress.value = index;
-                            },
-                            child: addressInfoWithContactInfoCart(
-                              isChange: false,
-                              customerAddressesInfo:
-                                  state.listOfAddressInfoClassToSave![index],
-                              context: context,
-                              index: index,
-                              indexTap: _indexTap,
-                              onTapDelete: () {},
-                              onTapEdit: () {
-                                //   panelController.close();
-                                HelperFunctions.slidingNavigation(
-                                  context,
-                                  AddShippingAdress(
-                                    addressInfoClassToEdid: state
-                                        .listOfAddressInfoClassToSave![index],
-                                    fromEdid: true,
-                                  ),
-                                );
-                              },
-                            ),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 10),
+                        itemCount:
+                            state.listOfAddressInfoClassToSave!.length + 1,
+                        controller: sc,
+                      ),
+                    ),
+                    Positioned(
+                      child: InkWell(
+                        onTap: () {
+                          // panelController.close();
+                          HelperFunctions.slidingNavigation(
+                            context,
+                            const AddShippingAdress(),
+                          );
+                        },
+                        child: Container(
+                          height: 40,
+                          width: 1.sw - 56,
+
+                          decoration: BoxDecoration(
+                            color: const Color(0xffE8FFED),
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(color: const Color(0xffC4C2C2)),
                           ),
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 10),
-                    itemCount: state.listOfAddressInfoClassToSave!.length + 1,
-                    controller: sc,
-                  ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    SvgPicture.asset(
+                                      AppAssets.addShippingAddressSvg,
+                                    ),
+                                    Positioned(
+                                      top: 2,
+                                      child: SvgPicture.asset(
+                                        AppAssets.addShippingAddressWhiteSvg,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                "${LocaleKeys.add_new_shipping_address.tr()} ",
+                                style: context.textTheme.bodyMedium?.mq
+                                    .copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.33,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      bottom: 0,
+                    ),
+                  ],
+                  alignment: Alignment.center,
                 ),
         ],
       ),
@@ -3628,7 +3639,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -3640,7 +3651,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.mq.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -3666,7 +3677,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -3687,7 +3698,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.bq.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -3697,7 +3708,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.mq.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -3725,7 +3736,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.bq.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -3740,7 +3751,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -4490,203 +4501,281 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               ? const SizedBox.shrink()
                               : Container(
                                   height: 40,
-                                  child: BlocListener<ChatBloc, ChatState>(
-                                    listenWhen: (previous, current) =>
-                                        previous.getOrderRecipientIdStatus !=
-                                        current.getOrderRecipientIdStatus,
+                                  child: BlocListener<CallsBloc, CallsState>(
+                                    listenWhen: (p, c) =>
+                                        p.makeCallStatus != c.makeCallStatus &&
+                                        c.makeCallStatus ==
+                                            MakeCallStatus.loading,
                                     listener: (context, state) {
-                                      if (requestReturnApiFromNotification &&
-                                          (state.getOrderRecipientIdStatus ==
-                                                  GetOrderRecipientIdStatus
-                                                      .success ||
-                                              state.getOrderRecipientIdStatus ==
-                                                  GetOrderRecipientIdStatus
-                                                      .failure)) {
-                                        fromNotification = false;
-                                        requestReturnApiFromNotification =
-                                            false;
-                                        Future.delayed(
-                                          const Duration(seconds: 3),
-                                          () {
-                                            if (canFetchReturnDetails) {
-                                              orderBloc.add(
-                                                FetchOrderReturnDetailsEvent(
-                                                  orders[indexTapPackage.value]
-                                                          .orderGroupId ??
-                                                      "",
-                                                ),
+                                      print(
+                                        "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ////",
+                                      );
+                                      callInProgressDialog(context);
+                                    },
+                                    child: BlocListener<CallsBloc, CallsState>(
+                                      listenWhen: (p, c) =>
+                                          p.makeCallStatus !=
+                                              c.makeCallStatus &&
+                                          c.makeCallStatus ==
+                                              MakeCallStatus.failure,
+                                      listener: (context, state) {
+                                        Navigator.pop(context);
+                                        showWarningMessage(
+                                          context,
+                                          '${state.receiverCallName ?? LocaleKeys.user.tr()} ${LocaleKeys.in_another_call.tr()}',
+                                        );
+                                      },
+                                      child: BlocListener<CallsBloc, CallsState>(
+                                        listenWhen: (p, c) =>
+                                            p.makeCallStatus !=
+                                                c.makeCallStatus &&
+                                            c.makeCallStatus ==
+                                                MakeCallStatus.startCall,
+                                        listener: (context, state) {
+                                          print(
+                                            "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ",
+                                          );
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                              builder: (_) => AgoraInAppWebView(
+                                                type: state.isVideoCall
+                                                    ? 'video'
+                                                    : 'voice',
+                                                isReceivingCall: false,
+                                                channelId: state
+                                                    .channelIdForCurrentCall!,
+                                                auth_token:
+                                                    GetIt.I<PrefsRepository>()
+                                                        .chatToken!,
+                                                uId: GetIt.I<PrefsRepository>()
+                                                    .myChatId
+                                                    .toString(),
+                                                action: 'sent',
+                                                messageId: state.messageId!,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: BlocListener<ChatBloc, ChatState>(
+                                          listenWhen: (previous, current) =>
+                                              previous
+                                                  .getOrderRecipientIdStatus !=
+                                              current.getOrderRecipientIdStatus,
+                                          listener: (context, state) {
+                                            if (requestReturnApiFromNotification &&
+                                                (state.getOrderRecipientIdStatus ==
+                                                        GetOrderRecipientIdStatus
+                                                            .success ||
+                                                    state.getOrderRecipientIdStatus ==
+                                                        GetOrderRecipientIdStatus
+                                                            .failure)) {
+                                              fromNotification = false;
+                                              requestReturnApiFromNotification =
+                                                  false;
+                                              Future.delayed(
+                                                const Duration(seconds: 3),
+                                                () {
+                                                  if (canFetchReturnDetails) {
+                                                    orderBloc.add(
+                                                      FetchOrderReturnDetailsEvent(
+                                                        orders[indexTapPackage
+                                                                    .value]
+                                                                .orderGroupId ??
+                                                            "",
+                                                      ),
+                                                    );
+                                                  }
+                                                },
                                               );
                                             }
+
+                                            if (state
+                                                    .getOrderRecipientIdStatus ==
+                                                GetOrderRecipientIdStatus
+                                                    .success) {
+                                              String receiverName =
+                                                  HelperFunctions.getTheFirstTwoLettersOfName(
+                                                    LocaleKeys.delivery_worker
+                                                        .tr(),
+                                                  );
+                                              String fullReceiverName =
+                                                  LocaleKeys.delivery_worker
+                                                      .tr();
+                                              String? recipientUserId =
+                                                  state.recipientUserId;
+                                              print(
+                                                "recipientUserId $recipientUserId",
+                                              );
+                                              if (recipientUserId == null) {
+                                                return;
+                                              }
+                                              Chat? chat;
+                                              User? receiver;
+                                              List<Chat> chats = List.of(
+                                                GetIt.I<ChatBloc>().state.chats,
+                                              );
+                                              debugPrint(chats.toString());
+                                              chats.addAll(
+                                                GetIt.I<ChatBloc>()
+                                                    .state
+                                                    .pinnedChats,
+                                              );
+                                              chat = chats.firstWhere(
+                                                (element) => element
+                                                    .channelMembers!
+                                                    .any((element) {
+                                                      return element.userId
+                                                              .toString() ==
+                                                          recipientUserId;
+                                                    }),
+                                              );
+                                              final preferences =
+                                                  GetIt.I<PrefsRepository>();
+                                              receiver = chat.channelMembers
+                                                  ?.firstWhere(
+                                                    (element) =>
+                                                        element.userId !=
+                                                        preferences.myChatId,
+                                                    orElse: () => ChannelMember(
+                                                      userId: int.tryParse(
+                                                        recipientUserId,
+                                                      ),
+                                                      user: User(
+                                                        id: int.tryParse(
+                                                          recipientUserId,
+                                                        ),
+                                                        name: receiverName,
+                                                      ),
+                                                    ),
+                                                  )
+                                                  .user;
+                                              String fromOrder = "true";
+                                              context.go(
+                                                GRouter
+                                                        .config
+                                                        .applicationRoutes
+                                                        .kSinglePageChatPagePath +
+                                                    '?chatId=${chat.id!.toString()}&fromOrder=$fromOrder&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}',
+                                              );
+                                            }
+                                            // TODO: implement listener
                                           },
-                                        );
-                                      }
-
-                                      if (state.getOrderRecipientIdStatus ==
-                                          GetOrderRecipientIdStatus.success) {
-                                        String receiverName =
-                                            HelperFunctions.getTheFirstTwoLettersOfName(
-                                              LocaleKeys.delivery_worker.tr(),
-                                            );
-                                        String fullReceiverName = LocaleKeys
-                                            .delivery_worker
-                                            .tr();
-                                        String? recipientUserId =
-                                            state.recipientUserId;
-                                        print(
-                                          "recipientUserId $recipientUserId",
-                                        );
-                                        if (recipientUserId == null) {
-                                          return;
-                                        }
-                                        Chat? chat;
-                                        User? receiver;
-                                        List<Chat> chats = List.of(
-                                          GetIt.I<ChatBloc>().state.chats,
-                                        );
-                                        debugPrint(chats.toString());
-                                        chats.addAll(
-                                          GetIt.I<ChatBloc>().state.pinnedChats,
-                                        );
-                                        chat = chats.firstWhere(
-                                          (element) => element.channelMembers!
-                                              .any((element) {
-                                                return element.userId
-                                                        .toString() ==
-                                                    recipientUserId;
-                                              }),
-                                        );
-                                        final preferences =
-                                            GetIt.I<PrefsRepository>();
-                                        receiver = chat.channelMembers
-                                            ?.firstWhere(
-                                              (element) =>
-                                                  element.userId !=
-                                                  preferences.myChatId,
-                                              orElse: () => ChannelMember(
-                                                userId: int.tryParse(
-                                                  recipientUserId,
-                                                ),
-                                                user: User(
-                                                  id: int.tryParse(
-                                                    recipientUserId,
+                                          child: BlocBuilder<ChatBloc, ChatState>(
+                                            buildWhen: (previous, current) =>
+                                                previous
+                                                    .getOrderRecipientIdStatus !=
+                                                current
+                                                    .getOrderRecipientIdStatus,
+                                            builder: (context, state) {
+                                              if (state
+                                                      .getOrderRecipientIdStatus ==
+                                                  GetOrderRecipientIdStatus
+                                                      .loading) {
+                                                return Container(
+                                                  width: 30,
+                                                  height: 30,
+                                                  child: TrydosLoader(size: 16),
+                                                );
+                                              }
+                                              return Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 5,
+                                                    ),
+                                                decoration: const BoxDecoration(
+                                                  color: const Color.fromARGB(
+                                                    255,
+                                                    82,
+                                                    139,
+                                                    236,
                                                   ),
-                                                  name: receiverName,
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                        Radius.circular(12),
+                                                      ),
                                                 ),
-                                              ),
-                                            )
-                                            .user;
-                                        String fromOrder = "true";
-                                        context.go(
-                                          GRouter
-                                                  .config
-                                                  .applicationRoutes
-                                                  .kSinglePageChatPagePath +
-                                              '?chatId=${chat.id!.toString()}&fromOrder=$fromOrder&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}',
-                                        );
-                                      }
-                                      // TODO: implement listener
-                                    },
-                                    child: BlocBuilder<ChatBloc, ChatState>(
-                                      buildWhen: (previous, current) =>
-                                          previous.getOrderRecipientIdStatus !=
-                                          current.getOrderRecipientIdStatus,
-                                      builder: (context, state) {
-                                        if (state.getOrderRecipientIdStatus ==
-                                            GetOrderRecipientIdStatus.loading) {
-                                          return Container(
-                                            width: 30,
-                                            height: 30,
-                                            child: TrydosLoader(size: 16),
-                                          );
-                                        }
-                                        return Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 5,
-                                          ),
-                                          decoration: const BoxDecoration(
-                                            color: const Color.fromARGB(
-                                              255,
-                                              82,
-                                              139,
-                                              236,
-                                            ),
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(12),
-                                            ),
-                                          ),
-                                          alignment: Alignment.center,
+                                                alignment: Alignment.center,
 
-                                          height: 30,
+                                                height: 30,
 
-                                          child: InkWell(
-                                            onTap: () {
-                                              chatBloc.add(
-                                                GetOrderRecipientIdEvent(
-                                                  originalUserId:
-                                                      GetIt.I<PrefsRepository>()
-                                                          .myMarketId
-                                                          .toString(),
-                                                  parentOrderId:
-                                                      orderReturnDetail == null
-                                                      ? null
-                                                      : orderReturnDetail
-                                                                .status
-                                                                ?.value ==
-                                                            "out_for_return"
-                                                      ? orders[indexTapPackage
-                                                                .value]
-                                                            .id
-                                                            .toString()
-                                                      : null,
-                                                  orderId:
-                                                      orderReturnDetail == null
-                                                      ? orders[indexTapPackage
-                                                                .value]
-                                                            .id
-                                                            .toString()
-                                                      : orderReturnDetail
-                                                                .status
-                                                                ?.value ==
-                                                            "out_for_return"
-                                                      ? orderReturnDetail
-                                                            .returnRequestId
-                                                            .toString()
-                                                      : orders[indexTapPackage
-                                                                .value]
-                                                            .id
-                                                            .toString(),
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    chatBloc.add(
+                                                      GetOrderRecipientIdEvent(
+                                                        originalUserId:
+                                                            GetIt.I<
+                                                                  PrefsRepository
+                                                                >()
+                                                                .myMarketId
+                                                                .toString(),
+                                                        parentOrderId:
+                                                            orderReturnDetail ==
+                                                                null
+                                                            ? null
+                                                            : orderReturnDetail
+                                                                      .status
+                                                                      ?.value ==
+                                                                  "out_for_return"
+                                                            ? orders[indexTapPackage
+                                                                      .value]
+                                                                  .id
+                                                                  .toString()
+                                                            : null,
+                                                        orderId:
+                                                            orderReturnDetail ==
+                                                                null
+                                                            ? orders[indexTapPackage
+                                                                      .value]
+                                                                  .id
+                                                                  .toString()
+                                                            : orderReturnDetail
+                                                                      .status
+                                                                      ?.value ==
+                                                                  "out_for_return"
+                                                            ? orderReturnDetail
+                                                                  .returnRequestId
+                                                                  .toString()
+                                                            : orders[indexTapPackage
+                                                                      .value]
+                                                                  .id
+                                                                  .toString(),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: Row(
+                                                    children: [
+                                                      SvgPicture.asset(
+                                                        AppAssets.chatSvg,
+                                                        width: 15,
+                                                      ),
+                                                      const SizedBox(width: 5),
+                                                      Text(
+                                                        LocaleKeys
+                                                            .chat_with_delivery_person
+                                                            .tr(),
+                                                        style: context
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.rq
+                                                            .copyWith(
+                                                              color:
+                                                                  const Color(
+                                                                    0xffFFFFFF,
+                                                                  ),
+                                                              fontSize: 9,
+                                                              height: 1.3,
+                                                              letterSpacing:
+                                                                  0.18,
+                                                            ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               );
                                             },
-                                            child: Row(
-                                              children: [
-                                                SvgPicture.asset(
-                                                  AppAssets.chatSvg,
-                                                  width: 15,
-                                                ),
-                                                const SizedBox(width: 5),
-                                                Text(
-                                                  LocaleKeys
-                                                      .chat_with_delivery_person
-                                                      .tr(),
-                                                  style: context
-                                                      .textTheme
-                                                      .bodyMedium
-                                                      ?.rq
-                                                      .copyWith(
-                                                        color: const Color(
-                                                          0xffFFFFFF,
-                                                        ),
-                                                        fontSize: 9,
-                                                        height: 1.3,
-                                                        letterSpacing: 0.18,
-                                                      ),
-                                                ),
-                                              ],
-                                            ),
                                           ),
-                                        );
-                                      },
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 );

@@ -25,15 +25,20 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
         headers = client.options.headers
           ..['original-user-id'] = GetIt.I<PrefsRepository>().myMarketId;
       }
+      if (serverName == ServerName.dashBoard) {
+        headers = client.options.headers
+          ..['X-Seller-ID'] = GetIt.I<PrefsRepository>().getXSellerId;
+      }
       headers = client.options.headers
         ..['lang'] = LanguageService.languageCode == 'ar'
             ? LanguageService.isKurdish
-                ? "ku"
-                : 'ar'
+                  ? "ku"
+                  : 'ar'
             : LanguageService.languageCode;
 
       headers.addAll({
-        'User-Agent': 'device OS:' +
+        'User-Agent':
+            'device OS:' +
             (Platform.isAndroid ? 'Android' : 'IOS') +
             ' '
                 ', application version: $applicationVersion',

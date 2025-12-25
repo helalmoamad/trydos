@@ -3,12 +3,6 @@
 <plist version="1.0">
 <dict>
 
-<key>UIBackgroundModes</key>
-<array>
-    <string>voip</string>
-    <string>remote-notification</string>
-    <string>processing</string>
-</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -38,10 +32,17 @@
     <false/>
     <key>UIBackgroundModes</key>
     <array>
+        <string>voip</string>
         <string>remote-notification</string>
+        <string>processing</string>
+        <string>audio</string>
     </array>
+    <key>NSCameraUsageDescription</key>
+    <string>This app requires camera access for video calls.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>This app requires microphone access for audio calls.</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Replace with your permission description.</string>
+    <string>This app requires photo library access to send images in chat.</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

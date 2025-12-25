@@ -28,7 +28,7 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ChatPageContent extends StatefulWidget {
   const ChatPageContent({Key? key, this.onSendForwardMessage})
-      : super(key: key);
+    : super(key: key);
   final Function(int receiverId, String channelId)? onSendForwardMessage;
 
   @override
@@ -45,16 +45,17 @@ class ChatPageContentState extends State<ChatPageContent> {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     differencetime = GetIt.I<PrefsRepository>().getdurtion ?? 0;
 
-    FirebasePresence.sendUserStatus(DateTime.now()
-        .toUtc()
-        .add(Duration(minutes: differencetime))
-        .toString());
+    FirebasePresence.sendUserStatus(
+      DateTime.now().toUtc().add(Duration(minutes: differencetime)).toString(),
+    );
 
     timers = Timer.periodic(const Duration(minutes: 4), (timer) {
-      FirebasePresence.sendUserStatus(DateTime.now()
-          .toUtc()
-          .add(Duration(minutes: differencetime))
-          .toString());
+      FirebasePresence.sendUserStatus(
+        DateTime.now()
+            .toUtc()
+            .add(Duration(minutes: differencetime))
+            .toString(),
+      );
     });
 
     super.initState();
@@ -65,15 +66,15 @@ class ChatPageContentState extends State<ChatPageContent> {
     timers.cancel();
     super.dispose();
   }
-// todo 9/21 unused code
-//  late ChatBloc chatBloc;
+  // todo 9/21 unused code
+  //  late ChatBloc chatBloc;
 
-//  @override
-//  void initState() {
-//
-//    chatBloc = BlocProvider.of<ChatBloc>(context);
-//    super.initState();
-//  }
+  //  @override
+  //  void initState() {
+  //
+  //    chatBloc = BlocProvider.of<ChatBloc>(context);
+  //    super.initState();
+  //  }
   static ValueNotifier<List<Chat>> searchChats = ValueNotifier([]);
   static List<Chat> initialChats = [];
 
@@ -84,7 +85,8 @@ class ChatPageContentState extends State<ChatPageContent> {
       List<Chat> search = [];
       for (Chat chat in initialChats) {
         ChannelMember member = chat.channelMembers!.firstWhere(
-            (element) => element.userId != GetIt.I<PrefsRepository>().myChatId);
+          (element) => element.userId != GetIt.I<PrefsRepository>().myChatId,
+        );
         if ((chat.channelName ?? LocaleKeys.unknown_user.tr())
                 .toLowerCase()
                 .contains(text?.toLowerCase() ?? '') ||
@@ -99,7 +101,7 @@ class ChatPageContentState extends State<ChatPageContent> {
   }
 
   @override
-// ! asd
+  // ! asd
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
       LastPagesTracker.sendErrorToBlocAndLog(error);
@@ -122,25 +124,25 @@ class ChatPageContentState extends State<ChatPageContent> {
             state.chats.isEmpty &&
             state.pinnedChats.isEmpty) {
           return SliverToBoxAdapter(
-              child: SizedBox(
-            height: 1.sh - 200,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TrydosLoader(),
-              ],
+            child: SizedBox(
+              height: 1.sh - 200,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [TrydosLoader()],
+              ),
             ),
-          ));
+          );
         }
         if (state.getChatsStatus == GetChatsStatus.failure &&
             searchChats.value.isEmpty) {
           return SliverToBoxAdapter(
             child: Center(
               child: ElevatedButton(
-                  onPressed: () {
-                    GetIt.I<ChatBloc>().add(const GetChatsEvent(limit: 10));
-                  },
-                  child: MyTextWidget(LocaleKeys.try_again.tr())),
+                onPressed: () {
+                  GetIt.I<ChatBloc>().add(const GetChatsEvent(limit: 10));
+                },
+                child: MyTextWidget(LocaleKeys.try_again.tr()),
+              ),
             ),
           );
         }
@@ -149,13 +151,15 @@ class ChatPageContentState extends State<ChatPageContent> {
         chats.addAll(List.of(state.chats));
         // todo  (future update) remove this from here handle it in the back of in bloc
 
-        chats.removeWhere((element) =>
-            // int.tryParse(element.id.toString()) == null &&
-            (element.messages.isNullOrEmpty));
+        chats.removeWhere(
+          (element) =>
+              // int.tryParse(element.id.toString()) == null &&
+              (element.messages.isNullOrEmpty),
+        );
 
         initialChats = chats;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          searchChats.value = chats;
+          searchChats.value = [...chats];
         });
         return SlidableAutoCloseBehavior(
           child: BlocBuilder<AppBloc, AppState>(
@@ -165,64 +169,70 @@ class ChatPageContentState extends State<ChatPageContent> {
               return SliverMainAxisGroup(
                 slivers: [
                   SliverToBoxAdapter(
-                      child: Container(
-                          width: 1.sw,
-                          color: colorScheme.white,
-                          child:
-                              state.getChatsStatus != GetChatsStatus.success &&
-                                      state.firstRequestForGetChats &&
-                                      state.chats.isEmpty &&
-                                      state.pinnedChats.isEmpty
-                                  ? TrydosLoader()
-                                  : const SizedBox.shrink())),
+                    child: Container(
+                      width: 1.sw,
+                      color: colorScheme.white,
+                      child:
+                          state.getChatsStatus != GetChatsStatus.success &&
+                              state.firstRequestForGetChats &&
+                              state.chats.isEmpty &&
+                              state.pinnedChats.isEmpty
+                          ? TrydosLoader()
+                          : const SizedBox.shrink(),
+                    ),
+                  ),
                   ValueListenableBuilder<List<Chat>>(
-                      valueListenable: searchChats,
-                      builder: (context, searchedChats, _) {
-                        return sliverListSeparated(
-                            separator: const SizedBox.shrink(),
-                            childCount: searchedChats.length,
-                            itemBuilder: (_, index) {
-                              bool thereActivity = int.tryParse(
-                                          searchedChats[index].id.toString()) !=
-                                      null
-                                  ? appState.pusherActivityIds.containsKey(
-                                      int.parse(
-                                          searchedChats[index].id.toString()))
-                                  : false;
-                              if (searchedChats[index].isPrivate == true) {
-                                return const SizedBox.shrink();
-                              }
-                              return ChatCard(
-                                key: TestVariables.kTestMode
-                                    ? Key(
-                                        '${WidgetsKeys.chatConversationCardKey}$index',
-                                      )
-                                    : null,
-                                onSendForwardMessage:
-                                    widget.onSendForwardMessage,
-                                chat: searchedChats[index],
-                                thereActivity: thereActivity,
-                                index: index,
-                                activityDescription: thereActivity
-                                    ? appState.pusherActivityDescription[
-                                        int.parse(
-                                            searchedChats[index].id.toString())]
-                                    : null,
-                                messageId:
-                                    searchedChats[index].messages?.first.id ??
-                                        "",
-                              );
-                            });
-                      }),
+                    valueListenable: searchChats,
+                    builder: (context, searchedChats, _) {
+                      return sliverListSeparated(
+                        separator: const SizedBox.shrink(),
+                        childCount: searchedChats.length,
+                        itemBuilder: (_, index) {
+                          bool thereActivity =
+                              int.tryParse(
+                                    searchedChats[index].id.toString(),
+                                  ) !=
+                                  null
+                              ? appState.pusherActivityIds.containsKey(
+                                  int.parse(searchedChats[index].id.toString()),
+                                )
+                              : false;
+                          if (searchedChats[index].isPrivate == true) {
+                            return const SizedBox.shrink();
+                          }
+                          return ChatCard(
+                            key: TestVariables.kTestMode
+                                ? Key(
+                                    '${WidgetsKeys.chatConversationCardKey}$index',
+                                  )
+                                : null,
+                            onSendForwardMessage: widget.onSendForwardMessage,
+                            chat: searchedChats[index],
+                            thereActivity: thereActivity,
+                            index: index,
+                            activityDescription: thereActivity
+                                ? appState.pusherActivityDescription[int.parse(
+                                    searchedChats[index].id.toString(),
+                                  )]
+                                : null,
+                            messageId:
+                                searchedChats[index].messages?.first.id ?? "",
+                          );
+                        },
+                      );
+                    },
+                  ),
                   SliverToBoxAdapter(
-                      child: Container(
-                          width: 1.sw,
-                          color: colorScheme.white,
-                          child:
-                              state.getChatsStatus != GetChatsStatus.success &&
-                                      !state.firstRequestForGetChats
-                                  ? TrydosLoader()
-                                  : const SizedBox.shrink())),
+                    child: Container(
+                      width: 1.sw,
+                      color: colorScheme.white,
+                      child:
+                          state.getChatsStatus != GetChatsStatus.success &&
+                              !state.firstRequestForGetChats
+                          ? TrydosLoader()
+                          : const SizedBox.shrink(),
+                    ),
+                  ),
                 ],
               );
             },

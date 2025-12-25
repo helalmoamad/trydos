@@ -423,6 +423,8 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                   ),
                   child: TextField(
                     controller: _controller,
+                    maxLines: 3,
+                    maxLength: 200,
                     decoration: InputDecoration(
                       hintText: LocaleKeys.edit_comment_hint.tr(),
                       border: InputBorder.none,
@@ -431,7 +433,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                         vertical: 14,
                       ),
                     ),
-                    maxLines: 6,
+
                     minLines: 3,
                   ),
                 ),

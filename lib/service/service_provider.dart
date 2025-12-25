@@ -5,6 +5,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/dashBoard/presentation/bloc/dashBoard_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -22,17 +23,22 @@ class ServiceProvider extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (BuildContext context) => GetIt.I<CallsBloc>()),
+        BlocProvider(
+          create: (BuildContext context) => GetIt.I<DashboardBloc>(),
+        ),
         BlocProvider(create: (BuildContext context) => GetIt.I<StoryBloc>()),
         BlocProvider(create: (BuildContext context) => GetIt.I<AppBloc>()),
         BlocProvider(
-            create: (BuildContext context) => SensitiveConnectivityBloc()),
+          create: (BuildContext context) => SensitiveConnectivityBloc(),
+        ),
         BlocProvider(create: (BuildContext context) => GetIt.I<AuthBloc>()),
         BlocProvider(create: (BuildContext context) => GetIt.I<ChatBloc>()),
         BlocProvider(create: (BuildContext context) => GetIt.I<CategoryBloc>()),
         BlocProvider(create: (BuildContext context) => GetIt.I<HomeBloc>()),
         BlocProvider(create: (BuildContext context) => GetIt.I<BoutiqueBloc>()),
         BlocProvider(
-            create: (BuildContext context) => GetIt.I<PreCachingImageBloc>()),
+          create: (BuildContext context) => GetIt.I<PreCachingImageBloc>(),
+        ),
         BlocProvider(create: (BuildContext context) => GetIt.I<OrderBloc>()),
       ],
       child: child,

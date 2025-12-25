@@ -49,8 +49,6 @@ showCallKitIncoming(
   String currentUuid, {
   required bool isVideo,
 }) async {
-  print("${data["message"]})");
-  print("))))))))))))))${data["message"]['channel']}");
   CallKitParams callKitParams = CallKitParams(
     id: currentUuid,
     nameCaller: data["message"]['channel']["channel_name"] ?? 'Un Known',
@@ -78,7 +76,7 @@ showCallKitIncoming(
     android: const AndroidParams(
       isCustomNotification: true,
       isImportant: true,
-      isShowFullLockedScreen: true,
+      isShowFullLockedScreen: false,
       isShowLogo: false,
       ringtonePath: 'system_ringtone_default',
       backgroundColor: '#0955fa',
@@ -87,6 +85,8 @@ showCallKitIncoming(
       actionColor: '#4CAF50',
       incomingCallNotificationChannelName: "Incoming Call",
       missedCallNotificationChannelName: "Missed Call",
+
+      // ✅ إضافة خاصية الصوت القوي والاهتزاز
     ),
     ios: const IOSParams(
       iconName: 'CallKitLogo',
@@ -225,27 +225,30 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
             break;
           case Event.actionCallDecline:
             {
-              /*  HttpOverrides.global = MyHttpOverrides();
+              HttpOverrides.global = MyHttpOverrides();
               if (!declineCallBecauseOfNotificationButton) {
-                GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
+                GetIt.I<CallsBloc>().add(
+                  RejectVideoCallEvent(
                     duration: 0,
                     payload: {'Target': 'Application  From terminated'},
-              messageId: data["id"].toString()));
-              }*/
+                    messageId: data["id"].toString(),
+                  ),
+                );
+              }
             }
             break;
           case Event.actionCallTimeout:
             {
-              /*   HttpOverrides.global = MyHttpOverrides();
+              HttpOverrides.global = MyHttpOverrides();
               if (!declineCallBecauseOfNotificationButton) {
-                GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
+                GetIt.I<CallsBloc>().add(
+                  RejectVideoCallEvent(
                     duration: 0,
                     payload: {'Target': 'Application  From terminated'},
-                    messageId: data["id"].toString()));
+                    messageId: data["id"].toString(),
+                  ),
+                );
               }
-              //  HttpOverrides.global = MyHttpOverrides();
-              //  GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
-              //  messageId: data["message"]["id"].toString()));*/
             }
             break;
           default:
@@ -380,7 +383,7 @@ Map<String, VideoPlayerController> videoProductInListingController = {};
   }*/
 }*/
 
-int applicationVersion = 51;
+int applicationVersion = 58;
 String alaa = "";
 request() async {
   final Stopwatch stopWatch = Stopwatch();

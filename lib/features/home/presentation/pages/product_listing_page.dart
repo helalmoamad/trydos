@@ -3900,6 +3900,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     .toString()]!
                                                                 .product
                                                                 ?.choiceOptions,
+                                                      variation: state
+                                                          .authProductDetailsModel
+                                                          ?.data
+                                                          ?.variation,
                                                       colors: state
                                                           .cachedProductWithoutRelatedProductsModel[products[tapIndex]
                                                               .productId

@@ -758,7 +758,7 @@ class BuyersProductRatePanel extends StatelessWidget {
 
   Widget _buyerReviewSingle(
     String text,
-    int numOfPercent,
+    double numOfPercent,
     BuildContext context,
   ) {
     return SizedBox(

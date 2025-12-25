@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
@@ -86,9 +87,10 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     scrollController.addListener(_getChatsPaginationListener);
     chatBloc = BlocProvider.of<ChatBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
+
     callsBloc.add(GetMissedCallCountEvent());
     callsBloc.add(GetMyCallsEvent());
-
+    print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!2");
     chatBloc.add(const GetChatsEvent(limit: 10));
     chatBloc.add(const SaveContactsEvent());
     chatPages.insert(
@@ -100,7 +102,25 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
       BlocProvider.of<AppBloc>(context).add(ChangeTabInChat(0));
     }
     saveUserContacts();
+    _requestCallKitPermission();
     super.initState();
+  }
+
+  Future<void> _requestCallKitPermission() async {
+    // 1. طلب إذن الإشعارات العادي
+    await FlutterCallkitIncoming.requestNotificationPermission({
+      "rationaleMessagePermission":
+          "نحتاج لإذن الإشعارات لتنبيهك بالمكالمات الواردة",
+      "postNotificationMessagePermission":
+          "سوف نرسل لك إشعارات عند وجود مكالمة",
+    });
+
+    // 2. طلب إذن الظهور فوق التطبيقات (Overlay) - ضروري جداً لـ Redmi و Infinix
+    /*if (await Permission.systemAlertWindow.isDenied) {
+      await Permission.systemAlertWindow.request();
+    }*/
+
+    //await prefs.setCallkitPermissionRequested(true);
   }
 
   bool _eventLogged = false;
@@ -156,6 +176,9 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
             p.makeCallStatus != c.makeCallStatus &&
             c.makeCallStatus == MakeCallStatus.loading,
         listener: (context, state) {
+          print(
+            "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ////",
+          );
           callInProgressDialog(context);
         },
         child: BlocListener<CallsBloc, CallsState>(
@@ -174,6 +197,9 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                 p.makeCallStatus != c.makeCallStatus &&
                 c.makeCallStatus == MakeCallStatus.startCall,
             listener: (context, state) {
+              print(
+                "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ",
+              );
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (_) => AgoraInAppWebView(

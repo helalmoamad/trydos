@@ -39,6 +39,8 @@ enum ChangeMessageStateFromPusherStatus { init, received, watched }
 
 enum ResendMessageStatus { init, loading, success, failure }
 
+enum BlockOrDeleteBlockUserStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 class ChatState {
   final int width;
@@ -50,6 +52,7 @@ class ChatState {
   final GetChatsStatus getChatsStatus;
   final SendMessageStatus sendMessageStatus;
   final ReceiveMessageStatus receiveMessageStatus;
+  final BlockOrDeleteBlockUserStatus blockOrDeleteBlockUserStatus;
   final LoadImageWidthAndHeight loadImageWidthAndHeight;
   final SaveContactsStatus saveContactsStatus;
   final GetContactsStatus getContactsStatus;
@@ -105,6 +108,7 @@ class ChatState {
     this.chatOrderParticipantId,
     this.firstRequestForGetChats = true,
     this.height = 0,
+    this.blockOrDeleteBlockUserStatus = BlockOrDeleteBlockUserStatus.init,
     this.imageCountInEachChat = 0,
     this.getAllChat = false,
     this.getSharedProductCountStatus,
@@ -164,6 +168,7 @@ class ChatState {
     final Duration? duration,
     final GetOrderRecipientIdStatus? getOrderRecipientIdStatus,
     final bool? firstRequestForGetChats,
+    final BlockOrDeleteBlockUserStatus? blockOrDeleteBlockUserStatus,
     final String? chatOrderParticipantId,
     final ResendMessageStatus? resendMessageStatus,
     final SendMessageStatus? sendMessageStatus,
@@ -186,7 +191,7 @@ class ChatState {
     final Chat? chatToNavigateFromTerminated,
     final NotifyThatIReceivedMessageStatus? notifyThatIReceivedMessageStatus,
     final ChangeMessageStateFromPusherStatus?
-        changeMessageStateFromPusherStatus,
+    changeMessageStateFromPusherStatus,
     final String? currentChannelReceivedMessage,
     final List<Chat>? chats,
     final bool? createAnewChat,
@@ -206,6 +211,8 @@ class ChatState {
     return ChatState(
       duration: duration ?? this.duration,
       userConnectedStatuse: userConnectedStatuse ?? this.userConnectedStatuse,
+      blockOrDeleteBlockUserStatus:
+          blockOrDeleteBlockUserStatus ?? this.blockOrDeleteBlockUserStatus,
       width: width ?? this.width,
       slopMessageId: slopMessageId ?? this.slopMessageId,
       isSlpoing: isSlpoing ?? this.isSlpoing,
@@ -241,7 +248,8 @@ class ChatState {
       contacts: contacts ?? this.contacts,
       chats: chats ?? this.chats,
       getAllChat: getAllChat ?? this.getAllChat,
-      currentRequestIdForAvoidPreRequest: currentRequestIdForAvoidPreRequest ??
+      currentRequestIdForAvoidPreRequest:
+          currentRequestIdForAvoidPreRequest ??
           this.currentRequestIdForAvoidPreRequest,
       currentOpenedChatId: currentOpenedChatId ?? this.currentOpenedChatId,
       createAnewChat: createAnewChat ?? this.createAnewChat,
@@ -249,13 +257,15 @@ class ChatState {
       currentFailedMessage: currentFailedMessage ?? this.currentFailedMessage,
       currentFailedMediaMessage:
           currentFailedMediaMessage ?? this.currentFailedMediaMessage,
-      changeMessageStateFromPusherStatus: changeMessageStateFromPusherStatus ??
+      changeMessageStateFromPusherStatus:
+          changeMessageStateFromPusherStatus ??
           this.changeMessageStateFromPusherStatus,
       scrollToParentMessage:
           scrollToParentMessage ?? this.scrollToParentMessage,
       // getSharedProductCount:
       //  getSharedProductCount ?? this.getSharedProductCount,
-      notifyThatIReceivedMessageStatus: notifyThatIReceivedMessageStatus ??
+      notifyThatIReceivedMessageStatus:
+          notifyThatIReceivedMessageStatus ??
           this.notifyThatIReceivedMessageStatus,
       currentMessage: currentMessage ?? this.currentMessage,
       pinnedChats: pinnedChats ?? this.pinnedChats,

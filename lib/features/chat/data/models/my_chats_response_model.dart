@@ -109,6 +109,7 @@ class Message {
   final File? file;
   bool? isFirstMessageForThisDay;
   bool? isFirstMessage;
+  bool? isPrivate;
   bool? isDateMessage;
   String? dateValue;
 
@@ -121,6 +122,7 @@ class Message {
     this.deletedByUserId,
     this.id,
     this.senderUserId,
+    this.isPrivate,
     this.localParentMessageId,
     this.receiverUserId,
     this.channelId,
@@ -144,6 +146,7 @@ class Message {
     final String? id,
     final String? localId,
     final String? localParentMessageId,
+    final bool? isPrivate,
     final int? senderUserId,
     final MessageStatus? authMessageStatus,
     final int? receiverUserId,
@@ -169,6 +172,7 @@ class Message {
       receiverUserId: receiverUserId ?? this.receiverUserId,
       channelId: channelId ?? this.channelId,
       createdAt: createdAt ?? this.createdAt,
+      isPrivate: isPrivate ?? this.isPrivate,
       authMessageStatus: authMessageStatus ?? this.authMessageStatus,
       messageType: messageType ?? this.messageType,
       file: file ?? this.file,
@@ -205,9 +209,9 @@ class Message {
           // ignore: sdk_version_since
           ? bool.parse(json["isFirstMessageForThisDay"])
           : false,
-      senderUserId: json["sender_user_id"],
-      receiverUserId: json["receiver_user_id"],
-      deletedByUserId: json["deleted_by_user_id"],
+      senderUserId: int.tryParse(json["sender_user_id"].toString()),
+      receiverUserId: int.tryParse(json["receiver_user_id"].toString()),
+      deletedByUserId: int.tryParse(json["deleted_by_user_id"].toString()),
       channelId: json["channel_id"].toString(),
       authMessageStatus: json["auth_message_status"] == null
           ? null
@@ -217,6 +221,8 @@ class Message {
           : DateTime.parse(json["created_at"]),
       messageType: json["message_type"] == null
           ? null
+          : json["message_type"] is String
+          ? MessageType.fromJson({"name": json["message_type"]})
           : MessageType.fromJson(json["message_type"]),
       parentMessageId: json["parent_message_id"]?.toString(),
       isForward: (json["is_forward"] is bool)
@@ -370,7 +376,11 @@ class Chat {
     totalUnreadMessageCount: json["total_unread_message_count"],
     updatedAt: DateTime.tryParse(json['updated_at'].toString()),
     channelMembers: json["channel_members"] == null
-        ? []
+        ? json["members"] == null
+              ? []
+              : List<ChannelMember>.from(
+                  json["members"]!.map((x) => ChannelMember.fromJson(x)),
+                )
         : List<ChannelMember>.from(
             json["channel_members"]!.map((x) => ChannelMember.fromJson(x)),
           ),
@@ -542,27 +552,37 @@ class MessageStatus {
     createdAt: createdAt ?? this.createdAt,
   );
 
-  factory MessageStatus.fromJson(Map<String, dynamic> json) => MessageStatus(
-    id: int.tryParse(json["id"].toString()),
-    userId: int.tryParse(json["user_id"].toString()),
-    isDeleted: int.tryParse(json["is_deleted"].toString()),
-    deleteForAll: json["delete_for_all"],
-    messageDeletedAt: json["message_deleted_at"] == null
-        ? null
-        : DateTime.parse(json["message_deleted_at"]),
-    isSent: json["is_sent"],
-    isReceived: json["is_received"],
-    isWatched: json["is_watched"],
-    watchedAt: json["watched_at"] == null
-        ? null
-        : DateTime.parse(json["watched_at"]),
-    receivedAt: json["received_at"] == null
-        ? null
-        : DateTime.parse(json["received_at"]),
-    createdAt: json["created_at"] == null
-        ? null
-        : DateTime.parse(json["created_at"]),
-  );
+  factory MessageStatus.fromJson(Map<String, dynamic> json) {
+    return MessageStatus(
+      id: int.tryParse(json["id"].toString()),
+      userId: int.tryParse(json["user_id"].toString()),
+      isDeleted: int.tryParse(json["is_deleted"].toString()),
+      deleteForAll: json["delete_for_all"] == null
+          ? false
+          : json["delete_for_all"] is int
+          ? json["delete_for_all"] == 1
+          : json["delete_for_all"],
+      messageDeletedAt: json["message_deleted_at"] == null
+          ? null
+          : DateTime.parse(json["message_deleted_at"]),
+      isSent: json["is_sent"],
+      isReceived: json["is_received"],
+      isWatched: json["is_watched"] == null
+          ? false
+          : json["is_watched"] is int
+          ? json["is_watched"] == 1
+          : json["is_watched"],
+      watchedAt: json["watched_at"] == null
+          ? null
+          : DateTime.parse(json["watched_at"]),
+      receivedAt: json["received_at"] == null
+          ? null
+          : DateTime.parse(json["received_at"]),
+      createdAt: json["created_at"] == null
+          ? null
+          : DateTime.parse(json["created_at"]),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "id": id,
@@ -595,6 +615,7 @@ class ChannelMember {
   final int? userId;
   final int? pin;
   final int? archived;
+  final int? isBlocked;
   final int? mute;
   final User? user;
 
@@ -603,6 +624,7 @@ class ChannelMember {
     this.userId,
     this.pin,
     this.archived,
+    this.isBlocked,
     this.mute,
     this.user,
   });
@@ -613,6 +635,7 @@ class ChannelMember {
     int? pin,
     int? archived,
     int? mute,
+    int? isBlocked,
     User? user,
   }) => ChannelMember(
     channelId: channelId ?? this.channelId,
@@ -621,14 +644,16 @@ class ChannelMember {
     archived: archived ?? this.archived,
     mute: mute ?? this.mute,
     user: user ?? this.user,
+    isBlocked: isBlocked ?? this.isBlocked,
   );
 
   factory ChannelMember.fromJson(Map<String, dynamic> json) => ChannelMember(
     channelId: json["channel_id"].toString(),
-    userId: json["user_id"],
+    userId: int.tryParse(json["user_id"].toString()),
     pin: json["pin"],
     archived: json["archived"],
     mute: json["mute"],
+    isBlocked: json["is_blocked"],
     user: json["user"] == null ? null : User.fromJson(json["user"]),
   );
 
@@ -637,6 +662,7 @@ class ChannelMember {
     "user_id": userId,
     "pin": pin,
     "archived": archived,
+    "is_blocked": isBlocked,
     "mute": mute,
     "user": user?.toJson(),
   };
@@ -651,7 +677,7 @@ class User {
   User({this.id, this.mobilePhone, this.photoPath, this.name});
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json["id"],
+    id: int.tryParse(json["id"].toString()),
     mobilePhone: json["mobile_phone"],
     photoPath: json["photo_path"],
     name: json["name"],

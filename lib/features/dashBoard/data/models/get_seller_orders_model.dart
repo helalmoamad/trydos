@@ -1,0 +1,471 @@
+// To parse this JSON data, do
+//
+//     final getSellerOrdersModel = getSellerOrdersModelFromJson(jsonString);
+
+import 'dart:convert';
+
+GetSellerOrdersModel getSellerOrdersModelFromJson(String str) =>
+    GetSellerOrdersModel.fromJson(json.decode(str));
+
+String getSellerOrdersModelToJson(GetSellerOrdersModel data) =>
+    json.encode(data.toJson());
+
+class GetSellerOrdersModel {
+  final bool? isSuccessful;
+  final bool? hasContent;
+  final int? code;
+  final String? message;
+  final dynamic detailedError;
+  final Data? data;
+
+  GetSellerOrdersModel({
+    this.isSuccessful,
+    this.hasContent,
+    this.code,
+    this.message,
+    this.detailedError,
+    this.data,
+  });
+
+  GetSellerOrdersModel copyWith({
+    bool? isSuccessful,
+    bool? hasContent,
+    int? code,
+    String? message,
+    dynamic detailedError,
+    Data? data,
+  }) => GetSellerOrdersModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
+
+  factory GetSellerOrdersModel.fromJson(Map<String, dynamic> json) =>
+      GetSellerOrdersModel(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
+        message: json["message"],
+        detailedError: json["detailed_error"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
+}
+
+class Data {
+  final List<UserOrder>? orders;
+  final UserAbilities? userAbilities;
+  final Meta? meta;
+
+  Data({this.orders, this.userAbilities, this.meta});
+
+  Data copyWith({
+    List<UserOrder>? orders,
+    UserAbilities? userAbilities,
+    Meta? meta,
+  }) => Data(
+    orders: orders ?? this.orders,
+    userAbilities: userAbilities ?? this.userAbilities,
+    meta: meta ?? this.meta,
+  );
+
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+    orders: json["orders"] == null
+        ? []
+        : List<UserOrder>.from(
+            json["orders"]!.map((x) => UserOrder.fromJson(x)),
+          ),
+    userAbilities: json["user_abilities"] == null
+        ? null
+        : UserAbilities.fromJson(json["user_abilities"]),
+    meta: json["meta"] == null ? null : Meta.fromJson(json["meta"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "orders": orders == null
+        ? []
+        : List<dynamic>.from(orders!.map((x) => x.toJson())),
+    "user_abilities": userAbilities?.toJson(),
+    "meta": meta?.toJson(),
+  };
+}
+
+class Meta {
+  final int? currentPage;
+  final int? lastPage;
+  final int? perPage;
+  final int? total;
+  final int? from;
+  final int? to;
+  final bool? hasMorePages;
+  final String? nextPageUrl;
+  final dynamic prevPageUrl;
+
+  Meta({
+    this.currentPage,
+    this.lastPage,
+    this.perPage,
+    this.total,
+    this.from,
+    this.to,
+    this.hasMorePages,
+    this.nextPageUrl,
+    this.prevPageUrl,
+  });
+
+  Meta copyWith({
+    int? currentPage,
+    int? lastPage,
+    int? perPage,
+    int? total,
+    int? from,
+    int? to,
+    bool? hasMorePages,
+    String? nextPageUrl,
+    dynamic prevPageUrl,
+  }) => Meta(
+    currentPage: currentPage ?? this.currentPage,
+    lastPage: lastPage ?? this.lastPage,
+    perPage: perPage ?? this.perPage,
+    total: total ?? this.total,
+    from: from ?? this.from,
+    to: to ?? this.to,
+    hasMorePages: hasMorePages ?? this.hasMorePages,
+    nextPageUrl: nextPageUrl ?? this.nextPageUrl,
+    prevPageUrl: prevPageUrl ?? this.prevPageUrl,
+  );
+
+  factory Meta.fromJson(Map<String, dynamic> json) => Meta(
+    currentPage: json["current_page"],
+    lastPage: json["last_page"],
+    perPage: json["per_page"],
+    total: json["total"],
+    from: json["from"],
+    to: json["to"],
+    hasMorePages: json["has_more_pages"],
+    nextPageUrl: json["next_page_url"],
+    prevPageUrl: json["prev_page_url"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "current_page": currentPage,
+    "last_page": lastPage,
+    "per_page": perPage,
+    "total": total,
+    "from": from,
+    "to": to,
+    "has_more_pages": hasMorePages,
+    "next_page_url": nextPageUrl,
+    "prev_page_url": prevPageUrl,
+  };
+}
+
+class UserOrder {
+  final int? id;
+  final bool? canReturnOrder;
+  final String? cartGroupId;
+  final String? orderGroupId;
+  final String? orderStatus;
+  final String? orderGroupStatus;
+  final PaymentMethod? paymentMethod;
+  final PaymentStatus? paymentStatus;
+  final int? codCost;
+  final String? transactionRef;
+  final int? orderAmount;
+  final Type? deliveryType;
+  final int? shippingAddress;
+  final Type? shippingType;
+  final int? discountAmount;
+  final dynamic discountType;
+  final dynamic couponCode;
+  final int? shippingCost;
+  final List<List<Detail>>? details;
+
+  UserOrder({
+    this.id,
+    this.canReturnOrder,
+    this.cartGroupId,
+    this.orderGroupId,
+    this.orderStatus,
+    this.orderGroupStatus,
+    this.paymentMethod,
+    this.paymentStatus,
+    this.codCost,
+    this.transactionRef,
+    this.orderAmount,
+    this.deliveryType,
+    this.shippingAddress,
+    this.shippingType,
+    this.discountAmount,
+    this.discountType,
+    this.couponCode,
+    this.shippingCost,
+    this.details,
+  });
+
+  UserOrder copyWith({
+    int? id,
+    bool? canReturnOrder,
+    String? cartGroupId,
+    String? orderGroupId,
+    String? orderStatus,
+    String? orderGroupStatus,
+    PaymentMethod? paymentMethod,
+    PaymentStatus? paymentStatus,
+    int? codCost,
+    String? transactionRef,
+    int? orderAmount,
+    Type? deliveryType,
+    int? shippingAddress,
+    Type? shippingType,
+    int? discountAmount,
+    dynamic discountType,
+    dynamic couponCode,
+    int? shippingCost,
+    List<List<Detail>>? details,
+  }) => UserOrder(
+    id: id ?? this.id,
+    canReturnOrder: canReturnOrder ?? this.canReturnOrder,
+    cartGroupId: cartGroupId ?? this.cartGroupId,
+    orderGroupId: orderGroupId ?? this.orderGroupId,
+    orderStatus: orderStatus ?? this.orderStatus,
+    orderGroupStatus: orderGroupStatus ?? this.orderGroupStatus,
+    paymentMethod: paymentMethod ?? this.paymentMethod,
+    paymentStatus: paymentStatus ?? this.paymentStatus,
+    codCost: codCost ?? this.codCost,
+    transactionRef: transactionRef ?? this.transactionRef,
+    orderAmount: orderAmount ?? this.orderAmount,
+    deliveryType: deliveryType ?? this.deliveryType,
+    shippingAddress: shippingAddress ?? this.shippingAddress,
+    shippingType: shippingType ?? this.shippingType,
+    discountAmount: discountAmount ?? this.discountAmount,
+    discountType: discountType ?? this.discountType,
+    couponCode: couponCode ?? this.couponCode,
+    shippingCost: shippingCost ?? this.shippingCost,
+    details: details ?? this.details,
+  );
+
+  factory UserOrder.fromJson(Map<String, dynamic> json) => UserOrder(
+    id: json["id"],
+    canReturnOrder: json["can_return_order"],
+    cartGroupId: json["cart_group_id"],
+    orderGroupId: json["order_group_id"],
+    orderStatus: json["order_status"],
+    orderGroupStatus: json["order_group_status"],
+    paymentMethod: paymentMethodValues.map[json["payment_method"]]!,
+    paymentStatus: paymentStatusValues.map[json["payment_status"]]!,
+    codCost: json["cod_cost"],
+    transactionRef: json["transaction_ref"],
+    orderAmount: json["order_amount"],
+    deliveryType: typeValues.map[json["delivery_type"]]!,
+    shippingAddress: json["shipping_address"],
+    shippingType: typeValues.map[json["shipping_type"]]!,
+    discountAmount: json["discount_amount"],
+    discountType: json["discount_type"],
+    couponCode: json["coupon_code"],
+    shippingCost: json["shipping_cost"],
+    details: json["details"] == null
+        ? []
+        : List<List<Detail>>.from(
+            json["details"]!.map(
+              (x) => List<Detail>.from(x.map((x) => Detail.fromJson(x))),
+            ),
+          ),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "can_return_order": canReturnOrder,
+    "cart_group_id": cartGroupId,
+    "order_group_id": orderGroupId,
+    "order_status": orderStatus,
+    "order_group_status": orderGroupStatus,
+    "payment_method": paymentMethodValues.reverse[paymentMethod],
+    "payment_status": paymentStatusValues.reverse[paymentStatus],
+    "cod_cost": codCost,
+    "transaction_ref": transactionRef,
+    "order_amount": orderAmount,
+    "delivery_type": typeValues.reverse[deliveryType],
+    "shipping_address": shippingAddress,
+    "shipping_type": typeValues.reverse[shippingType],
+    "discount_amount": discountAmount,
+    "discount_type": discountType,
+    "coupon_code": couponCode,
+    "shipping_cost": shippingCost,
+    "details": details == null
+        ? []
+        : List<dynamic>.from(
+            details!.map((x) => List<dynamic>.from(x.map((x) => x.toJson()))),
+          ),
+  };
+}
+
+enum Type { EXTERNAL_SHIPPING_COMPANY, PRODUCT_WISE }
+
+final typeValues = EnumValues({
+  "external_shipping_company": Type.EXTERNAL_SHIPPING_COMPANY,
+  "product_wise": Type.PRODUCT_WISE,
+});
+
+class Detail {
+  final int? id;
+  final int? orderId;
+  final int? sellerId;
+  final int? productId;
+  final String? productDetails;
+  final String? variant;
+  final String? cartImage;
+  final int? qty;
+  final int? price;
+  final int? weight;
+  final int? shippingCost;
+  final int? isRedeem;
+  final DeliveryStatus? deliveryStatus;
+  final PaymentStatus? paymentStatus;
+
+  Detail({
+    this.id,
+    this.orderId,
+    this.sellerId,
+    this.productId,
+    this.productDetails,
+    this.variant,
+    this.cartImage,
+    this.qty,
+    this.price,
+    this.weight,
+    this.shippingCost,
+    this.isRedeem,
+    this.deliveryStatus,
+    this.paymentStatus,
+  });
+
+  Detail copyWith({
+    int? id,
+    int? orderId,
+    int? sellerId,
+    int? productId,
+    String? productDetails,
+    String? variant,
+    String? cartImage,
+    int? qty,
+    int? price,
+    int? weight,
+    int? shippingCost,
+    int? isRedeem,
+    DeliveryStatus? deliveryStatus,
+    PaymentStatus? paymentStatus,
+  }) => Detail(
+    id: id ?? this.id,
+    orderId: orderId ?? this.orderId,
+    sellerId: sellerId ?? this.sellerId,
+    productId: productId ?? this.productId,
+    productDetails: productDetails ?? this.productDetails,
+    variant: variant ?? this.variant,
+    cartImage: cartImage ?? this.cartImage,
+    qty: qty ?? this.qty,
+    price: price ?? this.price,
+    weight: weight ?? this.weight,
+    shippingCost: shippingCost ?? this.shippingCost,
+    isRedeem: isRedeem ?? this.isRedeem,
+    deliveryStatus: deliveryStatus ?? this.deliveryStatus,
+    paymentStatus: paymentStatus ?? this.paymentStatus,
+  );
+
+  factory Detail.fromJson(Map<String, dynamic> json) => Detail(
+    id: json["id"],
+    orderId: json["order_id"],
+    sellerId: json["seller_id"],
+    productId: json["product_id"],
+    productDetails: json["product_details"],
+    variant: json["variant"],
+    cartImage: json["cart_image"],
+    qty: json["qty"],
+    price: json["price"],
+    weight: json["weight"],
+    shippingCost: json["shipping_cost"],
+    isRedeem: json["is_redeem"],
+    deliveryStatus: deliveryStatusValues.map[json["delivery_status"]]!,
+    paymentStatus: paymentStatusValues.map[json["payment_status"]]!,
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "order_id": orderId,
+    "seller_id": sellerId,
+    "product_id": productId,
+    "product_details": productDetails,
+    "variant": variant,
+    "cart_image": cartImage,
+    "qty": qty,
+    "price": price,
+    "weight": weight,
+    "shipping_cost": shippingCost,
+    "is_redeem": isRedeem,
+    "delivery_status": deliveryStatusValues.reverse[deliveryStatus],
+    "payment_status": paymentStatusValues.reverse[paymentStatus],
+  };
+}
+
+enum DeliveryStatus { PENDING }
+
+final deliveryStatusValues = EnumValues({"pending": DeliveryStatus.PENDING});
+
+enum PaymentStatus { PAID, UNPAID }
+
+final paymentStatusValues = EnumValues({
+  "paid": PaymentStatus.PAID,
+  "unpaid": PaymentStatus.UNPAID,
+});
+
+enum PaymentMethod { CASH_ON_DELIVERY, TRYDOS_WALLET }
+
+final paymentMethodValues = EnumValues({
+  "cash_on_delivery": PaymentMethod.CASH_ON_DELIVERY,
+  "trydos_wallet": PaymentMethod.TRYDOS_WALLET,
+});
+
+class UserAbilities {
+  final List<String>? changeOrderStatus;
+
+  UserAbilities({this.changeOrderStatus});
+
+  UserAbilities copyWith({List<String>? changeOrderStatus}) => UserAbilities(
+    changeOrderStatus: changeOrderStatus ?? this.changeOrderStatus,
+  );
+
+  factory UserAbilities.fromJson(Map<String, dynamic> json) => UserAbilities(
+    changeOrderStatus: json["change_order_status"] == null
+        ? []
+        : List<String>.from(json["change_order_status"]!.map((x) => x)),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "change_order_status": changeOrderStatus == null
+        ? []
+        : List<dynamic>.from(changeOrderStatus!.map((x) => x)),
+  };
+}
+
+class EnumValues<T> {
+  Map<String, T> map;
+  late Map<T, String> reverseMap;
+
+  EnumValues(this.map);
+
+  Map<T, String> get reverse {
+    reverseMap = map.map((k, v) => MapEntry(v, k));
+    return reverseMap;
+  }
+}

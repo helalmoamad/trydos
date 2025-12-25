@@ -55,6 +55,10 @@ abstract class ChatEndPoints {
 
   ///! ----< bugs >----
   static final createBugEP = 'create'.noScope();
+  static String blockUserEP(String receivedUserId) =>
+      'block/${receivedUserId}'.usersScope();
+  static String unBlockUserEP(String receivedUserId) =>
+      'unblock/${receivedUserId}'.usersScope();
 
   ///! ----< channels ( chats )  >----
   ///

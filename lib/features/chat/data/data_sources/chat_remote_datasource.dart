@@ -12,6 +12,7 @@ import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart
 import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
+import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../core/api/client_config.dart';
@@ -95,7 +96,7 @@ class ChatRemoteDataSource {
           serverName: ServerName.chat,
           requestPrams: RequestConfig<MyChatsResponseModel>(
             endpoint: ChatEndPoints.getMyChatsEP,
-            queryParameters: params,
+            data: params,
             response: ResponseValue<MyChatsResponseModel>(
               fromJson: (response) {
                 return MyChatsResponseModel.fromJson(response);
@@ -379,5 +380,26 @@ class ChatRemoteDataSource {
           ),
         );
     return searchForMessageTextInChat();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> blockOrDeleteBlockUser(
+    Map<String, dynamic> params,
+  ) {
+    PostClient<ReadOnlyMessageFromApiModel> blockOrDeleteBlockUser =
+        PostClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            receiveTimeout: const Duration(minutes: 1),
+            sendTimeout: const Duration(minutes: 1),
+            endpoint: params["is_block"]
+                ? ChatEndPoints.blockUserEP(params["user_id"])
+                : ChatEndPoints.unBlockUserEP(params["user_id"]),
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return blockOrDeleteBlockUser();
   }
 }

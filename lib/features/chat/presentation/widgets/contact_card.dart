@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -173,7 +174,7 @@ class ContactCard extends StatelessWidget {
 
   void shareAppLink() {
     final String appLink =
-        'https://trydos-front-git-alaa-dev-trydos-front-team.vercel.app/${(GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso : GetIt.I<PrefsRepository>().countryIso)?.toLowerCase()}-${LanguageService.isKurdish ? "ku" : LanguageService.languageCode}'; // رابط التطبيق الخاص بك
+        '${dotenv.env['WEB_APP']}/${(GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso : GetIt.I<PrefsRepository>().countryIso)?.toLowerCase()}-${LanguageService.isKurdish ? "ku" : LanguageService.languageCode}'; // رابط التطبيق الخاص بك
     Share.share('${LocaleKeys.download_the_app_here.tr()}:$appLink');
   }
 }

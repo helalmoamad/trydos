@@ -87,6 +87,8 @@ import '../../features/chat/data/data_sources/chat_remote_datasource.dart'
 import '../../features/chat/data/repositories/chat_repository_impl.dart'
     as _i504;
 import '../../features/chat/domain/repositories/chat_repository.dart' as _i420;
+import '../../features/chat/domain/use_cases/block_user_id_usecase.dart'
+    as _i900;
 import '../../features/chat/domain/use_cases/change_chat_property_usecase.dart'
     as _i142;
 import '../../features/chat/domain/use_cases/delete_chat_usecase.dart' as _i361;
@@ -129,6 +131,27 @@ import '../../features/chat/domain/use_cases/upload_file_usecase.dart' as _i897;
 import '../../features/chat/presentation/manager/chat_bloc.dart' as _i243;
 import '../../features/chat/presentation/manager/preload_bloc/preloading_videos_bloc.dart'
     as _i243;
+import '../../features/dashBoard/data/data_source/dashBoard_remote_data_source_model.dart'
+    as _i57;
+import '../../features/dashBoard/data/repositories/dashBoard_repository_impl.dart'
+    as _i161;
+import '../../features/dashBoard/domain/repositories/dashBoard_repository.dart'
+    as _i70;
+import '../../features/dashBoard/domain/useCase/add_user_usecase.dart' as _i602;
+import '../../features/dashBoard/domain/useCase/change_order_status_usecase.dart'
+    as _i645;
+import '../../features/dashBoard/domain/useCase/get_boutiques_usecase.dart'
+    as _i412;
+import '../../features/dashBoard/domain/useCase/get_orders_usecase.dart'
+    as _i919;
+import '../../features/dashBoard/domain/useCase/get_products_usecase.dart'
+    as _i51;
+import '../../features/dashBoard/domain/useCase/get_user_permission_usecase.dart.dart'
+    as _i652;
+import '../../features/dashBoard/domain/useCase/get_user_roles_usecase.dart'
+    as _i246;
+import '../../features/dashBoard/presentation/bloc/dashBoard_bloc.dart'
+    as _i976;
 import '../../features/home/data/data_sources/home_remote_data_source.dart'
     as _i350;
 import '../../features/home/data/repositories/home_repository_implementation.dart'
@@ -356,6 +379,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i375.ChatRemoteDataSource>(() => _i375.ChatRemoteDataSource());
   gh.factory<_i243.PreloadingVideosBloc>(() => _i243.PreloadingVideosBloc());
+  gh.factory<_i57.DashBoardRemoteDataSource>(
+    () => _i57.DashBoardRemoteDataSource(),
+  );
   gh.factory<_i350.HomeRemoteDatasource>(() => _i350.HomeRemoteDatasource());
   gh.factory<_i777.StoriesDataSource>(() => _i777.StoriesDataSource());
   gh.singleton<_i974.Logger>(() => appModule.logger);
@@ -478,6 +504,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i282.VerifyOtpSignUpUseCase>(
     () => _i282.VerifyOtpSignUpUseCase(gh<_i742.AuthRepository>()),
+  );
+  gh.lazySingleton<_i70.DashBoardRepository>(
+    () => _i161.DashBoardRepositoryImpl(gh<_i57.DashBoardRemoteDataSource>()),
   );
   gh.factory<_i70.AddCustomerAddressUseCase>(
     () => _i70.AddCustomerAddressUseCase(gh<_i0.HomeRepository>()),
@@ -718,6 +747,39 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i651.UpdateUserPhotoUseCase>(
     () => _i651.UpdateUserPhotoUseCase(gh<_i0.HomeRepository>()),
   );
+  gh.lazySingleton<_i279.OrderBloc>(
+    () => _i279.OrderBloc(
+      gh<_i649.PlaceOrderUsecase>(),
+      gh<_i197.CancelOrderItemUsecase>(),
+      gh<_i811.CancelOrderUsecase>(),
+      gh<_i291.UploadImagesProductReturnUseCase>(),
+      gh<_i636.ChangeOrderAddressUsecase>(),
+      gh<_i1003.GetOrdersByOrderGroupIDUsecase>(),
+      gh<_i59.GetOrdersByCartGroupIDUsecase>(),
+      gh<_i401.GetProvincesByIsoUseCase>(),
+      gh<_i361.GetCustomerWalletUseCase>(),
+      gh<_i241.StoreReturnRequestUseCase>(),
+      gh<_i943.ConfirmReturnRequestUseCase>(),
+      gh<_i926.OrderReturnRequestsViewUseCase>(),
+      gh<_i558.GetOrdersUseCase>(),
+      gh<_i1064.SetCustomerAddressDefaultUseCase>(),
+      gh<_i489.GetCustomerAddressesUseCase>(),
+      gh<_i71.DeleteCustomerAddressUseCase>(),
+      gh<_i70.AddCustomerAddressUseCase>(),
+      gh<_i418.UpdateCustomerAddressUseCase>(),
+      gh<_i970.GetAddressByCoordinatesUsecase>(),
+      gh<_i976.GetAddressByTextUsecase>(),
+      gh<_i493.ApplyCouponUsecase>(),
+      gh<_i716.GetProductColorSizeSyncAttributeUseCase>(),
+      gh<_i607.ChangeOrderItemVariantUsecase>(),
+      gh<_i815.GetReturnReasonsUseCase>(),
+      gh<_i285.StoreReturnRequestProductUseCase>(),
+      gh<_i441.CancelReturnRequestUseCase>(),
+      gh<_i217.CancelReturnRequestProductUseCase>(),
+      gh<_i799.UpdateReturnRequestProductUseCase>(),
+      gh<_i182.OrderReturnDetailsUseCase>(),
+    ),
+  );
   gh.lazySingleton<_i702.CommonUseRepository>(
     () => _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()),
   );
@@ -737,8 +799,32 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i518.GetHomeBoutiqesUseCase>(),
     ),
   );
+  gh.factory<_i602.AddUserUseCase>(
+    () => _i602.AddUserUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i645.ChangeOrderStatusUseCase>(
+    () => _i645.ChangeOrderStatusUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i412.GetBoutiquesUseCase>(
+    () => _i412.GetBoutiquesUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i919.GetOrdersUseCase>(
+    () => _i919.GetOrdersUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i51.GetProductsUseCase>(
+    () => _i51.GetProductsUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i652.GetUserPermissionUseCase>(
+    () => _i652.GetUserPermissionUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i246.GetUserRolesUseCase>(
+    () => _i246.GetUserRolesUseCase(gh<_i70.DashBoardRepository>()),
+  );
   gh.factory<_i589.CreateUserUseCase>(
     () => _i589.CreateUserUseCase(gh<_i420.ChatRepository>()),
+  );
+  gh.factory<_i900.BlockOrDeleteBlockUserUseCase>(
+    () => _i900.BlockOrDeleteBlockUserUseCase(gh<_i420.ChatRepository>()),
   );
   gh.factory<_i142.ChangeChatPropertyUseCase>(
     () => _i142.ChangeChatPropertyUseCase(gh<_i420.ChatRepository>()),
@@ -853,6 +939,17 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i290.GetProductFiltersUseCase>(),
     ),
   );
+  gh.lazySingleton<_i976.DashboardBloc>(
+    () => _i976.DashboardBloc(
+      gh<_i652.GetUserPermissionUseCase>(),
+      gh<_i246.GetUserRolesUseCase>(),
+      gh<_i602.AddUserUseCase>(),
+      gh<_i919.GetOrdersUseCase>(),
+      gh<_i51.GetProductsUseCase>(),
+      gh<_i412.GetBoutiquesUseCase>(),
+      gh<_i645.ChangeOrderStatusUseCase>(),
+    ),
+  );
   gh.lazySingleton<_i903.HomeBloc>(
     () => _i903.HomeBloc(
       gh<_i533.GetStoryForProductUseCase>(),
@@ -904,64 +1001,6 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i1021.GetUserNotificationUseCase>(),
     ),
   );
-  gh.lazySingleton<_i279.OrderBloc>(
-    () => _i279.OrderBloc(
-      gh<_i649.PlaceOrderUsecase>(),
-      gh<_i197.CancelOrderItemUsecase>(),
-      gh<_i811.CancelOrderUsecase>(),
-      gh<_i291.UploadImagesProductReturnUseCase>(),
-      gh<_i636.ChangeOrderAddressUsecase>(),
-      gh<_i1003.GetOrdersByOrderGroupIDUsecase>(),
-      gh<_i59.GetOrdersByCartGroupIDUsecase>(),
-      gh<_i401.GetProvincesByIsoUseCase>(),
-      gh<_i361.GetCustomerWalletUseCase>(),
-      gh<_i241.StoreReturnRequestUseCase>(),
-      gh<_i943.ConfirmReturnRequestUseCase>(),
-      gh<_i926.OrderReturnRequestsViewUseCase>(),
-      gh<_i558.GetOrdersUseCase>(),
-      gh<_i1064.SetCustomerAddressDefaultUseCase>(),
-      gh<_i489.GetCustomerAddressesUseCase>(),
-      gh<_i71.DeleteCustomerAddressUseCase>(),
-      gh<_i70.AddCustomerAddressUseCase>(),
-      gh<_i418.UpdateCustomerAddressUseCase>(),
-      gh<_i970.GetAddressByCoordinatesUsecase>(),
-      gh<_i976.GetAddressByTextUsecase>(),
-      gh<_i493.ApplyCouponUsecase>(),
-      gh<_i716.GetProductColorSizeSyncAttributeUseCase>(),
-      gh<_i607.ChangeOrderItemVariantUsecase>(),
-      gh<_i815.GetReturnReasonsUseCase>(),
-      gh<_i285.StoreReturnRequestProductUseCase>(),
-      gh<_i441.CancelReturnRequestUseCase>(),
-      gh<_i217.CancelReturnRequestProductUseCase>(),
-      gh<_i799.UpdateReturnRequestProductUseCase>(),
-      gh<_i182.OrderReturnDetailsUseCase>(),
-    ),
-  );
-  gh.lazySingleton<_i243.ChatBloc>(
-    () => _i243.ChatBloc(
-      gh<_i418.GetContactsUseCase>(),
-      gh<_i675.GetMyChatsUseCase>(),
-      gh<_i710.ShareProductOnAppsUseCase>(),
-      gh<_i777.SaveContactsUseCase>(),
-      gh<_i703.SendMessageUseCase>(),
-      gh<_i538.GetSharedProductCountUseCase>(),
-      gh<_i912.GetMessagesBetweenUseCase>(),
-      gh<_i1039.GetOrderRecipientIdUseCase>(),
-      gh<_i1043.UploadFileCloudinaryUseCase>(),
-      gh<_i304.GetMessagesForChatUseCase>(),
-      gh<_i361.DeleteChatUseCase>(),
-      gh<_i925.SearchForMessageTextInChatUseCase>(),
-      gh<_i142.ChangeChatPropertyUseCase>(),
-      gh<_i897.UploadFileUseCase>(),
-      gh<_i314.ReadAllMessagesUseCase>(),
-      gh<_i40.ReceiveMessageUseCase>(),
-      gh<_i750.UpdateProfileInChatUseCase>(),
-      gh<_i139.ShareProductWithContactsOrChannelsUsecase>(),
-      gh<_i109.GetMediaCountUseCase>(),
-      gh<_i668.GetDateTimeUseCase>(),
-      gh<_i677.SendErrorToServerUseCase>(),
-    ),
-  );
   gh.lazySingleton<_i536.StoryBloc>(
     () => _i536.StoryBloc(
       gh<_i1043.UploadFileCloudinaryUseCase>(),
@@ -991,6 +1030,32 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i574.VerifyOtpSignInUseCase>(),
       gh<_i644.GetUserCountryUseCase>(),
       gh<_i282.VerifyOtpSignUpUseCase>(),
+    ),
+  );
+  gh.lazySingleton<_i243.ChatBloc>(
+    () => _i243.ChatBloc(
+      gh<_i418.GetContactsUseCase>(),
+      gh<_i675.GetMyChatsUseCase>(),
+      gh<_i710.ShareProductOnAppsUseCase>(),
+      gh<_i777.SaveContactsUseCase>(),
+      gh<_i703.SendMessageUseCase>(),
+      gh<_i538.GetSharedProductCountUseCase>(),
+      gh<_i912.GetMessagesBetweenUseCase>(),
+      gh<_i1039.GetOrderRecipientIdUseCase>(),
+      gh<_i1043.UploadFileCloudinaryUseCase>(),
+      gh<_i304.GetMessagesForChatUseCase>(),
+      gh<_i361.DeleteChatUseCase>(),
+      gh<_i925.SearchForMessageTextInChatUseCase>(),
+      gh<_i142.ChangeChatPropertyUseCase>(),
+      gh<_i897.UploadFileUseCase>(),
+      gh<_i314.ReadAllMessagesUseCase>(),
+      gh<_i40.ReceiveMessageUseCase>(),
+      gh<_i750.UpdateProfileInChatUseCase>(),
+      gh<_i139.ShareProductWithContactsOrChannelsUsecase>(),
+      gh<_i109.GetMediaCountUseCase>(),
+      gh<_i668.GetDateTimeUseCase>(),
+      gh<_i900.BlockOrDeleteBlockUserUseCase>(),
+      gh<_i677.SendErrorToServerUseCase>(),
     ),
   );
   return getIt;

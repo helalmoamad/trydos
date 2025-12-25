@@ -224,8 +224,12 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                   TextField(
                     controller: _commentController,
                     maxLines: 3,
+                    maxLength: 200,
                     decoration: InputDecoration(
                       hintText: LocaleKeys.write_your_comment_here.tr(),
+                      counterText:
+                          "", // Hide the default counter if you want, but the requirement is just max limit.
+                      // Actually, let's keep the counter or just set the limit.
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Colors.grey[300]!),

@@ -29,6 +29,7 @@ import 'package:trydos/features/authentication/presentation/manager/auth_bloc.da
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/dashBoard/presentation/pages/select_shop_page.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 
@@ -107,9 +108,19 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       ),
                     ),
                     SizedBox(height: 12.h, width: 1.sw),
-                    _actionWidget(
-                      AppAssets.settingSvg,
-                      LocaleKeys.settings.tr(),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SelectShopPage(),
+                          ),
+                        );
+                      },
+                      child: _actionWidget(
+                        AppAssets.settingSvg,
+                        LocaleKeys.settings.tr(),
+                      ),
                     ),
                     SizedBox(height: 12.h, width: 1.sw),
                     _actionWidget(

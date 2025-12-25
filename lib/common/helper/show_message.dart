@@ -28,7 +28,7 @@ showMessage(
   Toast timeShowing = Toast.LENGTH_LONG,
   BuildContext? context,
 }) {
-  if (kDebugMode || showInRelease) {
+  if (kDebugMode || showInRelease || hasError) {
     final currentContext = context ?? navigatorKey.currentState?.context;
 
     if (currentContext != null) {
@@ -43,33 +43,43 @@ showMessage(
         try {
           _showCustomToast(currentContext, message, isSuccess: !hasError);
         } catch (e2) {
-          Fluttertoast.cancel().then((value) => Fluttertoast.showToast(
-                msg: message,
-                backgroundColor: hasError ? Colors.red : Colors.green,
-                textColor: Colors.white,
-                fontSize: 16,
-                toastLength: timeShowing,
-                gravity: ToastGravity.TOP,
-              ));
+          Fluttertoast.cancel().then(
+            (value) => Fluttertoast.showToast(
+              msg: message,
+              backgroundColor: hasError ? Colors.red : Colors.green,
+              textColor: Colors.white,
+              fontSize: 16,
+              toastLength: timeShowing,
+              gravity: ToastGravity.TOP,
+            ),
+          );
         }
       }
     } else {
-      Fluttertoast.cancel().then((value) => Fluttertoast.showToast(
-            msg: message,
-            backgroundColor: hasError ? Colors.red : Colors.green,
-            textColor: Colors.white,
-            fontSize: 16,
-            toastLength: timeShowing,
-            gravity: ToastGravity.TOP,
-          ));
+      Fluttertoast.cancel().then(
+        (value) => Fluttertoast.showToast(
+          msg: message,
+          backgroundColor: hasError ? Colors.red : Colors.green,
+          textColor: Colors.white,
+          fontSize: 16,
+          toastLength: timeShowing,
+          gravity: ToastGravity.TOP,
+        ),
+      );
     }
   }
 }
 
-showSuccessMessage(BuildContext context, String message,
-    {String? actionText, VoidCallback? onActionPressed}) {
+showSuccessMessage(
+  BuildContext context,
+  String message, {
+  String? actionText,
+  VoidCallback? onActionPressed,
+}) {
   // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
-  OverlayState? overlayState = Overlay.of(context);
+  OverlayState? overlayState =
+      Overlay.maybeOf(context) ?? navigatorKey.currentState?.overlay;
+  if (overlayState == null) return;
 
   late OverlayEntry overlayEntry;
 
@@ -92,12 +102,16 @@ showSuccessMessage(BuildContext context, String message,
 }
 
 Widget _buildSuccessWidget(
-    BuildContext context, String message, VoidCallback onClose) {
+  BuildContext context,
+  String message,
+  VoidCallback onClose,
+) {
   return Align(
     alignment: Alignment.topCenter,
     child: Padding(
       padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top +
+        top:
+            MediaQuery.of(context).padding.top +
             10, // إضافة padding للـ status bar
         left: 16,
         right: 16,
@@ -182,10 +196,16 @@ Widget _buildSuccessWidget(
   );
 }
 
-showErrorMessage(BuildContext context, String message,
-    {String? actionText, VoidCallback? onActionPressed}) {
+showErrorMessage(
+  BuildContext context,
+  String message, {
+  String? actionText,
+  VoidCallback? onActionPressed,
+}) {
   // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
-  OverlayState? overlayState = Overlay.of(context);
+  OverlayState? overlayState =
+      Overlay.maybeOf(context) ?? navigatorKey.currentState?.overlay;
+  if (overlayState == null) return;
 
   late OverlayEntry overlayEntry;
 
@@ -208,12 +228,16 @@ showErrorMessage(BuildContext context, String message,
 }
 
 Widget _buildErrorWidget(
-    BuildContext context, String message, VoidCallback onClose) {
+  BuildContext context,
+  String message,
+  VoidCallback onClose,
+) {
   return Align(
     alignment: Alignment.topCenter,
     child: Padding(
       padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top +
+        top:
+            MediaQuery.of(context).padding.top +
             10, // إضافة padding للـ status bar
         left: 16,
         right: 16,
@@ -298,10 +322,16 @@ Widget _buildErrorWidget(
   );
 }
 
-showWarningMessage(BuildContext context, String message,
-    {String? actionText, VoidCallback? onActionPressed}) {
+showWarningMessage(
+  BuildContext context,
+  String message, {
+  String? actionText,
+  VoidCallback? onActionPressed,
+}) {
   // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
-  OverlayState? overlayState = Overlay.of(context);
+  OverlayState? overlayState =
+      Overlay.maybeOf(context) ?? navigatorKey.currentState?.overlay;
+  if (overlayState == null) return;
 
   late OverlayEntry overlayEntry;
 
@@ -324,12 +354,16 @@ showWarningMessage(BuildContext context, String message,
 }
 
 Widget _buildWarningWidget(
-    BuildContext context, String message, VoidCallback onClose) {
+  BuildContext context,
+  String message,
+  VoidCallback onClose,
+) {
   return Align(
     alignment: Alignment.topCenter,
     child: Padding(
       padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top +
+        top:
+            MediaQuery.of(context).padding.top +
             10, // إضافة padding للـ status bar
         left: 16,
         right: 16,
@@ -414,38 +448,27 @@ Widget _buildWarningWidget(
   );
 }
 
-void _showCustomToast(BuildContext context, String message,
-    {bool isSuccess = true}) {
+void _showCustomToast(
+  BuildContext context,
+  String message, {
+  bool isSuccess = true,
+}) {
   OverlayState? overlayState;
   BuildContext? workingContext = context;
 
-  try {
-    overlayState = Overlay.of(context);
-  } catch (e) {
-    try {
-      overlayState = Overlay.of(context, rootOverlay: true);
-    } catch (e2) {
-      try {
-        if (navigatorKey.currentState?.context != null) {
-          workingContext = navigatorKey.currentState!.context;
-          overlayState = Overlay.of(workingContext);
-        }
-      } catch (e3) {
-        try {
-          if (navigatorKey.currentState?.context != null) {
-            workingContext = navigatorKey.currentState!.context;
-            overlayState = Overlay.of(workingContext, rootOverlay: true);
-          }
-        } catch (e4) {
-          _showDialogToast(workingContext ?? context, message, isSuccess);
-          return;
-        }
-      }
-    }
+  // المحاولة الأولى: الحصول على Overlay من الـ context الحالي
+  overlayState =
+      Overlay.maybeOf(context) ?? Overlay.maybeOf(context, rootOverlay: true);
+
+  // المحاولة الثانية: استخدام navigatorKey إذا فشلت الأولى
+  if (overlayState == null && navigatorKey.currentState != null) {
+    workingContext = navigatorKey.currentState!.context;
+    overlayState =
+        Overlay.maybeOf(workingContext) ?? navigatorKey.currentState!.overlay;
   }
 
   if (overlayState == null) {
-    _showDialogToast(workingContext ?? context, message, isSuccess);
+    _showDialogToast(workingContext, message, isSuccess);
     return;
   }
 
@@ -456,7 +479,8 @@ void _showCustomToast(BuildContext context, String message,
       alignment: Alignment.topCenter,
       child: Padding(
         padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top +
+          top:
+              MediaQuery.of(context).padding.top +
               10, // إضافة padding للـ status bar
           left: 16,
           right: 16,
@@ -475,9 +499,10 @@ void _showCustomToast(BuildContext context, String message,
                       : const Color(0xFFFFEDE2),
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
-                      color: isSuccess
-                          ? const Color(0xFF2CDD92)
-                          : const Color(0xFF402CDD)),
+                    color: isSuccess
+                        ? const Color(0xFF2CDD92)
+                        : const Color(0xFF402CDD),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       // ignore: deprecated_member_use
@@ -574,7 +599,8 @@ void _showDialogToast(BuildContext context, String message, bool isSuccess) {
         alignment: Alignment.topCenter,
         child: Padding(
           padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top +
+            top:
+                MediaQuery.of(context).padding.top +
                 10, // إضافة padding للـ status bar
             left: 16,
             right: 16,
@@ -593,9 +619,10 @@ void _showDialogToast(BuildContext context, String message, bool isSuccess) {
                         : const Color(0xFFFFEDE2),
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
-                        color: isSuccess
-                            ? const Color(0xFF2CDD92)
-                            : const Color(0xFF402CDD)),
+                      color: isSuccess
+                          ? const Color(0xFF2CDD92)
+                          : const Color(0xFF402CDD),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         // ignore: deprecated_member_use
@@ -676,37 +703,37 @@ void _showDialogToast(BuildContext context, String message, bool isSuccess) {
 
 Future<void> callInProgressDialog(BuildContext context) async {
   await showDialog<String>(
-      context: context,
-      // ignore: deprecated_member_use
-      barrierColor: Colors.white.withOpacity(0),
-      barrierDismissible: false,
-      builder: (BuildContext context) => BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-            child: IntrinsicHeight(
-              child: AlertDialog(
-                backgroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(18.0))),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const MyTextWidget(
-                      'The call is being set up...',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    TrydosLoader()
-                  ],
+    context: context,
+    // ignore: deprecated_member_use
+    barrierColor: Colors.white.withOpacity(0),
+    barrierDismissible: false,
+    builder: (BuildContext context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+      child: IntrinsicHeight(
+        child: AlertDialog(
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(18.0)),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const MyTextWidget(
+                'The call is being set up...',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  letterSpacing: 0.5,
                 ),
               ),
-            ),
-          ));
+              const SizedBox(height: 15),
+              TrydosLoader(),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }

@@ -960,7 +960,10 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
           final exchangeRate =
               state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ??
               1;
-          double redeemPrice = widget.productItem.redeemPrice ?? 0;
+          double redeemPrice = HelperFunctions.truncateToDecimalPlaces(
+            widget.productItem.redeemPrice ?? 0,
+            state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!,
+          );
           bool isRedeem =
               (GetIt.I<PrefsRepository>()
                           .getRedeemDateForProduct(

@@ -114,7 +114,7 @@ class Products {
   final List<String>? labelNames;
   final String? flashDealEndDate;
   final int? collectedAfterOrdering;
-  final int? flashDealStatus;
+  final String? flashDealStatus;
   final double? flashDealDiscount;
   final double? flashDealPrice;
   final Brand? brand;
@@ -304,7 +304,7 @@ class Products {
     String? slugEnTopic,
     List<Variation>? variation,
     List<ChoiceOption>? choiceOptions,
-    int? flashDealStatus,
+    String? flashDealStatus,
     double? flashDealDiscount,
     double? flashDealPrice,
     bool? hasDiscount,
@@ -470,7 +470,7 @@ class Products {
       // thumbnail: json["thumbnail"] == null
       //    ? null
       //     : Thumbnail.fromJson(json["thumbnail"]),
-      flashDealStatus: json["flash_deal_status"],
+      flashDealStatus: json["flash_deal_status"].toString(),
       flashDealDiscount: json["flash_deal_discount"]?.toDouble(),
       flashDealPrice: double.tryParse(
         (json["flash_deal_price"] ?? 0).toString(),

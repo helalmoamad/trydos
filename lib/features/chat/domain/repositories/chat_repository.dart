@@ -6,6 +6,7 @@ import 'package:trydos/features/chat/data/models/get_order_recipient_id_model.da
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
+import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../data/models/ImageDetail.dart';
@@ -46,6 +47,9 @@ abstract class ChatRepository {
   Future<Either<Failure, bool>> readAllMessages(Map<String, dynamic> params);
   Future<Either<Failure, bool>> receiveMessage(Map<String, dynamic> params);
   Future<Either<Failure, bool>> deleteChat(Map<String, dynamic> params);
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> blockOrDeleteBlockUser(
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, MyContactsResponseModel>> getContacts();
   Future<Either<Failure, MyChatsResponseModel>> getChats(
     Map<String, dynamic> params,

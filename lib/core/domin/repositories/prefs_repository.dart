@@ -17,6 +17,7 @@ abstract class PrefsRepository {
   int? get userCountryIsAvailable;
 
   String? get myMarketId;
+  String? get getXSellerId;
   bool? get isLogInToChat;
 
   List<Message>? get getTheMessageFromBackground;
@@ -70,7 +71,7 @@ abstract class PrefsRepository {
   Future<bool> setPrefechOfMainCategoryInHomePage(String value);
   Future<bool> removeMainCategoryWhenOpenApp();
   Future<bool> setNotificationIdsToRemoveAfterplaceOrder(String id);
-
+  Future<bool> setXSellerId(String id);
   String? getPrefechOfBoutiquesForEachMainCategoryInHomePage(String key);
   Future<bool> setPrefechOfBoutiquesForEachMainCategoryInHomePage(
     String key,
@@ -250,4 +251,6 @@ abstract class PrefsRepository {
   Future<bool> setOrderCoupon(String coupon);
   String getOrderCoupon();
   Future<bool> removeOrderCoupon();
+  bool get isCallkitPermissionRequested;
+  Future<bool> setCallkitPermissionRequested(bool value);
 }

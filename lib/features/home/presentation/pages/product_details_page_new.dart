@@ -2663,6 +2663,10 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                               .toString()]
                                           ?.product
                                           ?.offerPriceFormatted,
+                                variation: state
+                                    .authProductDetailsModel
+                                    ?.data
+                                    ?.variation,
                               ),
                               currentColor: currentSelectedColor,
                               maxAllowedToAddCart:
@@ -2869,11 +2873,28 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
               });
             }
             int qtyItemsInCart = state.cartCollection?.length ?? 0;
-            double totlalPrice =
-                ((state.getCartShippingItemsModel?.data?.total ?? 0) -
-                    (state.getCartShippingItemsModel?.data?.totalShippingCost ??
-                        0)) *
-                state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
+            double totlalPrice = 0;
+            state.cartCollection?.forEach(
+              (element) => totlalPrice +=
+                  ((HelperFunctions.truncateToDecimalPlaces(
+                    element.offerPrice ?? 0,
+                    state
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .decimalDigits ??
+                        2,
+                  )) *
+                  (element.quantity ?? 1)),
+            );
+
+            totlalPrice =
+                (totlalPrice *
+                state
+                    .getCurrencyForCountryModel!
+                    .data!
+                    .currency!
+                    .exchangeRate!);
             String priceSymbol =
                 state.getCurrencyForCountryModel!.data!.currency!.symbol ?? "";
             (productItem?.syncColorImages?.length ?? 0) ~/ 2;
@@ -3298,9 +3319,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   }
 
   Widget buyerReview(
-    int numLargePercent,
-    int numSmallPercent,
-    int numTruePercent,
+    double numLargePercent,
+    double numSmallPercent,
+    double numTruePercent,
   ) {
     return Container(
       width: 1.sw,
@@ -3335,7 +3356,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
     );
   }
 
-  Widget _buyerReviewSingle(String text, int numOfPercent) {
+  Widget _buyerReviewSingle(String text, double numOfPercent) {
     return SizedBox(
       width: 120.w,
       height: 25,

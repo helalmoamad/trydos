@@ -116,6 +116,57 @@ class _SinglePageChatState extends State<SinglePageChat> {
   int? previousMessageSenderId, currentMessageSenderId;
   List<Widget> data = [];
   Map<String, List<Message>> messagesByDate = {};
+  List<Message> removeDuplicateMessages(List<Message> messages) {
+    if (messages.isEmpty) return messages;
+    // Map لتتبع آخر ظهور لكل id و localId
+    Map<String, int> lastOccurrenceById = {};
+    Map<String, int> lastOccurrenceByLocalId = {};
+    Set<int> indicesToKeep = {};
+    // نمر على الرسائل من الأخير للأول لنحدد آخر ظهور لكل id و localId
+    for (int i = messages.length - 1; i >= 0; i--) {
+      Message message = messages[i];
+      // رسائل التاريخ نحتفظ بها دائماً
+      if (message.isDateMessage == true) {
+        indicesToKeep.add(i);
+        continue;
+      }
+      String? messageId = message.id;
+      String? messageLocalId = message.localId;
+
+      bool isDuplicate = false;
+      // فحص التكرار حسب id
+      if (messageId != null && messageId.isNotEmpty && messageId != "null") {
+        if (lastOccurrenceById.containsKey(messageId)) {
+          isDuplicate = true; // مكررة حسب id
+        } else {
+          lastOccurrenceById[messageId] = i;
+        }
+      }
+      // فحص التكرار حسب localId
+      if (messageLocalId != null &&
+          messageLocalId.isNotEmpty &&
+          messageLocalId != "null") {
+        if (lastOccurrenceByLocalId.containsKey(messageLocalId)) {
+          isDuplicate = true; // مكررة حسب localId
+        } else {
+          lastOccurrenceByLocalId[messageLocalId] = i;
+        }
+      }
+      // إذا لم تكن مكررة، نحتفظ بها
+      if (!isDuplicate) {
+        indicesToKeep.add(i);
+      }
+    }
+    // نبني القائمة الجديدة بالترتيب الأصلي
+    List<Message> result = [];
+    for (int i = 0; i < messages.length; i++) {
+      if (indicesToKeep.contains(i)) {
+        result.add(messages[i]);
+      }
+    }
+    return result;
+  }
+
   bool rebuild = true;
   bool rebuildForScrollWhenGetAllMessage = false;
   bool rebuildForScrollFirstWord = true;
@@ -265,6 +316,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           lastPage: "Single_Page_Chat",
         ),
       );
+
       print("asfsd${details.toString()}");
       GetIt.I<PrefsRepository>().saveRequestsData(
         null,
@@ -653,149 +705,137 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           ],
                         ),
                       ),
-                      widget.fromOrder == "true"
+                      /* widget.fromOrder == "true"
                           ? const SizedBox.shrink()
-                          : BlocBuilder<CallsBloc, CallsState>(
-                              builder: (context, state) => InkWell(
-                                onTap: () async {
-                                  List<Map<String, dynamic>> info = callerInfo(
-                                    channelId: widget.chatId,
-                                  );
-                                  PermissionStatus microphone = await Permission
-                                      .microphone
-                                      .request();
-                                  var status2 = await Permission.mediaLibrary
-                                      .request();
-                                  PermissionStatus camera = await Permission
-                                      .camera
-                                      .request();
-                                  if (microphone.isGranted &&
-                                      status2.isGranted &&
-                                      camera.isGranted) {
-                                    if (info[0].containsKey(
-                                      'currentReceiver',
-                                    )) {
-                                      GetIt.I<CallsBloc>().add(
-                                        MakeCallEvent(
-                                          receiverUserId:
-                                              info[0]['currentReceiver']
-                                                  .toString(),
-                                          receiverCallName:
-                                              widget.fullReceiverName,
-                                          chatId: info[1]['channelId'],
-                                          isVideo: true,
-                                          payload: info[1],
-                                        ),
-                                      );
-                                    } else {
-                                      GetIt.I<CallsBloc>().add(
-                                        MakeCallEvent(
-                                          isVideo: true,
-                                          receiverCallName:
-                                              widget.fullReceiverName,
-                                          chatId: info[0]['channelId'],
-                                          payload: info[0],
-                                        ),
-                                      );
-                                      //todo we have the id of the chat so we can move to the call immediately
-                                    }
-                                  } else if (microphone.isDenied ||
-                                      status2.isDenied ||
-                                      camera.isDenied) {
-                                    showWarningMessage(
-                                      context,
-                                      LocaleKeys.permission_denied.tr(),
-                                    );
-                                    openAppSettings();
-                                  }
-                                },
-                                child: SvgPicture.asset(
-                                  AppAssets.makeVideoCallSvg,
-                                  width: 34.w,
-                                  height: 25,
-                                ),
-                              ),
-                            ),
+                          :*/
+                      BlocBuilder<CallsBloc, CallsState>(
+                        builder: (context, state) => InkWell(
+                          onTap: () async {
+                            List<Map<String, dynamic>> info = callerInfo(
+                              channelId: widget.chatId,
+                            );
+                            PermissionStatus microphone = await Permission
+                                .microphone
+                                .request();
+                            var status2 = await Permission.mediaLibrary
+                                .request();
+                            PermissionStatus camera = await Permission.camera
+                                .request();
+                            if (microphone.isGranted &&
+                                status2.isGranted &&
+                                camera.isGranted) {
+                              if (info[0].containsKey('currentReceiver')) {
+                                GetIt.I<CallsBloc>().add(
+                                  MakeCallEvent(
+                                    receiverUserId: info[0]['currentReceiver']
+                                        .toString(),
+                                    receiverCallName: widget.fullReceiverName,
+                                    chatId: info[1]['channelId'],
+                                    isVideo: true,
+                                    payload: info[1],
+                                  ),
+                                );
+                              } else {
+                                GetIt.I<CallsBloc>().add(
+                                  MakeCallEvent(
+                                    isVideo: true,
+                                    receiverCallName: widget.fullReceiverName,
+                                    chatId: info[0]['channelId'],
+                                    payload: info[0],
+                                  ),
+                                );
+                                //todo we have the id of the chat so we can move to the call immediately
+                              }
+                            } else if (microphone.isDenied ||
+                                status2.isDenied ||
+                                camera.isDenied) {
+                              showWarningMessage(
+                                context,
+                                LocaleKeys.permission_denied.tr(),
+                              );
+                              openAppSettings();
+                            }
+                          },
+                          child: SvgPicture.asset(
+                            AppAssets.makeVideoCallSvg,
+                            width: 34.w,
+                            height: 25,
+                          ),
+                        ),
+                      ),
                       30.horizontalSpace,
                       // todo CreateCallPage
-                      widget.fromOrder == "true"
+                      /* widget.fromOrder == "true"
                           ? const SizedBox.shrink()
-                          : InkWell(
-                              onTap: () async {
-                                try {
-                                  List<Map<String, dynamic>> info = callerInfo(
-                                    channelId: widget.chatId,
-                                  );
-                                  PermissionStatus microphone = await Permission
-                                      .microphone
-                                      .request();
-                                  var status2 = await Permission.mediaLibrary
-                                      .request();
-                                  if (microphone.isGranted &&
-                                      status2.isGranted) {
-                                    //todo we have the receiver id so the chat dose not exist
-                                    if (info[0].containsKey(
-                                      'currentReceiver',
-                                    )) {
-                                      debugPrint(
-                                        'currentReceiver${info[0]['currentReceiver']}',
-                                      );
+                          : */
+                      InkWell(
+                        onTap: () async {
+                          try {
+                            List<Map<String, dynamic>> info = callerInfo(
+                              channelId: widget.chatId,
+                            );
+                            PermissionStatus microphone = await Permission
+                                .microphone
+                                .request();
+                            var status2 = await Permission.mediaLibrary
+                                .request();
+                            if (microphone.isGranted && status2.isGranted) {
+                              //todo we have the receiver id so the chat dose not exist
+                              if (info[0].containsKey('currentReceiver')) {
+                                debugPrint(
+                                  'currentReceiver${info[0]['currentReceiver']}',
+                                );
 
-                                      GetIt.I<CallsBloc>().add(
-                                        MakeCallEvent(
-                                          receiverUserId:
-                                              info[0]['currentReceiver']
-                                                  .toString(),
-                                          receiverCallName:
-                                              widget.fullReceiverName,
-                                          chatId: info[1]['channelId'],
-                                          isVideo: false,
-                                          payload: info[1],
-                                        ),
-                                      );
+                                GetIt.I<CallsBloc>().add(
+                                  MakeCallEvent(
+                                    receiverUserId: info[0]['currentReceiver']
+                                        .toString(),
+                                    receiverCallName: widget.fullReceiverName,
+                                    chatId: info[1]['channelId'],
+                                    isVideo: false,
+                                    payload: info[1],
+                                  ),
+                                );
 
-                                      // GetIt.I<CallsBloc>().add(VideoCallEvent(
-                                      //     receiverUserId: info[0]['currentReceiver'],
-                                      //     payload: info[1]));
-                                      //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
-                                    }
-                                    //todo else the chat already exist so we don't have the receiver id just the chat id
-                                    else {
-                                      debugPrint(
-                                        'widget.chatId${widget.chatId}',
-                                      );
-                                      debugPrint('info[0]${info[0]}');
+                                // GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                //     receiverUserId: info[0]['currentReceiver'],
+                                //     payload: info[1]));
+                                //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+                              }
+                              //todo else the chat already exist so we don't have the receiver id just the chat id
+                              else {
+                                debugPrint('widget.chatId${widget.chatId}');
+                                debugPrint('info[0]${info[0]}');
 
-                                      GetIt.I<CallsBloc>().add(
-                                        MakeCallEvent(
-                                          isVideo: false,
-                                          receiverCallName:
-                                              widget.fullReceiverName,
-                                          chatId: info[0]['channelId'],
-                                          payload: info[0],
-                                        ),
-                                      );
-                                      //todo we have the id of the chat so we can move to the call immediately
-                                    }
-                                  } else if (microphone.isDenied ||
-                                      status2.isDenied) {
-                                    showWarningMessage(
-                                      context,
-                                      LocaleKeys.permission_denied.tr(),
-                                    );
-                                    openAppSettings();
-                                  }
-                                } catch (e, st) {
-                                  print(e);
-                                  print(st);
-                                }
-                              },
-                              child: SvgPicture.asset(
-                                AppAssets.makeCallSvg,
-                                width: 25.w,
-                                height: 25,
-                              ),
-                            ),
+                                GetIt.I<CallsBloc>().add(
+                                  MakeCallEvent(
+                                    isVideo: false,
+                                    receiverCallName: widget.fullReceiverName,
+                                    chatId: info[0]['channelId'],
+                                    payload: info[0],
+                                  ),
+                                );
+                                //todo we have the id of the chat so we can move to the call immediately
+                              }
+                            } else if (microphone.isDenied ||
+                                status2.isDenied) {
+                              showWarningMessage(
+                                context,
+                                LocaleKeys.permission_denied.tr(),
+                              );
+                              openAppSettings();
+                            }
+                          } catch (e, st) {
+                            print(e);
+                            print(st);
+                          }
+                        },
+                        child: SvgPicture.asset(
+                          AppAssets.makeCallSvg,
+                          width: 25.w,
+                          height: 25,
+                        ),
+                      ),
                       20.horizontalSpace,
                     ],
                   ),
@@ -1004,6 +1044,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           c.receiveMessageStatus ==
                               ReceiveMessageStatus.success),
                   listener: (context, state) {
+                    print(
+                      "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE#",
+                    );
                     if (state.sendMessageStatus == SendMessageStatus.loading ||
                         state.receiveMessageStatus ==
                             ReceiveMessageStatus.success) {
@@ -1068,11 +1111,18 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         reverse: true,
                                         controller: autoScrollController,
                                         itemBuilder: (context, index) {
-                                          List<Message> messages = chatState
-                                              .newSortedChatsByDate![chat.id
-                                                  .toString()]!
-                                              .reversed
-                                              .toList();
+                                          List<Message> messages =
+                                              removeDuplicateMessages(
+                                                chatState
+                                                    .newSortedChatsByDate![chat
+                                                        .id
+                                                        .toString()]!
+                                                    .reversed
+                                                    .toList(),
+                                              );
+                                          print(
+                                            "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE${messages[1].id}#${messages[0].id}",
+                                          );
 
                                           if (messages[index].isDateMessage!) {
                                             return AutoScrollTag(
@@ -2097,10 +2147,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                             chatState.newSortedChatsByDate![chat
                                                     .id] !=
                                                 null
-                                            ? chatState
-                                                  .newSortedChatsByDate![chat
-                                                      .id]!
-                                                  .length
+                                            ? removeDuplicateMessages(
+                                                chatState
+                                                    .newSortedChatsByDate![chat
+                                                        .id
+                                                        .toString()]!
+                                                    .reversed
+                                                    .toList(),
+                                              ).length
                                             : 0,
                                       ),
                                     ),
@@ -2119,91 +2173,134 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 buildWhen: (p, c) => p.thereIsReply != c.thereIsReply,
                 builder: (context, state) {
                   //                flutterToast.s
-                  return ChatInputField(
-                    channelId: chat.id ?? "",
-                    senderName: widget.senderName,
-                    senderUserImage: widget.senderPhoto,
-                    onSendFile: (File file, String customPathType) {
-                      String id = const Uuid().v4();
-                      FileSaving().saveFileToSpecificDirectory(file);
-                      ChannelMember? member = !chat.channelMembers.isNullOrEmpty
-                          ? chat.channelMembers!.firstWhere(
-                              (element) =>
-                                  element.userId != _prefsRepository.myChatId,
+                  return BlocBuilder<ChatBloc, ChatState>(
+                    buildWhen: (p, c) =>
+                        p.blockOrDeleteBlockUserStatus !=
+                        c.blockOrDeleteBlockUserStatus,
+                    builder: (context, chatState) {
+                      //                flutterToast.s
+                      return (chatState.chats
+                                  .firstWhere(
+                                    (element) => element.id == widget.chatId,
+                                    orElse: () =>
+                                        chatState.pinnedChats.firstWhere(
+                                          (element) =>
+                                              element.id == widget.chatId,
+                                        ),
+                                  )
+                                  .channelMembers
+                                  ?.any((element) => element.isBlocked == 1) ??
+                              false)
+                          ? Container(
+                              alignment: Alignment.center,
+                              color: const Color.fromARGB(255, 236, 227, 227),
+                              width: 1.sw,
+                              height: 40,
+                              child: Text(
+                                LocaleKeys
+                                    .You_cannot_send_messages_or_calls_to_this_user.tr(),
+                                style: context.textTheme.bodyLarge!.copyWith(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                ),
+                              ),
                             )
-                          : null;
-                      String mimeStr = lookupMimeType(file.absolute.path) ?? '';
-                      bool isMediaFile = mimeStr.split('/')[0] != 'application';
+                          : ChatInputField(
+                              channelId: chat.id ?? "",
+                              senderName: widget.senderName,
+                              senderUserImage: widget.senderPhoto,
+                              onSendFile: (File file, String customPathType) {
+                                String id = const Uuid().v4();
+                                FileSaving().saveFileToSpecificDirectory(file);
+                                ChannelMember? member =
+                                    !chat.channelMembers.isNullOrEmpty
+                                    ? chat.channelMembers!.firstWhere(
+                                        (element) =>
+                                            element.userId !=
+                                            _prefsRepository.myChatId,
+                                      )
+                                    : null;
+                                String mimeStr =
+                                    lookupMimeType(file.absolute.path) ?? '';
+                                bool isMediaFile =
+                                    mimeStr.split('/')[0] != 'application';
 
-                      chatBloc.add(
-                        UploadFileEvent(
-                          file: file,
-                          channelId: chat.id.toString(),
-                          filePath: customPathType == 'image'
-                              ? 'images/test'
-                              : customPathType == 'file'
-                              ? 'files/test'
-                              : customPathType == 'video'
-                              ? 'videos/test'
-                              : 'voices/test',
-                          useCloudinaryToUpload: isMediaFile,
-                          fileName: file.path,
-                          messageType: customPathType == 'image'
-                              ? 'ImageMessage'
-                              : customPathType == 'file'
-                              ? 'FileMessage'
-                              : customPathType == 'video'
-                              ? 'VideoMessage'
-                              : 'VoiceMessage',
-                          isForward: false,
-                          senderParentMessageId: state.senderParentMessageId,
-                          parentMessageId: state.thereIsReply
-                              ? state.messageId
-                              : null,
-                          messageId: id,
-                          parentMessageContent: customPathType == 'image'
-                              ? LocaleKeys.photo.tr()
-                              : customPathType == 'file'
-                              ? LocaleKeys.file.tr()
-                              : customPathType == 'video'
-                              ? LocaleKeys.vvideo.tr()
-                              : LocaleKeys.voice.tr(),
-                          receiverUserId: member?.userId,
-                        ),
-                      );
-                      BlocProvider.of<AppBloc>(
-                        context,
-                      ).add(RefreshChatInputField(false, '', false));
-                    },
-                    onSendMessage: (String message) {
-                      String id = const Uuid().v4();
-                      ChannelMember? member = !chat.channelMembers.isNullOrEmpty
-                          ? chat.channelMembers?.firstWhere(
-                              (element) =>
-                                  element.userId != _prefsRepository.myChatId,
-                            )
-                          : null;
+                                chatBloc.add(
+                                  UploadFileEvent(
+                                    file: file,
+                                    channelId: chat.id.toString(),
+                                    filePath: customPathType == 'image'
+                                        ? 'images/test'
+                                        : customPathType == 'file'
+                                        ? 'files/test'
+                                        : customPathType == 'video'
+                                        ? 'videos/test'
+                                        : 'voices/test',
+                                    useCloudinaryToUpload: isMediaFile,
+                                    fileName: file.path,
+                                    messageType: customPathType == 'image'
+                                        ? 'ImageMessage'
+                                        : customPathType == 'file'
+                                        ? 'FileMessage'
+                                        : customPathType == 'video'
+                                        ? 'VideoMessage'
+                                        : 'VoiceMessage',
+                                    isForward: false,
+                                    senderParentMessageId:
+                                        state.senderParentMessageId,
+                                    parentMessageId: state.thereIsReply
+                                        ? state.messageId
+                                        : null,
+                                    messageId: id,
+                                    parentMessageContent:
+                                        customPathType == 'image'
+                                        ? LocaleKeys.photo.tr()
+                                        : customPathType == 'file'
+                                        ? LocaleKeys.file.tr()
+                                        : customPathType == 'video'
+                                        ? LocaleKeys.vvideo.tr()
+                                        : LocaleKeys.voice.tr(),
+                                    receiverUserId: member?.userId,
+                                  ),
+                                );
+                                BlocProvider.of<AppBloc>(
+                                  context,
+                                ).add(RefreshChatInputField(false, '', false));
+                              },
+                              onSendMessage: (String message) {
+                                String id = const Uuid().v4();
+                                ChannelMember? member =
+                                    !chat.channelMembers.isNullOrEmpty
+                                    ? chat.channelMembers?.firstWhere(
+                                        (element) =>
+                                            element.userId !=
+                                            _prefsRepository.myChatId,
+                                      )
+                                    : null;
 
-                      debugPrint('there : ${state.thereIsReply}');
-                      chatBloc.add(
-                        SendMessageEvent(
-                          messageType: 'TextMessage',
-                          channelId: chat.id.toString(),
-                          isForward: false,
-                          parentMessageId: state.thereIsReply
-                              ? state.messageId
-                              : null,
-                          content: message,
-                          messageId: id,
-                          senderParentMessageId: state.senderParentMessageId,
-                          parentMessageContent: state.message,
-                          receiverUserId: member?.userId,
-                        ),
-                      );
-                      BlocProvider.of<AppBloc>(
-                        context,
-                      ).add(RefreshChatInputField(false, '', false));
-                      // rebuildMessage.value = data.length;
+                                debugPrint('there : ${state.thereIsReply}');
+                                chatBloc.add(
+                                  SendMessageEvent(
+                                    messageType: 'TextMessage',
+                                    channelId: chat.id.toString(),
+                                    isForward: false,
+                                    parentMessageId: state.thereIsReply
+                                        ? state.messageId
+                                        : null,
+                                    content: message,
+                                    messageId: id,
+                                    senderParentMessageId:
+                                        state.senderParentMessageId,
+                                    parentMessageContent: state.message,
+                                    receiverUserId: member?.userId,
+                                  ),
+                                );
+                                BlocProvider.of<AppBloc>(
+                                  context,
+                                ).add(RefreshChatInputField(false, '', false));
+                                // rebuildMessage.value = data.length;
+                              },
+                            );
                     },
                   );
                 },

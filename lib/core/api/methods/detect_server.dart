@@ -2,6 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/cloudinary_url_routes.dart';
+import 'package:trydos/common/constant/configuration/dashBoard_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -17,9 +18,10 @@ enum ServerName {
   cloudinary,
   gemini,
   elastic,
+  dashBoard,
   webApp,
   comment,
-  get_comment_token
+  get_comment_token,
 }
 
 //todo make the return value dynamic to return the cloudinary as String
@@ -29,6 +31,8 @@ Uri getBaseUriForSpecificServer(ServerName serverName) {
       return ChatUrls.baseUri;
     case ServerName.market:
       return MarketUrls.baseUri;
+    case ServerName.dashBoard:
+      return DashBoardUrls.baseUri;
     case ServerName.stories:
       return StoriesUrls.baseUri;
     case ServerName.elastic:
@@ -54,6 +58,8 @@ String? getServerToken(ServerName serverName) {
     case ServerName.chat:
       return prefsRepository.chatToken;
     case ServerName.market:
+      return prefsRepository.marketToken;
+    case ServerName.dashBoard:
       return prefsRepository.marketToken;
     case ServerName.get_comment_token:
       return prefsRepository.tokenForComment;

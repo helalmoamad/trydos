@@ -760,6 +760,14 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
+  bool get isCallkitPermissionRequested =>
+      _preferences.getBool(PrefsKey.isCallkitPermissionRequested) ?? false;
+
+  @override
+  Future<bool> setCallkitPermissionRequested(bool value) =>
+      _preferences.setBool(PrefsKey.isCallkitPermissionRequested, value);
+
+  @override
   String? getPrefechOfProductsForEachBoutiqueInHomePage(String key) {
     _preferences.reload();
     return _preferences.getString(key);
@@ -1111,6 +1119,16 @@ class PrefsRepositoryImpl extends PrefsRepository {
       PrefsKey.myContactDetail,
       contactDetails ?? "",
     );
+  }
+
+  @override
+  Future<bool> setXSellerId(String id) {
+    return _preferences.setString(PrefsKey.xSellerId, id);
+  }
+
+  @override
+  String? get getXSellerId {
+    return _preferences.getString(PrefsKey.xSellerId);
   }
 
   // @override

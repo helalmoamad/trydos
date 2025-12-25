@@ -40,6 +40,12 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
   chatOrderParticipantId: json['chatOrderParticipantId'] as String?,
   firstRequestForGetChats: json['firstRequestForGetChats'] as bool? ?? true,
   height: (json['height'] as num?)?.toInt() ?? 0,
+  blockOrDeleteBlockUserStatus:
+      $enumDecodeNullable(
+        _$BlockOrDeleteBlockUserStatusEnumMap,
+        json['blockOrDeleteBlockUserStatus'],
+      ) ??
+      BlockOrDeleteBlockUserStatus.init,
   imageCountInEachChat: (json['imageCountInEachChat'] as num?)?.toInt() ?? 0,
   getAllChat: json['getAllChat'] as bool? ?? false,
   getSharedProductCountStatus: $enumDecodeNullable(
@@ -191,6 +197,9 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
   'sendMessageStatus': _$SendMessageStatusEnumMap[instance.sendMessageStatus]!,
   'receiveMessageStatus':
       _$ReceiveMessageStatusEnumMap[instance.receiveMessageStatus]!,
+  'blockOrDeleteBlockUserStatus':
+      _$BlockOrDeleteBlockUserStatusEnumMap[instance
+          .blockOrDeleteBlockUserStatus]!,
   'loadImageWidthAndHeight':
       _$LoadImageWidthAndHeightEnumMap[instance.loadImageWidthAndHeight]!,
   'saveContactsStatus':
@@ -265,6 +274,13 @@ const _$ResendMessageStatusEnumMap = {
   ResendMessageStatus.loading: 'loading',
   ResendMessageStatus.success: 'success',
   ResendMessageStatus.failure: 'failure',
+};
+
+const _$BlockOrDeleteBlockUserStatusEnumMap = {
+  BlockOrDeleteBlockUserStatus.init: 'init',
+  BlockOrDeleteBlockUserStatus.loading: 'loading',
+  BlockOrDeleteBlockUserStatus.success: 'success',
+  BlockOrDeleteBlockUserStatus.failure: 'failure',
 };
 
 const _$GetSharedProductCountStatusEnumMap = {
