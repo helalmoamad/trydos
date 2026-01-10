@@ -127,6 +127,7 @@ class UpdateProfileInChatEvent extends ChatEvent {
 
 class GetChatsEvent extends ChatEvent {
   final Chat? chatToNavigateFromTerminated;
+  final SenderInfo? senderInfo;
   final DateTime? timeStamp;
   final int? limit;
   final bool? getWithPagination;
@@ -134,6 +135,7 @@ class GetChatsEvent extends ChatEvent {
   const GetChatsEvent({
     this.chatToNavigateFromTerminated,
     this.timeStamp,
+    this.senderInfo,
     this.getWithPagination,
     this.limit,
     this.messagesLimit,
@@ -460,6 +462,22 @@ class GetMediaCountEvent extends ChatEvent {
   List<Object?> get props => [channelId];
 }
 
+class AddDurationToMessageCallEvent extends ChatEvent {
+  final String channelId;
+  final String messageId;
+  final int duration;
+
+  const AddDurationToMessageCallEvent({
+    required this.channelId,
+    required this.messageId,
+    required this.duration,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [channelId, messageId, duration];
+}
+
 class IncreaseSharedProductCountOnSocialAppEvent extends ChatEvent {
   final String productId;
   final Products product;
@@ -476,6 +494,14 @@ class IncreaseSharedProductCountOnSocialAppEvent extends ChatEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [sharedCount, productId, socialMediaName];
+}
+
+class ChangeStatusShareProructToInitialEvent extends ChatEvent {
+  const ChangeStatusShareProructToInitialEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
 }
 
 /*class GetSharedProductCountEvent extends ChatEvent {

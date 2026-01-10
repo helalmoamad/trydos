@@ -669,25 +669,27 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             cachedProductWithoutRelatedProductsModel,
       ),
     );
-    FirebaseAnalyticsService.logEventForSession(
-      eventName: AnalyticsEventsConst.shareContent,
-      executedEventName: AnalyticsButtonsEventNameConst.SHARE_CONTENT_BUTTON,
-      extraParams: {
-        'social_media_name': event.socialMediaName,
-        'content_type': 'product',
-        'brand': event.product.brand?.name ?? '',
-        'category': event.product.categories!
-            .map((e) => e.id.toString())
-            .toList()
-            .toString(),
-        'count_likes': event.product.countOfLikes.toString(),
-        'review_count': event.product.reviewsCount.toString(),
-        'screen_name':
-            '${GlobalScreenConst.PRODUCT_SCREEN}/${event.product.slug.toString()}',
-        'item_name': event.product.name.toString(),
-        'price': event.product.price.toString(),
-      },
-    );
+    try {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.shareContent,
+        executedEventName: AnalyticsButtonsEventNameConst.SHARE_CONTENT_BUTTON,
+        extraParams: {
+          'social_media_name': event.socialMediaName,
+          'content_type': 'product',
+          'brand': event.product.brand?.name ?? '',
+          'category': event.product.categories!
+              .map((e) => e.id.toString())
+              .toList()
+              .toString(),
+          'count_likes': event.product.countOfLikes.toString(),
+          'review_count': event.product.reviewsCount.toString(),
+          'screen_name':
+              '${GlobalScreenConst.PRODUCT_SCREEN}/${event.product.slug.toString()}',
+          'item_name': event.product.name.toString(),
+          'price': event.product.price.toString(),
+        },
+      );
+    } catch (e) {}
     showMessage(
       LocaleKeys.product_shared_successfully.tr(),
       foreGroundColor: Colors.white,
@@ -1917,6 +1919,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       },
       (r) {
+        GetIt.I<ChatBloc>().add(const ChangeStatusShareProructToInitialEvent());
         if (r.product?.isRedeem == true) {
           GetIt.I<PrefsRepository>().setRedeemDateForProduct(
             r.product!.id.toString(),
@@ -2318,21 +2321,24 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
         /////////////////////////////////
         Future.delayed(const Duration(milliseconds: 300), () {
-          FirebaseAnalyticsService.logEventForSession(
-            eventName: AnalyticsEventsConst.viewCart,
-            extraParams: {
-              'currency': state
-                  .getCurrencyForCountryModel!
-                  .data!
-                  .currency!
-                  .symbol
-                  .toString(),
-              'value': state.getCartShippingItemsModel!.data!.total.toString(),
-              'items': analyticsCartList.toString(),
-              'screen_name': GlobalScreenConst.CART_SCREEN,
-            },
-            executedEventName: AnalyticsButtonsEventNameConst.CART_ICON,
-          );
+          try {
+            FirebaseAnalyticsService.logEventForSession(
+              eventName: AnalyticsEventsConst.viewCart,
+              extraParams: {
+                'currency': state
+                    .getCurrencyForCountryModel!
+                    .data!
+                    .currency!
+                    .symbol
+                    .toString(),
+                'value': state.getCartShippingItemsModel!.data!.total
+                    .toString(),
+                'items': analyticsCartList.toString(),
+                'screen_name': GlobalScreenConst.CART_SCREEN,
+              },
+              executedEventName: AnalyticsButtonsEventNameConst.CART_ICON,
+            );
+          } catch (e) {}
         });
 
         //////////////////////////////////
@@ -4410,29 +4416,36 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       );
       /////////////////////////////////
       Future.delayed(const Duration(milliseconds: 300), () {
-        FirebaseAnalyticsService.logEventForSession(
-          eventName: AnalyticsEventsConst.addToCart,
-          executedEventName: AnalyticsButtonsEventNameConst.ADD_TO_CART_BUTTON,
-          extraParams: {
-            'currency': state.getCurrencyForCountryModel!.data!.currency!.symbol
-                .toString(),
-            'value': state.getCartShippingItemsModel!.data!.total.toString(),
-            'items': [
-              {
-                'item_id': event.id.toString(),
-                'item_name': event.products.name.toString(),
-                'price': event.products.price.toString(),
-                'quantity': listitemForAddToCart[i].quantity.toString(),
-                'brand': event.products.brand?.name.toString(),
-                'category': event.products.category?.name.toString(),
-                'count_likes': event.products.countOfLikes.toString(),
-                'review_count': event.products.reviewsCount.toString(),
-                'item_variant':
-                    '${listitemForAddToCart[i].colorOption}-${listitemForAddToCart[i].choiceOption}',
-              },
-            ].toString(),
-          },
-        );
+        try {
+          FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.addToCart,
+            executedEventName:
+                AnalyticsButtonsEventNameConst.ADD_TO_CART_BUTTON,
+            extraParams: {
+              'currency': state
+                  .getCurrencyForCountryModel!
+                  .data!
+                  .currency!
+                  .symbol
+                  .toString(),
+              'value': state.getCartShippingItemsModel!.data!.total.toString(),
+              'items': [
+                {
+                  'item_id': event.id.toString(),
+                  'item_name': event.products.name.toString(),
+                  'price': event.products.price.toString(),
+                  'quantity': listitemForAddToCart[i].quantity.toString(),
+                  'brand': event.products.brand?.name.toString(),
+                  'category': event.products.category?.name.toString(),
+                  'count_likes': event.products.countOfLikes.toString(),
+                  'review_count': event.products.reviewsCount.toString(),
+                  'item_variant':
+                      '${listitemForAddToCart[i].colorOption}-${listitemForAddToCart[i].choiceOption}',
+                },
+              ].toString(),
+            },
+          );
+        } catch (e) {}
       });
     }
 
@@ -4910,6 +4923,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       },
       (r) {
+        GetIt.I<ChatBloc>().add(const ChangeStatusShareProructToInitialEvent());
         ErrorManager.resetRetry('GetFullProductDetailsEvent');
         if (r.productItem?.productId == null) {
           emit(

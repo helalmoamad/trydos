@@ -649,6 +649,13 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                             ],
                                                           ),
                                                         )
+                                                      : (state.currentMessage
+                                                                .contains(
+                                                                  widget
+                                                                      .messageId,
+                                                                )) &&
+                                                            !timer
+                                                      ? const SizedBox.shrink()
                                                       : SvgPicture.asset(
                                                           widget.isRead
                                                               ? AppAssets
@@ -663,13 +670,15 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                                       widget
                                                                           .messageId,
                                                                     ))
-                                                              ? timer
-                                                                    ? (state.currentMessage.contains(
-                                                                            widget.messageId,
-                                                                          ))
-                                                                          ? AppAssets.sandClockSvg
-                                                                          : AppAssets.messageSentArrowSvg
-                                                                    : ""
+                                                              ? (state.currentMessage
+                                                                        .contains(
+                                                                          widget
+                                                                              .messageId,
+                                                                        ))
+                                                                    ? AppAssets
+                                                                          .sandClockSvg
+                                                                    : AppAssets
+                                                                          .messageSentArrowSvg
                                                               : AppAssets
                                                                     .messageSentArrowSvg,
                                                           width: 10.sp,

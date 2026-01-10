@@ -9,11 +9,7 @@ class CreateUserEvent extends AuthEvent {
   final String? mobilePhone;
   final String? password;
 
-  const CreateUserEvent({
-    this.name,
-    this.mobilePhone,
-    this.password,
-  });
+  const CreateUserEvent({this.name, this.mobilePhone, this.password});
 
   @override
   // TODO: implement props
@@ -36,8 +32,23 @@ class LoginToChatEvent extends AuthEvent {
 
   @override
   // TODO: implement props
-  List<Object?> get props =>
-      [mobilePhone, otpIdToken, fcmToken, originalUserId, name];
+  List<Object?> get props => [
+    mobilePhone,
+    otpIdToken,
+    fcmToken,
+    originalUserId,
+    name,
+  ];
+}
+
+class DeleteFcmTokenFromChatEvent extends AuthEvent {
+  final String fcmToken;
+
+  const DeleteFcmTokenFromChatEvent({required this.fcmToken});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [fcmToken];
 }
 
 class StoreFcmTokenEvent extends AuthEvent {
@@ -60,10 +71,7 @@ class DeleteFcmTokenEvent extends AuthEvent {
   final int userId;
   final String fcmToken;
 
-  const DeleteFcmTokenEvent({
-    required this.userId,
-    required this.fcmToken,
-  });
+  const DeleteFcmTokenEvent({required this.userId, required this.fcmToken});
 
   @override
   // TODO: implement props
@@ -74,8 +82,11 @@ class GenerateTokenForCommentEvent extends AuthEvent {
   final String? userId;
   final String? mobilePhone;
   final String? otpIdToken;
-  GenerateTokenForCommentEvent(
-      {this.userId, this.mobilePhone, this.otpIdToken});
+  GenerateTokenForCommentEvent({
+    this.userId,
+    this.mobilePhone,
+    this.otpIdToken,
+  });
   @override
   List<Object?> get props => [userId, mobilePhone, otpIdToken];
 }
@@ -84,10 +95,7 @@ class SendOtpEvent extends AuthEvent {
   final int isViaWhatsApp;
   final String phone;
 
-  const SendOtpEvent({
-    required this.phone,
-    required this.isViaWhatsApp,
-  });
+  const SendOtpEvent({required this.phone, required this.isViaWhatsApp});
   @override
   // TODO: implement props
   List<Object?> get props => [phone, isViaWhatsApp];
@@ -113,8 +121,11 @@ class VerifyOtpSignUpEvent extends AuthEvent {
   final String otp;
   final String? name;
 
-  VerifyOtpSignUpEvent(
-      {required this.verificationId, required this.otp, this.name});
+  VerifyOtpSignUpEvent({
+    required this.verificationId,
+    required this.otp,
+    this.name,
+  });
   @override
   // TODO: implement props
   List<Object?> get props => [otp, name, verificationId];
@@ -123,10 +134,7 @@ class VerifyOtpSignUpEvent extends AuthEvent {
 class VerifyOtpFromGuestEvent extends AuthEvent {
   final String verificationId;
   final String otp;
-  VerifyOtpFromGuestEvent({
-    required this.verificationId,
-    required this.otp,
-  });
+  VerifyOtpFromGuestEvent({required this.verificationId, required this.otp});
 
   @override
   // TODO: implement props
@@ -137,10 +145,7 @@ class VerifyOtpInProfileEvent extends AuthEvent {
   final String verificationId;
   final String otp;
 
-  VerifyOtpInProfileEvent({
-    required this.verificationId,
-    required this.otp,
-  });
+  VerifyOtpInProfileEvent({required this.verificationId, required this.otp});
 
   @override
   // TODO: implement props
@@ -150,10 +155,7 @@ class VerifyOtpInProfileEvent extends AuthEvent {
 class RegisterGuestEvent extends AuthEvent {
   final String deviceId;
   final String? oldGuestUserId;
-  RegisterGuestEvent({
-    required this.deviceId,
-    this.oldGuestUserId,
-  });
+  RegisterGuestEvent({required this.deviceId, this.oldGuestUserId});
 
   @override
   // TODO: implement props
@@ -163,9 +165,7 @@ class RegisterGuestEvent extends AuthEvent {
 class UpdateNameEvent extends AuthEvent {
   final String? name;
 
-  UpdateNameEvent({
-    this.name,
-  });
+  UpdateNameEvent({this.name});
 
   @override
   // TODO: implement props
@@ -175,9 +175,7 @@ class UpdateNameEvent extends AuthEvent {
 class UpdateChatUserNameEvent extends AuthEvent {
   final String name;
 
-  UpdateChatUserNameEvent({
-    required this.name,
-  });
+  UpdateChatUserNameEvent({required this.name});
 
   @override
   // TODO: implement props
@@ -188,11 +186,7 @@ class UpdateStoriesUserEvent extends AuthEvent {
   final String? name;
   final String? phone;
   final String? photo;
-  UpdateStoriesUserEvent({
-    this.name,
-    this.phone,
-    this.photo,
-  });
+  UpdateStoriesUserEvent({this.name, this.phone, this.photo});
 
   @override
   // TODO: implement props

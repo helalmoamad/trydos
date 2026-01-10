@@ -58,7 +58,7 @@ showCallKitIncoming(
         'https://trydos.s3.ap-south-1.amazonaws.com/images/5TPxSXKGAv3kLkbKIz5noTTmaZBwXNtSpJMoh7lE.jpg',
     handle: data['payload']['mobilePhone'],
     type: isVideo ? 1 : 0,
-    textAccept: 'Accept',
+    textAccept: isVideo ? 'Accept Video' : 'Accept Call',
     textDecline: 'Decline',
     missedCallNotification: const NotificationParams(
       showNotification: true,
@@ -73,16 +73,16 @@ showCallKitIncoming(
       'type': isVideo ? 'video' : 'voice',
     },
     headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
-    android: const AndroidParams(
+    android: AndroidParams(
       isCustomNotification: true,
       isImportant: true,
       isShowFullLockedScreen: false,
       isShowLogo: false,
       ringtonePath: 'system_ringtone_default',
-      backgroundColor: '#0955fa',
+      backgroundColor: isVideo ? '#2D1B4B' : '#0955fa',
       backgroundUrl:
           'https://trydos.s3.ap-south-1.amazonaws.com/images/5TPxSXKGAv3kLkbKIz5noTTmaZBwXNtSpJMoh7lE.jpg',
-      actionColor: '#4CAF50',
+      actionColor: isVideo ? '#FF1744' : '#4CAF50',
       incomingCallNotificationChannelName: "Incoming Call",
       missedCallNotificationChannelName: "Missed Call",
 
@@ -116,13 +116,16 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory(),
     );
-    if (!isLoadDotenvFile) {
-      await dotenv.load();
-    }
-    HttpOverrides.global = MyHttpOverrides();
-
     isHydratedStorageInitialized = true;
   }
+
+  if (!isLoadDotenvFile) {
+    await dotenv.load();
+    isLoadDotenvFile = true;
+  }
+
+  HttpOverrides.global = MyHttpOverrides();
+
   if (!isDependencyInitialized) {
     await configureDependencies();
     isDependencyInitialized = true;
@@ -264,10 +267,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     } else if (remoteMessage['type'] == 'RefuseCallEvent') {
       declineCallBecauseOfNotificationButton = true;
       Map<String, dynamic> data = remoteMessage;
-
-      if (data['duration_in_seconds']!.toString().contains("-1")) {
+      if (data['duration_in_seconds'] == null) {
+        GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
+      } else if (data['duration_in_seconds']!.toString().contains("-1")) {
         GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
       }
+
       if (data['message_id'].toString() !=
               GetIt.I<CallsBloc>().state.currentActiveCallId &&
           GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
@@ -383,8 +388,7 @@ Map<String, VideoPlayerController> videoProductInListingController = {};
   }*/
 }*/
 
-int applicationVersion = 58;
-String alaa = "";
+int applicationVersion = 62;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();

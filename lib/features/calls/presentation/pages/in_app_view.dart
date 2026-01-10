@@ -4,11 +4,14 @@ import 'dart:developer';
 import 'package:audioplayers/audioplayers.dart' hide AVAudioSessionCategory;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart' show GetIt;
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:vibration/vibration.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
@@ -84,6 +87,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   late ChatBloc chatBloc;
   @override
   void initState() {
+    print(
+      "myFcmToken ://///***/*8888****${GetIt.I<PrefsRepository>().getFcmTokens[0]}",
+    );
     LastPagesTracker.push('AgoraInAppWebView');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     debugPrint("asdafsd{${widget.channelId}");
@@ -101,6 +107,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         'type': widget.type,
         'action': widget.action,
         'ch_id': widget.channelId,
+        'fcm': widget.isReceivingCall
+            ? GetIt.I<PrefsRepository>().getFcmTokens[0]
+            : null,
       },
       host: baseUrl.host,
       scheme: baseUrl.scheme,
@@ -110,6 +119,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
     //   ..setBackgroundColor(const Color(0x00000000))
     //   ..loadRequest(source);
+    print("source ://///***/*8888****${source.toString()}");
     log(source.toString());
     super.initState();
   }
@@ -117,6 +127,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   @override
   void dispose() {
     _setCallAudioMode(false);
+    GetIt.I<CallsBloc>().add(ChangeMakeCallStatusToInitEvent());
     Vibration.cancel();
     timer?.cancel();
     if (_audioPlayer.state == PlayerState.playing) {
@@ -153,6 +164,15 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
     // 2. معالجة حالة مكبر الصوت (Speaker)
     for (var arg in args) {
+      if ((int.tryParse(arg.toString()) ?? 0) > 0) {
+        chatBloc.add(
+          AddDurationToMessageCallEvent(
+            channelId: widget.channelId,
+            messageId: widget.messageId,
+            duration: int.tryParse(arg.toString()) ?? 0,
+          ),
+        );
+      }
       if (arg == 'IsSpeaker') {
         Future.delayed(const Duration(milliseconds: 500), () {
           _setCallAudioMode(false);
@@ -357,16 +377,18 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                             _audioPlayer.stop();
                           }
                         });
-                      } else if (timer == null && widget.isReceivingCall) {
+                      } else if (!(timer?.isActive ?? false) &&
+                          widget.isReceivingCall) {
                         startVibration();
-                        timer = Timer.periodic(const Duration(seconds: 2), (
-                          timer,
-                        ) {
+                        print("*/*/*11111111111111111111");
+                        playIncomingCall();
+                        timer = Timer.periodic(const Duration(seconds: 4), (t) {
+                          print("*/*/*222222222222111");
                           playIncomingCall();
                         });
-                        Future.delayed(const Duration(seconds: 7), () {
-                          timer?.cancel();
+                        Future.delayed(const Duration(seconds: 2), () {
                           if (_audioPlayer.state == PlayerState.playing) {
+                            print("*/*/*33333333333333333333");
                             _audioPlayer.stop();
                           }
                         });

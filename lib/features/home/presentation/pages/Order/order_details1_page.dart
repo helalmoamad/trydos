@@ -4504,6 +4504,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                   child: BlocListener<CallsBloc, CallsState>(
                                     listenWhen: (p, c) =>
                                         p.makeCallStatus != c.makeCallStatus &&
+                                        p.makeCallStatus ==
+                                            MakeCallStatus.init &&
                                         c.makeCallStatus ==
                                             MakeCallStatus.loading,
                                     listener: (context, state) {

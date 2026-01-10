@@ -5,6 +5,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
+import 'package:trydos/features/home/presentation/widgets/home_page_boutique_card.dart';
 import 'package:trydos/main.dart' as app;
 import 'package:flutter/material.dart';
 
@@ -72,10 +73,15 @@ void main() {
     final Finder boutiqueTapFinder = find.byKey(
       const Key('${WidgetsKeys.boutiqueCardKey}*tap*0'),
     );
+
     print(
       "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF!!!!!!!!!!!!!!!!!!!!!!!!!!3",
     );
+
     await tester.pumpAndSettle();
+    final boutiqueSlug =
+        tester.widget<HomePageBoutiqueCard>(boutiqueFinder).boutique.slug ?? "";
+    print('//////// boutiqueCard1  : $boutiqueSlug //////////');
     await tester.tap(boutiqueTapFinder);
     print(
       "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF!!!!!!!!!!!!!!!!!!!!!!!!!!4",

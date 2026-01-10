@@ -507,7 +507,8 @@ class _SharedProductMessageState extends State<SharedProductMessage>
                                                         ? AppAssets.sandClockSvg
                                                         : AppAssets
                                                               .messageSentArrowSvg
-                                                  : ""
+                                                  : AppAssets
+                                                        .messageSentArrowSvg
                                             : AppAssets.messageSentArrowSvg,
                                         width: 10.sp,
                                         height: 10.sp,

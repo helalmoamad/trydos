@@ -164,7 +164,10 @@ class _SplashPageState extends State<SplashPage> {
     };
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
-        navigationToSinglePageChat(state.chatToNavigateFromTerminated!);
+        navigationToSinglePageChat(
+          state.chatToNavigateFromTerminated!,
+          state.senderInfo!,
+        );
       },
       listenWhen: (p, c) =>
           p.chatToNavigateFromTerminated != c.chatToNavigateFromTerminated,

@@ -101,7 +101,7 @@ abstract class ChatEndPoints {
   ///
   static final storeFcmEP = ''.firebaseTokensScope();
 
-  static String deleteFcmEP(int id) => id.toString().firebaseTokensScope();
+  static final deleteFcmEP = "remove-token".firebaseTokensScope();
 
   ///! ----< video calls >----
   ///

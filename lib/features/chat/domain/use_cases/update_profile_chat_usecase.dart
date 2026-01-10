@@ -35,7 +35,9 @@ class UpdateProfileInChatParams {
     "name": name,
     "mobile_phone": phone,
     "photo_path":
-        "/customers/profile/" +
-        "${(photo).contains("/") ? photo.split("/").last : photo}",
+        (((photo).contains("/") ? photo.split("/").last : photo).length > 1)
+        ? ("/customers/profile/" +
+              "${(photo).contains("/") ? photo.split("/").last : photo}")
+        : "",
   };
 }

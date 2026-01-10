@@ -186,18 +186,23 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
           color: widget.imageColor,
           cacheManager: CustomCacheManagers(),
           height: (widget.fromBoutique ?? false) ? null : widget.height,
+
           // 🔧 إصلاح: إعادة تفعيل memory cache للأداء الأفضل
-          memCacheHeight: (widget.fromBoutique ?? false)
+          /* memCacheHeight: (widget.fromBoutique ?? false)
               ? null
               : (widget.height * MediaQuery.devicePixelRatioOf(context))
                     .round(),
-
+          memCacheWidth: (widget.fromBoutique ?? false)
+              ? (widget.width * MediaQuery.devicePixelRatioOf(context)).round()
+              : null,*/
           placeholder: (context, url) {
             widget.callWhenLoadingImage?.call();
             return _buildSimpleShimmer();
           },
-          memCacheWidth: (widget.width * MediaQuery.devicePixelRatioOf(context))
-              .round(),
+
+          memCacheHeight:
+              (widget.height * MediaQuery.devicePixelRatioOf(context)).round(),
+
           // ⚡ تقليل زمن الانتقالات لتسريع عرض الصور
           fadeInDuration: const Duration(),
           placeholderFadeInDuration: const Duration(),
@@ -209,49 +214,52 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
 
            
           },*/
-          imageBuilder:
-              widget.imageBuilder ??
-              (ctx, image) {
-                if (_isDisposed) return const SizedBox.shrink();
+          imageBuilder: (widget.fromBoutique ?? false)
+              ? null
+              : widget.imageBuilder ??
+                    (ctx, image) {
+                      if (_isDisposed) return const SizedBox.shrink();
 
-                widget.callWhenDisplayImage?.call();
+                      widget.callWhenDisplayImage?.call();
 
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(widget.radius),
-                  child: Container(
-                    width: widget.width,
-                    height: (widget.fromBoutique ?? false)
-                        ? null
-                        : widget.height,
-                    decoration: widget.withInnerShadow
-                        ? inset_shadow.BoxDecoration(
-                            borderRadius: BorderRadius.circular(widget.radius),
-                            boxShadow: [
-                              inset_shadow.BoxShadow(
-                                offset: Offset(
-                                  0,
-                                  widget.innerShadowYOffset ?? 12,
-                                ),
-                                blurRadius: 24,
-                                inset: true,
-                                // ignore: deprecated_member_use
-                                color: Colors.black.withOpacity(0.44),
-                              ),
-                            ],
-                          )
-                        : null,
-                    child: Image(
-                      image: image,
-                      fit: widget.imageFit,
-                      width: widget.width,
-                      height: (widget.fromBoutique ?? false)
-                          ? null
-                          : widget.height,
-                      color: widget.imageColor,
-                    ),
-                  ),
-                );
-              },
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(widget.radius),
+                        child: Container(
+                          width: widget.width,
+                          height: (widget.fromBoutique ?? false)
+                              ? null
+                              : widget.height,
+                          decoration: widget.withInnerShadow
+                              ? inset_shadow.BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    widget.radius,
+                                  ),
+                                  boxShadow: [
+                                    inset_shadow.BoxShadow(
+                                      offset: Offset(
+                                        0,
+                                        widget.innerShadowYOffset ?? 12,
+                                      ),
+                                      blurRadius: 24,
+                                      inset: true,
+                                      // ignore: deprecated_member_use
+                                      color: Colors.black.withOpacity(0.44),
+                                    ),
+                                  ],
+                                )
+                              : null,
+                          child: Image(
+                            image: image,
+                            fit: widget.imageFit,
+                            width: widget.width,
+                            height: (widget.fromBoutique ?? false)
+                                ? null
+                                : widget.height,
+                            color: widget.imageColor,
+                          ),
+                        ),
+                      );
+                    },
           errorWidget: (context, url, error) {
             if (_isDisposed) return const SizedBox.shrink();
 

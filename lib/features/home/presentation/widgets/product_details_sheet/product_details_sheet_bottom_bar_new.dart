@@ -1990,9 +1990,7 @@ class _ProductDetailsSheetBottomBarNewState
                                               text:
                                                   '${state.cachedProductWithoutRelatedProductsModel[widget.productIdForCashProducts]?.product?.sharedCount ?? "0"}',
                                               svgPath: AppAssets.shareSvg,
-                                              color: currentTab == 1
-                                                  ? const Color(0xff1D1D1D)
-                                                  : const Color(0xff1D1D1D),
+                                              color: const Color(0xff1D1D1D),
                                               onTap: widget.clickOnShare,
                                             );
                                     },

@@ -93,6 +93,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<ChangeGlobalUsedVariablesInBloc>(_onChangeGlobalUsedVariablesInBloc);
     on<ResendMessageEvent>(_onResendMessageEvent);
     on<GetDateTimeEvent>(_onGetDateTimeEvent);
+    on<AddDurationToMessageCallEvent>(_onAddDurationToMessageCallEvent);
     on<AddAMessageToAChannel>(_onAddAMessageToAChannel);
     on<AddChannelToChannels>(_onAddChannelToChannels);
     on<AddUserConntctSatuseEvent>(_onAddUserConntctSatuseEvent);
@@ -139,6 +140,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<SearchTextInChatEvent>(
       _onSearchTextInChatEvent,
       transformer: restartable(),
+    );
+    on<ChangeStatusShareProructToInitialEvent>(
+      _onChangeStatusShareProructToInitialEvent,
     );
   }
 
@@ -263,6 +267,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     List<Chat> pinnedChats = List.of(state.pinnedChats);
     List<Chat> chats = List.of(state.chats);
     String? parentMessageId;
+    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD******///${chats[0].id}");
+    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD****////${event.channelId}");
 
     //todo ---if-----
     //todo check if the channel exist and get the messages of this channel
@@ -849,6 +855,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             state.copyWith(
               getChatsStatus: GetChatsStatus.success,
               chatToNavigateFromTerminated: event.chatToNavigateFromTerminated,
+              senderInfo: event.senderInfo,
               chats: newChats,
               getAllChat:
                   (event.getWithPagination ?? false) &&
@@ -1221,6 +1228,62 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         );
       },
     );
+  }
+
+  FutureOr<void> _onAddDurationToMessageCallEvent(
+    AddDurationToMessageCallEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    emit(state.copyWith(receiveMessageStatus: ReceiveMessageStatus.loading));
+    try {
+      List<Message> messages = [];
+      bool fromPinned = false;
+      List<Chat> chats;
+      if (state.chats.any((e) => e.id == event.channelId)) {
+        chats = List.of(state.chats);
+      } else {
+        fromPinned = true;
+        chats = List.of(state.pinnedChats);
+      }
+      Chat chat = chats.firstWhere(
+        (element) => element.id == event.channelId,
+        orElse: () => Chat(id: '-1'),
+      );
+
+      chats.removeWhere((element) => element.id == chat.id);
+      chats.insert(0, chat);
+      messages = List.of(chat.messages ?? []);
+      Message message = messages.firstWhere(
+        (element) => element.id == event.messageId,
+        orElse: () => Message(id: '-1'),
+      );
+      message = message.copyWith(durationInSeconds: event.duration);
+      int index = messages.indexWhere((element) => element.id == message.id);
+      if (index != -1) {
+        messages.removeAt(index);
+        messages.insert(index, message);
+      }
+
+      chats[0] = chats[0].copyWith(messages: messages);
+      emit(
+        state.copyWith(
+          receiveMessageStatus: ReceiveMessageStatus.success,
+          newSortedChatsByDate: groupReceivedMessageOnDays(
+            chats: [
+              ...chats,
+              ...(fromPinned ? state.chats : state.pinnedChats),
+            ],
+          ),
+          currentChannelReceivedMessage: chat.localId ?? chat.id,
+          channelId: event.channelId,
+          chats: fromPinned ? state.chats : chats,
+          pinnedChats: !fromPinned ? state.pinnedChats : chats,
+        ),
+      );
+      // add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
+    } catch (e) {
+      emit(state.copyWith(receiveMessageStatus: ReceiveMessageStatus.failure));
+    }
   }
 
   FutureOr<void> _onReceiveMessageEvent(
@@ -2124,6 +2187,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           readMessagesStatus: ResetReadMessagesStatus.init,
           firstRequestForGetChats: true,
           getOrderRecipientIdStatus: GetOrderRecipientIdStatus.init,
+          getSharedProductCountStatus: GetSharedProductCountStatus.init,
           changeChatPropertyStatus: ChangeChatPropertyStatus.init,
           changeMessageStateFromPusherStatus:
               ChangeMessageStateFromPusherStatus.init,
@@ -2442,6 +2506,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     DeleteMessageNotificationReceivedInChatsEvent event,
     Emitter<ChatState> emit,
   ) {
+    emit(state.copyWith(deleteMessageStatus: DeleteMessageStatus.loading));
+
     bool fromPinned = false;
 
     Chat chat;
@@ -2491,14 +2557,17 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             return e;
           }).toList()
         : state.pinnedChats;
-    if (isAFileMessageRemoved) {
-      _prefsRepository.removeAFilePathExist(
-        chat.messages![index].mediaMessageContent![0].filePath!,
-        event.channelId,
-      );
-    }
+    try {
+      if (isAFileMessageRemoved) {
+        _prefsRepository.removeAFilePathExist(
+          chat.messages![index].mediaMessageContent![0].filePath!,
+          event.channelId,
+        );
+      }
+    } catch (e) {}
     emit(
       state.copyWith(
+        deleteMessageStatus: DeleteMessageStatus.success,
         /* videoCountInEachChat: isAvideoMessageRemoved
           ? state.videoCountInEachChat - 1
           : state.videoCountInEachChat,
@@ -2582,9 +2651,21 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   FutureOr<void> _onAddUserConntctSatuseEvent(
     AddUserConntctSatuseEvent event,
     Emitter<ChatState> emit,
-  ) {
+  ) async {
+    if (event.userConnectedStatuse.length < 3) {
+      emit(
+        state.copyWith(
+          currentOpenedChatIdStatus: CurrentOpenedChatIdStatus.loading,
+          userConnectedStatuse: event.userConnectedStatuse,
+          currentOpenedChatId: event.chatId,
+        ),
+      );
+      await Future.delayed(const Duration(milliseconds: 300));
+    }
+
     emit(
       state.copyWith(
+        currentOpenedChatIdStatus: CurrentOpenedChatIdStatus.success,
         userConnectedStatuse: event.userConnectedStatuse,
         currentOpenedChatId: event.chatId,
       ),
@@ -2631,10 +2712,28 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     );
   }
 
+  FutureOr<void> _onChangeStatusShareProructToInitialEvent(
+    ChangeStatusShareProructToInitialEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    await Future.delayed(const Duration(seconds: 1));
+    emit(
+      state.copyWith(
+        getSharedProductCountStatus: GetSharedProductCountStatus.init,
+      ),
+    );
+  }
+
   FutureOr<void> _onIncreaseSharedProductCountOnSocialAppEvent(
     IncreaseSharedProductCountOnSocialAppEvent event,
     Emitter<ChatState> emit,
   ) async {
+    emit(
+      state.copyWith(
+        getSharedProductCountStatus: GetSharedProductCountStatus.loading,
+      ),
+    );
+
     final response = await shareProductOnAppsUseCase(
       ShareProductOnAppsParams(
         appName: event.socialMediaName,
@@ -2642,27 +2741,29 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         sharedCount: event.sharedCount,
       ),
     );
-    emit(
-      state.copyWith(
-        getSharedProductCountStatus: GetSharedProductCountStatus.loading,
-      ),
-    );
 
-    response.fold((l) => print("............"), (r) {
-      GetIt.I<HomeBloc>().add(
-        IncreaseCountShareOfProductEvent(
-          productId: event.productId,
-          socialMediaName: event.socialMediaName,
-          product: event.product,
-        ),
-      );
-      emit(
+    response.fold(
+      (l) => emit(
         state.copyWith(
-          // getSharedProductCount: getSharedProductCount,
-          getSharedProductCountStatus: GetSharedProductCountStatus.success,
+          getSharedProductCountStatus: GetSharedProductCountStatus.failure,
         ),
-      );
-    });
+      ),
+      (r) {
+        GetIt.I<HomeBloc>().add(
+          IncreaseCountShareOfProductEvent(
+            productId: event.productId,
+            socialMediaName: event.socialMediaName,
+            product: event.product,
+          ),
+        );
+        emit(
+          state.copyWith(
+            // getSharedProductCount: getSharedProductCount,
+            getSharedProductCountStatus: GetSharedProductCountStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onSearchTextInChatEvent(

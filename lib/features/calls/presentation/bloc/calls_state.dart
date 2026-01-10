@@ -7,7 +7,7 @@ enum MakeCallStatus {
   failure,
   cancel,
   endCall,
-  startCall
+  startCall,
 }
 
 enum OpenLocalVideoAndAudioStatus { init, loading, success, failure }
@@ -47,73 +47,76 @@ class CallsState {
   final int missedCallCount;
   final String? currentActiveCallId;
   final String? receiverCallName;
-  CallsState(
-      {this.messageId,
-      this.sessionId = 23,
-      this.watchedMissedCallStatus = WatchedMissedCallStatus.init,
-      this.missedCallCount = 0,
-      this.rejectVideoCallStatus = RejectVideoCallStatus.init,
-      this.getMissedCallCountStatus = GetMissedCallCountStatus.init,
-      this.agoraToken = null,
-      this.channelIdForCurrentCall = null,
-      this.callRegister,
-      this.receiverCallName,
-      this.getMyCallsStatus = GetMyCallsStatus.init,
-      this.deleteMessageStatus = DeleteMessageStatus.init,
-      this.isVideoCall = false,
-      this.stopRingToneReason = StopRingToneReason.init,
-      this.channelMembers = const [],
-      this.currentActiveCallId = '-1',
-      this.openRemoteVideoAndAudioStatus = OpenRemoteVideoAndAudioStatus.init,
-      this.openLocalVideoAndAudioStatus = OpenLocalVideoAndAudioStatus.init,
-      this.makeCallStatus = MakeCallStatus.init});
+  CallsState({
+    this.messageId,
+    this.sessionId = 23,
+    this.watchedMissedCallStatus = WatchedMissedCallStatus.init,
+    this.missedCallCount = 0,
+    this.rejectVideoCallStatus = RejectVideoCallStatus.init,
+    this.getMissedCallCountStatus = GetMissedCallCountStatus.init,
+    this.agoraToken = null,
+    this.channelIdForCurrentCall = null,
+    this.callRegister,
+    this.receiverCallName,
+    this.getMyCallsStatus = GetMyCallsStatus.init,
+    this.deleteMessageStatus = DeleteMessageStatus.init,
+    this.isVideoCall = false,
+    this.stopRingToneReason = StopRingToneReason.init,
+    this.channelMembers = const [],
+    this.currentActiveCallId = '-1',
+    this.openRemoteVideoAndAudioStatus = OpenRemoteVideoAndAudioStatus.init,
+    this.openLocalVideoAndAudioStatus = OpenLocalVideoAndAudioStatus.init,
+    this.makeCallStatus = MakeCallStatus.success,
+  });
 
-  CallsState copyWith(
-      {String? messageId,
-      int? sessionId,
-      List<CallReg>? callRegister,
-      GetMyCallsStatus? getMyCallsStatus,
-      RejectVideoCallStatus? rejectVideoCallStatus,
-      final String? currentActiveCallId,
-      StopRingToneReason? stopRingToneReason,
-      String? agoraToken,
-      WatchedMissedCallStatus? watchedMissedCallStatus,
-      GetMissedCallCountStatus? getMissedCallCountStatus,
-      String? receiverCallName,
-      String? channelIdForCurrentCall,
-      List<int>? channelMembers,
-      DeleteMessageStatus? deleteMessageStatus,
-      int? missedCallCount,
-      bool? isVideoCall,
-      OpenLocalVideoAndAudioStatus? openVideoAndAudioStatus,
-      OpenRemoteVideoAndAudioStatus? openRemoteVideoAndAudioStatus,
-      MakeCallStatus? makeCallStatus}) {
+  CallsState copyWith({
+    String? messageId,
+    int? sessionId,
+    List<CallReg>? callRegister,
+    GetMyCallsStatus? getMyCallsStatus,
+    RejectVideoCallStatus? rejectVideoCallStatus,
+    final String? currentActiveCallId,
+    StopRingToneReason? stopRingToneReason,
+    String? agoraToken,
+    WatchedMissedCallStatus? watchedMissedCallStatus,
+    GetMissedCallCountStatus? getMissedCallCountStatus,
+    String? receiverCallName,
+    String? channelIdForCurrentCall,
+    List<int>? channelMembers,
+    DeleteMessageStatus? deleteMessageStatus,
+    int? missedCallCount,
+    bool? isVideoCall,
+    OpenLocalVideoAndAudioStatus? openVideoAndAudioStatus,
+    OpenRemoteVideoAndAudioStatus? openRemoteVideoAndAudioStatus,
+    MakeCallStatus? makeCallStatus,
+  }) {
     return CallsState(
-        watchedMissedCallStatus:
-            watchedMissedCallStatus ?? this.watchedMissedCallStatus,
-        getMissedCallCountStatus:
-            getMissedCallCountStatus ?? this.getMissedCallCountStatus,
-        messageId: messageId ?? this.messageId,
-        missedCallCount: missedCallCount ?? this.missedCallCount,
-        receiverCallName: receiverCallName ?? this.receiverCallName,
-        deleteMessageStatus: deleteMessageStatus ?? this.deleteMessageStatus,
-        callRegister: callRegister ?? this.callRegister,
-        getMyCallsStatus: getMyCallsStatus ?? this.getMyCallsStatus,
-        sessionId: sessionId ?? this.sessionId,
-        currentActiveCallId: currentActiveCallId ?? this.currentActiveCallId,
-        isVideoCall: isVideoCall ?? this.isVideoCall,
-        rejectVideoCallStatus:
-            rejectVideoCallStatus ?? this.rejectVideoCallStatus,
-        agoraToken: agoraToken ?? this.agoraToken,
-        channelIdForCurrentCall:
-            channelIdForCurrentCall ?? this.channelIdForCurrentCall,
-        stopRingToneReason: stopRingToneReason ?? this.stopRingToneReason,
-        channelMembers: channelMembers ?? this.channelMembers,
-        openRemoteVideoAndAudioStatus:
-            openRemoteVideoAndAudioStatus ?? this.openRemoteVideoAndAudioStatus,
-        openLocalVideoAndAudioStatus:
-            openVideoAndAudioStatus ?? this.openLocalVideoAndAudioStatus,
-        makeCallStatus: makeCallStatus ?? this.makeCallStatus);
+      watchedMissedCallStatus:
+          watchedMissedCallStatus ?? this.watchedMissedCallStatus,
+      getMissedCallCountStatus:
+          getMissedCallCountStatus ?? this.getMissedCallCountStatus,
+      messageId: messageId ?? this.messageId,
+      missedCallCount: missedCallCount ?? this.missedCallCount,
+      receiverCallName: receiverCallName ?? this.receiverCallName,
+      deleteMessageStatus: deleteMessageStatus ?? this.deleteMessageStatus,
+      callRegister: callRegister ?? this.callRegister,
+      getMyCallsStatus: getMyCallsStatus ?? this.getMyCallsStatus,
+      sessionId: sessionId ?? this.sessionId,
+      currentActiveCallId: currentActiveCallId ?? this.currentActiveCallId,
+      isVideoCall: isVideoCall ?? this.isVideoCall,
+      rejectVideoCallStatus:
+          rejectVideoCallStatus ?? this.rejectVideoCallStatus,
+      agoraToken: agoraToken ?? this.agoraToken,
+      channelIdForCurrentCall:
+          channelIdForCurrentCall ?? this.channelIdForCurrentCall,
+      stopRingToneReason: stopRingToneReason ?? this.stopRingToneReason,
+      channelMembers: channelMembers ?? this.channelMembers,
+      openRemoteVideoAndAudioStatus:
+          openRemoteVideoAndAudioStatus ?? this.openRemoteVideoAndAudioStatus,
+      openLocalVideoAndAudioStatus:
+          openVideoAndAudioStatus ?? this.openLocalVideoAndAudioStatus,
+      makeCallStatus: makeCallStatus ?? this.makeCallStatus,
+    );
   }
 }
 

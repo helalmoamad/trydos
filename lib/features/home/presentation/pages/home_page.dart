@@ -281,6 +281,7 @@ class _HomePageState extends State<HomePage> {
           if (notificationTypesOfMarketFromTerminated.contains(
             "chatNotification",
           )) {
+            print("chatNotification//////////////////////////");
             Message myMessage = Message.fromJson(
               jsonDecode(
                 notificationTypesOfMarketFromTerminated
@@ -304,6 +305,7 @@ class _HomePageState extends State<HomePage> {
             String parentOrderId = orderGroupIdWithReturnRequestId.split(
               '#parentOrderId#',
             )[1];
+            print("chatNotification//////////////////////////22222");
             handleOpenChatPageFromNotificationInBackground(
               prevMessageId,
               orderId,

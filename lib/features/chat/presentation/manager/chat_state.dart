@@ -23,6 +23,8 @@ enum SendMessageStatus { init, loading, success, failure }
 
 enum GetSharedProductCountStatus { init, loading, success, failure }
 
+enum DeleteMessageStatus { init, loading, success, failure }
+
 enum ReceiveMessageStatus { init, loading, success, failure }
 
 enum GetMessagesBetweenStatus { init, loading, success, failure }
@@ -41,6 +43,8 @@ enum ResendMessageStatus { init, loading, success, failure }
 
 enum BlockOrDeleteBlockUserStatus { init, loading, success, failure }
 
+enum CurrentOpenedChatIdStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 class ChatState {
   final int width;
@@ -48,6 +52,7 @@ class ChatState {
   final bool isSlpoing;
   int imageCountInEachChat;
   int fileCountInEachChat;
+  final CurrentOpenedChatIdStatus currentOpenedChatIdStatus;
   int videoCountInEachChat;
   final GetChatsStatus getChatsStatus;
   final SendMessageStatus sendMessageStatus;
@@ -67,6 +72,7 @@ class ChatState {
   final ChangeMessageStateFromPusherStatus changeMessageStateFromPusherStatus;
   final ChangeChatPropertyStatus changeChatPropertyStatus;
   final DeleteChatStatus deleteChatStatus;
+  final DeleteMessageStatus deleteMessageStatus;
   final List<Contact> contacts;
   final String? currentOpenedChatId;
   final ResendMessageStatus resendMessageStatus;
@@ -86,6 +92,7 @@ class ChatState {
   final String? secondMessageId;
   final String? slopMessageId;
   final bool? getAllChat;
+  final SenderInfo? senderInfo;
   final int unReadMessagesFromAllChats;
   final String? recipientUserId;
   final String currentChannelReceivedMessage;
@@ -101,17 +108,20 @@ class ChatState {
     this.getMediaCountStatus = GetMediaCountStatus.init,
     this.resendMessageStatus = ResendMessageStatus.init,
     this.width = 0,
+    this.senderInfo,
     this.resultOfSearchTextInChat = const PaginationModel.init(),
     this.duration,
     this.slopMessageId = "",
     this.isSlpoing = false,
+    this.deleteMessageStatus = DeleteMessageStatus.init,
+    this.currentOpenedChatIdStatus = CurrentOpenedChatIdStatus.init,
     this.chatOrderParticipantId,
     this.firstRequestForGetChats = true,
     this.height = 0,
     this.blockOrDeleteBlockUserStatus = BlockOrDeleteBlockUserStatus.init,
     this.imageCountInEachChat = 0,
     this.getAllChat = false,
-    this.getSharedProductCountStatus,
+    this.getSharedProductCountStatus = GetSharedProductCountStatus.init,
     this.currentRequestIdForAvoidPreRequest = "",
     this.fileCountInEachChat = 0,
     this.recipientUserId,
@@ -140,6 +150,7 @@ class ChatState {
     this.currentChannelReceivedMessage = '-1',
     this.messageType,
     this.firstMessageId,
+
     this.chatToNavigateFromTerminated,
     this.scrollToParentMessage = false,
     this.createAnewChat = false,
@@ -164,12 +175,14 @@ class ChatState {
     final int? videoCountInEachChat,
     LoadImageWidthAndHeight? loadImageWidthAndHeight,
     Map<String, List<Message>>? newSortedChatsByDate,
+    final DeleteMessageStatus? deleteMessageStatus,
     final GetChatsStatus? getChatsStatus,
     final Duration? duration,
     final GetOrderRecipientIdStatus? getOrderRecipientIdStatus,
     final bool? firstRequestForGetChats,
     final BlockOrDeleteBlockUserStatus? blockOrDeleteBlockUserStatus,
     final String? chatOrderParticipantId,
+    final CurrentOpenedChatIdStatus? currentOpenedChatIdStatus,
     final ResendMessageStatus? resendMessageStatus,
     final SendMessageStatus? sendMessageStatus,
     final String? recipientUserId,
@@ -189,10 +202,12 @@ class ChatState {
     final int? currentOpenedChannelId,
     final ResetReadMessagesStatus? readMessagesStatus,
     final Chat? chatToNavigateFromTerminated,
+    final SenderInfo? senderInfo,
     final NotifyThatIReceivedMessageStatus? notifyThatIReceivedMessageStatus,
     final ChangeMessageStateFromPusherStatus?
     changeMessageStateFromPusherStatus,
     final String? currentChannelReceivedMessage,
+
     final List<Chat>? chats,
     final bool? createAnewChat,
     final bool? getAllChat,
@@ -222,11 +237,15 @@ class ChatState {
           chatOrderParticipantId ?? this.chatOrderParticipantId,
       height: height ?? this.height,
       resendMessageStatus: resendMessageStatus ?? this.resendMessageStatus,
+      currentOpenedChatIdStatus:
+          currentOpenedChatIdStatus ?? this.currentOpenedChatIdStatus,
       imageCountInEachChat: imageCountInEachChat ?? this.imageCountInEachChat,
       getMediaCountStatus: getMediaCountStatus ?? this.getMediaCountStatus,
       getSharedProductCountStatus:
           getSharedProductCountStatus ?? this.getSharedProductCountStatus,
       fileCountInEachChat: fileCountInEachChat ?? this.fileCountInEachChat,
+      deleteMessageStatus: deleteMessageStatus ?? this.deleteMessageStatus,
+      senderInfo: senderInfo ?? this.senderInfo,
       videoCountInEachChat: videoCountInEachChat ?? this.videoCountInEachChat,
       loadImageWidthAndHeight:
           loadImageWidthAndHeight ?? this.loadImageWidthAndHeight,

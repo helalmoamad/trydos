@@ -13,34 +13,48 @@ import '../../data/models/verify_otp_sign_up_and_in_response_model.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, CreateUserResponseModel>> createUser(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, LoginToChatResponseModel>> loginToChat(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> loginToMarket(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, VerifyOtpInProfileResponseModel>> verifyOtpInProfile(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> registerGuest(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, LoginToStoriesResponseModel>> loginToStories(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, bool>> updateName(Map<String, dynamic> params);
   Future<Either<Failure, bool>> updateChatUserName(Map<String, dynamic> params);
   Future<Either<Failure, bool>> updateStoriesUser(Map<String, dynamic> params);
-  Future<Either<Failure, bool>> deleteFcmToken(Map<String, dynamic> params);
+  Future<Either<Failure, bool>> deleteFcmTokenFromChat(
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, User>> getCustomerInfo();
 
   Future<Either<Failure, GetUserCountryResponseModel>> getUserCountry();
   Future<Either<Failure, StoreFcmTokenResponseModel>> storeFcmToken(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, String>> generateTokenForComment(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, SendOtpResponseModel>> sendOtp(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> verifyOtpSignIn(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> verifyOtpSignUp(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, VerifyOtpFromGuestResponseModel>> verifyOtpFromGuest(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
 }

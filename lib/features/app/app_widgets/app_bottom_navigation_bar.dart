@@ -674,6 +674,25 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                 //////////////
                                                 TextButton(
                                                   onPressed: () async {
+                                                    prefsRepository
+                                                                .getFcmTokens
+                                                                .length >
+                                                            0
+                                                        ? BlocProvider.of<AuthBloc>(
+                                                            context,
+                                                          ).add(
+                                                            DeleteFcmTokenFromChatEvent(
+                                                              fcmToken:
+                                                                  prefsRepository
+                                                                      .getFcmTokens[0],
+                                                            ),
+                                                          )
+                                                        : null;
+                                                    await Future.delayed(
+                                                      const Duration(
+                                                        milliseconds: 300,
+                                                      ),
+                                                    );
                                                     GetIt.I<HomeBloc>().add(
                                                       const ClearAllAppCashEvent(),
                                                     );
@@ -698,6 +717,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                         ),
                                                       ),
                                                     );
+
                                                     prefsRepository
                                                         .setVerifiedPhone(
                                                           false,

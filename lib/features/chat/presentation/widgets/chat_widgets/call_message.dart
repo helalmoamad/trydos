@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +11,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../../common/helper/helper_functions.dart';
+import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
@@ -23,10 +26,14 @@ class CallMessage extends StatelessWidget {
     required this.isVideo,
     required this.time,
     required this.isSent,
+    required this.durationInSeconds,
+    required this.isMessageForMe,
   }) : super(key: key);
   final String message;
   final bool isVideo;
   final bool isSent;
+  final int durationInSeconds;
+  final bool isMessageForMe;
   final DateTime time;
   final String? userMessagePhoto;
   final String userMessageName;
@@ -38,7 +45,7 @@ class CallMessage extends StatelessWidget {
       FlutterError.dumpErrorToConsole(error);
     };
     return Directionality(
-      textDirection: TextDirection.ltr,
+      textDirection: ui.TextDirection.ltr,
       child: Padding(
         padding: HWEdgeInsets.only(
           right: isSent ? 25.w : 0,
@@ -73,7 +80,7 @@ class CallMessage extends StatelessWidget {
                     ),
                     child: Center(
                       child: Directionality(
-                        textDirection: TextDirection.ltr,
+                        textDirection: ui.TextDirection.ltr,
                         child: Row(
                           children: [
                             SvgPicture.asset(
@@ -85,12 +92,12 @@ class CallMessage extends StatelessWidget {
                             ),
                             10.horizontalSpace,
                             MyTextWidget(
-                              '$message  ${!time.isUtc ? HelperFunctions.getDateInFormat(time) : HelperFunctions.getZonedDateInFormat(time)}',
+                              '${durationInSeconds == 0 ? LocaleKeys.missed_call.tr() : (isMessageForMe == false ? LocaleKeys.income.tr() : LocaleKeys.Outcome.tr())}${durationInSeconds > 0 ? ' ${HelperFunctions.getTimeInFormat(Duration(seconds: durationInSeconds))}' : ''} , $message  ${!time.isUtc ? HelperFunctions.getDateInFormat(time) : HelperFunctions.getZonedDateInFormat(time)}',
                               style: context.textTheme.titleMedium?.rq.copyWith(
                                 color: const Color(0xff404040),
                                 height: 1.66,
                               ),
-                              textDirection: TextDirection.ltr,
+                              textDirection: ui.TextDirection.ltr,
                             ),
                           ],
                         ),

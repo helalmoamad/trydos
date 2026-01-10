@@ -161,14 +161,16 @@ class _ChatCardState extends ThemeState<ChatCard> {
     String messageType = '';
     bool isDeleteForAll = false;
     bool deleteFromMyId = false;
-    if (!widget.chat.messages.isNullOrEmpty) {
+    if (widget.chat.messages?.length != 0) {
       messageType = (widget.chat.messages!.first.messageType?.name).toString();
-      deleteFromMyId =
-          (widget.chat.messages!.first.deletedByUserId ==
-          _prefsRepository.myChatId!);
-      isDeleteForAll =
-          (widget.chat.messages!.first.authMessageStatus!.deleteForAll ??
-          false);
+      if (widget.chat.messages!.first.authMessageStatus!.isDeleted == 1) {
+        deleteFromMyId =
+            !(widget.chat.messages!.first.authMessageStatus!.deleteForAll ??
+                false);
+        isDeleteForAll =
+            (widget.chat.messages!.first.authMessageStatus!.deleteForAll ??
+            false);
+      }
     }
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -656,83 +658,91 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                   },
                                                   Flexible(
                                                     flex: 2,
-                                                    child:
-                                                        deleteFromMyId &&
-                                                            !isDeleteForAll
-                                                        ? const SizedBox.shrink()
-                                                        : MyTextWidget(
-                                                            isDeleteForAll
-                                                                ? deleteFromMyId
+                                                    child: MyTextWidget(
+                                                      isDeleteForAll
+                                                          ? deleteFromMyId
+                                                                ? LocaleKeys
+                                                                      .you_have_deleted_this_message
+                                                                      .tr()
+                                                                : LocaleKeys
+                                                                      .this_message_has_been_deleted
+                                                                      .tr()
+                                                          : messageType !=
+                                                                'TextMessage'
+                                                          ? messageType !=
+                                                                    'ShareProduct'
+                                                                ? (messageType ==
+                                                                          'ImageMessage'
                                                                       ? LocaleKeys
-                                                                            .you_have_deleted_this_message
+                                                                            .photo
+                                                                            .tr()
+                                                                      : messageType ==
+                                                                            'VideoMessage'
+                                                                      ? LocaleKeys
+                                                                            .vvideo
+                                                                            .tr()
+                                                                      : messageType ==
+                                                                            'FileMessage'
+                                                                      ? LocaleKeys
+                                                                            .file
+                                                                            .tr()
+                                                                      : messageType ==
+                                                                            'VoiceCall'
+                                                                      ? LocaleKeys
+                                                                            .voice_call
+                                                                            .tr()
+                                                                      : messageType ==
+                                                                            'VideoCall'
+                                                                      ? LocaleKeys
+                                                                            .video_call
                                                                             .tr()
                                                                       : LocaleKeys
-                                                                            .this_message_has_been_deleted
-                                                                            .tr()
-                                                                : messageType !=
-                                                                      'TextMessage'
-                                                                ? messageType !=
-                                                                          'ShareProduct'
-                                                                      ? (messageType ==
-                                                                                'ImageMessage'
-                                                                            ? LocaleKeys.photo.tr()
-                                                                            : messageType ==
-                                                                                  'VideoMessage'
-                                                                            ? LocaleKeys.vvideo.tr()
-                                                                            : messageType ==
-                                                                                  'FileMessage'
-                                                                            ? LocaleKeys.file.tr()
-                                                                            : messageType ==
-                                                                                  'VoiceCall'
-                                                                            ? LocaleKeys.voice_call.tr()
-                                                                            : messageType ==
-                                                                                  'VideoCall'
-                                                                            ? LocaleKeys.video_call.tr()
-                                                                            : LocaleKeys.voice.tr())
-                                                                      : widget.chat.messages
-                                                                                ?.firstWhere(
-                                                                                  (
-                                                                                    element,
-                                                                                  ) =>
-                                                                                      element.authMessageStatus?.isDeleted ==
-                                                                                      0,
-                                                                                )
-                                                                                .shareProductContent
-                                                                                ?.productName ??
-                                                                            ""
+                                                                            .voice
+                                                                            .tr())
                                                                 : widget
-                                                                      .chat
-                                                                      .messages!
-                                                                      .firstWhere(
-                                                                        (
-                                                                          element,
-                                                                        ) =>
-                                                                            element.authMessageStatus!.isDeleted ==
-                                                                            0,
-                                                                      )
-                                                                      .messageContent!
-                                                                      .content
-                                                                      .toString(),
-                                                            maxLines:
-                                                                widget
-                                                                    .thereActivity
-                                                                ? 1
-                                                                : 3,
-                                                            textAlign:
-                                                                TextAlign.start,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: textTheme
-                                                                .titleSmall
-                                                                ?.lq
-                                                                .copyWith(
-                                                                  fontSize: 12,
-                                                                  height: 1.1,
-                                                                  color: colorScheme
-                                                                      .grey200,
-                                                                ),
+                                                                          .chat
+                                                                          .messages
+                                                                          ?.firstWhere(
+                                                                            (
+                                                                              element,
+                                                                            ) =>
+                                                                                element.authMessageStatus?.isDeleted ==
+                                                                                0,
+                                                                          )
+                                                                          .shareProductContent
+                                                                          ?.productName ??
+                                                                      ""
+                                                          : widget
+                                                                .chat
+                                                                .messages!
+                                                                .firstWhere(
+                                                                  (element) =>
+                                                                      element
+                                                                          .authMessageStatus!
+                                                                          .isDeleted ==
+                                                                      0,
+                                                                )
+                                                                .messageContent!
+                                                                .content
+                                                                .toString(),
+                                                      maxLines:
+                                                          widget.thereActivity
+                                                          ? 1
+                                                          : 3,
+                                                      textAlign:
+                                                          TextAlign.start,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: textTheme
+                                                          .titleSmall
+                                                          ?.lq
+                                                          .copyWith(
+                                                            fontSize: 12,
+                                                            height: 1.1,
+                                                            color: colorScheme
+                                                                .grey200,
                                                           ),
+                                                    ),
                                                   ),
                                                   const Spacer(),
                                                 ],

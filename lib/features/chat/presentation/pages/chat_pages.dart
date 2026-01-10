@@ -174,6 +174,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
       child: BlocListener<CallsBloc, CallsState>(
         listenWhen: (p, c) =>
             p.makeCallStatus != c.makeCallStatus &&
+            p.makeCallStatus == MakeCallStatus.init &&
             c.makeCallStatus == MakeCallStatus.loading,
         listener: (context, state) {
           print(

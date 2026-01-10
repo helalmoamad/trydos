@@ -23,59 +23,64 @@ class AuthRemoteDatasource {
   Future<LoginToChatResponseModel> loginToChat(Map<String, dynamic> params) {
     PostClient<LoginToChatResponseModel> loginToChat =
         PostClient<LoginToChatResponseModel>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<LoginToChatResponseModel>(
-        endpoint: ChatEndPoints.loginEP,
-        data: params,
-        response: ResponseValue<LoginToChatResponseModel>(
-          fromJson: (response) => LoginToChatResponseModel.fromJson(response),
-        ),
-      ),
-    );
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<LoginToChatResponseModel>(
+            endpoint: ChatEndPoints.loginEP,
+            data: params,
+            response: ResponseValue<LoginToChatResponseModel>(
+              fromJson: (response) =>
+                  LoginToChatResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return loginToChat();
   }
 
-  Future<bool> deleteFcmToken(Map<String, dynamic> params) {
-    PostClient<bool> deleteFcmToken = PostClient<bool>(
+  Future<bool> deleteFcmTokenFromChat(Map<String, dynamic> params) {
+    PostClient<bool> deleteFcmTokenFromChat = PostClient<bool>(
       serverName: ServerName.chat,
       requestPrams: RequestConfig<bool>(
-        endpoint: ChatEndPoints.deleteFcmEP(params['id']),
+        endpoint: ChatEndPoints.deleteFcmEP,
         data: params,
         response: ResponseValue<bool>(returnValueOnSuccess: true),
       ),
     );
-    return deleteFcmToken();
+    return deleteFcmTokenFromChat();
   }
 
   Future<StoreFcmTokenResponseModel> storeFcmToken(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<StoreFcmTokenResponseModel> storeFcmToken =
         PostClient<StoreFcmTokenResponseModel>(
-      serverName: params['server_name'],
-      requestPrams: RequestConfig<StoreFcmTokenResponseModel>(
-        endpoint: params['server_name'] == ServerName.chat
-            ? ChatEndPoints.storeFcmEP
-            : MarketEndPoints.storeFcmEP,
-        data: params['data'],
-        response: ResponseValue<StoreFcmTokenResponseModel>(
-            fromJson: (response) =>
-                StoreFcmTokenResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: params['server_name'],
+          requestPrams: RequestConfig<StoreFcmTokenResponseModel>(
+            endpoint: params['server_name'] == ServerName.chat
+                ? ChatEndPoints.storeFcmEP
+                : MarketEndPoints.storeFcmEP,
+            data: params['data'],
+            response: ResponseValue<StoreFcmTokenResponseModel>(
+              fromJson: (response) =>
+                  StoreFcmTokenResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return storeFcmToken();
   }
 
   Future<CreateUserResponseModel> createUser(Map<String, dynamic> params) {
     PostClient<CreateUserResponseModel> createUser =
         PostClient<CreateUserResponseModel>(
-      serverName: ServerName.chat,
-      requestPrams: RequestConfig<CreateUserResponseModel>(
-        endpoint: ChatEndPoints.createUserEP,
-        data: params,
-        response: ResponseValue<CreateUserResponseModel>(
-            fromJson: (response) => CreateUserResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<CreateUserResponseModel>(
+            endpoint: ChatEndPoints.createUserEP,
+            data: params,
+            response: ResponseValue<CreateUserResponseModel>(
+              fromJson: (response) =>
+                  CreateUserResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return createUser();
   }
 
@@ -86,41 +91,46 @@ class AuthRemoteDatasource {
         endpoint: MarketEndPoints.sendOtpEP,
         queryParameters: params,
         response: ResponseValue<SendOtpResponseModel>(
-            fromJson: (response) => SendOtpResponseModel.fromJson(response)),
+          fromJson: (response) => SendOtpResponseModel.fromJson(response),
+        ),
       ),
     );
     return sendOtp();
   }
 
   Future<VerifyOtpSignUpAndInResponseModel> verifyOtpSignUp(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<VerifyOtpSignUpAndInResponseModel> verifyOtpSignUp =
         GetClient<VerifyOtpSignUpAndInResponseModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
-        endpoint: MarketEndPoints.verifyOtpSignUpEP,
-        queryParameters: params,
-        response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
-            fromJson: (response) =>
-                VerifyOtpSignUpAndInResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
+            endpoint: MarketEndPoints.verifyOtpSignUpEP,
+            queryParameters: params,
+            response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
+              fromJson: (response) =>
+                  VerifyOtpSignUpAndInResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return verifyOtpSignUp();
   }
 
   Future<VerifyOtpInProfileResponseModel> verifyOtpInProfile(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<VerifyOtpInProfileResponseModel> verifyOtpInProfile =
         GetClient<VerifyOtpInProfileResponseModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<VerifyOtpInProfileResponseModel>(
-        endpoint: MarketEndPoints.verifyOtpInProfileEP,
-        queryParameters: params,
-        response: ResponseValue<VerifyOtpInProfileResponseModel>(
-            fromJson: (response) =>
-                VerifyOtpInProfileResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<VerifyOtpInProfileResponseModel>(
+            endpoint: MarketEndPoints.verifyOtpInProfileEP,
+            queryParameters: params,
+            response: ResponseValue<VerifyOtpInProfileResponseModel>(
+              fromJson: (response) =>
+                  VerifyOtpInProfileResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return verifyOtpInProfile();
   }
 
@@ -130,8 +140,9 @@ class AuthRemoteDatasource {
       requestPrams: RequestConfig<User>(
         endpoint: MarketEndPoints.getCustomerInfoEP,
         response: ResponseValue<User>(
-            fromJson: (response) =>
-                User.fromJson(response['data']['customer_info'])),
+          fromJson: (response) =>
+              User.fromJson(response['data']['customer_info']),
+        ),
       ),
     );
     return getCustomerInfo();
@@ -144,14 +155,15 @@ class AuthRemoteDatasource {
     ////////////////////
     GetClient<GetUserCountryResponseModel> getUserCountry =
         GetClient<GetUserCountryResponseModel>(
-      serverName: ServerName.location,
-      requestPrams: RequestConfig<GetUserCountryResponseModel>(
-        endpoint: '',
-        response: ResponseValue<GetUserCountryResponseModel>(
-            fromJson: (response) =>
-                GetUserCountryResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.location,
+          requestPrams: RequestConfig<GetUserCountryResponseModel>(
+            endpoint: '',
+            response: ResponseValue<GetUserCountryResponseModel>(
+              fromJson: (response) =>
+                  GetUserCountryResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return getUserCountry();
   }
 
@@ -192,18 +204,20 @@ class AuthRemoteDatasource {
   }
 
   Future<VerifyOtpSignUpAndInResponseModel> verifyOtpSignIn(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<VerifyOtpSignUpAndInResponseModel> verifyOtpSignIn =
         GetClient<VerifyOtpSignUpAndInResponseModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
-        endpoint: MarketEndPoints.verifyOtpSignInEP,
-        queryParameters: params,
-        response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
-            fromJson: (response) =>
-                VerifyOtpSignUpAndInResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
+            endpoint: MarketEndPoints.verifyOtpSignInEP,
+            queryParameters: params,
+            response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
+              fromJson: (response) =>
+                  VerifyOtpSignUpAndInResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return verifyOtpSignIn();
   }
 
@@ -214,73 +228,82 @@ class AuthRemoteDatasource {
         endpoint: WebAppEndPoints.generateTokenForCommentEP,
         data: params,
         response: ResponseValue<String>(
-            fromJson: (response) => response['comments_token'].toString()),
+          fromJson: (response) => response['comments_token'].toString(),
+        ),
       ),
     );
     return generateTokenForComment();
   }
 
   Future<VerifyOtpFromGuestResponseModel> verifyOtpFromGuest(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     GetClient<VerifyOtpFromGuestResponseModel> verifyOtpFromGuest =
         GetClient<VerifyOtpFromGuestResponseModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<VerifyOtpFromGuestResponseModel>(
-        endpoint: MarketEndPoints.verifyOtpFromGuestEP,
-        queryParameters: params,
-        response: ResponseValue<VerifyOtpFromGuestResponseModel>(
-            fromJson: (response) =>
-                VerifyOtpFromGuestResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<VerifyOtpFromGuestResponseModel>(
+            endpoint: MarketEndPoints.verifyOtpFromGuestEP,
+            queryParameters: params,
+            response: ResponseValue<VerifyOtpFromGuestResponseModel>(
+              fromJson: (response) =>
+                  VerifyOtpFromGuestResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return verifyOtpFromGuest();
   }
 
   Future<VerifyOtpSignUpAndInResponseModel> loginToMarket(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<VerifyOtpSignUpAndInResponseModel> loginToMarket =
         PostClient<VerifyOtpSignUpAndInResponseModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
-        endpoint: MarketEndPoints.loginEP,
-        data: params,
-        response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
-            fromJson: (response) =>
-                VerifyOtpSignUpAndInResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
+            endpoint: MarketEndPoints.loginEP,
+            data: params,
+            response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
+              fromJson: (response) =>
+                  VerifyOtpSignUpAndInResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return loginToMarket();
   }
 
   Future<VerifyOtpSignUpAndInResponseModel> registerGuest(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<VerifyOtpSignUpAndInResponseModel> registerGuest =
         PostClient<VerifyOtpSignUpAndInResponseModel>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
-        endpoint: MarketEndPoints.registerGuestEP,
-        data: params,
-        response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
-            fromJson: (response) =>
-                VerifyOtpSignUpAndInResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
+            endpoint: MarketEndPoints.registerGuestEP,
+            data: params,
+            response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
+              fromJson: (response) =>
+                  VerifyOtpSignUpAndInResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return registerGuest();
   }
 
   Future<LoginToStoriesResponseModel> loginToStories(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<LoginToStoriesResponseModel> loginToStories =
         PostClient<LoginToStoriesResponseModel>(
-      serverName: ServerName.stories,
-      requestPrams: RequestConfig<LoginToStoriesResponseModel>(
-        endpoint: StoriesEndPoints.loginEP,
-        data: params,
-        response: ResponseValue<LoginToStoriesResponseModel>(
-            fromJson: (response) =>
-                LoginToStoriesResponseModel.fromJson(response)),
-      ),
-    );
+          serverName: ServerName.stories,
+          requestPrams: RequestConfig<LoginToStoriesResponseModel>(
+            endpoint: StoriesEndPoints.loginEP,
+            data: params,
+            response: ResponseValue<LoginToStoriesResponseModel>(
+              fromJson: (response) =>
+                  LoginToStoriesResponseModel.fromJson(response),
+            ),
+          ),
+        );
     return loginToStories();
   }
 }

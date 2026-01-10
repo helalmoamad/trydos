@@ -76,15 +76,26 @@ class Data {
 }
 
 class SenderInfo {
-  final int? id;
+  final String? id;
   final String? name;
+  final String? photoPath;
+  final String? mobilePhone;
 
-  SenderInfo({this.id, this.name});
+  SenderInfo({this.id, this.name, this.photoPath, this.mobilePhone});
 
-  factory SenderInfo.fromJson(Map<String, dynamic> json) =>
-      SenderInfo(id: json['id'], name: json['name']);
+  factory SenderInfo.fromJson(Map<String, dynamic> json) => SenderInfo(
+    id: json['id'].toString(),
+    name: json['name'],
+    photoPath: json['photo_path'],
+    mobilePhone: json['mobile_phone'],
+  );
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name};
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'photo_path': photoPath,
+    'mobile_phone': mobilePhone,
+  };
 }
 
 class Message {
@@ -104,8 +115,10 @@ class Message {
   final List<MediaMessageContent>? mediaMessageContent;
   final List<MessageStatus>? messageStatus;
   final Chat? channel;
+  final SenderInfo? senderUser;
   final Message? parentMessage;
   final int? deletedByUserId;
+  final int? durationInSeconds;
   final File? file;
   bool? isFirstMessageForThisDay;
   bool? isFirstMessage;
@@ -117,6 +130,8 @@ class Message {
     this.isFirstMessageForThisDay = false,
     this.isDateMessage = false,
     this.dateValue = '',
+    this.senderUser,
+    this.durationInSeconds,
     this.isFirstMessage = false,
     this.authMessageStatus,
     this.deletedByUserId,
@@ -150,11 +165,13 @@ class Message {
     final int? senderUserId,
     final MessageStatus? authMessageStatus,
     final int? receiverUserId,
+    final SenderInfo? senderUser,
     final String? channelId,
     final DateTime? createdAt,
     final MessageType? messageType,
     final String? parentMessageId,
     final int? isForward,
+    final int? durationInSeconds,
     int? deletedByUserId,
     final MessageContent? messageContent,
     final ShareProductContent? shareProductContent,
@@ -169,8 +186,10 @@ class Message {
       localId: localId ?? this.localId,
       localParentMessageId: localParentMessageId ?? this.localParentMessageId,
       senderUserId: senderUserId ?? this.senderUserId,
+      durationInSeconds: durationInSeconds ?? this.durationInSeconds,
       receiverUserId: receiverUserId ?? this.receiverUserId,
       channelId: channelId ?? this.channelId,
+      senderUser: senderUser ?? this.senderUser,
       createdAt: createdAt ?? this.createdAt,
       isPrivate: isPrivate ?? this.isPrivate,
       authMessageStatus: authMessageStatus ?? this.authMessageStatus,
@@ -195,8 +214,14 @@ class Message {
     return Message(
       id: json["id"].toString(),
       localId: json["localId"].toString(),
+      durationInSeconds: int.tryParse(
+        (json["duration_in_seconds"] ?? "0").toString(),
+      ),
       localParentMessageId: json["localParentMessageId"].toString(),
       dateValue: json["dateValue"],
+      senderUser: json['sender_user'] != null
+          ? SenderInfo.fromJson(json['sender_user'])
+          : null,
       isDateMessage: json["isDateMessage"] != null
           // ignore: sdk_version_since
           ? bool.parse(json["isDateMessage"])
@@ -288,7 +313,9 @@ class Message {
     "isFirstMessageForThisDay": isFirstMessageForThisDay.toString(),
     "dateValue": dateValue,
     "isFirstMessage": isFirstMessage.toString(),
+    "sender_user": senderUser?.toJson(),
     "isDateMessage": isDateMessage.toString(),
+    "duration_in_seconds": durationInSeconds,
     "sender_user_id": senderUserId,
     "receiver_user_id": receiverUserId,
     "channel_id": channelId,
@@ -320,6 +347,7 @@ class Chat {
   final List<Message>? messages;
   final PaginationStatus paginationStatus;
   final DateTime? updatedAt;
+
   final bool hasReachedMax;
   final bool? isPrivate;
   Chat({

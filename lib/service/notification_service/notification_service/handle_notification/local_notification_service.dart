@@ -237,7 +237,7 @@ class LocalNotificationService {
                 : GetIt.I<PrefsRepository>().language == "ku"
                 ? "کارمەندی گەیاندن"
                 : "Delivery Worker")
-          : myMessage.channel?.channelName ?? 'No Channel Name',
+          : myMessage.senderUser?.name ?? 'No Channel Name',
       type == 'TextMessage'
           ? myMessage.messageContent!.content.toString()
           : type == 'ImageMessage'

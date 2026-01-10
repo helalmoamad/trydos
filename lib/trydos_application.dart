@@ -9,6 +9,7 @@ import 'package:trydos/common/constant/design/constant_design.dart';
 import 'package:trydos/config/theme/app_theme.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/core/utils/app_lifecycle_manager.dart';
 import 'package:trydos/features/app/blocs/sensitive_connectivity/connectivity_observer.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/routes/router.dart';
@@ -69,6 +70,45 @@ class _TrydosApplicationState extends State<TrydosApplication>
   void didChangeMetrics() {
     setState(() {});
     super.didChangeMetrics();
+  }
+
+  /// 🔄 معالجة حالة التطبيق لمنع الشاشة السوداء عند العودة من الخلفية
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // استخدام AppLifecycleManager لمعالجة الحالة
+    AppLifecycleManager().handleLifecycleChange(state);
+
+    // معالجة إضافية خاصة بالتطبيق
+    if (state == AppLifecycleState.resumed) {
+      _handleAppResumed();
+    }
+  }
+
+  /// ✅ معالجة عودة التطبيق من الخلفية
+  void _handleAppResumed() {
+    try {
+      // إعادة تعيين حالة الواجهة
+      if (mounted) {
+        setState(() {
+          // تحديث الواجهة
+        });
+      }
+
+      // إعادة تعيين شريط الحالة
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarColor: colorScheme.white,
+          statusBarBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.dark,
+        ),
+      );
+
+      debugPrint('✅ App state restored successfully');
+    } catch (e) {
+      debugPrint('❌ Error restoring app state: $e');
+    }
   }
 
   @override

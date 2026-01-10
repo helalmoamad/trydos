@@ -371,7 +371,8 @@ class _VideoMessageState extends State<VideoMessage>
                                                                       .sandClockSvg
                                                                 : AppAssets
                                                                       .messageSentArrowSvg
-                                                          : ""
+                                                          : AppAssets
+                                                                .messageSentArrowSvg
                                                     : AppAssets
                                                           .messageSentArrowSvg,
                                                 width: 10.sp,

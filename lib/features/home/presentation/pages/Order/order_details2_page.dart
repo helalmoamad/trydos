@@ -3923,15 +3923,25 @@ class _OrderDetails2 extends State<OrderDetails2> {
       builder: (context, _showShadowForCancelAllOrder, _) {
         List<String> images = [];
 
-        orderBloc.state.orderReturnDetailsModel?.data?.returnRequestsData!
-            .forEach((element) {
-              element.orderDetails?.forEach((element) {
-                if (element.returnRequestProductId != null &&
-                    element.returnRequestId != null) {
-                  images.add(element.image ?? "");
-                }
-              });
-            });
+        orderBloc.state.getOrdersByOrderGroupIDModel?.orders?.forEach((
+          element,
+        ) {
+          if (element.editReturnRequest ?? false
+          /* &&
+                                                      (element.editReturnRequest ??
+                                                          false)*/
+          ) {
+            orderBloc.state.orderReturnDetailsModel?.data?.returnRequestsData
+                ?.forEach((elements) {
+                  elements.orderDetails?.forEach((element) {
+                    if ((element.alreadyReturn ?? false) &&
+                        elements.status?.value != "cancelled") {
+                      images.add(element.image ?? "");
+                    }
+                  });
+                });
+          }
+        });
 
         return !_showShadowForCancelAllOrder
             ? const SizedBox.shrink()
@@ -4320,15 +4330,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
           orElse: () => ReturnOrderDetail(),
         );
 
-        orderBloc.state.orderReturnDetailsModel?.data?.returnRequestsData!
-            .forEach((element) {
-              element.orderDetails?.forEach((element) {
-                if (element.returnRequestProductId != null &&
-                    element.returnRequestId != null &&
-                    element.detailId != order?.details?[indexTap.value].id) {
-                  images.add(element.image ?? "");
-                }
-              });
+        orderBloc.state.orderReturnDetailsModel?.data?.returnRequestsData
+            ?.forEach((element) {
+              if ((element.status?.value ?? "").contains("draft") ||
+                  (element.status?.name ?? "").contains("draft")) {
+                element.orderDetails?.forEach((element) {
+                  if (element.alreadyReturn ?? false) {
+                    images.add(element.image ?? "");
+                  }
+                });
+              }
             });
         images.add(orderDetail.image ?? "");
 

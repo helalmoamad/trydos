@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as fln;
@@ -41,27 +39,35 @@ class NotificationProcess {
 
   handleNotificationForLocal(String? payload) {
     if (payload != null) {
-      final PayloadModel payloadModel =
-          PayloadModel.fromJson(jsonDecode(payload));
+      final PayloadModel payloadModel = PayloadModel.fromJson(
+        jsonDecode(payload),
+      );
       INotificationFactory factory = NotificationFactoryImpl();
-      NotificationType notification =
-          factory.getNotificationType(NotificationTypeName.delivery);
+      NotificationType notification = factory.getNotificationType(
+        NotificationTypeName.delivery,
+      );
       notification.executeNotification(payloadModel);
     }
   }
 
-  Future fcmToken(String? mobilePhone, String? name, String? originalUserId,
-      String? otpIdToken) async {
-    await FirebaseMessaging.instance.deleteToken();
+  Future fcmToken(
+    String? mobilePhone,
+    String? name,
+    String? originalUserId,
+    String? otpIdToken,
+  ) async {
     myFcmToken = await FirebaseMessaging.instance.getToken();
 
     if (otpIdToken != null) {
-      GetIt.I<AuthBloc>().add(LoginToChatEvent(
+      GetIt.I<AuthBloc>().add(
+        LoginToChatEvent(
           fcmToken: myFcmToken!,
           mobilePhone: mobilePhone,
           name: name,
           originalUserId: originalUserId,
-          otpIdToken: otpIdToken));
+          otpIdToken: otpIdToken,
+        ),
+      );
     }
     print("myFcmToken : ${myFcmToken}");
     if (myFcmToken != null) {
@@ -79,27 +85,28 @@ class NotificationProcess {
           serverName: ServerName.chat,
         ),
       );
+      print("myFcmToken :///////////////// ${myFcmToken}");
       GetIt.I<PrefsRepository>().addFcmToken(myFcmToken!);
       if (GetIt.I<PrefsRepository>().myMarketId != null) {
-        GetIt.I<HomeBloc>().add(StoreFcmTokenOfMarketEvent(
+        GetIt.I<HomeBloc>().add(
+          StoreFcmTokenOfMarketEvent(
             userId:
                 int.tryParse(GetIt.I<PrefsRepository>().myMarketId ?? '') ?? -1,
-            fcmToken: myFcmToken!));
+            fcmToken: myFcmToken!,
+          ),
+        );
       }
     }
     log(myFcmToken.toString());
   }
 
-  void onRefreshToken() {
-    FirebaseMessaging.instance.onTokenRefresh.listen((token) {
-      debugPrint('onRefreshToken: $token');
-    });
-  }
-
   Future<void> _setForegroundNotificationPresentationOptions() async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
-            alert: true, badge: true, sound: true);
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
 
   requestPermission() async {
@@ -113,22 +120,26 @@ class NotificationProcess {
   setupInteractedMessage() {
     FirebaseMessaging.onMessageOpenedApp.listen((event) async {
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
-          event)) {
+        event,
+      )) {
         HandlingMarketNotifications.dealWithNotificationFromMarket(
-            convert.jsonDecode(event.data["body"] ?? ""), true);
+          convert.jsonDecode(event.data["body"] ?? ""),
+          true,
+        );
         return;
       }
-      handleTappedNotificationOnTerminatedState();
+      //   handleTappedNotificationOnTerminatedState();
       Map remoteMessage = convert.jsonDecode(event.data['data']);
       handleOpenChatPageFromNotificationInBackground(
-          remoteMessage['prev_message_id'],
-          (remoteMessage["parent_order_id"] != null &&
-                  remoteMessage["parent_order_id"] != "")
-              ? remoteMessage["parent_order_id"]
-              : remoteMessage['order_id'] ?? "",
-          remoteMessage['order_group_id'] ?? "",
-          remoteMessage["parent_order_id"] ?? "",
-          message: Message.fromJson(remoteMessage['message']));
+        remoteMessage['prev_message_id'],
+        (remoteMessage["parent_order_id"] != null &&
+                remoteMessage["parent_order_id"] != "")
+            ? remoteMessage["parent_order_id"]
+            : remoteMessage['order_id'] ?? "",
+        remoteMessage['order_group_id'] ?? "",
+        remoteMessage["parent_order_id"] ?? "",
+        message: Message.fromJson(remoteMessage['message']),
+      );
     });
   }
 
@@ -139,11 +150,19 @@ class NotificationProcess {
 
     if (details != null) {
       if (details.didNotificationLaunchApp) {
-        Message myMessage = Message.fromJson(convert
-            .jsonDecode(details.notificationResponse!.payload!.split('##')[0]));
+        Message myMessage = Message.fromJson(
+          convert.jsonDecode(
+            details.notificationResponse!.payload!.split('##')[0],
+          ),
+        );
         print(myMessage.messageContent?.content);
-        GetIt.I<ChatBloc>().add(GetChatsEvent(
-            chatToNavigateFromTerminated: myMessage.channel, limit: 10));
+        GetIt.I<ChatBloc>().add(
+          GetChatsEvent(
+            chatToNavigateFromTerminated: myMessage.channel,
+            senderInfo: myMessage.senderUser,
+            limit: 10,
+          ),
+        );
       }
     }
   }

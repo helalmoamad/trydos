@@ -400,7 +400,8 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                                                           .sandClockSvg
                                                                     : AppAssets
                                                                           .messageSentArrowSvg
-                                                              : ""
+                                                              : AppAssets
+                                                                    .messageSentArrowSvg
                                                         : AppAssets
                                                               .messageSentArrowSvg,
                                                     width: 10.sp,

@@ -10,13 +10,16 @@ class MakeCallEvent extends CallsEvent {
   String receiverCallName;
   final bool isVideo;
 
-  MakeCallEvent(
-      {this.chatId,
-      required this.receiverCallName,
-      required this.payload,
-      required this.isVideo,
-      this.receiverUserId});
+  MakeCallEvent({
+    this.chatId,
+    required this.receiverCallName,
+    required this.payload,
+    required this.isVideo,
+    this.receiverUserId,
+  });
 }
+
+class ChangeMakeCallStatusToInitEvent extends CallsEvent {}
 
 class EndVideoCallEvent extends CallsEvent {}
 
@@ -28,10 +31,7 @@ class AnswerVideoCallEvent extends CallsEvent {
   String messageId;
   String chatId;
 
-  AnswerVideoCallEvent({
-    required this.messageId,
-    required this.chatId,
-  });
+  AnswerVideoCallEvent({required this.messageId, required this.chatId});
 }
 
 class RejectVideoCallEvent extends CallsEvent {
@@ -39,8 +39,11 @@ class RejectVideoCallEvent extends CallsEvent {
   int duration;
   final Map<String, dynamic>? payload;
 
-  RejectVideoCallEvent(
-      {required this.messageId, this.payload, required this.duration});
+  RejectVideoCallEvent({
+    required this.messageId,
+    this.payload,
+    required this.duration,
+  });
 }
 
 class GetMyCallsEvent extends CallsEvent {}
@@ -51,12 +54,13 @@ class DeleteMessageEvent extends CallsEvent {
   String type;
   int deleteFromId;
   String? channelId;
-  DeleteMessageEvent(
-      {required this.messageId,
-      required this.deleteFromBoth,
-      required this.deleteFromId,
-      required this.type,
-      this.channelId});
+  DeleteMessageEvent({
+    required this.messageId,
+    required this.deleteFromBoth,
+    required this.deleteFromId,
+    required this.type,
+    this.channelId,
+  });
 }
 
 class DeleteMessageNotificationReceivedInCallsEvent extends CallsEvent {
@@ -65,12 +69,13 @@ class DeleteMessageNotificationReceivedInCallsEvent extends CallsEvent {
   String type;
   int deleteFromId;
   String? channelId;
-  DeleteMessageNotificationReceivedInCallsEvent(
-      {required this.messageId,
-      required this.deleteFromBoth,
-      required this.deleteFromId,
-      required this.type,
-      this.channelId});
+  DeleteMessageNotificationReceivedInCallsEvent({
+    required this.messageId,
+    required this.deleteFromBoth,
+    required this.deleteFromId,
+    required this.type,
+    this.channelId,
+  });
 }
 
 class ResponseRejectVideoCallEvent extends CallsEvent {}

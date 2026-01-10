@@ -198,9 +198,10 @@ handleOpenChatPageFromNotificationInBackground(
           navigationToOrderPageForChat(orderGroupID!, orderId!, parentOrderId),
     );
   } else {
+    print("chatNotification//////////////////////////333333333");
     Future.delayed(
       const Duration(milliseconds: 600),
-      () => navigationToSinglePageChat(message.channel!),
+      () => navigationToSinglePageChat(message.channel!, message.senderUser!),
     );
   }
 }
@@ -543,7 +544,7 @@ extension _CountryRestrictionUI on _BasePageState {
 
 navigationToProductDetailsPage(String productId) {}
 
-navigationToSinglePageChat(Chat chat) {
+navigationToSinglePageChat(Chat chat, SenderInfo senderInfo) {
   GetIt.I<ChatBloc>().add(
     ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: chat.id),
   );
@@ -551,26 +552,15 @@ navigationToSinglePageChat(Chat chat) {
     navigatorKey.currentState!.context,
   );
   appBloc.add(ChangeBasePage(2));
-  User? receiver = chat.channelMembers!
-      .firstWhere(
-        (element) => element.userId != GetIt.I<PrefsRepository>().myChatId,
-      )
-      .user;
+
   String receiverName = HelperFunctions.getTheFirstTwoLettersOfName(
-        chat.channelName ?? 'No Channel Name',
+        senderInfo.name ?? 'No Channel Name',
       ),
-      fullReceiverName = chat.channelName ?? 'No Channel Name';
-  ChannelMember me = chat.channelMembers!.firstWhere(
-    (element) => element.userId == GetIt.I<PrefsRepository>().myChatId,
-  );
-  User? sender = me.user;
-  String senderName = sender?.name == null
-      ? 'UK'
-      : HelperFunctions.getTheFirstTwoLettersOfName(sender!.name!);
+      fullReceiverName = senderInfo.name ?? 'No Channel Name';
   //WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
   navigatorKey.currentState!.context.go(
     GRouter.config.applicationRoutes.kSinglePageChatPagePath +
-        '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}',
+        '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${senderInfo.mobilePhone ?? 'Uo Number'}&senderName=${GetIt.I<PrefsRepository>().myChatName}',
   );
   //});
 }
@@ -870,6 +860,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   Future<void> _logoutUser() async {
     final prefs = await SharedPreferences.getInstance();
+    prefsRepository.getFcmTokens.length > 0
+        ? BlocProvider.of<AuthBloc>(context).add(
+            DeleteFcmTokenFromChatEvent(
+              fcmToken: prefsRepository.getFcmTokens[0],
+            ),
+          )
+        : null;
     BlocProvider.of<HomeBloc>(context).add(const ClearAllAppCashEvent());
     clearCustomCashe();
     prefsRepository.setIsFoundDataCashed(false);
@@ -937,6 +934,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       print(
         "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ///....../${remoteMessage}",
       );
+      dev.log("......${remoteMessage}...........");
       if (remoteMessage['type'] == 'RefuseCallEvent') {
         Map<String, dynamic> data = remoteMessage;
         GetIt.I<PrefsRepository>().saveRequestsData(
@@ -949,7 +947,15 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           null,
           error: 'RefuseCall for message ForeGround ${data['message_id']}',
         );
-        if (data['duration_in_seconds']!.toString().contains("-1")) {
+        if (data['duration_in_seconds'] == null) {
+          chatBloc.add(
+            ReceiveMissCallEvent(
+              true,
+              channelId: data['channel_id'].toString(),
+            ),
+          );
+          GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
+        } else if (data['duration_in_seconds']!.toString().contains("-1")) {
           chatBloc.add(
             ReceiveMissCallEvent(
               true,
@@ -1206,7 +1212,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     _prefsRepository.setTokenExpired(false);
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
-        navigationToSinglePageChat(state.chatToNavigateFromTerminated!);
+        navigationToSinglePageChat(
+          state.chatToNavigateFromTerminated!,
+          state.senderInfo!,
+        );
       },
       listenWhen: (p, c) =>
           p.chatToNavigateFromTerminated != c.chatToNavigateFromTerminated,

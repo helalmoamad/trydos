@@ -116,21 +116,38 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
   }
 
   bool recorderReady = false;
+  bool _isInitializing = false;
 
   Future<bool> initializeRecorder() async {
-    final status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
+    if (recorderReady || _isInitializing) return recorderReady;
+    _isInitializing = true;
+
+    try {
+      final status = await Permission.microphone.request();
+      if (status != PermissionStatus.granted) {
+        return false;
+      }
+      await recorder.openRecorder();
+      if (!mounted) {
+        await recorder.closeRecorder();
+        return false;
+      }
+      await recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
+      recorderReady = true;
+      return true;
+    } catch (e) {
+      debugPrint("Recorder initialization error: $e");
       return false;
+    } finally {
+      _isInitializing = false;
     }
-    await recorder.openRecorder();
-    await recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
-    recorderReady = true;
-    return true;
   }
 
   @override
   void dispose() {
-    recorder.closeRecorder();
+    if (recorderReady) {
+      recorder.closeRecorder();
+    }
     _typingTimer.cancel();
     super.dispose();
   }

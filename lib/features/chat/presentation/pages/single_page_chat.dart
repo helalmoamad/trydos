@@ -201,6 +201,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
   void initState() {
     LastPagesTracker.push('SinglePageChat');
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().chatToken}*");
+    print(
+      "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE*/****#${widget.chatId}",
+    );
     rebuildMessage.value = -2;
     if (widget.fromOrder == "true") {
       Eraser.clearAppNotificationsByTag(widget.chatId);
@@ -428,35 +431,53 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       widget.fromOrder == "true"
                           ? const SizedBox.shrink()
                           : BlocListener<ChatBloc, ChatState>(
-                              listenWhen: (p, c) =>
-                                  p.currentOpenedChatId !=
-                                  c.currentOpenedChatId,
+                              listenWhen: (p, c) {
+                                print(
+                                  "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${p.currentOpenedChatIdStatus}//${c.currentOpenedChatIdStatus}",
+                                );
+
+                                return p.currentOpenedChatIdStatus !=
+                                    c.currentOpenedChatIdStatus;
+                              },
                               listener: (context, state) {
-                                chat = state.chats.firstWhere(
-                                  (element) =>
-                                      element.id.toString() == widget.chatId ||
-                                      element.localId.toString() ==
-                                          widget.chatId,
-                                  orElse: () => state.pinnedChats.firstWhere(
+                                if (state.currentOpenedChatIdStatus ==
+                                    CurrentOpenedChatIdStatus.success) {
+                                  chat = state.chats.firstWhere(
                                     (element) =>
                                         element.id.toString() ==
                                             widget.chatId ||
                                         element.localId.toString() ==
                                             widget.chatId,
-                                  ),
-                                );
+                                    orElse: () => state.pinnedChats.firstWhere(
+                                      (element) =>
+                                          element.id.toString() ==
+                                              widget.chatId ||
+                                          element.localId.toString() ==
+                                              widget.chatId,
+                                    ),
+                                  );
+                                  print(
+                                    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR///${state.currentOpenedChatIdStatus}",
+                                  );
+                                  print(
+                                    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR***${chat.id}",
+                                  );
+                                  print(
+                                    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR/*/${chat.localId}",
+                                  );
 
-                                member = !chat.channelMembers.isNullOrEmpty
-                                    ? chat.channelMembers!.firstWhere(
-                                        (element) =>
-                                            element.userId !=
-                                            _prefsRepository.myChatId,
-                                      )
-                                    : null;
-                                FirebasePresence.listeningToConnectStatus(
-                                  chatId: widget.chatId,
-                                  friendId: member!.userId!,
-                                );
+                                  member = !chat.channelMembers.isNullOrEmpty
+                                      ? chat.channelMembers!.firstWhere(
+                                          (element) =>
+                                              element.userId !=
+                                              _prefsRepository.myChatId,
+                                        )
+                                      : null;
+                                  FirebasePresence.listeningToConnectStatus(
+                                    chatId: widget.chatId,
+                                    friendId: member!.userId!,
+                                  );
+                                }
                               },
                               child: BlocBuilder<ChatBloc, ChatState>(
                                 builder: (context, state) {
@@ -708,61 +729,66 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       /* widget.fromOrder == "true"
                           ? const SizedBox.shrink()
                           :*/
-                      BlocBuilder<CallsBloc, CallsState>(
-                        builder: (context, state) => InkWell(
-                          onTap: () async {
-                            List<Map<String, dynamic>> info = callerInfo(
-                              channelId: widget.chatId,
-                            );
-                            PermissionStatus microphone = await Permission
-                                .microphone
-                                .request();
-                            var status2 = await Permission.mediaLibrary
-                                .request();
-                            PermissionStatus camera = await Permission.camera
-                                .request();
-                            if (microphone.isGranted &&
-                                status2.isGranted &&
-                                camera.isGranted) {
-                              if (info[0].containsKey('currentReceiver')) {
-                                GetIt.I<CallsBloc>().add(
-                                  MakeCallEvent(
-                                    receiverUserId: info[0]['currentReceiver']
-                                        .toString(),
-                                    receiverCallName: widget.fullReceiverName,
-                                    chatId: info[1]['channelId'],
-                                    isVideo: true,
-                                    payload: info[1],
-                                  ),
+                      (widget.fromOrder == "true")
+                          ? const SizedBox.shrink()
+                          : InkWell(
+                              onTap: () async {
+                                List<Map<String, dynamic>> info = callerInfo(
+                                  channelId: widget.chatId,
                                 );
-                              } else {
-                                GetIt.I<CallsBloc>().add(
-                                  MakeCallEvent(
-                                    isVideo: true,
-                                    receiverCallName: widget.fullReceiverName,
-                                    chatId: info[0]['channelId'],
-                                    payload: info[0],
-                                  ),
-                                );
-                                //todo we have the id of the chat so we can move to the call immediately
-                              }
-                            } else if (microphone.isDenied ||
-                                status2.isDenied ||
-                                camera.isDenied) {
-                              showWarningMessage(
-                                context,
-                                LocaleKeys.permission_denied.tr(),
-                              );
-                              openAppSettings();
-                            }
-                          },
-                          child: SvgPicture.asset(
-                            AppAssets.makeVideoCallSvg,
-                            width: 34.w,
-                            height: 25,
-                          ),
-                        ),
-                      ),
+                                PermissionStatus microphone = await Permission
+                                    .microphone
+                                    .request();
+                                var status2 = await Permission.mediaLibrary
+                                    .request();
+                                PermissionStatus camera = await Permission
+                                    .camera
+                                    .request();
+                                if (microphone.isGranted &&
+                                    status2.isGranted &&
+                                    camera.isGranted) {
+                                  if (info[0].containsKey('currentReceiver')) {
+                                    GetIt.I<CallsBloc>().add(
+                                      MakeCallEvent(
+                                        receiverUserId:
+                                            info[0]['currentReceiver']
+                                                .toString(),
+                                        receiverCallName:
+                                            widget.fullReceiverName,
+                                        chatId: info[1]['channelId'],
+                                        isVideo: true,
+                                        payload: info[1],
+                                      ),
+                                    );
+                                  } else {
+                                    GetIt.I<CallsBloc>().add(
+                                      MakeCallEvent(
+                                        isVideo: true,
+                                        receiverCallName:
+                                            widget.fullReceiverName,
+                                        chatId: info[0]['channelId'],
+                                        payload: info[0],
+                                      ),
+                                    );
+                                    //todo we have the id of the chat so we can move to the call immediately
+                                  }
+                                } else if (microphone.isDenied ||
+                                    status2.isDenied ||
+                                    camera.isDenied) {
+                                  showWarningMessage(
+                                    context,
+                                    LocaleKeys.permission_denied.tr(),
+                                  );
+                                  openAppSettings();
+                                }
+                              },
+                              child: SvgPicture.asset(
+                                AppAssets.makeVideoCallSvg,
+                                width: 34.w,
+                                height: 25,
+                              ),
+                            ),
+
                       30.horizontalSpace,
                       // todo CreateCallPage
                       /* widget.fromOrder == "true"
@@ -1044,9 +1070,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           c.receiveMessageStatus ==
                               ReceiveMessageStatus.success),
                   listener: (context, state) {
-                    print(
-                      "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE#",
-                    );
                     if (state.sendMessageStatus == SendMessageStatus.loading ||
                         state.receiveMessageStatus ==
                             ReceiveMessageStatus.success) {
@@ -1065,6 +1088,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     }
                   },
                   builder: (context, chatState) {
+                    print(
+                      "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE#///${chatState.sendMessageStatus}/${chatState.receiveMessageStatus}/${chatState.resendMessageStatus}/${chatState.getMessagesBetweenStatus}",
+                    );
                     chat = chatState.chats.firstWhere(
                       (element) =>
                           element.id.toString() == widget.chatId ||
@@ -1121,7 +1147,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                     .toList(),
                                               );
                                           print(
-                                            "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE${messages[1].id}#${messages[0].id}",
+                                            "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE${currentIndex}111222${messages[1].id}#${messages[0].id}",
                                           );
 
                                           if (messages[index].isDateMessage!) {
@@ -1381,46 +1407,65 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                             ),
                                                         child: GestureDetector(
                                                           onPanDown: (details) {
-                                                            if ((details
-                                                                        .localPosition
-                                                                        .dx +
-                                                                    (isSent
-                                                                        ? 140
-                                                                        : 0)) <
-                                                                (lan
-                                                                    ? 210.w
-                                                                    : 40)) {
+                                                            double dx = details
+                                                                .localPosition
+                                                                .dx;
+                                                            double iconWidth =
+                                                                30.w;
+
+                                                            // Calculate the visual gap on the left for messages aligned to the right (isSent).
+                                                            // Total Padding is 60.w (40+20). Content width is approx 225.w (185 icons + 35 reply + 5 space).
+                                                            // If isSent, content is right-aligned, so there is a gap on the left.
+                                                            // dx includes this gap. We need to subtract it to normalize coordinates to [0..ContentWidth].
+
+                                                            double screenWidth =
+                                                                MediaQuery.of(
+                                                                  context,
+                                                                ).size.width;
+                                                            double
+                                                            contentWidth =
+                                                                225.w;
+                                                            double padding =
+                                                                60.w;
+                                                            double gap = isSent
+                                                                ? (screenWidth -
+                                                                      padding -
+                                                                      contentWidth)
+                                                                : 0;
+                                                            if (gap < 0)
+                                                              gap = 0;
+
+                                                            double effectiveX =
+                                                                dx - gap;
+
+                                                            if (effectiveX <
+                                                                40) {
                                                               currentFocusedIcon
                                                                       .value =
                                                                   -1;
-                                                            } else if ((details
-                                                                        .localPosition
-                                                                        .dx +
-                                                                    (isSent
-                                                                        ? 140
-                                                                        : 0)) >
-                                                                (lan
-                                                                    ? 40
-                                                                    : 210.w)) {
+                                                            } else if (effectiveX >
+                                                                220.w) {
                                                               currentFocusedIcon
                                                                   .value = lan
-                                                                  ? 5
-                                                                  : 0;
+                                                                  ? 0
+                                                                  : 5;
                                                             } else {
+                                                              int
+                                                              calculatedIndex =
+                                                                  ((effectiveX -
+                                                                      40) ~/
+                                                                  iconWidth);
+                                                              if (calculatedIndex <
+                                                                  0)
+                                                                calculatedIndex =
+                                                                    -1;
+                                                              if (calculatedIndex >
+                                                                  5)
+                                                                calculatedIndex =
+                                                                    5;
                                                               currentFocusedIcon
                                                                       .value =
-                                                                  (lan
-                                                                      ? (details.localPosition.dx +
-                                                                            40 +
-                                                                            (isSent
-                                                                                ? 140
-                                                                                : 0))
-                                                                      : (details.localPosition.dx -
-                                                                            40 -
-                                                                            (isSent
-                                                                                ? 140
-                                                                                : 0))) ~/
-                                                                  (30.w);
+                                                                  calculatedIndex;
                                                             }
                                                           },
                                                           onPanEnd: (details) {
@@ -1435,37 +1480,60 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                             );
                                                           },
                                                           onPanUpdate: (details) {
-                                                            if ((details
-                                                                        .localPosition
-                                                                        .dx -
-                                                                    (isSent
-                                                                        ? 140
-                                                                        : 0)) <
+                                                            double dx = details
+                                                                .localPosition
+                                                                .dx;
+                                                            double iconWidth =
+                                                                30.w;
+
+                                                            double screenWidth =
+                                                                MediaQuery.of(
+                                                                  context,
+                                                                ).size.width;
+                                                            double
+                                                            contentWidth =
+                                                                225.w;
+                                                            double padding =
+                                                                60.w;
+                                                            double gap = isSent
+                                                                ? (screenWidth -
+                                                                      padding -
+                                                                      contentWidth)
+                                                                : 0;
+                                                            if (gap < 0)
+                                                              gap = 0;
+
+                                                            double effectiveX =
+                                                                dx - gap;
+
+                                                            if (effectiveX <
                                                                 40) {
                                                               currentFocusedIcon
                                                                       .value =
                                                                   -1;
-                                                            } else if ((details
-                                                                        .localPosition
-                                                                        .dx -
-                                                                    (isSent
-                                                                        ? 140
-                                                                        : 0)) >
-                                                                210.w) {
+                                                            } else if (effectiveX >
+                                                                220.w) {
                                                               currentFocusedIcon
-                                                                      .value =
-                                                                  5;
+                                                                  .value = lan
+                                                                  ? 0
+                                                                  : 5;
                                                             } else {
+                                                              int
+                                                              calculatedIndex =
+                                                                  ((effectiveX -
+                                                                      40) ~/
+                                                                  iconWidth);
+                                                              if (calculatedIndex <
+                                                                  0)
+                                                                calculatedIndex =
+                                                                    -1;
+                                                              if (calculatedIndex >
+                                                                  5)
+                                                                calculatedIndex =
+                                                                    5;
                                                               currentFocusedIcon
                                                                       .value =
-                                                                  (details
-                                                                          .localPosition
-                                                                          .dx -
-                                                                      40 -
-                                                                      (isSent
-                                                                          ? 140
-                                                                          : 0)) ~/
-                                                                  30.w;
+                                                                  calculatedIndex;
                                                             }
                                                           },
                                                           child: Row(
@@ -2181,7 +2249,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       //                flutterToast.s
                       return (chatState.chats
                                   .firstWhere(
-                                    (element) => element.id == widget.chatId,
+                                    (element) =>
+                                        (element.id == widget.chatId ||
+                                        element.localId == widget.chatId),
                                     orElse: () =>
                                         chatState.pinnedChats.firstWhere(
                                           (element) =>
@@ -2314,16 +2384,137 @@ class _SinglePageChatState extends State<SinglePageChat> {
   }
 
   void dealWithMessageOptions(int index, String? messageId) {
+    if (messageId == null) return;
+    Message message = chat.messages!.firstWhere(
+      (element) => element.id == messageId,
+    );
+
+    Locale locale = Localizations.localeOf(context);
+    bool lan = !locale.languageCode.contains("ar");
+
     if (index == -1) {
-      replayMessage(
-        chat.messages!.firstWhere((element) => element.id == messageId),
-        _prefsRepository.myChatId,
-      );
-    } else if (index == 0) {
-      forwardMessageMethod(
-        chat.messages!.firstWhere((element) => element.id == messageId),
-      );
+      replayMessage(message, _prefsRepository.myChatId);
+      return;
     }
+
+    // Actions Mapping
+    // English (lan=true):  0:Forward, 1:Copy, 2:Category, 3:Delete, 4:Edit, 5:Remind
+    // Arabic (lan=false): 0:Remind, 1:Edit, 2:Delete, 3:Category, 4:Copy, 5:Forward
+
+    if (lan) {
+      switch (index) {
+        case 0:
+          forwardMessageMethod(message);
+          break;
+        case 1:
+          _copyMessage(message);
+          break;
+        case 2:
+          // Category
+          break;
+        case 3:
+          _deleteMessageDialog(message);
+          break;
+        case 4:
+          // Edit
+          break;
+        case 5:
+          // Remind
+          break;
+      }
+    } else {
+      switch (index) {
+        case 0:
+          // Remind
+          break;
+        case 1:
+          // Edit
+          break;
+        case 2:
+          _deleteMessageDialog(message);
+          break;
+        case 3:
+          // Category
+          break;
+        case 4:
+          _copyMessage(message);
+          break;
+        case 5:
+          forwardMessageMethod(message);
+          break;
+      }
+    }
+  }
+
+  void _copyMessage(Message message) {
+    final messageContent = message.messageContent?.content?.toString();
+    if (messageContent == null ||
+        (messageContent.trim().isEmpty) ||
+        message.messageType?.name != "TextMessage") {
+      return;
+    }
+    Clipboard.setData(ClipboardData(text: messageContent));
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(LocaleKeys.copied.tr()),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+  }
+
+  void _deleteMessageDialog(Message message) {
+    bool isSent = message.senderUserId == _prefsRepository.myChatId;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(LocaleKeys.delete_message.tr()),
+        actions: [
+          MaterialButton(
+            onPressed: () {
+              callsBloc.add(
+                DeleteMessageEvent(
+                  type: "message",
+                  deleteFromBoth: 0,
+                  messageId: message.id!,
+                  channelId: widget.chatId,
+                  deleteFromId: _prefsRepository.myChatId!,
+                ),
+              );
+              Navigator.of(context).pop();
+              rebuildMessage.value = -1;
+            },
+            child: Text(LocaleKeys.only_me.tr()),
+          ),
+          SizedBox(width: 20.w),
+          (!isSent)
+              ? MaterialButton(
+                  child: Text(LocaleKeys.cancel.tr()),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    rebuildMessage.value = -1;
+                  },
+                )
+              : MaterialButton(
+                  onPressed: () {
+                    callsBloc.add(
+                      DeleteMessageEvent(
+                        deleteFromId: _prefsRepository.myChatId!,
+                        type: "message",
+                        deleteFromBoth: 1,
+                        messageId: message.id!,
+                        channelId: widget.chatId,
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                    rebuildMessage.value = -1;
+                  },
+                  child: Text(LocaleKeys.everyone.tr()),
+                ),
+        ],
+      ),
+    );
   }
 
   void forwardMessageMethod(Message message) {
@@ -2843,6 +3034,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
             message: LocaleKeys.video_call_at.tr(),
             time: message.createdAt!,
             isSent: isSentMessage,
+            durationInSeconds: message.durationInSeconds ?? 0,
+            isMessageForMe: isSentMessage,
             userMessageName: isSentMessage ? senderName : receiverName,
             userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
           );
@@ -2852,6 +3045,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
             message: LocaleKeys.voice_call_at.tr(),
             isSent: isSentMessage,
             time: message.createdAt!,
+            durationInSeconds: message.durationInSeconds ?? 0,
+            isMessageForMe: isSentMessage,
             userMessageName: isSentMessage ? senderName : receiverName,
             userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
           );

@@ -1,9 +1,11 @@
 import 'dart:developer';
 
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
 import 'package:trydos/features/calls/data/models/missed_call_count.dart';
 import 'package:trydos/features/calls/data/models/my_calls.dart';
@@ -41,22 +43,14 @@ class CallsRemoteDataSource {
   }
 
   Future<bool> makeAnswerCall(String messageId) {
+    print(
+      "myFcmToken ://///*******${GetIt.I<PrefsRepository>().getFcmTokens[0]}",
+    );
     PostClient<bool> AnswerCall = PostClient<bool>(
       requestPrams: RequestConfig<bool>(
         // data: params,
         endpoint: ChatEndPoints.answer_call(messageId),
-        response: ResponseValue<bool>(returnValueOnSuccess: true),
-      ),
-      serverName: ServerName.chat,
-    );
-    return AnswerCall();
-  }
-
-  Future<bool> makeRingingCall(String ChatId) {
-    PostClient<bool> AnswerCall = PostClient<bool>(
-      requestPrams: RequestConfig<bool>(
-        // data: params,
-        endpoint: ChatEndPoints.answer_call(ChatId),
+        data: {"fcm_token": GetIt.I<PrefsRepository>().getFcmTokens[0]},
         response: ResponseValue<bool>(returnValueOnSuccess: true),
       ),
       serverName: ServerName.chat,

@@ -13,6 +13,7 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/data/models/get_user_country_response_model.dart';
+import 'package:trydos/features/authentication/domain/use_cases/delete_fcm_from_chat_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/generating_token_for_comment.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
@@ -71,6 +72,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.verifyOtpFromGuestUseCase,
     this.verifyOtpSignInUseCase,
     this.getUserCountryUseCase,
+    this.deleteFcmFromChatUseCase,
     this.verifyOtpSignUpUseCase,
   ) : super(const AuthState()) {
     on<AuthEvent>((event, emit) {});
@@ -101,6 +103,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent);
     on<VerifyOtpInProfileEvent>(_onVerifyOtpInProfileEvent);
+    on<DeleteFcmTokenFromChatEvent>(_onDeleteFcmTokenFromChatEvent);
     on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent);
     on<VerifyOtpFromGuestEvent>(_onVerifyGuestPhoneEvent);
     on<RegisterGuestEvent>(
@@ -133,6 +136,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final VerifyOtpFromGuestUseCase verifyOtpFromGuestUseCase;
   final RegisterGuestUseCase registerGuestUseCase;
   final UpdateNameUseCase updateNameUseCase;
+  final DeleteFcmFromChatUseCase deleteFcmFromChatUseCase;
   final GetCustomerInfoUseCase getCustomerInfoUseCase;
   final GetUserCountryUseCase getUserCountryUseCase;
   final VerifyOtpInProfileUseCase verifyOtpInProfileUseCase;
@@ -228,6 +232,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         GetIt.I<ChatBloc>().add(const GetChatsEvent(limit: 10));
       },
     );
+  }
+
+  FutureOr<void> _onDeleteFcmTokenFromChatEvent(
+    DeleteFcmTokenFromChatEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    await deleteFcmFromChatUseCase(DeleteFcmParams(fcmToken: event.fcmToken));
   }
 
   FutureOr<void> _onStoreFcmTokenEvent(

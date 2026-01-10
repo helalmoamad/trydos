@@ -407,13 +407,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                                 //     width: 10.sp,
                                                                 //     height: 10.sp,
                                                                 //   )
-                                                                : SvgPicture.asset(
-                                                                    "",
-                                                                    width:
-                                                                        10.sp,
-                                                                    height:
-                                                                        10.sp,
-                                                                  )
+                                                                : const SizedBox.shrink()
                                                           : SvgPicture.asset(
                                                               key:
                                                                   TestVariables

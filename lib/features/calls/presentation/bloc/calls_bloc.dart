@@ -60,7 +60,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     on<InitResponseRejectVideoCallEvent>(_onInitResponseRejectVideoCallEvent);
     on<RejectVideoCallEvent>(_onRejectVideoCallEvent);
     on<WatchMissedCallEvent>(_onWatchMissedCallEvent);
-
+    on<ChangeMakeCallStatusToInitEvent>(_onChangeMakeCallStatusToInitEvent);
     on<AnswerVideoCallEvent>(_onAnswerVideoCallEvent);
     on<EndVideoCallEvent>(_onEndVideoCallEvent);
     on<MakeCallEvent>(_onMakeCallEvent);
@@ -82,6 +82,13 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   ) {
     debugPrint("createVideoCallStatusdasd");
     emit(state.copyWith(makeCallStatus: MakeCallStatus.cancel));
+  }
+
+  FutureOr<void> _onChangeMakeCallStatusToInitEvent(
+    ChangeMakeCallStatusToInitEvent event,
+    Emitter<CallsState> emit,
+  ) {
+    emit(state.copyWith(makeCallStatus: MakeCallStatus.init));
   }
 
   FutureOr<void> _onGetMyCalls(
@@ -156,17 +163,19 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     }
     emit(
       state.copyWith(
+        makeCallStatus: MakeCallStatus.init,
+        isVideoCall: event.isVideo,
+      ),
+    );
+    await Future.delayed(const Duration(milliseconds: 300));
+    emit(
+      state.copyWith(
         makeCallStatus: MakeCallStatus.loading,
         receiverCallName: event.receiverCallName,
         isVideoCall: event.isVideo,
       ),
     );
-    emit(
-      state.copyWith(
-        makeCallStatus: MakeCallStatus.init,
-        isVideoCall: event.isVideo,
-      ),
-    );
+
     final response = await endCallUseCase(
       EndCallParams(userId: GetIt.I<PrefsRepository>().myChatId.toString()),
     );

@@ -24,97 +24,124 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, CreateUserResponseModel>> createUser(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.createUser(params));
+      tryCall: () => dataSource.createUser(params),
+    );
   }
 
   @override
   Future<Either<Failure, LoginToChatResponseModel>> loginToChat(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.loginToChat(params));
+      tryCall: () => dataSource.loginToChat(params),
+    );
   }
 
   @override
-  Future<Either<Failure, bool>> deleteFcmToken(Map<String, dynamic> params) {
+  Future<Either<Failure, bool>> deleteFcmTokenFromChat(
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.deleteFcmToken(params));
+      tryCall: () => dataSource.deleteFcmTokenFromChat(params),
+    );
   }
 
   @override
   Future<Either<Failure, String>> generateTokenForComment(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.generateTokenForComment(params));
+      tryCall: () => dataSource.generateTokenForComment(params),
+    );
   }
 
   @override
   Future<Either<Failure, StoreFcmTokenResponseModel>> storeFcmToken(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.storeFcmToken(params));
+      tryCall: () => dataSource.storeFcmToken(params),
+    );
   }
 
   @override
   Future<Either<Failure, VerifyOtpInProfileResponseModel>> verifyOtpInProfile(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.verifyOtpInProfile(params));
+      tryCall: () => dataSource.verifyOtpInProfile(params),
+    );
   }
 
   @override
   Future<Either<Failure, SendOtpResponseModel>> sendOtp(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(tryCall: () => dataSource.sendOtp(params));
   }
 
   @override
   Future<Either<Failure, VerifyOtpFromGuestResponseModel>> verifyOtpFromGuest(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.verifyOtpFromGuest(params));
+      tryCall: () => dataSource.verifyOtpFromGuest(params),
+    );
   }
 
   @override
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> loginToMarket(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.loginToMarket(params));
+      tryCall: () => dataSource.loginToMarket(params),
+    );
   }
 
   @override
   Future<Either<Failure, LoginToStoriesResponseModel>> loginToStories(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.loginToStories(params));
+      tryCall: () => dataSource.loginToStories(params),
+    );
   }
 
   @override
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> verifyOtpSignIn(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.verifyOtpSignIn(params));
+      tryCall: () => dataSource.verifyOtpSignIn(params),
+    );
   }
 
   @override
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> verifyOtpSignUp(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.verifyOtpSignUp(params));
+      tryCall: () => dataSource.verifyOtpSignUp(params),
+    );
   }
 
   @override
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> registerGuest(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.registerGuest(params));
+      tryCall: () => dataSource.registerGuest(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> updateName(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateName(params));
+      tryCall: () => dataSource.updateName(params),
+    );
   }
 
   @override
@@ -130,13 +157,16 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
   @override
   Future<Either<Failure, bool>> updateStoriesUser(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateStoriesUser(params));
+      tryCall: () => dataSource.updateStoriesUser(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> updateChatUserName(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.updateChatUserName(params));
+      tryCall: () => dataSource.updateChatUserName(params),
+    );
   }
 }

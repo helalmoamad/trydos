@@ -145,7 +145,7 @@ class PhoneFormField extends StatelessWidget {
         alignment: Alignment.bottomLeft,
         children: [
           SizedBox(
-            height: 60,
+            height: 65.h,
             width: 390.w,
             child: Directionality(
               textDirection: TextDirection.ltr,
@@ -198,7 +198,7 @@ class PhoneFormField extends StatelessWidget {
                   decoration: TextDecoration.none,
                 ),
                 decoration: InputDecoration(
-                  contentPadding: HWEdgeInsets.only(top: 15),
+                  contentPadding: HWEdgeInsets.only(top: 22.h),
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   prefixIcon: prefixIcon,
@@ -222,7 +222,7 @@ class PhoneFormField extends StatelessWidget {
                         return Container(
                           margin: HWEdgeInsets.only(
                             left: 95 + offset,
-                            bottom: 20,
+                            bottom: 20.h,
                           ),
                           width: 10.w,
                           height: 1,

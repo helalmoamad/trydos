@@ -323,8 +323,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> addFcmToken(String fcmToken) {
-    List<String> tokens = getFcmTokens;
-    if (tokens.contains(fcmToken)) return Future.value(true);
+    List<String> tokens = [];
+
     tokens.add(fcmToken);
     return _preferences.setStringList(PrefsKey.fcmToken, tokens);
   }

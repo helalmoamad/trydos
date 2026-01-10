@@ -4,12 +4,14 @@ import android.content.Context
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Build
+import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.trydos.audio/settings"
+    private val TAG = "MainActivity"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -24,6 +26,32 @@ class MainActivity: FlutterActivity() {
                 result.notImplemented()
             }
         }
+    }
+
+    /// ✅ معالجة عودة التطبيق من الخلفية
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "✅ onResume: App is resuming from background")
+        
+        // إعادة تهيئة أي موارد ضرورية
+        try {
+            // يمكن إضافة أي كود لإعادة تهيئة الموارد هنا
+            Log.d(TAG, "✅ App resumed successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error in onResume: ${e.message}")
+        }
+    }
+
+    /// ⏸️ معالجة دخول التطبيق للخلفية
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "⏸️ onPause: App is going to background")
+    }
+
+    /// 🔄 معالجة إعادة تشغيل التطبيق بعد Process Death
+    override fun onRestart() {
+        super.onRestart()
+        Log.d(TAG, "🔄 onRestart: App is restarting after being stopped")
     }
 
     private fun setCallAudioMode(enable: Boolean) {
