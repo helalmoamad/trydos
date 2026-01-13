@@ -212,11 +212,8 @@ class _ProductDetailsBottomSheetNewState
             state.colorsQuantitiesForEachProduct ?? [];
         colorsForEachProduct = state.colorsForEachProduct ?? [];
         sizesForEachProduct = state.sizesForEachColor ?? [];
-        qtyForProductWithoutVariant = state
-            .cachedProductWithoutRelatedProductsModel[widget
-                .productIdForCashData]
-            ?.product
-            ?.availableQuantity;
+        qtyForProductWithoutVariant =
+            state.authProductDetailsModel?.data?.availableQuantity;
         return SingleChildScrollView(
           controller: singleChildScrollViewsScrollController,
           child: Column(

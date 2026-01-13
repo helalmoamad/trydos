@@ -617,10 +617,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                     .product
                                     ?.priceFormatted,
                                 availableQuantity: state
-                                    .cachedProductWithoutRelatedProductsModel[productItem
-                                        ?.productId
-                                        .toString()]!
-                                    .product
+                                    .authProductDetailsModel
+                                    ?.data
                                     ?.availableQuantity,
                                 choiceOptions: state
                                     .cachedProductWithoutRelatedProductsModel[productItem
@@ -1755,10 +1753,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             .product
                             ?.priceFormatted,
                         availableQuantity: state
-                            .cachedProductWithoutRelatedProductsModel[productItem
-                                ?.productId
-                                .toString()]!
-                            .product
+                            .authProductDetailsModel
+                            ?.data
                             ?.availableQuantity,
                         choiceOptions: state
                             .cachedProductWithoutRelatedProductsModel[productItem
@@ -2563,10 +2559,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                         null
                                     ? 0
                                     : state
-                                          .cachedProductWithoutRelatedProductsModel[productItem
-                                              ?.productId
-                                              .toString()]!
-                                          .product
+                                          .authProductDetailsModel
+                                          ?.data
                                           ?.availableQuantity,
                                 ownerId: state
                                     .cachedProductWithoutRelatedProductsModel[productItem

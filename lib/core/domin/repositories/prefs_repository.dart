@@ -25,7 +25,7 @@ abstract class PrefsRepository {
   List<String>? get getNotificationIdsToRemoveAfterplaceOrder;
   List<String>? get getImageUrlHasPrefeched;
   List<String>? get getTagsInUrlToFilter;
-  String? get getNotificationTypeFromTerminated;
+  Future<String?> getNotificationTypeFromTerminated();
   List<Map>? get getTheRemovedMessageFromBackground;
   List<Map>? get getTheMessageWatchStatusFromBackground;
   List<Map>? get getTheMessageReceivedStatusFromBackground;

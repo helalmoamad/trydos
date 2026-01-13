@@ -603,42 +603,44 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                           },
                                         );
                                       }
-                                      Future.delayed(const Duration(milliseconds: 300), () {
-                                        if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                    .success &&
-                                            state.authProductDetailsStatus ==
-                                                AuthProductDetailsStatus
-                                                    .success &&
-                                            tapIndex != -1)) {
-                                          if (state
-                                                  .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                      .productId
-                                                      .toString()]
-                                                  ?.product
-                                                  ?.countryIsRestricted ==
-                                              true) {
-                                            productNotAvailableNotifier
-                                                .value = LocaleKeys
-                                                .product_is_not_available_in_your_country
-                                                .tr();
-                                          } else if (state
-                                                  .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                      .productId
-                                                      .toString()]
-                                                  ?.product
-                                                  ?.availableQuantity ==
-                                              0) {
-                                            productNotAvailableNotifier
-                                                .value = LocaleKeys
-                                                .this_product_is_not_available_in_store
-                                                .tr();
-                                          } else {
-                                            productNotAvailableNotifier.value =
-                                                null;
+                                      Future.delayed(
+                                        const Duration(milliseconds: 300),
+                                        () {
+                                          if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                  GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                      .success &&
+                                              state.authProductDetailsStatus ==
+                                                  AuthProductDetailsStatus
+                                                      .success &&
+                                              tapIndex != -1)) {
+                                            if (state
+                                                    .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                                                        .productId
+                                                        .toString()]
+                                                    ?.product
+                                                    ?.countryIsRestricted ==
+                                                true) {
+                                              productNotAvailableNotifier
+                                                  .value = LocaleKeys
+                                                  .product_is_not_available_in_your_country
+                                                  .tr();
+                                            } else if (state
+                                                    .authProductDetailsModel
+                                                    ?.data
+                                                    ?.availableQuantity ==
+                                                0) {
+                                              productNotAvailableNotifier
+                                                  .value = LocaleKeys
+                                                  .this_product_is_not_available_in_store
+                                                  .tr();
+                                            } else {
+                                              productNotAvailableNotifier
+                                                      .value =
+                                                  null;
+                                            }
                                           }
-                                        }
-                                      });
+                                        },
+                                      );
                                       Future.delayed(
                                         const Duration(milliseconds: 300),
                                         () {
@@ -1135,10 +1137,8 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                                 null
                                                             ? 0
                                                             : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
+                                                                  .authProductDetailsModel
+                                                                  ?.data
                                                                   ?.availableQuantity,
                                                         choiceOptions:
                                                             state.cachedProductWithoutRelatedProductsModel[products[tapIndex]

@@ -1407,24 +1407,32 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                             ),
                                                         child: GestureDetector(
                                                           onPanDown: (details) {
+                                                            bool isText =
+                                                                messages[index]
+                                                                    .messageType
+                                                                    ?.name ==
+                                                                "TextMessage";
                                                             double dx = details
                                                                 .localPosition
                                                                 .dx;
                                                             double iconWidth =
                                                                 30.w;
 
-                                                            // Calculate the visual gap on the left for messages aligned to the right (isSent).
-                                                            // Total Padding is 60.w (40+20). Content width is approx 225.w (185 icons + 35 reply + 5 space).
-                                                            // If isSent, content is right-aligned, so there is a gap on the left.
-                                                            // dx includes this gap. We need to subtract it to normalize coordinates to [0..ContentWidth].
-
                                                             double screenWidth =
                                                                 MediaQuery.of(
                                                                   context,
                                                                 ).size.width;
+                                                            int maxIndex =
+                                                                isText
+                                                                ? (isSent
+                                                                      ? 5
+                                                                      : 4)
+                                                                : 3;
                                                             double
                                                             contentWidth =
-                                                                225.w;
+                                                                (maxIndex * 30 +
+                                                                        45)
+                                                                    .w;
                                                             double padding =
                                                                 60.w;
                                                             double gap = isSent
@@ -1444,11 +1452,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                       .value =
                                                                   -1;
                                                             } else if (effectiveX >
-                                                                220.w) {
+                                                                (contentWidth -
+                                                                    5.w)) {
                                                               currentFocusedIcon
-                                                                  .value = lan
-                                                                  ? 0
-                                                                  : 5;
+                                                                      .value =
+                                                                  maxIndex;
                                                             } else {
                                                               int
                                                               calculatedIndex =
@@ -1460,9 +1468,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                 calculatedIndex =
                                                                     -1;
                                                               if (calculatedIndex >
-                                                                  5)
+                                                                  maxIndex)
                                                                 calculatedIndex =
-                                                                    5;
+                                                                    maxIndex;
                                                               currentFocusedIcon
                                                                       .value =
                                                                   calculatedIndex;
@@ -1480,6 +1488,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                             );
                                                           },
                                                           onPanUpdate: (details) {
+                                                            bool isText =
+                                                                messages[index]
+                                                                    .messageType
+                                                                    ?.name ==
+                                                                "TextMessage";
                                                             double dx = details
                                                                 .localPosition
                                                                 .dx;
@@ -1490,9 +1503,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                 MediaQuery.of(
                                                                   context,
                                                                 ).size.width;
+                                                            int maxIndex =
+                                                                isText
+                                                                ? (isSent
+                                                                      ? 5
+                                                                      : 4)
+                                                                : 3;
                                                             double
                                                             contentWidth =
-                                                                225.w;
+                                                                (maxIndex * 30 +
+                                                                        45)
+                                                                    .w;
                                                             double padding =
                                                                 60.w;
                                                             double gap = isSent
@@ -1512,11 +1533,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                       .value =
                                                                   -1;
                                                             } else if (effectiveX >
-                                                                220.w) {
+                                                                (contentWidth -
+                                                                    5.w)) {
                                                               currentFocusedIcon
-                                                                  .value = lan
-                                                                  ? 0
-                                                                  : 5;
+                                                                      .value =
+                                                                  maxIndex;
                                                             } else {
                                                               int
                                                               calculatedIndex =
@@ -1528,9 +1549,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                 calculatedIndex =
                                                                     -1;
                                                               if (calculatedIndex >
-                                                                  5)
+                                                                  maxIndex)
                                                                 calculatedIndex =
-                                                                    5;
+                                                                    maxIndex;
                                                               currentFocusedIcon
                                                                       .value =
                                                                   calculatedIndex;
@@ -1567,7 +1588,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                               : MainAxisAlignment.start,
                                                                           children: [
                                                                             Container(
-                                                                              width: 185.w,
+                                                                              width:
+                                                                                  (messages[index].messageType?.name ==
+                                                                                              "TextMessage"
+                                                                                          ? (isSent
+                                                                                                ? 185
+                                                                                                : 155)
+                                                                                          : 125)
+                                                                                      .w,
                                                                               height: 40,
                                                                               padding: HWEdgeInsets.symmetric(
                                                                                 vertical: 12,
@@ -1614,51 +1642,68 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                     iconUrl: AppAssets.goBackIconSvg,
                                                                                     myIndex: lan
                                                                                         ? 0
-                                                                                        : 5,
+                                                                                        : (messages[index].messageType?.name ==
+                                                                                                  "TextMessage"
+                                                                                              ? (isSent
+                                                                                                    ? 5
+                                                                                                    : 4)
+                                                                                              : 3),
                                                                                     focusedIndex: focusedIndex,
                                                                                   ),
-                                                                                  MessageActionWidget(
-                                                                                    onTap: () {
-                                                                                      final messageContent = messages[index].messageContent?.content?.toString();
-                                                                                      if (messageContent ==
-                                                                                              null ||
-                                                                                          (messageContent.trim().isEmpty) ||
-                                                                                          messages[index].messageType?.name !=
-                                                                                              "TextMessage") {
-                                                                                        return;
-                                                                                      }
-                                                                                      Clipboard.setData(
-                                                                                        ClipboardData(
-                                                                                          text: messageContent,
-                                                                                        ),
-                                                                                      );
-                                                                                      ScaffoldMessenger.of(
-                                                                                          context,
-                                                                                        )
-                                                                                        ..clearSnackBars()
-                                                                                        ..showSnackBar(
-                                                                                          SnackBar(
-                                                                                            content: Text(
-                                                                                              LocaleKeys.copied.tr(),
-                                                                                            ),
-                                                                                            duration: const Duration(
-                                                                                              seconds: 1,
-                                                                                            ),
+                                                                                  if (messages[index].messageType?.name ==
+                                                                                      "TextMessage")
+                                                                                    MessageActionWidget(
+                                                                                      onTap: () {
+                                                                                        final messageContent = messages[index].messageContent?.content?.toString();
+                                                                                        if (messageContent ==
+                                                                                                null ||
+                                                                                            (messageContent.trim().isEmpty) ||
+                                                                                            messages[index].messageType?.name !=
+                                                                                                "TextMessage") {
+                                                                                          return;
+                                                                                        }
+                                                                                        Clipboard.setData(
+                                                                                          ClipboardData(
+                                                                                            text: messageContent,
                                                                                           ),
                                                                                         );
-                                                                                    },
-                                                                                    iconUrl: AppAssets.copyIconSvg,
-                                                                                    myIndex: lan
-                                                                                        ? 1
-                                                                                        : 4,
-                                                                                    focusedIndex: focusedIndex,
-                                                                                  ),
+                                                                                        ScaffoldMessenger.of(
+                                                                                            context,
+                                                                                          )
+                                                                                          ..clearSnackBars()
+                                                                                          ..showSnackBar(
+                                                                                            SnackBar(
+                                                                                              content: Text(
+                                                                                                LocaleKeys.copied.tr(),
+                                                                                              ),
+                                                                                              duration: const Duration(
+                                                                                                seconds: 1,
+                                                                                              ),
+                                                                                            ),
+                                                                                          );
+                                                                                      },
+                                                                                      iconUrl: AppAssets.copyIconSvg,
+                                                                                      myIndex: lan
+                                                                                          ? 1
+                                                                                          : (isSent
+                                                                                                ? 4
+                                                                                                : 3),
+                                                                                      focusedIndex: focusedIndex,
+                                                                                    ),
                                                                                   MessageActionWidget(
                                                                                     onTap: () {},
                                                                                     iconUrl: AppAssets.addToGroupSvg,
                                                                                     myIndex: lan
-                                                                                        ? 2
-                                                                                        : 3,
+                                                                                        ? (messages[index].messageType?.name ==
+                                                                                                  "TextMessage"
+                                                                                              ? 2
+                                                                                              : 1)
+                                                                                        : (messages[index].messageType?.name ==
+                                                                                                  "TextMessage"
+                                                                                              ? (isSent
+                                                                                                    ? 3
+                                                                                                    : 2)
+                                                                                              : 2),
                                                                                     focusedIndex: focusedIndex,
                                                                                   ),
                                                                                   MessageActionWidget(
@@ -1751,23 +1796,38 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                     },
                                                                                     iconUrl: AppAssets.removeIconSvg,
                                                                                     myIndex: lan
-                                                                                        ? 3
-                                                                                        : 2,
+                                                                                        ? (messages[index].messageType?.name ==
+                                                                                                  "TextMessage"
+                                                                                              ? 3
+                                                                                              : 2)
+                                                                                        : ((messages[index].messageType?.name ==
+                                                                                                      "TextMessage" &&
+                                                                                                  isSent)
+                                                                                              ? 2
+                                                                                              : 1),
                                                                                     focusedIndex: focusedIndex,
                                                                                   ),
-                                                                                  MessageActionWidget(
-                                                                                    onTap: () {},
-                                                                                    iconUrl: AppAssets.editIconSvg,
-                                                                                    myIndex: lan
-                                                                                        ? 4
-                                                                                        : 1,
-                                                                                    focusedIndex: focusedIndex,
-                                                                                  ),
+                                                                                  if (isSent &&
+                                                                                      messages[index].messageType?.name ==
+                                                                                          "TextMessage")
+                                                                                    MessageActionWidget(
+                                                                                      onTap: () {},
+                                                                                      iconUrl: AppAssets.editIconSvg,
+                                                                                      myIndex: lan
+                                                                                          ? 4
+                                                                                          : 1,
+                                                                                      focusedIndex: focusedIndex,
+                                                                                    ),
                                                                                   MessageActionWidget(
                                                                                     onTap: () {},
                                                                                     iconUrl: AppAssets.notificationIconSvg,
                                                                                     myIndex: lan
-                                                                                        ? 5
+                                                                                        ? (messages[index].messageType?.name ==
+                                                                                                  "TextMessage"
+                                                                                              ? (isSent
+                                                                                                    ? 5
+                                                                                                    : 4)
+                                                                                              : 3)
                                                                                         : 0,
                                                                                     focusedIndex: focusedIndex,
                                                                                   ),
@@ -1787,6 +1847,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                 ),
                                                                                 child: MessageSubtitleWidget(
                                                                                   focusedIndex: focusedIndex,
+                                                                                  isSent: isSent,
+                                                                                  isText:
+                                                                                      messages[index].messageType?.name ==
+                                                                                      "TextMessage",
                                                                                 ),
                                                                               )
                                                                             : const SizedBox.shrink(),
@@ -1901,7 +1965,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                               : MainAxisAlignment.start,
                                                                           children: [
                                                                             Container(
-                                                                              width: 185.w,
+                                                                              width:
+                                                                                  (isSent
+                                                                                          ? 185
+                                                                                          : 155)
+                                                                                      .w,
                                                                               height: 40,
                                                                               padding: HWEdgeInsets.symmetric(
                                                                                 vertical: 12,
@@ -1943,51 +2011,68 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                     iconUrl: AppAssets.goBackIconSvg,
                                                                                     myIndex: lan
                                                                                         ? 0
-                                                                                        : 5,
+                                                                                        : (messages[index].messageType?.name ==
+                                                                                                  "TextMessage"
+                                                                                              ? (isSent
+                                                                                                    ? 5
+                                                                                                    : 4)
+                                                                                              : 3),
                                                                                     focusedIndex: focusedIndex,
                                                                                   ),
-                                                                                  MessageActionWidget(
-                                                                                    onTap: () {
-                                                                                      final messageContent = messages[index].messageContent?.content?.toString();
-                                                                                      if (messageContent ==
-                                                                                              null ||
-                                                                                          messageContent.trim().isEmpty ||
-                                                                                          messages[index].messageType?.name !=
-                                                                                              "TextMessage") {
-                                                                                        return;
-                                                                                      }
-                                                                                      Clipboard.setData(
-                                                                                        ClipboardData(
-                                                                                          text: messageContent,
-                                                                                        ),
-                                                                                      );
-                                                                                      ScaffoldMessenger.of(
-                                                                                          context,
-                                                                                        )
-                                                                                        ..clearSnackBars()
-                                                                                        ..showSnackBar(
-                                                                                          const SnackBar(
-                                                                                            content: Text(
-                                                                                              'تم النسخ',
-                                                                                            ),
-                                                                                            duration: Duration(
-                                                                                              seconds: 1,
-                                                                                            ),
+                                                                                  if (messages[index].messageType?.name ==
+                                                                                      "TextMessage")
+                                                                                    MessageActionWidget(
+                                                                                      onTap: () {
+                                                                                        final messageContent = messages[index].messageContent?.content?.toString();
+                                                                                        if (messageContent ==
+                                                                                                null ||
+                                                                                            messageContent.trim().isEmpty ||
+                                                                                            messages[index].messageType?.name !=
+                                                                                                "TextMessage") {
+                                                                                          return;
+                                                                                        }
+                                                                                        Clipboard.setData(
+                                                                                          ClipboardData(
+                                                                                            text: messageContent,
                                                                                           ),
                                                                                         );
-                                                                                    },
-                                                                                    iconUrl: AppAssets.copyIconSvg,
-                                                                                    myIndex: lan
-                                                                                        ? 1
-                                                                                        : 4,
-                                                                                    focusedIndex: focusedIndex,
-                                                                                  ),
+                                                                                        ScaffoldMessenger.of(
+                                                                                            context,
+                                                                                          )
+                                                                                          ..clearSnackBars()
+                                                                                          ..showSnackBar(
+                                                                                            SnackBar(
+                                                                                              content: Text(
+                                                                                                LocaleKeys.copied.tr(),
+                                                                                              ),
+                                                                                              duration: const Duration(
+                                                                                                seconds: 1,
+                                                                                              ),
+                                                                                            ),
+                                                                                          );
+                                                                                      },
+                                                                                      iconUrl: AppAssets.copyIconSvg,
+                                                                                      myIndex: lan
+                                                                                          ? 1
+                                                                                          : (isSent
+                                                                                                ? 4
+                                                                                                : 3),
+                                                                                      focusedIndex: focusedIndex,
+                                                                                    ),
                                                                                   MessageActionWidget(
                                                                                     onTap: () {},
                                                                                     iconUrl: AppAssets.addToGroupSvg,
                                                                                     myIndex: lan
-                                                                                        ? 2
-                                                                                        : 3,
+                                                                                        ? (messages[index].messageType?.name ==
+                                                                                                  "TextMessage"
+                                                                                              ? 2
+                                                                                              : 1)
+                                                                                        : (messages[index].messageType?.name ==
+                                                                                                  "TextMessage"
+                                                                                              ? (isSent
+                                                                                                    ? 3
+                                                                                                    : 2)
+                                                                                              : 2),
                                                                                     focusedIndex: focusedIndex,
                                                                                   ),
                                                                                   MessageActionWidget(
@@ -2070,23 +2155,39 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                     },
                                                                                     iconUrl: AppAssets.removeIconSvg,
                                                                                     myIndex: lan
-                                                                                        ? 3
-                                                                                        : 2,
+                                                                                        ? (messages[index].messageType?.name ==
+                                                                                                  "TextMessage"
+                                                                                              ? 3
+                                                                                              : 2)
+                                                                                        : (messages[index].messageType?.name ==
+                                                                                                  "TextMessage"
+                                                                                              ? (isSent
+                                                                                                    ? 2
+                                                                                                    : 1)
+                                                                                              : 1),
                                                                                     focusedIndex: focusedIndex,
                                                                                   ),
-                                                                                  MessageActionWidget(
-                                                                                    onTap: () {},
-                                                                                    iconUrl: AppAssets.editIconSvg,
-                                                                                    myIndex: lan
-                                                                                        ? 4
-                                                                                        : 1,
-                                                                                    focusedIndex: focusedIndex,
-                                                                                  ),
+                                                                                  if (isSent &&
+                                                                                      messages[index].messageType?.name ==
+                                                                                          "TextMessage")
+                                                                                    MessageActionWidget(
+                                                                                      onTap: () {},
+                                                                                      iconUrl: AppAssets.editIconSvg,
+                                                                                      myIndex: lan
+                                                                                          ? 4
+                                                                                          : 1,
+                                                                                      focusedIndex: focusedIndex,
+                                                                                    ),
                                                                                   MessageActionWidget(
                                                                                     onTap: () {},
                                                                                     iconUrl: AppAssets.notificationIconSvg,
                                                                                     myIndex: lan
-                                                                                        ? 5
+                                                                                        ? (messages[index].messageType?.name ==
+                                                                                                  "TextMessage"
+                                                                                              ? (isSent
+                                                                                                    ? 5
+                                                                                                    : 4)
+                                                                                              : 3)
                                                                                         : 0,
                                                                                     focusedIndex: focusedIndex,
                                                                                   ),
@@ -2106,6 +2207,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                 ),
                                                                                 child: MessageSubtitleWidget(
                                                                                   focusedIndex: focusedIndex,
+                                                                                  isSent: isSent,
+                                                                                  isText:
+                                                                                      messages[index].messageType?.name ==
+                                                                                      "TextMessage",
                                                                                 ),
                                                                               )
                                                                             : const SizedBox.shrink(),
@@ -2401,8 +2506,29 @@ class _SinglePageChatState extends State<SinglePageChat> {
     // English (lan=true):  0:Forward, 1:Copy, 2:Category, 3:Delete, 4:Edit, 5:Remind
     // Arabic (lan=false): 0:Remind, 1:Edit, 2:Delete, 3:Category, 4:Copy, 5:Forward
 
+    bool isSent = message.senderUserId == _prefsRepository.myChatId;
+    bool isText = message.messageType?.name == "TextMessage";
+    int adjustedIndex = index;
+    if (isText) {
+      if (!isSent) {
+        if (lan) {
+          if (index >= 4) adjustedIndex = index + 1;
+        } else {
+          if (index >= 1) adjustedIndex = index + 1;
+        }
+      }
+    } else {
+      if (lan) {
+        if (index >= 1) adjustedIndex = index + 1;
+        if (adjustedIndex >= 4) adjustedIndex = adjustedIndex + 1;
+      } else {
+        if (index >= 1) adjustedIndex = index + 1;
+        if (adjustedIndex >= 4) adjustedIndex = adjustedIndex + 1;
+      }
+    }
+
     if (lan) {
-      switch (index) {
+      switch (adjustedIndex) {
         case 0:
           forwardMessageMethod(message);
           break;
@@ -2423,7 +2549,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           break;
       }
     } else {
-      switch (index) {
+      switch (adjustedIndex) {
         case 0:
           // Remind
           break;
@@ -3126,9 +3252,15 @@ class MessageActionWidget extends StatelessWidget {
 }
 
 class MessageSubtitleWidget extends StatelessWidget {
-  const MessageSubtitleWidget({Key? key, required this.focusedIndex})
-    : super(key: key);
+  const MessageSubtitleWidget({
+    Key? key,
+    required this.focusedIndex,
+    required this.isSent,
+    required this.isText,
+  }) : super(key: key);
   final int focusedIndex;
+  final bool isSent;
+  final bool isText;
 
   @override
   Widget build(BuildContext context) {
@@ -3136,7 +3268,26 @@ class MessageSubtitleWidget extends StatelessWidget {
     bool lan = locale.languageCode != "ar";
 
     String hoverText = '';
-    switch (focusedIndex) {
+    int adjustedIndex = focusedIndex;
+    if (isText) {
+      if (!isSent) {
+        if (lan) {
+          if (focusedIndex >= 4) adjustedIndex = focusedIndex + 1;
+        } else {
+          if (focusedIndex >= 1) adjustedIndex = focusedIndex + 1;
+        }
+      }
+    } else {
+      if (lan) {
+        if (focusedIndex >= 1) adjustedIndex = focusedIndex + 1;
+        if (adjustedIndex >= 4) adjustedIndex = adjustedIndex + 1;
+      } else {
+        if (focusedIndex >= 1) adjustedIndex = focusedIndex + 1;
+        if (adjustedIndex >= 4) adjustedIndex = adjustedIndex + 1;
+      }
+    }
+
+    switch (adjustedIndex) {
       case 5:
         hoverText = lan ? LocaleKeys.re_mind.tr() : LocaleKeys.forward.tr();
         break;
@@ -3153,7 +3304,7 @@ class MessageSubtitleWidget extends StatelessWidget {
         hoverText = lan ? LocaleKeys.copy.tr() : LocaleKeys.edit.tr();
         break;
       case 0:
-        lan ? hoverText = LocaleKeys.forward.tr() : LocaleKeys.re_mind.tr();
+        hoverText = lan ? LocaleKeys.forward.tr() : LocaleKeys.re_mind.tr();
         break;
     }
     return Container(

@@ -2947,19 +2947,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       (r) {
         add(GetCartOverviewEvent());
         Variation? variation;
-        Map<String, GetProductDetailWithoutRelatedProductsModel>?
-        cachedProductWithoutRelatedProductsModel = Map.of(
-          state.cachedProductWithoutRelatedProductsModel,
-        );
-        Product? product =
-            cachedProductWithoutRelatedProductsModel[event.products.productId
-                    .toString()]
-                ?.product;
-
         GetAuthProductDetailsModel getAuthProductDetailsModel =
             state.authProductDetailsModel ?? GetAuthProductDetailsModel();
         List<Variation> listVariation =
             getAuthProductDetailsModel.data?.variation ?? [];
+        int availableQuantity =
+            getAuthProductDetailsModel.data?.availableQuantity ?? 0;
 
         int index = listVariation.indexWhere(
           (element) =>
@@ -3097,8 +3090,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             state.copyWith(
               addItemInCartStatus: AddItemInCartStatus.success,
               cartCollection: cartCollection,
-              cachedProductWithoutRelatedProductsModel:
-                  cachedProductWithoutRelatedProductsModel,
+
               authProductDetailsModel: getAuthProductDetailsModel,
             ),
           );
@@ -3122,24 +3114,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               qty: ((variation.qty)! - (event.quantity ?? 0)),
             );
             listVariation.insert(index, variation);
-
-            getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
-              data: getAuthProductDetailsModel.data!.copyWith(
-                variation: listVariation,
-              ),
-            );
           }
-
-          product = product?.copyWith(
-            availableQuantity:
-                ((product.availableQuantity)! - (event.quantity ?? 0)).round(),
+          getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
+            data: getAuthProductDetailsModel.data!.copyWith(
+              variation: listVariation,
+              availableQuantity: ((availableQuantity) - (event.quantity ?? 0))
+                  .round(),
+            ),
           );
-
-          cachedProductWithoutRelatedProductsModel[event.products.productId
-                  .toString()] =
-              cachedProductWithoutRelatedProductsModel[event.products.productId
-                      .toString()]!
-                  .copyWith(data: product!);
           Map<String, Map<String, String>> addVariationToCartId = Map.of(
             state.addVariationToCartId ?? {},
           );
@@ -3237,8 +3219,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               addItemInCartStatus: AddItemInCartStatus.success,
               authProductDetailsModel: getAuthProductDetailsModel,
               addVariationToCartId: addVariationToCartId,
-              cachedProductWithoutRelatedProductsModel:
-                  cachedProductWithoutRelatedProductsModel,
               cartCollection: cartCollection,
               addImagesToProductIdForCart: addImagesToProductIdForCart,
             ),
@@ -3360,13 +3340,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         Variation? variation;
         GetAuthProductDetailsModel getAuthProductDetailsModel =
             state.authProductDetailsModel ?? GetAuthProductDetailsModel();
-        Map<String, GetProductDetailWithoutRelatedProductsModel>?
-        cachedProductWithoutRelatedProductsModel = Map.of(
-          state.cachedProductWithoutRelatedProductsModel,
-        );
-        Product? product =
-            cachedProductWithoutRelatedProductsModel[event.productId.toString()]
-                ?.product;
+        int availableQuantity =
+            getAuthProductDetailsModel.data?.availableQuantity ?? 0;
         List<Variation> listVariation =
             getAuthProductDetailsModel.data?.variation ?? [];
 
@@ -3380,22 +3355,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           listVariation.removeAt(index);
           variation = variation.copyWith(qty: ((variation.qty)! + 1));
           listVariation.insert(index, variation);
-
-          getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
-            data: getAuthProductDetailsModel.data!.copyWith(
-              variation: listVariation,
-            ),
-          );
         }
-        if (!event.fromCartPage) {
-          product = product?.copyWith(
-            availableQuantity: product.availableQuantity! + 1,
-          );
-          cachedProductWithoutRelatedProductsModel[event.productId.toString()] =
-              cachedProductWithoutRelatedProductsModel[event.productId
-                      .toString()]!
-                  .copyWith(data: product!);
-        }
+        getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
+          data: getAuthProductDetailsModel.data!.copyWith(
+            variation: listVariation,
+            availableQuantity: availableQuantity + 1,
+          ),
+        );
         Map<String, Map<String, String>> addVariationToCartId = Map.of(
           state.addVariationToCartId ?? {},
         );
@@ -3416,8 +3382,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
         emit(
           state.copyWith(
-            cachedProductWithoutRelatedProductsModel:
-                cachedProductWithoutRelatedProductsModel,
             authProductDetailsModel: getAuthProductDetailsModel,
             addVariationToCartId: addVariationToCartId,
             addImagesToProductIdForCart: addImagesToProductIdForCart,
@@ -3777,23 +3741,21 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         ErrorManager.resetRetry('UpdateCartItemEvent');
         add(GetCartOverviewEvent());
         Variation? variation;
-        Map<String, GetProductDetailWithoutRelatedProductsModel>?
-        cachedProductWithoutRelatedProductsModel = Map.of(
-          state.cachedProductWithoutRelatedProductsModel,
-        );
-        Product? product =
-            cachedProductWithoutRelatedProductsModel[event.productId.toString()]
-                ?.product;
         List<Variation> listVariation =
             state.authProductDetailsModel?.data == null
             ? []
             : (state.authProductDetailsModel?.data!.variation) ?? [];
+        int availableQuantity =
+            state.authProductDetailsModel?.data!.availableQuantity ?? 0;
         GetAuthProductDetailsModel getAuthProductDetailsModel =
             state.authProductDetailsModel ?? GetAuthProductDetailsModel();
         int index = listVariation.indexWhere(
           (element) =>
               element.type ==
               "${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}",
+        );
+        print(
+          "SSSSSSSSSSSSSSSSAAAAAAAAAAAAAAAAAA${index} ${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}",
         );
         if ((r.data == null || r.data == "") || (r.data?.status ?? 0) != 1) {
           if (index != -1 && event.totalQuantity == 1) {
@@ -3921,8 +3883,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           emit(
             state.copyWith(
               authProductDetailsModel: getAuthProductDetailsModel,
-              cachedProductWithoutRelatedProductsModel:
-                  cachedProductWithoutRelatedProductsModel,
               updateItemInCartStatus: UpdateItemInCartStatus.success,
               cartCollection: cartCollection,
             ),
@@ -3937,24 +3897,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               qty: ((variation.qty)! - (event.newQuantity)),
             );
             listVariation.insert(index, variation);
-
-            getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
-              data: getAuthProductDetailsModel.data!.copyWith(
-                variation: listVariation,
-              ),
-            );
           }
-          if (!event.fromCartPage) {
-            product = product?.copyWith(
-              availableQuantity:
-                  ((product.availableQuantity)! - (event.newQuantity)).round(),
-            );
-            cachedProductWithoutRelatedProductsModel[event.productId
-                    .toString()] =
-                cachedProductWithoutRelatedProductsModel[event.productId
-                        .toString()]!
-                    .copyWith(data: product!);
-          }
+          getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
+            data: getAuthProductDetailsModel.data!.copyWith(
+              variation: listVariation,
+              availableQuantity: ((availableQuantity) - (event.newQuantity))
+                  .round(),
+            ),
+          );
 
           Map<String, Map<int, List<List<String>>>>
           addImagesToProductIdForCart = Map.from(
@@ -4056,8 +4006,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             state.copyWith(
               addImagesToProductIdForCart: addImagesToProductIdForCart,
               authProductDetailsModel: getAuthProductDetailsModel,
-              cachedProductWithoutRelatedProductsModel:
-                  cachedProductWithoutRelatedProductsModel,
               updateItemInCartStatus: UpdateItemInCartStatus.success,
             ),
           );

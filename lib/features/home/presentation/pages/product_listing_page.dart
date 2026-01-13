@@ -3324,10 +3324,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               .product_is_not_available_in_your_country
                                               .tr();
                                         } else if (state
-                                                .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                    .productId
-                                                    .toString()]
-                                                ?.product
+                                                .authProductDetailsModel
+                                                ?.data
                                                 ?.availableQuantity ==
                                             0) {
                                           productNotAvailableNotifier
@@ -3883,10 +3881,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               null
                                                           ? 0
                                                           : state
-                                                                .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                    .productId
-                                                                    .toString()]!
-                                                                .product
+                                                                .authProductDetailsModel
+                                                                ?.data
                                                                 ?.availableQuantity,
                                                       choiceOptions:
                                                           state.cachedProductWithoutRelatedProductsModel[products[tapIndex]

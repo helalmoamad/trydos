@@ -233,11 +233,8 @@ class _ProductDetailsSheetBottomBarNewState
             });
           }
         }
-        qtyForProductWithoutVariant = state
-            .cachedProductWithoutRelatedProductsModel[widget
-                .productIdForCashProducts]
-            ?.product
-            ?.availableQuantity;
+        qtyForProductWithoutVariant =
+            state.authProductDetailsModel?.data?.availableQuantity;
         double totalPrice = 0;
         state.cartCollection?.forEach((element) {
           if (element.productId.toString() == widget.productIdForRequestApi) {

@@ -68,14 +68,23 @@ class GetAuthProductDetailsModel {
 class Data {
   final int? id;
   final List<Variation>? variation;
+  final int? availableQuantity;
 
-  Data({this.id, this.variation});
+  Data({this.id, this.variation, this.availableQuantity});
 
-  Data copyWith({int? id, List<Variation>? variation}) =>
-      Data(id: id ?? this.id, variation: variation ?? this.variation);
+  Data copyWith({
+    int? id,
+    List<Variation>? variation,
+    int? availableQuantity,
+  }) => Data(
+    id: id ?? this.id,
+    variation: variation ?? this.variation,
+    availableQuantity: availableQuantity ?? this.availableQuantity,
+  );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     id: json["id"],
+    availableQuantity: int.tryParse(json["available_quantity"].toString()),
     variation: json["variation"] == null
         ? []
         : List<Variation>.from(
@@ -85,6 +94,7 @@ class Data {
 
   Map<String, dynamic> toJson() => {
     "id": id,
+    "available_quantity": availableQuantity,
     "variation": variation == null
         ? []
         : List<dynamic>.from(variation!.map((x) => x.toJson())),

@@ -33,7 +33,7 @@ import 'handling_market_notifications.dart';
 @pragma('vm:entry-point')
 class LocalNotificationService {
   static final _localNotificationPlugin = FlutterLocalNotificationsPlugin();
-  final String _androidChannelId = r'$_$_1_$_$';
+  final String _androidChannelId = 'trydos_notifications';
   final String _androidChannelName = "Notification";
 
   static FlutterLocalNotificationsPlugin get localNotificationPlugin =>
@@ -50,32 +50,55 @@ class LocalNotificationService {
       android: androidInitializationSettings,
       iOS: iosInitializationSettings,
     );
+    await _localNotificationPlugin.initialize(
+      settings,
+      onDidReceiveBackgroundNotificationResponse: _onSelectNotification,
+      onDidReceiveNotificationResponse: _onSelectNotification,
+    );
+
     try {
-      await _localNotificationPlugin.getNotificationAppLaunchDetails().then((
-        value,
-      ) {
-        if (value?.notificationResponse?.payload?.contains("###") ?? false) {
-          GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
-            value?.notificationResponse?.payload?.split('###')[0] ?? "",
+      final value = await _localNotificationPlugin
+          .getNotificationAppLaunchDetails();
+      if (value != null) {
+        print("chatNotification//////////////////////////**-----1");
+        dev.log(
+          "chatNotification//////////////////////////${value.notificationResponse?.payload ?? ""}",
+        );
+        if (value.notificationResponse?.payload?.contains("###") ?? false) {
+          print("chatNotification//////////////////////////**-----2");
+          await GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
+            value.notificationResponse?.payload?.split('###')[0] ?? "",
           );
-        } else if (value?.notificationResponse?.payload?.contains(
+        } else if (value.notificationResponse?.payload?.contains(
               "#prevMessageId#",
             ) ??
             false) {
-          GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
-            ((value?.notificationResponse?.payload?.split(
-                      '#prevMessageId#',
-                    )[0] ??
-                    "") +
-                ("chatNotification") +
-                (value?.notificationResponse?.payload?.split(
-                      '#prevMessageId#',
-                    )[1] ??
-                    "")),
+          print("chatNotification//////////////////////////**-----3");
+          final payload = value.notificationResponse!.payload!;
+          final parts = payload.split('#prevMessageId#');
+          final resultValue =
+              (parts.isNotEmpty ? parts[0] : "") +
+              "chatNotification" +
+              (parts.length > 1 ? parts[1] : "");
+
+          await GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
+            resultValue,
+          );
+          final storedVal = await GetIt.I<PrefsRepository>()
+              .getNotificationTypeFromTerminated();
+          print(
+            "chatNotification//////////////////////////**-----3$resultValue",
+          );
+          print(
+            "chatNotification//////////////////////////**-----3--$storedVal",
           );
         }
-      });
-    } catch (e) {}
+      }
+    } catch (e, st) {
+      print("chatNotification Error in LocalNotificationService: $e");
+      print(st);
+      dev.log("chatNotification Error: $e");
+    }
     await _localNotificationPlugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
@@ -83,12 +106,6 @@ class LocalNotificationService {
         ?.createNotificationChannel(
           LocalNotificationService().getAndroidChannel,
         );
-
-    await _localNotificationPlugin.initialize(
-      settings,
-      onDidReceiveBackgroundNotificationResponse: _onSelectNotification,
-      onDidReceiveNotificationResponse: _onSelectNotification,
-    );
   }
 
   @pragma('vm:entry-point')
@@ -224,42 +241,38 @@ class LocalNotificationService {
         ? "-1"
         : RemoteMessage["parent_order_id"].toString();
     String orderGroupId = (RemoteMessage['order_group_id'] ?? "").toString();
-    String type = myMessage.messageType!.name.toString();
+
+    String? type = myMessage.messageType?.name?.toString();
+    String notificationTitle = (parentOrderId != "-1" || orderId != "")
+        ? (GetIt.I<PrefsRepository>().language == "ar"
+              ? "عامل التوصيل"
+              : GetIt.I<PrefsRepository>().language == "en"
+              ? "Delivery Worker"
+              : GetIt.I<PrefsRepository>().language == "tr"
+              ? "Teslimat Çalışanı"
+              : GetIt.I<PrefsRepository>().language == "ku"
+              ? "کارمەندی گەیاندن"
+              : "Delivery Worker")
+        : myMessage.senderUser?.name ?? 'Trydos User';
+
+    String notificationBody = "";
+    if (type == 'TextMessage') {
+      notificationBody = myMessage.messageContent?.content?.toString() ?? "";
+    } else if (type == 'ImageMessage') {
+      notificationBody = 'Photo 📷';
+    } else if (type == 'VoiceMessage') {
+      notificationBody = 'Voice message 🎤';
+    } else if (type == 'VideoMessage') {
+      notificationBody = 'Video 🎥';
+    } else {
+      notificationBody = 'New message';
+    }
+
     await _localNotificationPlugin.show(
       notificationId,
-      (parentOrderId != "-1" || orderId != "")
-          ? (GetIt.I<PrefsRepository>().language == "ar"
-                ? "عامل التوصيل"
-                : GetIt.I<PrefsRepository>().language == "en"
-                ? "Delivery Worker"
-                : GetIt.I<PrefsRepository>().language == "tr"
-                ? "Teslimat Çalışanı"
-                : GetIt.I<PrefsRepository>().language == "ku"
-                ? "کارمەندی گەیاندن"
-                : "Delivery Worker")
-          : myMessage.senderUser?.name ?? 'No Channel Name',
-      type == 'TextMessage'
-          ? myMessage.messageContent!.content.toString()
-          : type == 'ImageMessage'
-          ? 'Photo'
-          : type == 'VoiceMessage'
-          ? 'Voice'
-          : type == 'VideoMessage'
-          ? 'Video'
-          : 'File',
-      _notificationDetails(
-        null,
-        myMessage.channel?.id,
-        type == 'TextMessage'
-            ? myMessage.messageContent!.content.toString()
-            : type == 'ImageMessage'
-            ? 'Photo'
-            : type == 'VoiceMessage'
-            ? 'Voice'
-            : type == 'VideoMessage'
-            ? 'Video'
-            : 'File',
-      ),
+      notificationTitle,
+      notificationBody,
+      _notificationDetails(null, myMessage.channel?.id, notificationBody),
       payload:
           '${convert.jsonEncode(RemoteMessage['message'])}#prevMessageId#${prevMessageId}#orderId#${orderId}#groupeOrderId#${orderGroupId}#parentOrderId#${parentOrderId}',
     );
@@ -375,11 +388,14 @@ class LocalNotificationService {
           channel.id,
           channel.name,
           channelDescription: channel.description,
-          ticker: 'ticker',
+          ticker: body, // Use the body as ticker text
           importance: Importance.max,
           tag: tag,
-          priority: Priority.max,
+          priority: Priority.max, // Use Priority.max for maximum visibility
+          category: AndroidNotificationCategory.message,
+          visibility: NotificationVisibility.public,
           playSound: channel.playSound,
+          fullScreenIntent: true,
           enableVibration: channel.enableVibration,
           largeIcon: (pngImage == null)
               ? null

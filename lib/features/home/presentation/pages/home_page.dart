@@ -264,24 +264,28 @@ class _HomePageState extends State<HomePage> {
     // تحميل بيانات البحث في الخلفية
 
     // العمليات الثقيلة تتم في الخلفية
-    Future.delayed(const Duration(milliseconds: 1300), () {
+    Future.delayed(const Duration(seconds: 2), () {
       _handleDeferredNotifications();
     });
   }
 
   /// معالجة الإشعارات المؤجلة
-  void _handleDeferredNotifications() {
+  Future<void> _handleDeferredNotifications() async {
     try {
-      String notificationTypesOfMarketFromTerminated =
-          GetIt.I<PrefsRepository>().getNotificationTypeFromTerminated ?? "";
-
+      final String? rawData = await GetIt.I<PrefsRepository>()
+          .getNotificationTypeFromTerminated();
+      String notificationTypesOfMarketFromTerminated = rawData ?? "";
+      print(
+        "chatNotification//////////////////////////0***${notificationTypesOfMarketFromTerminated}00000",
+      );
       if (notificationTypesOfMarketFromTerminated != "") {
+        print("chatNotification//////////////////////////000000");
         GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated("");
         try {
           if (notificationTypesOfMarketFromTerminated.contains(
             "chatNotification",
           )) {
-            print("chatNotification//////////////////////////");
+            print("chatNotification//////////////////////////11111");
             Message myMessage = Message.fromJson(
               jsonDecode(
                 notificationTypesOfMarketFromTerminated
@@ -1503,10 +1507,8 @@ class _HomePageState extends State<HomePage> {
                                                           .product_is_not_available_in_your_country
                                                           .tr();
                                                     } else if (state
-                                                            .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                .productId
-                                                                .toString()]
-                                                            ?.product
+                                                            .authProductDetailsModel
+                                                            ?.data
                                                             ?.availableQuantity ==
                                                         0) {
                                                       productNotAvailableNotifier
@@ -1989,8 +1991,8 @@ class _HomePageState extends State<HomePage> {
                                                                             null
                                                                         ? 0
                                                                         : state
-                                                                              .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
-                                                                              .product
+                                                                              .authProductDetailsModel
+                                                                              ?.data
                                                                               ?.availableQuantity,
                                                                     choiceOptions:
                                                                         state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId

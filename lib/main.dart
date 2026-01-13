@@ -76,7 +76,7 @@ showCallKitIncoming(
     android: AndroidParams(
       isCustomNotification: true,
       isImportant: true,
-      isShowFullLockedScreen: false,
+      isShowFullLockedScreen: true,
       isShowLogo: false,
       ringtonePath: 'system_ringtone_default',
       backgroundColor: isVideo ? '#2D1B4B' : '#0955fa',
@@ -388,7 +388,7 @@ Map<String, VideoPlayerController> videoProductInListingController = {};
   }*/
 }*/
 
-int applicationVersion = 62;
+int applicationVersion = 66;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();
@@ -426,8 +426,9 @@ void main() async {
     EasyLocalization.ensureInitialized(),
     dotenv.load(),
     configureDependencies(),
-    NotificationProcess().init(),
   ]);
+
+  await NotificationProcess().init();
   //GetIt.I<PreCachingImageBloc>().add(RemoveUrlThatNotUsedEvent());
   isLoadDotenvFile = true;
 
