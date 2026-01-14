@@ -107,7 +107,7 @@ class DashboardTabBar extends StatelessWidget {
                     : Colors.grey.shade600,
               ),
             ),
-            if (count != null) ...[
+            if (count != null && count > 0) ...[
               SizedBox(width: 6.w),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),

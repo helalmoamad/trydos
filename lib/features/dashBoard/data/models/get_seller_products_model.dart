@@ -184,8 +184,8 @@ class Product {
   final String? syncColorImages;
   final String? choiceOptions;
   final String? variation;
-  final int? unitPrice;
-  final int? unitPriceInDefaultCurrency;
+  final double? unitPrice;
+  final double? unitPriceInDefaultCurrency;
   final double? purchasePrice;
   final double? purchasePriceInDefaultCurrency;
   final String? discount;
@@ -253,8 +253,8 @@ class Product {
     String? syncColorImages,
     String? choiceOptions,
     String? variation,
-    int? unitPrice,
-    int? unitPriceInDefaultCurrency,
+    double? unitPrice,
+    double? unitPriceInDefaultCurrency,
     double? purchasePrice,
     double? purchasePriceInDefaultCurrency,
     String? discount,
@@ -318,25 +318,28 @@ class Product {
           ),
     restrictedCountries: json["restricted_countries"],
     brandId: json["brand_id"],
-    unit: unitValues.map[json["unit"]]!,
+    //unit: unitValues.map.isNotEmpty ? unitValues.map[json["unit"]] : null,
     minQty: json["min_qty"],
     images: json["images"] == null
         ? []
-        : List<String>.from(json["images"]!.map((x) => x)),
+        : List<String>.from(json["images"].map((x) => x)),
     videos: json["videos"] == null
         ? []
-        : List<dynamic>.from(json["videos"]!.map((x) => x)),
+        : List<dynamic>.from(json["videos"].map((x) => x)),
     isFeatured: json["is_featured"],
     flashDeal: json["flash_deal"],
     colors: json["colors"],
     syncColorImages: json["sync_color_images"],
     choiceOptions: json["choice_options"],
     variation: json["variation"],
-    unitPrice: json["unit_price"],
-    unitPriceInDefaultCurrency: json["unit_price_in_default_currency"],
-    purchasePrice: json["purchase_price"]?.toDouble(),
-    purchasePriceInDefaultCurrency: json["purchase_price_in_default_currency"]
-        ?.toDouble(),
+    unitPrice: double.tryParse(json["unit_price"].toString()),
+    unitPriceInDefaultCurrency: double.tryParse(
+      json["unit_price_in_default_currency"].toString(),
+    ),
+    purchasePrice: double.tryParse(json["purchase_price"].toString()),
+    purchasePriceInDefaultCurrency: double.tryParse(
+      json["purchase_price_in_default_currency"].toString(),
+    ),
     discount: json["discount"],
     currentStock: json["current_stock"],
   );
@@ -352,7 +355,7 @@ class Product {
     "similar_words": similarWords,
     "tags_ids": tagsIds,
     "boutique_id": boutiqueId,
-    "count_in_carts": countInCarts,
+    "count_in_carts": (countInCarts ?? 0).round(),
     "weight": weight,
     "collected_after_ordering": collectedAfterOrdering,
     "categories": categories == null

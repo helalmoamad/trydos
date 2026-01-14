@@ -13,9 +13,9 @@ abstract class DashBoardRepository {
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> addUser(
     Map<String, dynamic> params,
   );
-  Future<Either<Failure, GetSellerProductsModel>> getProducts();
-  Future<Either<Failure, GetSellerBoutiquesModel>> getBoutiques();
-  Future<Either<Failure, GetSellerOrdersModel>> getOrders();
+  Future<Either<Failure, GetSellerProductsModel>> getProducts({int page = 1});
+  Future<Either<Failure, GetSellerBoutiquesModel>> getBoutiques({int page = 1});
+  Future<Either<Failure, GetSellerOrdersModel>> getOrders({int page = 1});
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> changeOrderStatus(
     Map<String, dynamic> params,
   );

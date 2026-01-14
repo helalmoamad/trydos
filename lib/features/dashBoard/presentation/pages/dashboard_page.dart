@@ -11,6 +11,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/dashBoard_bloc.dart';
 import '../widgets/permission_card.dart';
 import '../widgets/add_user_widget.dart';
+import '../widgets/products_grid_widget.dart';
+import '../widgets/boutiques_grid_widget.dart';
+import '../widgets/orders_list_widget.dart';
 
 class DashboardPage extends StatefulWidget {
   final String shopName;
@@ -121,12 +124,31 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildProductsTab() {
     return BlocBuilder<DashboardBloc, DashBoardState>(
       buildWhen: (previous, current) =>
-          previous.getProductsStatus != current.getProductsStatus,
+          previous.getProductsStatus != current.getProductsStatus ||
+          previous.products != current.products ||
+          previous.productsMeta != current.productsMeta,
       builder: (context, state) {
         print(state.getProductsStatus);
-        if (state.getProductsStatus == GetProductsStatus.loading) {
+        if (state.getProductsStatus == GetProductsStatus.loading &&
+            state.products?.length == 0) {
           return const Center(child: CircularProgressIndicator());
         }
+
+        // Check if products exist and are not empty
+        if (state.products != null && state.products!.isNotEmpty) {
+          return ProductsGridWidget(
+            products: state.products!,
+            meta: state.productsMeta,
+            onAddProduct: () {
+              // TODO: Add onAddProduct callback
+            },
+            onPageChanged: (page) {
+              _dashboardBloc.add(GetProductsEvent(page: page));
+            },
+          );
+        }
+
+        // Show empty state when no products
         return EmptyStateWidget(
           message: LocaleKeys.no_products_found_dashboard.tr(),
           icon: Icons.inventory_2_outlined,
@@ -140,12 +162,31 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildBoutiquesTab() {
     return BlocBuilder<DashboardBloc, DashBoardState>(
       buildWhen: (previous, current) =>
-          previous.getBoutiquesStatus != current.getBoutiquesStatus,
+          previous.getBoutiquesStatus != current.getBoutiquesStatus ||
+          previous.boutiques != current.boutiques ||
+          previous.boutiquesMeta != current.boutiquesMeta,
       builder: (context, state) {
         print(state.getBoutiquesStatus);
-        if (state.getBoutiquesStatus == GetBoutiquesStatus.loading) {
+        if (state.getBoutiquesStatus == GetBoutiquesStatus.loading &&
+            state.boutiques?.length == 0) {
           return const Center(child: CircularProgressIndicator());
         }
+
+        // Check if boutiques exist and are not empty
+        if (state.boutiques != null && state.boutiques!.isNotEmpty) {
+          return BoutiquesGridWidget(
+            boutiques: state.boutiques!,
+            meta: state.boutiquesMeta,
+            onAddBoutique: () {
+              // TODO: Add onAddBoutique callback
+            },
+            onPageChanged: (page) {
+              _dashboardBloc.add(GetBoutiquesEvent(page: page));
+            },
+          );
+        }
+
+        // Show empty state when no boutiques
         return EmptyStateWidget(
           message: LocaleKeys.no_boutiques_found.tr(),
           icon: Icons.store_outlined,
@@ -159,11 +200,32 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildOrdersTab() {
     return BlocBuilder<DashboardBloc, DashBoardState>(
       buildWhen: (previous, current) =>
-          previous.getOrdersStatus != current.getOrdersStatus,
+          previous.getOrdersStatus != current.getOrdersStatus ||
+          previous.orders != current.orders ||
+          previous.ordersMeta != current.ordersMeta,
       builder: (context, state) {
-        if (state.getOrdersStatus == GetOrdersStatus.loading) {
+        if (state.getOrdersStatus == GetOrdersStatus.loading &&
+            state.orders?.length == 0) {
           return const Center(child: CircularProgressIndicator());
         }
+
+        // Check if orders exist and are not empty
+        if (state.orders != null && state.orders!.isNotEmpty) {
+          return OrdersListWidget(
+            orders: state.orders!,
+            meta: state.ordersMeta,
+            onPageChanged: (page) {
+              _dashboardBloc.add(GetOrdersEvent(page: page));
+            },
+            onStatusChanged: (orderId, status) {
+              _dashboardBloc.add(
+                ChangeOrderStatusEvent(order_id: orderId, status: status),
+              );
+            },
+          );
+        }
+
+        // Show empty state when no orders
         return EmptyStateWidget(
           message: LocaleKeys.no_orders_found.tr(),
           icon: Icons.shopping_bag_outlined,

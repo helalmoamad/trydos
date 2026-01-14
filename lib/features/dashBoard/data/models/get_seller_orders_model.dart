@@ -180,16 +180,16 @@ class UserOrder {
   final String? orderGroupStatus;
   final PaymentMethod? paymentMethod;
   final PaymentStatus? paymentStatus;
-  final int? codCost;
+  final double? codCost;
   final String? transactionRef;
-  final int? orderAmount;
+  final double? orderAmount;
   final Type? deliveryType;
   final int? shippingAddress;
   final Type? shippingType;
-  final int? discountAmount;
+  final double? discountAmount;
   final dynamic discountType;
   final dynamic couponCode;
-  final int? shippingCost;
+  final double? shippingCost;
   final List<List<Detail>>? details;
 
   UserOrder({
@@ -223,16 +223,16 @@ class UserOrder {
     String? orderGroupStatus,
     PaymentMethod? paymentMethod,
     PaymentStatus? paymentStatus,
-    int? codCost,
+    double? codCost,
     String? transactionRef,
-    int? orderAmount,
+    double? orderAmount,
     Type? deliveryType,
     int? shippingAddress,
     Type? shippingType,
-    int? discountAmount,
+    double? discountAmount,
     dynamic discountType,
     dynamic couponCode,
-    int? shippingCost,
+    double? shippingCost,
     List<List<Detail>>? details,
   }) => UserOrder(
     id: id ?? this.id,
@@ -265,16 +265,16 @@ class UserOrder {
     orderGroupStatus: json["order_group_status"],
     paymentMethod: paymentMethodValues.map[json["payment_method"]]!,
     paymentStatus: paymentStatusValues.map[json["payment_status"]]!,
-    codCost: json["cod_cost"],
+    codCost: double.tryParse(json["cod_cost"].toString()),
     transactionRef: json["transaction_ref"],
-    orderAmount: json["order_amount"],
-    deliveryType: typeValues.map[json["delivery_type"]]!,
+    orderAmount: double.tryParse(json["order_amount"].toString()),
+    deliveryType: typeValues.map[json["delivery_type"]],
     shippingAddress: json["shipping_address"],
-    shippingType: typeValues.map[json["shipping_type"]]!,
-    discountAmount: json["discount_amount"],
+    shippingType: typeValues.map[json["shipping_type"]],
+    discountAmount: double.tryParse(json["discount_amount"].toString()),
     discountType: json["discount_type"],
     couponCode: json["coupon_code"],
-    shippingCost: json["shipping_cost"],
+    shippingCost: double.tryParse(json["shipping_cost"].toString()),
     details: json["details"] == null
         ? []
         : List<List<Detail>>.from(
@@ -327,9 +327,9 @@ class Detail {
   final String? variant;
   final String? cartImage;
   final int? qty;
-  final int? price;
-  final int? weight;
-  final int? shippingCost;
+  final double? price;
+  final double? weight;
+  final double? shippingCost;
   final int? isRedeem;
   final DeliveryStatus? deliveryStatus;
   final PaymentStatus? paymentStatus;
@@ -360,9 +360,9 @@ class Detail {
     String? variant,
     String? cartImage,
     int? qty,
-    int? price,
-    int? weight,
-    int? shippingCost,
+    double? price,
+    double? weight,
+    double? shippingCost,
     int? isRedeem,
     DeliveryStatus? deliveryStatus,
     PaymentStatus? paymentStatus,
@@ -392,12 +392,12 @@ class Detail {
     variant: json["variant"],
     cartImage: json["cart_image"],
     qty: json["qty"],
-    price: json["price"],
-    weight: json["weight"],
-    shippingCost: json["shipping_cost"],
+    price: double.tryParse(json["price"].toString()),
+    weight: double.tryParse(json["weight"].toString()),
+    shippingCost: double.tryParse(json["shipping_cost"].toString()),
     isRedeem: json["is_redeem"],
-    deliveryStatus: deliveryStatusValues.map[json["delivery_status"]]!,
-    paymentStatus: paymentStatusValues.map[json["payment_status"]]!,
+    deliveryStatus: deliveryStatusValues.map[json["delivery_status"]],
+    paymentStatus: paymentStatusValues.map[json["payment_status"]],
   );
 
   Map<String, dynamic> toJson() => {

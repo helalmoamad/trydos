@@ -36,18 +36,24 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   }
 
   @override
-  Future<Either<Failure, GetSellerProductsModel>> getProducts() {
-    return handlingExceptionRequest(tryCall: () => dataSource.getProducts());
+  Future<Either<Failure, GetSellerProductsModel>> getProducts({int page = 1}) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getProducts(page: page),
+    );
   }
 
   @override
-  Future<Either<Failure, GetSellerBoutiquesModel>> getBoutiques() {
-    return handlingExceptionRequest(tryCall: () => dataSource.getBoutiques());
+  Future<Either<Failure, GetSellerBoutiquesModel>> getBoutiques({int page = 1}) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getBoutiques(page: page),
+    );
   }
 
   @override
-  Future<Either<Failure, GetSellerOrdersModel>> getOrders() {
-    return handlingExceptionRequest(tryCall: () => dataSource.getOrders());
+  Future<Either<Failure, GetSellerOrdersModel>> getOrders({int page = 1}) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getOrders(page: page),
+    );
   }
 
   @override

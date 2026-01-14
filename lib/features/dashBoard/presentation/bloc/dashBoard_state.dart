@@ -25,9 +25,12 @@ class DashBoardState extends Equatable {
   final AddUserStatus addUserStatus;
   final List<Shop>? shops;
   final List<ShopRole>? shopRoles;
-  final List<Boutique>? boutiques;
-  final List<UserOrder>? orders;
-  final List<Product>? products;
+  final List<boutiques_model.Boutique>? boutiques;
+  final boutiques_model.Meta? boutiquesMeta;
+  final List<orders_model.UserOrder>? orders;
+  final orders_model.Meta? ordersMeta;
+  final List<products_model.Product>? products;
+  final products_model.Meta? productsMeta;
   DashBoardState({
     this.getUserPermissionStatus = GetUserPermissionStatus.init,
     this.getUserRolesStatus = GetUserRolesStatus.init,
@@ -39,8 +42,11 @@ class DashBoardState extends Equatable {
     this.shops,
     this.shopRoles,
     this.boutiques,
+    this.boutiquesMeta,
     this.orders,
+    this.ordersMeta,
     this.products,
+    this.productsMeta,
   });
   DashBoardState copyWith({
     GetUserPermissionStatus? getUserPermissionStatus,
@@ -52,9 +58,12 @@ class DashBoardState extends Equatable {
     AddUserStatus? addUserStatus,
     List<Shop>? shops,
     List<ShopRole>? shopRoles,
-    List<Boutique>? boutiques,
-    List<UserOrder>? orders,
-    List<Product>? products,
+    List<boutiques_model.Boutique>? boutiques,
+    boutiques_model.Meta? boutiquesMeta,
+    List<orders_model.UserOrder>? orders,
+    orders_model.Meta? ordersMeta,
+    List<products_model.Product>? products,
+    products_model.Meta? productsMeta,
   }) {
     return DashBoardState(
       getUserPermissionStatus:
@@ -69,8 +78,11 @@ class DashBoardState extends Equatable {
       shops: shops ?? this.shops,
       shopRoles: shopRoles ?? this.shopRoles,
       boutiques: boutiques ?? this.boutiques,
+      boutiquesMeta: boutiquesMeta ?? this.boutiquesMeta,
       orders: orders ?? this.orders,
+      ordersMeta: ordersMeta ?? this.ordersMeta,
       products: products ?? this.products,
+      productsMeta: productsMeta ?? this.productsMeta,
     );
   }
 
@@ -86,7 +98,10 @@ class DashBoardState extends Equatable {
     shops,
     shopRoles,
     boutiques,
+    boutiquesMeta,
     orders,
+    ordersMeta,
     products,
+    productsMeta,
   ];
 }

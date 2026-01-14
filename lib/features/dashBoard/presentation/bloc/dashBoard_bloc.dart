@@ -6,9 +6,12 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/dashBoard/data/models/get_user_permission_model.dart';
-import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.dart';
-import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
-import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.dart'
+    as products_model;
+import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart'
+    as orders_model;
+import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart'
+    as boutiques_model;
 import 'package:trydos/features/dashBoard/data/models/get_user_roles_model.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/add_user_usecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/get_user_permission_usecase.dart.dart';
@@ -130,7 +133,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   ) async {
     emit(state.copyWith(getOrdersStatus: GetOrdersStatus.loading));
 
-    final response = await getOrdersUseCase(NoParams());
+    final response = await getOrdersUseCase(GetOrdersParams(page: event.page));
     response.fold(
       (l) {
         emit((state.copyWith(getOrdersStatus: GetOrdersStatus.failure)));
@@ -139,6 +142,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
         emit(
           (state.copyWith(
             orders: r.data?.orders,
+            ordersMeta: r.data?.meta,
             getOrdersStatus: GetOrdersStatus.success,
           )),
         );
@@ -152,7 +156,9 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   ) async {
     emit(state.copyWith(getProductsStatus: GetProductsStatus.loading));
 
-    final response = await getProductsUseCase(NoParams());
+    final response = await getProductsUseCase(
+      GetProductsParams(page: event.page),
+    );
     response.fold(
       (l) {
         emit((state.copyWith(getProductsStatus: GetProductsStatus.failure)));
@@ -161,6 +167,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
         emit(
           (state.copyWith(
             products: r.data?.products,
+            productsMeta: r.data?.meta,
             getProductsStatus: GetProductsStatus.success,
           )),
         );
@@ -174,7 +181,9 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   ) async {
     emit(state.copyWith(getBoutiquesStatus: GetBoutiquesStatus.loading));
 
-    final response = await getBoutiquesUseCase(NoParams());
+    final response = await getBoutiquesUseCase(
+      GetBoutiquesParams(page: event.page),
+    );
     response.fold(
       (l) {
         emit((state.copyWith(getBoutiquesStatus: GetBoutiquesStatus.failure)));
@@ -183,6 +192,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
         emit(
           (state.copyWith(
             boutiques: r.data?.boutiques,
+            boutiquesMeta: r.data?.meta,
             getBoutiquesStatus: GetBoutiquesStatus.success,
           )),
         );

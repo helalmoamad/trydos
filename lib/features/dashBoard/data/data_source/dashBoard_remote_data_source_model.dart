@@ -57,12 +57,13 @@ class DashBoardRemoteDataSource {
     return addUser();
   }
 
-  Future<GetSellerProductsModel> getProducts() {
+  Future<GetSellerProductsModel> getProducts({int page = 1}) {
     GetClient<GetSellerProductsModel> getProducts =
         GetClient<GetSellerProductsModel>(
           serverName: ServerName.dashBoard,
           requestPrams: RequestConfig<GetSellerProductsModel>(
             endpoint: DashBoardEndPoints.getProducts,
+            queryParameters: {'page': page.toString()},
             response: ResponseValue<GetSellerProductsModel>(
               fromJson: (response) => GetSellerProductsModel.fromJson(response),
             ),
@@ -71,12 +72,13 @@ class DashBoardRemoteDataSource {
     return getProducts();
   }
 
-  Future<GetSellerBoutiquesModel> getBoutiques() {
+  Future<GetSellerBoutiquesModel> getBoutiques({int page = 1}) {
     GetClient<GetSellerBoutiquesModel> getBoutiques =
         GetClient<GetSellerBoutiquesModel>(
           serverName: ServerName.dashBoard,
           requestPrams: RequestConfig<GetSellerBoutiquesModel>(
             endpoint: DashBoardEndPoints.getBoutiques,
+            queryParameters: {'page': page.toString()},
             response: ResponseValue<GetSellerBoutiquesModel>(
               fromJson: (response) =>
                   GetSellerBoutiquesModel.fromJson(response),
@@ -86,11 +88,12 @@ class DashBoardRemoteDataSource {
     return getBoutiques();
   }
 
-  Future<GetSellerOrdersModel> getOrders() {
+  Future<GetSellerOrdersModel> getOrders({int page = 1}) {
     GetClient<GetSellerOrdersModel> getOrders = GetClient<GetSellerOrdersModel>(
       serverName: ServerName.dashBoard,
       requestPrams: RequestConfig<GetSellerOrdersModel>(
         endpoint: DashBoardEndPoints.getOrders,
+        queryParameters: {'page': page.toString()},
         response: ResponseValue<GetSellerOrdersModel>(
           fromJson: (response) => GetSellerOrdersModel.fromJson(response),
         ),

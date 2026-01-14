@@ -215,6 +215,11 @@ abstract class LocaleKeys {
   static const quantity_running_out = 'quantity_running_out';
   static const shopping_bag = 'shopping_bag';
   static const out_of_stock = 'out_of_stock';
+  static const stock = 'stock';
+  static const previous = 'previous';
+  static const next = 'next';
+  static const page = 'page';
+  static const of = 'of';
   static const you_have_to_delete_all_unavailable_products =
       'you_have_to_delete_all_unavailable_products';
   static const the_payment_is_allowed_throw_trydos_wallet_only =

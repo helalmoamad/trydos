@@ -22,15 +22,18 @@ class AddUserEvent extends DashBoardEvent {
 }
 
 class GetBoutiquesEvent extends DashBoardEvent {
-  GetBoutiquesEvent();
+  final int page;
+  GetBoutiquesEvent({this.page = 1});
 }
 
 class GetOrdersEvent extends DashBoardEvent {
-  GetOrdersEvent();
+  final int page;
+  GetOrdersEvent({this.page = 1});
 }
 
 class GetProductsEvent extends DashBoardEvent {
-  GetProductsEvent();
+  final int page;
+  GetProductsEvent({this.page = 1});
 }
 
 class ChangeOrderStatusEvent extends DashBoardEvent {

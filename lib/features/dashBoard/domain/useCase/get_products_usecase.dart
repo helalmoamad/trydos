@@ -6,14 +6,19 @@ import 'package:trydos/features/dashBoard/domain/repositories/dashBoard_reposito
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
+class GetProductsParams {
+  final int page;
+  GetProductsParams({this.page = 1});
+}
+
 @injectable
-class GetProductsUseCase extends UseCase<GetSellerProductsModel, NoParams> {
+class GetProductsUseCase extends UseCase<GetSellerProductsModel, GetProductsParams> {
   final DashBoardRepository repository;
 
   GetProductsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, GetSellerProductsModel>> call(NoParams params) {
-    return repository.getProducts();
+  Future<Either<Failure, GetSellerProductsModel>> call(GetProductsParams params) {
+    return repository.getProducts(page: params.page);
   }
 }
