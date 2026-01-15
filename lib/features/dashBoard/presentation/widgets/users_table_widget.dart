@@ -69,6 +69,7 @@ class UsersTableWidget extends StatelessWidget {
                           flex: 2,
                           child: Text(
                             'Role',
+                            //roles
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.bold,
