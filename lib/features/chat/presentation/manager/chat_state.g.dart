@@ -26,6 +26,9 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
       ) ??
       ResendMessageStatus.init,
   width: (json['width'] as num?)?.toInt() ?? 0,
+  senderInfo: json['senderInfo'] == null
+      ? null
+      : SenderInfo.fromJson(json['senderInfo'] as Map<String, dynamic>),
   resultOfSearchTextInChat: json['resultOfSearchTextInChat'] == null
       ? const PaginationModel.init()
       : PaginationModel<String>.fromJson(
@@ -37,6 +40,18 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
       : Duration(microseconds: (json['duration'] as num).toInt()),
   slopMessageId: json['slopMessageId'] as String? ?? "",
   isSlpoing: json['isSlpoing'] as bool? ?? false,
+  deleteMessageStatus:
+      $enumDecodeNullable(
+        _$DeleteMessageStatusEnumMap,
+        json['deleteMessageStatus'],
+      ) ??
+      DeleteMessageStatus.init,
+  currentOpenedChatIdStatus:
+      $enumDecodeNullable(
+        _$CurrentOpenedChatIdStatusEnumMap,
+        json['currentOpenedChatIdStatus'],
+      ) ??
+      CurrentOpenedChatIdStatus.init,
   chatOrderParticipantId: json['chatOrderParticipantId'] as String?,
   firstRequestForGetChats: json['firstRequestForGetChats'] as bool? ?? true,
   height: (json['height'] as num?)?.toInt() ?? 0,
@@ -48,10 +63,12 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
       BlockOrDeleteBlockUserStatus.init,
   imageCountInEachChat: (json['imageCountInEachChat'] as num?)?.toInt() ?? 0,
   getAllChat: json['getAllChat'] as bool? ?? false,
-  getSharedProductCountStatus: $enumDecodeNullable(
-    _$GetSharedProductCountStatusEnumMap,
-    json['getSharedProductCountStatus'],
-  ),
+  getSharedProductCountStatus:
+      $enumDecodeNullable(
+        _$GetSharedProductCountStatusEnumMap,
+        json['getSharedProductCountStatus'],
+      ) ??
+      GetSharedProductCountStatus.init,
   currentRequestIdForAvoidPreRequest:
       json['currentRequestIdForAvoidPreRequest'] as String? ?? "",
   fileCountInEachChat: (json['fileCountInEachChat'] as num?)?.toInt() ?? 0,
@@ -192,6 +209,8 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
   'isSlpoing': instance.isSlpoing,
   'imageCountInEachChat': instance.imageCountInEachChat,
   'fileCountInEachChat': instance.fileCountInEachChat,
+  'currentOpenedChatIdStatus':
+      _$CurrentOpenedChatIdStatusEnumMap[instance.currentOpenedChatIdStatus]!,
   'videoCountInEachChat': instance.videoCountInEachChat,
   'getChatsStatus': _$GetChatsStatusEnumMap[instance.getChatsStatus]!,
   'sendMessageStatus': _$SendMessageStatusEnumMap[instance.sendMessageStatus]!,
@@ -223,6 +242,8 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
   'changeChatPropertyStatus':
       _$ChangeChatPropertyStatusEnumMap[instance.changeChatPropertyStatus]!,
   'deleteChatStatus': _$DeleteChatStatusEnumMap[instance.deleteChatStatus]!,
+  'deleteMessageStatus':
+      _$DeleteMessageStatusEnumMap[instance.deleteMessageStatus]!,
   'contacts': instance.contacts.map((e) => e.toJson()).toList(),
   'currentOpenedChatId': instance.currentOpenedChatId,
   'resendMessageStatus':
@@ -246,6 +267,7 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
   'secondMessageId': instance.secondMessageId,
   'slopMessageId': instance.slopMessageId,
   'getAllChat': instance.getAllChat,
+  'senderInfo': instance.senderInfo?.toJson(),
   'unReadMessagesFromAllChats': instance.unReadMessagesFromAllChats,
   'recipientUserId': instance.recipientUserId,
   'currentChannelReceivedMessage': instance.currentChannelReceivedMessage,
@@ -274,6 +296,20 @@ const _$ResendMessageStatusEnumMap = {
   ResendMessageStatus.loading: 'loading',
   ResendMessageStatus.success: 'success',
   ResendMessageStatus.failure: 'failure',
+};
+
+const _$DeleteMessageStatusEnumMap = {
+  DeleteMessageStatus.init: 'init',
+  DeleteMessageStatus.loading: 'loading',
+  DeleteMessageStatus.success: 'success',
+  DeleteMessageStatus.failure: 'failure',
+};
+
+const _$CurrentOpenedChatIdStatusEnumMap = {
+  CurrentOpenedChatIdStatus.init: 'init',
+  CurrentOpenedChatIdStatus.loading: 'loading',
+  CurrentOpenedChatIdStatus.success: 'success',
+  CurrentOpenedChatIdStatus.failure: 'failure',
 };
 
 const _$BlockOrDeleteBlockUserStatusEnumMap = {

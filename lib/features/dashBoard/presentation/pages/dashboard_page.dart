@@ -130,7 +130,7 @@ class _DashboardPageState extends State<DashboardPage> {
       builder: (context, state) {
         print(state.getProductsStatus);
         if (state.getProductsStatus == GetProductsStatus.loading &&
-            state.products?.length == 0) {
+            (state.products?.length ?? 0) == 0) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -168,7 +168,7 @@ class _DashboardPageState extends State<DashboardPage> {
       builder: (context, state) {
         print(state.getBoutiquesStatus);
         if (state.getBoutiquesStatus == GetBoutiquesStatus.loading &&
-            state.boutiques?.length == 0) {
+            (state.boutiques?.length ?? 0) == 0) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -205,7 +205,7 @@ class _DashboardPageState extends State<DashboardPage> {
           previous.ordersMeta != current.ordersMeta,
       builder: (context, state) {
         if (state.getOrdersStatus == GetOrdersStatus.loading &&
-            state.orders?.length == 0) {
+            (state.orders?.length ?? 0) == 0) {
           return const Center(child: CircularProgressIndicator());
         }
 

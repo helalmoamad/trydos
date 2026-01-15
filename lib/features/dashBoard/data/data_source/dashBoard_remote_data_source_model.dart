@@ -10,6 +10,7 @@ import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.da
 import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_user_permission_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_user_roles_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_users_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 
 @injectable
@@ -39,6 +40,20 @@ class DashBoardRemoteDataSource {
       ),
     );
     return getUserRoles();
+  }
+
+  Future<GetUsersModel> getUsers({int page = 1}) {
+    GetClient<GetUsersModel> getUsers = GetClient<GetUsersModel>(
+      serverName: ServerName.dashBoard,
+      requestPrams: RequestConfig<GetUsersModel>(
+        endpoint: DashBoardEndPoints.getUsersEP,
+        queryParameters: {'page': page.toString()},
+        response: ResponseValue<GetUsersModel>(
+          fromJson: (response) => GetUsersModel.fromJson(response),
+        ),
+      ),
+    );
+    return getUsers();
   }
 
   Future<ReadOnlyMessageFromApiModel> addUser(Map<String, dynamic> params) {

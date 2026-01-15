@@ -8,6 +8,7 @@ import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.da
 import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_user_permission_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_user_roles_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_users_model.dart';
 import 'package:trydos/features/dashBoard/domain/repositories/dashBoard_repository.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 
@@ -26,6 +27,13 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   @override
   Future<Either<Failure, GetUserRolesModel>> getUserRoles() {
     return handlingExceptionRequest(tryCall: () => dataSource.getUserRoles());
+  }
+
+  @override
+  Future<Either<Failure, GetUsersModel>> getUsers({int page = 1}) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getUsers(page: page),
+    );
   }
 
   @override

@@ -13,6 +13,8 @@ import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.da
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart'
     as boutiques_model;
 import 'package:trydos/features/dashBoard/data/models/get_user_roles_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_users_model.dart'
+    as users_model;
 import 'package:trydos/features/dashBoard/domain/useCase/add_user_usecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/get_user_permission_usecase.dart.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/get_user_roles_usecase.dart';
@@ -20,6 +22,7 @@ import 'package:trydos/features/dashBoard/domain/useCase/get_orders_usecase.dart
 import 'package:trydos/features/dashBoard/domain/useCase/get_products_usecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/get_boutiques_usecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/change_order_status_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/get_users_usecase.dart';
 import 'package:equatable/equatable.dart';
 part 'dashBoard_event.dart';
 part 'dashBoard_state.dart';
@@ -28,6 +31,7 @@ part 'dashBoard_state.dart';
 class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   final GetUserPermissionUseCase getUserPermissionUseCase;
   final GetUserRolesUseCase getUserRolesUseCase;
+  final GetUsersUseCase getUsersUseCase;
   final AddUserUseCase addUserUseCase;
   final GetOrdersUseCase getOrdersUseCase;
   final GetProductsUseCase getProductsUseCase;
@@ -37,6 +41,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   DashboardBloc(
     this.getUserPermissionUseCase,
     this.getUserRolesUseCase,
+    this.getUsersUseCase,
     this.addUserUseCase,
     this.getOrdersUseCase,
     this.getProductsUseCase,
@@ -49,6 +54,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     on<ChangeOrderStatusEvent>(_onChangeOrderStatusEvent);
     on<GetUserPermissionEvent>(_onGetUserPermissionEvent);
     on<GetUserRolesEvent>(_onGetUserRolesEvent);
+    on<GetUsersEvent>(_onGetUsersEvent);
     on<AddUserEvent>(_onAddUserEvent);
   }
 
@@ -123,6 +129,31 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
       (r) {
         emit((state.copyWith(addUserStatus: AddUserStatus.success)));
         showMessage(r.message ?? "");
+        // Refresh users list after adding a user
+        add(GetUsersEvent());
+      },
+    );
+  }
+
+  FutureOr<void> _onGetUsersEvent(
+    GetUsersEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(state.copyWith(getUsersStatus: GetUsersStatus.loading));
+
+    final response = await getUsersUseCase(GetUsersParams(page: event.page));
+    response.fold(
+      (l) {
+        emit((state.copyWith(getUsersStatus: GetUsersStatus.failure)));
+      },
+      (r) {
+        emit(
+          (state.copyWith(
+            users: r.data?.users,
+            usersMeta: r.data?.meta,
+            getUsersStatus: GetUsersStatus.success,
+          )),
+        );
       },
     );
   }

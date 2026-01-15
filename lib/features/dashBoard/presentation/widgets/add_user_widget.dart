@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' as el;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../bloc/dashBoard_bloc.dart';
 import '../../data/models/get_user_roles_model.dart';
+import 'users_table_widget.dart';
 
 class AddUserWidget extends StatefulWidget {
   final String sellerId;
@@ -24,6 +25,8 @@ class _AddUserWidgetState extends State<AddUserWidget> {
   void initState() {
     super.initState();
     _dashboardBloc = BlocProvider.of<DashboardBloc>(context);
+    // Load users when widget initializes
+    _dashboardBloc.add(GetUsersEvent());
   }
 
   @override
@@ -31,7 +34,10 @@ class _AddUserWidgetState extends State<AddUserWidget> {
     return BlocBuilder<DashboardBloc, DashBoardState>(
       buildWhen: (previous, current) =>
           previous.getUserRolesStatus != current.getUserRolesStatus ||
-          previous.addUserStatus != current.addUserStatus,
+          previous.addUserStatus != current.addUserStatus ||
+          previous.getUsersStatus != current.getUsersStatus ||
+          previous.users != current.users ||
+          previous.usersMeta != current.usersMeta,
       builder: (context, state) {
         final roles = state.shopRoles ?? [];
         final isLoading =
@@ -73,19 +79,24 @@ class _AddUserWidgetState extends State<AddUserWidget> {
                     // Phone Number Label
                     _buildLabel(LocaleKeys.phone_number_label.tr()),
                     SizedBox(height: 8.h),
-                    TextFormField(
-                      controller: _phoneController,
-                      decoration: _inputDecoration('+(country_code)XXX'),
-                      keyboardType: TextInputType.phone,
-                      onChanged: (value) {
-                        if (value.isNotEmpty && !value.startsWith('+')) {
-                          _phoneController.text = '+' + value;
-                          _phoneController
-                              .selection = TextSelection.fromPosition(
-                            TextPosition(offset: _phoneController.text.length),
-                          );
-                        }
-                      },
+                    Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: TextFormField(
+                        controller: _phoneController,
+                        decoration: _inputDecoration('+(country_code)XXX'),
+                        keyboardType: TextInputType.phone,
+                        onChanged: (value) {
+                          if (value.isNotEmpty && !value.startsWith('+')) {
+                            _phoneController.text = '+' + value;
+                            _phoneController.selection =
+                                TextSelection.fromPosition(
+                                  TextPosition(
+                                    offset: _phoneController.text.length,
+                                  ),
+                                );
+                          }
+                        },
+                      ),
                     ),
                     SizedBox(height: 4.h),
                     Text(
@@ -190,96 +201,59 @@ class _AddUserWidgetState extends State<AddUserWidget> {
 
               SizedBox(height: 20.h),
 
-              // Available Roles Section
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(24.w),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.r),
-                  boxShadow: [
-                    BoxShadow(
-                      // ignore: deprecated_member_use
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 20,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      LocaleKeys.available_roles.tr(),
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xff111827),
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
-                    if (isLoading)
-                      Wrap(
-                        spacing: 12.w,
-                        runSpacing: 12.h,
-                        children: List.generate(4, (index) {
-                          return Shimmer.fromColors(
-                            baseColor: Colors.grey.shade100,
-                            highlightColor: Colors.grey.shade50,
-                            child: Container(
-                              width: 80.w,
-                              height: 38.h,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                            ),
-                          );
-                        }),
-                      )
-                    else if (roles.isEmpty)
-                      Container(
-                        height: 150.h,
-                        alignment: Alignment.center,
-                        child: Text(
-                          LocaleKeys.no_roles_available.tr(),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: Colors.grey.shade400,
-                          ),
-                        ),
-                      )
-                    else
-                      Wrap(
-                        spacing: 12.w,
-                        runSpacing: 12.h,
-                        children: roles.map((role) {
-                          return IntrinsicWidth(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 16.w,
-                                vertical: 10.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade50,
-                                borderRadius: BorderRadius.circular(10.r),
-                                border: Border.all(color: Colors.grey.shade100),
-                              ),
-                              child: Text(
-                                role.name ?? "",
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                  ],
+              // Users Section
+              SizedBox(height: 24.h),
+              Text(
+                'Users',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xff111827),
                 ),
               ),
+              SizedBox(height: 16.h),
+
+              // Users Table or Loading/Empty State
+              if (state.getUsersStatus == GetUsersStatus.loading)
+                Container(
+                  height: 200.h,
+                  alignment: Alignment.center,
+                  child: const CircularProgressIndicator(),
+                )
+              else if (state.users != null && state.users!.isNotEmpty)
+                SizedBox(
+                  height: 400.h,
+                  child: UsersTableWidget(
+                    users: state.users!,
+                    meta: state.usersMeta,
+                    onPageChanged: (page) {
+                      _dashboardBloc.add(GetUsersEvent(page: page));
+                    },
+                    onChangeRole: (userId, roleId) {
+                      // TODO: Implement change role
+                    },
+                    onDeleteUser: (userId) {
+                      // TODO: Implement delete user
+                    },
+                  ),
+                )
+              else
+                Container(
+                  height: 150.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'No users found',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                ),
             ],
           ),
         );

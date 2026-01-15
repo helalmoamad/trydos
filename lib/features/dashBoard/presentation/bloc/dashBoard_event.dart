@@ -41,3 +41,8 @@ class ChangeOrderStatusEvent extends DashBoardEvent {
   final String status;
   ChangeOrderStatusEvent({required this.order_id, required this.status});
 }
+
+class GetUsersEvent extends DashBoardEvent {
+  final int page;
+  GetUsersEvent({this.page = 1});
+}
