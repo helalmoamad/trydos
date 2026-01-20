@@ -669,11 +669,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                       PaymentMethods.cod,
                                     )
                                     ? HelperFunctions.formatNumber(
-                                        number: totalCashed,
+                                        numberToFormate: totalCashed,
                                         isNeedRounding: false,
                                       )
                                     : HelperFunctions.formatNumber(
-                                        number: totalPrice,
+                                        numberToFormate: totalPrice,
                                         isNeedRounding: false,
                                       ),
                                 style: context.textTheme.bodyMedium?.bq
@@ -837,11 +837,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                       PaymentMethods.cod,
                                     )
                                     ? HelperFunctions.formatNumber(
-                                        number: totalCashed,
+                                        numberToFormate: totalCashed,
                                         isNeedRounding: false,
                                       )
                                     : HelperFunctions.formatNumber(
-                                        number: totalPrice,
+                                        numberToFormate: totalPrice,
                                         isNeedRounding: false,
                                       ),
                                 style: context.textTheme.bodyMedium?.bq

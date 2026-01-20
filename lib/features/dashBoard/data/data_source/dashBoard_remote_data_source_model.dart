@@ -5,6 +5,7 @@ import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/core/api/methods/post.dart';
 import 'package:trydos/core/api/methods/put.dart';
+import 'package:trydos/core/api/methods/delete.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.dart';
@@ -29,11 +30,17 @@ class DashBoardRemoteDataSource {
     return getUserPermission();
   }
 
-  Future<GetUserRolesModel> getUserRoles() {
+  Future<GetUserRolesModel> getUserRoles({String? search, int page = 1}) {
+    Map<String, String> queryParameters = {'page': page.toString()};
+    if (search != null && search.isNotEmpty) {
+      queryParameters['search'] = search;
+    }
+
     GetClient<GetUserRolesModel> getUserRoles = GetClient<GetUserRolesModel>(
       serverName: ServerName.dashBoard,
       requestPrams: RequestConfig<GetUserRolesModel>(
         endpoint: DashBoardEndPoints.getUserRolesEP,
+        queryParameters: queryParameters,
         response: ResponseValue<GetUserRolesModel>(
           fromJson: (response) => GetUserRolesModel.fromJson(response),
         ),
@@ -133,5 +140,53 @@ class DashBoardRemoteDataSource {
           ),
         );
     return changeOrderStatus();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> deleteUser(String userId) {
+    DeleteClient<ReadOnlyMessageFromApiModel> deleteUser =
+        DeleteClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.deleteUserEP(userId),
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return deleteUser();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> updateUserRole(
+    Map<String, dynamic> params,
+  ) {
+    PutClient<ReadOnlyMessageFromApiModel> updateUserRole =
+        PutClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.updateUserRoleEP,
+            data: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return updateUserRole();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> leaveShop() {
+    DeleteClient<ReadOnlyMessageFromApiModel> leaveShop =
+        DeleteClient<ReadOnlyMessageFromApiModel>(
+      serverName: ServerName.dashBoard,
+      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+        endpoint: DashBoardEndPoints.leaveShopEP,
+        response: ResponseValue<ReadOnlyMessageFromApiModel>(
+          fromJson: (response) =>
+              ReadOnlyMessageFromApiModel.fromJson(response),
+        ),
+      ),
+    );
+    return leaveShop();
   }
 }

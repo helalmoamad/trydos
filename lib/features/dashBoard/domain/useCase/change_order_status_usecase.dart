@@ -22,7 +22,7 @@ class ChangeOrderStatusUseCase
 }
 
 class ChangeOrderParams {
-  final String order_id;
+  final int order_id;
   final String status;
   ChangeOrderParams({required this.order_id, required this.status});
   Map<String, dynamic> get map => {"id": order_id, "status": status};

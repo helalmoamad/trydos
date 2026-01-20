@@ -9,6 +9,19 @@ class PermissionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String _formatStatus(String status) {
+      // Format status string to be more readable
+      // Convert snake_case to Title Case
+      return status
+          .split('_')
+          .map(
+            (word) => word.isEmpty
+                ? ''
+                : word[0].toUpperCase() + word.substring(1).toLowerCase(),
+          )
+          .join(' ');
+    }
+
     return Container(
       margin: EdgeInsets.only(bottom: 20.h),
       child: Column(
@@ -51,20 +64,11 @@ class PermissionCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        permissionName,
+                        _formatStatus(permissionName),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        'You have full access to all features', // Or a more dynamic description
-                        style: TextStyle(
-                          // ignore: deprecated_member_use
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 12.sp,
                         ),
                       ),
                     ],
@@ -114,7 +118,7 @@ class PermissionCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Text(
-                    permissionName,
+                    _formatStatus(permissionName),
                     style: TextStyle(
                       fontSize: 13.sp,
                       color: Colors.black54,

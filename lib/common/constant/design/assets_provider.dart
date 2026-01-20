@@ -210,6 +210,8 @@ abstract class AppAssets {
   static String get logoActiveSvg => 'logo_active'.svg;
   static String get bottomBarLogoActiveSvg => 'bottom_bar_logo_active'.svg;
   static String get logoTextSvg => 'logo_text'.svg;
+  static String get confirmCheckSvg => 'confirm_check'.svg;
+  static String get marketSvg => 'market'.svg;
 
   static String get callMutedSvg => 'call_muted'.svg;
   static String get callUnMutedSvg => 'call_unmute'.svg;

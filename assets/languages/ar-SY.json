@@ -723,5 +723,15 @@
   "add_user_button": "إضافة مستخدم",
   "available_roles": "الأدوار المتاحة",
   "no_roles_available": "لا توجد أدوار متاحة",
-  "full_access_message": "لديك وصول كامل إلى جميع الميزات"
+  "full_access_message": "لديك وصول كامل إلى جميع الميزات",
+  "name_phone": "الاسم / الهاتف",
+  "actions": "الإجراءات",
+  "change_role": "تغيير الدور",
+  "not_available": "غير متاح",
+  "shop_name": "اسم المتجر",
+  "enter_button": "دخول",
+  "leave_button": "مغادرة",
+  "confirm_leave_shop_title": "تأكيد مغادرة المتجر",
+  "confirm_leave_shop_message": "هل أنت متأكد أنك تريد مغادرة هذا المتجر؟",
+  "go_to_seller_dashboard": "الذهاب إلى لوحة تحكم البائع"
 }

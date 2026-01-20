@@ -430,7 +430,9 @@ class _ProductListingLightSliderState
                   Row(
                     children: [
                       MyTextWidget(
-                        HelperFunctions.formatNumber(number: price * rate),
+                        HelperFunctions.formatNumber(
+                          numberToFormate: price * rate,
+                        ),
                         style: textTheme.titleMedium?.lq.copyWith(
                           color: const Color(0xff3c3c3c),
                           decoration: TextDecoration.lineThrough,
@@ -438,7 +440,9 @@ class _ProductListingLightSliderState
                       ),
                       const SizedBox(width: 2),
                       MyTextWidget(
-                        HelperFunctions.formatNumber(number: offerPrice * rate),
+                        HelperFunctions.formatNumber(
+                          numberToFormate: offerPrice * rate,
+                        ),
                         style: textTheme.titleMedium?.bq.copyWith(
                           color: const Color(0xff3c3c3c),
                         ),

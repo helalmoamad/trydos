@@ -53,6 +53,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
+      // log(response.data.toString());
       _StatusType statusType;
       if (response.statusCode == StatusCode.operationSucceeded.code ||
           response.statusCode == StatusCode.createdSucceeded.code) {

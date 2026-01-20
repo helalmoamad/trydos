@@ -402,8 +402,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
         ),
         Text(
           widget.partialPaymentByWallet > 0
-              ? '${HelperFunctions.formatNumber(number: (widget.amount - widget.partialPaymentByWallet), isNeedRounding: false)} ${widget.currencySymbol}'
-              : '${HelperFunctions.formatNumber(number: widget.amount, isNeedRounding: false)} ${widget.currencySymbol}',
+              ? '${HelperFunctions.formatNumber(numberToFormate: (widget.amount - widget.partialPaymentByWallet), isNeedRounding: false)} ${widget.currencySymbol}'
+              : '${HelperFunctions.formatNumber(numberToFormate: widget.amount, isNeedRounding: false)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,
@@ -430,7 +430,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                 ),
               ),
               Text(
-                '${HelperFunctions.formatNumber(number: ((HelperFunctions.truncateToDecimalPlaces((GetIt.I<HomeBloc>().state.getCartShippingItemsModel?.data?.codCost ?? 0).toDouble(), GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ?? 1)), isNeedRounding: false)} ${widget.currencySymbol}',
+                '${HelperFunctions.formatNumber(numberToFormate: ((HelperFunctions.truncateToDecimalPlaces((GetIt.I<HomeBloc>().state.getCartShippingItemsModel?.data?.codCost ?? 0).toDouble(), GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ?? 1)), isNeedRounding: false)} ${widget.currencySymbol}',
                 style: context.textTheme.bodyMedium?.sbt.copyWith(
                   color: const Color(0xff1D1D1D),
                   letterSpacing: 0.18,
@@ -499,8 +499,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
         ),
         Text(
           widget.partialPaymentByWallet > 0
-              ? '${HelperFunctions.formatNumber(number: widget.partialPaymentByWallet, isNeedRounding: false)} ${widget.currencySymbol}'
-              : '${HelperFunctions.formatNumber(number: widget.amount, isNeedRounding: false)} ${widget.currencySymbol}',
+              ? '${HelperFunctions.formatNumber(numberToFormate: widget.partialPaymentByWallet, isNeedRounding: false)} ${widget.currencySymbol}'
+              : '${HelperFunctions.formatNumber(numberToFormate: widget.amount, isNeedRounding: false)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,

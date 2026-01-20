@@ -195,7 +195,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                           ? const SizedBox.shrink()
                           : MyTextWidget(
                               HelperFunctions.formatNumber(
-                                number: double.parse(
+                                numberToFormate: double.parse(
                                   currentTab == 3
                                       ? widget.price
                                       : widget.initPrice,
@@ -212,7 +212,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                       const SizedBox(width: 5),
                       MyTextWidget(
                         HelperFunctions.formatNumber(
-                          number: double.parse(
+                          numberToFormate: double.parse(
                             currentTab == 3
                                 ? ((offPriceInCart > 0 && (!(widget.isRedeem)))
                                       ? (HelperFunctions.truncateToDecimalPlaces(
@@ -258,7 +258,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                       widget.isRedeem
                           ? MyTextWidget(
                               HelperFunctions.formatNumber(
-                                number: currentTab == 3
+                                numberToFormate: currentTab == 3
                                     ? widget.redeemVariantPrice
                                     : widget.redeemPrice,
                               ),

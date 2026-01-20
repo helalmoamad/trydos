@@ -29,6 +29,8 @@ import 'package:trydos/features/authentication/presentation/manager/auth_bloc.da
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/dashBoard/presentation/bloc/dashBoard_bloc.dart'
+    as dashboard;
 import 'package:trydos/features/dashBoard/presentation/pages/select_shop_page.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
@@ -108,20 +110,54 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       ),
                     ),
                     SizedBox(height: 12.h, width: 1.sw),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SelectShopPage(),
-                          ),
-                        );
+                    BlocBuilder<
+                      dashboard.DashboardBloc,
+                      dashboard.DashBoardState
+                    >(
+                      buildWhen: (previous, current) =>
+                          previous.getUserPermissionStatus !=
+                          current.getUserPermissionStatus,
+                      builder: (context, state) {
+                        return state.getUserPermissionStatus ==
+                                dashboard.GetUserPermissionStatus.loading
+                            ? Shimmer.fromColors(
+                                baseColor: Colors.grey[200]!,
+                                highlightColor: Colors.grey[100]!,
+                                child: Container(
+                                  width: 1.sw,
+                                  height: 53,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffFAFAFA),
+                                    borderRadius: BorderRadius.circular(15.r),
+                                  ),
+                                ),
+                              )
+                            : state.getUserPermissionStatus ==
+                                  dashboard.GetUserPermissionStatus.success
+                            ? InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SelectShopPage(),
+                                    ),
+                                  );
+                                },
+                                child: _actionWidget(
+                                  AppAssets.marketSvg,
+                                  LocaleKeys.go_to_seller_dashboard.tr(),
+                                ),
+                              )
+                            : const SizedBox.shrink();
                       },
-                      child: _actionWidget(
-                        AppAssets.settingSvg,
-                        LocaleKeys.settings.tr(),
-                      ),
                     ),
+                    SizedBox(height: 12.h, width: 1.sw),
+                    _actionWidget(
+                      AppAssets.settingSvg,
+                      LocaleKeys.settings.tr(),
+                    ),
+
                     SizedBox(height: 12.h, width: 1.sw),
                     _actionWidget(
                       AppAssets.termSvg,

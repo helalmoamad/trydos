@@ -178,7 +178,7 @@ class UserOrder {
   final String? orderGroupId;
   final String? orderStatus;
   final String? orderGroupStatus;
-  final PaymentMethod? paymentMethod;
+  final String? paymentMethod;
   final PaymentStatus? paymentStatus;
   final double? codCost;
   final String? transactionRef;
@@ -221,7 +221,7 @@ class UserOrder {
     String? orderGroupId,
     String? orderStatus,
     String? orderGroupStatus,
-    PaymentMethod? paymentMethod,
+    String? paymentMethod,
     PaymentStatus? paymentStatus,
     double? codCost,
     String? transactionRef,
@@ -263,7 +263,7 @@ class UserOrder {
     orderGroupId: json["order_group_id"],
     orderStatus: json["order_status"],
     orderGroupStatus: json["order_group_status"],
-    paymentMethod: paymentMethodValues.map[json["payment_method"]]!,
+    paymentMethod: json["payment_method"]?.toString(),
     paymentStatus: paymentStatusValues.map[json["payment_status"]]!,
     codCost: double.tryParse(json["cod_cost"].toString()),
     transactionRef: json["transaction_ref"],
@@ -291,7 +291,7 @@ class UserOrder {
     "order_group_id": orderGroupId,
     "order_status": orderStatus,
     "order_group_status": orderGroupStatus,
-    "payment_method": paymentMethodValues.reverse[paymentMethod],
+    "payment_method": paymentMethod,
     "payment_status": paymentStatusValues.reverse[paymentStatus],
     "cod_cost": codCost,
     "transaction_ref": transactionRef,
@@ -429,12 +429,7 @@ final paymentStatusValues = EnumValues({
   "unpaid": PaymentStatus.UNPAID,
 });
 
-enum PaymentMethod { CASH_ON_DELIVERY, TRYDOS_WALLET }
-
-final paymentMethodValues = EnumValues({
-  "cash_on_delivery": PaymentMethod.CASH_ON_DELIVERY,
-  "trydos_wallet": PaymentMethod.TRYDOS_WALLET,
-});
+// PaymentMethod is now a dynamic string to support any payment method from API
 
 class UserAbilities {
   final List<String>? changeOrderStatus;

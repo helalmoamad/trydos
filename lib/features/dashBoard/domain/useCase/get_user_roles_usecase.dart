@@ -7,13 +7,20 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class GetUserRolesUseCase extends UseCase<GetUserRolesModel, NoParams> {
+class GetUserRolesUseCase extends UseCase<GetUserRolesModel, GetUserRolesParams> {
   final DashBoardRepository repository;
 
   GetUserRolesUseCase(this.repository);
 
   @override
-  Future<Either<Failure, GetUserRolesModel>> call(NoParams params) {
-    return repository.getUserRoles();
+  Future<Either<Failure, GetUserRolesModel>> call(GetUserRolesParams params) {
+    return repository.getUserRoles(search: params.search, page: params.page);
   }
+}
+
+class GetUserRolesParams {
+  final String? search;
+  final int page;
+
+  GetUserRolesParams({this.search, this.page = 1});
 }

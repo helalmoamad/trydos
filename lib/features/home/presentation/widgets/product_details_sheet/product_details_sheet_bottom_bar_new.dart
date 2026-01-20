@@ -484,7 +484,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                             ),
                                                       ),
                                                       Text(
-                                                        "${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces(widget.redeemVariantPrice, homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))} ",
+                                                        "${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces(widget.redeemVariantPrice, homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))} ",
                                                         style: context
                                                             .textTheme
                                                             .bodyMedium
@@ -593,7 +593,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                   ),
                                                             ),
                                                             Text(
-                                                              "${HelperFunctions.formatNumber(number: totalPrice)} ",
+                                                              "${HelperFunctions.formatNumber(numberToFormate: totalPrice)} ",
                                                               style: context
                                                                   .textTheme
                                                                   .bodyMedium

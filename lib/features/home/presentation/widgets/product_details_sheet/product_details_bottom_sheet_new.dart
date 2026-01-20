@@ -1104,7 +1104,7 @@ class _ProductDetailsBottomSheetNewState
                             children: [
                               MyTextWidget(
                                 HelperFunctions.formatNumber(
-                                  number: double.parse(
+                                  numberToFormate: double.parse(
                                     (HelperFunctions.truncateToDecimalPlaces(
                                               (widget.productItem.price ?? 0),
                                               homeBloc
@@ -1176,7 +1176,7 @@ class _ProductDetailsBottomSheetNewState
 
                                   return MyTextWidget(
                                     HelperFunctions.formatNumber(
-                                      number: double.parse(
+                                      numberToFormate: double.parse(
                                         (offPriceInCart > 0 &&
                                                 (!(widget.isRedeem)))
                                             ? (HelperFunctions.truncateToDecimalPlaces(
@@ -1250,7 +1250,7 @@ class _ProductDetailsBottomSheetNewState
                               widget.isRedeem
                                   ? MyTextWidget(
                                       HelperFunctions.formatNumber(
-                                        number:
+                                        numberToFormate:
                                             HelperFunctions.truncateToDecimalPlaces(
                                               (widget.redeemVariantPrice),
                                               homeBloc

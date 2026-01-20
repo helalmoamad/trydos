@@ -2965,7 +2965,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             ),
                           ),
                           Text(
-                            " ${HelperFunctions.formatNumber(number: totlalPrice)} ",
+                            " ${HelperFunctions.formatNumber(numberToFormate: totlalPrice)} ",
                             style: context.textTheme.bodyMedium?.mq.copyWith(
                               fontSize: 13.sp,
                               color: const Color(0xff1D1D1D),

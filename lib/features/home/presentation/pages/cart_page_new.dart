@@ -1175,7 +1175,7 @@ class _CartPageState extends State<CartPage> {
                                                                           ),
                                                                           const Spacer(),
                                                                           Text(
-                                                                            " ${HelperFunctions.formatNumber(number: totlalPriceWithoutShipping, isNeedRounding: false)}  ",
+                                                                            " ${HelperFunctions.formatNumber(numberToFormate: totlalPriceWithoutShipping, isNeedRounding: false)}  ",
                                                                             style: context.textTheme.bodyMedium?.bq.copyWith(
                                                                               fontSize: 13.sp,
                                                                               color: const Color(
@@ -1331,7 +1331,7 @@ class _CartPageState extends State<CartPage> {
                                                                           ),
                                                                           const Spacer(),
                                                                           Text(
-                                                                            "- ${HelperFunctions.formatNumber(number: (totlalDiscount), isNeedRounding: false)}  ",
+                                                                            "- ${HelperFunctions.formatNumber(numberToFormate: (totlalDiscount), isNeedRounding: false)}  ",
                                                                             style: context.textTheme.bodyMedium?.bq.copyWith(
                                                                               fontSize: 13.sp,
                                                                               color: const Color(
@@ -1631,7 +1631,7 @@ class _CartPageState extends State<CartPage> {
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
                                                                                     ),*/
                                                                           Text(
-                                                                            " ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0), state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)}  ",
+                                                                            " ${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0), state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)}  ",
                                                                             style: context.textTheme.bodyMedium?.bq.copyWith(
                                                                               fontSize: 13.sp,
                                                                               color: const Color(
@@ -1799,7 +1799,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     0)
                                                                                 ? const SizedBox.shrink()
                                                                                 : Text(
-                                                                                    "${HelperFunctions.formatNumber(number: totlalPriceWithDiscount, isNeedRounding: false)}  ",
+                                                                                    "${HelperFunctions.formatNumber(numberToFormate: totlalPriceWithDiscount, isNeedRounding: false)}  ",
                                                                                     style: context.textTheme.bodyMedium?.rq.copyWith(
                                                                                       decoration: TextDecoration.lineThrough,
                                                                                       fontSize: 16,
@@ -1811,7 +1811,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     ),
                                                                                   ),
                                                                             Text(
-                                                                              "${HelperFunctions.formatNumber(number: totlalPrice, isNeedRounding: false)}  ",
+                                                                              "${HelperFunctions.formatNumber(numberToFormate: totlalPrice, isNeedRounding: false)}  ",
                                                                               style: context.textTheme.bodyMedium?.bq.copyWith(
                                                                                 fontSize: 16.sp,
                                                                                 color: const Color(
@@ -2273,7 +2273,7 @@ class _CartPageState extends State<CartPage> {
                                                                                         ),
                                                                                       ),
                                                                                       Text(
-                                                                                        " ${HelperFunctions.formatNumber(number: totlalPrice, isNeedRounding: false)} ",
+                                                                                        " ${HelperFunctions.formatNumber(numberToFormate: totlalPrice, isNeedRounding: false)} ",
                                                                                         style: context.textTheme.bodyMedium?.bq.copyWith(
                                                                                           fontSize: 14.sp,
                                                                                           color: const Color(
@@ -2489,7 +2489,7 @@ class _CartPageState extends State<CartPage> {
                                                                                               ),
                                                                                             ),
                                                                                             Text(
-                                                                                              " ${HelperFunctions.formatNumber(number: totlalPrice, isNeedRounding: false)} ",
+                                                                                              " ${HelperFunctions.formatNumber(numberToFormate: totlalPrice, isNeedRounding: false)} ",
                                                                                               style: context.textTheme.bodyMedium?.bq.copyWith(
                                                                                                 fontSize: 14.sp,
                                                                                                 color: const Color(

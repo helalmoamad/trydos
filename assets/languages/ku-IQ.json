@@ -733,5 +733,15 @@
   "add_user_button": "زیادکردنی بەکارهێنەر",
   "available_roles": "ڕۆڵە بەردەستەکان",
   "no_roles_available": "هیچ ڕۆڵێک بەردەست نییە",
-  "full_access_message": "دەستڕاگەیشتنی تەواوت هەیە بۆ هەموو تایبەتمەندییەکان"
+  "full_access_message": "دەستڕاگەیشتنی تەواوت هەیە بۆ هەموو تایبەتمەندییەکان",
+  "name_phone": "ناو / تەلەفۆن",
+  "actions": "کردارەکان",
+  "change_role": "گۆڕینی ڕۆڵ",
+  "shop_name": "ناوی فرۆشگا",
+  "enter_button": "چوونەژوورەوە",
+  "leave_button": "دەرچوون",
+  "not_available": "بەردەست نییە",
+  "confirm_leave_shop_title": "دڵنیاکردنەوەی دەرچوون لە فرۆشگا",
+  "confirm_leave_shop_message": "دڵنیایت دەتەوێت لەم فرۆشگایە دەرچیت؟",
+  "go_to_seller_dashboard": "چوونە بۆ تابلۆی فرۆشیار"
 }

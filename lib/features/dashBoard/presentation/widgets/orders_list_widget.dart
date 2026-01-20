@@ -2,20 +2,24 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
+import 'package:trydos/features/dashBoard/presentation/bloc/dashBoard_bloc.dart';
 import 'pagination_widget.dart';
 
 class OrdersListWidget extends StatelessWidget {
   final List<UserOrder> orders;
   final Meta? meta;
+  final UserAbilities? userAbilities;
   final Function(int page)? onPageChanged;
-  final Function(String orderId, String status)? onStatusChanged;
+  final Function(int orderId, String status)? onStatusChanged;
 
   const OrdersListWidget({
     Key? key,
     required this.orders,
     this.meta,
+    this.userAbilities,
     this.onPageChanged,
     this.onStatusChanged,
   }) : super(key: key);
@@ -34,6 +38,7 @@ class OrdersListWidget extends StatelessWidget {
               itemBuilder: (context, index) {
                 return OrderCard(
                   order: orders[index],
+                  availableStatuses: userAbilities?.changeOrderStatus ?? [],
                   onStatusChanged: onStatusChanged,
                 );
               },
@@ -65,10 +70,15 @@ class OrdersListWidget extends StatelessWidget {
 
 class OrderCard extends StatefulWidget {
   final UserOrder order;
-  final Function(String orderId, String status)? onStatusChanged;
+  final List<String> availableStatuses;
+  final Function(int orderId, String status)? onStatusChanged;
 
-  const OrderCard({Key? key, required this.order, this.onStatusChanged})
-    : super(key: key);
+  const OrderCard({
+    Key? key,
+    required this.order,
+    required this.availableStatuses,
+    this.onStatusChanged,
+  }) : super(key: key);
 
   @override
   State<OrderCard> createState() => _OrderCardState();
@@ -77,27 +87,69 @@ class OrderCard extends StatefulWidget {
 class _OrderCardState extends State<OrderCard> {
   String? selectedStatus;
 
-  // All possible order statuses
-  static const List<String> availableStatuses = [
-    'pending',
-    'confirmed',
-    'processing',
-    'out_for_delivery',
-    'delivered',
-    'canceled',
-    'returned',
-    'failed',
-    'ready_to_shipping',
-    'on_hold',
-  ];
-
   @override
   void initState() {
     super.initState();
     // Ensure the current status is in the list, otherwise set to first item
-    selectedStatus = availableStatuses.contains(widget.order.orderStatus)
-        ? widget.order.orderStatus
-        : availableStatuses.first;
+    if (widget.availableStatuses.isNotEmpty) {
+      // If current status is in available statuses, use it
+      if (widget.availableStatuses.contains(widget.order.orderStatus)) {
+        selectedStatus = widget.order.orderStatus;
+      } else {
+        // Otherwise, use first available status
+        selectedStatus = widget.availableStatuses.first;
+      }
+    } else {
+      // If no available statuses, use current status (but button will be disabled)
+      selectedStatus = widget.order.orderStatus;
+    }
+  }
+
+  @override
+  void didUpdateWidget(OrderCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update selectedStatus if availableStatuses changed
+    if (widget.availableStatuses.isNotEmpty) {
+      // If current selectedStatus is not in new availableStatuses, update it
+      if (!widget.availableStatuses.contains(selectedStatus)) {
+        // Try to use current order status if available
+        if (widget.availableStatuses.contains(widget.order.orderStatus)) {
+          selectedStatus = widget.order.orderStatus;
+        } else {
+          // Otherwise use first available status
+          selectedStatus = widget.availableStatuses.first;
+        }
+      }
+    } else {
+      // If availableStatuses became empty, use current order status
+      selectedStatus = widget.order.orderStatus;
+    }
+  }
+
+  String _formatPaymentMethod(String paymentMethod) {
+    // Format payment method string to be more readable
+    // Convert snake_case to Title Case
+    return paymentMethod
+        .split('_')
+        .map(
+          (word) => word.isEmpty
+              ? ''
+              : word[0].toUpperCase() + word.substring(1).toLowerCase(),
+        )
+        .join(' ');
+  }
+
+  String _formatStatus(String status) {
+    // Format status string to be more readable
+    // Convert snake_case to Title Case
+    return status
+        .split('_')
+        .map(
+          (word) => word.isEmpty
+              ? ''
+              : word[0].toUpperCase() + word.substring(1).toLowerCase(),
+        )
+        .join(' ');
   }
 
   Color _getStatusColor(String? status) {
@@ -267,7 +319,7 @@ class _OrderCardState extends State<OrderCard> {
                       ),
                     if (widget.order.paymentMethod != null)
                       _buildSmallBadge(
-                        widget.order.paymentMethod?.name ?? '',
+                        _formatPaymentMethod(widget.order.paymentMethod!),
                         const Color(0xFFE0F2F1),
                         const Color(0xFF00695C),
                       ),
@@ -317,59 +369,116 @@ class _OrderCardState extends State<OrderCard> {
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
-                            value: selectedStatus,
+                            value:
+                                widget.availableStatuses.isNotEmpty &&
+                                    selectedStatus != null &&
+                                    widget.availableStatuses.contains(
+                                      selectedStatus,
+                                    )
+                                ? selectedStatus
+                                : widget.availableStatuses.isNotEmpty
+                                ? widget.availableStatuses.first
+                                : null,
                             isExpanded: true,
                             icon: Icon(
                               Icons.arrow_drop_down,
                               color: Colors.grey.shade700,
                             ),
-                            items: availableStatuses.map((String value) {
+                            items: widget.availableStatuses.map((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(
-                                  value.replaceAll('_', ' '),
+                                  _formatStatus(value),
                                   style: TextStyle(fontSize: 14.sp),
                                 ),
                               );
                             }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selectedStatus = newValue;
-                              });
-                            },
+                            onChanged: widget.availableStatuses.isNotEmpty
+                                ? (String? newValue) {
+                                    if (newValue != null &&
+                                        widget.availableStatuses.contains(
+                                          newValue,
+                                        )) {
+                                      setState(() {
+                                        selectedStatus = newValue;
+                                      });
+                                    }
+                                  }
+                                : null,
                           ),
                         ),
                       ),
                     ),
                     SizedBox(width: 12.w),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (selectedStatus != null &&
-                            widget.onStatusChanged != null) {
-                          widget.onStatusChanged!(
-                            widget.order.id.toString(),
-                            selectedStatus!,
-                          );
-                        }
+                    BlocBuilder<DashboardBloc, DashBoardState>(
+                      buildWhen: (previous, current) =>
+                          previous.changeOrderStatusStatus !=
+                          current.changeOrderStatusStatus,
+                      builder: (context, state) {
+                        final isLoading =
+                            state.changeOrderStatusStatus ==
+                            ChangeOrderStatusStatus.loading;
+                        final isThisOrderLoading =
+                            isLoading &&
+                            selectedStatus != widget.order.orderStatus;
+
+                        // Check if selectedStatus is valid and different from current
+                        final canUpdate =
+                            widget.availableStatuses.isNotEmpty &&
+                            selectedStatus != null &&
+                            widget.onStatusChanged != null &&
+                            widget.order.id != null &&
+                            selectedStatus != widget.order.orderStatus &&
+                            widget.availableStatuses.contains(selectedStatus);
+
+                        return ElevatedButton(
+                          onPressed: isThisOrderLoading || !canUpdate
+                              ? null
+                              : () {
+                                  if (widget.order.id != null &&
+                                      selectedStatus != null &&
+                                      widget.availableStatuses.contains(
+                                        selectedStatus,
+                                      )) {
+                                    widget.onStatusChanged!(
+                                      widget.order.id!,
+                                      selectedStatus!,
+                                    );
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isThisOrderLoading || !canUpdate
+                                ? Colors.grey.shade300
+                                : const Color(0xFF90CAF9),
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 24.w,
+                              vertical: 12.h,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                          ),
+                          child: isThisOrderLoading
+                              ? SizedBox(
+                                  width: 16.w,
+                                  height: 16.h,
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : Text(
+                                  'Update',
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                        );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF90CAF9),
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 24.w,
-                          vertical: 12.h,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                      ),
-                      child: Text(
-                        'Update',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
                     ),
                   ],
                 ),

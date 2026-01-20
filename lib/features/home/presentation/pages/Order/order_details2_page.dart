@@ -384,7 +384,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               "";
                                           String
                                           orderAmount = HelperFunctions.formatNumber(
-                                            number:
+                                            numberToFormate:
                                                 (HelperFunctions.truncateToDecimalPlaces(
                                                   order!.orderAmount!,
                                                   state
@@ -1160,7 +1160,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     const SizedBox(width: 5),
                     Text(
                       HelperFunctions.formatNumber(
-                        number:
+                        numberToFormate:
                             (HelperFunctions.truncateToDecimalPlaces(
                               order!.orderAmount!,
                               homeBloc
@@ -1970,7 +1970,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             ? const TextSpan()
                                             : TextSpan(
                                                 text:
-                                                    '${HelperFunctions.formatNumber(number: ((HelperFunctions.truncateToDecimalPlaces((orderListDetailModel.price ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!)) * (homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}',
+                                                    '${HelperFunctions.formatNumber(numberToFormate: ((HelperFunctions.truncateToDecimalPlaces((orderListDetailModel.price ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!)) * (homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}',
                                                 style: context
                                                     .textTheme
                                                     .bodyMedium
@@ -1989,7 +1989,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         ////////////////////////////
                                         TextSpan(
                                           text:
-                                              ' ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((orderListDetailModel.priceAfterDiscount ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}',
+                                              ' ${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces((orderListDetailModel.priceAfterDiscount ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}',
                                           style: context
                                               .textTheme
                                               .bodyMedium
@@ -2022,7 +2022,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             ? const TextSpan(text: "")
                                             : TextSpan(
                                                 text:
-                                                    ' ${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces(((((orderListDetailModel.priceAfterDiscount ?? 0) / (orderListDetailModel.qty ?? 1)) * (orderDetail.quantity ?? 0)) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
+                                                    ' ${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces(((((orderListDetailModel.priceAfterDiscount ?? 0) / (orderListDetailModel.qty ?? 1)) * (orderDetail.quantity ?? 0)) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
                                                 style: context
                                                     .textTheme
                                                     .bodyMedium
@@ -2238,7 +2238,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       .tr(),
                                   order?.paymentStatus == "unpaid"
                                       ? ""
-                                      : '${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces(((((orderListDetailModel.priceAfterDiscount ?? 0) / (orderListDetailModel.qty ?? 1)) * (orderDetail.quantity ?? 0)) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
+                                      : '${LocaleKeys.back_to_your_wallet.tr()} ${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces(((((orderListDetailModel.priceAfterDiscount ?? 0) / (orderListDetailModel.qty ?? 1)) * (orderDetail.quantity ?? 0)) - (reason?.isCostBySystem == 1 ? 0 : reason?.cost ?? 0)), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}',
                                   "3 H",
                                   "00:02:19",
                                   ((returnRequestsData!.status?.value?.contains(
@@ -6263,7 +6263,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               const SizedBox(width: 5),
                               Text(
                                 HelperFunctions.formatNumber(
-                                  number:
+                                  numberToFormate:
                                       (HelperFunctions.truncateToDecimalPlaces(
                                         order!.orderAmount!,
                                         homeBloc
@@ -7986,7 +7986,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           const SizedBox(width: 5),
                           Text(
                             HelperFunctions.formatNumber(
-                              number:
+                              numberToFormate:
                                   (HelperFunctions.truncateToDecimalPlaces(
                                     order!.orderAmount!,
                                     homeBloc
@@ -8128,7 +8128,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               ),
             ),
             Text(
-              "  ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((((allOrder ? order!.orderAmount! : ((order!.details?[indexTap.value].priceAfterDiscount ?? 0))))), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!) * (order!.details?[indexTap.value].qty ?? 0)), isNeedRounding: false)}",
+              "  ${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces((((allOrder ? order!.orderAmount! : ((order!.details?[indexTap.value].priceAfterDiscount ?? 0))))), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!) * (order!.details?[indexTap.value].qty ?? 0)), isNeedRounding: false)}",
               maxLines: 1,
               style: context.textTheme.bodyMedium?.bq.copyWith(
                 color: const Color(0xff8D8D8D),
@@ -9211,7 +9211,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         return Text(
                           order!.paymentStatus == "unpaid"
                               ? " 0"
-                              : "  ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces(((((order!.details?[indexTap.value].priceAfterDiscount ?? 0) / (order!.details?[indexTap.value].qty ?? 1)) * (_qtyOfReturnValueNotifier)) - (_reasonCost)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!)), isNeedRounding: false)}",
+                              : "  ${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces(((((order!.details?[indexTap.value].priceAfterDiscount ?? 0) / (order!.details?[indexTap.value].qty ?? 1)) * (_qtyOfReturnValueNotifier)) - (_reasonCost)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!)), isNeedRounding: false)}",
                           maxLines: 1,
                           style: context.textTheme.bodyMedium?.bq.copyWith(
                             color: const Color(0xff8D8D8D),
@@ -9559,7 +9559,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             children: [
                               for (ReturnReasonModel reason in row) ...[
                                 optionReturnOrder(
-                                  "${(reason.reasonAeEn ?? '') + '${(reason.isCostBySystem != 0) ? "" : '\n ${LocaleKeys.cost.tr()} ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((reason.cost ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}'}'}",
+                                  "${(reason.reasonAeEn ?? '') + '${(reason.isCostBySystem != 0) ? "" : '\n ${LocaleKeys.cost.tr()} ${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces((reason.cost ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)} ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol}'}'}",
                                   reason.id ?? -1, // النص من الـ API
                                   _calculateButtonWidth(
                                     reason.reasonAeEn ?? '',

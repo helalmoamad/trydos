@@ -131,7 +131,8 @@ class _ProductListing3DSliderOptimizedState
       final originalLength = _processedColorImages!.length;
       final duplicatedImages =
           List<productListingModel.SyncColorImageProduct>.from(
-              _processedColorImages!);
+            _processedColorImages!,
+          );
 
       // Add only necessary duplicates for smooth circular scrolling
       _processedColorImages!.addAll(duplicatedImages);
@@ -150,17 +151,22 @@ class _ProductListing3DSliderOptimizedState
   void _cacheImageData() {
     if (_processedColorImages?.isEmpty ?? true) return;
 
-    _cachedImages =
-        _processedColorImages!.map((e) => e.images!.first.filePath!).toList();
+    _cachedImages = _processedColorImages!
+        .map((e) => e.images!.first.filePath!)
+        .toList();
 
     _cachedOriginalHeights = _processedColorImages!
-        .map((e) =>
-            double.tryParse(e.images!.first.originalHeight ?? '200') ?? 200.0)
+        .map(
+          (e) =>
+              double.tryParse(e.images!.first.originalHeight ?? '200') ?? 200.0,
+        )
         .toList();
 
     _cachedOriginalWidths = _processedColorImages!
-        .map((e) =>
-            double.tryParse(e.images!.first.originalWidth ?? '200') ?? 200.0)
+        .map(
+          (e) =>
+              double.tryParse(e.images!.first.originalWidth ?? '200') ?? 200.0,
+        )
         .toList();
   }
 
@@ -186,8 +192,9 @@ class _ProductListing3DSliderOptimizedState
       autoLoop: false, // 🔥 إيقاف الحركة التلقائية نهائياً
       minScale: colorCount >= 3 ? _calculateMinScale(colorCount) : 0.8,
       initialIndex: 0, // 🔥 البدء من 0 دائماً بدلاً من حساب معقد
-      primaryshiftingOffsetDivision:
-          colorCount >= 3 ? _calculateDivision(colorCount) : 2.0,
+      primaryshiftingOffsetDivision: colorCount >= 3
+          ? _calculateDivision(colorCount)
+          : 2.0,
       scrollTime: 20,
     );
   }
@@ -230,10 +237,12 @@ class _ProductListing3DSliderOptimizedState
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       if (mounted) {
-        _homeBloc.add(AddCurrentSelectedColorEvent(
-          currentSelectedColor: _sliderState.currentColorIndex,
-          productSlug: widget.productItem.slug.toString(),
-        ));
+        _homeBloc.add(
+          AddCurrentSelectedColorEvent(
+            currentSelectedColor: _sliderState.currentColorIndex,
+            productSlug: widget.productItem.slug.toString(),
+          ),
+        );
       }
     });
   }
@@ -387,8 +396,10 @@ class _ProductListing3DSliderOptimizedState
     if (_processedColorImages?.isEmpty ?? true) return const SizedBox();
 
     // 🛡️ Safe index access with bounds checking
-    final safeColorIndex = _sliderState.currentColorIndex
-        .clamp(0, (_processedColorImages?.length ?? 1) - 1);
+    final safeColorIndex = _sliderState.currentColorIndex.clamp(
+      0,
+      (_processedColorImages?.length ?? 1) - 1,
+    );
     final currentColorImages = _processedColorImages!.length > safeColorIndex
         ? (_processedColorImages![safeColorIndex].images ?? [])
         : <listing.Thumbnail>[];
@@ -410,8 +421,8 @@ class _ProductListing3DSliderOptimizedState
         },
         separatorBuilder: (context, index) =>
             index == currentColorImages.length - 1
-                ? const SizedBox.shrink()
-                : const SizedBox(width: 2),
+            ? const SizedBox.shrink()
+            : const SizedBox(width: 2),
       ),
     );
   }
@@ -437,14 +448,15 @@ class _ProductListing3DSliderOptimizedState
               offset: const Offset(0, 3),
               inset: true,
               blurRadius: 6,
-            )
+            ),
           ],
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-              width: index == _sliderState.currentImageIndex ? 2.0 : 0.5,
-              color: index == _sliderState.currentImageIndex
-                  ? Colors.blue
-                  : Colors.grey.shade400),
+            width: index == _sliderState.currentImageIndex ? 2.0 : 0.5,
+            color: index == _sliderState.currentImageIndex
+                ? Colors.blue
+                : Colors.grey.shade400,
+          ),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
@@ -471,7 +483,7 @@ class _ProductListing3DSliderOptimizedState
                       offset: const Offset(0, 3),
                       inset: true,
                       blurRadius: 6,
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -531,8 +543,9 @@ class _ProductListing3DSliderOptimizedState
             // تحسين: التعامل مع النقر بشكل صحيح
             final safeIndex = index.clamp(0, (colorCount - 1));
             setState(() {
-              _sliderState =
-                  _sliderState.copyWith(currentColorIndex: safeIndex);
+              _sliderState = _sliderState.copyWith(
+                currentColorIndex: safeIndex,
+              );
             });
             _debounceNotifyColorChange();
             widget.setThisEnabled(-1, -1);
@@ -559,17 +572,19 @@ class _ProductListing3DSliderOptimizedState
         }
 
         // 🛡️ Safe index access with bounds checking
-        final safeColorIndex = _sliderState.currentColorIndex
-            .clamp(0, (_processedColorImages?.length ?? 1) - 1);
+        final safeColorIndex = _sliderState.currentColorIndex.clamp(
+          0,
+          (_processedColorImages?.length ?? 1) - 1,
+        );
         final colorName = _processedColorImages!.length > safeColorIndex
             ? (_processedColorImages![safeColorIndex].colorName ?? '')
             : '';
 
         final colorHex = widget.productItem.colors?.isNotEmpty == true
             ? widget
-                .productItem
-                .colors![safeColorIndex % widget.productItem.colors!.length]
-                .color
+                  .productItem
+                  .colors![safeColorIndex % widget.productItem.colors!.length]
+                  .color
             : null;
 
         return MyTextWidget(
@@ -588,12 +603,14 @@ class _ProductListing3DSliderOptimizedState
   /// 🖼️ Default Image View (Carousel)
   Widget _buildDefaultImageView() {
     // 🛡️ Safe index access with bounds checking
-    final safeColorIndex = _sliderState.currentColorIndex
-        .clamp(0, (_processedColorImages?.length ?? 1) - 1);
+    final safeColorIndex = _sliderState.currentColorIndex.clamp(
+      0,
+      (_processedColorImages?.length ?? 1) - 1,
+    );
     final currentColorImages = _processedColorImages?.isNotEmpty == true
         ? (_processedColorImages!.length > safeColorIndex
-            ? _processedColorImages![safeColorIndex].images
-            : widget.productItem.images)
+              ? _processedColorImages![safeColorIndex].images
+              : widget.productItem.images)
         : widget.productItem.images;
 
     if (currentColorImages?.isEmpty ?? true) return const SizedBox();
@@ -635,10 +652,7 @@ class _ProductListing3DSliderOptimizedState
             ),
 
           // Interaction overlay
-          Positioned(
-            top: 0,
-            child: _buildImageModeButton(),
-          ),
+          Positioned(top: 0, child: _buildImageModeButton()),
         ],
       ),
     );
@@ -669,9 +683,7 @@ class _ProductListing3DSliderOptimizedState
             final indicatorSize = _calculateIndicatorSize(index, itemCount);
 
             return Container(
-              margin: EdgeInsets.only(
-                right: index != (itemCount - 1) ? 2 : 0,
-              ),
+              margin: EdgeInsets.only(right: index != (itemCount - 1) ? 2 : 0),
               width: indicatorSize,
               height: indicatorSize,
               decoration: BoxDecoration(
@@ -689,10 +701,7 @@ class _ProductListing3DSliderOptimizedState
                         stops: [0, 1],
                       )
                     : null,
-                border: Border.all(
-                  width: 0.3,
-                  color: const Color(0xff3c3c3c),
-                ),
+                border: Border.all(width: 0.3, color: const Color(0xff3c3c3c)),
               ),
             );
           }),
@@ -835,11 +844,7 @@ class _ProductListing3DSliderOptimizedState
     final brandIcon = widget.productItem.brand?.icon?.filePath;
     if (brandIcon == null) return const SizedBox.shrink();
 
-    return SvgNetworkWidget(
-      svgUrl: brandIcon,
-      width: 30.w,
-      height: 15,
-    );
+    return SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 15);
   }
 
   /// 📝 Product Name Row
@@ -877,10 +882,7 @@ class _ProductListing3DSliderOptimizedState
       height: 10,
       child: Transform.translate(
         offset: const Offset(0, 1),
-        child: SvgNetworkWidget(
-          svgUrl: categoryIcon,
-          height: 10,
-        ),
+        child: SvgNetworkWidget(svgUrl: categoryIcon, height: 10),
       ),
     );
   }
@@ -898,8 +900,12 @@ class _ProductListing3DSliderOptimizedState
           builder: (context, state) {
             final price = widget.productItem.price ?? 0;
             final offerPrice = widget.productItem.offerPrice ?? 0;
-            final exchangeRate = state
-                    .getCurrencyForCountryModel?.data?.currency?.exchangeRate ??
+            final exchangeRate =
+                state
+                    .getCurrencyForCountryModel
+                    ?.data
+                    ?.currency
+                    ?.exchangeRate ??
                 1;
             final currencySymbol =
                 state.getCurrencyForCountryModel?.data?.currency?.symbol ?? '';
@@ -919,7 +925,8 @@ class _ProductListing3DSliderOptimizedState
                       children: [
                         MyTextWidget(
                           HelperFunctions.formatNumber(
-                              number: price * exchangeRate),
+                            numberToFormate: price * exchangeRate,
+                          ),
                           style: textTheme.titleSmall?.lq.copyWith(
                             // تقليل حجم الخط
                             color: const Color(0xff3c3c3c),
@@ -930,7 +937,8 @@ class _ProductListing3DSliderOptimizedState
                         const SizedBox(width: 2),
                         MyTextWidget(
                           HelperFunctions.formatNumber(
-                              number: offerPrice * exchangeRate),
+                            numberToFormate: offerPrice * exchangeRate,
+                          ),
                           style: textTheme.titleSmall?.bq.copyWith(
                             // تقليل حجم الخط
                             color: const Color(0xff3c3c3c),
@@ -960,9 +968,11 @@ class _ProductListing3DSliderOptimizedState
   Widget _buildCompactBuyButton() {
     return InkWell(
       onTap: () {
-        _homeBloc.add(const ChangeStatusOFGetProductsDetailsToSuccessEvent(
-          isStatusInitaial: true,
-        ));
+        _homeBloc.add(
+          const ChangeStatusOFGetProductsDetailsToSuccessEvent(
+            isStatusInitaial: true,
+          ),
+        );
         widget.productIsFlashDeal?.value = widget.fromFlashDeal ?? false;
 
         Future.delayed(
@@ -1060,8 +1070,9 @@ class _ProductListing3DSliderOptimizedState
     if (_cachedImages?.isEmpty ?? true) {
       // إذا لم تكن هناك صور ألوان، استخدم صور المنتج العادية
       if (widget.productItem.images?.isNotEmpty == true) {
-        final productImages =
-            widget.productItem.images!.map((e) => e.filePath!).toList();
+        final productImages = widget.productItem.images!
+            .map((e) => e.filePath!)
+            .toList();
 
         if (productImages.length == 1) {
           return [productImages[0], productImages[0], productImages[0]];
@@ -1125,9 +1136,11 @@ class _ProductListing3DSliderOptimizedState
   void _handleCarouselPageChanged(int page, CarouselPageChangedReason reason) {
     // 🛡️ Safe page index handling
     final currentColorImages = _processedColorImages?.isNotEmpty == true
-        ? _processedColorImages![_sliderState.currentColorIndex
-                .clamp(0, (_processedColorImages?.length ?? 1) - 1)]
-            .images
+        ? _processedColorImages![_sliderState.currentColorIndex.clamp(
+                0,
+                (_processedColorImages?.length ?? 1) - 1,
+              )]
+              .images
         : widget.productItem.images;
 
     final maxPages = (currentColorImages?.length ?? 1) - 1;

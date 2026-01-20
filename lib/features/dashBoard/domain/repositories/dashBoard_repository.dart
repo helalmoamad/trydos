@@ -10,7 +10,10 @@ import 'package:trydos/features/home/data/models/get_only_message_from_api_model
 
 abstract class DashBoardRepository {
   Future<Either<Failure, GetUserPermissionModel>> getUserPermission();
-  Future<Either<Failure, GetUserRolesModel>> getUserRoles();
+  Future<Either<Failure, GetUserRolesModel>> getUserRoles({
+    String? search,
+    int page = 1,
+  });
   Future<Either<Failure, GetUsersModel>> getUsers({int page = 1});
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> addUser(
     Map<String, dynamic> params,
@@ -21,4 +24,11 @@ abstract class DashBoardRepository {
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> changeOrderStatus(
     Map<String, dynamic> params,
   );
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> deleteUser(
+    String userId,
+  );
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> updateUserRole(
+    Map<String, dynamic> params,
+  );
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> leaveShop();
 }

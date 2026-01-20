@@ -181,27 +181,24 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
           },
           imageUrl: url,
           fit: widget.imageFit,
-          width: widget.width, // maxHeightDiskCache: widget.height.ceil(),
-          //  maxWidthDiskCache: widget.width.ceil(),
+          width: widget.width,
           color: widget.imageColor,
           cacheManager: CustomCacheManagers(),
           height: (widget.fromBoutique ?? false) ? null : widget.height,
 
-          // 🔧 إصلاح: إعادة تفعيل memory cache للأداء الأفضل
-          /* memCacheHeight: (widget.fromBoutique ?? false)
+          // ⚡ تحسين: ضغط الصور في الذاكرة فقط (لا يؤثر على جودة العرض)
+          memCacheHeight: (widget.fromBoutique ?? false)
               ? null
               : (widget.height * MediaQuery.devicePixelRatioOf(context))
                     .round(),
           memCacheWidth: (widget.fromBoutique ?? false)
               ? (widget.width * MediaQuery.devicePixelRatioOf(context)).round()
-              : null,*/
+              : null,
+
           placeholder: (context, url) {
             widget.callWhenLoadingImage?.call();
             return _buildSimpleShimmer();
           },
-
-          memCacheHeight:
-              (widget.height * MediaQuery.devicePixelRatioOf(context)).round(),
 
           // ⚡ تقليل زمن الانتقالات لتسريع عرض الصور
           fadeInDuration: const Duration(),
@@ -409,21 +406,33 @@ String addSuitableWidthAndHeightToImage({
   // 🔧 إصلاح: حالة عدم وجود الأبعاد الأصلية (مثل home page)
   // استخدام استراتيجية ذكية بدلاً من h_ فقط
   if (fromBoutique ?? false) {
-    url = list[0] + 'upload/w_${fWidth},c_fit,f_auto,q_auto' + list[1];
+    url = list[0] + 'upload/w_${fWidth},c_fit,f_webp,q_85' + list[1];
   } else if (width > height) {
     // الصورة أعرض من الارتفاع - استخدم العرض
     url =
         list[0] +
-        'upload/w_${fWidth},h_${fHeight},c_fit,b_rgb:f0f0f0,f_auto,q_auto' +
+        'upload/w_${fWidth},h_${fHeight},c_fit,b_rgb:f0f0f0,f_webp,q_85' +
         list[1];
   } else {
     // الصورة أطول من العرض - استخدم الارتفاع
     url =
         list[0] +
-        'upload/w_${fWidth},h_${fHeight},c_fit,b_rgb:f0f0f0,f_auto,q_auto' +
+        'upload/w_${fWidth},h_${fHeight},c_fit,b_rgb:f0f0f0,f_webp,q_85' +
         list[1];
   }
   //}
+
+  // ⚡ تحسين: تحويل صور Cloudinary إلى WebP مع جودة محسّنة (إذا لم يتم تطبيقه بالفعل)
+  if (url.contains('cloudinary.com') && url.contains('/upload/')) {
+    // ✅ تحويل إلى WebP format (أصغر حجماً، نفس الجودة)
+    if (!url.contains('f_webp')) {
+      url = url.replaceFirst('/upload/', '/upload/f_webp,q_85/');
+    }
+    // ✅ ضبط الجودة إلى 85% (توازن ممتاز بين الحجم والجودة)
+    if (!url.contains('q_85') && !url.contains('q_auto')) {
+      url = url.replaceFirst('/upload/', '/upload/q_85/');
+    }
+  }
 
   return url;
 }

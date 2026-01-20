@@ -20,7 +20,7 @@ class _SelectShopPageState extends State<SelectShopPage> {
   void initState() {
     super.initState();
     dashboardBloc = context.read<DashboardBloc>();
-    dashboardBloc.add(GetUserPermissionEvent());
+    //dashboardBloc.add(GetUserPermissionEvent());
   }
 
   @override
@@ -158,48 +158,108 @@ class _SelectShopPageState extends State<SelectShopPage> {
               );
             }
 
-            return CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverPadding(
-                  padding: EdgeInsets.all(24.w),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          LocaleKeys.please_select_a_shop.tr(),
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            color: const Color(0xff4B5563),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        Container(
-                          width: 40.w,
-                          height: 4.h,
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade400,
-                            borderRadius: BorderRadius.circular(2.r),
-                          ),
+            return SingleChildScrollView(
+              padding: EdgeInsets.all(24.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title
+                  Text(
+                    LocaleKeys.please_select_a_shop.tr(),
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: const Color(0xff111827),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+                  // Table
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(color: Colors.grey.shade200),
+                      boxShadow: [
+                        BoxShadow(
+                          // ignore: deprecated_member_use
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
+                    child: Column(
+                      children: [
+                        // Table Header
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 12.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade50,
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(12.r),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  LocaleKeys.shop_name.tr(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 16.w),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  LocaleKeys.seller_id.tr(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 16.w),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  LocaleKeys.actions.tr(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Table Rows
+                        ...shops.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final shop = entry.value;
+                          return _buildShopRow(
+                            context,
+                            shop,
+                            index == shops.length - 1,
+                          );
+                        }),
+                      ],
+                    ),
                   ),
-                ),
-                SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 16.h),
-                        child: _buildShopCard(context, shops[index]),
-                      );
-                    }, childCount: shops.length),
-                  ),
-                ),
-              ],
+                ],
+              ),
             );
           },
         ),
@@ -207,140 +267,159 @@ class _SelectShopPageState extends State<SelectShopPage> {
     );
   }
 
-  Widget _buildShopCard(BuildContext context, Shop shop) {
-    return Hero(
-      tag: 'shop_${shop.sellerId}',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DashboardPage(
-                  shopName: shop.shopName ?? '',
-                  sellerId: shop.sellerId?.toString() ?? '0',
-                  permissions: shop.permissions ?? [],
-                ),
-              ),
-            );
-          },
-          borderRadius: BorderRadius.circular(20.r),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20.r),
-              boxShadow: [
-                BoxShadow(
-                  // ignore: deprecated_member_use
-                  color: Colors.blue.shade900.withOpacity(0.06),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-              border: Border.all(color: Colors.white, width: 2),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20.r),
-              child: Stack(
-                children: [
-                  Positioned(
-                    right: -20,
-                    top: -20,
-                    child: CircleAvatar(
-                      radius: 50,
-                      // ignore: deprecated_member_use
-                      backgroundColor: Colors.blue.shade50.withOpacity(0.3),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(20.w),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 64.w,
-                          height: 64.w,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.blue.shade400,
-                                Colors.blue.shade600,
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(18.r),
-                            boxShadow: [
-                              BoxShadow(
-                                // ignore: deprecated_member_use
-                                color: Colors.blue.withOpacity(0.3),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            Icons.store_rounded,
-                            color: Colors.white,
-                            size: 32.w,
-                          ),
-                        ),
-                        SizedBox(width: 18.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                shop.shopName ?? 'Unknown Shop',
-                                style: TextStyle(
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xff111827),
-                                ),
-                              ),
-                              SizedBox(height: 6.h),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.badge_outlined,
-                                    size: 14.w,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                  SizedBox(width: 4.w),
-                                  Text(
-                                    '${LocaleKeys.seller_id.tr()}: ${shop.sellerId}',
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: const Color(0xff6B7280),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(8.w),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            color: Colors.grey.shade400,
-                            size: 14.w,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+  Widget _buildShopRow(BuildContext context, Shop shop, bool isLast) {
+    return Container(
+      decoration: BoxDecoration(
+        border: isLast
+            ? null
+            : Border(bottom: BorderSide(color: Colors.grey.shade200)),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              shop.shopName ?? 'Unknown Shop',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14.sp, color: Colors.black87),
             ),
           ),
-        ),
+          SizedBox(width: 16.w),
+          Expanded(
+            flex: 2,
+            child: Text(
+              shop.sellerId?.toString() ?? '0',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14.sp, color: Colors.black87),
+            ),
+          ),
+          SizedBox(width: 16.w),
+          Expanded(
+            flex: 3,
+            child: Row(
+              children: [
+                // Enter Button
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DashboardPage(
+                            shopName: shop.shopName ?? '',
+                            sellerId: shop.sellerId?.toString() ?? '0',
+                            permissions: shop.permissions ?? [],
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3366FF),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 8.h,
+                      ),
+                      minimumSize: Size(0, 36.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6.r),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      LocaleKeys.enter_button.tr(),
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                // Leave Button
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _showLeaveShopConfirmation(context, shop);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red.shade50,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 8.h,
+                      ),
+                      minimumSize: Size(0, 36.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6.r),
+                        side: BorderSide(color: Colors.red.shade200),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      LocaleKeys.leave_button.tr(),
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: Colors.red.shade700,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  void _showLeaveShopConfirmation(BuildContext context, Shop shop) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            LocaleKeys.confirm_leave_shop_title.tr(),
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          content: Text(
+            LocaleKeys.confirm_leave_shop_message.tr(),
+            style: TextStyle(fontSize: 14.sp, color: Colors.black54),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                LocaleKeys.cancel.tr(),
+                style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade700),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                dashboardBloc.add(LeaveShopEvent());
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.shade600,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+              child: Text(
+                LocaleKeys.confirm.tr(),
+                style: TextStyle(fontSize: 14.sp, color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

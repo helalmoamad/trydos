@@ -7,7 +7,9 @@ class GetUserPermissionEvent extends DashBoardEvent {
 }
 
 class GetUserRolesEvent extends DashBoardEvent {
-  GetUserRolesEvent();
+  final String? search;
+  final int page;
+  GetUserRolesEvent({this.search, this.page = 1});
 }
 
 class AddUserEvent extends DashBoardEvent {
@@ -37,7 +39,7 @@ class GetProductsEvent extends DashBoardEvent {
 }
 
 class ChangeOrderStatusEvent extends DashBoardEvent {
-  final String order_id;
+  final int order_id;
   final String status;
   ChangeOrderStatusEvent({required this.order_id, required this.status});
 }
@@ -45,4 +47,19 @@ class ChangeOrderStatusEvent extends DashBoardEvent {
 class GetUsersEvent extends DashBoardEvent {
   final int page;
   GetUsersEvent({this.page = 1});
+}
+
+class DeleteUserEvent extends DashBoardEvent {
+  final String userId;
+  DeleteUserEvent({required this.userId});
+}
+
+class ChangeUserRoleEvent extends DashBoardEvent {
+  final String userId;
+  final String roleId;
+  ChangeUserRoleEvent({required this.userId, required this.roleId});
+}
+
+class LeaveShopEvent extends DashBoardEvent {
+  LeaveShopEvent();
 }

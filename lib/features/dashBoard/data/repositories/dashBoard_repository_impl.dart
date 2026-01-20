@@ -25,8 +25,10 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   }
 
   @override
-  Future<Either<Failure, GetUserRolesModel>> getUserRoles() {
-    return handlingExceptionRequest(tryCall: () => dataSource.getUserRoles());
+  Future<Either<Failure, GetUserRolesModel>> getUserRoles({String? search, int page = 1}) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getUserRoles(search: search, page: page),
+    );
   }
 
   @override
@@ -70,6 +72,29 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.changeOrderStatus(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> deleteUser(String userId) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.deleteUser(userId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> updateUserRole(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.updateUserRole(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> leaveShop() {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.leaveShop(),
     );
   }
 }

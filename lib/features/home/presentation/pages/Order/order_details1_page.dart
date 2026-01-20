@@ -503,7 +503,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                   ),
                                               orderAmount:
                                                   HelperFunctions.formatNumber(
-                                                    number: orderAmount,
+                                                    numberToFormate:
+                                                        orderAmount,
                                                     isNeedRounding: false,
                                                   ),
                                               orderCurrency: currencySymbol,
@@ -2451,7 +2452,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         const SizedBox(width: 5),
                         Text(
                           HelperFunctions.formatNumber(
-                            number:
+                            numberToFormate:
                                 (HelperFunctions.truncateToDecimalPlaces(
                                   orders[_indexTapPackage].orderAmount!,
                                   homeBloc
@@ -2573,7 +2574,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   ),
                 ),
                 Text(
-                  "  ${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces((orders[_indexTapPackage].orderAmount ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}",
+                  "  ${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces((orders[_indexTapPackage].orderAmount ?? 0), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)), isNeedRounding: false)}",
                   maxLines: 1,
                   style: context.textTheme.bodyMedium?.bq.copyWith(
                     color: const Color(0xff8D8D8D),
@@ -3124,7 +3125,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                   const SizedBox(width: 5),
                                   Text(
                                     HelperFunctions.formatNumber(
-                                      number:
+                                      numberToFormate:
                                           (HelperFunctions.truncateToDecimalPlaces(
                                             orders[_indexTapPackage]
                                                 .orderAmount!,
@@ -3715,7 +3716,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         const SizedBox(width: 5),
                         Text(
                           HelperFunctions.formatNumber(
-                            number:
+                            numberToFormate:
                                 (HelperFunctions.truncateToDecimalPlaces(
                                   orders[_indexTapPackage].orderAmount!,
                                   homeBloc

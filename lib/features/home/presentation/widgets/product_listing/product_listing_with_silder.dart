@@ -842,7 +842,8 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                                         ),
                                         child: AutoSizeText(
                                           HelperFunctions.formatNumber(
-                                            number: (price * exchangeRate),
+                                            numberToFormate:
+                                                (price * exchangeRate),
                                           ),
                                           /* .toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
@@ -866,7 +867,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                                   ),
                                   child: AutoSizeText(
                                     HelperFunctions.formatNumber(
-                                      number:
+                                      numberToFormate:
                                           (((isFlashDealEnded ||
                                                   (widget
                                                               .productItem
@@ -1005,7 +1006,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                         constraints: const BoxConstraints(maxWidth: 25),
                         child: AutoSizeText(
                           HelperFunctions.formatNumber(
-                            number: redeemPrice * exchangeRate,
+                            numberToFormate: redeemPrice * exchangeRate,
                           ),
                           maxLines: 1,
                           minFontSize: 2,

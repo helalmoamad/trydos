@@ -805,9 +805,29 @@ class HelperFunctions {
   }
 
   static String formatNumber({
-    required double number,
+    required double numberToFormate,
     bool isNeedRounding = true,
   }) {
+    double number = numberToFormate;
+    // Check if decimal part has more than 5 zeros
+    String numberStr = number.toString();
+    if (numberStr.contains('.')) {
+      String decimalPart = numberStr.split('.')[1];
+      // Count leading zeros in decimal part
+      int leadingZeros = 0;
+      for (int i = 0; i < decimalPart.length; i++) {
+        if (decimalPart[i] == '0') {
+          leadingZeros++;
+        } else {
+          break;
+        }
+      }
+      // If more than 5 leading zeros, return integer part only
+      if (leadingZeros > 5) {
+        number = number.truncate().toDouble();
+      }
+    }
+
     var formate = NumberFormat("0.######", "en_US");
     String iso =
         (_prefsRepository.userCountryIsAvailable == 1

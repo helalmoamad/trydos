@@ -13,12 +13,15 @@ extension ScopeApi on String {
 abstract class DashBoardEndPoints {
   static final getUserPermissionEP = 'auth/permissions'.shopScope();
   static final addUserEP = 'add'.usersScope();
-  static final getUsersEP = ''.usersScope();
+  static final getUsersEP = 'users'.shopScope();
   static final getProducts = 'products'.shopScope();
   static final getBoutiques = 'boutiques'.shopScope();
   static final getOrders = 'orders'.shopScope();
   static final changeOrderStatus = 'orders/status'.shopScope();
   static final getUserRolesEP = 'roles'.usersScope();
+  static String deleteUserEP(String userId) => '$userId/delete'.usersScope();
+  static final updateUserRoleEP = 'role/update'.usersScope();
+  static final leaveShopEP = 'leave'.usersScope();
 }
 
 abstract class DashBoardUrls {

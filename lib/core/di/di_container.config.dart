@@ -140,6 +140,8 @@ import '../../features/dashBoard/domain/repositories/dashBoard_repository.dart'
 import '../../features/dashBoard/domain/useCase/add_user_usecase.dart' as _i602;
 import '../../features/dashBoard/domain/useCase/change_order_status_usecase.dart'
     as _i645;
+import '../../features/dashBoard/domain/useCase/delete_user_usecase.dart'
+    as _i441;
 import '../../features/dashBoard/domain/useCase/get_boutiques_usecase.dart'
     as _i412;
 import '../../features/dashBoard/domain/useCase/get_orders_usecase.dart'
@@ -152,6 +154,10 @@ import '../../features/dashBoard/domain/useCase/get_user_roles_usecase.dart'
     as _i246;
 import '../../features/dashBoard/domain/useCase/get_users_usecase.dart'
     as _i900;
+import '../../features/dashBoard/domain/useCase/leave_shop_usecase.dart'
+    as _i858;
+import '../../features/dashBoard/domain/useCase/update_user_role_usecase.dart'
+    as _i1023;
 import '../../features/dashBoard/presentation/bloc/dashBoard_bloc.dart'
     as _i976;
 import '../../features/home/data/data_sources/home_remote_data_source.dart'
@@ -807,6 +813,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i645.ChangeOrderStatusUseCase>(
     () => _i645.ChangeOrderStatusUseCase(gh<_i70.DashBoardRepository>()),
   );
+  gh.factory<_i441.DeleteUserUseCase>(
+    () => _i441.DeleteUserUseCase(gh<_i70.DashBoardRepository>()),
+  );
   gh.factory<_i412.GetBoutiquesUseCase>(
     () => _i412.GetBoutiquesUseCase(gh<_i70.DashBoardRepository>()),
   );
@@ -824,6 +833,27 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i900.GetUsersUseCase>(
     () => _i900.GetUsersUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i858.LeaveShopUseCase>(
+    () => _i858.LeaveShopUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i1023.UpdateUserRoleUseCase>(
+    () => _i1023.UpdateUserRoleUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.lazySingleton<_i976.DashboardBloc>(
+    () => _i976.DashboardBloc(
+      gh<_i652.GetUserPermissionUseCase>(),
+      gh<_i246.GetUserRolesUseCase>(),
+      gh<_i900.GetUsersUseCase>(),
+      gh<_i602.AddUserUseCase>(),
+      gh<_i919.GetOrdersUseCase>(),
+      gh<_i51.GetProductsUseCase>(),
+      gh<_i412.GetBoutiquesUseCase>(),
+      gh<_i645.ChangeOrderStatusUseCase>(),
+      gh<_i441.DeleteUserUseCase>(),
+      gh<_i1023.UpdateUserRoleUseCase>(),
+      gh<_i858.LeaveShopUseCase>(),
+    ),
   );
   gh.factory<_i589.CreateUserUseCase>(
     () => _i589.CreateUserUseCase(gh<_i420.ChatRepository>()),
@@ -1014,18 +1044,6 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i675.GetCartOverviewUseCase>(),
       gh<_i358.TranslateCommentUsecase>(),
       gh<_i1021.GetUserNotificationUseCase>(),
-    ),
-  );
-  gh.lazySingleton<_i976.DashboardBloc>(
-    () => _i976.DashboardBloc(
-      gh<_i652.GetUserPermissionUseCase>(),
-      gh<_i246.GetUserRolesUseCase>(),
-      gh<_i900.GetUsersUseCase>(),
-      gh<_i602.AddUserUseCase>(),
-      gh<_i919.GetOrdersUseCase>(),
-      gh<_i51.GetProductsUseCase>(),
-      gh<_i412.GetBoutiquesUseCase>(),
-      gh<_i645.ChangeOrderStatusUseCase>(),
     ),
   );
   gh.lazySingleton<_i536.StoryBloc>(

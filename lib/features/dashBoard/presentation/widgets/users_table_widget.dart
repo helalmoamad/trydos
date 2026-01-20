@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart' as tran;
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/features/dashBoard/data/models/get_users_model.dart';
 import 'pagination_widget.dart';
+import 'change_role_dialog.dart';
 
 class UsersTableWidget extends StatelessWidget {
   final List<User> users;
@@ -21,117 +24,126 @@ class UsersTableWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Users Table
-        Expanded(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(16.w),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: Colors.grey.shade200),
-                boxShadow: [
-                  BoxShadow(
-                    // ignore: deprecated_member_use
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Table Header
-                  Container(
-                    padding: EdgeInsets.all(16.w),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(12.r),
+    return Directionality(
+      textDirection: TextDirection.ltr,
+
+      child: Column(
+        children: [
+          // Users Table
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: Colors.grey.shade200),
+                  boxShadow: [
+                    BoxShadow(
+                      // ignore: deprecated_member_use
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Table Header
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 12.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade50,
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(12.r),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              LocaleKeys.name_phone.tr(),
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              LocaleKeys.role_label.tr(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            flex: 4,
+                            child: Text(
+                              LocaleKeys.actions.tr(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Name / Phone',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            'Role',
-                            //roles
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            'Actions',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
 
-                  // Table Body
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: users.length,
-                    separatorBuilder: (context, index) =>
-                        Divider(height: 1, color: Colors.grey.shade200),
-                    itemBuilder: (context, index) {
-                      return UserRow(
-                        user: users[index],
-                        onChangeRole: onChangeRole,
-                        onDeleteUser: onDeleteUser,
-                      );
-                    },
-                  ),
-                ],
+                    // Table Body
+                    Expanded(
+                      child: ListView.separated(
+                        itemCount: users.length,
+                        separatorBuilder: (context, index) =>
+                            Divider(height: 1, color: Colors.grey.shade200),
+                        itemBuilder: (context, index) {
+                          return UserRow(
+                            user: users[index],
+                            onChangeRole: onChangeRole,
+                            onDeleteUser: onDeleteUser,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
 
-        // Pagination
-        if (meta != null && (meta!.lastPage ?? 1) > 1)
-          PaginationWidget(
-            currentPage: meta!.currentPage ?? 1,
-            totalPages: meta!.lastPage ?? 1,
-            onPrevious: () {
-              if (onPageChanged != null && (meta!.currentPage ?? 1) > 1) {
-                onPageChanged!((meta!.currentPage ?? 1) - 1);
-              }
-            },
-            onNext: () {
-              if (onPageChanged != null &&
-                  (meta!.currentPage ?? 1) < (meta!.lastPage ?? 1)) {
-                onPageChanged!((meta!.currentPage ?? 1) + 1);
-              }
-            },
-          ),
-      ],
+          // Pagination
+          if (meta != null && (meta!.lastPage ?? 1) > 1)
+            PaginationWidget(
+              currentPage: meta!.currentPage ?? 1,
+              totalPages: meta!.lastPage ?? 1,
+              onPrevious: () {
+                if (onPageChanged != null && (meta!.currentPage ?? 1) > 1) {
+                  onPageChanged!((meta!.currentPage ?? 1) - 1);
+                }
+              },
+              onNext: () {
+                if (onPageChanged != null &&
+                    (meta!.currentPage ?? 1) < (meta!.lastPage ?? 1)) {
+                  onPageChanged!((meta!.currentPage ?? 1) + 1);
+                }
+              },
+            ),
+        ],
+      ),
     );
   }
 }
@@ -151,7 +163,7 @@ class UserRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
       child: Row(
         children: [
           // Name / Phone
@@ -161,7 +173,7 @@ class UserRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  user.name ?? 'N/A',
+                  user.name ?? LocaleKeys.not_available.tr(),
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
@@ -183,71 +195,93 @@ class UserRow extends StatelessWidget {
             ),
           ),
 
+          SizedBox(width: 8.w),
+
           // Role
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Text(
-              user.role?.name ?? 'N/A',
+              user.role?.name ?? LocaleKeys.not_available.tr(),
+              textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700),
             ),
           ),
 
+          SizedBox(width: 8.w),
+
           // Actions
           Expanded(
-            flex: 2,
+            flex: 4,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // Change Role Button
-                TextButton(
-                  onPressed: () {
-                    // TODO: Show dialog to change role
-                    if (onChangeRole != null) {
-                      // onChangeRole!(user.id.toString(), newRoleId);
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 6.h,
+                // Change Role Button (عرضه ضعف زر الحذف)
+                Flexible(
+                  child: TextButton(
+                    onPressed: () {
+                      if (onChangeRole != null) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => ChangeRoleDialog(
+                            userId: user.id.toString(),
+                            onRoleSelected: onChangeRole!,
+                          ),
+                        );
+                      }
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 6.h,
+                      ),
+                      minimumSize: Size(0, 32.h),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      backgroundColor: Colors.grey.shade50,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6.r),
+                        side: BorderSide(color: Colors.grey.shade300),
+                      ),
                     ),
-                    backgroundColor: Colors.grey.shade50,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6.r),
-                      side: BorderSide(color: Colors.grey.shade300),
+                    child: Text(
+                      LocaleKeys.change_role.tr(),
+                      style: TextStyle(fontSize: 12.sp, color: Colors.black87),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  child: Text(
-                    'Change role',
-                    style: TextStyle(fontSize: 12.sp, color: Colors.black87),
                   ),
                 ),
 
-                SizedBox(width: 8.w),
+                SizedBox(width: 6.w),
 
                 // Delete Button
-                TextButton(
-                  onPressed: () {
-                    if (onDeleteUser != null) {
-                      onDeleteUser!(user.id.toString());
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 6.h,
+                Flexible(
+                  child: TextButton(
+                    onPressed: () {
+                      if (onDeleteUser != null) {
+                        onDeleteUser!(user.id.toString());
+                      }
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 8.w,
+                        vertical: 6.h,
+                      ),
+                      minimumSize: Size(0, 32.h),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      backgroundColor: Colors.red.shade50,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6.r),
+                        side: BorderSide(color: Colors.red.shade200),
+                      ),
                     ),
-                    backgroundColor: Colors.red.shade50,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6.r),
-                      side: BorderSide(color: Colors.red.shade200),
-                    ),
-                  ),
-                  child: Text(
-                    'Delete',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.red.shade700,
+                    child: Text(
+                      LocaleKeys.delete.tr(),
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        color: Colors.red.shade700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),

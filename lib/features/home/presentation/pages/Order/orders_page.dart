@@ -414,7 +414,7 @@ class _OrdersPageState extends State<OrdersPage> {
                       ? AppAssets.orderCanselSvg
                       : AppAssets.orderPreparingSvg,
                   amount: HelperFunctions.formatNumber(
-                    number: orderAmount,
+                    numberToFormate: orderAmount,
                     isNeedRounding: false,
                   ),
                   currency: currencySymbol,

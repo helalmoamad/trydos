@@ -706,5 +706,15 @@
   "add_user_button": "Kullanıcı Ekle",
   "available_roles": "Mevcut Roller",
   "no_roles_available": "Mevcut rol yok",
-  "full_access_message": "Tüm özelliklere tam erişiminiz var"
+  "full_access_message": "Tüm özelliklere tam erişiminiz var",
+  "name_phone": "İsim / Telefon",
+  "actions": "İşlemler",
+  "change_role": "Rolü değiştir",
+  "not_available": "N/A",
+  "shop_name": "Mağaza Adı",
+  "enter_button": "Gir",
+  "leave_button": "Ayrıl",
+  "confirm_leave_shop_title": "Mağazadan Ayrılmayı Onayla",
+  "confirm_leave_shop_message": "Bu mağazadan ayrılmak istediğinizden emin misiniz?",
+  "go_to_seller_dashboard": "Satıcı Paneline Git"
 }

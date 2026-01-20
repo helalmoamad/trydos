@@ -721,6 +721,7 @@ class _ProductListing3DSliderOptimizedState
           builder: (context, state) {
             final price = widget.productItem.price ?? 0;
             final offerPrice = widget.productItem.offerPrice ?? 0;
+
             final exchangeRate =
                 state
                     .getCurrencyForCountryModel
@@ -795,7 +796,7 @@ class _ProductListing3DSliderOptimizedState
                                       ),
                                       child: AutoSizeText(
                                         HelperFunctions.formatNumber(
-                                          number:
+                                          numberToFormate:
                                               ((HelperFunctions.truncateToDecimalPlaces(
                                                 price,
                                                 state
@@ -829,7 +830,7 @@ class _ProductListing3DSliderOptimizedState
                                 constraints: const BoxConstraints(maxWidth: 60),
                                 child: AutoSizeText(
                                   HelperFunctions.formatNumber(
-                                    number:
+                                    numberToFormate:
                                         (((isFlashDealEnded ||
                                             (widget
                                                         .productItem
@@ -995,7 +996,7 @@ class _ProductListing3DSliderOptimizedState
                         constraints: const BoxConstraints(maxWidth: 25),
                         child: AutoSizeText(
                           HelperFunctions.formatNumber(
-                            number: (redeemPrice * exchangeRate),
+                            numberToFormate: (redeemPrice * exchangeRate),
                           ),
                           minFontSize: 2,
                           //      .toStringAsFixed(widget.decimalPoint),

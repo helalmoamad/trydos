@@ -831,4 +831,14 @@ abstract class LocaleKeys {
   static const available_roles = 'available_roles';
   static const no_roles_available = 'no_roles_available';
   static const full_access_message = 'full_access_message';
+  static const name_phone = 'name_phone';
+  static const actions = 'actions';
+  static const change_role = 'change_role';
+  static const not_available = 'not_available';
+  static const shop_name = 'shop_name';
+  static const enter_button = 'enter_button';
+  static const leave_button = 'leave_button';
+  static const confirm_leave_shop_title = 'confirm_leave_shop_title';
+  static const confirm_leave_shop_message = 'confirm_leave_shop_message';
+  static const go_to_seller_dashboard = 'go_to_seller_dashboard';
 }

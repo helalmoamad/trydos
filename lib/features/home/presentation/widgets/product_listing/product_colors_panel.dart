@@ -373,7 +373,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                           children: [
                             MyTextWidget(
                               HelperFunctions.formatNumber(
-                                number:
+                                numberToFormate:
                                     (HelperFunctions.truncateToDecimalPlaces(
                                       price,
                                       state
@@ -398,7 +398,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                             const SizedBox(width: 2),
                             MyTextWidget(
                               HelperFunctions.formatNumber(
-                                number:
+                                numberToFormate:
                                     (HelperFunctions.truncateToDecimalPlaces(
                                       offerPrice,
                                       state
@@ -531,7 +531,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                 isRedeem
                     ? MyTextWidget(
                         HelperFunctions.formatNumber(
-                          number:
+                          numberToFormate:
                               HelperFunctions.truncateToDecimalPlaces(
                                 redeemPrice,
                                 state

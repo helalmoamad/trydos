@@ -598,11 +598,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     PaymentMethods.cod,
                                   )
                                   ? HelperFunctions.formatNumber(
-                                      number: widget.totalCashed,
+                                      numberToFormate: widget.totalCashed,
                                       isNeedRounding: false,
                                     )
                                   : HelperFunctions.formatNumber(
-                                      number: widget.totalPrice,
+                                      numberToFormate: widget.totalPrice,
                                       isNeedRounding: false,
                                     ),
                               style: context.textTheme.bodyMedium?.bq.copyWith(
@@ -706,11 +706,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                       PaymentMethods.cod,
                                     )
                                     ? HelperFunctions.formatNumber(
-                                        number: widget.totalCashed,
+                                        numberToFormate: widget.totalCashed,
                                         isNeedRounding: false,
                                       )
                                     : HelperFunctions.formatNumber(
-                                        number: widget.totalPrice,
+                                        numberToFormate: widget.totalPrice,
                                         isNeedRounding: false,
                                       ),
                                 style: context.textTheme.bodyMedium?.bq

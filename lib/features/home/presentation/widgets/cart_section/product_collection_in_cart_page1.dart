@@ -1260,7 +1260,7 @@ class _ProductCollectionInCartPage1State
                                                 Text(
                                                   isOldCart
                                                       ? HelperFunctions.formatNumber(
-                                                          number:
+                                                          numberToFormate:
                                                               (HelperFunctions.truncateToDecimalPlaces(
                                                                 oldCartCollection![index]
                                                                     .priceOfVariant!,
@@ -1283,7 +1283,7 @@ class _ProductCollectionInCartPage1State
                                                                   ?.decimalPointSetting ??
                                                               2)*/
                                                       : HelperFunctions.formatNumber(
-                                                          number:
+                                                          numberToFormate:
                                                               (HelperFunctions.truncateToDecimalPlaces(
                                                                 cartCollection![index]
                                                                     .price!,
@@ -1341,7 +1341,7 @@ class _ProductCollectionInCartPage1State
                                                             cartCollection[index]
                                                                 .price
                                                       ? ""
-                                                      : "${HelperFunctions.formatNumber(number: (HelperFunctions.truncateToDecimalPlaces(cartCollection[index].offerPrice!, state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * cartCollection[index].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))
+                                                      : "${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces(cartCollection[index].offerPrice!, state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * cartCollection[index].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))
                                                         //.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)
                                                         } ",
                                                   style: context

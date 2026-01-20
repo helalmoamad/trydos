@@ -26,6 +26,7 @@ import 'package:trydos/features/authentication/domain/use_cases/update_stories_u
 import 'package:trydos/features/authentication/domain/use_cases/verify_guest_phone_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signin_usecase.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/dashBoard/presentation/bloc/dashBoard_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import '../../../../common/helper/show_message.dart';
@@ -873,6 +874,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
+    GetIt.I<DashboardBloc>().add(GetUserPermissionEvent());
     final response = await getCustomerInfoUseCase(NoParams());
     response.fold(
       (l) {

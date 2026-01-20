@@ -724,5 +724,15 @@
   "add_user_button": "Add User",
   "available_roles": "Available Roles",
   "no_roles_available": "No roles available",
-  "full_access_message": "You have full access to all features"
+  "full_access_message": "You have full access to all features",
+  "name_phone": "Name / Phone",
+  "actions": "Actions",
+  "change_role": "Change role",
+  "not_available": "N/A",
+  "shop_name": "Shop Name",
+  "enter_button": "Enter",
+  "leave_button": "Leave",
+  "confirm_leave_shop_title": "Confirm Leave Shop",
+  "confirm_leave_shop_message": "Are you sure you want to leave this shop?",
+  "go_to_seller_dashboard": "Go to Seller Dashboard"
 }
