@@ -56,7 +56,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       // log(response.data.toString());
       _StatusType statusType;
       if (response.statusCode == StatusCode.operationSucceeded.code ||
-          response.statusCode == StatusCode.createdSucceeded.code) {
+          response.statusCode == StatusCode.createdSucceeded.code ||
+          response.statusCode == 204) {
         statusType = _StatusType.succeed;
       } else {
         statusType = _StatusType.failed;
@@ -108,6 +109,9 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       //       timeShowing: Toast.LENGTH_LONG);
       // }
       if (err.response?.statusCode == 400 || err.response?.statusCode == 422) {
+        print(
+          "error message: ${jsonDecode(err.response.toString())["message"].toString()}",
+        );
         showMessage(
           jsonDecode(err.response.toString())["message"].toString(),
           foreGroundColor: Colors.white,

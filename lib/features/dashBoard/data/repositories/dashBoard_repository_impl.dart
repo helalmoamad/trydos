@@ -7,8 +7,11 @@ import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_user_permission_model.dart';
+import 'dart:io';
 import 'package:trydos/features/dashBoard/data/models/get_user_roles_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_users_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_presigned_url_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.dart';
 import 'package:trydos/features/dashBoard/domain/repositories/dashBoard_repository.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 
@@ -25,7 +28,10 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   }
 
   @override
-  Future<Either<Failure, GetUserRolesModel>> getUserRoles({String? search, int page = 1}) {
+  Future<Either<Failure, GetUserRolesModel>> getUserRoles({
+    String? search,
+    int page = 1,
+  }) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getUserRoles(search: search, page: page),
     );
@@ -53,7 +59,9 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   }
 
   @override
-  Future<Either<Failure, GetSellerBoutiquesModel>> getBoutiques({int page = 1}) {
+  Future<Either<Failure, GetSellerBoutiquesModel>> getBoutiques({
+    int page = 1,
+  }) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getBoutiques(page: page),
     );
@@ -76,7 +84,9 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   }
 
   @override
-  Future<Either<Failure, ReadOnlyMessageFromApiModel>> deleteUser(String userId) {
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> deleteUser(
+    String userId,
+  ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.deleteUser(userId),
     );
@@ -93,8 +103,56 @@ class DashBoardRepositoryImpl extends DashBoardRepository
 
   @override
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> leaveShop() {
+    return handlingExceptionRequest(tryCall: () => dataSource.leaveShop());
+  }
+
+  @override
+  Future<Either<Failure, GetPresignedUrlModel>> getPresignedUrl(
+    String mimeType,
+  ) {
     return handlingExceptionRequest(
-      tryCall: () => dataSource.leaveShop(),
+      tryCall: () => dataSource.getPresignedUrl(mimeType),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> uploadFileToS3({
+    required File file,
+    required String uploadUrl,
+    required String mimeType,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.uploadFileToS3(
+        file: file,
+        uploadUrl: uploadUrl,
+        mimeType: mimeType,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, GetVendorRequestModel>> getVendorRequest() {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getVendorRequest(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> submitVendorRequest(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.submitVendorRequest(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> updateVendorRequest(
+    int vendorRequestId,
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.updateVendorRequest(vendorRequestId, params),
     );
   }
 }

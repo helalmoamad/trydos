@@ -426,6 +426,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LoginToStoriesEvent event,
     Emitter<AuthState> emit,
   ) async {
+    GetIt.I<DashboardBloc>().add(GetUserPermissionEvent());
     emit(state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.loading));
 
     final response = await loginToStoriesUseCase(

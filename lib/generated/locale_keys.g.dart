@@ -841,4 +841,66 @@ abstract class LocaleKeys {
   static const confirm_leave_shop_title = 'confirm_leave_shop_title';
   static const confirm_leave_shop_message = 'confirm_leave_shop_message';
   static const go_to_seller_dashboard = 'go_to_seller_dashboard';
+  static const become_a_seller_at_trydos = 'become_a_seller_at_trydos';
+  static const personal_details = 'personal_details';
+  static const first_name = 'first_name';
+  static const last_name = 'last_name';
+  static const invalid_email = 'invalid_email';
+  static const password = 'password';
+  static const password_must_be_at_least_6_characters =
+      'password_must_be_at_least_6_characters';
+  static const password_must_be_at_least_8_characters =
+      'password_must_be_at_least_8_characters';
+  static const repeat_password = 'repeat_password';
+  static const passwords_do_not_match = 'passwords_do_not_match';
+  static const shop_information = 'shop_information';
+  static const shop_address = 'shop_address';
+  static const location_details = 'location_details';
+  static const location_name = 'location_name';
+  static const location_address = 'location_address';
+  static const documents = 'documents';
+  static const no_documents_uploaded = 'no_documents_uploaded';
+  static const document_type = 'document_type';
+  static const document_type_hint = 'document_type_hint';
+  static const choose_file = 'choose_file';
+  static const no_file_chosen = 'no_file_chosen';
+  static const upload_document = 'upload_document';
+  static const document_uploaded_successfully =
+      'document_uploaded_successfully';
+  static const submit = 'submit';
+  static const failed_to_load_map_boundaries = 'failed_to_load_map_boundaries';
+  static const error_picking_file = 'error_picking_file';
+  static const please_select_a_file_first = 'please_select_a_file_first';
+  static const first_name_is_required = 'first_name_is_required';
+  static const last_name_is_required = 'last_name_is_required';
+  static const email_is_required = 'email_is_required';
+  static const invalid_email_format = 'invalid_email_format';
+  static const phone_is_required = 'phone_is_required';
+  static const password_is_required = 'password_is_required';
+  static const repeat_password_is_required = 'repeat_password_is_required';
+  static const shop_name_is_required = 'shop_name_is_required';
+  static const shop_address_is_required = 'shop_address_is_required';
+  static const location_name_is_required = 'location_name_is_required';
+  static const location_address_is_required = 'location_address_is_required';
+  static const document_type_is_required = 'document_type_is_required';
+  static const please_upload_a_document = 'please_upload_a_document';
+  static const registration_successful = 'registration_successful';
+  static const select_location = 'select_location';
+  static const please_select_a_location = 'please_select_a_location';
+  static const confirm_location = 'confirm_location';
+  static const file_uploaded_successfully = 'file_uploaded_successfully';
+  static const document_type_identity = 'document_type_identity';
+  static const document_type_passport = 'document_type_passport';
+  static const document_type_commercial_license =
+      'document_type_commercial_license';
+  static const document_type_tax_certificate = 'document_type_tax_certificate';
+  static const document_type_bank_statement = 'document_type_bank_statement';
+  static const document_type_address_proof = 'document_type_address_proof';
+  static const document_type_authorization_letter =
+      'document_type_authorization_letter';
+  static const phone_cannot_be_same_as_registered =
+      'phone_cannot_be_same_as_registered';
+  static const field_must_not_exceed_10_characters =
+      'field_must_not_exceed_10_characters';
+  static const update = 'update';
 }

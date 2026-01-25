@@ -63,3 +63,27 @@ class ChangeUserRoleEvent extends DashBoardEvent {
 class LeaveShopEvent extends DashBoardEvent {
   LeaveShopEvent();
 }
+
+class UploadDocumentEvent extends DashBoardEvent {
+  final String filePath;
+  final String mimeType;
+  UploadDocumentEvent({required this.filePath, required this.mimeType});
+}
+
+class SubmitVendorRequestEvent extends DashBoardEvent {
+  final SubmitVendorRequestParams params;
+  SubmitVendorRequestEvent({required this.params});
+}
+
+class GetVendorRequestEvent extends DashBoardEvent {
+  GetVendorRequestEvent();
+}
+
+class UpdateVendorRequestEvent extends DashBoardEvent {
+  final UpdateVendorRequestParams params;
+  UpdateVendorRequestEvent({required this.params});
+}
+
+class ResetVendorRequestStatesEvent extends DashBoardEvent {
+  ResetVendorRequestStatesEvent();
+}

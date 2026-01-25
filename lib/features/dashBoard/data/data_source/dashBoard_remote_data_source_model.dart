@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/dashBoard_url_routes.dart';
 import 'package:trydos/core/api/client_config.dart';
@@ -12,6 +15,8 @@ import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.
 import 'package:trydos/features/dashBoard/data/models/get_user_permission_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_user_roles_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_users_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_presigned_url_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 
 @injectable
@@ -23,7 +28,37 @@ class DashBoardRemoteDataSource {
           requestPrams: RequestConfig<GetUserPermissionModel>(
             endpoint: DashBoardEndPoints.getUserPermissionEP,
             response: ResponseValue<GetUserPermissionModel>(
-              fromJson: (response) => GetUserPermissionModel.fromJson(response),
+              fromJson: (response) {
+                // Handle 204 No Content or empty response
+                if (response == null) {
+                  return GetUserPermissionModel(shops: []);
+                }
+
+                // If response is a String (empty or not), return empty model
+                if (response is String) {
+                  if (response.isEmpty || response.trim().isEmpty) {
+                    return GetUserPermissionModel(shops: []);
+                  }
+                  // Try to parse string as JSON
+                  try {
+                    final decoded = json.decode(response);
+                    if (decoded is Map<String, dynamic>) {
+                      return GetUserPermissionModel.fromJson(decoded);
+                    }
+                  } catch (e) {
+                    // If parsing fails, return empty model
+                    return GetUserPermissionModel(shops: []);
+                  }
+                }
+
+                // If response is already a Map, use it directly
+                if (response is Map<String, dynamic>) {
+                  return GetUserPermissionModel.fromJson(response);
+                }
+
+                // Default: return empty model
+                return GetUserPermissionModel(shops: []);
+              },
             ),
           ),
         );
@@ -178,15 +213,119 @@ class DashBoardRemoteDataSource {
   Future<ReadOnlyMessageFromApiModel> leaveShop() {
     DeleteClient<ReadOnlyMessageFromApiModel> leaveShop =
         DeleteClient<ReadOnlyMessageFromApiModel>(
-      serverName: ServerName.dashBoard,
-      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
-        endpoint: DashBoardEndPoints.leaveShopEP,
-        response: ResponseValue<ReadOnlyMessageFromApiModel>(
-          fromJson: (response) =>
-              ReadOnlyMessageFromApiModel.fromJson(response),
-        ),
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.leaveShopEP,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return leaveShop();
+  }
+
+  Future<GetPresignedUrlModel> getPresignedUrl(String mimeType) {
+    PostClient<GetPresignedUrlModel> getPresignedUrl =
+        PostClient<GetPresignedUrlModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<GetPresignedUrlModel>(
+            endpoint: DashBoardEndPoints.getPresignedUrlEP,
+            data: {'mime_type': mimeType},
+            response: ResponseValue<GetPresignedUrlModel>(
+              fromJson: (response) => GetPresignedUrlModel.fromJson(response),
+            ),
+          ),
+        );
+    return getPresignedUrl();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> uploadFileToS3({
+    required File file,
+    required String uploadUrl,
+    required String mimeType,
+  }) async {
+    // Create a new Dio instance without interceptors for S3 upload
+    final dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(minutes: 2),
+        receiveTimeout: const Duration(minutes: 2),
+        sendTimeout: const Duration(minutes: 2),
       ),
     );
-    return leaveShop();
+
+    final fileBytes = await file.readAsBytes();
+
+    final response = await dio.put(
+      uploadUrl,
+      data: fileBytes,
+      options: Options(
+        responseType: ResponseType.bytes,
+        headers: {
+          'Content-Type': mimeType,
+          'Content-Length': fileBytes.length.toString(),
+        },
+        validateStatus: (status) => status != null && status < 500,
+      ),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      return ReadOnlyMessageFromApiModel.fromJson({
+        'message': 'file_uploaded_successfully', // Translation key
+      });
+    } else {
+      throw Exception('Upload failed with status: ${response.statusCode}');
+    }
+  }
+
+  Future<GetVendorRequestModel> getVendorRequest() {
+    GetClient<GetVendorRequestModel> getVendorRequest =
+        GetClient<GetVendorRequestModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<GetVendorRequestModel>(
+            endpoint: DashBoardEndPoints.vendorRequestsEP,
+            response: ResponseValue<GetVendorRequestModel>(
+              fromJson: (response) => GetVendorRequestModel.fromJson(response),
+            ),
+          ),
+        );
+    return getVendorRequest();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> submitVendorRequest(
+    Map<String, dynamic> params,
+  ) {
+    PostClient<ReadOnlyMessageFromApiModel> submitVendorRequest =
+        PostClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.vendorRequestsEP,
+            data: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return submitVendorRequest();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> updateVendorRequest(
+    int vendorRequestId,
+    Map<String, dynamic> params,
+  ) {
+    PutClient<ReadOnlyMessageFromApiModel> updateVendorRequest =
+        PutClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.updateVendorRequestEP(vendorRequestId),
+            data: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return updateVendorRequest();
   }
 }

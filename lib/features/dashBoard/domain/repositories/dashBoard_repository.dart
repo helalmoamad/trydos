@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
@@ -6,6 +7,8 @@ import 'package:trydos/features/dashBoard/data/models/get_user_permission_model.
 import '../../../../core/error/failures.dart';
 import 'package:trydos/features/dashBoard/data/models/get_user_roles_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_users_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_presigned_url_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 
 abstract class DashBoardRepository {
@@ -31,4 +34,20 @@ abstract class DashBoardRepository {
     Map<String, dynamic> params,
   );
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> leaveShop();
+  Future<Either<Failure, GetPresignedUrlModel>> getPresignedUrl(
+    String mimeType,
+  );
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> uploadFileToS3({
+    required File file,
+    required String uploadUrl,
+    required String mimeType,
+  });
+  Future<Either<Failure, GetVendorRequestModel>> getVendorRequest();
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> submitVendorRequest(
+    Map<String, dynamic> params,
+  );
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> updateVendorRequest(
+    int vendorRequestId,
+    Map<String, dynamic> params,
+  );
 }

@@ -33,6 +33,7 @@ import 'package:trydos/features/dashBoard/presentation/bloc/dashBoard_bloc.dart'
     as dashboard;
 import 'package:trydos/features/dashBoard/presentation/pages/select_shop_page.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
+import 'package:trydos/features/home/presentation/pages/become_seller/become_seller_page.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -132,8 +133,11 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                   ),
                                 ),
                               )
-                            : state.getUserPermissionStatus ==
-                                  dashboard.GetUserPermissionStatus.success
+                            : (state.getUserPermissionStatus ==
+                                      dashboard
+                                          .GetUserPermissionStatus
+                                          .success &&
+                                  (!(state.shops?.isNullOrEmpty ?? true)))
                             ? InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -153,6 +157,89 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       },
                     ),
                     SizedBox(height: 12.h, width: 1.sw),
+                    BlocBuilder<
+                      dashboard.DashboardBloc,
+                      dashboard.DashBoardState
+                    >(
+                      buildWhen: (previous, current) =>
+                          previous.getUserPermissionStatus !=
+                          current.getUserPermissionStatus,
+                      builder: (context, state) {
+                        return state.getUserPermissionStatus ==
+                                dashboard.GetUserPermissionStatus.loading
+                            ? Shimmer.fromColors(
+                                baseColor: Colors.grey[200]!,
+                                highlightColor: Colors.grey[100]!,
+                                child: Container(
+                                  width: 1.sw,
+                                  height: 53,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffFAFAFA),
+                                    borderRadius: BorderRadius.circular(15.r),
+                                  ),
+                                ),
+                              )
+                            : (state.getUserPermissionStatus ==
+                                      dashboard
+                                          .GetUserPermissionStatus
+                                          .success &&
+                                  (!(state.shops?.isNullOrEmpty ?? true)))
+                            ? (state.shops?.first.isMaster ?? false)
+                                  ? const SizedBox.shrink()
+                                  : InkWell(
+                                      onTap: () {
+                                        if (!(prefsRepository.isVerifiedPhone ??
+                                            false)) {
+                                          isVerified.value = false;
+                                          if ((prefsRepository
+                                                  .isVerifiedPhonePeforeExpiredToken ??
+                                              false)) {
+                                            authBloc.add(
+                                              SendOtpEvent(
+                                                phone: prefsRepository
+                                                    .myPhoneNumber!,
+                                                isViaWhatsApp: 1,
+                                              ),
+                                            );
+                                          }
+                                          return;
+                                        }
+                                        showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          backgroundColor: Colors.transparent,
+                                          builder: (context) => SizedBox(
+                                            height:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.height *
+                                                0.8,
+                                            child: Padding(
+                                              padding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(
+                                                  context,
+                                                ).viewInsets.bottom,
+                                              ),
+                                              child: const BecomeSellerPage(),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: EdgeInsetsGeometry.only(
+                                          bottom: 12.h,
+                                        ),
+                                        child: _actionWidget(
+                                          AppAssets.sellerSvg,
+                                          LocaleKeys.become_a_seller_at_trydos
+                                              .tr(),
+                                        ),
+                                      ),
+                                    )
+                            : const SizedBox.shrink();
+                      },
+                    ),
+
                     _actionWidget(
                       AppAssets.settingSvg,
                       LocaleKeys.settings.tr(),

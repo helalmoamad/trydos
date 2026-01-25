@@ -70,20 +70,37 @@ class GetUserPermissionModel {
 class Shop {
   final int? sellerId;
   final String? shopName;
+  final bool? isMaster;
+  final String? shopRole;
   final List<String>? permissions;
 
-  Shop({this.sellerId, this.shopName, this.permissions});
+  Shop({
+    this.sellerId,
+    this.shopName,
+    this.permissions,
+    this.isMaster,
+    this.shopRole,
+  });
 
-  Shop copyWith({int? sellerId, String? shopName, List<String>? permissions}) =>
-      Shop(
-        sellerId: sellerId ?? this.sellerId,
-        shopName: shopName ?? this.shopName,
-        permissions: permissions ?? this.permissions,
-      );
+  Shop copyWith({
+    int? sellerId,
+    String? shopName,
+    List<String>? permissions,
+    bool? isMaster,
+    String? shopRole,
+  }) => Shop(
+    sellerId: sellerId ?? this.sellerId,
+    shopName: shopName ?? this.shopName,
+    permissions: permissions ?? this.permissions,
+    isMaster: isMaster ?? this.isMaster,
+    shopRole: shopRole ?? this.shopRole,
+  );
 
   factory Shop.fromJson(Map<String, dynamic> json) => Shop(
     sellerId: json["seller_id"],
     shopName: json["shop_name"],
+    isMaster: json["is_master"] == 1 ? true : false,
+    shopRole: json["shop_role"],
     permissions: json["permissions"] == null
         ? []
         : List<String>.from(json["permissions"]!.map((x) => x)),
@@ -92,6 +109,8 @@ class Shop {
   Map<String, dynamic> toJson() => {
     "seller_id": sellerId,
     "shop_name": shopName,
+    "is_master": isMaster,
+    "shop_role": shopRole,
     "permissions": permissions == null
         ? []
         : List<dynamic>.from(permissions!.map((x) => x)),

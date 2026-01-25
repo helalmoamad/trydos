@@ -22,6 +22,12 @@ enum ChangeUserRoleStatus { init, loading, success, failure }
 
 enum LeaveShopStatus { init, loading, success, failure }
 
+enum UploadDocumentStatus { init, loading, success, failure }
+
+enum SubmitVendorRequestStatus { init, loading, success, failure }
+enum GetVendorRequestStatus { init, loading, success, failure }
+enum UpdateVendorRequestStatus { init, loading, success, failure }
+
 @immutable
 class DashBoardState extends Equatable {
   final GetUserPermissionStatus getUserPermissionStatus;
@@ -35,6 +41,12 @@ class DashBoardState extends Equatable {
   final DeleteUserStatus deleteUserStatus;
   final ChangeUserRoleStatus changeUserRoleStatus;
   final LeaveShopStatus leaveShopStatus;
+  final UploadDocumentStatus uploadDocumentStatus;
+  final String? uploadedDocumentKey;
+  final SubmitVendorRequestStatus submitVendorRequestStatus;
+  final GetVendorRequestStatus getVendorRequestStatus;
+  final UpdateVendorRequestStatus updateVendorRequestStatus;
+  final VendorRequestData? vendorRequest;
   final List<Shop>? shops;
   final List<ShopRole>? shopRoles;
   final Meta? rolesMeta;
@@ -59,6 +71,12 @@ class DashBoardState extends Equatable {
     this.deleteUserStatus = DeleteUserStatus.init,
     this.changeUserRoleStatus = ChangeUserRoleStatus.init,
     this.leaveShopStatus = LeaveShopStatus.init,
+    this.uploadDocumentStatus = UploadDocumentStatus.init,
+    this.uploadedDocumentKey,
+    this.submitVendorRequestStatus = SubmitVendorRequestStatus.init,
+    this.getVendorRequestStatus = GetVendorRequestStatus.init,
+    this.updateVendorRequestStatus = UpdateVendorRequestStatus.init,
+    this.vendorRequest,
     this.shops,
     this.shopRoles,
     this.boutiques,
@@ -84,6 +102,12 @@ class DashBoardState extends Equatable {
     DeleteUserStatus? deleteUserStatus,
     ChangeUserRoleStatus? changeUserRoleStatus,
     LeaveShopStatus? leaveShopStatus,
+    UploadDocumentStatus? uploadDocumentStatus,
+    String? uploadedDocumentKey,
+    SubmitVendorRequestStatus? submitVendorRequestStatus,
+    GetVendorRequestStatus? getVendorRequestStatus,
+    UpdateVendorRequestStatus? updateVendorRequestStatus,
+    VendorRequestData? vendorRequest,
     List<Shop>? shops,
     List<ShopRole>? shopRoles,
     Meta? rolesMeta,
@@ -111,6 +135,15 @@ class DashBoardState extends Equatable {
       deleteUserStatus: deleteUserStatus ?? this.deleteUserStatus,
       changeUserRoleStatus: changeUserRoleStatus ?? this.changeUserRoleStatus,
       leaveShopStatus: leaveShopStatus ?? this.leaveShopStatus,
+      uploadDocumentStatus: uploadDocumentStatus ?? this.uploadDocumentStatus,
+      uploadedDocumentKey: uploadedDocumentKey ?? this.uploadedDocumentKey,
+      submitVendorRequestStatus:
+          submitVendorRequestStatus ?? this.submitVendorRequestStatus,
+      getVendorRequestStatus:
+          getVendorRequestStatus ?? this.getVendorRequestStatus,
+      updateVendorRequestStatus:
+          updateVendorRequestStatus ?? this.updateVendorRequestStatus,
+      vendorRequest: vendorRequest ?? this.vendorRequest,
       shops: shops ?? this.shops,
       shopRoles: shopRoles ?? this.shopRoles,
       rolesMeta: rolesMeta ?? this.rolesMeta,
@@ -139,6 +172,12 @@ class DashBoardState extends Equatable {
     deleteUserStatus,
     changeUserRoleStatus,
     leaveShopStatus,
+    uploadDocumentStatus,
+    uploadedDocumentKey,
+    submitVendorRequestStatus,
+    getVendorRequestStatus,
+    updateVendorRequestStatus,
+    vendorRequest,
     shops,
     shopRoles,
     rolesMeta,

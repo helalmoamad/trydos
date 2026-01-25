@@ -1,10 +1,15 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:trydos/features/dashBoard/data/models/get_user_permission_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.dart'
     as products_model;
@@ -26,6 +31,13 @@ import 'package:trydos/features/dashBoard/domain/useCase/get_users_usecase.dart'
 import 'package:trydos/features/dashBoard/domain/useCase/delete_user_usecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/update_user_role_usecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/leave_shop_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/get_presigned_url_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/upload_file_to_s3_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/submit_vendor_request_usecase.dart';
+export 'package:trydos/features/dashBoard/domain/useCase/submit_vendor_request_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/get_vendor_request_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/update_vendor_request_usecase.dart';
+import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.dart';
 import 'package:equatable/equatable.dart';
 part 'dashBoard_event.dart';
 part 'dashBoard_state.dart';
@@ -43,6 +55,11 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   final DeleteUserUseCase deleteUserUseCase;
   final UpdateUserRoleUseCase updateUserRoleUseCase;
   final LeaveShopUseCase leaveShopUseCase;
+  final GetPresignedUrlUseCase getPresignedUrlUseCase;
+  final UploadFileToS3UseCase uploadFileToS3UseCase;
+  final SubmitVendorRequestUseCase submitVendorRequestUseCase;
+  final GetVendorRequestUseCase getVendorRequestUseCase;
+  final UpdateVendorRequestUseCase updateVendorRequestUseCase;
 
   DashboardBloc(
     this.getUserPermissionUseCase,
@@ -56,6 +73,11 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     this.deleteUserUseCase,
     this.updateUserRoleUseCase,
     this.leaveShopUseCase,
+    this.getPresignedUrlUseCase,
+    this.uploadFileToS3UseCase,
+    this.submitVendorRequestUseCase,
+    this.getVendorRequestUseCase,
+    this.updateVendorRequestUseCase,
   ) : super(DashBoardState()) {
     on<GetOrdersEvent>(_onGetOrdersEvent);
     on<GetProductsEvent>(_onGetProductsEvent);
@@ -68,12 +90,25 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     on<DeleteUserEvent>(_onDeleteUserEvent);
     on<ChangeUserRoleEvent>(_onChangeUserRoleEvent);
     on<LeaveShopEvent>(_onLeaveShopEvent);
+    on<UploadDocumentEvent>(_onUploadDocumentEvent);
+    on<SubmitVendorRequestEvent>(_onSubmitVendorRequestEvent);
+    on<GetVendorRequestEvent>(_onGetVendorRequestEvent);
+    on<UpdateVendorRequestEvent>(_onUpdateVendorRequestEvent);
+    on<ResetVendorRequestStatesEvent>(_onResetVendorRequestStatesEvent);
   }
 
   FutureOr<void> _onGetUserPermissionEvent(
     GetUserPermissionEvent event,
     Emitter<DashBoardState> emit,
   ) async {
+    if ((GetIt.I<PrefsRepository>().myPhoneNumber?.length ?? 0) < 3) {
+      emit(
+        state.copyWith(
+          getUserPermissionStatus: GetUserPermissionStatus.failure,
+        ),
+      );
+      return;
+    }
     emit(
       state.copyWith(getUserPermissionStatus: GetUserPermissionStatus.loading),
     );
@@ -91,6 +126,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
         emit(
           (state.copyWith(
             shops: r.shops,
+
             getUserPermissionStatus: GetUserPermissionStatus.success,
           )),
         );
@@ -360,6 +396,181 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
         // Refresh orders list after changing status
         add(GetOrdersEvent(page: state.ordersMeta?.currentPage ?? 1));
       },
+    );
+  }
+
+  FutureOr<void> _onUploadDocumentEvent(
+    UploadDocumentEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(state.copyWith(uploadDocumentStatus: UploadDocumentStatus.loading));
+
+    final file = File(event.filePath);
+
+    // Step 1: Get presigned URL
+    final presignedUrlResponse = await getPresignedUrlUseCase(
+      GetPresignedUrlParams(mimeType: event.mimeType),
+    );
+
+    // Handle presigned URL response
+    if (presignedUrlResponse.isLeft()) {
+      final failure = presignedUrlResponse.fold(
+        (l) => l,
+        (r) => throw Exception(),
+      );
+      if (!emit.isDone) {
+        emit(
+          state.copyWith(uploadDocumentStatus: UploadDocumentStatus.failure),
+        );
+      }
+      showMessage(failure.message, hasError: true);
+      return;
+    }
+
+    final presignedUrlModel = presignedUrlResponse.fold(
+      (l) => throw Exception(),
+      (r) => r,
+    );
+
+    // Step 2: Upload file to presigned URL using PUT
+    final uploadResponse = await uploadFileToS3UseCase(
+      UploadFileToS3Params(
+        file: file,
+        uploadUrl: presignedUrlModel.uploadUrl!,
+        mimeType: event.mimeType,
+      ),
+    );
+
+    // Handle upload response
+    if (uploadResponse.isLeft()) {
+      final failure = uploadResponse.fold((l) => l, (r) => throw Exception());
+      if (!emit.isDone) {
+        emit(
+          state.copyWith(uploadDocumentStatus: UploadDocumentStatus.failure),
+        );
+      }
+      showMessage(failure.message, hasError: true);
+      return;
+    }
+
+    final success = uploadResponse.fold((l) => throw Exception(), (r) => r);
+    if (!emit.isDone) {
+      emit(
+        state.copyWith(
+          uploadDocumentStatus: UploadDocumentStatus.success,
+          uploadedDocumentKey: presignedUrlModel.key ?? '',
+        ),
+      );
+    }
+    // Translate the message if it's a translation key, otherwise use default
+    final message = success.message == 'file_uploaded_successfully'
+        ? LocaleKeys.file_uploaded_successfully.tr()
+        : (success.message ?? LocaleKeys.document_uploaded_successfully.tr());
+    showMessage(message);
+  }
+
+  FutureOr<void> _onSubmitVendorRequestEvent(
+    SubmitVendorRequestEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        submitVendorRequestStatus: SubmitVendorRequestStatus.loading,
+      ),
+    );
+
+    final response = await submitVendorRequestUseCase(event.params);
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            submitVendorRequestStatus: SubmitVendorRequestStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            submitVendorRequestStatus: SubmitVendorRequestStatus.success,
+          ),
+        );
+        showMessage(r.message ?? LocaleKeys.registration_successful.tr());
+      },
+    );
+  }
+
+  FutureOr<void> _onGetVendorRequestEvent(
+    GetVendorRequestEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(
+      state.copyWith(getVendorRequestStatus: GetVendorRequestStatus.loading),
+    );
+
+    final response = await getVendorRequestUseCase(NoParams());
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            getVendorRequestStatus: GetVendorRequestStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            getVendorRequestStatus: GetVendorRequestStatus.success,
+            vendorRequest: r.data,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onUpdateVendorRequestEvent(
+    UpdateVendorRequestEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        updateVendorRequestStatus: UpdateVendorRequestStatus.loading,
+      ),
+    );
+
+    final response = await updateVendorRequestUseCase(event.params);
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            updateVendorRequestStatus: UpdateVendorRequestStatus.failure,
+          ),
+        );
+        showMessage(l.message, hasError: true);
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            updateVendorRequestStatus: UpdateVendorRequestStatus.success,
+          ),
+        );
+        showMessage(r.message ?? LocaleKeys.registration_successful.tr());
+      },
+    );
+  }
+
+  FutureOr<void> _onResetVendorRequestStatesEvent(
+    ResetVendorRequestStatesEvent event,
+    Emitter<DashBoardState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        getVendorRequestStatus: GetVendorRequestStatus.init,
+        updateVendorRequestStatus: UpdateVendorRequestStatus.init,
+        submitVendorRequestStatus: SubmitVendorRequestStatus.init,
+      ),
     );
   }
 }

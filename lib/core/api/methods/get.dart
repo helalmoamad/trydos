@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import '../../../enums/status_code_type.dart';
@@ -55,9 +56,27 @@ class GetClient<T> extends BaseApi<T> {
       print(
         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${requestPrams.queryParameters}",
       );
+      // Prepare data for saving - handle String, null, or empty responses
+      dynamic dataToSave = response.data;
+      if (dataToSave is String) {
+        // If data is a string (e.g., empty string in 204), convert to map
+        if (dataToSave.trim().isEmpty) {
+          dataToSave = <String, dynamic>{};
+        } else {
+          // Try to parse as JSON, if fails use as string value
+          try {
+            dataToSave = json.decode(dataToSave);
+          } catch (e) {
+            dataToSave = {'data': dataToSave};
+          }
+        }
+      } else if (dataToSave == null) {
+        dataToSave = <String, dynamic>{};
+      }
+
       GetIt.I<PrefsRepository>().saveRequestsData(
         'This From Response   ${response.requestOptions.path}',
-        response.data is! FormData ? response.data : {'data': 'formData'},
+        dataToSave is! FormData ? dataToSave : {'data': 'formData'},
         response.requestOptions.headers,
         response.statusCode,
         response.requestOptions.method,
@@ -69,12 +88,23 @@ class GetClient<T> extends BaseApi<T> {
       prettyPrinterI(stopWatch.elapsed.toString());
 
       if (response.statusCode == StatusCode.operationSucceeded.code ||
-          response.statusCode == StatusCode.createdSucceeded.code) {
+          response.statusCode == StatusCode.createdSucceeded.code ||
+          response.statusCode == 204) {
         if (_fromJson == null) {
           return Future.value(_valueOnSuccess);
         }
 
-        return _fromJson(response.data);
+        // Handle 204 No Content - response.data might be null, empty string, or empty
+        dynamic dataToParse = response.data;
+        if (response.statusCode == 204) {
+          // For 204, use empty map if data is null or empty string
+          if (dataToParse == null ||
+              (dataToParse is String && dataToParse.trim().isEmpty)) {
+            dataToParse = <String, dynamic>{};
+          }
+        }
+
+        return _fromJson(dataToParse);
       } else {
         final exception = getException(
           statusCode: response.statusCode!,

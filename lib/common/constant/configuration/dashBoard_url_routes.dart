@@ -22,6 +22,10 @@ abstract class DashBoardEndPoints {
   static String deleteUserEP(String userId) => '$userId/delete'.usersScope();
   static final updateUserRoleEP = 'role/update'.usersScope();
   static final leaveShopEP = 'leave'.usersScope();
+  static final getPresignedUrlEP = 'uploads/presigned-url'.shopScope();
+  static final vendorRequestsEP = 'vendor-requests'.shopScope();
+  static String updateVendorRequestEP(int vendorRequestId) =>
+      'vendor-requests/$vendorRequestId'.shopScope();
 }
 
 abstract class DashBoardUrls {
