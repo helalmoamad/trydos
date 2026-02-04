@@ -5,6 +5,7 @@ import '../../../features/chat/data/models/my_chats_response_model.dart';
 abstract class PrefsRepository {
   String? get chatToken;
   String? get marketToken;
+  String? get walletToken;
   String? get storiesToken;
   String? get countryIso;
   String? get userChoosedCountryIso;
@@ -40,6 +41,7 @@ abstract class PrefsRepository {
   bool? get isTokenExpired;
   bool? get isRequestNotificationPermission;
   bool? get isSmartlookStarted;
+  bool? get isCreateWallet;
 
   String? get myStoriesName;
 
@@ -78,6 +80,7 @@ abstract class PrefsRepository {
     String value,
   );
   Future<bool> removeMainCategoryHasPerfechedWhenOpenApp(bool allCategory);
+  Future<bool> setIsCearteWallet(bool isCreate);
   Future<bool> setIsFoundDataCashed(bool isFoundDataCashed);
   Future<bool> setRedeemDateForProduct(String productId, String seconds);
   Future<bool> setRedeemSecondRemainingForProduct(
@@ -134,6 +137,8 @@ abstract class PrefsRepository {
   Future<bool> setMarketToken(String? token);
 
   Future<bool> setStoriesToken(String token);
+
+  Future<bool> setWalletToken(String token);
 
   Future<bool> setLogInToChat(bool isLogInToChat);
 

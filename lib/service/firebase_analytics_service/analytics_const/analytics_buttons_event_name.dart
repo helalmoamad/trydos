@@ -220,4 +220,8 @@ class AnalyticsButtonsEventNameConst {
   static const LOGIN_METHOD_QR_BUTTON = "login_method_qr_button";
   static const SEARCH_TRENDING_OPTION = "search_trending_option_button";
   static const SEARCH_HISTORY_OPTION = "search_history_option_button";
+  static const PRODUCT_LISTING_PAGE = "productListingPage";
+  static const VIEW_ITEM_LIST_EVENT = "view_item_list_event";
+  static const VIEW_TIME_PRODUCT_EVENT = "view_time_product_event";
+  static const CLOSE_LOGIN = "close_login";
 }

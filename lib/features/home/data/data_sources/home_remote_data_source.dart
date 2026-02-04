@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/elastic_url_routes.dart';
+import 'package:trydos/common/constant/configuration/wallet_url_routes.dart';
 import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/delete.dart';
@@ -11,6 +12,7 @@ import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/create_return_request_model.dart';
+import 'package:trydos/features/home/data/models/currencies_response_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
@@ -1224,7 +1226,7 @@ class HomeRemoteDatasource {
     return deleteLikeOFProduct();
   }
 
-  Future<CustomerWalletModel> getCustomerWallet({
+  /* Future<CustomerWalletModel> getCustomerWallet({
     required int limit,
     required int offset,
   }) {
@@ -1244,6 +1246,39 @@ class HomeRemoteDatasource {
         );
 
     return getCustomerWallet();
+  }*/
+  Future<CustomerWalletModel> getCustomerWallet({required String assetId}) {
+    GetClient<CustomerWalletModel> getCustomerWallet =
+        GetClient<CustomerWalletModel>(
+          serverName: ServerName.wallet,
+          requestPrams: RequestConfig<CustomerWalletModel>(
+            endpoint: WalletEndPoints.walletBalanceEP(assetId),
+            queryParameters: {
+              'accountSubtype': 'MAIN',
+              'assetType': 'CURRENCY',
+            },
+            response: ResponseValue<CustomerWalletModel>(
+              fromJson: (response) => CustomerWalletModel.fromJson(response),
+            ),
+          ),
+        );
+    return getCustomerWallet();
+  }
+
+  Future<CurrenciesForWalletResponseModel> getCurrenciesForWallet() {
+    GetClient<CurrenciesForWalletResponseModel> getCurrencies =
+        GetClient<CurrenciesForWalletResponseModel>(
+          serverName: ServerName.wallet,
+          requestPrams: RequestConfig<CurrenciesForWalletResponseModel>(
+            endpoint: WalletEndPoints.currenciesEP,
+            response: ResponseValue<CurrenciesForWalletResponseModel>(
+              fromJson: (response) => CurrenciesForWalletResponseModel.fromJson(
+                response as Map<String, dynamic>,
+              ),
+            ),
+          ),
+        );
+    return getCurrencies();
   }
 
   Future<OrdersGroupModel> placeOrder({

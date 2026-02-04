@@ -25,14 +25,15 @@ import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
 
 class ColorsListFilter extends StatefulWidget {
-  const ColorsListFilter(
-      {super.key,
-      this.hideTitle = false,
-      this.searchText,
-      required this.colors,
-      required this.fromHomeSearch,
-      required this.boutiqueSlug,
-      this.category});
+  const ColorsListFilter({
+    super.key,
+    this.hideTitle = false,
+    this.searchText,
+    required this.colors,
+    required this.fromHomeSearch,
+    required this.boutiqueSlug,
+    this.category,
+  });
 
   final List<String> colors;
   final bool hideTitle;
@@ -59,13 +60,14 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
         debounce = Timer(const Duration(milliseconds: 600), () {
           if (scrollController.offset >=
               (scrollController.position.maxScrollExtent * 0.6)) {
-            BlocProvider.of<BoutiqueBloc>(context)
-                .add(GetFiltersWithPaginatioEvent(
-              fromHomePageSearch: true,
-              searchText: widget.searchText,
-              category: widget.category,
-              boutiqueSlug: widget.boutiqueSlug,
-            ));
+            BlocProvider.of<BoutiqueBloc>(context).add(
+              GetFiltersWithPaginatioEvent(
+                fromHomePageSearch: true,
+                searchText: widget.searchText,
+                category: widget.category,
+                boutiqueSlug: widget.boutiqueSlug,
+              ),
+            );
           }
         });
       } catch (e) {}
@@ -98,193 +100,216 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
             Row(
               children: [
                 const FilterSelectedMark(width: 20, height: 20),
-                const SizedBox(
-                  width: 10,
-                ),
+                const SizedBox(width: 10),
                 MyTextWidget(
                   '${LocaleKeys.filter_by_color.tr()}',
                   style: context.textTheme.titleMedium?.rq.copyWith(
-                      color: const Color(0xff505050), height: 15 / 12),
+                    color: const Color(0xff505050),
+                    height: 15 / 12,
+                  ),
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5),
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
                   // ignore: deprecated_member_use
                   color: const Color(0xffD3D3D3),
                 ),
                 BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                    builder: (context, state) {
-                  if (state.getProductFiltersStatus[key] ==
-                      GetProductFiltersStatus.loading) {
-                    return Row(
-                      children: [
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        TrydosLoader(
-                          size: 20,
-                        ),
-                      ],
-                    );
-                  }
-                  return const SizedBox.shrink();
-                })
+                  builder: (context, state) {
+                    if (state.getProductFiltersStatus[key] ==
+                        GetProductFiltersStatus.loading) {
+                      return Row(
+                        children: [
+                          const SizedBox(width: 5),
+                          TrydosLoader(size: 20),
+                        ],
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
           },
           SizedBox(
-              height: 105,
-              child: ListView.separated(
-                  controller: scrollController,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (ctx, index) {
-                    BoutiqueBloc boutiqueBloc =
-                        BlocProvider.of<BoutiqueBloc>(context);
-                    bool isSelected = widget.hideTitle
-                        ? (boutiqueBloc.state.appliedFiltersByUser[key]?.filters
-                                ?.colors
-                                ?.any((element) =>
-                                    element == widget.colors[index]) ??
-                            false)
-                        : (boutiqueBloc.state.choosedFiltersByUser[key]?.filters
-                                ?.colors
-                                ?.any((element) =>
-                                    element == widget.colors[index]) ??
-                            false);
-                    return Column(
-                      children: [
-                        GestureDetector(
-                          key: TestVariables.kTestMode == false
-                              ? null
-                              : Key(
-                                  '${WidgetsKeys.colorCircleProductListingFilterKey}$index'),
-                          onTap: () {
-                            String color = widget.colors[index];
-                            Filter? prevChoosedOrAppliedFilterToAddToIt =
-                                widget.hideTitle
-                                    ? boutiqueBloc.state
-                                        .appliedFiltersByUser[key]?.filters
-                                    : boutiqueBloc.state
-                                        .choosedFiltersByUser[key]?.filters;
-                            List<String>? colors = List.of(
-                                prevChoosedOrAppliedFilterToAddToIt?.colors ??
-                                    []);
-                            if (!isSelected) {
-                              FirebaseAnalyticsService.logEventForSession(
-                                eventName: AnalyticsEventsConst.applyFilter,
-                                extraParams: {
-                                  'filter_type': "color",
-                                  'filter_value': widget.colors[index],
-                                  'screen_name':
-                                      GlobalScreenConst.PRODUCT_LISTING_SCREEN,
-                                },
-                                executedEventName:
-                                    AnalyticsButtonsEventNameConst
-                                        .applyFilterButton,
-                              );
-                              if (prevChoosedOrAppliedFilterToAddToIt == null) {
-                                prevChoosedOrAppliedFilterToAddToIt = Filter();
-                              }
-                              prevChoosedOrAppliedFilterToAddToIt =
-                                  prevChoosedOrAppliedFilterToAddToIt
-                                      .copyWithSaveOtherField(
-                                          prices:
-                                              prevChoosedOrAppliedFilterToAddToIt
-                                                  .prices,
-                                          searchText: widget.searchText,
-                                          colors:
-                                              prevChoosedOrAppliedFilterToAddToIt
-                                                      .colors.isNullOrEmpty
-                                                  ? [color]
-                                                  : [
-                                                      ...prevChoosedOrAppliedFilterToAddToIt
-                                                          .colors!,
-                                                      color
-                                                    ]);
-                            } else {
-                              // FirebaseAnalyticsService.logEventForSession(
-                              //   eventName: AnalyticsEventsConst.buttonClicked,
-                              //   executedEventName:
-                              //       AnalyticsButtonsEventNameConst
-                              //           .resetByTapOnFilterButton,
-                              // );
-                              ////////////////////////////////
-                              colors.removeWhere(((element) =>
-                                  element == widget.colors[index]));
-                              prevChoosedOrAppliedFilterToAddToIt =
-                                  prevChoosedOrAppliedFilterToAddToIt
-                                      ?.copyWithSaveOtherField(
-                                colors: colors,
-                                searchText: widget.searchText,
-                                prices:
-                                    prevChoosedOrAppliedFilterToAddToIt.prices,
-                              );
-                            }
-                            if (widget.hideTitle) {
-                              boutiqueBloc.add(ChangeAppliedFiltersEvent(
-                                category: widget.category,
-                                boutiqueSlug: widget.boutiqueSlug,
-                                filtersAppliedByUser: GetProductFiltersModel(
-                                    filters:
-                                        prevChoosedOrAppliedFilterToAddToIt),
-                              ));
-                              boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                  fromSearch: widget.fromHomeSearch,
-                                  searchText: widget.searchText,
-                                  boutiqueSlug: widget.boutiqueSlug,
-                                  category: widget.category,
-                                  offset: 1));
-                            } else {
-                              boutiqueBloc.add(ChangeSelectedFiltersEvent(
-                                fromHomePageSearch: widget.fromHomeSearch,
-                                category: widget.category,
-                                boutiqueSlug: widget.boutiqueSlug,
-                                filtersChoosedByUser: GetProductFiltersModel(
-                                    filters:
-                                        prevChoosedOrAppliedFilterToAddToIt),
-                              ));
-                            }
-                          },
-                          child: Stack(
-                            children: [
-                              Container(
-                                width: 70,
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Color(int.parse(
-                                      '0xff${widget.colors[index].substring(1)}')),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        // ignore: deprecated_member_use
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 3,
-                                        offset: const Offset(0, 3))
-                                  ],
-                                  border: Border.all(
-                                      color: const Color(0xffC4C2C2)),
+            height: 105,
+            child: ListView.separated(
+              controller: scrollController,
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (ctx, index) {
+                BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(
+                  context,
+                );
+                bool isSelected = widget.hideTitle
+                    ? (boutiqueBloc
+                              .state
+                              .appliedFiltersByUser[key]
+                              ?.filters
+                              ?.colors
+                              ?.any(
+                                (element) => element == widget.colors[index],
+                              ) ??
+                          false)
+                    : (boutiqueBloc
+                              .state
+                              .choosedFiltersByUser[key]
+                              ?.filters
+                              ?.colors
+                              ?.any(
+                                (element) => element == widget.colors[index],
+                              ) ??
+                          false);
+                return Column(
+                  children: [
+                    GestureDetector(
+                      key: TestVariables.kTestMode == false
+                          ? null
+                          : Key(
+                              '${WidgetsKeys.colorCircleProductListingFilterKey}$index',
+                            ),
+                      onTap: () {
+                        String color = widget.colors[index];
+                        Filter? prevChoosedOrAppliedFilterToAddToIt =
+                            widget.hideTitle
+                            ? boutiqueBloc
+                                  .state
+                                  .appliedFiltersByUser[key]
+                                  ?.filters
+                            : boutiqueBloc
+                                  .state
+                                  .choosedFiltersByUser[key]
+                                  ?.filters;
+                        List<String>? colors = List.of(
+                          prevChoosedOrAppliedFilterToAddToIt?.colors ?? [],
+                        );
+                        if (!isSelected) {
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.APPLY_FILTER,
+                            extraParams: {
+                              'filter_type': "color",
+                              'filter_value': widget.colors[index],
+                              'screen_name':
+                                  GlobalScreenConst.PRODUCT_LISTING_SCREEN,
+                            },
+                            executedEventName: AnalyticsButtonsEventNameConst
+                                .applyFilterButton,
+                          );
+                          if (prevChoosedOrAppliedFilterToAddToIt == null) {
+                            prevChoosedOrAppliedFilterToAddToIt = Filter();
+                          }
+                          prevChoosedOrAppliedFilterToAddToIt =
+                              prevChoosedOrAppliedFilterToAddToIt
+                                  .copyWithSaveOtherField(
+                                    prices: prevChoosedOrAppliedFilterToAddToIt
+                                        .prices,
+                                    searchText: widget.searchText,
+                                    colors:
+                                        prevChoosedOrAppliedFilterToAddToIt
+                                            .colors
+                                            .isNullOrEmpty
+                                        ? [color]
+                                        : [
+                                            ...prevChoosedOrAppliedFilterToAddToIt
+                                                .colors!,
+                                            color,
+                                          ],
+                                  );
+                        } else {
+                          // FirebaseAnalyticsService.logEventForSession(
+                          //   eventName: AnalyticsEventsConst.buttonClicked,
+                          //   executedEventName:
+                          //       AnalyticsButtonsEventNameConst
+                          //           .resetByTapOnFilterButton,
+                          // );
+                          ////////////////////////////////
+                          colors.removeWhere(
+                            ((element) => element == widget.colors[index]),
+                          );
+                          prevChoosedOrAppliedFilterToAddToIt =
+                              prevChoosedOrAppliedFilterToAddToIt
+                                  ?.copyWithSaveOtherField(
+                                    colors: colors,
+                                    searchText: widget.searchText,
+                                    prices: prevChoosedOrAppliedFilterToAddToIt
+                                        .prices,
+                                  );
+                        }
+                        if (widget.hideTitle) {
+                          boutiqueBloc.add(
+                            ChangeAppliedFiltersEvent(
+                              category: widget.category,
+                              boutiqueSlug: widget.boutiqueSlug,
+                              filtersAppliedByUser: GetProductFiltersModel(
+                                filters: prevChoosedOrAppliedFilterToAddToIt,
+                              ),
+                            ),
+                          );
+                          boutiqueBloc.add(
+                            GetProductsWithFiltersEvent(
+                              fromSearch: widget.fromHomeSearch,
+                              searchText: widget.searchText,
+                              boutiqueSlug: widget.boutiqueSlug,
+                              category: widget.category,
+                              offset: 1,
+                            ),
+                          );
+                        } else {
+                          boutiqueBloc.add(
+                            ChangeSelectedFiltersEvent(
+                              fromHomePageSearch: widget.fromHomeSearch,
+                              category: widget.category,
+                              boutiqueSlug: widget.boutiqueSlug,
+                              filtersChoosedByUser: GetProductFiltersModel(
+                                filters: prevChoosedOrAppliedFilterToAddToIt,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(
+                                int.parse(
+                                  '0xff${widget.colors[index].substring(1)}',
                                 ),
                               ),
-                              Visibility(
-                                  visible: isSelected,
-                                  child: const FilterSelectedMark(
-                                      width: 20, height: 20))
-                            ],
+                              boxShadow: [
+                                BoxShadow(
+                                  // ignore: deprecated_member_use
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 3,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                              border: Border.all(
+                                color: const Color(0xffC4C2C2),
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                  separatorBuilder: (ctx, index) => const SizedBox(
-                        width: 10,
+                          Visibility(
+                            visible: isSelected,
+                            child: const FilterSelectedMark(
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                        ],
                       ),
-                  itemCount: widget.colors.length)),
+                    ),
+                  ],
+                );
+              },
+              separatorBuilder: (ctx, index) => const SizedBox(width: 10),
+              itemCount: widget.colors.length,
+            ),
+          ),
           SizedBox(height: !widget.hideTitle ? 20 : 0),
         ],
       ),

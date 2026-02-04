@@ -52,14 +52,18 @@ class _UserInfoPageState extends State<UserInfoPage> {
         prefsRepository.setPhoneNumber(userInfo['userMarketPhone']);
       }
       if (userInfo.containsKey('userChatId')) {
-        prefsRepository
-            .setMyChatId(int.tryParse(userInfo['userChatId'].toString()) ?? 0);
+        prefsRepository.setMyChatId(
+          int.tryParse(userInfo['userChatId'].toString()) ?? 0,
+        );
       }
       if (userInfo.containsKey('userChatToken')) {
         prefsRepository.setChatToken(userInfo['userChatToken']);
       }
       if (userInfo.containsKey('userStoriesToken')) {
         prefsRepository.setStoriesToken(userInfo['userStoriesToken']);
+      }
+      if (userInfo.containsKey('userWalletToken')) {
+        prefsRepository.setWalletToken(userInfo['userWalletToken']);
       }
       if (userInfo.containsKey('userChatName')) {
         prefsRepository.setMyChatName(userInfo['userChatName']);
@@ -75,32 +79,39 @@ class _UserInfoPageState extends State<UserInfoPage> {
       }
       if (userInfo.containsKey('userStoriesId')) {
         prefsRepository.setMyStoriesId(
-            int.tryParse(userInfo['userStoriesId'].toString()) ?? 0);
+          int.tryParse(userInfo['userStoriesId'].toString()) ?? 0,
+        );
       }
       if (userInfo.containsKey('userCountryIso')) {
         prefsRepository.setCountryIso(userInfo['userCountryIso']);
       }
       if (userInfo.containsKey('userCountryIsAvailable')) {
         prefsRepository.setUserCountryIsAvailable(
-            int.tryParse(userInfo['userCountryIsAvailable'].toString()) ?? 0);
+          int.tryParse(userInfo['userCountryIsAvailable'].toString()) ?? 0,
+        );
       }
       if (userInfo.containsKey('userUserChoosedCountryIso')) {
-        prefsRepository
-            .setUserChoosedCountryIso(userInfo['userUserChoosedCountryIso']);
+        prefsRepository.setUserChoosedCountryIso(
+          userInfo['userUserChoosedCountryIso'],
+        );
       }
       if (userInfo.containsKey('userVerifiedPhone')) {
         prefsRepository.setVerifiedPhone(
-            userInfo['userVerifiedPhone'] == true ||
-                userInfo['userVerifiedPhone'] == 'true');
+          userInfo['userVerifiedPhone'] == true ||
+              userInfo['userVerifiedPhone'] == 'true',
+        );
       }
       if (userInfo.containsKey('isVerifiedPhonePeforeExpiredToken')) {
         prefsRepository.setVerifiedPhonePeforeExpiredToken(
-            userInfo['isVerifiedPhonePeforeExpiredToken'] == true ||
-                userInfo['isVerifiedPhonePeforeExpiredToken'] == 'true');
+          userInfo['isVerifiedPhonePeforeExpiredToken'] == true ||
+              userInfo['isVerifiedPhonePeforeExpiredToken'] == 'true',
+        );
       }
       if (userInfo.containsKey('isTokenExpired')) {
-        prefsRepository.setTokenExpired(userInfo['isTokenExpired'] == true ||
-            userInfo['isTokenExpired'] == 'true');
+        prefsRepository.setTokenExpired(
+          userInfo['isTokenExpired'] == true ||
+              userInfo['isTokenExpired'] == 'true',
+        );
       }
       if (userInfo.containsKey('language')) {
         prefsRepository.setLanguage(userInfo['language']);
@@ -113,7 +124,9 @@ class _UserInfoPageState extends State<UserInfoPage> {
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('last_user_market_id', userInfo['userMarketId'] ?? '');
       prefs.setInt(
-          'last_user_info_time', DateTime.now().millisecondsSinceEpoch);
+        'last_user_info_time',
+        DateTime.now().millisecondsSinceEpoch,
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User Info saved successfully!')),
       );
@@ -134,11 +147,14 @@ class _UserInfoPageState extends State<UserInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Info',
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 18)),
+        title: const Text(
+          'User Info',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 18,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: Colors.deepPurple,
       ),
@@ -174,7 +190,9 @@ class _UserInfoPageState extends State<UserInfoPage> {
                         errorText: _error,
                       ),
                       style: const TextStyle(
-                          fontFamily: 'monospace', fontSize: 11),
+                        fontFamily: 'monospace',
+                        fontSize: 11,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -187,7 +205,9 @@ class _UserInfoPageState extends State<UserInfoPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       textStyle: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     child: const Text(
                       'Save',
@@ -212,8 +232,9 @@ class _UserInfoPageState extends State<UserInfoPage> {
                     ),
                     const SizedBox(height: 24),
                     Table(
-                      border:
-                          TableBorder.all(color: Colors.deepPurple.shade100),
+                      border: TableBorder.all(
+                        color: Colors.deepPurple.shade100,
+                      ),
                       columnWidths: const {
                         0: FlexColumnWidth(2),
                         1: FlexColumnWidth(3),
@@ -263,7 +284,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
 Map<String, dynamic> userInfoFromJson(String source) {
   return source.isNotEmpty
       ? (source.trim().startsWith('{')
-          ? (jsonDecode(source) as Map<String, dynamic>)
-          : {})
+            ? (jsonDecode(source) as Map<String, dynamic>)
+            : {})
       : {};
 }

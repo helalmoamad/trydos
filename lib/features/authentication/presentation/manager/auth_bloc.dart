@@ -13,6 +13,7 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/data/models/get_user_country_response_model.dart';
+import 'package:trydos/features/authentication/domain/use_cases/create_wallet_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/delete_fcm_from_chat_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/generating_token_for_comment.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart';
@@ -33,6 +34,7 @@ import '../../../../common/helper/show_message.dart';
 import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../main.dart';
+import '../../domain/use_cases/login_to_wallet_usecase.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
 import '../../../home/presentation/manager/homeBloc/home_event.dart';
@@ -67,6 +69,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.verifyOtpInProfileUseCase,
     this.updateNameUseCase,
     this.registerGuestUseCase,
+    this.createWalletUseCase,
+
+    this.loginToWalletUseCase,
     this.generateTokenForCommentUseCase,
     this.sendOtpUseCase,
     this.getCustomerInfoUseCase,
@@ -97,6 +102,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _onLoginToStoriesEvent,
       transformer: throttleDroppable(const Duration(seconds: 10)),
     );
+    on<LoginToWalletEvent>(
+      _onLoginToWalletEvent,
+      transformer: throttleDroppable(const Duration(seconds: 10)),
+    );
     on<StoreFcmTokenEvent>(_onStoreFcmTokenEvent);
     on<SendOtpEvent>(
       _onSendOtpEvent,
@@ -123,6 +132,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _onGetUserCountryEvent,
       //transformer: throttleDroppable(throttleDuration)
     );
+    on<CreateWalletEvent>(_onCreateWalletEvent);
+
     on<GenerateTokenForCommentEvent>(_onGenerateTokenForCommentEvent);
   }
 
@@ -134,9 +145,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final GeneratingTokenForCommentUseCase generateTokenForCommentUseCase;
   final VerifyOtpSignInUseCase verifyOtpSignInUseCase;
   final VerifyOtpSignUpUseCase verifyOtpSignUpUseCase;
+  final CreateWalletUseCase createWalletUseCase;
+
   final VerifyOtpFromGuestUseCase verifyOtpFromGuestUseCase;
   final RegisterGuestUseCase registerGuestUseCase;
   final UpdateNameUseCase updateNameUseCase;
+  final LoginToWalletUseCase loginToWalletUseCase;
   final DeleteFcmFromChatUseCase deleteFcmFromChatUseCase;
   final GetCustomerInfoUseCase getCustomerInfoUseCase;
   final GetUserCountryUseCase getUserCountryUseCase;
@@ -387,6 +401,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             ),
           );
           add(
+            LoginToWalletEvent(
+              otpIdToken: r.data?.idToken,
+              name: r.data?.user?.name,
+              phone: r.data?.user?.phone,
+            ),
+          );
+          add(
             GenerateTokenForCommentEvent(
               mobilePhone: r.data?.user?.phone,
               otpIdToken: r.data?.idToken,
@@ -472,6 +493,71 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         NotificationProcess().fcmToken(null, null, null, null);
         apisMustNotToRequest.remove('GetStoryEvent');
         GetIt.I<StoryBloc>().add(const GetStoryEvent(withPaginition: false));
+      },
+    );
+  }
+
+  FutureOr<void> _onLoginToWalletEvent(
+    LoginToWalletEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    final response = await loginToWalletUseCase(
+      LoginToWalletParams(
+        otpIdToken: event.otpIdToken,
+        phone: event.phone,
+        name: event.name,
+      ),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('LoginToWalletEvent', l.statusCode)) {
+          add(
+            LoginToWalletEvent(
+              otpIdToken: event.otpIdToken,
+              phone: event.phone,
+              name: event.name,
+            ),
+          );
+          ErrorManager.incrementRetry('LoginToWalletEvent');
+        }
+      },
+      (r) {
+        _prefsRepository.setWalletToken(r.accessToken?.token ?? "");
+        add(CreateWalletEvent());
+
+        ErrorManager.resetRetry('LoginToWalletEvent');
+      },
+    );
+  }
+
+  FutureOr<void> _onCreateWalletEvent(
+    CreateWalletEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    if (_prefsRepository.isCreateWallet ?? false) {
+      GetIt.I<HomeBloc>().add(GetCurrenciesForWalletEvent());
+      return;
+    }
+    final response = await createWalletUseCase(NoParams());
+    response.fold(
+      (l) {
+        if (l.statusCode == 409) {
+          _prefsRepository.setIsCearteWallet(true);
+
+          GetIt.I<HomeBloc>().add(GetCurrenciesForWalletEvent());
+          return;
+        }
+        if (ErrorManager.shouldRetry('CreateWalletEvent', l.statusCode)) {
+          add(CreateWalletEvent());
+          ErrorManager.incrementRetry('CreateWalletEvent');
+          return;
+        }
+        GetIt.I<HomeBloc>().add(GetCurrenciesForWalletEvent());
+      },
+      (r) {
+        _prefsRepository.setIsCearteWallet(true);
+        ErrorManager.resetRetry('CreateWalletEvent');
+        GetIt.I<HomeBloc>().add(GetCurrenciesForWalletEvent());
       },
     );
   }
@@ -610,6 +696,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             ),
           );
           add(
+            LoginToWalletEvent(
+              otpIdToken: r.data?.idToken,
+              name: r.data?.user?.name,
+              phone: r.data?.user?.phone,
+            ),
+          );
+          add(
             GenerateTokenForCommentEvent(
               mobilePhone: r.data?.user?.phone,
               otpIdToken: r.data?.idToken,
@@ -737,6 +830,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ),
         );
         add(
+          LoginToWalletEvent(
+            otpIdToken: r.data?.idToken,
+            name: r.data?.user?.name,
+            phone: r.data?.user?.phone,
+          ),
+        );
+        add(
           GenerateTokenForCommentEvent(
             mobilePhone: r.data?.user?.phone,
             otpIdToken: r.data?.idToken,
@@ -782,6 +882,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     bool? previousStatusOfIsVerifiedPhone =
         _prefsRepository.isVerifiedPhone ?? false;
+    _prefsRepository.setIsCearteWallet(false);
     _prefsRepository.setVerifiedPhone(false);
     response.fold(
       (l) {

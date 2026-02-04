@@ -1,9 +1,11 @@
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
+import 'package:trydos/common/constant/configuration/wallet_url_routes.dart';
 import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/features/authentication/data/models/login_to_stories_response_model.dart';
+import 'package:trydos/features/authentication/data/models/login_to_wallet_model.dart';
 import 'package:trydos/features/authentication/data/models/store_fcm_token_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_response_model.dart';
 import '../../../../common/constant/configuration/chat_url_routes.dart';
@@ -305,5 +307,33 @@ class AuthRemoteDatasource {
           ),
         );
     return loginToStories();
+  }
+
+  Future<LoginToWalletModel> loginToWallet(Map<String, dynamic> params) {
+    PostClient<LoginToWalletModel> loginToWallet =
+        PostClient<LoginToWalletModel>(
+          serverName: ServerName.wallet,
+          requestPrams: RequestConfig<LoginToWalletModel>(
+            endpoint: WalletEndPoints.loginWithIdTokenEP,
+            data: params,
+            response: ResponseValue<LoginToWalletModel>(
+              fromJson: (response) => LoginToWalletModel.fromJson(response),
+            ),
+          ),
+        );
+    return loginToWallet();
+  }
+
+  Future<bool> createWallet() {
+    PostClient<bool> createWallet = PostClient<bool>(
+      serverName: ServerName.wallet,
+      requestPrams: RequestConfig<bool>(
+        endpoint: WalletEndPoints.createWalletEP,
+        data: {"name": "Primary Funding Wallet"},
+        queryParameters: {"subtype": "MAIN"},
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return createWallet();
   }
 }

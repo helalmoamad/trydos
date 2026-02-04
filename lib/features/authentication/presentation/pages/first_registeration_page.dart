@@ -215,7 +215,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                               //////////////////////////
 
                               FirebaseAnalyticsService.logEventForSession(
-                                executedEventName: "register_cancel_button",
+                                executedEventName: AnalyticsButtonsEventNameConst
+                                    .register_cancel_button,
                                 eventName: fromLogin
                                     ? AnalyticsEventsConst.CANCEL_LOGIN
                                     : AnalyticsEventsConst.CANCEL_SIGNUP,

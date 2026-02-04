@@ -206,6 +206,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                   builder: (_) => AgoraInAppWebView(
                     type: state.isVideoCall ? 'video' : 'voice',
                     isReceivingCall: false,
+                    isPrivate: false,
                     channelId: state.channelIdForCurrentCall!,
                     auth_token: GetIt.I<PrefsRepository>().chatToken!,
                     uId: GetIt.I<PrefsRepository>().myChatId.toString(),

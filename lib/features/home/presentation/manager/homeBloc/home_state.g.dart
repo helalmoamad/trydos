@@ -172,6 +172,17 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
     _$EnableAddToCardAfterChangeVariantZeroEnumMap,
     json['enableAddToCardAfterChangeVariantZero'],
   ),
+  getCurrenciesForWalletStatus:
+      $enumDecodeNullable(
+        _$GetCurrenciesForWalletStatusEnumMap,
+        json['getCurrenciesForWalletStatus'],
+      ) ??
+      GetCurrenciesForWalletStatus.init,
+  walletCurrencies: json['walletCurrencies'] == null
+      ? null
+      : CurrenciesForWalletResponseModel.fromJson(
+          json['walletCurrencies'] as Map<String, dynamic>,
+        ),
   getOldCartItemsStatus:
       $enumDecodeNullable(
         _$GetOLdCartItemsStatusEnumMap,
@@ -496,6 +507,10 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       _$GetOrderRatingStatusEnumMap[instance.getOrderRatingStatus]!,
   'getAllowedCountriesStatus':
       _$GetAllowedCountriesStatusEnumMap[instance.getAllowedCountriesStatus],
+  'getCurrenciesForWalletStatus':
+      _$GetCurrenciesForWalletStatusEnumMap[instance
+          .getCurrenciesForWalletStatus]!,
+  'walletCurrencies': instance.walletCurrencies?.toJson(),
   'getFqaCommentsPaginationModel': instance.getFqaCommentsPaginationModel?.map(
     (k, e) => MapEntry(k, e.toJson((value) => value.toJson())),
   ),
@@ -804,6 +819,13 @@ const _$EnableAddToCardAfterChangeVariantZeroEnumMap = {
   EnableAddToCardAfterChangeVariantZero.loading: 'loading',
   EnableAddToCardAfterChangeVariantZero.success: 'success',
   EnableAddToCardAfterChangeVariantZero.failure: 'failure',
+};
+
+const _$GetCurrenciesForWalletStatusEnumMap = {
+  GetCurrenciesForWalletStatus.init: 'init',
+  GetCurrenciesForWalletStatus.loading: 'loading',
+  GetCurrenciesForWalletStatus.success: 'success',
+  GetCurrenciesForWalletStatus.failure: 'failure',
 };
 
 const _$GetOLdCartItemsStatusEnumMap = {

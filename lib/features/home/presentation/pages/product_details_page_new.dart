@@ -652,7 +652,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   executedEventName:
                                       AnalyticsButtonsEventNameConst
                                           .VIEW_ITEM_BUTTON,
-                                  eventName: AnalyticsEventsConst.viewItem,
+                                  eventName:
+                                      AnalyticsEventsConst.VIEW_PRODUCT_EVENT,
                                   extraParams: {
                                     'item_id': productItem!.productId
                                         .toString(),
@@ -678,9 +679,11 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 const Duration(seconds: 20),
                                 (_) {
                                   FirebaseAnalyticsService.logEventForSession(
-                                    executedEventName: "",
+                                    executedEventName:
+                                        AnalyticsButtonsEventNameConst
+                                            .VIEW_TIME_PRODUCT_EVENT,
                                     eventName:
-                                        AnalyticsEventsConst.viewTimeProduct,
+                                        AnalyticsEventsConst.VIEW_ITEM_PRODUCT,
                                     extraParams: {
                                       'item_id': productItem!.productId
                                           .toString(),

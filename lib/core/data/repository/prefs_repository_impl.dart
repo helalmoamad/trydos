@@ -39,6 +39,13 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.setString(PrefsKey.storiesToken, token);
 
   @override
+  Future<bool> setWalletToken(String token) =>
+      _preferences.setString(PrefsKey.walletToken, token);
+
+  @override
+  String? get walletToken => _preferences.getString(PrefsKey.walletToken);
+
+  @override
   String? get storiesToken => _preferences.getString(PrefsKey.storiesToken);
 
   @override
@@ -635,9 +642,18 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setLogInToChat(bool isLogInToChat) =>
       _preferences.setBool(PrefsKey.isLogInToChat, isLogInToChat);
+
+  @override
+  Future<bool> setIsCearteWallet(bool isCreate) =>
+      _preferences.setBool(PrefsKey.createWallet, isCreate);
+
   @override
   // TODO: implement isVerifiedPhonePeforeExpiredToken
   bool? get isLogInToChat => _preferences.getBool(PrefsKey.isLogInToChat);
+
+  @override
+  // TODO: implement isVerifiedPhonePeforeExpiredToken
+  bool? get isCreateWallet => _preferences.getBool(PrefsKey.createWallet);
   @override
   // TODO: implement isVerifiedPhonePeforeExpiredToken
   bool? get isVerifiedPhonePeforeExpiredToken =>

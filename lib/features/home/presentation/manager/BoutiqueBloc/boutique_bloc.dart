@@ -2251,8 +2251,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       },
       (r) {
         FirebaseAnalyticsService.logEventForSession(
-          eventName: AnalyticsEventsConst.viewItemList,
-          executedEventName: "",
+          eventName: AnalyticsEventsConst.VIEW_ITEMS_LIST,
+          executedEventName:
+              AnalyticsButtonsEventNameConst.VIEW_ITEM_LIST_EVENT,
           extraParams: {
             'item_list_id': Random().nextInt(1000000).toString(),
             'items':
@@ -2280,8 +2281,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                   0) >
               2) {
             FirebaseAnalyticsService.logEventForSession(
-              eventName: AnalyticsEventsConst.search,
-              executedEventName: "search",
+              eventName: AnalyticsEventsConst.SEARCH,
+              executedEventName:
+                  AnalyticsButtonsEventNameConst.SEARCH_WITH_VOICE_BUTTON,
               extraParams: {
                 'search_keyword':
                     filters.searchText ??
@@ -2852,7 +2854,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         Future.delayed(
           const Duration(milliseconds: 100),
           () => FirebaseAnalyticsService.logEventForSession(
-            eventName: AnalyticsEventsConst.PROGRAMMING_EVENT,
+            eventName: AnalyticsEventsConst.APPLY_FILTER,
             executedEventName:
                 AnalyticsButtonsEventNameConst.APPLIED_FILTERS_EVENT,
             extraParams: {
@@ -3043,8 +3045,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       (r) {
         try {
           FirebaseAnalyticsService.logEventForSession(
-            eventName: AnalyticsEventsConst.viewItemList,
-            executedEventName: "",
+            eventName: AnalyticsEventsConst.VIEW_ITEMS_LIST,
+            executedEventName:
+                AnalyticsButtonsEventNameConst.VIEW_ITEM_LIST_EVENT,
             extraParams: {
               'item_list_id': Random().nextInt(1000000).toString(),
               'items':

@@ -219,10 +219,25 @@ class LoginToStoriesEvent extends AuthEvent {
   List<Object?> get props => [otpIdToken, phone, originalUserId, name];
 }
 
+class LoginToWalletEvent extends AuthEvent {
+  final String? otpIdToken;
+  final String? phone;
+  final String? name;
+  LoginToWalletEvent({this.otpIdToken, this.phone, this.name});
+  @override
+  List<Object?> get props => [otpIdToken, phone, name];
+}
+
 class GetUserCountryEvent extends AuthEvent {
   GetUserCountryEvent();
 
   @override
   // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class CreateWalletEvent extends AuthEvent {
+  CreateWalletEvent();
+  @override
   List<Object?> get props => [];
 }

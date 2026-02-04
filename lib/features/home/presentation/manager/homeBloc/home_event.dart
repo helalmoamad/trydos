@@ -35,6 +35,12 @@ class StorySelectedEvent extends HomeEvent {
   ];
 }
 
+class GetCurrenciesForWalletEvent extends HomeEvent {
+  GetCurrenciesForWalletEvent();
+  @override
+  List<Object?> get props => [];
+}
+
 class GetCoutryBoundaryByIsoEvent extends HomeEvent {
   const GetCoutryBoundaryByIsoEvent();
 

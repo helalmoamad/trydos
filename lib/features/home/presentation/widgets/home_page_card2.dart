@@ -670,7 +670,8 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                     ),
                                   );
                                   FirebaseAnalyticsService.logEventForSession(
-                                    eventName: AnalyticsEventsConst.applyFilter,
+                                    eventName:
+                                        AnalyticsEventsConst.APPLY_FILTER,
                                     extraParams: {
                                       'filter_type': "category",
                                       'filter_value': index == 7

@@ -69,6 +69,7 @@ class AuthState {
   final GetCustomerInfoStatus getCustomerInfoStatus;
   final UpdateChatUserNameStatus updateChatUserNameStatus;
   final GetCustomerCountryStatus getCustomerCountryStatus;
+
   final User? marketUser;
   final GetUserCountryResponseModel? getUserCountryResponseModel;
   final String? signInErrorMessage;
@@ -76,28 +77,29 @@ class AuthState {
   final GenerateTokenForCommentStatus generateTokenForCommentStatus;
   final String? sendOtpError;
   final String? countryName;
-  AuthState copyWith(
-      {final CreateUserStatus? createUserStatus,
-      final LoginToChatStatus? loginToChatStatus,
-      final LoginToStoriesStatus? loginToStoriesStatus,
-      final SendOtpStatus? sendOtpStatus,
-      final String? signInErrorMessage,
-      final String? countryName,
-      final GetUserCountryResponseModel? getUserCountryResponseModel,
-      final GenerateTokenForCommentStatus? generateTokenForCommentStatus,
-      final GetCustomerCountryStatus? getCustomerCountryStatus,
-      final RegisterGuestStatus? registerGuestStatus,
-      final VerifyOtpInProfileStatus? verifyOtpInProfileStatus,
-      final GetCustomerInfoStatus? getCustomerInfoStatus,
-      final UpdateChatUserNameStatus? updateChatUserNameStatus,
-      final String? signUpErrorMessage,
-      final String? sendOtpError,
-      final UpdateNameStatus? updateNameStatus,
-      final User? marketUser,
-      final VerifyOtpSignUpStatus? verifyOtpSignUpStatus,
-      final UpdateStoriesUserStatus? updateStoriesUserStatus,
-      final VerifyOtpSignInStatus? verifyOtpSignInStatus,
-      final VerifyOtpFromGuestStatus? verifyOtpFromGuestStatus}) {
+  AuthState copyWith({
+    final CreateUserStatus? createUserStatus,
+    final LoginToChatStatus? loginToChatStatus,
+    final LoginToStoriesStatus? loginToStoriesStatus,
+    final SendOtpStatus? sendOtpStatus,
+    final String? signInErrorMessage,
+    final String? countryName,
+    final GetUserCountryResponseModel? getUserCountryResponseModel,
+    final GenerateTokenForCommentStatus? generateTokenForCommentStatus,
+    final GetCustomerCountryStatus? getCustomerCountryStatus,
+    final RegisterGuestStatus? registerGuestStatus,
+    final VerifyOtpInProfileStatus? verifyOtpInProfileStatus,
+    final GetCustomerInfoStatus? getCustomerInfoStatus,
+    final UpdateChatUserNameStatus? updateChatUserNameStatus,
+    final String? signUpErrorMessage,
+    final String? sendOtpError,
+    final UpdateNameStatus? updateNameStatus,
+    final User? marketUser,
+    final VerifyOtpSignUpStatus? verifyOtpSignUpStatus,
+    final UpdateStoriesUserStatus? updateStoriesUserStatus,
+    final VerifyOtpSignInStatus? verifyOtpSignInStatus,
+    final VerifyOtpFromGuestStatus? verifyOtpFromGuestStatus,
+  }) {
     return AuthState(
       updateChatUserNameStatus:
           updateChatUserNameStatus ?? this.updateChatUserNameStatus,

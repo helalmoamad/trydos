@@ -35,6 +35,11 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'dart:io';
 
 class RecommendProductsPage extends StatefulWidget {
   const RecommendProductsPage({Key? key}) : super(key: key);
@@ -262,6 +267,73 @@ class _RecommendProductsPageState extends State<RecommendProductsPage> {
                                             itemBuilder: (context, index) {
                                               return InkWell(
                                                 onTap: () {
+                                                  // Log recommended product selection event
+                                                  final product =
+                                                      products[index];
+                                                  final categoryIds = product
+                                                      .categories
+                                                      ?.map(
+                                                        (cat) =>
+                                                            cat.id
+                                                                ?.toString() ??
+                                                            '',
+                                                      )
+                                                      .where(
+                                                        (id) => id.isNotEmpty,
+                                                      )
+                                                      .toList();
+
+                                                  FirebaseAnalyticsService.logEventForSession(
+                                                    eventName:
+                                                        AnalyticsEventsConst
+                                                            .RECOMENDED,
+                                                    executedEventName:
+                                                        AnalyticsButtonsEventNameConst
+                                                            .LATER_TAKE_LOOK_BUTTON,
+                                                    extraParams: {
+                                                      'recommended_item_select':
+                                                          product.productId
+                                                              .toString(),
+                                                      'user_id_custom':
+                                                          GetIt.I<
+                                                                PrefsRepository
+                                                              >()
+                                                              .myMarketId
+                                                              .toString(),
+                                                      'product_id': product
+                                                          .productId
+                                                          .toString(),
+                                                      'product_name':
+                                                          product.name ?? '',
+                                                      'product_category':
+                                                          categoryIds != null
+                                                          ? categoryIds
+                                                                .toString()
+                                                          : '',
+                                                      'screen_name':
+                                                          GlobalScreenConst
+                                                              .HOME_PAGE,
+                                                      'screen_path': '',
+                                                      'device_type':
+                                                          Platform.isIOS ||
+                                                              Platform.isAndroid
+                                                          ? 'mobile'
+                                                          : 'desktop',
+                                                      'operating_system':
+                                                          Platform.isIOS
+                                                          ? 'ios'
+                                                          : Platform.isAndroid
+                                                          ? 'Android'
+                                                          : Platform.isWindows
+                                                          ? 'Windows'
+                                                          : Platform.isMacOS
+                                                          ? 'Macintosh'
+                                                          : Platform.isLinux
+                                                          ? 'Linux'
+                                                          : 'Unknown',
+                                                    },
+                                                  );
+
                                                   GetIt.I<HomeBloc>().add(
                                                     const ChangeStatusOFGetProductsDetailsToSuccessEvent(
                                                       isStatusInitaial: true,

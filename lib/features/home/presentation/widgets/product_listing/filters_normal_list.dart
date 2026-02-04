@@ -25,16 +25,17 @@ import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
 
 class FiltersNormalList<T> extends StatefulWidget {
-  const FiltersNormalList(
-      {super.key,
-      required this.filterListTitle,
-      this.hideTitle = false,
-      required this.isBrandFilter,
-      required this.filters,
-      this.searchText,
-      required this.fromHomeSearch,
-      required this.boutiqueSlug,
-      this.category});
+  const FiltersNormalList({
+    super.key,
+    required this.filterListTitle,
+    this.hideTitle = false,
+    required this.isBrandFilter,
+    required this.filters,
+    this.searchText,
+    required this.fromHomeSearch,
+    required this.boutiqueSlug,
+    this.category,
+  });
 
   final bool isBrandFilter;
   final String filterListTitle;
@@ -64,13 +65,14 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
         debounce = Timer(const Duration(milliseconds: 600), () {
           if (scrollController.offset >=
               (scrollController.position.maxScrollExtent * 0.6)) {
-            BlocProvider.of<BoutiqueBloc>(context)
-                .add(GetFiltersWithPaginatioEvent(
-              fromHomePageSearch: true,
-              searchText: widget.searchText,
-              category: widget.category,
-              boutiqueSlug: widget.boutiqueSlug,
-            ));
+            BlocProvider.of<BoutiqueBloc>(context).add(
+              GetFiltersWithPaginatioEvent(
+                fromHomePageSearch: true,
+                searchText: widget.searchText,
+                category: widget.category,
+                boutiqueSlug: widget.boutiqueSlug,
+              ),
+            );
           }
         });
       } catch (e) {}
@@ -100,220 +102,243 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                   : null,
               children: [
                 const FilterSelectedMark(width: 20, height: 20),
-                const SizedBox(
-                  width: 10,
-                ),
+                const SizedBox(width: 10),
                 MyTextWidget(
                   widget.filterListTitle,
                   style: context.textTheme.titleMedium?.rq.copyWith(
-                      color: const Color(0xff505050), height: 15 / 12),
+                    color: const Color(0xff505050),
+                    height: 15 / 12,
+                  ),
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5),
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
                   // ignore: deprecated_member_use
                   color: const Color(0xffD3D3D3),
                 ),
                 BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                    builder: (context, state) {
-                  if (state.getProductFiltersStatus[key] ==
-                      GetProductFiltersStatus.loading) {
-                    return Row(
-                      key: TestVariables.kTestMode
-                          ? const Key(WidgetsKeys.getBrandsLoadingKey)
-                          : null,
-                      children: [
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        TrydosLoader(
-                          size: 20,
-                        ),
-                      ],
-                    );
-                  }
-                  return const SizedBox.shrink();
-                })
+                  builder: (context, state) {
+                    if (state.getProductFiltersStatus[key] ==
+                        GetProductFiltersStatus.loading) {
+                      return Row(
+                        key: TestVariables.kTestMode
+                            ? const Key(WidgetsKeys.getBrandsLoadingKey)
+                            : null,
+                        children: [
+                          const SizedBox(width: 5),
+                          TrydosLoader(size: 20),
+                        ],
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
           },
           SizedBox(
-              height: 105,
-              child: ListView.separated(
-                  controller: scrollController,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (ctx, index) {
-                    BoutiqueBloc boutiqueBloc =
-                        BlocProvider.of<BoutiqueBloc>(context);
-                    bool isSelected = widget.hideTitle
-                        ? widget.isBrandFilter
-                            ? (boutiqueBloc.state.appliedFiltersByUser[key]
-                                    ?.filters?.brands
-                                    ?.any((element) =>
-                                        element.id ==
-                                        widget.filters[index].id) ??
+            height: 105,
+            child: ListView.separated(
+              controller: scrollController,
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (ctx, index) {
+                BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(
+                  context,
+                );
+                bool isSelected = widget.hideTitle
+                    ? widget.isBrandFilter
+                          ? (boutiqueBloc
+                                    .state
+                                    .appliedFiltersByUser[key]
+                                    ?.filters
+                                    ?.brands
+                                    ?.any(
+                                      (element) =>
+                                          element.id ==
+                                          widget.filters[index].id,
+                                    ) ??
                                 false)
-                            : false
-                        : widget.isBrandFilter
-                            ? (boutiqueBloc.state.choosedFiltersByUser[key]
-                                    ?.filters?.brands
-                                    ?.any((element) =>
-                                        element.id ==
-                                        widget.filters[index].id) ??
-                                false)
-                            : false;
-                    return Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Filter? prevChoosedOrAppliedFilterToAddToIt =
-                                widget.hideTitle
-                                    ? boutiqueBloc.state
-                                        .appliedFiltersByUser[key]?.filters
-                                        ?.copyWithSaveOtherField(
-                                            prices: boutiqueBloc
-                                                .state
-                                                .appliedFiltersByUser[key]
-                                                ?.filters
-                                                ?.prices,
-                                            searchText: boutiqueBloc
-                                                .state
-                                                .appliedFiltersByUser[key]
-                                                ?.filters
-                                                ?.searchText)
-                                    : boutiqueBloc.state
-                                        .choosedFiltersByUser[key]?.filters;
-                            List<Brand>? brands = List.of(
-                                prevChoosedOrAppliedFilterToAddToIt?.brands ??
-                                    []);
-                            if (!isSelected) {
-                              FirebaseAnalyticsService.logEventForSession(
-                                eventName: AnalyticsEventsConst.applyFilter,
-                                extraParams: {
-                                  'filter_type': "brand",
-                                  'filter_value':
-                                      widget.filters[index].name ?? "",
-                                  'screen_name':
-                                      GlobalScreenConst.PRODUCT_LISTING_SCREEN,
-                                },
-                                executedEventName:
-                                    AnalyticsButtonsEventNameConst
-                                        .applyFilterButton,
-                              );
-                              dynamic item = widget.filters[index];
-                              if (prevChoosedOrAppliedFilterToAddToIt == null) {
-                                prevChoosedOrAppliedFilterToAddToIt = Filter();
-                              }
-                              prevChoosedOrAppliedFilterToAddToIt =
-                                  prevChoosedOrAppliedFilterToAddToIt
-                                      .copyWithSaveOtherField(
-                                          prices:
-                                              prevChoosedOrAppliedFilterToAddToIt
-                                                  .prices,
-                                          searchText:
-                                              prevChoosedOrAppliedFilterToAddToIt
-                                                  .searchText,
-                                          brands: !widget.isBrandFilter
-                                              ? prevChoosedOrAppliedFilterToAddToIt
-                                                  .brands
-                                              : prevChoosedOrAppliedFilterToAddToIt
-                                                      .brands.isNullOrEmpty
-                                                  ? [item]
-                                                  : [
-                                                      ...prevChoosedOrAppliedFilterToAddToIt
-                                                          .brands!,
-                                                      item
-                                                    ]);
-                            } else {
-                              // FirebaseAnalyticsService.logEventForSession(
-                              //   eventName: AnalyticsEventsConst.buttonClicked,
-                              //   executedEventName:
-                              //       AnalyticsButtonsEventNameConst
-                              //           .resetByTapOnFilterButton,
-                              // );
-                              /////////////////////////////////////
-                              if (widget.isBrandFilter) {
-                                brands.removeWhere(((element) =>
-                                    element.id == widget.filters[index].id));
-                              }
-                              prevChoosedOrAppliedFilterToAddToIt =
-                                  prevChoosedOrAppliedFilterToAddToIt
-                                      ?.copyWithSaveOtherField(
-                                brands: brands,
-                                searchText: prevChoosedOrAppliedFilterToAddToIt
-                                    .searchText,
-                                prices:
-                                    prevChoosedOrAppliedFilterToAddToIt.prices,
-                              );
-                            }
-                            if (widget.hideTitle) {
-                              boutiqueBloc.add(ChangeAppliedFiltersEvent(
-                                category: widget.category,
-                                boutiqueSlug: widget.boutiqueSlug,
-                                filtersAppliedByUser: GetProductFiltersModel(
-                                    filters:
-                                        prevChoosedOrAppliedFilterToAddToIt),
-                              ));
-                              boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                  fromSearch: widget.fromHomeSearch,
-                                  searchText: widget.searchText,
-                                  boutiqueSlug: widget.boutiqueSlug,
-                                  category: widget.category,
-                                  offset: 1));
-                            } else {
-                              print(
-                                  'dwwdwdwqe32e23e ${boutiqueBloc.state.prefAppliedFilterForExtendFilter?.brands}');
-                              boutiqueBloc.add(ChangeSelectedFiltersEvent(
-                                fromHomePageSearch: widget.fromHomeSearch,
-                                category: widget.category,
-                                boutiqueSlug: widget.boutiqueSlug,
-                                filtersChoosedByUser: GetProductFiltersModel(
-                                    filters:
-                                        prevChoosedOrAppliedFilterToAddToIt),
-                              ));
-                            }
-                          },
-                          child: Stack(
-                            children: [
-                              Container(
-                                key: TestVariables.kTestMode == false
-                                    ? null
-                                    : Key(
-                                        '${WidgetsKeys.brandCircleProductListingFilterKey}$index'),
-                                width: 70,
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                        // ignore: deprecated_member_use
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 3,
-                                        offset: const Offset(0, 3))
-                                  ],
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? const Color(0xffFF5F61)
-                                        : const Color(0xffC4C2C2),
+                          : false
+                    : widget.isBrandFilter
+                    ? (boutiqueBloc
+                              .state
+                              .choosedFiltersByUser[key]
+                              ?.filters
+                              ?.brands
+                              ?.any(
+                                (element) =>
+                                    element.id == widget.filters[index].id,
+                              ) ??
+                          false)
+                    : false;
+                return Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Filter? prevChoosedOrAppliedFilterToAddToIt =
+                            widget.hideTitle
+                            ? boutiqueBloc
+                                  .state
+                                  .appliedFiltersByUser[key]
+                                  ?.filters
+                                  ?.copyWithSaveOtherField(
+                                    prices: boutiqueBloc
+                                        .state
+                                        .appliedFiltersByUser[key]
+                                        ?.filters
+                                        ?.prices,
+                                    searchText: boutiqueBloc
+                                        .state
+                                        .appliedFiltersByUser[key]
+                                        ?.filters
+                                        ?.searchText,
+                                  )
+                            : boutiqueBloc
+                                  .state
+                                  .choosedFiltersByUser[key]
+                                  ?.filters;
+                        List<Brand>? brands = List.of(
+                          prevChoosedOrAppliedFilterToAddToIt?.brands ?? [],
+                        );
+                        if (!isSelected) {
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.APPLY_FILTER,
+                            extraParams: {
+                              'filter_type': "brand",
+                              'filter_value': widget.filters[index].name ?? "",
+                              'screen_name':
+                                  GlobalScreenConst.PRODUCT_LISTING_SCREEN,
+                            },
+                            executedEventName: AnalyticsButtonsEventNameConst
+                                .applyFilterButton,
+                          );
+                          dynamic item = widget.filters[index];
+                          if (prevChoosedOrAppliedFilterToAddToIt == null) {
+                            prevChoosedOrAppliedFilterToAddToIt = Filter();
+                          }
+                          prevChoosedOrAppliedFilterToAddToIt =
+                              prevChoosedOrAppliedFilterToAddToIt
+                                  .copyWithSaveOtherField(
+                                    prices: prevChoosedOrAppliedFilterToAddToIt
+                                        .prices,
+                                    searchText:
+                                        prevChoosedOrAppliedFilterToAddToIt
+                                            .searchText,
+                                    brands: !widget.isBrandFilter
+                                        ? prevChoosedOrAppliedFilterToAddToIt
+                                              .brands
+                                        : prevChoosedOrAppliedFilterToAddToIt
+                                              .brands
+                                              .isNullOrEmpty
+                                        ? [item]
+                                        : [
+                                            ...prevChoosedOrAppliedFilterToAddToIt
+                                                .brands!,
+                                            item,
+                                          ],
+                                  );
+                        } else {
+                          // FirebaseAnalyticsService.logEventForSession(
+                          //   eventName: AnalyticsEventsConst.buttonClicked,
+                          //   executedEventName:
+                          //       AnalyticsButtonsEventNameConst
+                          //           .resetByTapOnFilterButton,
+                          // );
+                          /////////////////////////////////////
+                          if (widget.isBrandFilter) {
+                            brands.removeWhere(
+                              ((element) =>
+                                  element.id == widget.filters[index].id),
+                            );
+                          }
+                          prevChoosedOrAppliedFilterToAddToIt =
+                              prevChoosedOrAppliedFilterToAddToIt
+                                  ?.copyWithSaveOtherField(
+                                    brands: brands,
+                                    searchText:
+                                        prevChoosedOrAppliedFilterToAddToIt
+                                            .searchText,
+                                    prices: prevChoosedOrAppliedFilterToAddToIt
+                                        .prices,
+                                  );
+                        }
+                        if (widget.hideTitle) {
+                          boutiqueBloc.add(
+                            ChangeAppliedFiltersEvent(
+                              category: widget.category,
+                              boutiqueSlug: widget.boutiqueSlug,
+                              filtersAppliedByUser: GetProductFiltersModel(
+                                filters: prevChoosedOrAppliedFilterToAddToIt,
+                              ),
+                            ),
+                          );
+                          boutiqueBloc.add(
+                            GetProductsWithFiltersEvent(
+                              fromSearch: widget.fromHomeSearch,
+                              searchText: widget.searchText,
+                              boutiqueSlug: widget.boutiqueSlug,
+                              category: widget.category,
+                              offset: 1,
+                            ),
+                          );
+                        } else {
+                          print(
+                            'dwwdwdwqe32e23e ${boutiqueBloc.state.prefAppliedFilterForExtendFilter?.brands}',
+                          );
+                          boutiqueBloc.add(
+                            ChangeSelectedFiltersEvent(
+                              fromHomePageSearch: widget.fromHomeSearch,
+                              category: widget.category,
+                              boutiqueSlug: widget.boutiqueSlug,
+                              filtersChoosedByUser: GetProductFiltersModel(
+                                filters: prevChoosedOrAppliedFilterToAddToIt,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            key: TestVariables.kTestMode == false
+                                ? null
+                                : Key(
+                                    '${WidgetsKeys.brandCircleProductListingFilterKey}$index',
                                   ),
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  // ignore: deprecated_member_use
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 3,
+                                  offset: const Offset(0, 3),
                                 ),
-                                child: Center(
-                                  child: widget.isBrandFilter
-                                      ? widget.filters[index].icon != null
-                                          ? widget.filters[index].icon!
+                              ],
+                              border: Border.all(
+                                color: isSelected
+                                    ? const Color(0xffFF5F61)
+                                    : const Color(0xffC4C2C2),
+                              ),
+                            ),
+                            child: Center(
+                              child: widget.isBrandFilter
+                                  ? widget.filters[index].icon != null
+                                        ? widget
+                                                      .filters[index]
+                                                      .icon!
                                                       .filePath !=
                                                   null
                                               ? Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 5.0),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 5.0,
+                                                      ),
                                                   child: SvgNetworkWidget(
                                                     //  width: 70,
                                                     width: 70,
@@ -324,40 +349,43 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                                   ),
                                                 )
                                               : const SizedBox.shrink()
-                                          : const SizedBox.shrink()
-                                      : const SizedBox.shrink(),
-                                ),
-                              ),
-                              Visibility(
-                                  visible: isSelected,
-                                  child: const FilterSelectedMark(
-                                      width: 20, height: 20))
-                            ],
+                                        : const SizedBox.shrink()
+                                  : const SizedBox.shrink(),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 5),
-                        MyTextWidget(
-                          key: TestVariables.kTestMode == false
-                              ? null
-                              : Key(
-                                  '${WidgetsKeys.brandProductListingFilterNameKey}$index'),
-                          widget.isBrandFilter
-                              ? widget.filters[index].name
-                              : '',
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                          style: context.textTheme.titleMedium?.rq.copyWith(
-                              color: const Color(0xff8E8E8E),
-                              letterSpacing: 0,
-                              height: 1.25),
-                        ),
-                      ],
-                    );
-                  },
-                  separatorBuilder: (ctx, index) => const SizedBox(
-                        width: 10,
+                          Visibility(
+                            visible: isSelected,
+                            child: const FilterSelectedMark(
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                        ],
                       ),
-                  itemCount: widget.filters.length)),
+                    ),
+                    const SizedBox(height: 5),
+                    MyTextWidget(
+                      key: TestVariables.kTestMode == false
+                          ? null
+                          : Key(
+                              '${WidgetsKeys.brandProductListingFilterNameKey}$index',
+                            ),
+                      widget.isBrandFilter ? widget.filters[index].name : '',
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.titleMedium?.rq.copyWith(
+                        color: const Color(0xff8E8E8E),
+                        letterSpacing: 0,
+                        height: 1.25,
+                      ),
+                    ),
+                  ],
+                );
+              },
+              separatorBuilder: (ctx, index) => const SizedBox(width: 10),
+              itemCount: widget.filters.length,
+            ),
+          ),
           SizedBox(height: !widget.hideTitle ? 20 : 0),
         ],
       ),

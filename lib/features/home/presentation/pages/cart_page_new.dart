@@ -33,6 +33,7 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/cart_shee
 import 'package:trydos/features/home/presentation/widgets/cart_section/product_collection_in_cart_page1.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -104,6 +105,14 @@ class _CartPageState extends State<CartPage> {
           'platform': GlobalPlatform.MOBILE,
         },
       );
+
+      // Log view cart event
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.VIEW_CART,
+        executedEventName: AnalyticsButtonsEventNameConst.CART_ICON,
+        extraParams: {'screen_name': GlobalScreenConst.CART_SCREEN},
+      );
+
       _eventLogged = true;
     }
 
@@ -160,7 +169,7 @@ class _CartPageState extends State<CartPage> {
                 Future.delayed(const Duration(milliseconds: 300), () {
                   FirebaseAnalyticsService.logEventForSession(
                     executedEventName: GlobalScreenConst.CART_SCREEN,
-                    eventName: AnalyticsEventsConst.beginCheckout,
+                    eventName: AnalyticsEventsConst.BEGIN_CHECKOUT,
                     extraParams: {
                       'currency': priceSymbol.toString(),
                       'value': state.getCartShippingItemsModel!.data!.total
@@ -169,7 +178,18 @@ class _CartPageState extends State<CartPage> {
                     },
                   );
                 }); ////////////////////////////////
-                orderBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
+                orderBloc.add(
+                  GetCustomerWalletEvent(
+                    assetId: "",
+                    /*    GetIt.I<HomeBloc>().state.walletCurrencies!.items!
+                            .firstWhere(
+                              (element) => element.symbol == priceSymbol,
+                              orElse: () => CurrencyItem(id: ""),
+                            )
+                            .id ??
+                        "",*/
+                  ),
+                );
                 Future.delayed(
                   const Duration(milliseconds: 600),
                   () => HelperFunctions.slidingNavigation(

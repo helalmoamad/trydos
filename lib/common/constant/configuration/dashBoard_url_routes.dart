@@ -25,7 +25,7 @@ abstract class DashBoardEndPoints {
   static final getPresignedUrlEP = 'uploads/presigned-url'.shopScope();
   static final vendorRequestsEP = 'vendor-requests'.shopScope();
   static String updateVendorRequestEP(int vendorRequestId) =>
-      'vendor-requests/$vendorRequestId'.shopScope();
+      'vendor-requests'.shopScope();
 }
 
 abstract class DashBoardUrls {

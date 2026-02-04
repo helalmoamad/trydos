@@ -15,6 +15,9 @@ import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.d
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../common/helper/show_message.dart';
@@ -289,6 +292,19 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                   widget.paymentMethods,
                                   PaymentMethods.card,
                                 );
+
+                                // Log add payment event
+                                try {
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    eventName: AnalyticsEventsConst.ADD_PAYMENT,
+                                    executedEventName:
+                                        AnalyticsButtonsEventNameConst
+                                            .CONFIRM_SHIPPING_AND_PAYMENT_BUTTON,
+                                    extraParams: {
+                                      'payment_type': PaymentMethods.card,
+                                    },
+                                  );
+                                } catch (e) {}
                               }
                             }
                           },
@@ -526,8 +542,20 @@ class _PaymentMethodState extends State<PaymentMethod> {
                         onTap: () {
                           BlocProvider.of<OrderBloc>(context).add(
                             GetCustomerWalletEvent(
-                              limit: 10,
-                              offset: 1,
+                              assetId: "",
+                              /*assetId:
+                                  GetIt.I<HomeBloc>()
+                                      .state
+                                      .walletCurrencies!
+                                      .items!
+                                      .firstWhere(
+                                        (element) =>
+                                            element.symbol ==
+                                            widget.currencySymbol,
+                                        orElse: () => CurrencyItem(id: ""),
+                                      )
+                                      .id ??
+                                  "",*/
                               statusInitToRefreshAmount: true,
                             ),
                           );

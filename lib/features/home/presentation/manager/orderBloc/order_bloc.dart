@@ -573,6 +573,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetCustomerWalletEvent event,
     Emitter<OrderState> emit,
   ) async {
+    if (event.assetId == "") {
+      return;
+    }
     if (event.statusInitToRefreshAmount) {
       emit(
         state.copyWith(getCustomerWalletStatus: GetCustomerWalletStatus.init),
@@ -585,13 +588,18 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       );
     }
     final response = await getCustomerWalletUseCase.call(
-      CustomerWalletParams(limit: event.limit, offset: event.offset),
+      CustomerWalletParams(assetId: event.assetId),
     );
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry('GetCustomerWalletEvent', l.statusCode)) {
           ErrorManager.incrementRetry('GetCustomerWalletEvent');
-          add(GetCustomerWalletEvent(limit: event.limit, offset: event.offset));
+          add(
+            GetCustomerWalletEvent(
+              assetId: event.assetId,
+              statusInitToRefreshAmount: event.statusInitToRefreshAmount,
+            ),
+          );
           return;
         }
         emit(

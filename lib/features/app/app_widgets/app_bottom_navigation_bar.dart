@@ -731,6 +731,10 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                     prefsRepository
                                                         .setMyMarketName("");
                                                     prefsRepository
+                                                        .setWalletToken("");
+                                                    prefsRepository
+                                                        .setStoriesToken("");
+                                                    prefsRepository
                                                         .setMyChatName("");
                                                     prefsRepository
                                                         .setMyStoriesName("");

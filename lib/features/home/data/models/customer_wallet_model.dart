@@ -1,260 +1,253 @@
+// To parse this JSON data, do
+//
+//     final customerWalletModel = customerWalletModelFromJson(jsonString);
+
+import 'dart:convert';
+
+CustomerWalletModel customerWalletModelFromJson(String str) =>
+    CustomerWalletModel.fromJson(json.decode(str));
+
+String customerWalletModelToJson(CustomerWalletModel data) =>
+    json.encode(data.toJson());
+
 class CustomerWalletModel {
-  final bool? isSuccessful;
-  final bool? hasContent;
-  final int? code;
-  final String message;
-  final dynamic detailedError;
-  final CustomerWalletDataModel data;
+  final String? currencySymbol;
+  final double? totalAvailable;
+  final int? totalLocked;
+  final double? totalValue;
+  final List<Wallet>? wallets;
 
   CustomerWalletModel({
-    required this.isSuccessful,
-    required this.hasContent,
-    required this.code,
-    required this.message,
-    required this.detailedError,
-    required this.data,
+    this.currencySymbol,
+    this.totalAvailable,
+    this.totalLocked,
+    this.totalValue,
+    this.wallets,
   });
 
   CustomerWalletModel copyWith({
-    bool? isSuccessful,
-    bool? hasContent,
-    int? code,
-    String? message,
-    dynamic detailedError,
-    CustomerWalletDataModel? data,
-  }) =>
-      CustomerWalletModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+    String? currencySymbol,
+    double? totalAvailable,
+    int? totalLocked,
+    double? totalValue,
+    List<Wallet>? wallets,
+  }) => CustomerWalletModel(
+    currencySymbol: currencySymbol ?? this.currencySymbol,
+    totalAvailable: totalAvailable ?? this.totalAvailable,
+    totalLocked: totalLocked ?? this.totalLocked,
+    totalValue: totalValue ?? this.totalValue,
+    wallets: wallets ?? this.wallets,
+  );
 
   factory CustomerWalletModel.fromJson(Map<String, dynamic> json) =>
       CustomerWalletModel(
-        isSuccessful: json["isSuccessful"] ?? false,
-        hasContent: json["hasContent"] ?? false,
-        code: json["code"] ?? 0,
-        message: json["message"] ?? '',
-        detailedError: json["detailed_error"] ?? '',
-        data: CustomerWalletDataModel.fromJson(json["data"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data.toJson(),
-      };
-}
-
-class CustomerWalletDataModel {
-  final int? limit;
-  final int? offset;
-  final double? totalWalletBalance;
-  final String? currencySymbol;
-  final String? currencyCode;
-  final int? totalWalletTransaction;
-  final List<WalletTransactionList> walletTransactionList;
-
-  CustomerWalletDataModel({
-    required this.limit,
-    required this.offset,
-    required this.totalWalletBalance,
-    required this.currencySymbol,
-    required this.currencyCode,
-    required this.totalWalletTransaction,
-    required this.walletTransactionList,
-  });
-
-  CustomerWalletDataModel copyWith({
-    int? limit,
-    int? offset,
-    double? totalWalletBalance,
-    String? totalWalletBalanceFormatted,
-    String? currencySymbol,
-    String? currencyCode,
-    int? totalWalletTransaction,
-    List<WalletTransactionList>? walletTransactionList,
-  }) =>
-      CustomerWalletDataModel(
-        limit: limit ?? this.limit,
-        offset: offset ?? this.offset,
-        totalWalletBalance: totalWalletBalance ?? this.totalWalletBalance,
-        currencyCode: currencyCode ?? this.currencyCode,
-        currencySymbol: currencySymbol ?? this.currencySymbol,
-        totalWalletTransaction:
-            totalWalletTransaction ?? this.totalWalletTransaction,
-        walletTransactionList:
-            walletTransactionList ?? this.walletTransactionList,
-      );
-
-  factory CustomerWalletDataModel.fromJson(Map<String, dynamic> json) =>
-      CustomerWalletDataModel(
-        limit: json["limit"] ?? 0,
-        offset: json["offset"] ?? 0,
-        totalWalletBalance: json["wallet_balance"] == null
-            ? 0
-            : double.parse(
-                json["wallet_balance"].toString(),
+        currencySymbol: json["currencySymbol"],
+        totalAvailable: json["totalAvailable"]?.toDouble(),
+        totalLocked: json["totalLocked"],
+        totalValue: json["totalValue"]?.toDouble(),
+        wallets: json["wallets"] == null
+            ? []
+            : List<Wallet>.from(
+                json["wallets"]!.map((x) => Wallet.fromJson(x)),
               ),
-        totalWalletTransaction: json["total_wallet_transaction"] ?? 0,
-        currencyCode: json["currency_code"] ?? '',
-        currencySymbol: json["currency_symbol"] ?? '',
-        walletTransactionList: [],
-        // List<WalletTransactionList>.from(
-        //     json["wallet_transaction_list"]
-        //         .map((x) => WalletTransactionList.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-        "limit": limit,
-        "offset": offset,
-        "wallet_balance": totalWalletBalance,
-        "total_wallet_transaction": totalWalletTransaction,
-        "currency_code": currencyCode,
-        "currency_symbol": currencySymbol,
-        "wallet_transaction_list":
-            List<dynamic>.from(walletTransactionList.map((x) => x.toJson())),
-      };
+    "currencySymbol": currencySymbol,
+    "totalAvailable": totalAvailable,
+    "totalLocked": totalLocked,
+    "totalValue": totalValue,
+    "wallets": wallets == null
+        ? []
+        : List<dynamic>.from(wallets!.map((x) => x.toJson())),
+  };
 }
 
-class WalletTransactionList {
-  final int id;
-  final int userId;
-  final dynamic orderId;
-  final int? transactionId;
-  final double? credit;
-  final double? debit;
-  final double? adminBonus;
-  final double? balance;
-  final String? transactionType;
-  final String? reference;
-  final dynamic paymentMethodCustomer;
-  final double? returnedToCreditCart;
-  final String? statusPayment;
-  final String? creditFormatted;
-  final String? debitFormatted;
-  final String? balanceFormatted;
-  final String? destinationName;
+class Wallet {
+  final String? id;
+  final String? type;
+  final String? userId;
+  final String? subtype;
+  final String? status;
+  final String? name;
+  final dynamic deletedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final List<Balance>? balances;
 
-  WalletTransactionList({
-    required this.id,
-    required this.userId,
-    required this.orderId,
-    required this.transactionId,
-    required this.credit,
-    required this.debit,
-    required this.adminBonus,
-    required this.balance,
-    required this.transactionType,
-    required this.reference,
-    required this.paymentMethodCustomer,
-    required this.returnedToCreditCart,
-    required this.statusPayment,
-    required this.creditFormatted,
-    required this.debitFormatted,
-    required this.balanceFormatted,
-    required this.destinationName,
+  Wallet({
+    this.id,
+    this.type,
+    this.userId,
+    this.subtype,
+    this.status,
+    this.name,
+    this.deletedAt,
+    this.createdAt,
+    this.updatedAt,
+    this.balances,
   });
 
-  WalletTransactionList copyWith({
-    int? id,
-    int? userId,
-    dynamic orderId,
-    int? transactionId,
-    double? credit,
-    double? debit,
-    double? adminBonus,
-    double? balance,
-    String? transactionType,
-    String? reference,
-    dynamic paymentMethodCustomer,
-    double? returnedToCreditCart,
+  Wallet copyWith({
+    String? id,
+    String? type,
+    String? userId,
+    String? subtype,
+    String? status,
+    String? name,
+    dynamic deletedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
-    dynamic deletedAt,
-    dynamic returnRequestId,
-    dynamic destinationId,
-    dynamic convertedWalletTransactionId,
-    String? statusPayment,
-    String? creditFormatted,
-    String? debitFormatted,
-    String? balanceFormatted,
-    String? destinationName,
-  }) =>
-      WalletTransactionList(
-        id: id ?? this.id,
-        userId: userId ?? this.userId,
-        orderId: orderId ?? this.orderId,
-        transactionId: transactionId ?? this.transactionId,
-        credit: credit ?? this.credit,
-        debit: debit ?? this.debit,
-        adminBonus: adminBonus ?? this.adminBonus,
-        balance: balance ?? this.balance,
-        transactionType: transactionType ?? this.transactionType,
-        reference: reference ?? this.reference,
-        paymentMethodCustomer:
-            paymentMethodCustomer ?? this.paymentMethodCustomer,
-        returnedToCreditCart: returnedToCreditCart ?? this.returnedToCreditCart,
-        statusPayment: statusPayment ?? this.statusPayment,
-        creditFormatted: creditFormatted ?? this.creditFormatted,
-        debitFormatted: debitFormatted ?? this.debitFormatted,
-        balanceFormatted: balanceFormatted ?? this.balanceFormatted,
-        destinationName: destinationName ?? this.destinationName,
-      );
+    List<Balance>? balances,
+  }) => Wallet(
+    id: id ?? this.id,
+    type: type ?? this.type,
+    userId: userId ?? this.userId,
+    subtype: subtype ?? this.subtype,
+    status: status ?? this.status,
+    name: name ?? this.name,
+    deletedAt: deletedAt ?? this.deletedAt,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    balances: balances ?? this.balances,
+  );
 
-  factory WalletTransactionList.fromJson(Map<String, dynamic> json) =>
-      WalletTransactionList(
-        id: json["id"],
-        userId: json["user_id"],
-        orderId: json["order_id"],
-        transactionId: json["transaction_id"] ?? 0,
-        credit: json["credit"] == null
-            ? 0
-            : double.parse(json["credit"].toString()),
-        debit:
-            json["debit"] == null ? 0 : double.parse(json["debit"].toString()),
-        adminBonus: json["admin_bonus"] == null
-            ? 0
-            : double.parse(json["admin_bonus"].toString()),
-        balance: json["balance"] == null
-            ? 0
-            : double.parse(json["balance"].toString()),
-        transactionType: json["transaction_type"] ?? '',
-        reference: json["reference"] ?? '',
-        paymentMethodCustomer: json["payment_method_customer"],
-        returnedToCreditCart: json["returned_to_credit_cart"] == null
-            ? 0
-            : double.parse(json["returned_to_credit_cart"].toString()),
-        statusPayment: json["status_payment"] ?? '',
-        creditFormatted: json["credit_formatted"] ?? '',
-        debitFormatted: json["debit_formatted"] ?? '',
-        balanceFormatted: json["balance_formatted"] ?? '',
-        destinationName: json["destination_name"] ?? '',
-      );
+  factory Wallet.fromJson(Map<String, dynamic> json) => Wallet(
+    id: json["id"],
+    type: json["type"],
+    userId: json["userId"],
+    subtype: json["subtype"],
+    status: json["status"],
+    name: json["name"],
+    deletedAt: json["deletedAt"],
+    createdAt: json["createdAt"] == null
+        ? null
+        : DateTime.parse(json["createdAt"]),
+    updatedAt: json["updatedAt"] == null
+        ? null
+        : DateTime.parse(json["updatedAt"]),
+    balances: json["balances"] == null
+        ? []
+        : List<Balance>.from(json["balances"]!.map((x) => Balance.fromJson(x))),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "user_id": userId,
-        "order_id": orderId,
-        "transaction_id": transactionId,
-        "credit": credit,
-        "debit": debit,
-        "admin_bonus": adminBonus,
-        "balance": balance,
-        "transaction_type": transactionType,
-        "reference": reference,
-        "payment_method_customer": paymentMethodCustomer,
-        "returned_to_credit_cart": returnedToCreditCart,
-        "status_payment": statusPayment,
-        "credit_formatted": creditFormatted,
-        "debit_formatted": debitFormatted,
-        "balance_formatted": balanceFormatted,
-        "destination_name": destinationName,
-      };
+    "id": id,
+    "type": type,
+    "userId": userId,
+    "subtype": subtype,
+    "status": status,
+    "name": name,
+    "deletedAt": deletedAt,
+    "createdAt": createdAt?.toIso8601String(),
+    "updatedAt": updatedAt?.toIso8601String(),
+    "balances": balances == null
+        ? []
+        : List<dynamic>.from(balances!.map((x) => x.toJson())),
+  };
+}
+
+class Balance {
+  final String? id;
+  final String? accountId;
+  final String? assetType;
+  final String? assetId;
+  final String? assetSymbol;
+  final double? available;
+  final int? locked;
+  final int? reserved;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final Asset? asset;
+
+  Balance({
+    this.id,
+    this.accountId,
+    this.assetType,
+    this.assetId,
+    this.assetSymbol,
+    this.available,
+    this.locked,
+    this.reserved,
+    this.createdAt,
+    this.updatedAt,
+    this.asset,
+  });
+
+  Balance copyWith({
+    String? id,
+    String? accountId,
+    String? assetType,
+    String? assetId,
+    String? assetSymbol,
+    double? available,
+    int? locked,
+    int? reserved,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Asset? asset,
+  }) => Balance(
+    id: id ?? this.id,
+    accountId: accountId ?? this.accountId,
+    assetType: assetType ?? this.assetType,
+    assetId: assetId ?? this.assetId,
+    assetSymbol: assetSymbol ?? this.assetSymbol,
+    available: available ?? this.available,
+    locked: locked ?? this.locked,
+    reserved: reserved ?? this.reserved,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    asset: asset ?? this.asset,
+  );
+
+  factory Balance.fromJson(Map<String, dynamic> json) => Balance(
+    id: json["id"],
+    accountId: json["accountId"],
+    assetType: json["assetType"],
+    assetId: json["assetId"],
+    assetSymbol: json["assetSymbol"],
+    available: json["available"]?.toDouble(),
+    locked: json["locked"],
+    reserved: json["reserved"],
+    createdAt: json["createdAt"] == null
+        ? null
+        : DateTime.parse(json["createdAt"]),
+    updatedAt: json["updatedAt"] == null
+        ? null
+        : DateTime.parse(json["updatedAt"]),
+    asset: json["asset"] == null ? null : Asset.fromJson(json["asset"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "accountId": accountId,
+    "assetType": assetType,
+    "assetId": assetId,
+    "assetSymbol": assetSymbol,
+    "available": available,
+    "locked": locked,
+    "reserved": reserved,
+    "createdAt": createdAt?.toIso8601String(),
+    "updatedAt": updatedAt?.toIso8601String(),
+    "asset": asset?.toJson(),
+  };
+}
+
+class Asset {
+  final String? id;
+  final String? symbol;
+  final String? name;
+
+  Asset({this.id, this.symbol, this.name});
+
+  Asset copyWith({String? id, String? symbol, String? name}) => Asset(
+    id: id ?? this.id,
+    symbol: symbol ?? this.symbol,
+    name: name ?? this.name,
+  );
+
+  factory Asset.fromJson(Map<String, dynamic> json) =>
+      Asset(id: json["id"], symbol: json["symbol"], name: json["name"]);
+
+  Map<String, dynamic> toJson() => {"id": id, "symbol": symbol, "name": name};
 }

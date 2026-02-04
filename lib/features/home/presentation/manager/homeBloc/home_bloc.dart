@@ -46,6 +46,7 @@ import 'package:trydos/features/home/domain/use_cases/get_auth_product_details_u
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_count_view_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_country_boundary_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_currencies_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_currency_for_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_full_product_details_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_my_firebase_settings_usecase.dart';
@@ -139,6 +140,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getNotificationTypeProductUseCase,
     this.getWidthAndHeightUseCase,
     this.getMyFirebaseSettingsUseCase,
+    this.getCurrenciesForWalletUseCase,
     this.getAuthProductDetailsUseCase,
     this.updateEmailNotificationUseCase,
     this.updateFirebaseNotificationUseCase,
@@ -182,6 +184,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<UpdateLikeSocialSharedProductsEvent>(
       _onUpdateLikeSocialSharedProductsEvent,
     );
+    on<GetCurrenciesForWalletEvent>(_onGetCurrenciesForWalletEvent);
 
     on<SaveUserInfoFromAuthEvent>(_onSaveUserInfoEvent);
     on<GetOrderRatingEvent>(_onGetOrderRatingEvent, transformer: restartable());
@@ -413,8 +416,47 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetMyFirebaseSettingsUseCase getMyFirebaseSettingsUseCase;
 
   final GetUserNotificationUseCase getUserNotificationUseCase;
-
+  final GetCurrenciesForWalletUseCase getCurrenciesForWalletUseCase;
   final Smartlook smartLook = Smartlook.instance;
+
+  ////////////////////////////////////////////////////////////////
+  FutureOr<void> _onGetCurrenciesForWalletEvent(
+    GetCurrenciesForWalletEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    if ((prefsRepository.walletToken?.length ?? 0) < 5) {
+      return;
+    }
+    /* emit(
+      state.copyWith(
+        getCurrenciesForWalletStatus: GetCurrenciesForWalletStatus.loading,
+      ),
+    );
+    final response = await getCurrenciesForWalletUseCase(NoParams());
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('GetCurrenciesEvent', l.statusCode)) {
+          add(GetCurrenciesForWalletEvent());
+          ErrorManager.incrementRetry('GetCurrenciesEvent');
+        }
+        emit(
+          state.copyWith(
+            getCurrenciesForWalletStatus: GetCurrenciesForWalletStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('GetCurrenciesEvent');
+
+        emit(
+          state.copyWith(
+            getCurrenciesForWalletStatus: GetCurrenciesForWalletStatus.success,
+            walletCurrencies: r,
+          ),
+        );
+      },
+    );*/
+  }
 
   FutureOr<void> _onGetStartingSettingsEvent(
     GetStartingSettingsEvent event,
@@ -671,7 +713,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     try {
       FirebaseAnalyticsService.logEventForSession(
-        eventName: AnalyticsEventsConst.shareContent,
+        eventName: AnalyticsEventsConst.SHARE_CONTENT,
         executedEventName: AnalyticsButtonsEventNameConst.SHARE_CONTENT_BUTTON,
         extraParams: {
           'social_media_name': event.socialMediaName,
@@ -2323,7 +2365,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         Future.delayed(const Duration(milliseconds: 300), () {
           try {
             FirebaseAnalyticsService.logEventForSession(
-              eventName: AnalyticsEventsConst.viewCart,
+              eventName: AnalyticsEventsConst.VIEW_CART,
               extraParams: {
                 'currency': state
                     .getCurrencyForCountryModel!
@@ -2635,6 +2677,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       "userMarketPhone": prefsRepository.myPhoneNumber ?? "",
       "userChatId": prefsRepository.myChatId ?? "",
       "userChatName": prefsRepository.myChatName ?? "",
+      "userWalletToken": prefsRepository.walletToken ?? "",
       "userStoriesName": prefsRepository.myStoriesName ?? "",
       "userChatPhoto": prefsRepository.myChatPhoto ?? "",
       "userStoriesId": prefsRepository.myStoriesId ?? "",
@@ -3406,6 +3449,21 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
         ErrorManager.resetRetry('RemoveCartItemEvent');
 
+        // Log remove from cart event
+        try {
+          FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.REMOVE_FROM_CART,
+            executedEventName:
+                AnalyticsButtonsEventNameConst.REMOVE_PRODUCT_FROM_CART,
+            extraParams: {
+              'item_id': event.productId,
+              'item_name': cart.name.toString(),
+              'quantity': cart.quantity.toString(),
+              'price': cart.price.toString(),
+            },
+          );
+        } catch (e) {}
+
         showMessage(
           "${LocaleKeys.item_was_hidden_successfuly.tr()}",
           foreGroundColor: Colors.white,
@@ -4018,7 +4076,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             FirebaseAnalyticsService.logEventForSession(
               executedEventName:
                   AnalyticsButtonsEventNameConst.REMOVE_PRODUCT_FROM_CART,
-              eventName: AnalyticsEventsConst.removeFromCart,
+              eventName: AnalyticsEventsConst.REMOVE_FROM_CART,
               extraParams: {
                 'items': [
                   {
@@ -4366,7 +4424,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       Future.delayed(const Duration(milliseconds: 300), () {
         try {
           FirebaseAnalyticsService.logEventForSession(
-            eventName: AnalyticsEventsConst.addToCart,
+            eventName: AnalyticsEventsConst.ADD_TO_CART,
             executedEventName:
                 AnalyticsButtonsEventNameConst.ADD_TO_CART_BUTTON,
             extraParams: {
@@ -5382,6 +5440,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           GetIt.I<AuthBloc>().add(
             LoginToStoriesEvent(
               originalUserId: r.data?.id.toString(),
+              otpIdToken: prefsRepository.idToken,
+              name: r.data?.name,
+              phone: r.data?.phone,
+            ),
+          );
+          GetIt.I<AuthBloc>().add(
+            LoginToWalletEvent(
               otpIdToken: prefsRepository.idToken,
               name: r.data?.name,
               phone: r.data?.phone,

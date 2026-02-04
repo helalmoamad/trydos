@@ -304,7 +304,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                         FirebaseAnalyticsService.logEventForSession(
                           executedEventName:
                               AnalyticsButtonsEventNameConst.VIEW_STORY_BUTTON,
-                          eventName: AnalyticsEventsConst.viewStory,
+                          eventName: AnalyticsEventsConst.VIEW_STORY,
                           extraParams: {
                             "link":
                                 state

@@ -49,6 +49,10 @@ dependencies:
     git:
         url: https://gitlab.com/trydos_app/flutter_inset_box_shadow-1.0.8.git
   easy_localization: ^3.0.3
+  trydos_wallet:
+    git:
+        url: https://gitlab.com/trydos_app/trydos_wallet.git
+        ref: main
   url_launcher: ^6.1.14
   flutter_launcher_icons: ^0.13.1
   flutter_gallery_3d:

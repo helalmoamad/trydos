@@ -23,6 +23,7 @@ class AgoraInAppWebView extends StatefulWidget {
   String channelId;
   String uId;
   String auth_token;
+  bool isPrivate;
   String action;
   String messageId;
   bool isReceivingCall;
@@ -33,6 +34,7 @@ class AgoraInAppWebView extends StatefulWidget {
     required this.type,
     required this.channelId,
     required this.auth_token,
+    required this.isPrivate,
     required this.uId,
     this.isReceivingCall = true,
     super.key,
@@ -49,6 +51,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   static const platform = MethodChannel('com.trydos.audio/settings');
 
   Future<void> _setCallAudioMode(bool enable) async {
+    print("enable: $enable");
     try {
       await platform.invokeMethod('setCallAudioMode', enable);
     } on PlatformException catch (e) {
@@ -58,7 +61,10 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
   Future<void> playIncomingCall() async {
     try {
-      await _audioPlayer.stop();
+      // Only stop if already playing to avoid interrupting
+      if (_audioPlayer.state == PlayerState.playing) {
+        await _audioPlayer.stop();
+      }
       await _audioPlayer.play(
         AssetSource('audio/incoming_call.mp3'),
         volume: 1,
@@ -70,11 +76,20 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
   Future<void> playWaitingCall() async {
     try {
-      await _audioPlayer.stop();
+      // Only stop if already playing to avoid interrupting
+      if (_audioPlayer.state == PlayerState.playing) {
+        await _audioPlayer.stop();
+      }
+
       await _audioPlayer.play(
         AssetSource('audio/send_call_ring.mp3'),
         volume: 1,
       );
+      if (!widget.isReceivingCall && widget.type == 'voice') {
+        print("setCallAudioMode: true");
+        await Future.delayed(const Duration(milliseconds: 600));
+        await _setCallAudioMode(true);
+      }
     } catch (e) {
       print('Error playing waiting call: $e');
     }
@@ -87,6 +102,20 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   late ChatBloc chatBloc;
   @override
   void initState() {
+    // Set audio mode based on call type
+    // For incoming calls, set to speaker for video, earpiece for voice
+    // For outgoing calls, set to earpiece for voice
+    if (widget.isReceivingCall) {
+      if (widget.type == 'video') {
+        _setCallAudioMode(false); // Speaker for video calls
+      } else {
+        _setCallAudioMode(true); // Earpiece for voice calls
+      }
+    } else {
+      if (widget.type == 'voice') {
+        _setCallAudioMode(true); // Earpiece for outgoing voice calls
+      }
+    }
     print(
       "myFcmToken ://///***/*8888****${GetIt.I<PrefsRepository>().getFcmTokens[0]}",
     );
@@ -107,10 +136,11 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         'type': widget.type,
         'action': widget.action,
         'ch_id': widget.channelId,
+        'is_private': widget.isPrivate ? 'delivery' : null,
         'fcm': widget.isReceivingCall
             ? GetIt.I<PrefsRepository>().getFcmTokens[0]
             : null,
-      },
+      }..removeWhere((key, value) => value == null),
       host: baseUrl.host,
       scheme: baseUrl.scheme,
       path: '/call_direct',
@@ -126,18 +156,31 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
   @override
   void dispose() {
-    _setCallAudioMode(false);
-    GetIt.I<CallsBloc>().add(ChangeMakeCallStatusToInitEvent());
-    Vibration.cancel();
+    // Cancel timer first to prevent any callbacks
     timer?.cancel();
-    if (_audioPlayer.state == PlayerState.playing) {
-      _audioPlayer.dispose();
-    }
+    timer = null;
+
+    // Stop vibration
+    Vibration.cancel();
+
+    // Stop and dispose audio player
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
+
+    // Reset audio mode
+    _setCallAudioMode(false);
+
+    // Reset bloc state
+    GetIt.I<CallsBloc>().add(ChangeMakeCallStatusToInitEvent());
+
     super.dispose();
   }
 
   ValueNotifier<int> loadingNotifier = ValueNotifier(0);
   void _performAction1(List<dynamic> args) {
+    // Check if widget is still mounted before processing
+    if (!mounted) return;
+
     debugPrint('Received message from web: $args');
     if (args.isEmpty) return;
 
@@ -154,10 +197,12 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
       // إذا كانت المكالمة صوتية ولم يتم تحديد حالة مكبر الصوت بعد، نضبطها على Earpiece افتراضياً
       // أما في مكالمات الفيديو فتكون Speaker افتراضياً
       Future.delayed(const Duration(milliseconds: 500), () {
-        if (widget.type == 'voice') {
-          _setCallAudioMode(true); // Earpiece
-        } else {
-          _setCallAudioMode(false); // Speaker
+        if (mounted) {
+          if (widget.type == 'voice') {
+            _setCallAudioMode(true); // Earpiece
+          } else {
+            _setCallAudioMode(false); // Speaker
+          }
         }
       });
     }
@@ -165,22 +210,28 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     // 2. معالجة حالة مكبر الصوت (Speaker)
     for (var arg in args) {
       if ((int.tryParse(arg.toString()) ?? 0) > 0) {
-        chatBloc.add(
-          AddDurationToMessageCallEvent(
-            channelId: widget.channelId,
-            messageId: widget.messageId,
-            duration: int.tryParse(arg.toString()) ?? 0,
-          ),
-        );
+        if (mounted) {
+          chatBloc.add(
+            AddDurationToMessageCallEvent(
+              channelId: widget.channelId,
+              messageId: widget.messageId,
+              duration: int.tryParse(arg.toString()) ?? 0,
+            ),
+          );
+        }
       }
       if (arg == 'IsSpeaker') {
         Future.delayed(const Duration(milliseconds: 500), () {
-          _setCallAudioMode(false);
+          if (mounted) {
+            _setCallAudioMode(false);
+          }
         });
         break;
       } else if (arg == 'IsEarpiece') {
         Future.delayed(const Duration(milliseconds: 500), () {
-          _setCallAudioMode(true);
+          if (mounted) {
+            _setCallAudioMode(true);
+          }
         });
         break;
       }
@@ -244,6 +295,12 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     },
 
                     onUpdateVisitedHistory: (controller, url, isReload) {
+                      // Check if widget is still mounted before accessing context or widget
+                      if (!mounted) return;
+
+                      if (!widget.isReceivingCall && widget.type == 'voice') {
+                        _setCallAudioMode(true);
+                      }
                       print(
                         "//////////////////////////////////////1111111111111111111111///////////${url?.queryParameters}",
                       );
@@ -261,9 +318,14 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                           "57............................${url?.path.toString()}",
                         );
                         Timer.periodic(const Duration(seconds: 7), (timer) {
+                          if (!mounted) {
+                            timer.cancel();
+                            return;
+                          }
                           controller.stopLoading();
                           controller.dispose();
-                          if (context.canPop() &&
+                          if (mounted &&
+                              context.canPop() &&
                               context.widget is! SinglePageChat) {
                             Navigator.of(context).pop();
                           }
@@ -273,10 +335,20 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                         });
                       }
                       if ((url?.path ?? "").toString().contains('end')) {
-                        print("54..............${url.toString()}");
+                        timer?.cancel();
+                        timer = null;
+
+                        // Stop vibration
+                        Vibration.cancel();
+
+                        // Stop and dispose audio player
+                        _audioPlayer.stop();
+                        _audioPlayer.dispose();
+
                         controller.stopLoading();
                         controller.dispose();
-                        if (context.canPop() &&
+                        if (mounted &&
+                            context.canPop() &&
                             context.widget is! SinglePageChat) {
                           Navigator.of(context).pop();
                         }
@@ -347,9 +419,11 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                         "******************---------------------------------------------------------------------------------/////////////////////////////////////////////////${progress}",
                       );
 
-                      setState(() {
-                        loadingNotifier.value = progress;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          loadingNotifier.value = progress;
+                        });
+                      }
                     },
                   ),
                   ValueListenableBuilder<int>(
@@ -361,37 +435,44 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
                       if (progress < 100)
                         return const Center(child: CircularProgressIndicator());
+                      if (!widget.isReceivingCall && widget.type == 'voice') {
+                        _setCallAudioMode(true);
+                      }
                       if (!(timer?.isActive ?? false) &&
                           !widget.isReceivingCall) {
-                        print("*/*/*11111111111111111111");
                         playWaitingCall();
+
                         timer = Timer.periodic(const Duration(seconds: 10), (
                           t,
                         ) {
+                          if (!mounted) {
+                            t.cancel();
+                            return;
+                          }
                           print("*/*/*222222222222111");
-                          playWaitingCall();
-                        });
-                        Future.delayed(const Duration(seconds: 7), () {
-                          if (_audioPlayer.state == PlayerState.playing) {
-                            print("*/*/*33333333333333333333");
-                            _audioPlayer.stop();
+                          // Only play if audio player is not already playing
+                          if (_audioPlayer.state != PlayerState.playing) {
+                            playWaitingCall();
                           }
                         });
+                        // Remove the delayed stop - let the ring play until stop-ring is received
                       } else if (!(timer?.isActive ?? false) &&
                           widget.isReceivingCall) {
                         startVibration();
                         print("*/*/*11111111111111111111");
                         playIncomingCall();
                         timer = Timer.periodic(const Duration(seconds: 4), (t) {
+                          if (!mounted) {
+                            t.cancel();
+                            return;
+                          }
                           print("*/*/*222222222222111");
-                          playIncomingCall();
-                        });
-                        Future.delayed(const Duration(seconds: 2), () {
-                          if (_audioPlayer.state == PlayerState.playing) {
-                            print("*/*/*33333333333333333333");
-                            _audioPlayer.stop();
+                          // Only play if audio player is not already playing
+                          if (_audioPlayer.state != PlayerState.playing) {
+                            playIncomingCall();
                           }
                         });
+                        // Remove the delayed stop - let the ring play until stop-ring is received
                       }
                       return const SizedBox.shrink();
                     },

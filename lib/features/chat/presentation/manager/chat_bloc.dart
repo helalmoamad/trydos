@@ -1290,7 +1290,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     ReceiveMessageEvent event,
     Emitter<ChatState> emit,
   ) async {
-    print('_onReceiveMessageEvent_onReceiveMessageEvent');
+    print(
+      '_onReceiveMessageEvent_onReceiveMessageEvent${event.prevMessageId}  ${event.message.id}',
+    );
 
     emit(state.copyWith(receiveMessageStatus: ReceiveMessageStatus.loading));
     try {
@@ -1354,6 +1356,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       // add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
 
       if (index == -1 && event.prevMessageId != null) {
+        print(
+          'get all messages between ${event.prevMessageId} and ${event.message.id}',
+        );
         add(
           GetAllMessagesBetweenEvent(
             firstMessageId: event.prevMessageId!,

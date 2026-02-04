@@ -548,7 +548,6 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
             updateVendorRequestStatus: UpdateVendorRequestStatus.failure,
           ),
         );
-        showMessage(l.message, hasError: true);
       },
       (r) {
         emit(

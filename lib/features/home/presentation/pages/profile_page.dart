@@ -48,6 +48,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import 'package:trydos/service/language_service.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos_wallet/trydos_wallet.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../manager/orderBloc/order_bloc.dart';
 import 'Order/orders_page.dart';
@@ -75,8 +76,28 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     LastPagesTracker.push("ProfileHome Page");
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    authBloc.add(CreateWalletEvent());
     orderBloc = BlocProvider.of<OrderBloc>(context);
-    orderBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
+    orderBloc.add(
+      GetCustomerWalletEvent(
+        assetId: "",
+        /*  GetIt.I<HomeBloc>().state.walletCurrencies!.items!
+                .firstWhere(
+                  (element) =>
+                      element.symbol ==
+                      (homeBloc
+                              .state
+                              .getCurrencyForCountryModel
+                              ?.data
+                              ?.currency
+                              ?.symbol ??
+                          ''),
+                  orElse: () => CurrencyItem(id: ""),
+                )
+                .id ??
+            "",*/
+      ),
+    );
     authBloc.add(GetCustomerInfoEvent());
     orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
@@ -414,7 +435,27 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         navigateTocartOrProfile: () {
                           isVerified.value = true;
                           orderBloc.add(
-                            GetCustomerWalletEvent(limit: 10, offset: 1),
+                            GetCustomerWalletEvent(
+                              assetId: "",
+                              /* GetIt.I<HomeBloc>()
+                                      .state
+                                      .walletCurrencies!
+                                      .items!
+                                      .firstWhere(
+                                        (element) =>
+                                            element.symbol ==
+                                            (homeBloc
+                                                    .state
+                                                    .getCurrencyForCountryModel
+                                                    ?.data
+                                                    ?.currency
+                                                    ?.symbol ??
+                                                ''),
+                                        orElse: () => CurrencyItem(id: ""),
+                                      )
+                                      .id ??
+                                  "",*/
+                            ),
                           );
                           orderBloc.add(
                             GetOrdersEvent(
@@ -730,10 +771,10 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       builder: (context, state) {
         double walletBalance = state.customerWalletModel == null
             ? 0
-            : state.customerWalletModel!.data.totalWalletBalance!;
+            : state.customerWalletModel!.totalAvailable ?? 0;
         String symbole = state.customerWalletModel == null
             ? ''
-            : state.customerWalletModel!.data.currencySymbol ?? '';
+            : state.customerWalletModel?.currencySymbol ?? "";
         return Container(
           padding: const EdgeInsets.all(10),
           width: 195.w,
@@ -741,44 +782,51 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             color: const Color(0xffF8F8F8),
             borderRadius: BorderRadius.circular(15.r),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              SvgPicture.asset(
-                AppAssets.trydosWalletSvg,
-                // ignore: deprecated_member_use
-                color: const Color(0xff3C3C3C),
-                width: 25,
+          child: InkWell(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const TrydosWalletWelcomeScreen(),
               ),
-              Text(
-                LanguageService.languageCode == "ar"
-                    ? LocaleKeys.wallet.tr() + " " + LocaleKeys.trydos.tr()
-                    : LocaleKeys.trydos.tr() + " " + LocaleKeys.wallet.tr(),
-                style: context.textTheme.bodyMedium?.mq.copyWith(
-                  color: const Color(0xff1D1D1D),
-                  letterSpacing: 0.18,
-                  fontSize: 14,
-                  height: 1.3,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                SvgPicture.asset(
+                  AppAssets.trydosWalletSvg,
+                  // ignore: deprecated_member_use
+                  color: const Color(0xff3C3C3C),
+                  width: 25,
                 ),
-              ),
-              state.getCustomerWalletStatus == GetCustomerWalletStatus.loading
-                  ? Container(
-                      alignment: Alignment.center,
-                      width: 40,
-                      height: 20,
-                      child: TrydosLoader(size: 20),
-                    )
-                  : Text(
-                      '${LocaleKeys.your_balance.tr()} ${(walletBalance).toStringAsFixed((GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2).round())} ${symbole}',
-                      style: context.textTheme.bodyMedium?.rq.copyWith(
-                        color: const Color(0xff8D8D8D),
-                        letterSpacing: 0.18,
-                        fontSize: 12,
-                        height: 1.3,
+                Text(
+                  LanguageService.languageCode == "ar"
+                      ? LocaleKeys.wallet.tr() + " " + LocaleKeys.trydos.tr()
+                      : LocaleKeys.trydos.tr() + " " + LocaleKeys.wallet.tr(),
+                  style: context.textTheme.bodyMedium?.mq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 14,
+                    height: 1.3,
+                  ),
+                ),
+                state.getCustomerWalletStatus == GetCustomerWalletStatus.loading
+                    ? Container(
+                        alignment: Alignment.center,
+                        width: 40,
+                        height: 20,
+                        child: TrydosLoader(size: 20),
+                      )
+                    : Text(
+                        '${LocaleKeys.your_balance.tr()} ${(walletBalance).toStringAsFixed((GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2).round())} ${symbole}',
+                        style: context.textTheme.bodyMedium?.rq.copyWith(
+                          color: const Color(0xff8D8D8D),
+                          letterSpacing: 0.18,
+                          fontSize: 12,
+                          height: 1.3,
+                        ),
                       ),
-                    ),
-            ],
+              ],
+            ),
           ),
         );
       },

@@ -18,6 +18,7 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
+
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -28,6 +29,10 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/place_ord
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../manager/orderBloc/order_bloc.dart';
@@ -279,11 +284,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                       double walletBalance =
                           orderState.customerWalletModel == null
                           ? 0
-                          : orderState
-                                    .customerWalletModel
-                                    ?.data
-                                    .totalWalletBalance ??
-                                0;
+                          : orderState.customerWalletModel?.totalAvailable ?? 0;
                       // *
                       //     state.getCurrencyForCountryModel!.data!.currency!
                       //         .exchangeRate!;
@@ -355,8 +356,30 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                                           context,
                                                         ).add(
                                                           GetCustomerWalletEvent(
-                                                            limit: 10,
-                                                            offset: 1,
+                                                            assetId:
+                                                                ""
+                                                                "",
+                                                            /*GetIt.I<
+                                                                      HomeBloc
+                                                                    >()
+                                                                    .state
+                                                                    .walletCurrencies!
+                                                                    .items!
+                                                                    .firstWhere(
+                                                                      (
+                                                                        element,
+                                                                      ) =>
+                                                                          element
+                                                                              .symbol ==
+                                                                          (homeState.getCurrencyForCountryModel?.data?.currency?.symbol ??
+                                                                              ""),
+                                                                      orElse: () =>
+                                                                          CurrencyItem(
+                                                                            id: "",
+                                                                          ),
+                                                                    )
+                                                                    .id ??
+                                                                "",*/
                                                           ),
                                                         );
                                                       },
@@ -377,16 +400,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                                       fromPalceOrder: false,
                                                       availablePaymentMethod:
                                                           availablePaymentMethod,
-                                                      currencySymbol:
-                                                          orderState
-                                                                  .customerWalletModel ==
-                                                              null
-                                                          ? ""
-                                                          : orderState
-                                                                    .customerWalletModel!
-                                                                    .data
-                                                                    .currencySymbol ??
-                                                                '',
+                                                      currencySymbol: widget
+                                                          .currencySympole,
                                                       paymentMethods:
                                                           paymentMethods,
                                                       totalPrice: totalPrice,
@@ -770,12 +785,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                   .exchangeRate ??
                               0,
                           totalCashed: totalCashed,
-                          currencySymbol:
-                              orderState
-                                  .customerWalletModel!
-                                  .data
-                                  .currencySymbol ??
-                              "",
+
                           decimalPointSetting:
                               homeState.startingSetting?.decimalPointSettings ??
                               2,
@@ -1180,6 +1190,16 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
           const Spacer(),
           InkWell(
             onTap: () {
+              // Log add address event
+              try {
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.ADD_ADDRESS,
+                  executedEventName:
+                      AnalyticsButtonsEventNameConst.AT_YOUR_ADDRESS_BUTTON,
+                  extraParams: {'screen_name': GlobalScreenConst.CART_SCREEN},
+                );
+              } catch (e) {}
+
               panelController.close();
               HelperFunctions.slidingNavigation(
                 context,

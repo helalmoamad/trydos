@@ -43,10 +43,10 @@ class _ProductDetailsDescriptionWidgetState
       text: TextSpan(
         text: plainText,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: 11,
-              height: 1.5,
-              color: const Color(0xff1D1D1D),
-            ),
+          fontSize: 11,
+          height: 1.5,
+          color: const Color(0xff1D1D1D),
+        ),
       ),
       maxLines: 2,
       textDirection: TextDirection.rtl,
@@ -82,8 +82,9 @@ class _ProductDetailsDescriptionWidgetState
                     color: const Color(0xff1D1D1D),
                     lineHeight: const LineHeight(1.5),
                     maxLines: isExpandedNotifier.value ? null : 2,
-                    textOverflow:
-                        isExpandedNotifier.value ? null : TextOverflow.ellipsis,
+                    textOverflow: isExpandedNotifier.value
+                        ? null
+                        : TextOverflow.ellipsis,
                   ),
                 },
               ),
@@ -93,7 +94,7 @@ class _ProductDetailsDescriptionWidgetState
                     FirebaseAnalyticsService.logEventForSession(
                       executedEventName: AnalyticsButtonsEventNameConst
                           .READ_MORE_ABOUT_PRODUCT_BUTTON,
-                      eventName: AnalyticsEventsConst.READ_MORE_ABOUT_PRODUCT,
+                      eventName: AnalyticsEventsConst.READ_MORE,
                       extraParams: {
                         'item_id': widget.productItem.productId.toString(),
                         'item_name': widget.productItem.name.toString(),
@@ -102,15 +103,13 @@ class _ProductDetailsDescriptionWidgetState
                             ? ""
                             : widget.productItem.brand!.name.toString(),
                         'category': widget.productItem.categories!
-                            .map(
-                              (e) => e.id.toString(),
-                            )
+                            .map((e) => e.id.toString())
                             .toList()
                             .toString(),
-                        'count_likes':
-                            widget.productItem.countOfLikes.toString(),
-                        'review_count':
-                            widget.productItem.reviewsCount.toString(),
+                        'count_likes': widget.productItem.countOfLikes
+                            .toString(),
+                        'review_count': widget.productItem.reviewsCount
+                            .toString(),
                         'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
                       },
                     );

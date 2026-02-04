@@ -48,6 +48,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -398,7 +399,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     if (!_eventLogged) {
       FirebaseAnalyticsService.logEventForSession(
         eventName: AnalyticsEventsConst.SCREEN_VIEW,
-        executedEventName: "productListingPage",
+        executedEventName: AnalyticsButtonsEventNameConst.PRODUCT_LISTING_PAGE,
         extraParams: {
           'screen_name': GlobalScreenConst.BOUTIQUE_SCREEN,
           'screen_path': '',

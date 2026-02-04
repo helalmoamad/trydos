@@ -9,6 +9,7 @@ abstract class PrefsKey {
       r'__$__verifiedPhonePeforeExpiredToken__$__';
   static const currentCountry = r'__$__currentCountry__$__';
   static const onMessageRun = r'__$__onMessageRun__$__';
+  static const walletToken = r'__$__walletToken__$__';
   static const requestNotificationPermission =
       r'__$__requestNotificationPermission__$__';
   static const tokenExpired = r'__$__tokenexpired__$__';
@@ -61,7 +62,7 @@ abstract class PrefsKey {
   static const isAuthorizedGetAssets = r'__$__isAuthorizedGetAssets__$__';
 
   static const fcmToken = r'__$__fcmToken__$__';
-
+  static const createWallet = r'__$__createWallet__$__';
   static const marketUrl = r'__$__marketUrl__$__';
   static const storyUrl = r'__$__storyUrl__$__';
   static const chatUrl = r'__$__chatUrl__$__';

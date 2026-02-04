@@ -191,6 +191,7 @@ class UserOrder {
   final dynamic couponCode;
   final double? shippingCost;
   final List<List<Detail>>? details;
+  final List<String>? availableOrderStatusChange;
 
   UserOrder({
     this.id,
@@ -212,6 +213,7 @@ class UserOrder {
     this.couponCode,
     this.shippingCost,
     this.details,
+    this.availableOrderStatusChange,
   });
 
   UserOrder copyWith({
@@ -234,6 +236,7 @@ class UserOrder {
     dynamic couponCode,
     double? shippingCost,
     List<List<Detail>>? details,
+    List<String>? availableOrderStatusChange,
   }) => UserOrder(
     id: id ?? this.id,
     canReturnOrder: canReturnOrder ?? this.canReturnOrder,
@@ -254,6 +257,7 @@ class UserOrder {
     couponCode: couponCode ?? this.couponCode,
     shippingCost: shippingCost ?? this.shippingCost,
     details: details ?? this.details,
+    availableOrderStatusChange: availableOrderStatusChange ?? this.availableOrderStatusChange,
   );
 
   factory UserOrder.fromJson(Map<String, dynamic> json) => UserOrder(
@@ -264,7 +268,7 @@ class UserOrder {
     orderStatus: json["order_status"],
     orderGroupStatus: json["order_group_status"],
     paymentMethod: json["payment_method"]?.toString(),
-    paymentStatus: paymentStatusValues.map[json["payment_status"]]!,
+    paymentStatus: paymentStatusValues.map[json["payment_status"]],
     codCost: double.tryParse(json["cod_cost"].toString()),
     transactionRef: json["transaction_ref"],
     orderAmount: double.tryParse(json["order_amount"].toString()),
@@ -282,6 +286,9 @@ class UserOrder {
               (x) => List<Detail>.from(x.map((x) => Detail.fromJson(x))),
             ),
           ),
+    availableOrderStatusChange: json["available_order_status_change"] == null
+        ? []
+        : List<String>.from(json["available_order_status_change"]!.map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
@@ -308,6 +315,9 @@ class UserOrder {
         : List<dynamic>.from(
             details!.map((x) => List<dynamic>.from(x.map((x) => x.toJson()))),
           ),
+    "available_order_status_change": availableOrderStatusChange == null
+        ? []
+        : List<dynamic>.from(availableOrderStatusChange!.map((x) => x)),
   };
 }
 

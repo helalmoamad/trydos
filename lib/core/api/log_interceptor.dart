@@ -181,6 +181,14 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
               )["message"].toString().contains("Unauth") ||
               jsonDecode(err.response.toString())["code"].toString() ==
                   "401") &&
+          (err.requestOptions.path.contains(dotenv.env['WALLET_URL']!))) {
+        _prefsRepository.setWalletToken("");
+      }
+      if ((jsonDecode(
+                err.response.toString(),
+              )["message"].toString().contains("Unauth") ||
+              jsonDecode(err.response.toString())["code"].toString() ==
+                  "401") &&
           (err.requestOptions.path.contains(dotenv.env['CHAT_URL']!))) {
         _prefsRepository.setChatToken("");
       }
@@ -190,7 +198,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
               jsonDecode(err.response.toString())["code"].toString() ==
                   "401") &&
           (err.requestOptions.path.contains(dotenv.env['COMMENT_TOKEN_URL']!) ||
-              err.requestOptions.path.contains(dotenv.env['MARKET_URL']!)) &&
+              err.requestOptions.path.contains(dotenv.env['MARKET_URL']!) ||
+              err.requestOptions.path.contains(dotenv.env['WALLET_URL']!)) &&
           !(_prefsRepository.isTokenExpired ?? false)) {
         _prefsRepository.setVerifiedPhonePeforeExpiredToken(
           _prefsRepository.isVerifiedPhone ?? false,

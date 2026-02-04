@@ -21,6 +21,7 @@ import 'package:trydos/features/home/presentation/widgets/product_details_body/p
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../common/helper/show_message.dart';
@@ -44,7 +45,7 @@ class PlaceOrder extends StatefulWidget {
   final String currencySympole;
   final CustomerAddressesInfo customerAddressesInfo;
   final double decimalPointSetting;
-  final String currencySymbol;
+
   final double exchangeRate;
   const PlaceOrder({
     super.key,
@@ -57,7 +58,7 @@ class PlaceOrder extends StatefulWidget {
     required this.availablePaymentMethod,
     required this.decimalPointSetting,
     required this.cartGroupId,
-    required this.currencySymbol,
+
     required this.totalCashed,
     required this.walletBalance,
   });
@@ -305,14 +306,14 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     FirebaseAnalyticsService.logEventForSession(
                       executedEventName:
                           AnalyticsButtonsEventNameConst.PLACE_ORDER_BUTTON,
-                      eventName: AnalyticsEventsConst.purchase,
+                      eventName: AnalyticsEventsConst.PURCHASE,
                       extraParams: {
                         'transaction_id': data[0].transactionRef.toString(),
                         'value': orderAmount.toString(),
                         'currency': widget.currencySympole.toString(),
                         'shipping': data[0].shippingCost.toString(),
                         'coupon': data[0].couponCode.toString(),
-                        'screen_name': 'PlaceOrderScreen',
+                        'screen_name': GlobalScreenConst.PLACE_ORDER_SCREEN,
                         'items': analyticsItems.toString(),
                       },
                     );
@@ -332,7 +333,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       orderAmount: orderAmount,
                       partialPaymentByWallet: partialPaymentByWallet,
                       orderGroupId: data[0].orderGroupId ?? '',
-                      currencySymbol: widget.currencySymbol,
+                      currencySymbol: widget.currencySympole,
                     ),
                   );
                 }
@@ -465,7 +466,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       decimalPointSetting: widget.decimalPointSetting,
                       orderAmount: orderAmount,
                       orderGroupId: data[0].orderGroupId ?? '',
-                      currencySymbol: widget.currencySymbol,
+                      currencySymbol: widget.currencySympole,
                     ),
                   );
                 }
@@ -511,7 +512,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                       totalPrice: widget.totalPrice,
                                       decimalPointSetting:
                                           widget.decimalPointSetting,
-                                      currencySymbol: widget.currencySymbol,
+                                      currencySymbol: widget.currencySympole,
                                     ),
                                     /////////////////////////
                                     SizedBox(height: 40.h),

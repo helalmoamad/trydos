@@ -198,6 +198,8 @@ handleOpenChatPageFromNotificationInBackground(
           navigationToOrderPageForChat(orderGroupID!, orderId!, parentOrderId),
     );
   } else {
+    // إضافة الرسالة إلى الـ bloc قبل الانتقال حتى تظهر في الدردشة عند فتحها من الإشعار
+
     print("chatNotification//////////////////////////333333333");
     Future.delayed(
       const Duration(milliseconds: 600),
@@ -585,12 +587,22 @@ navigationToOrderPageForChat(
 void DealWithMessagesStoredFromBackground() async {
   await GetIt.I<SharedPreferences>().reload();
   List<Message>? messages;
+
   if ((messages = GetIt.I<PrefsRepository>().getTheMessageFromBackground) !=
       null) {
-    for (int i = 0; i < (messages?.length ?? 0); i++) {
-      print(messages![i].messageContent?.content);
-      GetIt.I<ChatBloc>().add(AddChannelToChannels(message: messages[i]));
-      GetIt.I<ChatBloc>().add(ReceiveMessageEvent(message: messages[i]));
+    // ترتيب الرسائل من الأقدم للأحدث (حسب id) حتى يظهر الترتيب صحيحاً في الدردشة
+    final msgList = messages!;
+    msgList.sort((a, b) {
+      final idA = int.tryParse(a.id ?? '0') ?? 0;
+      final idB = int.tryParse(b.id ?? '0') ?? 0;
+      return idA.compareTo(idB);
+    });
+    for (int i = 0; i < msgList.length; i++) {
+      print(msgList[i].messageContent?.content);
+      await Future.delayed(const Duration(milliseconds: 50), () {
+        GetIt.I<ChatBloc>().add(AddChannelToChannels(message: msgList[i]));
+        GetIt.I<ChatBloc>().add(ReceiveMessageEvent(message: msgList[i]));
+      });
     }
     GetIt.I<PrefsRepository>().removeMessageFromBackground();
   }
@@ -887,6 +899,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     prefsRepository.setVerifiedPhone(false);
     prefsRepository.setPhoneNumber("");
     prefsRepository.setChatToken("");
+    prefsRepository.setWalletToken("");
+    prefsRepository.setStoriesToken("");
     prefsRepository.setMarketToken(null);
     prefsRepository.setMyMarketName("");
     prefsRepository.setMyChatName("");
@@ -1008,7 +1022,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         chatBloc.add(
           AddChannelToChannels(
             message: message!,
-            isPrivate: remoteMessage['is_private'] == 1,
+            isPrivate: remoteMessage['is_private'] ?? false,
           ),
         );
         chatBloc.add(
@@ -1018,6 +1032,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           MaterialPageRoute(
             builder: (context) => AgoraInAppWebView(
               messageId: message!.id.toString(),
+              isPrivate: remoteMessage['is_private'] ?? false,
               action: 'receive',
               type: 'video',
               channelId: message.channelId.toString(),
@@ -1027,6 +1042,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           ),
         );
       } else if (remoteMessage['type'] == 'VoiceCallEvent') {
+        print(
+          "VoiceCallEvent ForeGround Message${remoteMessage['is_private']}",
+        );
         dev.log("VoiceCallEvent ForeGround Message${remoteMessage}");
         GetIt.I<PrefsRepository>().saveRequestsData(
           null,
@@ -1060,7 +1078,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         chatBloc.add(
           AddChannelToChannels(
             message: message!,
-            isPrivate: remoteMessage['is_private'] == 1,
+            isPrivate: remoteMessage['is_private'] ?? false,
           ),
         );
         chatBloc.add(
@@ -1070,6 +1088,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           MaterialPageRoute(
             builder: (context) => AgoraInAppWebView(
               messageId: message!.id.toString(),
+              isPrivate: remoteMessage['is_private'] ?? false,
               action: 'receive',
               type: 'voice',
               channelId: message.channelId.toString(),
@@ -1170,7 +1189,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         chatBloc.add(
           AddChannelToChannels(
             message: message,
-            isPrivate: remoteMessage['is_private'] == 1,
+            isPrivate: remoteMessage['is_private'] ?? false,
           ),
         );
         chatBloc.add(
@@ -1181,8 +1200,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             NotifyThatIReceivedMessageEvent(channelId: message.channelId!),
           );
         }
-        if (BlocProvider.of<ChatBloc>(context).currentOpenedChatId !=
-                message.channelId &&
+        // Use GetIt to avoid context after widget unmount (e.g. when app is in foreground)
+        final chatBlocInstance = GetIt.I<ChatBloc>();
+        if (chatBlocInstance.currentOpenedChatId != message.channelId &&
             message.channel!.channelMembers!
                     .firstWhere(
                       (element) => element.userId == prefsRepository.myChatId,

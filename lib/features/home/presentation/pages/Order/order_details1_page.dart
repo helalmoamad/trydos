@@ -4545,6 +4545,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                     ? 'video'
                                                     : 'voice',
                                                 isReceivingCall: false,
+                                                isPrivate: true,
                                                 channelId: state
                                                     .channelIdForCurrentCall!,
                                                 auth_token:

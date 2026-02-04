@@ -45,6 +45,7 @@ showCallKitIncoming(
   Map<String, dynamic> data,
   String currentUuid, {
   required bool isVideo,
+  required bool isPrivate,
 }) async {
   CallKitParams callKitParams = CallKitParams(
     id: currentUuid,
@@ -68,6 +69,7 @@ showCallKitIncoming(
       'channel_id': data["message"]["channel_id"].toString(),
       'message_id': data["message"]["id"].toString(),
       'type': isVideo ? 'video' : 'voice',
+      'is_private': isPrivate,
     },
     headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
     android: AndroidParams(
@@ -260,6 +262,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         remoteMessage,
         currentUuid,
         isVideo: remoteMessage['type'] == 'VideoCallEvent',
+        isPrivate: remoteMessage['is_private'] ?? false,
       );
     } else if (remoteMessage['type'] == 'RefuseCallEvent') {
       declineCallBecauseOfNotificationButton = true;
@@ -327,6 +330,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           NotifyThatIReceivedMessageEvent(channelId: myMessage.channelId!),
         );
       }
+      print(
+        "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ//////////////////////******",
+      );
       GetIt.I<PrefsRepository>().setMessageFromBackground(
         convert.jsonEncode(remoteMessage['message']),
       );
@@ -436,7 +442,17 @@ void main() async {
   //GetIt.I<PrefsRepository>().removeBoutiqueHasPerfechedWhenOpenApp(false);
   //GetIt.I<PrefsRepository>().removeFiveFilterHasPerfechedWhenOpenApp();
   //await Eraser.clearAllAppNotifications();
-  await GetIt.I<PrefsRepository>().removeMessageFromBackground();
+  // عدم مسح الرسائل عند فتح التطبيق من إشعار دردشة (terminated) حتى يقرأها base_page
+  final launchDetails = await LocalNotificationService.localNotificationPlugin
+      .getNotificationAppLaunchDetails();
+  final isChatNotificationLaunch =
+      launchDetails?.notificationResponse?.payload?.contains(
+        '#prevMessageId#',
+      ) ??
+      false;
+  if (!isChatNotificationLaunch) {
+    await GetIt.I<PrefsRepository>().removeMessageFromBackground();
+  }
 
   await NotificationProcess().setupInteractedMessage();
 

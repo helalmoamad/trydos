@@ -63,131 +63,148 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
       return const SizedBox.shrink();
     }
     return SizedBox(
-        height: 70,
-        child: ListView.separated(
-          itemCount: widget.priceRanges.length,
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          separatorBuilder: (ctx, index) => const SizedBox(
-            width: 10,
-          ),
-          itemBuilder: (ctx, index) {
-            BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
-            bool isSelected = (boutiqueBloc.state.appliedFiltersByUser[key]
-                        ?.filters?.prices?.minPrice ==
-                    widget.priceRanges[index].maxPrice) &&
-                (boutiqueBloc.state.appliedFiltersByUser[key]?.filters?.prices
-                        ?.maxPrice ==
-                    widget.priceRanges[index].minPrice);
-            return Stack(
-              children: [
-                GestureDetector(
-                  key: TestVariables.kTestMode == false
-                      ? null
-                      : Key(
-                          '${WidgetsKeys.priceCircleProductListingFilterKey}$index'),
-                  onTap: () {
-                    FirebaseAnalyticsService.logEventForSession(
-                      eventName: AnalyticsEventsConst.applyFilter,
-                      extraParams: {
-                        'filter_type': "price",
-                        'filter_value':
-                            '${widget.priceRanges[index].minPrice} - ${widget.priceRanges[index].maxPrice}',
-                        'screen_name': GlobalScreenConst.PRODUCT_LISTING_SCREEN,
-                      },
-                      executedEventName:
-                          AnalyticsButtonsEventNameConst.applyFilterButton,
+      height: 70,
+      child: ListView.separated(
+        itemCount: widget.priceRanges.length,
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        separatorBuilder: (ctx, index) => const SizedBox(width: 10),
+        itemBuilder: (ctx, index) {
+          BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
+          bool isSelected =
+              (boutiqueBloc
+                      .state
+                      .appliedFiltersByUser[key]
+                      ?.filters
+                      ?.prices
+                      ?.minPrice ==
+                  widget.priceRanges[index].maxPrice) &&
+              (boutiqueBloc
+                      .state
+                      .appliedFiltersByUser[key]
+                      ?.filters
+                      ?.prices
+                      ?.maxPrice ==
+                  widget.priceRanges[index].minPrice);
+          return Stack(
+            children: [
+              GestureDetector(
+                key: TestVariables.kTestMode == false
+                    ? null
+                    : Key(
+                        '${WidgetsKeys.priceCircleProductListingFilterKey}$index',
+                      ),
+                onTap: () {
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.APPLY_FILTER,
+                    extraParams: {
+                      'filter_type': "price",
+                      'filter_value':
+                          '${widget.priceRanges[index].minPrice} - ${widget.priceRanges[index].maxPrice}',
+                      'screen_name': GlobalScreenConst.PRODUCT_LISTING_SCREEN,
+                    },
+                    executedEventName:
+                        AnalyticsButtonsEventNameConst.applyFilterButton,
+                  );
+                  Filter? prevChoosedOrAppliedFilterToAddToIt =
+                      boutiqueBloc.state.appliedFiltersByUser[key]?.filters;
+                  if (prevChoosedOrAppliedFilterToAddToIt == null) {
+                    prevChoosedOrAppliedFilterToAddToIt = Filter();
+                  }
+                  if (prevChoosedOrAppliedFilterToAddToIt.prices == null) {
+                    prevChoosedOrAppliedFilterToAddToIt =
+                        prevChoosedOrAppliedFilterToAddToIt
+                            .copyWithSaveOtherField(
+                              searchText: prevChoosedOrAppliedFilterToAddToIt
+                                  .searchText,
+                              prices: Prices(
+                                currencySymbol: widget.currencySymbol,
+                                minPrice: widget.priceRanges[index].minPrice,
+                                maxPrice: widget.priceRanges[index].maxPrice,
+                              ),
+                            );
+                  } else if (prevChoosedOrAppliedFilterToAddToIt
+                              .prices!
+                              .minPrice !=
+                          widget.priceRanges[index].maxPrice ||
+                      prevChoosedOrAppliedFilterToAddToIt.prices!.maxPrice !=
+                          widget.priceRanges[index].minPrice) {
+                    print(
+                      "*********************************************************************",
                     );
-                    Filter? prevChoosedOrAppliedFilterToAddToIt =
-                        boutiqueBloc.state.appliedFiltersByUser[key]?.filters;
-                    if (prevChoosedOrAppliedFilterToAddToIt == null) {
-                      prevChoosedOrAppliedFilterToAddToIt = Filter();
-                    }
-                    if (prevChoosedOrAppliedFilterToAddToIt.prices == null) {
-                      prevChoosedOrAppliedFilterToAddToIt =
-                          prevChoosedOrAppliedFilterToAddToIt
-                              .copyWithSaveOtherField(
-                                  searchText:
-                                      prevChoosedOrAppliedFilterToAddToIt
-                                          .searchText,
-                                  prices: Prices(
-                                      currencySymbol: widget.currencySymbol,
-                                      minPrice:
-                                          widget.priceRanges[index].minPrice,
-                                      maxPrice:
-                                          widget.priceRanges[index].maxPrice));
-                    } else if (prevChoosedOrAppliedFilterToAddToIt
-                                .prices!.minPrice !=
-                            widget.priceRanges[index].maxPrice ||
-                        prevChoosedOrAppliedFilterToAddToIt.prices!.maxPrice !=
-                            widget.priceRanges[index].minPrice) {
-                      print(
-                          "*********************************************************************");
-                      prevChoosedOrAppliedFilterToAddToIt =
-                          prevChoosedOrAppliedFilterToAddToIt
-                              .copyWithSaveOtherField(
-                                  searchText:
-                                      prevChoosedOrAppliedFilterToAddToIt
-                                          .searchText,
-                                  prices: Prices(
-                                      currencySymbol: widget.currencySymbol,
-                                      minPrice:
-                                          widget.priceRanges[index].minPrice,
-                                      maxPrice:
-                                          widget.priceRanges[index].maxPrice));
-                    } else {
-                      print(
-                          "*********************************************************************");
-                      prevChoosedOrAppliedFilterToAddToIt =
-                          prevChoosedOrAppliedFilterToAddToIt
-                              .copyWithSaveOtherField(
-                                  searchText:
-                                      prevChoosedOrAppliedFilterToAddToIt
-                                          .searchText);
-                    }
-                    boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                    prevChoosedOrAppliedFilterToAddToIt =
+                        prevChoosedOrAppliedFilterToAddToIt
+                            .copyWithSaveOtherField(
+                              searchText: prevChoosedOrAppliedFilterToAddToIt
+                                  .searchText,
+                              prices: Prices(
+                                currencySymbol: widget.currencySymbol,
+                                minPrice: widget.priceRanges[index].minPrice,
+                                maxPrice: widget.priceRanges[index].maxPrice,
+                              ),
+                            );
+                  } else {
+                    print(
+                      "*********************************************************************",
+                    );
+                    prevChoosedOrAppliedFilterToAddToIt =
+                        prevChoosedOrAppliedFilterToAddToIt
+                            .copyWithSaveOtherField(
+                              searchText: prevChoosedOrAppliedFilterToAddToIt
+                                  .searchText,
+                            );
+                  }
+                  boutiqueBloc.add(
+                    ChangeAppliedFiltersEvent(
                       category: widget.category,
                       boutiqueSlug: widget.boutiqueSlug,
                       filtersAppliedByUser: GetProductFiltersModel(
-                          filters: prevChoosedOrAppliedFilterToAddToIt),
-                    ));
-                    boutiqueBloc.add(GetProductsWithFiltersEvent(
-                        fromSearch: widget.fromHomeSearch,
-                        searchText: widget.searchText,
-                        boutiqueSlug: widget.boutiqueSlug,
-                        category: widget.category,
-                        offset: 1));
-                  },
-                  child: Container(
-                    height: 50,
-                    margin: const EdgeInsets.only(top: 20),
-                    child: DottedBorder(
-                        radius: const Radius.circular(180),
-                        borderType: BorderType.RRect,
-                        strokeCap: StrokeCap.square,
-                        strokeWidth: 0.5,
-                        color: isSelected
-                            ? const Color(0xffFF5F61)
-                            : const Color(0xff6B6B6B),
-                        padding: const EdgeInsets.all(8),
-                        dashPattern: const [3, 3],
-                        child: Center(
-                          child: Text(
-                            '${(widget.priceRanges[index].minPrice! * widget.exchangeRate).toStringAsFixed(widget.decimalPoint.round())} - ${(widget.priceRanges[index].maxPrice! * widget.exchangeRate).toStringAsFixed(2)} ${widget.currencySymbol}',
-                            overflow: TextOverflow.ellipsis,
-                            textDirection: TextDirection.ltr,
-                            style: textTheme.titleLarge?.mq.copyWith(
-                              height: 1.3,
-                              fontSize: 15.sp,
-                              color: const Color(0xff5D5C5D),
-                            ),
-                          ),
-                        )),
+                        filters: prevChoosedOrAppliedFilterToAddToIt,
+                      ),
+                    ),
+                  );
+                  boutiqueBloc.add(
+                    GetProductsWithFiltersEvent(
+                      fromSearch: widget.fromHomeSearch,
+                      searchText: widget.searchText,
+                      boutiqueSlug: widget.boutiqueSlug,
+                      category: widget.category,
+                      offset: 1,
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 50,
+                  margin: const EdgeInsets.only(top: 20),
+                  child: DottedBorder(
+                    radius: const Radius.circular(180),
+                    borderType: BorderType.RRect,
+                    strokeCap: StrokeCap.square,
+                    strokeWidth: 0.5,
+                    color: isSelected
+                        ? const Color(0xffFF5F61)
+                        : const Color(0xff6B6B6B),
+                    padding: const EdgeInsets.all(8),
+                    dashPattern: const [3, 3],
+                    child: Center(
+                      child: Text(
+                        '${(widget.priceRanges[index].minPrice! * widget.exchangeRate).toStringAsFixed(widget.decimalPoint.round())} - ${(widget.priceRanges[index].maxPrice! * widget.exchangeRate).toStringAsFixed(2)} ${widget.currencySymbol}',
+                        overflow: TextOverflow.ellipsis,
+                        textDirection: TextDirection.ltr,
+                        style: textTheme.titleLarge?.mq.copyWith(
+                          height: 1.3,
+                          fontSize: 15.sp,
+                          color: const Color(0xff5D5C5D),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ],
-            );
-          },
-        ));
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 }

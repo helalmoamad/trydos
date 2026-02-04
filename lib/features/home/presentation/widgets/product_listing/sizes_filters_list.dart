@@ -70,20 +70,22 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
         debounce = Timer(const Duration(milliseconds: 600), () {
           if (scrollController.offset >=
               (scrollController.position.maxScrollExtent * 0.6)) {
-            BlocProvider.of<BoutiqueBloc>(context)
-                .add(GetFiltersWithPaginatioEvent(
-              fromHomePageSearch: true,
-              searchText: widget.searchText,
-              category: widget.category,
-              boutiqueSlug: widget.boutiqueSlug,
-            ));
+            BlocProvider.of<BoutiqueBloc>(context).add(
+              GetFiltersWithPaginatioEvent(
+                fromHomePageSearch: true,
+                searchText: widget.searchText,
+                category: widget.category,
+                boutiqueSlug: widget.boutiqueSlug,
+              ),
+            );
           }
         });
       } catch (e) {}
     });
     key = widget.boutiqueSlug + (widget.category ?? '');
-    currentIndexInSizes =
-        ValueNotifier((widget.attribute.options?.length ?? 0) ~/ 2);
+    currentIndexInSizes = ValueNotifier(
+      (widget.attribute.options?.length ?? 0) ~/ 2,
+    );
     super.initState();
   }
 
@@ -110,245 +112,285 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
             Row(
               children: [
                 const FilterSelectedMark(width: 20, height: 20),
-                const SizedBox(
-                  width: 10,
-                ),
+                const SizedBox(width: 10),
                 MyTextWidget(
                   '${LocaleKeys.filter_by.tr()} ${LocaleKeys.sizes.tr()}',
                   style: context.textTheme.titleMedium?.rq.copyWith(
-                      color: const Color(0xff505050), height: 15 / 12),
+                    color: const Color(0xff505050),
+                    height: 15 / 12,
+                  ),
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5),
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
                   // ignore: deprecated_member_use
                   color: const Color(0xffD3D3D3),
                 ),
                 BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                    builder: (context, state) {
-                  if (state.getProductFiltersStatus[key] ==
-                      GetProductFiltersStatus.loading) {
-                    return Row(
-                      children: [
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        TrydosLoader(
-                          size: 20,
-                        ),
-                      ],
-                    );
-                  }
-                  return const SizedBox.shrink();
-                })
+                  builder: (context, state) {
+                    if (state.getProductFiltersStatus[key] ==
+                        GetProductFiltersStatus.loading) {
+                      return Row(
+                        children: [
+                          const SizedBox(width: 5),
+                          TrydosLoader(size: 20),
+                        ],
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
           },
           SizedBox(
             height: 70,
             child: ValueListenableBuilder<int>(
-                valueListenable: currentIndexInSizes,
-                builder: (context, currentIndex, _) {
-                  return ListView.separated(
-                    controller: scrollController,
-                    itemCount: widget.attribute.options?.length ?? 0,
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    separatorBuilder: (ctx, index) => const SizedBox(
-                      width: 10,
-                    ),
-                    itemBuilder: (ctx, index) {
-                      BoutiqueBloc boutiqueBloc =
-                          BlocProvider.of<BoutiqueBloc>(context);
-                      bool isSelected = widget.hideTitle
-                          ? ((boutiqueBloc.state.appliedFiltersByUser[key]
-                                      ?.filters?.attributes?.isNullOrEmpty ??
+              valueListenable: currentIndexInSizes,
+              builder: (context, currentIndex, _) {
+                return ListView.separated(
+                  controller: scrollController,
+                  itemCount: widget.attribute.options?.length ?? 0,
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  separatorBuilder: (ctx, index) => const SizedBox(width: 10),
+                  itemBuilder: (ctx, index) {
+                    BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(
+                      context,
+                    );
+                    bool isSelected = widget.hideTitle
+                        ? ((boutiqueBloc
+                                      .state
+                                      .appliedFiltersByUser[key]
+                                      ?.filters
+                                      ?.attributes
+                                      ?.isNullOrEmpty ??
                                   true)
                               ? false
-                              : boutiqueBloc.state.appliedFiltersByUser[key]!
-                                      .filters!.attributes![0].options
-                                      ?.any((element) =>
-                                          element ==
-                                          widget.attribute.options?[index]) ??
-                                  false)
-                          : ((boutiqueBloc.state.choosedFiltersByUser[key]
-                                      ?.filters?.attributes?.isNullOrEmpty ??
+                              : boutiqueBloc
+                                        .state
+                                        .appliedFiltersByUser[key]!
+                                        .filters!
+                                        .attributes![0]
+                                        .options
+                                        ?.any(
+                                          (element) =>
+                                              element ==
+                                              widget.attribute.options?[index],
+                                        ) ??
+                                    false)
+                        : ((boutiqueBloc
+                                      .state
+                                      .choosedFiltersByUser[key]
+                                      ?.filters
+                                      ?.attributes
+                                      ?.isNullOrEmpty ??
                                   true)
                               ? false
-                              : boutiqueBloc.state.choosedFiltersByUser[key]!
-                                      .filters!.attributes![0].options
-                                      ?.any((element) => element == widget.attribute.options?[index]) ??
-                                  false);
-                      return Stack(
-                        children: [
-                          GestureDetector(
-                            key: TestVariables.kTestMode == false
-                                ? null
-                                : Key(
-                                    '${WidgetsKeys.sizeCircleProductListingFilterKey}$index'),
-                            onTap: () {
-                              Filter? prevChoosedOrAppliedFilterToAddToIt =
-                                  widget.hideTitle
-                                      ? boutiqueBloc.state
-                                          .appliedFiltersByUser[key]?.filters
-                                      : boutiqueBloc.state
-                                          .choosedFiltersByUser[key]?.filters;
-                              List<Attribute>? sizes = List.of(
+                              : boutiqueBloc
+                                        .state
+                                        .choosedFiltersByUser[key]!
+                                        .filters!
+                                        .attributes![0]
+                                        .options
+                                        ?.any(
+                                          (element) =>
+                                              element ==
+                                              widget.attribute.options?[index],
+                                        ) ??
+                                    false);
+                    return Stack(
+                      children: [
+                        GestureDetector(
+                          key: TestVariables.kTestMode == false
+                              ? null
+                              : Key(
+                                  '${WidgetsKeys.sizeCircleProductListingFilterKey}$index',
+                                ),
+                          onTap: () {
+                            Filter? prevChoosedOrAppliedFilterToAddToIt =
+                                widget.hideTitle
+                                ? boutiqueBloc
+                                      .state
+                                      .appliedFiltersByUser[key]
+                                      ?.filters
+                                : boutiqueBloc
+                                      .state
+                                      .choosedFiltersByUser[key]
+                                      ?.filters;
+                            List<Attribute>? sizes = List.of(
+                              prevChoosedOrAppliedFilterToAddToIt?.attributes ??
+                                  [],
+                            );
+                            if (!isSelected) {
+                              FirebaseAnalyticsService.logEventForSession(
+                                eventName: AnalyticsEventsConst.APPLY_FILTER,
+                                extraParams: {
+                                  'filter_type': "size",
+                                  'filter_value':
+                                      widget.attribute.options![index],
+                                  'screen_name':
+                                      GlobalScreenConst.PRODUCT_LISTING_SCREEN,
+                                },
+                                executedEventName:
+                                    AnalyticsButtonsEventNameConst
+                                        .applyFilterButton,
+                              );
+                              String size = widget.attribute.options![index];
+                              if (prevChoosedOrAppliedFilterToAddToIt == null) {
+                                prevChoosedOrAppliedFilterToAddToIt = Filter();
+                              }
+                              prevChoosedOrAppliedFilterToAddToIt =
                                   prevChoosedOrAppliedFilterToAddToIt
-                                          ?.attributes ??
-                                      []);
-                              if (!isSelected) {
-                                FirebaseAnalyticsService.logEventForSession(
-                                  eventName: AnalyticsEventsConst.applyFilter,
-                                  extraParams: {
-                                    'filter_type': "size",
-                                    'filter_value':
-                                        widget.attribute.options![index],
-                                    'screen_name': GlobalScreenConst
-                                        .PRODUCT_LISTING_SCREEN,
-                                  },
-                                  executedEventName:
-                                      AnalyticsButtonsEventNameConst
-                                          .applyFilterButton,
-                                );
-                                String size = widget.attribute.options![index];
-                                if (prevChoosedOrAppliedFilterToAddToIt ==
-                                    null) {
-                                  prevChoosedOrAppliedFilterToAddToIt =
-                                      Filter();
-                                }
-                                prevChoosedOrAppliedFilterToAddToIt =
-                                    prevChoosedOrAppliedFilterToAddToIt
-                                        .copyWithSaveOtherField(
-                                  prices: prevChoosedOrAppliedFilterToAddToIt
-                                      .prices,
-                                  searchText:
-                                      prevChoosedOrAppliedFilterToAddToIt
-                                          .searchText,
-                                  attributes:
-                                      prevChoosedOrAppliedFilterToAddToIt
-                                              .attributes.isNullOrEmpty
-                                          ? [
-                                              Attribute(
+                                      .copyWithSaveOtherField(
+                                        prices:
+                                            prevChoosedOrAppliedFilterToAddToIt
+                                                .prices,
+                                        searchText:
+                                            prevChoosedOrAppliedFilterToAddToIt
+                                                .searchText,
+                                        attributes:
+                                            prevChoosedOrAppliedFilterToAddToIt
+                                                .attributes
+                                                .isNullOrEmpty
+                                            ? [
+                                                Attribute(
                                                   id: widget.attribute.id,
                                                   name: widget.attribute.name,
-                                                  options: [size])
-                                            ]
-                                          : [
-                                              prevChoosedOrAppliedFilterToAddToIt
-                                                  .attributes![0]
-                                                  .copyWith(options: [
-                                                ...prevChoosedOrAppliedFilterToAddToIt
-                                                        .attributes![0]
-                                                        .options ??
-                                                    [],
-                                                size
-                                              ])
-                                            ],
-                                );
-                              } else {
-                                print('reset size');
-                                // FirebaseAnalyticsService.logEventForSession(
-                                //   eventName: AnalyticsEventsConst.buttonClicked,
-                                //   executedEventName:
-                                //       AnalyticsButtonsEventNameConst
-                                //           .resetByTapOnFilterButton,
-                                // );
-                                ////////////////////////////////////
-                                List<String> options =
-                                    List.of(sizes[0].options ?? []);
-                                options.removeWhere(((element) =>
+                                                  options: [size],
+                                                ),
+                                              ]
+                                            : [
+                                                prevChoosedOrAppliedFilterToAddToIt
+                                                    .attributes![0]
+                                                    .copyWith(
+                                                      options: [
+                                                        ...prevChoosedOrAppliedFilterToAddToIt
+                                                                .attributes![0]
+                                                                .options ??
+                                                            [],
+                                                        size,
+                                                      ],
+                                                    ),
+                                              ],
+                                      );
+                            } else {
+                              print('reset size');
+                              // FirebaseAnalyticsService.logEventForSession(
+                              //   eventName: AnalyticsEventsConst.buttonClicked,
+                              //   executedEventName:
+                              //       AnalyticsButtonsEventNameConst
+                              //           .resetByTapOnFilterButton,
+                              // );
+                              ////////////////////////////////////
+                              List<String> options = List.of(
+                                sizes[0].options ?? [],
+                              );
+                              options.removeWhere(
+                                ((element) =>
                                     element ==
-                                    widget.attribute.options![index]));
-                                sizes[0] = sizes[0].copyWith(options: options);
+                                    widget.attribute.options![index]),
+                              );
+                              sizes[0] = sizes[0].copyWith(options: options);
+                              prevChoosedOrAppliedFilterToAddToIt =
+                                  prevChoosedOrAppliedFilterToAddToIt!
+                                      .copyWithSaveOtherField(
+                                        searchText:
+                                            prevChoosedOrAppliedFilterToAddToIt
+                                                .searchText,
+                                        prices:
+                                            prevChoosedOrAppliedFilterToAddToIt
+                                                .prices,
+                                        attributes: sizes,
+                                      );
+                              if (sizes[0].options!.length == 0) {
                                 prevChoosedOrAppliedFilterToAddToIt =
-                                    prevChoosedOrAppliedFilterToAddToIt!
-                                        .copyWithSaveOtherField(
-                                            searchText:
-                                                prevChoosedOrAppliedFilterToAddToIt
-                                                    .searchText,
-                                            prices:
-                                                prevChoosedOrAppliedFilterToAddToIt
-                                                    .prices,
-                                            attributes: sizes);
-                                if (sizes[0].options!.length == 0) {
-                                  prevChoosedOrAppliedFilterToAddToIt =
-                                      prevChoosedOrAppliedFilterToAddToIt
-                                          .changeAttributesAndSaveOthers();
-                                }
+                                    prevChoosedOrAppliedFilterToAddToIt
+                                        .changeAttributesAndSaveOthers();
                               }
-                              if (widget.hideTitle) {
-                                boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                            }
+                            if (widget.hideTitle) {
+                              boutiqueBloc.add(
+                                ChangeAppliedFiltersEvent(
                                   category: widget.category,
                                   boutiqueSlug: widget.boutiqueSlug,
                                   filtersAppliedByUser: GetProductFiltersModel(
-                                      filters:
-                                          prevChoosedOrAppliedFilterToAddToIt),
-                                ));
-                                boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                    fromSearch: widget.fromHomeSearch,
-                                    searchText: widget.searchText,
-                                    boutiqueSlug: widget.boutiqueSlug,
-                                    category: widget.category,
-                                    offset: 1));
-                              } else {
-                                boutiqueBloc.add(ChangeSelectedFiltersEvent(
+                                    filters:
+                                        prevChoosedOrAppliedFilterToAddToIt,
+                                  ),
+                                ),
+                              );
+                              boutiqueBloc.add(
+                                GetProductsWithFiltersEvent(
+                                  fromSearch: widget.fromHomeSearch,
+                                  searchText: widget.searchText,
+                                  boutiqueSlug: widget.boutiqueSlug,
+                                  category: widget.category,
+                                  offset: 1,
+                                ),
+                              );
+                            } else {
+                              boutiqueBloc.add(
+                                ChangeSelectedFiltersEvent(
                                   fromHomePageSearch: widget.fromHomeSearch,
                                   category: widget.category,
                                   boutiqueSlug: widget.boutiqueSlug,
                                   filtersChoosedByUser: GetProductFiltersModel(
-                                      filters:
-                                          prevChoosedOrAppliedFilterToAddToIt),
-                                ));
-                              }
-                            },
-                            child: Container(
-                              height: 70,
-                              width: 70,
-                              child: DottedBorder(
-                                  radius: const Radius.circular(180),
-                                  borderType: BorderType.RRect,
-                                  strokeCap: StrokeCap.round,
-                                  strokeWidth: 0.5,
-                                  color: isSelected
-                                      ? const Color(0xffFF5F61)
-                                      : const Color(0xff6B6B6B),
-                                  dashPattern: const [3, 3],
-                                  child: Center(
-                                    child: Text(
-                                      widget.attribute.options![index],
-                                      overflow: TextOverflow.ellipsis,
-                                      style:
-                                          // index == currentIndex
-                                          //     ? textTheme.titleLarge?.bq.copyWith(
-                                          //   height: 1.3,
-                                          //   fontSize: 15.sp,
-                                          //   color: const Color(0xff5D5C5D),
-                                          // )
-                                          //     :
-                                          textTheme.titleLarge?.mq.copyWith(
+                                    filters:
+                                        prevChoosedOrAppliedFilterToAddToIt,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: Container(
+                            height: 70,
+                            width: 70,
+                            child: DottedBorder(
+                              radius: const Radius.circular(180),
+                              borderType: BorderType.RRect,
+                              strokeCap: StrokeCap.round,
+                              strokeWidth: 0.5,
+                              color: isSelected
+                                  ? const Color(0xffFF5F61)
+                                  : const Color(0xff6B6B6B),
+                              dashPattern: const [3, 3],
+                              child: Center(
+                                child: Text(
+                                  widget.attribute.options![index],
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      // index == currentIndex
+                                      //     ? textTheme.titleLarge?.bq.copyWith(
+                                      //   height: 1.3,
+                                      //   fontSize: 15.sp,
+                                      //   color: const Color(0xff5D5C5D),
+                                      // )
+                                      //     :
+                                      textTheme.titleLarge?.mq.copyWith(
                                         height: 1.3,
                                         fontSize: 15.sp,
                                         color: const Color(0xff5D5C5D),
                                       ),
-                                    ),
-                                  )),
+                                ),
+                              ),
                             ),
                           ),
-                          Visibility(
-                              visible: isSelected,
-                              child: const FilterSelectedMark(
-                                  width: 20, height: 20))
-                        ],
-                      );
-                    },
-                  );
-                }),
+                        ),
+                        Visibility(
+                          visible: isSelected,
+                          child: const FilterSelectedMark(
+                            width: 20,
+                            height: 20,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

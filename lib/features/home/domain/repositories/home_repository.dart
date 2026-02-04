@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
+import 'package:trydos/features/home/data/models/currencies_response_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
@@ -214,15 +215,15 @@ abstract class HomeRepository {
   );
 
   Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
-    required int limit,
-    required int offset,
+    required String assetId,
   });
 
   Future<Either<Failure, OrdersGroupModel>> placeOrder({
     required Map<String, dynamic> params,
     required String paymentMethod,
   });
-
+  Future<Either<Failure, CurrenciesForWalletResponseModel>>
+  getCurrenciesForWallet();
   Future<Either<Failure, OrdersGroupModel>> getOrdersByOrderGroupID({
     required String orderGroupID,
   });

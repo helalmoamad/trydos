@@ -4,6 +4,7 @@ import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/cloudinary_url_routes.dart';
 import 'package:trydos/common/constant/configuration/dashBoard_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
+import 'package:trydos/common/constant/configuration/wallet_url_routes.dart';
 import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
@@ -22,6 +23,7 @@ enum ServerName {
   webApp,
   comment,
   get_comment_token,
+  wallet,
 }
 
 //todo make the return value dynamic to return the cloudinary as String
@@ -31,6 +33,8 @@ Uri getBaseUriForSpecificServer(ServerName serverName) {
       return ChatUrls.baseUri;
     case ServerName.market:
       return MarketUrls.baseUri;
+    case ServerName.wallet:
+      return WalletUrls.baseUri;
     case ServerName.dashBoard:
       return DashBoardUrls.baseUri;
     case ServerName.stories:
@@ -65,6 +69,8 @@ String? getServerToken(ServerName serverName) {
       return prefsRepository.tokenForComment;
     case ServerName.stories:
       return prefsRepository.storiesToken;
+    case ServerName.wallet:
+      return prefsRepository.walletToken;
     case ServerName.comment:
       return prefsRepository.tokenForComment;
     case ServerName.elastic:

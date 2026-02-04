@@ -8692,8 +8692,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       .exchangeRate!)) >
                                               (state
                                                       .customerWalletModel
-                                                      ?.data
-                                                      .totalWalletBalance ??
+                                                      ?.totalAvailable ??
                                                   0)) {
                                             showMessage(
                                               '${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()} , new price : ${(newVariantPrice ?? 0) * ((order!.details?[indexTap.value].qty ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)} ${(GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.symbol!)}',
@@ -8874,8 +8873,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       .exchangeRate!)) >
                                               (state
                                                       .customerWalletModel
-                                                      ?.data
-                                                      .totalWalletBalance ??
+                                                      ?.totalAvailable ??
                                                   0)) {
                                             showMessage(
                                               '${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()} , new price : ${(newVariantPrice ?? 0) * ((order!.details?[indexTap.value].qty ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)} ${(GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.symbol!)}',

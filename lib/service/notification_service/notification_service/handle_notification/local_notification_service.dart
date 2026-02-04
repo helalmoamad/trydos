@@ -108,17 +108,41 @@ class LocalNotificationService {
         );
   }
 
+  /// Returns a stable notification ID for a channel so that notifications from
+  /// the same chat/channel update one notification (like WhatsApp) instead of
+  /// creating a new one per message.
+  static int _notificationIdForChannel(String? channelId) {
+    if (channelId == null || channelId.isEmpty) {
+      return Random().nextInt(1000000);
+    }
+    return channelId.hashCode.abs() % 1000000;
+  }
+
+  /// Max lines shown when notification is expanded (Android InboxStyle supports 5).
+  static const int _maxChatNotificationLines = 5;
+  static final Map<String, List<String>> _channelMessageLines = {};
+
+  /// Appends a message line for the channel and returns the list (oldest first) for InboxStyle.
+  static List<String> _appendMessageLineForChannel(
+    String? channelId,
+    String line,
+  ) {
+    if (channelId == null || channelId.isEmpty) return [line];
+    final list = _channelMessageLines.putIfAbsent(channelId, () => <String>[]);
+    list.add(line);
+    while (list.length > _maxChatNotificationLines) list.removeAt(0);
+    return List<String>.from(list);
+  }
+
   @pragma('vm:entry-point')
   Future<void> showNotificationWithPayload({
     required RemoteMessage message,
     required int fromBackGround,
   }) async {
-    final Random random = Random();
-    final int notificationId = random.nextInt(1000000);
-
     if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
       message,
     )) {
+      final int notificationId = Random().nextInt(1000000);
       Map? data = convert.jsonDecode(message.data["body"] ?? "") ?? {};
       print(
         "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ${data?["type"]}",
@@ -268,11 +292,32 @@ class LocalNotificationService {
       notificationBody = 'New message';
     }
 
+    // Build one line for this message (e.g. "Sender: body") and accumulate for InboxStyle.
+    final String senderLabel = myMessage.senderUser?.name ?? 'Trydos User';
+    final String oneLine = '$senderLabel: $notificationBody';
+    final List<String> inboxLines = _appendMessageLineForChannel(
+      myMessage.channel?.id,
+      oneLine,
+    );
+
+    // Use stable notification ID per channel so messages from same chat
+    // update one notification (like WhatsApp) instead of creating many.
+    final int chatNotificationId = _notificationIdForChannel(
+      myMessage.channel?.id,
+    );
+
     await _localNotificationPlugin.show(
-      notificationId,
+      chatNotificationId,
       notificationTitle,
       notificationBody,
-      _notificationDetails(null, myMessage.channel?.id, notificationBody),
+      _notificationDetails(
+        null,
+        myMessage.channel?.id,
+        notificationBody,
+        inboxLines: inboxLines,
+        inboxContentTitle: notificationTitle,
+        // النافذة المنبثقة تختفي تلقائياً ويبقى الإشعار في البردايه
+      ),
       payload:
           '${convert.jsonEncode(RemoteMessage['message'])}#prevMessageId#${prevMessageId}#orderId#${orderId}#groupeOrderId#${orderGroupId}#parentOrderId#${parentOrderId}',
     );
@@ -380,29 +425,48 @@ class LocalNotificationService {
     );
   }
 
-  _notificationDetails(Uint8List? pngImage, String? tag, String body) {
+  _notificationDetails(
+    Uint8List? pngImage,
+    String? tag,
+    String body, {
+    List<String>? inboxLines,
+    String? inboxContentTitle,
+
+    /// إشعارات الدردشة: false حتى تختفي النافذة المنبثقة تلقائياً ويبقى الإشعار في البردايه فقط.
+  }) {
     final channel = LocalNotificationService().getAndroidChannel;
+
+    StyleInformation styleInfo;
+    if (pngImage != null) {
+      styleInfo = BigPictureStyleInformation(ByteArrayAndroidBitmap(pngImage));
+    } else if (inboxLines != null && inboxLines.isNotEmpty) {
+      // When expanded, show previous messages like WhatsApp (Android InboxStyle).
+      styleInfo = InboxStyleInformation(
+        inboxLines,
+        contentTitle: inboxContentTitle,
+      );
+    } else {
+      styleInfo = BigTextStyleInformation(body);
+    }
 
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
           channel.id,
           channel.name,
           channelDescription: channel.description,
-          ticker: body, // Use the body as ticker text
+          ticker: body,
           importance: Importance.max,
           tag: tag,
-          priority: Priority.max, // Use Priority.max for maximum visibility
+          priority: Priority.max,
           category: AndroidNotificationCategory.message,
           visibility: NotificationVisibility.public,
           playSound: channel.playSound,
-          fullScreenIntent: true,
+
           enableVibration: channel.enableVibration,
           largeIcon: (pngImage == null)
               ? null
               : ByteArrayAndroidBitmap(pngImage),
-          styleInformation: (pngImage == null)
-              ? BigTextStyleInformation(body)
-              : BigPictureStyleInformation(ByteArrayAndroidBitmap(pngImage)),
+          styleInformation: styleInfo,
         );
     const DarwinNotificationDetails iosNotificationDetails =
         DarwinNotificationDetails();

@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
+import 'package:trydos/features/home/data/models/currencies_response_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
@@ -133,6 +134,8 @@ enum CurrentSelectedColorForEveryProductStatus {
 
 enum AuthProductDetailsStatus { init, loading, success, failure }
 
+enum GetCurrenciesForWalletStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class HomeState extends Equatable {
@@ -177,6 +180,8 @@ class HomeState extends Equatable {
     this.deleteItemInCartStatus,
     this.oldcartCollection,
     this.enableAddToCardAfterChangeVariantZero,
+    this.getCurrenciesForWalletStatus = GetCurrenciesForWalletStatus.init,
+    this.walletCurrencies,
     this.getOldCartItemsStatus = GetOLdCartItemsStatus.init,
     this.getOldCartModel,
     this.countryCoordinatesBorders = const [],
@@ -260,6 +265,8 @@ class HomeState extends Equatable {
   final UpdateProfileStatus? updateProfileStatus;
   final GetOrderRatingStatus getOrderRatingStatus;
   final GetAllowedCountriesStatus? getAllowedCountriesStatus;
+  final GetCurrenciesForWalletStatus getCurrenciesForWalletStatus;
+  final CurrenciesForWalletResponseModel? walletCurrencies;
   //final PaginationModel<comment.Comment>?
   //   getCommentsFromAnalyticsPaginationModel;
   final Map<String, PaginationModel<FqaComment>>? getFqaCommentsPaginationModel;
@@ -401,7 +408,8 @@ class HomeState extends Equatable {
     likeForReplayComment,
     convertItemFromcartToOldCartStatus,
     getOldCartModel,
-
+    getCurrenciesForWalletStatus,
+    walletCurrencies,
     getOldCartItemsStatus,
     notificationTypeForProductModel,
     updateProfileStatus,
@@ -520,6 +528,8 @@ class HomeState extends Equatable {
     final GetCountryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus,
     final FirebaseSettingForNotificationModel?
     firebaseSettingForNotificationModel,
+    final GetCurrenciesForWalletStatus? getCurrenciesForWalletStatus,
+    final CurrenciesForWalletResponseModel? walletCurrencies,
     final List<String>? productIdToSaveRedeemTimer,
     final int? currentHeightWhenAddToBag,
     final bool? isChangedVariationWhenQtyZero,
@@ -642,6 +652,9 @@ class HomeState extends Equatable {
           this.enableAddToCardAfterChangeVariantZero,
       updateOrderCommentRatingStatus:
           updateOrderCommentRatingStatus ?? this.updateOrderCommentRatingStatus,
+      getCurrenciesForWalletStatus:
+          getCurrenciesForWalletStatus ?? this.getCurrenciesForWalletStatus,
+      walletCurrencies: walletCurrencies ?? this.walletCurrencies,
       updateLikeCommentRatingStatus:
           updateLikeCommentRatingStatus ?? this.updateLikeCommentRatingStatus,
       likeForReplayComment: likeForReplayComment ?? this.likeForReplayComment,

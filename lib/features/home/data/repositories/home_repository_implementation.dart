@@ -6,6 +6,7 @@ import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/apply_coupon_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
+import 'package:trydos/features/home/data/models/currencies_response_model.dart';
 import 'package:trydos/features/home/data/models/customer_wallet_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
@@ -613,11 +614,18 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
-    required int limit,
-    required int offset,
+    required String assetId,
   }) {
     return handlingExceptionRequest(
-      tryCall: () => dataSource.getCustomerWallet(limit: limit, offset: offset),
+      tryCall: () => dataSource.getCustomerWallet(assetId: assetId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, CurrenciesForWalletResponseModel>>
+  getCurrenciesForWallet() {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getCurrenciesForWallet(),
     );
   }
 

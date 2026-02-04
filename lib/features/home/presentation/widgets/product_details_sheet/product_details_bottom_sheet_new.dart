@@ -1399,7 +1399,7 @@ class _ProductDetailsBottomSheetNewState
                         FirebaseAnalyticsService.logEventForSession(
                           executedEventName: AnalyticsButtonsEventNameConst
                               .CHOOSE_AVAILABLE_COLOR_BUTTON,
-                          eventName: AnalyticsEventsConst.changeColor,
+                          eventName: AnalyticsEventsConst.CHANGE_COLOR,
                           extraParams: {
                             'item_id': widget.productItem.productId.toString(),
                             'item_name': widget.productItem.name.toString(),

@@ -51,7 +51,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
     );
     if (!_eventLogged) {
       FirebaseAnalyticsService.logEventForSession(
-        executedEventName: "later_take_look_button",
+        executedEventName: AnalyticsButtonsEventNameConst.LATER_TAKE_LOOK_BUTTON,
         eventName: AnalyticsEventsConst.SCREEN_VIEW,
         extraParams: {
           'screen_name': AuthScreenConst.USER_NOT_FOUND_SCREEN,
@@ -307,7 +307,8 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 ///////////////////
 
                                 FirebaseAnalyticsService.logEventForSession(
-                                  executedEventName: "LATER_TAKE_LOOK_BUTTON",
+                                  executedEventName: AnalyticsButtonsEventNameConst
+                                      .LATER_TAKE_LOOK_BUTTON,
                                   eventName: AnalyticsEventsConst
                                       .LATER_TAKE_LOOK_CLICKED,
                                   extraParams: {

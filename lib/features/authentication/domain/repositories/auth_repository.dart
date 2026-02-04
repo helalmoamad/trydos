@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_response_model.dart';
-
+import 'package:trydos/features/authentication/data/models/login_to_wallet_model.dart';
 import 'package:trydos/features/authentication/data/models/login_to_stories_response_model.dart';
 import '../../../../core/error/failures.dart';
 import '../../data/models/create_user_response_model.dart';
@@ -42,12 +42,17 @@ abstract class AuthRepository {
   Future<Either<Failure, StoreFcmTokenResponseModel>> storeFcmToken(
     Map<String, dynamic> params,
   );
+  Future<Either<Failure, LoginToWalletModel>> loginToWallet(
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, String>> generateTokenForComment(
     Map<String, dynamic> params,
   );
   Future<Either<Failure, SendOtpResponseModel>> sendOtp(
     Map<String, dynamic> params,
   );
+  Future<Either<Failure, bool>> createWallet();
+
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> verifyOtpSignIn(
     Map<String, dynamic> params,
   );

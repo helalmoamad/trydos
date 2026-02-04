@@ -32,18 +32,22 @@ class AuthScreenConst {
 
 class GlobalScreenConst {
   static const HOME_SCREEN = "home_screen";
+  static const HOME_PAGE = "home_page";
   static const HOME_CATEGORY_SCREEN = "home_category_screen";
   static const SEARCH_SCREEN = "search_screen";
-  static const PRODUCT_SCREEN = "product_detail";
+  static const PRODUCT_SCREEN = "product_screen";
   static const PRODUCT_LISTING_SCREEN = "product_listing_screen";
   static const CART_SCREEN = "cart_screen";
   static const CHECKOUT_SCREEN = "checkout_screen";
   static const ORDER_SUCCESS_SCREEN = "order_success_screen";
+  static const PLACE_ORDER_SCREEN = "PlaceOrderScreen";
   static const SETTINGS_SCREEN = "settings_screen";
   static const NOTIFICATIONS_SCREEN = "notifications_screen";
   static const BOUTIQUE_SCREEN = "boutique_screen";
+  static const FILTERS_SCREEN = "filters_screen";
   static const STORY_SCREEN = "story_screen";
   static const CHAT_SCREEN = "chat_screen";
+  static const TAGS_SCREEN = "tags_filters_screen";
 }
 
 

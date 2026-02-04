@@ -1837,7 +1837,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                 FirebaseAnalyticsService.logEventForSession(
                                                   eventName:
                                                       AnalyticsEventsConst
-                                                          .likeItem,
+                                                          .LIKE_ITEM,
                                                   executedEventName:
                                                       AnalyticsButtonsEventNameConst
                                                           .LIKE_ITEM_BUTTON,
