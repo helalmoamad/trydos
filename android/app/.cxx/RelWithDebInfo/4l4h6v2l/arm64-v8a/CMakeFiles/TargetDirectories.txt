@@ -1,0 +1,2 @@
+D:/trrdos/trydos/tyrdos/trydos/android/app/.cxx/RelWithDebInfo/4l4h6v2l/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/trrdos/trydos/tyrdos/trydos/android/app/.cxx/RelWithDebInfo/4l4h6v2l/arm64-v8a/CMakeFiles/rebuild_cache.dir

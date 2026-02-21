@@ -1,0 +1,331 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
+import 'package:trydos/common/constant/configuration/dashBoard_url_routes.dart';
+import 'package:trydos/core/api/client_config.dart';
+import 'package:trydos/core/api/methods/detect_server.dart';
+import 'package:trydos/core/api/methods/get.dart';
+import 'package:trydos/core/api/methods/post.dart';
+import 'package:trydos/core/api/methods/put.dart';
+import 'package:trydos/core/api/methods/delete.dart';
+import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_user_permission_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_user_roles_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_users_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_presigned_url_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.dart';
+import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
+
+@injectable
+class DashBoardRemoteDataSource {
+  Future<GetUserPermissionModel> getUserPermission() {
+    GetClient<GetUserPermissionModel> getUserPermission =
+        GetClient<GetUserPermissionModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<GetUserPermissionModel>(
+            endpoint: DashBoardEndPoints.getUserPermissionEP,
+            response: ResponseValue<GetUserPermissionModel>(
+              fromJson: (response) {
+                // Handle 204 No Content or empty response
+                if (response == null) {
+                  return GetUserPermissionModel(shops: []);
+                }
+
+                // If response is a String (empty or not), return empty model
+                if (response is String) {
+                  if (response.isEmpty || response.trim().isEmpty) {
+                    return GetUserPermissionModel(shops: []);
+                  }
+                  // Try to parse string as JSON
+                  try {
+                    final decoded = json.decode(response);
+                    if (decoded is Map<String, dynamic>) {
+                      return GetUserPermissionModel.fromJson(decoded);
+                    }
+                  } catch (e) {
+                    // If parsing fails, return empty model
+                    return GetUserPermissionModel(shops: []);
+                  }
+                }
+
+                // If response is already a Map, use it directly
+                if (response is Map<String, dynamic>) {
+                  return GetUserPermissionModel.fromJson(response);
+                }
+
+                // Default: return empty model
+                return GetUserPermissionModel(shops: []);
+              },
+            ),
+          ),
+        );
+    return getUserPermission();
+  }
+
+  Future<GetUserRolesModel> getUserRoles({String? search, int page = 1}) {
+    Map<String, String> queryParameters = {'page': page.toString()};
+    if (search != null && search.isNotEmpty) {
+      queryParameters['search'] = search;
+    }
+
+    GetClient<GetUserRolesModel> getUserRoles = GetClient<GetUserRolesModel>(
+      serverName: ServerName.dashBoard,
+      requestPrams: RequestConfig<GetUserRolesModel>(
+        endpoint: DashBoardEndPoints.getUserRolesEP,
+        queryParameters: queryParameters,
+        response: ResponseValue<GetUserRolesModel>(
+          fromJson: (response) => GetUserRolesModel.fromJson(response),
+        ),
+      ),
+    );
+    return getUserRoles();
+  }
+
+  Future<GetUsersModel> getUsers({int page = 1}) {
+    GetClient<GetUsersModel> getUsers = GetClient<GetUsersModel>(
+      serverName: ServerName.dashBoard,
+      requestPrams: RequestConfig<GetUsersModel>(
+        endpoint: DashBoardEndPoints.getUsersEP,
+        queryParameters: {'page': page.toString()},
+        response: ResponseValue<GetUsersModel>(
+          fromJson: (response) => GetUsersModel.fromJson(response),
+        ),
+      ),
+    );
+    return getUsers();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> addUser(Map<String, dynamic> params) {
+    PostClient<ReadOnlyMessageFromApiModel> addUser =
+        PostClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.addUserEP,
+            data: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return addUser();
+  }
+
+  Future<GetSellerProductsModel> getProducts({int page = 1}) {
+    GetClient<GetSellerProductsModel> getProducts =
+        GetClient<GetSellerProductsModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<GetSellerProductsModel>(
+            endpoint: DashBoardEndPoints.getProducts,
+            queryParameters: {'page': page.toString()},
+            response: ResponseValue<GetSellerProductsModel>(
+              fromJson: (response) => GetSellerProductsModel.fromJson(response),
+            ),
+          ),
+        );
+    return getProducts();
+  }
+
+  Future<GetSellerBoutiquesModel> getBoutiques({int page = 1}) {
+    GetClient<GetSellerBoutiquesModel> getBoutiques =
+        GetClient<GetSellerBoutiquesModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<GetSellerBoutiquesModel>(
+            endpoint: DashBoardEndPoints.getBoutiques,
+            queryParameters: {'page': page.toString()},
+            response: ResponseValue<GetSellerBoutiquesModel>(
+              fromJson: (response) =>
+                  GetSellerBoutiquesModel.fromJson(response),
+            ),
+          ),
+        );
+    return getBoutiques();
+  }
+
+  Future<GetSellerOrdersModel> getOrders({int page = 1}) {
+    GetClient<GetSellerOrdersModel> getOrders = GetClient<GetSellerOrdersModel>(
+      serverName: ServerName.dashBoard,
+      requestPrams: RequestConfig<GetSellerOrdersModel>(
+        endpoint: DashBoardEndPoints.getOrders,
+        queryParameters: {'page': page.toString()},
+        response: ResponseValue<GetSellerOrdersModel>(
+          fromJson: (response) => GetSellerOrdersModel.fromJson(response),
+        ),
+      ),
+    );
+    return getOrders();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> changeOrderStatus(
+    Map<String, dynamic> params,
+  ) {
+    PutClient<ReadOnlyMessageFromApiModel> changeOrderStatus =
+        PutClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.changeOrderStatus,
+            data: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return changeOrderStatus();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> deleteUser(String userId) {
+    DeleteClient<ReadOnlyMessageFromApiModel> deleteUser =
+        DeleteClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.deleteUserEP(userId),
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return deleteUser();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> updateUserRole(
+    Map<String, dynamic> params,
+  ) {
+    PutClient<ReadOnlyMessageFromApiModel> updateUserRole =
+        PutClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.updateUserRoleEP,
+            data: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return updateUserRole();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> leaveShop() {
+    DeleteClient<ReadOnlyMessageFromApiModel> leaveShop =
+        DeleteClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.leaveShopEP,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return leaveShop();
+  }
+
+  Future<GetPresignedUrlModel> getPresignedUrl(String mimeType) {
+    PostClient<GetPresignedUrlModel> getPresignedUrl =
+        PostClient<GetPresignedUrlModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<GetPresignedUrlModel>(
+            endpoint: DashBoardEndPoints.getPresignedUrlEP,
+            data: {'mime_type': mimeType},
+            response: ResponseValue<GetPresignedUrlModel>(
+              fromJson: (response) => GetPresignedUrlModel.fromJson(response),
+            ),
+          ),
+        );
+    return getPresignedUrl();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> uploadFileToS3({
+    required File file,
+    required String uploadUrl,
+    required String mimeType,
+  }) async {
+    // Create a new Dio instance without interceptors for S3 upload
+    final dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(minutes: 2),
+        receiveTimeout: const Duration(minutes: 2),
+        sendTimeout: const Duration(minutes: 2),
+      ),
+    );
+
+    final fileBytes = await file.readAsBytes();
+
+    final response = await dio.put(
+      uploadUrl,
+      data: fileBytes,
+      options: Options(
+        responseType: ResponseType.bytes,
+        headers: {
+          'Content-Type': mimeType,
+          'Content-Length': fileBytes.length.toString(),
+        },
+        validateStatus: (status) => status != null && status < 500,
+      ),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      return ReadOnlyMessageFromApiModel.fromJson({
+        'message': 'file_uploaded_successfully', // Translation key
+      });
+    } else {
+      throw Exception('Upload failed with status: ${response.statusCode}');
+    }
+  }
+
+  Future<GetVendorRequestModel> getVendorRequest() {
+    GetClient<GetVendorRequestModel> getVendorRequest =
+        GetClient<GetVendorRequestModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<GetVendorRequestModel>(
+            endpoint: DashBoardEndPoints.vendorRequestsEP,
+            response: ResponseValue<GetVendorRequestModel>(
+              fromJson: (response) => GetVendorRequestModel.fromJson(response),
+            ),
+          ),
+        );
+    return getVendorRequest();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> submitVendorRequest(
+    Map<String, dynamic> params,
+  ) {
+    PostClient<ReadOnlyMessageFromApiModel> submitVendorRequest =
+        PostClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.vendorRequestsEP,
+            data: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return submitVendorRequest();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> updateVendorRequest(
+    int vendorRequestId,
+    Map<String, dynamic> params,
+  ) {
+    PutClient<ReadOnlyMessageFromApiModel> updateVendorRequest =
+        PutClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.updateVendorRequestEP(vendorRequestId),
+            data: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return updateVendorRequest();
+  }
+}

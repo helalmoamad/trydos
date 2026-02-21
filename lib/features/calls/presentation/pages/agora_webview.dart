@@ -1,0 +1,134 @@
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+import '../../../app/my_text_widget.dart';
+
+// ignore: must_be_immutable
+class AgoraWebView extends StatefulWidget {
+  String type;
+  String channelId;
+  String uId;
+  String auth_token;
+  String action;
+  String message_id;
+
+  AgoraWebView(
+      {required this.message_id,
+      required this.action,
+      required this.type,
+      required this.channelId,
+      required this.auth_token,
+      required this.uId,
+      super.key});
+
+  @override
+  State<AgoraWebView> createState() => _AgoraWebViewState();
+}
+
+class _AgoraWebViewState extends State<AgoraWebView> {
+  late WebViewController controller;
+  late ChatBloc chatBloc;
+  @override
+  void initState() {
+    LastPagesTracker.push('AgoraWebView');
+    chatBloc = BlocProvider.of<ChatBloc>(context);
+    // final flutterWebviewPlugin = new FlutterWebviewPlugin();
+    debugPrint("asdafsd{${widget.channelId}");
+    debugPrint("asdafsd{${widget.message_id}");
+    debugPrint("asdafsd{${widget.uId}");
+    debugPrint("asdafsd{${widget.type}");
+    debugPrint("asdafsd{${widget.action}");
+    debugPrint("asdafsd{${widget.auth_token}");
+    Uri baseUrl = Uri.parse('https://webdev.trydos.com');
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..loadRequest(Uri(queryParameters: {
+        'uid': widget.uId,
+        'authToken': widget.auth_token,
+        'message_id': widget.message_id,
+        'type': widget.type,
+        'action': widget.action,
+        'ch_id': widget.channelId
+      }, host: baseUrl.host, scheme: baseUrl.scheme, path: '/call_direct'));
+
+    super.initState();
+  }
+
+  int loading = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
+
+    Uri baseUrl = Uri.parse('https://webdev.trydos.com');
+
+    String uasd = Uri(queryParameters: {
+      'uid': widget.uId,
+      'authToken': widget.auth_token,
+      'message_id': widget.message_id,
+      'type': widget.type,
+      'action': widget.action,
+      'ch_id': widget.channelId
+    }, host: baseUrl.host, scheme: baseUrl.scheme, path: '/call_direct')
+        .toString();
+    String urlBasd = uasd;
+    log("asfsdsd${uasd}");
+    controller.setNavigationDelegate(
+      NavigationDelegate(
+        onUrlChange: (change) {
+          setState(() {
+            urlBasd = change.toString();
+          });
+          // if (change.url == 'https://youtube.com') Navigator.of(context).pop();
+        },
+        onProgress: (int progress) {
+          setState(() {
+            loading = progress;
+          });
+        },
+        onPageStarted: (String url) {},
+        onPageFinished: (String url) {
+          setState(() {
+            loading = 100;
+          });
+        },
+        onWebResourceError: (WebResourceError error) {},
+        onNavigationRequest: (NavigationRequest request) {
+          debugPrint("asdsdfgdgv${request.url}");
+
+          if (request.url.startsWith('https://www.youtube.com')) {
+            Navigator.of(context).pop();
+          }
+// controller.goBack();
+// // controller.clear
+//             return NavigationDecision.prevent;
+//           }
+          return NavigationDecision.navigate;
+        },
+      ),
+    );
+    return Scaffold(
+      body: Stack(
+        children: [
+          WebViewWidget(
+            controller: controller,
+          ),
+          if (loading < 100) const Center(child: CircularProgressIndicator()),
+          MyTextWidget(
+            urlBasd,
+            style: const TextStyle(color: Colors.teal),
+          )
+        ],
+      ),
+    );
+  }
+}

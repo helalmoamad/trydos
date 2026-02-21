@@ -1,0 +1,144 @@
+{
+  "project_info": {
+    "project_number": "817506223106",
+    "firebase_url": "https://trydos-2e2b2-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "trydos-2e2b2",
+    "storage_bucket": "trydos-2e2b2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817506223106:android:1bc40a7e160d8daa82131b",
+        "android_client_info": {
+          "package_name": "com.example.delivery_man_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHW9v3OeTVyxDG3nEIVuXj3FIvkMR7X7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817506223106:android:b058276a56ac4c4e82131b",
+        "android_client_info": {
+          "package_name": "com.example.geo_address_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHW9v3OeTVyxDG3nEIVuXj3FIvkMR7X7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817506223106:android:b7b4ce2b70aeff3e82131b",
+        "android_client_info": {
+          "package_name": "com.example.trydos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHW9v3OeTVyxDG3nEIVuXj3FIvkMR7X7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817506223106:android:f65b6605f72d063782131b",
+        "android_client_info": {
+          "package_name": "com.example2.Test"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHW9v3OeTVyxDG3nEIVuXj3FIvkMR7X7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817506223106:android:09b114a7540dc8a082131b",
+        "android_client_info": {
+          "package_name": "com.example2.trydos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHW9v3OeTVyxDG3nEIVuXj3FIvkMR7X7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817506223106:android:37783158e3f4647982131b",
+        "android_client_info": {
+          "package_name": "com.ramaaz.trydos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHW9v3OeTVyxDG3nEIVuXj3FIvkMR7X7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817506223106:android:28ea5e0de1f196c382131b",
+        "android_client_info": {
+          "package_name": "com.trydos.www"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHW9v3OeTVyxDG3nEIVuXj3FIvkMR7X7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

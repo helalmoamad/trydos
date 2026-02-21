@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12" viewBox="0 0 12 12">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_5764" data-name="Rectangle 5764" width="12" height="12" transform="translate(28 566)" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Mask_Group_534" data-name="Mask Group 534" transform="translate(-28 -566)" clip-path="url(#clip-path)">
+    <g id="money-9" transform="translate(28 566)">
+      <g id="Group_12791" data-name="Group 12791">
+        <g id="Group_12790" data-name="Group 12790">
+          <path id="Path_22251" data-name="Path 22251" d="M.164,6.016a.25.25,0,0,0-.148.32l.157.432,1.2-1.2Z" fill="#5ba260"/>
+        </g>
+      </g>
+      <g id="Group_12793" data-name="Group 12793">
+        <g id="Group_12792" data-name="Group 12792">
+          <path id="Path_22252" data-name="Path 22252" d="M1.3,9.855l.72,1.98a.248.248,0,0,0,.129.141A.251.251,0,0,0,2.25,12a.245.245,0,0,0,.087-.015l.794-.293Z" fill="#5ba260"/>
+        </g>
+      </g>
+      <g id="Group_12795" data-name="Group 12795">
+        <g id="Group_12794" data-name="Group 12794">
+          <path id="Path_22253" data-name="Path 22253" d="M11.985,8.165,11.161,5.9,9.183,7.877l.98-.361a.25.25,0,0,1,.173.469l-1.245.459A.25.25,0,0,1,8.77,8.3s0,0,0,0l-2.1,2.1,5.162-1.9A.249.249,0,0,0,11.985,8.165Z" fill="#5ba260"/>
+        </g>
+      </g>
+      <g id="Group_12797" data-name="Group 12797">
+        <g id="Group_12796" data-name="Group 12796">
+          <path id="Path_22254" data-name="Path 22254" d="M11.927,4.073l-4-4a.25.25,0,0,0-.353,0l-7.5,7.5a.25.25,0,0,0,0,.353l4,4A.247.247,0,0,0,4.25,12a.251.251,0,0,0,.177-.073l7.5-7.5A.251.251,0,0,0,11.927,4.073Zm-9,2.854-1,1a.25.25,0,0,1-.354-.353l1-1a.25.25,0,0,1,.354.354Zm4.317.317a.944.944,0,0,1-.685.262,2.066,2.066,0,0,1-1.39-.664,2.291,2.291,0,0,1-.624-1.064,1.045,1.045,0,0,1,.222-1.011,1.041,1.041,0,0,1,1.011-.222,2.286,2.286,0,0,1,1.064.624C7.537,5.863,7.714,6.775,7.244,7.245Zm3.182-2.817-1,1a.25.25,0,0,1-.354-.353l1-1a.25.25,0,0,1,.354.353Z" fill="#5ba260"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

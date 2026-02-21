@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_4614" data-name="Rectangle 4614" width="24" height="24" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Mask_Group_289" data-name="Mask Group 289" clip-path="url(#clip-path)">
+    <g id="seller" transform="translate(-2 -2)">
+      <circle id="head" cx="14" cy="8" r="3" fill="none" stroke="#8d8d8d" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+      <path id="body" d="M8,20c0-3,2.5-5.5,6-5.5s6,2.5,6,5.5" fill="none" stroke="#8d8d8d" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+      <path id="bag" d="M18,10.5V8a4,4,0,0,0-8,0v2.5" fill="none" stroke="#8d8d8d" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+      <path id="bag-handle" d="M10,10.5h8a1,1,0,0,1,1,1v6a1,1,0,0,1-1,1H10a1,1,0,0,1-1-1v-6A1,1,0,0,1,10,10.5Z" fill="none" stroke="#8d8d8d" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+      <path id="store-icon" d="M12.5,14.5h3a.5.5,0,0,1,.5.5v2a.5.5,0,0,1-.5.5h-3a.5.5,0,0,1-.5-.5V15A.5.5,0,0,1,12.5,14.5Z" fill="none" stroke="#8d8d8d" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/>
+      <path id="store-roof" d="M11.5,14.5l1-1.5h2l1,1.5" fill="none" stroke="#8d8d8d" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/>
+    </g>
+  </g>
+</svg>

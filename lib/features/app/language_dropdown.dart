@@ -1,0 +1,84 @@
+import 'package:easy_localization/easy_localization.dart' as local;
+import 'package:flutter/material.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+
+class LanguageDropdown extends StatefulWidget {
+  final List<Language> language;
+  const LanguageDropdown({super.key, required this.language});
+  @override
+  _LanguageDropdownState createState() => _LanguageDropdownState();
+}
+
+class _LanguageDropdownState extends State<LanguageDropdown> {
+  final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
+
+  String? selectedlang;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton2(
+          hint: const Text('Language'),
+          items: widget.language.map((lang) {
+            return DropdownMenuItem<String>(
+              value: lang.code,
+              child: Text(lang.name ?? ""),
+            );
+          }).toList(),
+          value: selectedlang,
+          onChanged: (String? newValue) async {
+            selectedlang = newValue;
+            BlocProvider.of<HomeBloc>(context)
+                .add(const ClearAllAppCashEvent());
+            _prefsRepository.removeBoutiqueHasPerfechedWhenOpenApp(true);
+            _prefsRepository.removeMainCategoryHasPerfechedWhenOpenApp(true);
+
+            _prefsRepository.removeFiveFilterHasPerfechedWhenOpenApp();
+            /*   List<String> topicTOUnSubsecribe =
+                _prefsRepository.topicThatAlreadySubsecribed();
+            topicTOUnSubsecribe.forEach(
+              (element) {
+                SubsecribeOrUnSubsecribeToTopic()
+                    .UnSubsecribeToOtherTopic(element);
+                print(
+                    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${element}");
+              },
+            );*/
+            BlocProvider.of<HomeBloc>(context).add(
+                ChangeCountryLanguageForNotificationEvent(
+                    country: _prefsRepository.countryIso!.toLowerCase(),
+                    languageCode: newValue ?? ""));
+            Future.delayed(
+              const Duration(microseconds: 500),
+              () {
+                context.go("/");
+              },
+            );
+            _prefsRepository.setLanguage(newValue);
+            context.setLocale(HelperFunctions.getInitLocale());
+            print(
+                "############################################################################################################${HelperFunctions.getInitLocale()}");
+          },
+          // buttonHeight: 30,
+          // buttonWidth: 95,
+          // itemHeight: 30,
+        ),
+      ),
+    );
+  }
+}
