@@ -680,8 +680,8 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
     if (brandIcon == null) return const SizedBox.shrink();
 
     return SizedBox(
-      width: isVerified ? 55.w : 30.w,
-      height: 15,
+      width: isVerified ? 56.w : 31.w,
+      height: 16,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: LanguageService.languageCode == "ar"

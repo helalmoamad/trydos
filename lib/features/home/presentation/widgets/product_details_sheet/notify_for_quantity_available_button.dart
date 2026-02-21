@@ -87,6 +87,7 @@ class _NotifyWhenQuantityAvailableButtonState
               ? ""
               : widget.selectedColorName;
         }
+        print("GGGGGGGGGGGGGGGGGGGGGGGGGGG${variant}");
 
         state
             .firebaseSettingForNotificationModel
@@ -143,7 +144,8 @@ class _NotifyWhenQuantityAvailableButtonState
                           FirebaseAnalyticsService.logEventForSession(
                             executedEventName: AnalyticsButtonsEventNameConst
                                 .ENABLE_PRODUCT_NOTIFICATIONS_BUTTON,
-                            eventName: AnalyticsEventsConst.ENABLE_PRODUCT_NOTIFICATION,
+                            eventName: AnalyticsEventsConst
+                                .ENABLE_PRODUCT_NOTIFICATION,
                             extraParams: {
                               'item_id': widget.productItem.productId
                                   .toString(),

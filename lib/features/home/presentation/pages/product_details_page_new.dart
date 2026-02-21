@@ -152,6 +152,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   final FocusNode focusNode = FocusNode();
   Timer? _analyticsTimer;
   String currentVariantType = "";
+  String currentVariationId = "";
   @override
   void initState() {
     LastPagesTracker.push(
@@ -620,12 +621,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                     .authProductDetailsModel
                                     ?.data
                                     ?.availableQuantity,
-                                choiceOptions: state
+                                sizes: state
                                     .cachedProductWithoutRelatedProductsModel[productItem
                                         ?.productId
                                         .toString()]!
                                     .product
-                                    ?.choiceOptions,
+                                    ?.sizes,
                                 colors: state
                                     .cachedProductWithoutRelatedProductsModel[productItem
                                         ?.productId
@@ -827,7 +828,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                 .productId
                                                 .toString()]!
                                             .product!
-                                            .choiceOptions
+                                            .sizes
                                             .isNullOrEmpty
                                       : true
                                 : true)) {
@@ -842,7 +843,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   ? state
                                         .cachedProductWithoutRelatedProductsModel[productId]!
                                         .product!
-                                        .choiceOptions
+                                        .sizes
                                         .isNullOrEmpty
                                   : true
                             : true)) {
@@ -850,7 +851,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               (state
                                           .cachedProductWithoutRelatedProductsModel[productId]!
                                           .product!
-                                          .choiceOptions
+                                          .sizes
                                           ?.length ??
                                       0) ==
                                   0
@@ -858,22 +859,19 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               : state
                                         .cachedProductWithoutRelatedProductsModel[productId]!
                                         .product!
-                                        .choiceOptions![0]
-                                        .options?[(state
-                                                    .cachedProductWithoutRelatedProductsModel[productId]!
-                                                    .product
-                                                    ?.choiceOptions?[0]
-                                                    .options
-                                                    ?.length ??
-                                                0) ~/
-                                            2]
-                                        .name ??
+                                        .sizes?[(state
+                                                .cachedProductWithoutRelatedProductsModel[productId]!
+                                                .product
+                                                ?.sizes
+                                                ?.length ??
+                                            0) ~/
+                                        2] ??
                                     "";
                           String sizeOptionSelect =
                               (state
                                           .cachedProductWithoutRelatedProductsModel[productId]!
                                           .product!
-                                          .choiceOptions
+                                          .sizes
                                           ?.length ??
                                       0) ==
                                   0
@@ -881,16 +879,13 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               : state
                                         .cachedProductWithoutRelatedProductsModel[productId]!
                                         .product!
-                                        .choiceOptions![0]
-                                        .options?[(state
-                                                    .cachedProductWithoutRelatedProductsModel[productId]!
-                                                    .product
-                                                    ?.choiceOptions?[0]
-                                                    .options
-                                                    ?.length ??
-                                                0) ~/
-                                            2]
-                                        .option ??
+                                        .sizes?[(state
+                                                .cachedProductWithoutRelatedProductsModel[productId]!
+                                                .product
+                                                ?.sizes
+                                                ?.length ??
+                                            0) ~/
+                                        2] ??
                                     "";
                           homeBloc.add(
                             AddCurrentColorSizeEvent(
@@ -1178,12 +1173,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                         .toString()]!
                                                     .product
                                                     ?.ownerType,
-                                                choiceOptions: state
+                                                sizes: state
                                                     .cachedProductWithoutRelatedProductsModel[productItem
                                                         ?.productId
                                                         .toString()]!
                                                     .product
-                                                    ?.choiceOptions,
+                                                    ?.sizes,
                                                 colors: state
                                                     .cachedProductWithoutRelatedProductsModel[productItem
                                                         ?.productId
@@ -1405,7 +1400,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                       .productId
                                                       .toString()]!
                                                   .product!
-                                                  .choiceOptions
+                                                  .sizes
                                                   .isNullOrEmpty
                                             : true
                                       : true)) ...{
@@ -1436,12 +1431,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                       .toString()]!
                                                   .product
                                                   ?.ownerType,
-                                              choiceOptions: state
+                                              sizes: state
                                                   .cachedProductWithoutRelatedProductsModel[productItem
                                                       ?.productId
                                                       .toString()]!
                                                   .product
-                                                  ?.choiceOptions,
+                                                  ?.sizes,
                                               colors: state
                                                   .cachedProductWithoutRelatedProductsModel[productItem
                                                       ?.productId
@@ -1759,12 +1754,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             .authProductDetailsModel
                             ?.data
                             ?.availableQuantity,
-                        choiceOptions: state
+                        sizes: state
                             .cachedProductWithoutRelatedProductsModel[productItem
                                 ?.productId
                                 .toString()]!
                             .product
-                            ?.choiceOptions,
+                            ?.sizes,
                         colors: state
                             .cachedProductWithoutRelatedProductsModel[productItem
                                 ?.productId
@@ -1819,8 +1814,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
 
                       currentVariantType =
                           "${currentSelectedColorOption != "" ? currentSelectedColorOption : ""}" +
-                          "${!(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? true) && (currentSelectedColorOption != "") ? "-" : ""}" +
-                          "${!(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? true) ? "${(state.currentColorSizeForCart?["choiceOption"] == null || state.currentColorSizeForCart?["choiceOption"] == "") ? state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions![0].options![(state.cachedProductWithoutRelatedProductsModel[productId]!.product?.choiceOptions?[0].options?.length ?? 0) ~/ 2].option : state.currentColorSizeForCart?["choiceOption"]}" : ""}";
+                          "${!(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.sizes?.isNullOrEmpty ?? true) && (currentSelectedColorOption != "") ? "-" : ""}" +
+                          "${!(state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.sizes?.isNullOrEmpty ?? true) ? "${(state.currentColorSizeForCart?["choiceOption"] == null || state.currentColorSizeForCart?["choiceOption"] == "") ? state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.sizes![(state.cachedProductWithoutRelatedProductsModel[productId]!.product?.sizes?.length ?? 0) ~/ 2] : state.currentColorSizeForCart?["choiceOption"]}" : ""}";
+
                       currentVariation = state
                           .authProductDetailsModel
                           ?.data
@@ -1829,9 +1825,10 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             (element) =>
                                 element.type!.contains(currentVariantType),
                             orElse: () {
-                              return Variation(variantNotifyForUser: false);
+                              return Variation();
                             },
                           );
+                      currentVariationId = currentVariation?.id ?? "";
 
                       Future.delayed(
                         const Duration(milliseconds: 600),
@@ -2307,9 +2304,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 _duration.inSeconds < 1) {
                               isFlashDealEnded = true;
                             }
-
+                            print(
+                              "############${state.authProductDetailsModel?.data?.variation}",
+                            );
                             return ProductDetailsBottomSheetNew(
                               isVerified: isVerified,
+                              variationId: currentVariationId,
                               showShadowForPanel: showShadowForPanel,
                               currentVariant: currentVariantType,
                               visibleRedeemNotifier: visibleRedeem,
@@ -2364,8 +2364,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                         : 0
                                   : 0,
                               redeemVariantPrice:
-                                  (currentVariation?.redeemPrice != null)
-                                  ? currentVariation?.redeemPrice ?? 0
+                                  (currentVariation?.luckPrice != null)
+                                  ? currentVariation?.luckPrice ?? 0
                                   : state
                                             .cachedProductWithoutRelatedProductsModel[productItem
                                                 ?.productId
@@ -2577,7 +2577,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                         .toString()]!
                                     .product
                                     ?.ownerType,
-                                choiceOptions:
+                                sizes:
                                     state.cachedProductWithoutRelatedProductsModel[productItem
                                             ?.productId
                                             .toString()] ==
@@ -2588,7 +2588,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                               ?.productId
                                               .toString()]!
                                           .product
-                                          ?.choiceOptions,
+                                          ?.sizes,
                                 colors:
                                     state.cachedProductWithoutRelatedProductsModel[productItem
                                             ?.productId
@@ -2642,24 +2642,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                               .toString()]
                                           ?.product
                                           ?.offerPrice,
-                                priceFormatted:
-                                    currentVariation?.priceFormated != null
-                                    ? currentVariation?.priceFormated
-                                    : state
-                                          .cachedProductWithoutRelatedProductsModel[productItem
-                                              ?.productId
-                                              .toString()]
-                                          ?.product
-                                          ?.priceFormatted,
-                                offerPriceFormatted:
-                                    currentVariation?.offerPriceFormated != null
-                                    ? currentVariation?.offerPriceFormated
-                                    : state
-                                          .cachedProductWithoutRelatedProductsModel[productItem
-                                              ?.productId
-                                              .toString()]
-                                          ?.product
-                                          ?.offerPriceFormatted,
+
                                 variation: state
                                     .authProductDetailsModel
                                     ?.data
@@ -3758,13 +3741,10 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
           const Duration(milliseconds: 300),
           () => homeBloc.add(
             AddCurrentColorSizeEvent(
-              choice_1: productItem?.choiceOptions?[0].options
-                  ?.firstWhere(
-                    (element) =>
-                        element.option ==
-                        (currentVariation!.type!.split("-").toList()[1]),
-                  )
-                  .name,
+              choice_1: productItem?.sizes?.firstWhere(
+                (element) =>
+                    element == (currentVariation!.type!.split("-").toList()[1]),
+              ),
               choiceOption: (currentVariation!.type!.split("-").toList()[1]),
             ),
           ),
@@ -3805,11 +3785,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
           const Duration(milliseconds: 300),
           () => homeBloc.add(
             AddCurrentColorSizeEvent(
-              choice_1: productItem?.choiceOptions?[0].options
-                  ?.firstWhere(
-                    (element) => element.option == (currentVariation!.type),
-                  )
-                  .name,
+              choice_1: productItem?.sizes?.firstWhere(
+                (element) => element == (currentVariation!.type),
+              ),
               choiceOption: (currentVariation!.type),
             ),
           ),
@@ -3821,13 +3799,10 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
           const Duration(milliseconds: 300),
           () => homeBloc.add(
             AddCurrentColorSizeEvent(
-              choice_1: productItem?.choiceOptions?[0].options
-                  ?.firstWhere(
-                    (element) =>
-                        element.option ==
-                        (currentVariation!.type!.split("-").toList()[1]),
-                  )
-                  .name,
+              choice_1: productItem?.sizes?.firstWhere(
+                (element) =>
+                    element == (currentVariation!.type!.split("-").toList()[1]),
+              ),
               choiceOption: (currentVariation!.type!.split("-").toList()[1]),
             ),
           ),
@@ -3837,14 +3812,11 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
           const Duration(milliseconds: 300),
           () => homeBloc.add(
             AddCurrentColorSizeEvent(
-              choice_1: productItem?.choiceOptions?.length == 0
+              choice_1: productItem?.sizes?.length == 0
                   ? ""
-                  : productItem?.choiceOptions?[0].options
-                        ?.firstWhere(
-                          (element) =>
-                              element.option == (currentVariation!.type),
-                        )
-                        .name,
+                  : productItem?.sizes?.firstWhere(
+                      (element) => element == (currentVariation!.type),
+                    ),
               choiceOption: currentVariation!.type,
             ),
           ),

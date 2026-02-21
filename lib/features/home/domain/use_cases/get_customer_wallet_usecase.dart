@@ -16,13 +16,15 @@ class GetCustomerWalletUseCase
   Future<Either<Failure, CustomerWalletModel>> call(
     CustomerWalletParams params,
   ) async {
-    return repository.getCustomerWallet(assetId: params.map['assetId']);
+    return repository.getCustomerWallet(
+      currencySymbol: params.map['currencySymbol'],
+    );
   }
 }
 
 class CustomerWalletParams {
-  final String assetId;
+  final String currencySymbol;
 
-  CustomerWalletParams({required this.assetId});
-  Map<String, dynamic> get map => {"assetId": assetId};
+  CustomerWalletParams({required this.currencySymbol});
+  Map<String, dynamic> get map => {"currencySymbol": currencySymbol};
 }

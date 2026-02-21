@@ -8,7 +8,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
@@ -152,11 +151,11 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
 
               double offPriceInCart =
                   state.cartCollection?.firstWhere((element) {
-                    if (element.variations?.isNullOrEmpty ?? true) {
+                    if (element.variations == null) {
                       return (element.productId == widget.productId);
                     }
                     return (element.productId == widget.productId &&
-                        ('${element.variations![0].colorOption ?? ""}${(((element.variations![0].colorOption ?? "") != "") && ((element.variations![0].sizeOption ?? "") != "")) ? "-" : ""}${element.variations![0].sizeOption ?? ""}') ==
+                        ('${element.variations!.colorOption ?? ""}${(((element.variations!.colorOption ?? "") != "") && ((element.variations!.sizeOption ?? "") != "")) ? "-" : ""}${element.variations!.sizeOption ?? ""}') ==
                             widget.currentVariant);
                   }, orElse: () => Cart(id: 0, offerPrice: 0)).offerPrice ??
                   0;

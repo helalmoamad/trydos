@@ -1,4 +1,3 @@
-import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 
 class OrderModel {
@@ -488,9 +487,7 @@ class OrderListDetailModel {
       deliveryStatus: json["delivery_status"],
       paymentStatus: json["payment_status"],
       shippingMethodId: json["shipping_method_id"],
-      variant: json["variant"] == null
-          ? null
-          : HelperFunctions.replaceDashAfterFirst(json["variant"]),
+      variant: json["variant"] == null ? null : json["variant"],
       collectProductAfterOrdering: json["collect_product_after_ordering"],
       variation: json["variation"] == null
           ? []
@@ -503,7 +500,7 @@ class OrderListDetailModel {
                     json["variation"].map(
                       (x) => GetOrderVariationModel.fromJson(x),
                     ),
-                  )
+                  ).where((element) => element.type == json["variant"]).toList()
           : [],
       discountType: json["discount_type"],
       isStockDecreased: json["is_stock_decreased"],
@@ -709,51 +706,91 @@ class GetOrderRatingModel {
 }
 
 class GetOrderVariationModel {
-  final String? sizeOption;
-  final String? colorOption;
+  final String? id;
   final String? size;
-  final String? color;
+  final VariationColor? color;
+  final String? type;
+  final double? price;
+  final double? offerPrice;
+  final double? luckPrice;
+  final String? sku;
+  final int? qty;
+
   GetOrderVariationModel({
-    this.sizeOption,
-    this.colorOption,
+    this.id,
     this.size,
     this.color,
+    this.type,
+    this.price,
+    this.offerPrice,
+    this.luckPrice,
+    this.sku,
+    this.qty,
   });
 
   GetOrderVariationModel copyWith({
-    String? sizeOption,
-    String? colorOption,
+    String? id,
     String? size,
-    String? color,
+    VariationColor? color,
+    String? type,
+    double? price,
+    double? offerPrice,
+    double? luckPrice,
+    String? sku,
+    int? qty,
   }) => GetOrderVariationModel(
-    sizeOption: sizeOption ?? this.sizeOption,
-    colorOption: colorOption ?? this.colorOption,
+    id: id ?? this.id,
     size: size ?? this.size,
     color: color ?? this.color,
+    type: type ?? this.type,
+    price: price ?? this.price,
+    offerPrice: offerPrice ?? this.offerPrice,
+    luckPrice: luckPrice ?? this.luckPrice,
+    sku: sku ?? this.sku,
+    qty: qty ?? this.qty,
   );
 
   factory GetOrderVariationModel.fromJson(Map<String, dynamic> json) =>
       GetOrderVariationModel(
-        sizeOption: json["size_options"] == null
-            ? null
-            : json["size_options"].toString().replaceAll("-", "_"),
-        colorOption: json["color_options"] == null
-            ? null
-            : json["color_options"].toString().replaceAll("-", "_"),
-        size: json["Size"] == null
-            ? null
-            : json["Size"].toString().replaceAll("-", "_"),
+        id: json["id"],
+        size: json["size"],
         color: json["color"] == null
             ? null
-            : json["color"].toString().replaceAll("-", "_"),
+            : VariationColor.fromJson(json["color"]),
+        type: json["type"],
+        price: double.tryParse(json["price"].toString()),
+        offerPrice: double.tryParse(json["offer_price"].toString()),
+        luckPrice: double.tryParse(json["luck_price"].toString()),
+        sku: json["sku"],
+        qty: json["qty"],
       );
 
   Map<String, dynamic> toJson() => {
-    "size_options": sizeOption,
-    "color_options": colorOption,
-    "Size": size,
-    "color": color,
+    "id": id,
+    "size": size,
+    "color": color?.toJson(),
+    "type": type,
+    "price": price,
+    "offer_price": offerPrice,
+    "luck_price": luckPrice,
+    "sku": sku,
+    "qty": qty,
   };
+}
+
+class VariationColor {
+  final String? name;
+  final String? code;
+
+  VariationColor({this.name, this.code});
+
+  VariationColor copyWith({String? name, String? code}) =>
+      VariationColor(name: name ?? this.name, code: code ?? this.code);
+
+  factory VariationColor.fromJson(Map<String, dynamic> json) =>
+      VariationColor(name: json["name"], code: json["code"]);
+
+  Map<String, dynamic> toJson() => {"name": name, "code": code};
 }
 
 class OrderStatus {

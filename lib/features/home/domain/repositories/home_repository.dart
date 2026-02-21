@@ -142,7 +142,7 @@ abstract class HomeRepository {
   getColorsAndSizesForSearch();
   Future<Either<Failure, ListOfProductsFoundedInCartModel>>
   getProductsListInCart();
-  Future<Either<Failure, bool>> storeFcmTokenOfMarket(
+  Future<Either<Failure, String>> storeFcmTokenOfMarket(
     Map<String, dynamic> params,
   );
   Future<Either<Failure, PopularSearchTermsModel>> getPopularSearchTerms();
@@ -215,13 +215,15 @@ abstract class HomeRepository {
   );
 
   Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
-    required String assetId,
+    required String currencySymbol,
   });
 
   Future<Either<Failure, OrdersGroupModel>> placeOrder({
     required Map<String, dynamic> params,
     required String paymentMethod,
   });
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>>
+  sendAcceptOfNotificationMarket(Map<String, dynamic> params);
   Future<Either<Failure, CurrenciesForWalletResponseModel>>
   getCurrenciesForWallet();
   Future<Either<Failure, OrdersGroupModel>> getOrdersByOrderGroupID({

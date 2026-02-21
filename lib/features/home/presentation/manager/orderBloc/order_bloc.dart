@@ -573,7 +573,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetCustomerWalletEvent event,
     Emitter<OrderState> emit,
   ) async {
-    if (event.assetId == "") {
+    if (event.currencySymbol == "" ||
+        ((prefsRepository.walletToken?.length ?? 0) < 6)) {
       return;
     }
     if (event.statusInitToRefreshAmount) {
@@ -588,7 +589,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       );
     }
     final response = await getCustomerWalletUseCase.call(
-      CustomerWalletParams(assetId: event.assetId),
+      CustomerWalletParams(currencySymbol: event.currencySymbol),
     );
     response.fold(
       (l) {
@@ -596,7 +597,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           ErrorManager.incrementRetry('GetCustomerWalletEvent');
           add(
             GetCustomerWalletEvent(
-              assetId: event.assetId,
+              currencySymbol: event.currencySymbol,
               statusInitToRefreshAmount: event.statusInitToRefreshAmount,
             ),
           );

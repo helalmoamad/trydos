@@ -138,7 +138,7 @@ class Products {
   final List<Variation>? variation;
   final bool? isRedeem;
   final double? redeemPrice;
-  final List<ChoiceOption>? choiceOptions;
+  final List<String>? sizes;
   final bool? countryIsRestricted;
   final bool? hasRedeemDiscount;
   final bool? hasDiscount;
@@ -230,7 +230,7 @@ class Products {
     this.shippingCost,
     this.videos,
     this.countOfLikes,
-    this.choiceOptions,
+    this.sizes,
     this.hasDiscount,
     this.hasTax,
     this.deliveryAt,
@@ -303,7 +303,7 @@ class Products {
     dynamic features,
     String? slugEnTopic,
     List<Variation>? variation,
-    List<ChoiceOption>? choiceOptions,
+    List<String>? sizes,
     String? flashDealStatus,
     double? flashDealDiscount,
     double? flashDealPrice,
@@ -384,7 +384,7 @@ class Products {
     model: model ?? this.model,
     variation: variation ?? this.variation,
     features: features ?? this.features,
-    choiceOptions: choiceOptions ?? this.choiceOptions,
+    sizes: sizes ?? this.sizes,
     hasDiscount: hasDiscount ?? this.hasDiscount,
     hasTax: hasTax ?? this.hasTax,
     deliveryAt: deliveryAt ?? this.deliveryAt,
@@ -439,7 +439,7 @@ class Products {
       shareLink: json["share_link"],
       isRedeem: json["is_redeem"],
       categoriesTree: json["categories_tree"],
-      redeemPrice: (json["redeem_price"] ?? 0).toDouble(),
+      redeemPrice: double.tryParse(json["redeem_price"].toString()),
       details: json["details"],
       countryIsRestricted: json["is_country_restricted"],
       ownerType: json["owner_type"],
@@ -458,7 +458,7 @@ class Products {
                 (x) => RecommendationStat.fromJson(x),
               ),
             ),
-      totalRating: json["total_rating"]?.toDouble(),
+      totalRating: double.tryParse(json["total_rating"].toString()),
       commentsCount: json["comments_count"],
       /*  comments: json["comments"] == null
             ? []
@@ -471,14 +471,20 @@ class Products {
       //    ? null
       //     : Thumbnail.fromJson(json["thumbnail"]),
       flashDealStatus: json["flash_deal_status"].toString(),
-      flashDealDiscount: json["flash_deal_discount"]?.toDouble(),
+      flashDealDiscount: double.tryParse(
+        json["flash_deal_discount"].toString(),
+      ),
       flashDealPrice: double.tryParse(
         (json["flash_deal_price"] ?? 0).toString(),
       ),
       images: json["images"] == null
           ? []
           : List<Thumbnail>.from(
-              json["images"]!.map((x) => Thumbnail.fromJson(x)),
+              json["images"]!.map(
+                (x) => x is String
+                    ? Thumbnail.fromJson({"file_path": x})
+                    : Thumbnail.fromJson(x),
+              ),
             ),
       categoryHierarchy: json["category_hierarchy"] == null
           ? null
@@ -504,18 +510,18 @@ class Products {
                 (x) => SyncColorImageProduct.fromJson(x),
               ),
             ),
-      price: json["price"].toDouble(),
+      price: double.tryParse(json["price"].toString()),
       priceFormatted: json["price_formatted"],
       videos: json["videos"] == null
           ? []
           : List<String>.from(json["videos"]!.map((x) => x)),
-      offerPrice: json["offer_price"].toDouble(),
+      offerPrice: double.tryParse(json["offer_price"].toString()),
       maxAllowedQty: json["max_allowed_qty"],
       offerPriceFormatted: json["offer_price_formatted"],
       collectedAfterOrdering: json["collected_after_ordering"],
       isFavourite: json["is_favourite"],
       isActive: json["is_active"],
-      labelNames: json["label_names"] == null
+      labelNames: json["label_names"] == null || json["label_names"] == "[]"
           ? []
           : List<String>.from(json["label_names"]!.map((x) => x)),
       flashDealEndDate: json["flash_deal_end_date"],
@@ -531,16 +537,14 @@ class Products {
       boutique: json["boutique"] == null
           ? null
           : BoutiqueForCart.fromJson(json["boutique"]),
-      variation: json["variation"] == null
+      variation: json["variations"] == null
           ? []
           : List<Variation>.from(
-              json["variation"]!.map((x) => Variation.fromJson(x)),
+              json["variations"]!.map((x) => Variation.fromJson(x)),
             ),
-      choiceOptions: json["choice_options"] == null
+      sizes: json["sizes"] == null
           ? []
-          : List<ChoiceOption>.from(
-              json["choice_options"]!.map((x) => ChoiceOption.fromJson(x)),
-            ),
+          : List<String>.from(json["sizes"]!.map((x) => x)),
       hasDiscount: json["has_discount"],
       hasTax: json["has_tax"],
       deliveryAt: json["delivery_at"],
@@ -607,7 +611,13 @@ class Products {
     //"thumbnail": thumbnail?.toJson(),
     "images": images == null
         ? []
-        : List<dynamic>.from(images!.map((x) => x.toJson())),
+        : List<dynamic>.from(
+            images!.map(
+              (x) => x is String
+                  ? Thumbnail.fromJson({"file_path": x})
+                  : x.toJson(),
+            ),
+          ),
     "categories": categories == null
         ? []
         : List<dynamic>.from(categories!.map((x) => x.toJson())),
@@ -647,13 +657,11 @@ class Products {
     "features": features,
 
     "boutique": boutique?.toJson(),
-    "variation": variation == null
+    "variations": variation == null
         ? []
         : List<dynamic>.from(variation!.map((x) => x.toJson())),
 
-    "choice_options": choiceOptions == null
-        ? []
-        : List<dynamic>.from(choiceOptions!.map((x) => x.toJson())),
+    "sizes": sizes == null ? [] : List<dynamic>.from(sizes!.map((x) => x)),
     "has_discount": hasDiscount,
 
     "has_tax": hasTax,
@@ -768,7 +776,7 @@ class Brand {
     id: json["id"],
     slug: json["slug"],
     name: json["name"],
-    isVerified: json["is_verified"],
+    isVerified: int.tryParse(json["is_verified"].toString()),
     icon: json["icon"] == null ? null : Thumbnail.fromJson(json["icon"]),
   );
 
@@ -841,7 +849,7 @@ class ProductColor {
     print("12-----------------------------${json["option"]}");
     return ProductColor(
       name: json["name"],
-      color: json["color"],
+      color: json["color"] ?? json["code"],
       option: json["option"],
     );
   }
@@ -906,7 +914,11 @@ class SyncColorImageProduct {
       images: json["images"] == null
           ? []
           : List<Thumbnail>.from(
-              json["images"]!.map((x) => Thumbnail.fromJson(x)),
+              json["images"]!.map(
+                (x) => x is String
+                    ? Thumbnail.fromJson({"file_path": x})
+                    : Thumbnail.fromJson(x),
+              ),
             ),
       colorTrend: json["color_trend"] == null || json["color_trend"] == "on"
           ? false

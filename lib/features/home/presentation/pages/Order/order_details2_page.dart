@@ -1379,9 +1379,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               currentColorName:
                                   (orderListDetailModel.variation.isNullOrEmpty)
                                   ? ""
-                                  : orderListDetailModel
-                                        .variation?[0]
-                                        .colorOption,
+                                        ''
+                                  : orderListDetailModel.variant
+                                        ?.split("-")
+                                        .first,
                               productSlug:
                                   orderListDetailModel.productSlug ?? "",
                             ),
@@ -1443,9 +1444,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             .variation
                                             .isNullOrEmpty)
                                         ? ""
-                                        : orderListDetailModel
-                                              .variation?[0]
-                                              .colorOption,
+                                        : orderListDetailModel.variant
+                                              ?.split("-")
+                                              .first,
                                     productSlug:
                                         orderListDetailModel.productSlug ?? "",
                                   ),
@@ -1516,11 +1517,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     "") &&
                                             (orderListDetailModel
                                                         .variation?[0]
-                                                        .color ==
+                                                        .color
+                                                        ?.name ==
                                                     null ||
                                                 orderListDetailModel
                                                         .variation?[0]
-                                                        .color ==
+                                                        .color
+                                                        ?.name ==
                                                     "")
                                       ? const SizedBox.shrink()
                                       : Row(
@@ -1548,7 +1551,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       ? const TextSpan(text: "")
                                                       : orderListDetailModel
                                                                     .variation?[0]
-                                                                    .color ==
+                                                                    .color
+                                                                    ?.name ==
                                                                 "" ||
                                                             orderListDetailModel
                                                                     .variation?[0]
@@ -1562,14 +1566,21 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                   ////////////////////////////
                                                   TextSpan(
                                                     text:
-                                                        orderListDetailModel
+                                                        (orderListDetailModel
                                                             .variation
-                                                            .isNullOrEmpty
+                                                            .isNullOrEmpty)
                                                         ? ''
                                                         : orderListDetailModel
-                                                                  .variation?[0]
-                                                                  .color ??
-                                                              '',
+                                                              .variation
+                                                              ?.firstWhere(
+                                                                (element) =>
+                                                                    element
+                                                                        .type ==
+                                                                    orderListDetailModel
+                                                                        .variant,
+                                                              )
+                                                              .color
+                                                              ?.name,
                                                     style: context
                                                         .textTheme
                                                         .bodyMedium
@@ -1595,11 +1606,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                   ? 0
                                                   : orderListDetailModel
                                                                 .variation?[0]
-                                                                .color ==
+                                                                .color
+                                                                ?.name ==
                                                             "" ||
                                                         orderListDetailModel
                                                                 .variation?[0]
-                                                                .color ==
+                                                                .color
+                                                                ?.name ==
                                                             null
                                                   ? 0
                                                   : 12,

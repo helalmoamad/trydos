@@ -1644,27 +1644,29 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               }
             }
 
-            url = addSuitableWidthAndHeightToImage(
-              imageUrl: product.images![0].filePath!,
-              width: 200,
-              // the width of the image in the ui
-              height: 290,
-              // the height of the image in the ui
-            );
-            /*url2 = addSuitableWidthAndHeightToImage(
+            if ((product.images?.length ?? 0) > 0) {
+              url = addSuitableWidthAndHeightToImage(
+                imageUrl: product.images![0].filePath!,
+                width: 200,
+                // the width of the image in the ui
+                height: 290,
+                // the height of the image in the ui
+              );
+              /*url2 = addSuitableWidthAndHeightToImage(
             imageUrl: image.filePath!,
             width: 200.w,
             // the width of the image in the ui
             height: 350,
           );*/
-            if (!cachedLinksOfImages.contains(url)) {
-              prefetchImages(
-                url,
-                event.context!,
-                "productListingImages",
-                200,
-                290,
-              );
+              if (!cachedLinksOfImages.contains(url)) {
+                prefetchImages(
+                  url,
+                  event.context!,
+                  "productListingImages",
+                  200,
+                  290,
+                );
+              }
             }
             /*  Future.delayed(Duration(seconds: 5), () {
             if (!cachedLinksOfImages.contains(url2)) {

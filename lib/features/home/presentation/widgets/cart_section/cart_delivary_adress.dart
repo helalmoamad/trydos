@@ -212,12 +212,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   homeState.cartCollection?.forEach((element) {
                     cartImages.add({
                       "image": element.image ?? "",
-                      "size": element.variations?.isNullOrEmpty ?? false
+                      "size": element.variations == null
                           ? ""
-                          : element.variations?[0].size ?? "",
-                      "color": element.variations?.isNullOrEmpty ?? false
+                          : element.variations?.size ?? "",
+                      "color": element.variations == null
                           ? ""
-                          : element.variations?[0].color ?? "",
+                          : element.variations?.color ?? "",
                     });
                   });
                   List<String> availablePaymentMethod =
@@ -281,10 +281,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   return ValueListenableBuilder<bool>(
                     valueListenable: showDeleteAddress,
                     builder: (context, _showDeleteAddress, _) {
-                      double walletBalance =
-                          orderState.customerWalletModel == null
-                          ? 0
-                          : orderState.customerWalletModel?.totalAvailable ?? 0;
+                      double walletBalance = 20000000;
                       // *
                       //     state.getCurrencyForCountryModel!.data!.currency!
                       //         .exchangeRate!;
@@ -356,30 +353,16 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                                           context,
                                                         ).add(
                                                           GetCustomerWalletEvent(
-                                                            assetId:
-                                                                ""
-                                                                "",
-                                                            /*GetIt.I<
+                                                            currencySymbol:
+                                                                GetIt.I<
                                                                       HomeBloc
                                                                     >()
                                                                     .state
-                                                                    .walletCurrencies!
-                                                                    .items!
-                                                                    .firstWhere(
-                                                                      (
-                                                                        element,
-                                                                      ) =>
-                                                                          element
-                                                                              .symbol ==
-                                                                          (homeState.getCurrencyForCountryModel?.data?.currency?.symbol ??
-                                                                              ""),
-                                                                      orElse: () =>
-                                                                          CurrencyItem(
-                                                                            id: "",
-                                                                          ),
-                                                                    )
-                                                                    .id ??
-                                                                "",*/
+                                                                    .getCurrencyForCountryModel!
+                                                                    .data!
+                                                                    .currency!
+                                                                    .code ??
+                                                                "",
                                                           ),
                                                         );
                                                       },

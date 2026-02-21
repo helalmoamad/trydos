@@ -163,11 +163,17 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   String? get fcmTokenId => _preferences.getString(PrefsKey.fcmTokenId);
+  @override
+  String? get fcmMarketTokenId =>
+      _preferences.getString(PrefsKey.fcmMarketTokenId);
   /* @override
   String? get alaaWebForCall => _preferences.getString("alaa");*/
   @override
   Future<bool> setFcmTokenId(String fcmTokenId) =>
       _preferences.setString(PrefsKey.fcmTokenId, fcmTokenId);
+  @override
+  Future<bool> setFcmMarketTokenId(String fcmMarketTokenId) =>
+      _preferences.setString(PrefsKey.fcmMarketTokenId, fcmMarketTokenId);
 
   /* @override
   Future<bool> setAlaaWebForCall(String url) =>

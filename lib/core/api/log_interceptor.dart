@@ -27,6 +27,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     if (kDebugMode) {
       log(_prefsRepository.chatToken.toString());
       log('story ${_prefsRepository.storiesToken.toString()}');
+
       prettyPrinterI(
         "***|| INFO Request ${options.path} ||***"
         "\n HTTP Method: ${options.method}"
@@ -53,7 +54,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
-      // log(response.data.toString());
+      log(response.data.toString());
       _StatusType statusType;
       if (response.statusCode == StatusCode.operationSucceeded.code ||
           response.statusCode == StatusCode.createdSucceeded.code ||

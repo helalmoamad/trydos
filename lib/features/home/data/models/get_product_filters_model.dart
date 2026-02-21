@@ -19,15 +19,9 @@ class GetProductFiltersModel {
   final String? message;
   final Filter? filters;
 
-  GetProductFiltersModel({
-    this.message,
-    this.filters,
-  });
+  GetProductFiltersModel({this.message, this.filters});
 
-  GetProductFiltersModel copyWith({
-    String? message,
-    Filter? filters,
-  }) =>
+  GetProductFiltersModel copyWith({String? message, Filter? filters}) =>
       GetProductFiltersModel(
         message: message ?? this.message,
         filters: filters ?? this.filters,
@@ -36,8 +30,7 @@ class GetProductFiltersModel {
   GetProductFiltersModel copyWithSendValue({
     String? message,
     Filter? filters,
-  }) =>
-      GetProductFiltersModel(message: message, filters: filters);
+  }) => GetProductFiltersModel(message: message, filters: filters);
 
   factory GetProductFiltersModel.fromJson(Map<String, dynamic> json) =>
       GetProductFiltersModel(
@@ -46,9 +39,9 @@ class GetProductFiltersModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "message": message,
-        "data": filters?.toJson(),
-      };
+    "message": message,
+    "data": filters?.toJson(),
+  };
 }
 
 class Filter {
@@ -74,49 +67,49 @@ class Filter {
     this.boutiqueSlug,
   });
 
-  Filter changeAttributesAndSaveOthers(
-          {List<Brand>? brands,
-          List<Attribute>? attributes,
-          List<Category>? categories,
-          List<String>? colors,
-          String? searchText,
-          int? totalSize,
-          Prices? prices,
-          String? boutiqueSlug,
-          List<Boutique>? boutiques}) =>
-      Filter(
-        brands: brands ?? this.brands,
-        attributes: attributes,
-        colors: colors ?? this.colors,
-        prices: prices ?? this.prices,
-        searchText: searchText ?? this.searchText,
-        boutiques: boutiques ?? this.boutiques,
-        totalSize: totalSize ?? this.totalSize,
-        categories: categories ?? this.categories,
-        boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
-      );
+  Filter changeAttributesAndSaveOthers({
+    List<Brand>? brands,
+    List<Attribute>? attributes,
+    List<Category>? categories,
+    List<String>? colors,
+    String? searchText,
+    int? totalSize,
+    Prices? prices,
+    String? boutiqueSlug,
+    List<Boutique>? boutiques,
+  }) => Filter(
+    brands: brands ?? this.brands,
+    attributes: attributes,
+    colors: colors ?? this.colors,
+    prices: prices ?? this.prices,
+    searchText: searchText ?? this.searchText,
+    boutiques: boutiques ?? this.boutiques,
+    totalSize: totalSize ?? this.totalSize,
+    categories: categories ?? this.categories,
+    boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
+  );
 
-  Filter copyWithSaveOtherField(
-          {List<Brand>? brands,
-          List<Attribute>? attributes,
-          List<Category>? categories,
-          List<String>? colors,
-          String? searchText,
-          int? totalSize,
-          Prices? prices,
-          String? boutiqueSlug,
-          List<Boutique>? boutiques}) =>
-      Filter(
-        brands: brands ?? this.brands,
-        attributes: attributes ?? this.attributes,
-        colors: colors ?? this.colors,
-        prices: prices,
-        searchText: searchText,
-        boutiques: boutiques ?? this.boutiques,
-        totalSize: totalSize ?? this.totalSize,
-        categories: categories ?? this.categories,
-        boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
-      );
+  Filter copyWithSaveOtherField({
+    List<Brand>? brands,
+    List<Attribute>? attributes,
+    List<Category>? categories,
+    List<String>? colors,
+    String? searchText,
+    int? totalSize,
+    Prices? prices,
+    String? boutiqueSlug,
+    List<Boutique>? boutiques,
+  }) => Filter(
+    brands: brands ?? this.brands,
+    attributes: attributes ?? this.attributes,
+    colors: colors ?? this.colors,
+    prices: prices,
+    searchText: searchText,
+    boutiques: boutiques ?? this.boutiques,
+    totalSize: totalSize ?? this.totalSize,
+    categories: categories ?? this.categories,
+    boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
+  );
 
   Filter copyWith({
     List<Brand>? brands,
@@ -128,18 +121,17 @@ class Filter {
     List<Boutique>? boutiques,
     Prices? prices,
     String? boutiqueSlug,
-  }) =>
-      Filter(
-        brands: brands,
-        attributes: attributes,
-        colors: colors,
-        searchText: searchText ?? this.searchText,
-        totalSize: totalSize,
-        boutiques: boutiques ?? this.boutiques,
-        prices: prices,
-        categories: categories,
-        boutiqueSlug: boutiqueSlug,
-      );
+  }) => Filter(
+    brands: brands,
+    attributes: attributes,
+    colors: colors,
+    searchText: searchText ?? this.searchText,
+    totalSize: totalSize,
+    boutiques: boutiques ?? this.boutiques,
+    prices: prices,
+    categories: categories,
+    boutiqueSlug: boutiqueSlug,
+  );
 
   factory Filter.fromJson(Map<String, dynamic> json) {
     return Filter(
@@ -150,18 +142,21 @@ class Filter {
       boutiques: json["boutiques"] == null
           ? []
           : List<Boutique>.from(
-              json["boutiques"]!.map((x) => Boutique.fromJson(x))),
+              json["boutiques"]!.map((x) => Boutique.fromJson(x)),
+            ),
       attributes: json["attributes"] == null || json["attributes"] == []
           ? []
           : List<Attribute>.from(
-              json["attributes"]!.map((x) => Attribute.fromJson(x))),
+              json["attributes"]!.map((x) => Attribute.fromJson(x)),
+            ),
       colors: json["colors"] == null
           ? []
           : List<String>.from(json["colors"]!.map((x) => x)),
       categories: json["categories"] == null
           ? []
           : List<Category>.from(
-              json["categories"]!.map((x) => Category.fromJson(x))),
+              json["categories"]!.map((x) => Category.fromJson(x)),
+            ),
       prices: json["prices"] == null ? null : Prices.fromJson(json["prices"]),
       boutiqueSlug: json["boutique_slug"],
     );
@@ -194,40 +189,37 @@ class CategoryBanner {
   final String? originalWidth;
   final String? originalHeight;
 
-  CategoryBanner({
-    this.filePath,
-    this.originalWidth,
-    this.originalHeight,
-  });
+  CategoryBanner({this.filePath, this.originalWidth, this.originalHeight});
 
   CategoryBanner copyWith({
     String? filePath,
     String? originalWidth,
     String? originalHeight,
-  }) =>
-      CategoryBanner(
-        filePath: filePath ?? this.filePath,
-        originalWidth: originalWidth ?? this.originalWidth,
-        originalHeight: originalHeight ?? this.originalHeight,
-      );
+  }) => CategoryBanner(
+    filePath: filePath ?? this.filePath,
+    originalWidth: originalWidth ?? this.originalWidth,
+    originalHeight: originalHeight ?? this.originalHeight,
+  );
 
   factory CategoryBanner.fromJson(Map<String, dynamic> json) => CategoryBanner(
-        filePath: json["file_path"]?.contains("cloudinary")
-            ? json["file_path"]
-            : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
-        originalWidth: (json["original_width"] ?? "")
-            .toString()
-            .replaceAll(RegExp(r'[^0-9.]'), ''),
-        originalHeight: (json["original_height"] ?? "")
-            .toString()
-            .replaceAll(RegExp(r'[^0-9.]'), ''),
-      );
+    filePath: json["file_path"]?.contains("cloudinary")
+        ? json["file_path"]
+        : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
+    originalWidth: (json["original_width"] ?? "").toString().replaceAll(
+      RegExp(r'[^0-9.]'),
+      '',
+    ),
+    originalHeight: (json["original_height"] ?? "").toString().replaceAll(
+      RegExp(r'[^0-9.]'),
+      '',
+    ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "file_path": filePath,
-        "original_width": originalWidth,
-        "original_height": originalHeight,
-      };
+    "file_path": filePath,
+    "original_width": originalWidth,
+    "original_height": originalHeight,
+  };
 }
 
 class Boutique {
@@ -238,47 +230,48 @@ class Boutique {
   final String? image;
   final bool? isSelected;
 
-  Boutique(
-      {this.id,
-      this.slug,
-      this.name,
-      this.banner,
-      this.image,
-      this.isSelected = false});
+  Boutique({
+    this.id,
+    this.slug,
+    this.name,
+    this.banner,
+    this.image,
+    this.isSelected = false,
+  });
 
-  Boutique copyWith(
-          {int? id,
-          String? slug,
-          String? name,
-          BunnerBoutique? banner,
-          String? image,
-          final bool? isSelected}) =>
-      Boutique(
-        id: id ?? this.id,
-        slug: slug ?? this.slug,
-        name: name ?? this.name,
-        isSelected: isSelected ?? this.isSelected,
-        banner: banner ?? this.banner,
-        image: image ?? this.image,
-      );
+  Boutique copyWith({
+    int? id,
+    String? slug,
+    String? name,
+    BunnerBoutique? banner,
+    String? image,
+    final bool? isSelected,
+  }) => Boutique(
+    id: id ?? this.id,
+    slug: slug ?? this.slug,
+    name: name ?? this.name,
+    isSelected: isSelected ?? this.isSelected,
+    banner: banner ?? this.banner,
+    image: image ?? this.image,
+  );
 
   factory Boutique.fromJson(Map<String, dynamic> json) => Boutique(
-        id: json["id"],
-        slug: json["slug"],
-        name: json["name"],
-        banner: json["banner"] == null || json["banner"] == []
-            ? null
-            : BunnerBoutique.fromJson(json["banner"]),
-        image: json["image"],
-      );
+    id: json["id"],
+    slug: json["slug"],
+    name: json["name"],
+    banner: json["banner"] == null || json["banner"] == []
+        ? null
+        : BunnerBoutique.fromJson(json["banner"]),
+    image: json["image"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "slug": slug,
-        "name": name,
-        "banner": banner?.toJson(),
-        "image": image,
-      };
+    "id": id,
+    "slug": slug,
+    "name": name,
+    "banner": banner?.toJson(),
+    "image": image,
+  };
 }
 
 class Attribute {
@@ -286,17 +279,9 @@ class Attribute {
   final String? name;
   final List<String>? options;
 
-  Attribute({
-    this.id,
-    this.name,
-    this.options,
-  });
+  Attribute({this.id, this.name, this.options});
 
-  Attribute copyWith({
-    int? id,
-    String? name,
-    List<String>? options,
-  }) =>
+  Attribute copyWith({int? id, String? name, List<String>? options}) =>
       Attribute(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -304,20 +289,20 @@ class Attribute {
       );
 
   factory Attribute.fromJson(Map<String, dynamic> json) => Attribute(
-        id: json["id"],
-        name: json["name"],
-        options: json["options"] == null || json["options"] == []
-            ? []
-            : List<String>.from(json["options"]!.map((x) => x)),
-      );
+    id: json["id"],
+    name: json["name"],
+    options: json["options"] == null || json["options"] == []
+        ? []
+        : List<String>.from(json["options"]!.map((x) => x)),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "options": options == null || options == []
-            ? []
-            : List<dynamic>.from(options!.map((x) => x)),
-      };
+    "id": id,
+    "name": name,
+    "options": options == null || options == []
+        ? []
+        : List<dynamic>.from(options!.map((x) => x)),
+  };
 }
 
 class Brand {
@@ -326,19 +311,9 @@ class Brand {
   final String? name;
   final Thumbnail? icon;
 
-  Brand({
-    this.id,
-    this.slug,
-    this.name,
-    this.icon,
-  });
+  Brand({this.id, this.slug, this.name, this.icon});
 
-  Brand copyWith({
-    int? id,
-    String? slug,
-    String? name,
-    Thumbnail? icon,
-  }) =>
+  Brand copyWith({int? id, String? slug, String? name, Thumbnail? icon}) =>
       Brand(
         id: id ?? this.id,
         slug: slug ?? this.slug,
@@ -347,18 +322,22 @@ class Brand {
       );
 
   factory Brand.fromJson(Map<String, dynamic> json) => Brand(
-        id: json["id"],
-        slug: json["slug"],
-        name: json["name"],
-        icon: json["icon"] == null ? null : Thumbnail.fromJson(json["icon"]),
-      );
+    id: json["id"],
+    slug: json["slug"],
+    name: json["name"],
+    icon: json["icon"] == null
+        ? null
+        : Thumbnail.fromJson(
+            json["icon"] is String ? {"file_path": json["icon"]} : json["icon"],
+          ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "slug": slug,
-        "name": name,
-        "icon": icon?.toJson(),
-      };
+    "id": id,
+    "slug": slug,
+    "name": name,
+    "icon": icon?.toJson(),
+  };
 }
 
 class Thumbnail {
@@ -366,40 +345,37 @@ class Thumbnail {
   final String? originalWidth;
   final String? originalHeight;
 
-  Thumbnail({
-    this.filePath,
-    this.originalWidth,
-    this.originalHeight,
-  });
+  Thumbnail({this.filePath, this.originalWidth, this.originalHeight});
 
   Thumbnail copyWith({
     String? filePath,
     String? originalWidth,
     String? originalHeight,
-  }) =>
-      Thumbnail(
-        filePath: filePath ?? this.filePath,
-        originalWidth: originalWidth ?? this.originalWidth,
-        originalHeight: originalHeight ?? this.originalHeight,
-      );
+  }) => Thumbnail(
+    filePath: filePath ?? this.filePath,
+    originalWidth: originalWidth ?? this.originalWidth,
+    originalHeight: originalHeight ?? this.originalHeight,
+  );
 
   factory Thumbnail.fromJson(Map<String, dynamic> json) => Thumbnail(
-        filePath: json["file_path"]?.contains("cloudinary")
-            ? json["file_path"]
-            : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
-        originalWidth: (json["original_width"] ?? "")
-            .toString()
-            .replaceAll(RegExp(r'[^0-9.]'), ''),
-        originalHeight: (json["original_height"] ?? "")
-            .toString()
-            .replaceAll(RegExp(r'[^0-9.]'), ''),
-      );
+    filePath: json["file_path"]?.contains("cloudinary")
+        ? json["file_path"]
+        : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
+    originalWidth: (json["original_width"] ?? "").toString().replaceAll(
+      RegExp(r'[^0-9.]'),
+      '',
+    ),
+    originalHeight: (json["original_height"] ?? "").toString().replaceAll(
+      RegExp(r'[^0-9.]'),
+      '',
+    ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "file_path": filePath,
-        "original_width": originalWidth,
-        "original_height": originalHeight,
-      };
+    "file_path": filePath,
+    "original_width": originalWidth,
+    "original_height": originalHeight,
+  };
 }
 
 class Prices {
@@ -426,38 +402,38 @@ class Prices {
     String? minPriceFormatted,
     String? currencySymbol,
     List<PriceRange>? priceRanges,
-  }) =>
-      Prices(
-        minPrice: minPrice ?? this.minPrice,
-        maxPrice: maxPrice ?? this.maxPrice,
-        minPriceFormatted: minPriceFormatted ?? this.minPriceFormatted,
-        maxPriceFormatted: maxPriceFormatted ?? this.maxPriceFormatted,
-        currencySymbol: currencySymbol ?? this.currencySymbol,
-        priceRanges: priceRanges ?? this.priceRanges,
-      );
+  }) => Prices(
+    minPrice: minPrice ?? this.minPrice,
+    maxPrice: maxPrice ?? this.maxPrice,
+    minPriceFormatted: minPriceFormatted ?? this.minPriceFormatted,
+    maxPriceFormatted: maxPriceFormatted ?? this.maxPriceFormatted,
+    currencySymbol: currencySymbol ?? this.currencySymbol,
+    priceRanges: priceRanges ?? this.priceRanges,
+  );
 
   factory Prices.fromJson(Map<String, dynamic> json) => Prices(
-        minPrice: json["min_price"].toDouble(),
-        maxPrice: json["max_price"].toDouble(),
-        currencySymbol: json["currency_symbol"],
-        maxPriceFormatted: json["max_price_formated"],
-        minPriceFormatted: json["min_price_formated"],
-        priceRanges: json["priceRanges"] == null
-            ? []
-            : List<PriceRange>.from(
-                json["priceRanges"]!.map((x) => PriceRange.fromJson(x))),
-      );
+    minPrice: json["min_price"].toDouble(),
+    maxPrice: json["max_price"].toDouble(),
+    currencySymbol: json["currency_symbol"],
+    maxPriceFormatted: json["max_price_formated"],
+    minPriceFormatted: json["min_price_formated"],
+    priceRanges: json["priceRanges"] == null
+        ? []
+        : List<PriceRange>.from(
+            json["priceRanges"]!.map((x) => PriceRange.fromJson(x)),
+          ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "min_price": minPrice,
-        "max_price": maxPrice,
-        "min_price_formated": minPriceFormatted,
-        "max_price_formated": maxPriceFormatted,
-        "currency_symbol": currencySymbol,
-        "priceRanges": priceRanges == null
-            ? []
-            : List<dynamic>.from(priceRanges!.map((x) => x.toJson())),
-      };
+    "min_price": minPrice,
+    "max_price": maxPrice,
+    "min_price_formated": minPriceFormatted,
+    "max_price_formated": maxPriceFormatted,
+    "currency_symbol": currencySymbol,
+    "priceRanges": priceRanges == null
+        ? []
+        : List<dynamic>.from(priceRanges!.map((x) => x.toJson())),
+  };
 }
 
 class PriceRange {
@@ -484,31 +460,30 @@ class PriceRange {
     double? maxPrice,
     String? text,
     int? count,
-  }) =>
-      PriceRange(
-        minPrice: minPrice ?? this.minPrice,
-        maxPrice: maxPrice ?? this.maxPrice,
-        minPriceFormatted: minPriceFormatted ?? this.minPriceFormatted,
-        maxPriceFormatted: maxPriceFormatted ?? this.maxPriceFormatted,
-        text: text ?? this.text,
-        count: count ?? this.count,
-      );
+  }) => PriceRange(
+    minPrice: minPrice ?? this.minPrice,
+    maxPrice: maxPrice ?? this.maxPrice,
+    minPriceFormatted: minPriceFormatted ?? this.minPriceFormatted,
+    maxPriceFormatted: maxPriceFormatted ?? this.maxPriceFormatted,
+    text: text ?? this.text,
+    count: count ?? this.count,
+  );
 
   factory PriceRange.fromJson(Map<String, dynamic> json) => PriceRange(
-        minPrice: json["min_price"]?.toDouble(),
-        maxPrice: json["max_price"]?.toDouble(),
-        maxPriceFormatted: json["max_price_formated"],
-        minPriceFormatted: json["min_price_formated"],
-        text: json["text"],
-        count: json["products_count"],
-      );
+    minPrice: json["min_price"]?.toDouble(),
+    maxPrice: json["max_price"]?.toDouble(),
+    maxPriceFormatted: json["max_price_formated"],
+    minPriceFormatted: json["min_price_formated"],
+    text: json["text"],
+    count: json["products_count"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "min_price_formated": minPriceFormatted,
-        "max_price_formated": maxPriceFormatted,
-        "min_price": minPrice,
-        "max_price": maxPrice,
-        "text": text,
-        "products_count": count,
-      };
+    "min_price_formated": minPriceFormatted,
+    "max_price_formated": maxPriceFormatted,
+    "min_price": minPrice,
+    "max_price": maxPrice,
+    "text": text,
+    "products_count": count,
+  };
 }

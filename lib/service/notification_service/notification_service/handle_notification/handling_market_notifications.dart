@@ -24,6 +24,7 @@ enum TypeOfNotificationForMarketEnum {
   product_cart_expiration,
   product_availability,
   product_discount,
+  greeting,
   product_comment,
   category_created,
   boutique_created,
@@ -44,13 +45,14 @@ enum TypeOfNotificationForMarketEnum {
   seller_comment_added,
   seller_product_stock_out,
   order_status_changed,
-  seller_order_status_changed
+  seller_order_status_changed,
 }
 
 Map<TypeOfNotificationForMarketEnum, String> typeOfNotificationForMarket = {
   TypeOfNotificationForMarketEnum.boutique_created: "boutique created",
   TypeOfNotificationForMarketEnum.seller_order_added: "seller order added",
   TypeOfNotificationForMarketEnum.order_status_changed: "order status changed",
+  TypeOfNotificationForMarketEnum.greeting: "greeting",
   TypeOfNotificationForMarketEnum.seller_comment_added: "seller comment added",
   TypeOfNotificationForMarketEnum.order_status_changed_to_out_for_return:
       "order status changed to out for return",
@@ -86,7 +88,7 @@ Map<TypeOfNotificationForMarketEnum, String> typeOfNotificationForMarket = {
       "product hurry up notification quantity",
   TypeOfNotificationForMarketEnum.product_hurry_up_time_left:
       "product hurry up notification time left",
-  TypeOfNotificationForMarketEnum.order_placed: "order placed"
+  TypeOfNotificationForMarketEnum.order_placed: "order placed",
 };
 
 class HandlingMarketNotifications {
@@ -102,26 +104,26 @@ class HandlingMarketNotifications {
     if (message.data["title"] == "market") {
       print("data?['type']${data?["type"]}");
       if (data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_cart_expiration] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_cart_expiration] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.remember_abandon_cart] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .remember_abandon_cart] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_hurry_up_time_left] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_hurry_up_time_left] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_hurry_up_quantity]) {
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_hurry_up_quantity]) {
         GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
         GetIt.I<HomeBloc>().add(const GetCartItemEvent());
       }
       if (data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.order_placed] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .order_placed] ||
           data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.seller_order_added] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .seller_order_added] ||
           data?["type"] ==
               typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                   .seller_order_status_changed] ||
@@ -148,18 +150,22 @@ class HandlingMarketNotifications {
                   .order_status_changed_to_shipped]) {
         GetIt.I<OrderBloc>().add(
           GetOrdersByOrderGroupIDEvent(
-              fromNotification: true,
-              status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
-              orderGroupId: data?["order_group_id"].toString() ?? ""),
+            fromNotification: true,
+            status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
+            orderGroupId: data?["order_group_id"].toString() ?? "",
+          ),
         );
       }
       if (data?["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_availability] &&
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_availability] &&
           GetIt.I<HomeBloc>().state.currentSlugToRefreshFromNotification ==
               data?["product_slug"].toString()) {
-        GetIt.I<HomeBloc>().add(GetProductDatailsWithoutRelatedProductsEvent(
-            productSlug: data?["product_slug"].toString() ?? ""));
+        GetIt.I<HomeBloc>().add(
+          GetProductDatailsWithoutRelatedProductsEvent(
+            productSlug: data?["product_slug"].toString() ?? "",
+          ),
+        );
       }
 
       return true;
@@ -172,14 +178,14 @@ class HandlingMarketNotifications {
   static dealWithNotificationFromMarket(Map data, bool fromBackground) async {
     //    BlocProvider.of<AppBloc>(context).add(ChangeBasePage(1));
     if (data["type"] ==
-            typeOfNotificationForMarket[
-                TypeOfNotificationForMarketEnum.order_placed] ||
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .order_placed] ||
         data["type"] ==
-            typeOfNotificationForMarket[
-                TypeOfNotificationForMarketEnum.seller_order_added] ||
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .seller_order_added] ||
         data["type"] ==
-            typeOfNotificationForMarket[
-                TypeOfNotificationForMarketEnum.seller_order_status_changed] ||
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .seller_order_status_changed] ||
         data["type"] ==
             typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                 .order_status_changed_to_delivered] ||
@@ -202,8 +208,8 @@ class HandlingMarketNotifications {
             typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                 .order_status_changed_to_shipped]) {
       if (data["type"] ==
-          typeOfNotificationForMarket[
-              TypeOfNotificationForMarketEnum.order_placed]) {
+          typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+              .order_placed]) {
         GetIt.I<OrderBloc>().add(ChangeOrderByGroupStatus(loading: true));
         //      homeBloc.add(RemoveItemsFromCartAfterOrderSuccessEvent());
         GetIt.I<HomeBloc>().add(const GetCartItemEvent());
@@ -212,95 +218,108 @@ class HandlingMarketNotifications {
       //   GetOrdersByOrderGroupIDEvent(orderGroupId: data["order_group_id"]));
 
       Future.delayed(
-          const Duration(seconds: 1),
-          () => Navigator.of(navigatorKey.currentState!.context).push(
-              PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      OrdersPage(
-                          fromNotification: true,
-                          groupId: data["order_group_id"].toString()))));
+        const Duration(seconds: 1),
+        () => Navigator.of(navigatorKey.currentState!.context).push(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => OrdersPage(
+              fromNotification: true,
+              groupId: data["order_group_id"].toString(),
+            ),
+          ),
+        ),
+      );
     }
     if (data["type"] ==
-            typeOfNotificationForMarket[
-                TypeOfNotificationForMarketEnum.product_cart_expiration] ||
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .product_cart_expiration] ||
         data["type"] ==
-            typeOfNotificationForMarket[
-                TypeOfNotificationForMarketEnum.remember_abandon_cart] ||
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .remember_abandon_cart] ||
         data["type"] ==
-            typeOfNotificationForMarket[
-                TypeOfNotificationForMarketEnum.product_hurry_up_time_left] ||
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .product_hurry_up_time_left] ||
         data["type"] ==
-            typeOfNotificationForMarket[
-                TypeOfNotificationForMarketEnum.product_hurry_up_quantity]) {
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .product_hurry_up_quantity]) {
       try {
         Future.delayed(
-            const Duration(seconds: 1),
-            () => Navigator.of(navigatorKey.currentState!.context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const CartPage(
-                      fromeFilters: true,
-                    ),
-                  ),
-                ));
+          const Duration(seconds: 1),
+          () => Navigator.of(navigatorKey.currentState!.context).push(
+            MaterialPageRoute(
+              builder: (context) => const CartPage(fromeFilters: true),
+            ),
+          ),
+        );
 
         //  BlocProvider.of<AppBloc>(navigatorKey.currentState!.context)
         //   .add(ChangeBasePage(1));
       } catch (e) {}
     } else {
       if (data["type"] ==
-          typeOfNotificationForMarket[
-              TypeOfNotificationForMarketEnum.product_availability]) {
+          typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+              .product_availability]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
-              .add(GetFullProductDetailsEvent(
-            productSlug: data["product_slug"].toString(),
-          ));
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              AddCurrentSelectedColorEvent(
-                  currentSelectedColor: data["image_color_sort"],
-                  productSlug: data["product_slug"].toString()));
+            GetFullProductDetailsEvent(
+              productSlug: data["product_slug"].toString(),
+            ),
+          );
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+            AddCurrentSelectedColorEvent(
+              currentSelectedColor: data["image_color_sort"],
+              productSlug: data["product_slug"].toString(),
+            ),
+          );
 
           Future.delayed(
-              const Duration(seconds: 1),
-              () => Navigator.of(navigatorKey.currentState!.context)
-                      .push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        ProductDetailsPageNew(
-                            productSlugForOpeningChatDirectly:
-                                data["product_slug"].toString(),
-                            fromNotification: fromBackground,
-                            productIdForOpeningChatDirectly:
-                                data["product_id"].toString()),
-                  )));
+            const Duration(seconds: 1),
+            () => Navigator.of(navigatorKey.currentState!.context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    ProductDetailsPageNew(
+                      productSlugForOpeningChatDirectly: data["product_slug"]
+                          .toString(),
+                      fromNotification: fromBackground,
+                      productIdForOpeningChatDirectly: data["product_id"]
+                          .toString(),
+                    ),
+              ),
+            ),
+          );
         } catch (e) {}
       }
 
       if (data["type"] ==
-          typeOfNotificationForMarket[
-              TypeOfNotificationForMarketEnum.product_before_stock_out]) {
+          typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+              .product_before_stock_out]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
-              .add(GetFullProductDetailsEvent(
-            productSlug: data["product_slug"].toString(),
-          ));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
-              .add(AddCurrentSelectedColorEvent(
-            currentSelectedColor: 0,
-            productSlug: data["product_slug"].toString(),
-          ));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+            GetFullProductDetailsEvent(
+              productSlug: data["product_slug"].toString(),
+            ),
+          );
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+            AddCurrentSelectedColorEvent(
+              currentSelectedColor: 0,
+              productSlug: data["product_slug"].toString(),
+            ),
+          );
 
           Future.delayed(
-              const Duration(seconds: 1),
-              () => Navigator.of(navigatorKey.currentState!.context)
-                      .push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        ProductDetailsPageNew(
-                            productSlugForOpeningChatDirectly:
-                                data["product_slug"].toString(),
-                            fromNotification: fromBackground,
-                            productIdForOpeningChatDirectly:
-                                data["product_id"].toString()),
-                  )));
+            const Duration(seconds: 1),
+            () => Navigator.of(navigatorKey.currentState!.context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    ProductDetailsPageNew(
+                      productSlugForOpeningChatDirectly: data["product_slug"]
+                          .toString(),
+                      fromNotification: fromBackground,
+                      productIdForOpeningChatDirectly: data["product_id"]
+                          .toString(),
+                    ),
+              ),
+            ),
+          );
         } catch (e) {}
       }
 
@@ -308,161 +327,193 @@ class HandlingMarketNotifications {
               typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                   .product_when_change_in_price] ||
           data["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.seller_product_stock_out]) {
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .seller_product_stock_out]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
-              .add(GetFullProductDetailsEvent(
-            productSlug: data["product_slug"].toString(),
-          ));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
-              .add(AddCurrentSelectedColorEvent(
-            currentSelectedColor: 0,
-            productSlug: data["product_slug"].toString(),
-          ));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+            GetFullProductDetailsEvent(
+              productSlug: data["product_slug"].toString(),
+            ),
+          );
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+            AddCurrentSelectedColorEvent(
+              currentSelectedColor: 0,
+              productSlug: data["product_slug"].toString(),
+            ),
+          );
 
           Future.delayed(
-              const Duration(seconds: 1),
-              () => Navigator.of(navigatorKey.currentState!.context)
-                      .push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        ProductDetailsPageNew(
-                            productSlugForOpeningChatDirectly:
-                                data["product_slug"].toString(),
-                            fromNotification: fromBackground,
-                            productIdForOpeningChatDirectly:
-                                data["product_id"].toString()),
-                  )));
+            const Duration(seconds: 1),
+            () => Navigator.of(navigatorKey.currentState!.context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    ProductDetailsPageNew(
+                      productSlugForOpeningChatDirectly: data["product_slug"]
+                          .toString(),
+                      fromNotification: fromBackground,
+                      productIdForOpeningChatDirectly: data["product_id"]
+                          .toString(),
+                    ),
+              ),
+            ),
+          );
         } catch (e) {}
       }
 
       if (data["type"] ==
-          typeOfNotificationForMarket[
-              TypeOfNotificationForMarketEnum.product_discount]) {
+          typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+              .product_discount]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
-              .add(GetFullProductDetailsEvent(
-            productSlug: data["product_slug"].toString(),
-          ));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
-              .add(AddCurrentSelectedColorEvent(
-            currentSelectedColor: 0,
-            productSlug: data["product_slug"].toString(),
-          ));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+            GetFullProductDetailsEvent(
+              productSlug: data["product_slug"].toString(),
+            ),
+          );
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+            AddCurrentSelectedColorEvent(
+              currentSelectedColor: 0,
+              productSlug: data["product_slug"].toString(),
+            ),
+          );
 
           Future.delayed(
-              const Duration(seconds: 1),
-              () => Navigator.of(navigatorKey.currentState!.context)
-                      .push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        ProductDetailsPageNew(
-                            productSlugForOpeningChatDirectly:
-                                data["product_slug"].toString(),
-                            fromNotification: fromBackground,
-                            productIdForOpeningChatDirectly:
-                                data["product_id"].toString()),
-                  )));
+            const Duration(seconds: 1),
+            () => Navigator.of(navigatorKey.currentState!.context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    ProductDetailsPageNew(
+                      productSlugForOpeningChatDirectly: data["product_slug"]
+                          .toString(),
+                      fromNotification: fromBackground,
+                      productIdForOpeningChatDirectly: data["product_id"]
+                          .toString(),
+                    ),
+              ),
+            ),
+          );
         } catch (e) {}
       }
       if (data["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_comment] ||
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_comment] ||
           data["type"] ==
-              typeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.seller_comment_added]) {
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .seller_comment_added]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
-              .add(GetFullProductDetailsEvent(
-            productSlug: data["product_slug"].toString(),
-          ));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
-              .add(AddCurrentSelectedColorEvent(
-            currentSelectedColor: 0,
-            productSlug: data["product_slug"].toString(),
-          ));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+            GetFullProductDetailsEvent(
+              productSlug: data["product_slug"].toString(),
+            ),
+          );
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+            AddCurrentSelectedColorEvent(
+              currentSelectedColor: 0,
+              productSlug: data["product_slug"].toString(),
+            ),
+          );
 
           Future.delayed(
-              const Duration(seconds: 1),
-              () => Navigator.of(navigatorKey.currentState!.context)
-                      .push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        ProductDetailsPageNew(
-                            fromNotificationComment: true,
-                            fromNotification: fromBackground,
-                            productSlugForOpeningChatDirectly:
-                                data["product_slug"].toString(),
-                            productIdForOpeningChatDirectly:
-                                data["product_id"].toString()),
-                  )));
+            const Duration(seconds: 1),
+            () => Navigator.of(navigatorKey.currentState!.context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    ProductDetailsPageNew(
+                      fromNotificationComment: true,
+                      fromNotification: fromBackground,
+                      productSlugForOpeningChatDirectly: data["product_slug"]
+                          .toString(),
+                      productIdForOpeningChatDirectly: data["product_id"]
+                          .toString(),
+                    ),
+              ),
+            ),
+          );
         } catch (e) {}
       }
       if (data["type"] ==
-          typeOfNotificationForMarket[
-              TypeOfNotificationForMarketEnum.category_created]) {
+          typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+              .category_created]) {
         try {
           BlocProvider.of<BoutiqueBloc>(navigatorKey.currentState!.context).add(
-              ChangeAppliedFiltersEvent(
-                  boutiqueSlug: "search", resetAppliedFilters: true));
+            ChangeAppliedFiltersEvent(
+              boutiqueSlug: "search",
+              resetAppliedFilters: true,
+            ),
+          );
           BlocProvider.of<BoutiqueBloc>(navigatorKey.currentState!.context).add(
-              ChangeSelectedFiltersEvent(
-                  boutiqueSlug: "search",
-                  fromHomePageSearch: true,
-                  resetChoosedFilters: true,
-                  requestToUpdateFilters: false));
-
-          await Future.delayed(
-              const Duration(seconds: 1),
-              () => Navigator.of(navigatorKey.currentState!.context).push(
-                  PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          ProductListingPage(
-                              getProductFiltersModel: GetProductFiltersModel(
-                                  filters: Filter(categories: [
-                                Category(
-                                  slug: data["category_slug"],
-                                  isSelected: true,
-                                  mostViewedProductThumbnail:
-                                      CategoryBanner(filePath: data["image"]),
-                                  flatPhotoPath: CategoryBanner(
-                                      filePath: data["image_svg"]),
-                                  name: data["category_name"],
-                                  id: int.tryParse(
-                                      data["category_id"].toString()),
-                                )
-                              ])),
-                              fromNotificationCategory: true,
-                              fromBackground: fromBackground,
-                              fromSearch: true,
-                              boutiqueSlug: "search"))));
-        } catch (e) {}
-      }
-      if (data["type"] ==
-          typeOfNotificationForMarket[
-              TypeOfNotificationForMarketEnum.boutique_created]) {
-        try {
-          Map? boutiqueIcon = data["boutique_icon"] ?? {};
-          List<BunnerBoutique>? boutiqueBannerList = List<BunnerBoutique>.from(
-              data["banner"]!.map((x) => BunnerBoutique.fromJson(x)));
-
-          print("${data["boutique_slug"]}" +
-              "${data['description']}" +
-              "${boutiqueIcon?["file_path"]}" +
-              "${boutiqueBannerList}");
+            ChangeSelectedFiltersEvent(
+              boutiqueSlug: "search",
+              fromHomePageSearch: true,
+              resetChoosedFilters: true,
+              requestToUpdateFilters: false,
+            ),
+          );
 
           await Future.delayed(
             const Duration(seconds: 1),
-            () => Navigator.of(navigatorKey.currentState!.context)
-                .push(PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  ProductListingPage(
-                fromBackground: fromBackground,
-                boutiqueSlug: data["boutique_slug"] ?? "",
-                banner: boutiqueBannerList,
-                boutiqueName: data["name"] ?? "",
-                boutiqueFirstBanner: boutiqueBannerList[0].filePath ?? "",
-                boutiqueIcon: boutiqueIcon?["file_path"] ?? "",
+            () => Navigator.of(navigatorKey.currentState!.context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    ProductListingPage(
+                      getProductFiltersModel: GetProductFiltersModel(
+                        filters: Filter(
+                          categories: [
+                            Category(
+                              slug: data["category_slug"],
+                              isSelected: true,
+                              mostViewedProductThumbnail: CategoryBanner(
+                                filePath: data["image"],
+                              ),
+                              flatPhotoPath: CategoryBanner(
+                                filePath: data["image_svg"],
+                              ),
+                              name: data["category_name"],
+                              id: int.tryParse(data["category_id"].toString()),
+                            ),
+                          ],
+                        ),
+                      ),
+                      fromNotificationCategory: true,
+                      fromBackground: fromBackground,
+                      fromSearch: true,
+                      boutiqueSlug: "search",
+                    ),
               ),
-            )),
+            ),
+          );
+        } catch (e) {}
+      }
+      if (data["type"] ==
+          typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+              .boutique_created]) {
+        try {
+          Map? boutiqueIcon = data["boutique_icon"] ?? {};
+          List<BunnerBoutique>? boutiqueBannerList = List<BunnerBoutique>.from(
+            data["banner"]!.map((x) => BunnerBoutique.fromJson(x)),
+          );
+
+          print(
+            "${data["boutique_slug"]}" +
+                "${data['description']}" +
+                "${boutiqueIcon?["file_path"]}" +
+                "${boutiqueBannerList}",
+          );
+
+          await Future.delayed(
+            const Duration(seconds: 1),
+            () => Navigator.of(navigatorKey.currentState!.context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    ProductListingPage(
+                      fromBackground: fromBackground,
+                      boutiqueSlug: data["boutique_slug"] ?? "",
+                      banner: boutiqueBannerList,
+                      boutiqueName: data["name"] ?? "",
+                      boutiqueFirstBanner: boutiqueBannerList[0].filePath ?? "",
+                      boutiqueIcon: boutiqueIcon?["file_path"] ?? "",
+                    ),
+              ),
+            ),
           );
         } catch (e) {}
       }
@@ -473,11 +524,12 @@ class HandlingMarketNotifications {
 }
 
 class SubsecribeOrUnSubsecribeToTopic {
-  String countryISo = ((GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
-              ? GetIt.I<PrefsRepository>().userChoosedCountryIso
-              : GetIt.I<PrefsRepository>().countryIso) ??
-          "")
-      .toLowerCase();
+  String countryISo =
+      ((GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
+                  ? GetIt.I<PrefsRepository>().userChoosedCountryIso
+                  : GetIt.I<PrefsRepository>().countryIso) ??
+              "")
+          .toLowerCase();
 
   void subsecribeToOtherTopic(String topic) async {
     /*await FirebaseMessaging.instance.subscribeToTopic(topic);
@@ -498,7 +550,8 @@ class SubsecribeOrUnSubsecribeToTopic {
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
         "boutique_created_${countryISo}_${LanguageService.languageCode}");*/
     GetIt.I<HomeBloc>().add(
-        const SubscribeTopicForNotificationEvent(topic: "boutique_created"));
+      const SubscribeTopicForNotificationEvent(topic: "boutique_created"),
+    );
   }
 
   void unSubsecribeToBoutiqueCreated() async {
@@ -508,7 +561,8 @@ class SubsecribeOrUnSubsecribeToTopic {
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
         "boutique_created_${countryISo}_${LanguageService.languageCode}");*/
     GetIt.I<HomeBloc>().add(
-        const UnSubscribeTopicForNotificationEvent(topic: "boutique_created"));
+      const UnSubscribeTopicForNotificationEvent(topic: "boutique_created"),
+    );
   }
 
   void subsecribeToCategoryCreated() async {
@@ -518,7 +572,8 @@ class SubsecribeOrUnSubsecribeToTopic {
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
         "category_created_${countryISo}_${LanguageService.languageCode}");*/
     GetIt.I<HomeBloc>().add(
-        const SubscribeTopicForNotificationEvent(topic: "category_created"));
+      const SubscribeTopicForNotificationEvent(topic: "category_created"),
+    );
   }
 
   void unSubsecribeToCategoryCreated() async {
@@ -527,7 +582,8 @@ class SubsecribeOrUnSubsecribeToTopic {
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
         "category_created_${countryISo}_${LanguageService.languageCode}");*/
     GetIt.I<HomeBloc>().add(
-        const UnSubscribeTopicForNotificationEvent(topic: "category_created"));
+      const UnSubscribeTopicForNotificationEvent(topic: "category_created"),
+    );
   }
 
   void subsecribeToProductDiscount(String productId) async {
@@ -535,8 +591,11 @@ class SubsecribeOrUnSubsecribeToTopic {
         "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
         "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>().add(SubscribeTopicForNotificationEvent(
-        topic: "product_discount_${productId}"));
+    GetIt.I<HomeBloc>().add(
+      SubscribeTopicForNotificationEvent(
+        topic: "product_discount_${productId}",
+      ),
+    );
   }
 
   void unSubsecribeToProductDiscount(String productId) async {
@@ -544,8 +603,11 @@ class SubsecribeOrUnSubsecribeToTopic {
         "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
         "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>().add(UnSubscribeTopicForNotificationEvent(
-        topic: "product_discount_${productId}"));
+    GetIt.I<HomeBloc>().add(
+      UnSubscribeTopicForNotificationEvent(
+        topic: "product_discount_${productId}",
+      ),
+    );
   }
 
   void subsecribeToProductComment(String productId) async {
@@ -553,8 +615,9 @@ class SubsecribeOrUnSubsecribeToTopic {
         "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
         "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>().add(SubscribeTopicForNotificationEvent(
-        topic: "product_comment_${productId}"));
+    GetIt.I<HomeBloc>().add(
+      SubscribeTopicForNotificationEvent(topic: "product_comment_${productId}"),
+    );
   }
 
   void unSubsecribeToProductComment(String productId) async {
@@ -562,8 +625,11 @@ class SubsecribeOrUnSubsecribeToTopic {
         "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
         "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>().add(UnSubscribeTopicForNotificationEvent(
-        topic: "product_comment_${productId}"));
+    GetIt.I<HomeBloc>().add(
+      UnSubscribeTopicForNotificationEvent(
+        topic: "product_comment_${productId}",
+      ),
+    );
   }
 
   void subsecribeToProductHurryUpTimeLeft(String cartId) async {
@@ -571,8 +637,11 @@ class SubsecribeOrUnSubsecribeToTopic {
         "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
         "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>().add(SubscribeTopicForNotificationEvent(
-        topic: "product_hurry_up_time_left_${cartId}"));
+    GetIt.I<HomeBloc>().add(
+      SubscribeTopicForNotificationEvent(
+        topic: "product_hurry_up_time_left_${cartId}",
+      ),
+    );
   }
 
   void unSubsecribeToProductHurryUpTimeLeft(String cartId) async {
@@ -580,8 +649,11 @@ class SubsecribeOrUnSubsecribeToTopic {
         "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
         "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>().add(UnSubscribeTopicForNotificationEvent(
-        topic: "product_hurry_up_time_left_${cartId}"));
+    GetIt.I<HomeBloc>().add(
+      UnSubscribeTopicForNotificationEvent(
+        topic: "product_hurry_up_time_left_${cartId}",
+      ),
+    );
   }
 
   void subsecribeToProductHurryUpQuantity(String cartId) async {
@@ -589,8 +661,11 @@ class SubsecribeOrUnSubsecribeToTopic {
         "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
         "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>().add(SubscribeTopicForNotificationEvent(
-        topic: "product_hurry_up_quantity_${cartId}"));
+    GetIt.I<HomeBloc>().add(
+      SubscribeTopicForNotificationEvent(
+        topic: "product_hurry_up_quantity_${cartId}",
+      ),
+    );
   }
 
   void unSubsecribeToProductHurryUpQuantity(String cartId) async {
@@ -598,7 +673,10 @@ class SubsecribeOrUnSubsecribeToTopic {
         "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
         "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");*/
-    GetIt.I<HomeBloc>().add(UnSubscribeTopicForNotificationEvent(
-        topic: "product_hurry_up_quantity_${cartId}"));
+    GetIt.I<HomeBloc>().add(
+      UnSubscribeTopicForNotificationEvent(
+        topic: "product_hurry_up_quantity_${cartId}",
+      ),
+    );
   }
 }

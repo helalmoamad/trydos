@@ -23,23 +23,21 @@ class AddItemToCartUseCase
 class AddITemToCartParams {
   String? id;
   int? quantity;
-  String? choice_1;
-  String? color;
+  String? variationId;
   bool? isRedeem;
   String? image;
-  AddITemToCartParams(
-      {this.choice_1,
-      this.color,
-      this.id,
-      this.quantity,
-      this.image,
-      this.isRedeem});
+  AddITemToCartParams({
+    this.variationId,
+    this.id,
+    this.quantity,
+    this.image,
+    this.isRedeem,
+  });
   Map<String, dynamic> get map => {
-        "id": id,
-        "quantity": quantity,
-        "choice_1": choice_1,
-        "is_redeem": isRedeem,
-        "color": color,
-        "image": image
-      }..removeWhere((key, value) => value == null || value == "");
+    "id": id,
+    "quantity": quantity,
+    "is_redeem": isRedeem,
+    "product_variation_id": variationId,
+    "image": image,
+  }..removeWhere((key, value) => value == null || value == "");
 }

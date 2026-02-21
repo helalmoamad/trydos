@@ -24,7 +24,6 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter;
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
@@ -43,10 +42,10 @@ class FlashDealProductsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
+    /*FlutterError.onError = (FlutterErrorDetails error) {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
-    };
+    };*/
     final ValueNotifier<bool> refreshFlashDeal = ValueNotifier(false);
     List<filter.Products> products = [];
 

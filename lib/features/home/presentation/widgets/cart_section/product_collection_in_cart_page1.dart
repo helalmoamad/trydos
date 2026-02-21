@@ -232,19 +232,18 @@ class _ProductCollectionInCartPage1State
                               BlocProvider.of<HomeBloc>(context).add(
                                 GetFullProductDetailsEvent(
                                   currentColorName: isOldCart
-                                      ? (!oldCartCollection![index]
-                                                .variations
-                                                .isNullOrEmpty
+                                      ? (!(oldCartCollection![index]
+                                                    .variations ==
+                                                null)
                                             ? oldCartCollection[index]
-                                                      .variations![0]
+                                                      .variations!
                                                       .colorOption ??
                                                   ""
                                             : "")
-                                      : (!cartCollection![index]
-                                                .variations
-                                                .isNullOrEmpty
+                                      : (!(cartCollection![index].variations ==
+                                                null)
                                             ? cartCollection[index]
-                                                      .variations![0]
+                                                      .variations!
                                                       .colorOption ??
                                                   ""
                                             : ""),
@@ -365,29 +364,29 @@ class _ProductCollectionInCartPage1State
                                 children: [
                                   isOldCart &&
                                               oldCartCollection![index]
-                                                  .variations
-                                                  .isNullOrEmpty ||
+                                                      .variations ==
+                                                  null ||
                                           (!isOldCart &&
                                               cartCollection![index]
-                                                  .variations
-                                                  .isNullOrEmpty)
+                                                      .variations ==
+                                                  null)
                                       ? const SizedBox.shrink()
                                       : !isOldCart &&
                                                 (cartCollection![index]
-                                                            .variations![0]
+                                                            .variations!
                                                             .colorOption ==
                                                         "" ||
                                                     cartCollection[index]
-                                                            .variations![0]
+                                                            .variations!
                                                             .colorOption ==
                                                         null) ||
                                             isOldCart &&
                                                 (oldCartCollection![index]
-                                                            .variations![0]
+                                                            .variations!
                                                             .colorOption ==
                                                         "" ||
                                                     oldCartCollection[index]
-                                                            .variations![0]
+                                                            .variations!
                                                             .colorOption ==
                                                         null)
                                       ? const SizedBox.shrink()
@@ -425,19 +424,19 @@ class _ProductCollectionInCartPage1State
                                               ),
                                               Text(
                                                 isOldCart
-                                                    ? !oldCartCollection![index]
-                                                              .variations
-                                                              .isNullOrEmpty
+                                                    ? oldCartCollection![index]
+                                                                  .variations !=
+                                                              null
                                                           ? oldCartCollection[index]
-                                                                    .variations![0]
+                                                                    .variations!
                                                                     .color ??
                                                                 ""
                                                           : ""
-                                                    : !cartCollection![index]
-                                                          .variations
-                                                          .isNullOrEmpty
+                                                    : cartCollection![index]
+                                                              .variations !=
+                                                          null
                                                     ? cartCollection[index]
-                                                              .variations![0]
+                                                              .variations!
                                                               .color ??
                                                           ""
                                                     : "",
@@ -463,29 +462,29 @@ class _ProductCollectionInCartPage1State
                                     width:
                                         isOldCart &&
                                                 oldCartCollection![index]
-                                                    .variations
-                                                    .isNullOrEmpty ||
+                                                        .variations ==
+                                                    null ||
                                             (!isOldCart &&
                                                 cartCollection![index]
-                                                    .variations
-                                                    .isNullOrEmpty)
+                                                        .variations ==
+                                                    null)
                                         ? 0
                                         : !isOldCart &&
                                                   (cartCollection![index]
-                                                              .variations![0]
+                                                              .variations!
                                                               .colorOption ==
                                                           "" ||
                                                       cartCollection[index]
-                                                              .variations![0]
+                                                              .variations!
                                                               .colorOption ==
                                                           null) ||
                                               isOldCart &&
                                                   (oldCartCollection![index]
-                                                              .variations![0]
+                                                              .variations!
                                                               .colorOption ==
                                                           "" ||
                                                       oldCartCollection[index]
-                                                              .variations![0]
+                                                              .variations!
                                                               .colorOption ==
                                                           null)
                                         ? 0
@@ -493,29 +492,29 @@ class _ProductCollectionInCartPage1State
                                   ),
                                   !isOldCart &&
                                               cartCollection![index]
-                                                  .variations
-                                                  .isNullOrEmpty ||
+                                                      .variations ==
+                                                  null ||
                                           isOldCart &&
                                               oldCartCollection![index]
-                                                  .variations
-                                                  .isNullOrEmpty
+                                                      .variations ==
+                                                  null
                                       ? const SizedBox.shrink()
                                       : (!isOldCart &&
                                                 (cartCollection![index]
-                                                            .variations![0]
+                                                            .variations!
                                                             .sizeOption ==
                                                         "" ||
                                                     cartCollection[index]
-                                                            .variations![0]
+                                                            .variations!
                                                             .sizeOption ==
                                                         null)) ||
                                             (isOldCart &&
                                                 (oldCartCollection![index]
-                                                            .variations![0]
+                                                            .variations!
                                                             .sizeOption ==
                                                         "" ||
                                                     oldCartCollection[index]
-                                                            .variations![0]
+                                                            .variations!
                                                             .sizeOption ==
                                                         null))
                                       ? const SizedBox.shrink()
@@ -556,19 +555,19 @@ class _ProductCollectionInCartPage1State
                                               ),
                                               Text(
                                                 isOldCart
-                                                    ? !oldCartCollection![index]
-                                                              .variations
-                                                              .isNullOrEmpty
+                                                    ? oldCartCollection![index]
+                                                                  .variations !=
+                                                              null
                                                           ? oldCartCollection[index]
-                                                                    .variations![0]
+                                                                    .variations!
                                                                     .size ??
                                                                 ""
                                                           : ""
-                                                    : !cartCollection![index]
-                                                          .variations
-                                                          .isNullOrEmpty
+                                                    : cartCollection![index]
+                                                              .variations !=
+                                                          null
                                                     ? cartCollection[index]
-                                                              .variations![0]
+                                                              .variations!
                                                               .size ??
                                                           ""
                                                     : "",
@@ -816,19 +815,19 @@ class _ProductCollectionInCartPage1State
                                                       GetFullProductDetailsEvent(
                                                         currentColorName:
                                                             isOldCart
-                                                            ? (!oldCartCollection![index]
-                                                                      .variations
-                                                                      .isNullOrEmpty
+                                                            ? (oldCartCollection![index]
+                                                                          .variations !=
+                                                                      null
                                                                   ? oldCartCollection[index]
-                                                                            .variations![0]
+                                                                            .variations!
                                                                             .colorOption ??
                                                                         ""
                                                                   : "")
-                                                            : (!cartCollection![index]
-                                                                      .variations
-                                                                      .isNullOrEmpty
+                                                            : (cartCollection![index]
+                                                                          .variations !=
+                                                                      null
                                                                   ? cartCollection[index]
-                                                                            .variations![0]
+                                                                            .variations!
                                                                             .colorOption ??
                                                                         ""
                                                                   : ""),
@@ -997,20 +996,20 @@ class _ProductCollectionInCartPage1State
                                                                     "0",
                                                               ),
                                                               currentSize:
-                                                                  !cartCollection[index]
-                                                                      .variations
-                                                                      .isNullOrEmpty
+                                                                  cartCollection[index]
+                                                                          .variations !=
+                                                                      null
                                                                   ? cartCollection[index]
-                                                                            .variations![0]
+                                                                            .variations!
                                                                             .sizeOption ??
                                                                         ""
                                                                   : "",
                                                               colorOption:
-                                                                  !cartCollection[index]
-                                                                      .variations
-                                                                      .isNullOrEmpty
+                                                                  cartCollection[index]
+                                                                          .variations !=
+                                                                      null
                                                                   ? cartCollection[index]
-                                                                            .variations![0]
+                                                                            .variations!
                                                                             .colorOption ??
                                                                         ""
                                                                   : "",
@@ -1055,20 +1054,20 @@ class _ProductCollectionInCartPage1State
                                                                       .image ??
                                                                   '',
                                                               currentSize:
-                                                                  !cartCollection[index]
-                                                                      .variations
-                                                                      .isNullOrEmpty
+                                                                  cartCollection[index]
+                                                                          .variations !=
+                                                                      null
                                                                   ? cartCollection[index]
-                                                                            .variations![0]
+                                                                            .variations!
                                                                             .sizeOption ??
                                                                         ""
                                                                   : "",
                                                               colorName:
-                                                                  !cartCollection[index]
-                                                                      .variations
-                                                                      .isNullOrEmpty
+                                                                  cartCollection[index]
+                                                                          .variations !=
+                                                                      null
                                                                   ? cartCollection[index]
-                                                                            .variations![0]
+                                                                            .variations!
                                                                             .colorOption ??
                                                                         ""
                                                                   : "",
@@ -1175,20 +1174,20 @@ class _ProductCollectionInCartPage1State
                                                               "0",
                                                         ),
                                                         currentSize:
-                                                            !cartCollection[index]
-                                                                .variations
-                                                                .isNullOrEmpty
+                                                            cartCollection[index]
+                                                                    .variations !=
+                                                                null
                                                             ? cartCollection[index]
-                                                                      .variations![0]
+                                                                      .variations!
                                                                       .sizeOption ??
                                                                   ""
                                                             : "",
                                                         colorOption:
-                                                            !cartCollection[index]
-                                                                .variations
-                                                                .isNullOrEmpty
+                                                            cartCollection[index]
+                                                                    .variations ==
+                                                                null
                                                             ? cartCollection[index]
-                                                                      .variations![0]
+                                                                      .variations!
                                                                       .colorOption ??
                                                                   ""
                                                             : "",
@@ -1263,7 +1262,7 @@ class _ProductCollectionInCartPage1State
                                                           numberToFormate:
                                                               (HelperFunctions.truncateToDecimalPlaces(
                                                                 oldCartCollection![index]
-                                                                    .priceOfVariant!,
+                                                                    .offerPrice!,
                                                                 state
                                                                     .getCurrencyForCountryModel!
                                                                     .data!
@@ -1699,19 +1698,19 @@ class _ProductCollectionInCartPage1State
                                             ).add(
                                               GetFullProductDetailsEvent(
                                                 currentColorName: isOldCart
-                                                    ? (!oldCartCollection![index]
-                                                              .variations
-                                                              .isNullOrEmpty
+                                                    ? (oldCartCollection![index]
+                                                                  .variations !=
+                                                              null
                                                           ? oldCartCollection[index]
-                                                                    .variations![0]
+                                                                    .variations!
                                                                     .colorOption ??
                                                                 ""
                                                           : "")
-                                                    : (!cartCollection![index]
-                                                              .variations
-                                                              .isNullOrEmpty
+                                                    : (cartCollection![index]
+                                                                  .variations !=
+                                                              null
                                                           ? cartCollection[index]
-                                                                    .variations![0]
+                                                                    .variations!
                                                                     .colorOption ??
                                                                 ""
                                                           : ""),

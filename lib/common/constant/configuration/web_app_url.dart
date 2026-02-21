@@ -29,7 +29,9 @@ abstract class WebAppEndPoints {
   static const getCommentsFromAnalyticsEP = "api/products/comments/comments";
   static const productRecommendedEP = "api/products/recomended";
   static String productDetailsEP(String slug) =>
-      "api/mobile/product/details_without_similar_related_products/${slug}";
+      "api/mobile/product/details/${slug}";
+  static String getAuthProductDetailsEP(String slug) =>
+      "api/mobile/product/qty/${slug}";
   //  static final imageSearchEP = "api/image-search";
 }
 

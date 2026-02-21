@@ -4,8 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:trydos/common/helper/helper_functions.dart';
-
 GetCartShippingItemsModel getCartShippingItemsModelFromJson(String str) =>
     GetCartShippingItemsModel.fromJson(json.decode(str));
 
@@ -36,15 +34,14 @@ class GetCartShippingItemsModel {
     String? message,
     dynamic detailedError,
     CartShipping? data,
-  }) =>
-      GetCartShippingItemsModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => GetCartShippingItemsModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory GetCartShippingItemsModel.fromJson(Map<String, dynamic> json) =>
       GetCartShippingItemsModel(
@@ -57,13 +54,13 @@ class GetCartShippingItemsModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class CartShipping {
@@ -123,79 +120,76 @@ class CartShipping {
     bool? showMessageResetForShippingFree,
     List<String>? availablePaymentMethod,
     List<Cart>? cart,
-  }) =>
-      CartShipping(
-        subTotal: subTotal ?? this.subTotal,
-        totalTax: totalTax ?? this.totalTax,
-        totalShippingCost: totalShippingCost ?? this.totalShippingCost,
-        productsDiscount: productsDiscount ?? this.productsDiscount,
-        couponDiscount: couponDiscount ?? this.couponDiscount,
-        totalDiscount: totalDiscount ?? this.totalDiscount,
-        couponCode: couponCode ?? this.couponCode,
-        codCost: codCost ?? this.codCost,
-        limitFree: limitFree ?? this.limitFree,
-        estimatedTax: estimatedTax ?? this.estimatedTax,
-        total: total ?? this.total,
-        restForFreeShipping: restForFreeShipping ?? this.restForFreeShipping,
-        totalCash: totalCash ?? this.totalCash,
-        hasCod: hasCod ?? this.hasCod,
-        showMessageResetForShippingFree: showMessageResetForShippingFree ??
-            this.showMessageResetForShippingFree,
-        availablePaymentMethod:
-            availablePaymentMethod ?? this.availablePaymentMethod,
-        cart: cart ?? this.cart,
-      );
+  }) => CartShipping(
+    subTotal: subTotal ?? this.subTotal,
+    totalTax: totalTax ?? this.totalTax,
+    totalShippingCost: totalShippingCost ?? this.totalShippingCost,
+    productsDiscount: productsDiscount ?? this.productsDiscount,
+    couponDiscount: couponDiscount ?? this.couponDiscount,
+    totalDiscount: totalDiscount ?? this.totalDiscount,
+    couponCode: couponCode ?? this.couponCode,
+    codCost: codCost ?? this.codCost,
+    limitFree: limitFree ?? this.limitFree,
+    estimatedTax: estimatedTax ?? this.estimatedTax,
+    total: total ?? this.total,
+    restForFreeShipping: restForFreeShipping ?? this.restForFreeShipping,
+    totalCash: totalCash ?? this.totalCash,
+    hasCod: hasCod ?? this.hasCod,
+    showMessageResetForShippingFree:
+        showMessageResetForShippingFree ?? this.showMessageResetForShippingFree,
+    availablePaymentMethod:
+        availablePaymentMethod ?? this.availablePaymentMethod,
+    cart: cart ?? this.cart,
+  );
 
   factory CartShipping.fromJson(Map<String, dynamic> json) => CartShipping(
-        subTotal: json["sub_total"]?.toDouble(),
-        totalTax: json["total_tax"],
-        totalShippingCost:
-            double.tryParse(json["total_shipping_cost"].toString()),
-        productsDiscount: json["products_discount"]?.toDouble(),
-        couponCode: json["coupon_code"]?.toString(),
-        couponDiscount: json["coupon_discount"]?.toDouble(),
-        totalDiscount: json["total_discount"]?.toDouble(),
-        codCost: json["cod_cost"],
-        limitFree: double.tryParse(json["limitFree"].toString()),
-        estimatedTax: json["estimated_tax"]?.toDouble(),
-        total: json["total"]?.toDouble(),
-        restForFreeShipping: json["rest_for_free_shipping"]?.toDouble(),
-        totalCash: json["total_cash"]?.toDouble(),
-        hasCod: json["has_cod"],
-        showMessageResetForShippingFree:
-            json["show_message_reset_for_shipping_free"],
-        availablePaymentMethod: json["available_payment_method"] == null
-            ? []
-            : List<String>.from(
-                json["available_payment_method"]!.map((x) => x)),
-        cart: json["cart"] == null
-            ? []
-            : List<Cart>.from(json["cart"]!.map((x) => Cart.fromJson(x))),
-      );
+    subTotal: json["sub_total"]?.toDouble(),
+    totalTax: json["total_tax"],
+    totalShippingCost: double.tryParse(json["total_shipping_cost"].toString()),
+    productsDiscount: json["products_discount"]?.toDouble(),
+    couponCode: json["coupon_code"]?.toString(),
+    couponDiscount: json["coupon_discount"]?.toDouble(),
+    totalDiscount: json["total_discount"]?.toDouble(),
+    codCost: json["cod_cost"],
+    limitFree: double.tryParse(json["limitFree"].toString()),
+    estimatedTax: json["estimated_tax"]?.toDouble(),
+    total: json["total"]?.toDouble(),
+    restForFreeShipping: json["rest_for_free_shipping"]?.toDouble(),
+    totalCash: json["total_cash"]?.toDouble(),
+    hasCod: json["has_cod"],
+    showMessageResetForShippingFree:
+        json["show_message_reset_for_shipping_free"],
+    availablePaymentMethod: json["available_payment_method"] == null
+        ? []
+        : List<String>.from(json["available_payment_method"]!.map((x) => x)),
+    cart: json["cart"] == null
+        ? []
+        : List<Cart>.from(json["cart"]!.map((x) => Cart.fromJson(x))),
+  );
 
   Map<String, dynamic> toJson() => {
-        "sub_total": subTotal,
-        "total_tax": totalTax,
-        "total_shipping_cost": totalShippingCost?.toDouble(),
-        "products_discount": productsDiscount,
-        'coupon_code': couponCode,
-        "coupon_discount": couponDiscount,
-        "total_discount": totalDiscount,
-        "cod_cost": codCost,
-        "limitFree": limitFree?.toDouble(),
-        "estimated_tax": estimatedTax,
-        "total": total,
-        "rest_for_free_shipping": restForFreeShipping,
-        "total_cash": totalCash,
-        "has_cod": hasCod,
-        "show_message_reset_for_shipping_free": showMessageResetForShippingFree,
-        "available_payment_method": availablePaymentMethod == null
-            ? []
-            : List<dynamic>.from(availablePaymentMethod!.map((x) => x)),
-        "cart": cart == null
-            ? []
-            : List<dynamic>.from(cart!.map((x) => x.toJson())),
-      };
+    "sub_total": subTotal,
+    "total_tax": totalTax,
+    "total_shipping_cost": totalShippingCost?.toDouble(),
+    "products_discount": productsDiscount,
+    'coupon_code': couponCode,
+    "coupon_discount": couponDiscount,
+    "total_discount": totalDiscount,
+    "cod_cost": codCost,
+    "limitFree": limitFree?.toDouble(),
+    "estimated_tax": estimatedTax,
+    "total": total,
+    "rest_for_free_shipping": restForFreeShipping,
+    "total_cash": totalCash,
+    "has_cod": hasCod,
+    "show_message_reset_for_shipping_free": showMessageResetForShippingFree,
+    "available_payment_method": availablePaymentMethod == null
+        ? []
+        : List<dynamic>.from(availablePaymentMethod!.map((x) => x)),
+    "cart": cart == null
+        ? []
+        : List<dynamic>.from(cart!.map((x) => x.toJson())),
+  };
 }
 
 class Cart {
@@ -205,7 +199,7 @@ class Cart {
   final String? cartGroupId;
   final int? productId;
   final List<Choice>? choices;
-  final List<VariationCart>? variations;
+  final VariationCart? variations;
   final String? variant;
   final int? availableQuantity;
   final String? maxAllowedQty;
@@ -282,7 +276,7 @@ class Cart {
     String? cartGroupId,
     int? productId,
     List<Choice>? choices,
-    List<VariationCart>? variations,
+    VariationCart? variations,
     String? variant,
     int? availableQuantity,
     bool? isCountryRestricted,
@@ -312,176 +306,155 @@ class Cart {
     dynamic flashDealDetails,
     dynamic flashDealMaxAllowedQuantity,
     DateTime? createdAt,
-  }) =>
-      Cart(
-        id: id ?? this.id,
-        uuid: uuid ?? this.uuid,
-        customerId: customerId ?? this.customerId,
-        cartGroupId: cartGroupId ?? this.cartGroupId,
-        productId: productId ?? this.productId,
-        choices: choices ?? this.choices,
-        isRedeem: isRedeem ?? this.isRedeem,
-        variations: variations ?? this.variations,
-        variant: variant ?? this.variant,
-        availableQuantity: availableQuantity ?? this.availableQuantity,
-        isActive: isActive ?? this.isActive,
-        isCountryRestricted: isCountryRestricted ?? this.isCountryRestricted,
-        maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
-        vendorName: vendorName ?? this.vendorName,
-        quantity: quantity ?? this.quantity,
-        discount: discount ?? this.discount,
-        price: price ?? this.price,
-        offerPrice: offerPrice ?? this.offerPrice,
-        tax: tax ?? this.tax,
-        slug: slug ?? this.slug,
-        name: name ?? this.name,
-        countOfPieces: countOfPieces ?? this.countOfPieces,
-        shop: shop ?? this.shop,
-        checkAvailability: checkAvailability ?? this.checkAvailability,
-        brand: brand ?? this.brand,
-        boutique: boutique ?? this.boutique,
-        thumbnail: thumbnail ?? this.thumbnail,
-        image: image ?? this.image,
-        shippingDays: shippingDays ?? this.shippingDays,
-        haveHurryUpNotifyTimeLeft:
-            haveHurryUpNotifyTimeLeft ?? this.haveHurryUpNotifyTimeLeft,
-        haveHurryUpNotifyQty: haveHurryUpNotifyQty ?? this.haveHurryUpNotifyQty,
-        qtyLeft: qtyLeft ?? this.qtyLeft,
-        timeLeftInMinutes: timeLeftInMinutes ?? this.timeLeftInMinutes,
-        flashDealDetails: flashDealDetails ?? this.flashDealDetails,
-        flashDealMaxAllowedQuantity:
-            flashDealMaxAllowedQuantity ?? this.flashDealMaxAllowedQuantity,
-        createdAt: createdAt ?? this.createdAt,
-      );
+  }) => Cart(
+    id: id ?? this.id,
+    uuid: uuid ?? this.uuid,
+    customerId: customerId ?? this.customerId,
+    cartGroupId: cartGroupId ?? this.cartGroupId,
+    productId: productId ?? this.productId,
+    choices: choices ?? this.choices,
+    isRedeem: isRedeem ?? this.isRedeem,
+    variations: variations ?? this.variations,
+    variant: variant ?? this.variant,
+    availableQuantity: availableQuantity ?? this.availableQuantity,
+    isActive: isActive ?? this.isActive,
+    isCountryRestricted: isCountryRestricted ?? this.isCountryRestricted,
+    maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
+    vendorName: vendorName ?? this.vendorName,
+    quantity: quantity ?? this.quantity,
+    discount: discount ?? this.discount,
+    price: price ?? this.price,
+    offerPrice: offerPrice ?? this.offerPrice,
+    tax: tax ?? this.tax,
+    slug: slug ?? this.slug,
+    name: name ?? this.name,
+    countOfPieces: countOfPieces ?? this.countOfPieces,
+    shop: shop ?? this.shop,
+    checkAvailability: checkAvailability ?? this.checkAvailability,
+    brand: brand ?? this.brand,
+    boutique: boutique ?? this.boutique,
+    thumbnail: thumbnail ?? this.thumbnail,
+    image: image ?? this.image,
+    shippingDays: shippingDays ?? this.shippingDays,
+    haveHurryUpNotifyTimeLeft:
+        haveHurryUpNotifyTimeLeft ?? this.haveHurryUpNotifyTimeLeft,
+    haveHurryUpNotifyQty: haveHurryUpNotifyQty ?? this.haveHurryUpNotifyQty,
+    qtyLeft: qtyLeft ?? this.qtyLeft,
+    timeLeftInMinutes: timeLeftInMinutes ?? this.timeLeftInMinutes,
+    flashDealDetails: flashDealDetails ?? this.flashDealDetails,
+    flashDealMaxAllowedQuantity:
+        flashDealMaxAllowedQuantity ?? this.flashDealMaxAllowedQuantity,
+    createdAt: createdAt ?? this.createdAt,
+  );
 
   factory Cart.fromJson(Map<String, dynamic> json) => Cart(
-        id: json["id"],
-        uuid: json["uuid"],
-        customerId: json["customer_id"],
-        cartGroupId: json["cart_group_id"],
-        productId: json["product_id"],
-        isRedeem: json["is_redeem"],
-        choices: json["choices"] == null
-            ? []
-            : List<Choice>.from(
-                json["choices"]!.map((x) => Choice.fromJson(x))),
-        variations: json["variations"] == null
-            ? []
-            : (json["variations"] is List)
-                ? (json["variations"] as List).isEmpty
-                    ? []
-                    : json["variations"]?.first.isEmpty
-                        ? []
-                        : List<VariationCart>.from(json["variations"]
-                            .map((x) => VariationCart.fromJson(x)))
-                : [],
-        variant: json["variant"] == null
-            ? null
-            : HelperFunctions.replaceDashAfterFirst(json["variant"]),
-        availableQuantity: json["available_quantity"],
-        maxAllowedQty: json["max_allowed_qty"],
-        vendorName: json["vendor_name"],
-        quantity: json["quantity"],
-        discount: json["discount"]?.toDouble(),
-        price: json["price"]?.toDouble(),
-        offerPrice: json["offer_price"]?.toDouble(),
-        tax: json["tax"],
-        slug: json["slug"],
-        name: json["name"],
-        countOfPieces: json["count_of_pieces"],
-        shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
-        checkAvailability: json["check_availability"] ?? false,
-        isActive: json["is_active"] ?? false,
-        isCountryRestricted: json["is_country_restricted"] ?? false,
-        brand: json["brand"] == null ? null : CartBrand.fromJson(json["brand"]),
-        boutique: json["boutique"] == null
-            ? null
-            : BoutiquesCart.fromJson(json["boutique"]),
-        thumbnail: json["thumbnail"],
-        image: json["image"],
-        shippingDays: json["shipping_days"],
-        haveHurryUpNotifyTimeLeft: json["have_hurry_up_notify_time_left"],
-        haveHurryUpNotifyQty: json["have_hurry_up_notify_qty"],
-        qtyLeft: json["qty_left"],
-        timeLeftInMinutes: json["time_left_in_minutes"],
-        flashDealDetails: json["flash_deal_details"],
-        flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-      );
+    id: json["id"],
+    uuid: json["uuid"],
+    customerId: json["customer_id"],
+    cartGroupId: json["cart_group_id"],
+    productId: json["product_id"],
+    isRedeem: json["is_redeem"],
+    choices: json["choices"] == null
+        ? []
+        : List<Choice>.from(json["choices"]!.map((x) => Choice.fromJson(x))),
+    variations: json["variations"] == null
+        ? null
+        : json["variations"] is List
+        ? json["variations"].isEmpty
+              ? null
+              : VariationCart.fromJson(json["variations"][0])
+        : VariationCart.fromJson(json["variations"]),
+    variant: json["variant"] == null ? null : json["variant"],
+    availableQuantity: json["available_quantity"],
+    maxAllowedQty: json["max_allowed_qty"],
+    vendorName: json["vendor_name"],
+    quantity: json["quantity"],
+    discount: json["discount"]?.toDouble(),
+    price: json["price"]?.toDouble(),
+    offerPrice: json["offer_price"]?.toDouble(),
+    tax: json["tax"],
+    slug: json["slug"],
+    name: json["name"],
+    countOfPieces: json["count_of_pieces"],
+    shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
+    checkAvailability: json["check_availability"] ?? false,
+    isActive: json["is_active"] ?? false,
+    isCountryRestricted: json["is_country_restricted"] ?? false,
+    brand: json["brand"] == null ? null : CartBrand.fromJson(json["brand"]),
+    boutique: json["boutique"] == null
+        ? null
+        : BoutiquesCart.fromJson(json["boutique"]),
+    thumbnail: json["thumbnail"],
+    image: json["image"],
+    shippingDays: json["shipping_days"],
+    haveHurryUpNotifyTimeLeft: json["have_hurry_up_notify_time_left"],
+    haveHurryUpNotifyQty: json["have_hurry_up_notify_qty"],
+    qtyLeft: json["qty_left"],
+    timeLeftInMinutes: json["time_left_in_minutes"],
+    flashDealDetails: json["flash_deal_details"],
+    flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "uuid": uuid,
-        "customer_id": customerId,
-        "cart_group_id": cartGroupId,
-        "product_id": productId,
-        "choices": choices == null
-            ? []
-            : List<dynamic>.from(choices!.map((x) => x.toJson())),
-        "variations": variations == null
-            ? []
-            : List<dynamic>.from(variations!.map((x) => x.toJson())),
-        "variant": variant,
-        "available_quantity": availableQuantity,
-        "max_allowed_qty": maxAllowedQty,
-        "is_redeem": isRedeem,
-        "vendor_name": vendorName,
-        "quantity": quantity,
-        "discount": discount,
-        "price": price,
-        "offer_price": offerPrice,
-        "tax": tax,
-        "slug": slug,
-        "name": name,
-        "count_of_pieces": countOfPieces,
-        "shop": shop?.toJson(),
-        "check_availability": checkAvailability,
-        "is_country_restricted": isCountryRestricted,
-        "is_active": isActive,
-        "brand": brand?.toJson(),
-        "boutique": boutique?.toJson(),
-        "thumbnail": thumbnail,
-        "image": image,
-        "shipping_days": shippingDays,
-        "have_hurry_up_notify_time_left": haveHurryUpNotifyTimeLeft,
-        "have_hurry_up_notify_qty": haveHurryUpNotifyQty,
-        "qty_left": qtyLeft,
-        "time_left_in_minutes": timeLeftInMinutes,
-        "flash_deal_details": flashDealDetails,
-        "flash_deal_max_allowed_quantity": flashDealMaxAllowedQuantity,
-        "created_at": createdAt?.toIso8601String(),
-      };
+    "id": id,
+    "uuid": uuid,
+    "customer_id": customerId,
+    "cart_group_id": cartGroupId,
+    "product_id": productId,
+    "choices": choices == null
+        ? []
+        : List<dynamic>.from(choices!.map((x) => x.toJson())),
+    "variations": variations,
+    "variant": variant,
+    "available_quantity": availableQuantity,
+    "max_allowed_qty": maxAllowedQty,
+    "is_redeem": isRedeem,
+    "vendor_name": vendorName,
+    "quantity": quantity,
+    "discount": discount,
+    "price": price,
+    "offer_price": offerPrice,
+    "tax": tax,
+    "slug": slug,
+    "name": name,
+    "count_of_pieces": countOfPieces,
+    "shop": shop?.toJson(),
+    "check_availability": checkAvailability,
+    "is_country_restricted": isCountryRestricted,
+    "is_active": isActive,
+    "brand": brand?.toJson(),
+    "boutique": boutique?.toJson(),
+    "thumbnail": thumbnail,
+    "image": image,
+    "shipping_days": shippingDays,
+    "have_hurry_up_notify_time_left": haveHurryUpNotifyTimeLeft,
+    "have_hurry_up_notify_qty": haveHurryUpNotifyQty,
+    "qty_left": qtyLeft,
+    "time_left_in_minutes": timeLeftInMinutes,
+    "flash_deal_details": flashDealDetails,
+    "flash_deal_max_allowed_quantity": flashDealMaxAllowedQuantity,
+    "created_at": createdAt?.toIso8601String(),
+  };
 }
 
 class BoutiquesCart {
   final int? id;
   final IconCart? icon;
 
-  BoutiquesCart({
-    this.id,
-    this.icon,
-  });
+  BoutiquesCart({this.id, this.icon});
 
-  BoutiquesCart copyWith({
-    int? id,
-    IconCart? icon,
-  }) =>
-      BoutiquesCart(
-        id: id ?? this.id,
-        icon: icon ?? this.icon,
-      );
+  BoutiquesCart copyWith({int? id, IconCart? icon}) =>
+      BoutiquesCart(id: id ?? this.id, icon: icon ?? this.icon);
 
   factory BoutiquesCart.fromJson(Map<String, dynamic> json) => BoutiquesCart(
-        id: json["id"],
-        icon: json["icon"] == null ? null : IconCart.fromJson(json["icon"]),
-      );
+    id: json["id"],
+    icon: json["icon"] == null ? null : IconCart.fromJson(json["icon"]),
+  );
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "icon": icon?.toJson(),
-      };
+  Map<String, dynamic> toJson() => {"id": id, "icon": icon?.toJson()};
 }
 
 class IconCart {
@@ -489,34 +462,29 @@ class IconCart {
   final String? originalWidth;
   final String? originalHeight;
 
-  IconCart({
-    this.filePath,
-    this.originalWidth,
-    this.originalHeight,
-  });
+  IconCart({this.filePath, this.originalWidth, this.originalHeight});
 
   IconCart copyWith({
     String? filePath,
     String? originalWidth,
     String? originalHeight,
-  }) =>
-      IconCart(
-        filePath: filePath ?? this.filePath,
-        originalWidth: originalWidth ?? this.originalWidth,
-        originalHeight: originalHeight ?? this.originalHeight,
-      );
+  }) => IconCart(
+    filePath: filePath ?? this.filePath,
+    originalWidth: originalWidth ?? this.originalWidth,
+    originalHeight: originalHeight ?? this.originalHeight,
+  );
 
   factory IconCart.fromJson(Map<String, dynamic> json) => IconCart(
-        filePath: json["file_path"],
-        originalWidth: json["original_width"],
-        originalHeight: json["original_height"],
-      );
+    filePath: json["file_path"],
+    originalWidth: json["original_width"],
+    originalHeight: json["original_height"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "file_path": filePath,
-        "original_width": originalWidth,
-        "original_height": originalHeight,
-      };
+    "file_path": filePath,
+    "original_width": originalWidth,
+    "original_height": originalHeight,
+  };
 }
 
 class CartBrand {
@@ -525,19 +493,9 @@ class CartBrand {
   final String? name;
   final CartIcon? icon;
 
-  CartBrand({
-    this.id,
-    this.slug,
-    this.name,
-    this.icon,
-  });
+  CartBrand({this.id, this.slug, this.name, this.icon});
 
-  CartBrand copyWith({
-    int? id,
-    String? slug,
-    String? name,
-    CartIcon? icon,
-  }) =>
+  CartBrand copyWith({int? id, String? slug, String? name, CartIcon? icon}) =>
       CartBrand(
         id: id ?? this.id,
         slug: slug ?? this.slug,
@@ -546,18 +504,18 @@ class CartBrand {
       );
 
   factory CartBrand.fromJson(Map<String, dynamic> json) => CartBrand(
-        id: json["id"],
-        slug: json["slug"],
-        name: json["name"],
-        icon: json["icon"] == null ? null : CartIcon.fromJson(json["icon"]),
-      );
+    id: json["id"],
+    slug: json["slug"],
+    name: json["name"],
+    icon: json["icon"] == null ? null : CartIcon.fromJson(json["icon"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "slug": slug,
-        "name": name,
-        "icon": icon?.toJson(),
-      };
+    "id": id,
+    "slug": slug,
+    "name": name,
+    "icon": icon?.toJson(),
+  };
 }
 
 class CartIcon {
@@ -565,86 +523,58 @@ class CartIcon {
   final String? originalWidth;
   final String? originalHeight;
 
-  CartIcon({
-    this.filePath,
-    this.originalWidth,
-    this.originalHeight,
-  });
+  CartIcon({this.filePath, this.originalWidth, this.originalHeight});
 
   CartIcon copyWith({
     String? filePath,
     String? originalWidth,
     String? originalHeight,
-  }) =>
-      CartIcon(
-        filePath: filePath ?? this.filePath,
-        originalWidth: originalWidth ?? this.originalWidth,
-        originalHeight: originalHeight ?? this.originalHeight,
-      );
+  }) => CartIcon(
+    filePath: filePath ?? this.filePath,
+    originalWidth: originalWidth ?? this.originalWidth,
+    originalHeight: originalHeight ?? this.originalHeight,
+  );
 
   factory CartIcon.fromJson(Map<String, dynamic> json) => CartIcon(
-        filePath: json["file_path"],
-        originalWidth: json["original_width"],
-        originalHeight: json["original_height"],
-      );
+    filePath: json["file_path"],
+    originalWidth: json["original_width"],
+    originalHeight: json["original_height"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "file_path": filePath,
-        "original_width": originalWidth,
-        "original_height": originalHeight,
-      };
+    "file_path": filePath,
+    "original_width": originalWidth,
+    "original_height": originalHeight,
+  };
 }
 
 class Choice {
   final String? choice1;
 
-  Choice({
-    this.choice1,
-  });
+  Choice({this.choice1});
 
-  Choice copyWith({
-    String? choice1,
-  }) =>
-      Choice(
-        choice1: choice1 ?? this.choice1,
-      );
+  Choice copyWith({String? choice1}) =>
+      Choice(choice1: choice1 ?? this.choice1);
 
-  factory Choice.fromJson(Map<String, dynamic> json) => Choice(
-        choice1: json["choice_1"],
-      );
+  factory Choice.fromJson(Map<String, dynamic> json) =>
+      Choice(choice1: json["choice_1"]);
 
-  Map<String, dynamic> toJson() => {
-        "choice_1": choice1,
-      };
+  Map<String, dynamic> toJson() => {"choice_1": choice1};
 }
 
 class Shop {
   final String? image;
   final String? name;
 
-  Shop({
-    this.image,
-    this.name,
-  });
+  Shop({this.image, this.name});
 
-  Shop copyWith({
-    String? image,
-    String? name,
-  }) =>
-      Shop(
-        image: image ?? this.image,
-        name: name ?? this.name,
-      );
+  Shop copyWith({String? image, String? name}) =>
+      Shop(image: image ?? this.image, name: name ?? this.name);
 
-  factory Shop.fromJson(Map<String, dynamic> json) => Shop(
-        image: json["image"],
-        name: json["name"],
-      );
+  factory Shop.fromJson(Map<String, dynamic> json) =>
+      Shop(image: json["image"], name: json["name"]);
 
-  Map<String, dynamic> toJson() => {
-        "image": image,
-        "name": name,
-      };
+  Map<String, dynamic> toJson() => {"image": image, "name": name};
 }
 
 class VariationCart {
@@ -653,44 +583,39 @@ class VariationCart {
   final String? size;
   final String? color;
 
-  VariationCart({
-    this.sizeOption,
-    this.colorOption,
-    this.size,
-    this.color,
-  });
+  VariationCart({this.sizeOption, this.colorOption, this.size, this.color});
 
   VariationCart copyWith({
     String? sizeOption,
     String? colorOption,
     String? size,
     String? color,
-  }) =>
-      VariationCart(
-        sizeOption: sizeOption ?? this.sizeOption,
-        colorOption: colorOption ?? this.colorOption,
-        size: size ?? this.size,
-        color: color ?? this.color,
-      );
+  }) => VariationCart(
+    sizeOption: sizeOption ?? this.sizeOption,
+    colorOption: colorOption ?? this.colorOption,
+    size: size ?? this.size,
+    color: color ?? this.color,
+  );
 
   factory VariationCart.fromJson(Map<String, dynamic> json) => VariationCart(
-      sizeOption: json["size_options"] == null
-          ? null
-          : json["size_options"].toString().replaceAll("-", "_"),
-      colorOption: json["color_options"] == null
-          ? null
-          : json["color_options"].toString().replaceAll("-", "_"),
-      size: json["Size"] == null
-          ? null
-          : json["Size"].toString().replaceAll("-", "_"),
-      color: json["color"] == null
-          ? null
-          : json["color"].toString().replaceAll("-", "_"));
+    sizeOption: json["size_options"] == null
+        ? null
+        : json["size_options"].toString().replaceAll("-", "_"),
+    colorOption: json["color_options"] == null
+        ? null
+        : json["color_options"].toString().replaceAll("-", "_"),
+    size: json["Size"] == null
+        ? null
+        : json["Size"].toString().replaceAll("-", "_"),
+    color: json["color"] == null
+        ? null
+        : json["color"].toString().replaceAll("-", "_"),
+  );
 
   Map<String, dynamic> toJson() => {
-        "size_options": sizeOption,
-        "color_options": colorOption,
-        "Size": size,
-        "color": color,
-      };
+    "size_options": sizeOption,
+    "color_options": colorOption,
+    "Size": size,
+    "color": color,
+  };
 }

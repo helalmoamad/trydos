@@ -9,14 +9,15 @@ import '../repositories/home_repository.dart';
 
 @injectable
 class StoreFcmTokenOfMarketUseCase
-    implements UseCase<bool, StoreFcmTokenOfMarketUseCaseParams> {
+    implements UseCase<String, StoreFcmTokenOfMarketUseCaseParams> {
   StoreFcmTokenOfMarketUseCase(this.repository);
 
   final HomeRepository repository;
 
   @override
-  Future<Either<Failure, bool>> call(
-      StoreFcmTokenOfMarketUseCaseParams params) async {
+  Future<Either<Failure, String>> call(
+    StoreFcmTokenOfMarketUseCaseParams params,
+  ) async {
     return repository.storeFcmTokenOfMarket(params.map);
   }
 }
@@ -25,12 +26,14 @@ class StoreFcmTokenOfMarketUseCaseParams {
   final String fcmToken;
   final int userId;
 
-  StoreFcmTokenOfMarketUseCaseParams(
-      {required this.fcmToken, required this.userId});
+  StoreFcmTokenOfMarketUseCaseParams({
+    required this.fcmToken,
+    required this.userId,
+  });
 
   Map<String, dynamic> get map => {
-        "device_token": fcmToken,
-        "user_id": userId,
-        "auth_token": GetIt.I<PrefsRepository>().marketToken
-      };
+    "device_token": fcmToken,
+    "user_id": userId,
+    "auth_token": GetIt.I<PrefsRepository>().marketToken,
+  };
 }

@@ -85,16 +85,16 @@ class GetOrdersByCartGroupIDEvent extends OrderEvent {
 }
 
 class GetCustomerWalletEvent extends OrderEvent {
-  final String assetId;
+  final String currencySymbol;
   final bool statusInitToRefreshAmount;
   GetCustomerWalletEvent({
-    required this.assetId,
+    required this.currencySymbol,
     this.statusInitToRefreshAmount = false,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [assetId, statusInitToRefreshAmount];
+  List<Object?> get props => [currencySymbol, statusInitToRefreshAmount];
 }
 
 class GetOrdersEvent extends OrderEvent {

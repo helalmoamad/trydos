@@ -279,17 +279,19 @@ class MainCategoriesForProductId {
   final int? categoryId;
   final String? productName;
   final int? countProducts;
-  final BunnerBoutique? mostViewedProductThumbnail;
+  final String? mostViewedProductThumbnail;
   final String? categorySlug;
   final String? categoryName;
   final bool? isProduct;
   final BunnerBoutique? flatPhotoPath;
+  final bool? mostViews;
 
   MainCategoriesForProductId({
     this.categoryId,
     this.categorySlug,
     this.productName,
     this.countProducts,
+    this.mostViews,
     this.mostViewedProductThumbnail,
     this.categoryName,
     this.flatPhotoPath,
@@ -303,10 +305,12 @@ class MainCategoriesForProductId {
     String? productName,
     int? countProducts,
     bool? isProduct,
-    BunnerBoutique? mostViewedProductThumbnail,
+    bool? mostViews,
+    String? mostViewedProductThumbnail,
     BunnerBoutique? flatPhotoPath,
   }) => MainCategoriesForProductId(
     categoryId: categoryId ?? this.categoryId,
+    mostViews: mostViews ?? this.mostViews,
     categorySlug: categorySlug ?? this.categorySlug,
     categoryName: categoryName ?? this.categoryName,
     productName: productName ?? this.productName,
@@ -317,31 +321,34 @@ class MainCategoriesForProductId {
     flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
   );
 
-  factory MainCategoriesForProductId.fromJson(Map<String, dynamic> json) =>
-      MainCategoriesForProductId(
-        categoryId: json["id"],
-        categorySlug: json["slug"],
-        isProduct: json["is_product"],
-        categoryName: json["name"],
-        productName: json["most_viewed_product_name"],
-        countProducts: json["num_available_product"],
-        mostViewedProductThumbnail:
-            json["most_viewed_product_thumbnail"] == null
-            ? null
-            : BunnerBoutique.fromJson(json["most_viewed_product_thumbnail"]),
-        flatPhotoPath: json["flat_photo_path"] == null
-            ? null
-            : BunnerBoutique.fromJson(json["flat_photo_path"]),
-      );
+  factory MainCategoriesForProductId.fromJson(
+    Map<String, dynamic> json,
+  ) => MainCategoriesForProductId(
+    categoryId: json["id"],
+    categorySlug: json["slug"],
+    isProduct: json["is_product"],
+    mostViews: json["most_views"],
+    categoryName: json["name"],
+    productName: json["most_viewed_product_name"],
+    countProducts: json["num_available_product"],
+    mostViewedProductThumbnail:
+        json["most_viewed_product_thumbnail"].toString().contains("cloudinary")
+        ? json["most_viewed_product_thumbnail"]
+        : "${dotenv.env['Images_Url']}${json["most_viewed_product_thumbnail"]}",
+    flatPhotoPath: json["flat_photo_path"] == null
+        ? null
+        : BunnerBoutique.fromJson(json["flat_photo_path"]),
+  );
 
   Map<String, dynamic> toJson() => {
     "id": categoryId,
+    "most_views": mostViews,
     "slug": categorySlug,
     "name": categoryName,
     "is_product": isProduct,
     "flat_photo_path": flatPhotoPath?.toJson(),
     "most_viewed_product_name": productName,
     "num_available_product": countProducts,
-    "most_viewed_product_thumbnail": mostViewedProductThumbnail?.toJson(),
+    "most_viewed_product_thumbnail": mostViewedProductThumbnail,
   };
 }

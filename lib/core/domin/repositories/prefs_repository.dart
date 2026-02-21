@@ -10,6 +10,7 @@ abstract class PrefsRepository {
   String? get countryIso;
   String? get userChoosedCountryIso;
   String? get fcmTokenId;
+  String? get fcmMarketTokenId;
   String? get serverTime;
   int? get myChatId;
 
@@ -158,6 +159,7 @@ abstract class PrefsRepository {
   Future<bool> setPhoneNumber(String phoneNumber);
   Future<bool> setIdToken(String idToken);
   Future<void> setFcmTokenId(String fcmTokenId);
+  Future<void> setFcmMarketTokenId(String fcmMarketTokenId);
 
   Future<bool> setMyChatId(int id);
 

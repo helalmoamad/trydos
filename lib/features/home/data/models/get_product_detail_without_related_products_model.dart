@@ -5,7 +5,6 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/features/home/data/models/get_buyers_comments_model.dart';
 import 'package:trydos/features/home/data/models/get_fqa_comments_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -53,7 +52,7 @@ class Product {
   final String? ownerId;
   final bool? isActive;
   // final List<Variation>? variation;
-  final List<ChoiceOption>? choiceOptions;
+  final List<String>? sizes;
   final String? maxAllowedQty;
   final bool? hasDiscount;
   final Seller? seller;
@@ -128,7 +127,7 @@ class Product {
     this.shippingCost,
     this.commentOffset,
     this.countOfLikes,
-    this.choiceOptions,
+    this.sizes,
     this.hasDiscount,
     this.price,
     this.priceFormatted,
@@ -166,7 +165,7 @@ class Product {
     List<Thumbnail>? images,
     List<SyncColorImageProduct>? syncColorImages,
     //   List<Variation>? variation,
-    List<ChoiceOption>? choiceOptions,
+    List<String>? sizes,
     bool? hasDiscount,
     bool? goodQualityProduct,
     bool? hasTax,
@@ -223,7 +222,7 @@ class Product {
     slug: slug ?? this.slug,
     isActive: isActive ?? this.isActive,
     // variation: variation ?? this.variation,
-    choiceOptions: choiceOptions ?? this.choiceOptions,
+    sizes: sizes ?? this.sizes,
     hasDiscount: hasDiscount ?? this.hasDiscount,
     maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
     buyersComment: buyersComment ?? this.buyersComment,
@@ -307,7 +306,11 @@ class Product {
     images: json["images"] == null
         ? []
         : List<Thumbnail>.from(
-            json["images"]!.map((x) => Thumbnail.fromJson(x)),
+            json["images"]!.map(
+              (x) => x is String
+                  ? Thumbnail.fromJson({"file_path": x})
+                  : Thumbnail.fromJson(x),
+            ),
           ),
     boutique: json["boutique"] == null
         ? null
@@ -318,7 +321,7 @@ class Product {
           ? []
           : List<comment_model.Comment>.from(
               json["comments"]!.map((x) => comment_model.Comment.fromJson(x))),*/
-    labelNames: json["label_names"] == null
+    labelNames: json["label_names"] == null || json["label_names"] == "[]"
         ? []
         : List<String>.from(json["label_names"]!.map((x) => x)),
     flashDealEndDate: json["flash_deal_end_date"],
@@ -337,11 +340,9 @@ class Product {
           ? []
           : List<Variation>.from(
               json["variation"]!.map((x) => Variation.fromJson(x))),*/
-    choiceOptions: json["choice_options"] == null
+    sizes: json["sizes"] == null
         ? []
-        : List<ChoiceOption>.from(
-            json["choice_options"]!.map((x) => ChoiceOption.fromJson(x)),
-          ),
+        : List<String>.from(json["sizes"]!.map((x) => x)),
     hasDiscount: json["has_discount"],
     isRedeem: json["is_redeem"],
     redeemPrice: (json["redeem_price"] ?? 0).toDouble(),
@@ -406,14 +407,12 @@ class Product {
     "seller": seller?.toJson(),
     "redeem_price": redeemPrice,
 
-    "choice_options": choiceOptions == null
-        ? []
-        : List<dynamic>.from(choiceOptions!.map((x) => x.toJson())),
+    "sizes": sizes == null ? [] : List<dynamic>.from(sizes!.map((x) => x)),
     "has_discount": hasDiscount,
     /* "variation": variation == null
             ? []
             : List<dynamic>.from(variation!.map((x) => x.toJson())),*/
-    "label_names": labelNames == null
+    "label_names": labelNames == null || labelNames == "[]"
         ? []
         : List<dynamic>.from(labelNames!.map((x) => x)),
 
@@ -845,73 +844,90 @@ class Shop {
 }
 
 class Variation {
-  final bool? variantNotifyForUser;
+  final String? id;
+  final String? size;
+  final VariationColor? color;
   final String? type;
   final double? price;
-  final String? priceFormated;
   final double? offerPrice;
-  final double? redeemPrice;
-  final String? offerPriceFormated;
+  final double? luckPrice;
   final String? sku;
-  final double? qty;
+  final int? qty;
 
   Variation({
-    this.variantNotifyForUser,
+    this.id,
+    this.size,
+    this.color,
     this.type,
     this.price,
-    this.redeemPrice,
-    this.priceFormated,
     this.offerPrice,
-    this.offerPriceFormated,
+    this.luckPrice,
     this.sku,
     this.qty,
   });
 
   Variation copyWith({
-    bool? variantNotifyForUser,
+    String? id,
+    String? size,
+    VariationColor? color,
     String? type,
     double? price,
-    String? priceFormated,
     double? offerPrice,
-    String? offerPriceFormated,
+    double? luckPrice,
     String? sku,
-    double? redeemPrice,
-    double? qty,
+    int? qty,
   }) => Variation(
-    variantNotifyForUser: variantNotifyForUser ?? this.variantNotifyForUser,
+    id: id ?? this.id,
+    size: size ?? this.size,
+    color: color ?? this.color,
     type: type ?? this.type,
     price: price ?? this.price,
-    redeemPrice: redeemPrice ?? this.redeemPrice,
-    priceFormated: priceFormated ?? this.priceFormated,
     offerPrice: offerPrice ?? this.offerPrice,
-    offerPriceFormated: offerPriceFormated ?? this.offerPriceFormated,
+    luckPrice: luckPrice ?? this.luckPrice,
     sku: sku ?? this.sku,
     qty: qty ?? this.qty,
   );
 
   factory Variation.fromJson(Map<String, dynamic> json) => Variation(
-    variantNotifyForUser: json["variant_notify_for_user"] ?? false,
-    type: HelperFunctions.replaceDashAfterFirst(json["type"]),
-    price: json["price"]?.toDouble(),
-    priceFormated: json["price_formated"],
-    offerPrice: json["offer_price"]?.toDouble(),
-    redeemPrice: json["redeem_price"]?.toDouble(),
-    offerPriceFormated: json["offer_price_formated"],
+    id: json["id"],
+    size: json["size"],
+    color: json["color"] == null
+        ? null
+        : VariationColor.fromJson(json["color"]),
+    type: json["type"],
+    price: double.tryParse(json["price"].toString()),
+    offerPrice: double.tryParse(json["offer_price"].toString()),
+    luckPrice: double.tryParse(json["luck_price"].toString()),
     sku: json["sku"],
-    qty: double.tryParse(json["qty"].toString()),
+    qty: json["qty"],
   );
 
   Map<String, dynamic> toJson() => {
-    "variant_notify_for_user": variantNotifyForUser,
+    "id": id,
+    "size": size,
+    "color": color?.toJson(),
     "type": type,
     "price": price,
-    "price_formated": priceFormated,
-    "redeem_price": redeemPrice,
     "offer_price": offerPrice,
-    "offer_price_formated": offerPriceFormated,
+    "luck_price": luckPrice,
     "sku": sku,
-    "qty": qty?.toDouble(),
+    "qty": qty,
   };
+}
+
+class VariationColor {
+  final String? name;
+  final String? code;
+
+  VariationColor({this.name, this.code});
+
+  VariationColor copyWith({String? name, String? code}) =>
+      VariationColor(name: name ?? this.name, code: code ?? this.code);
+
+  factory VariationColor.fromJson(Map<String, dynamic> json) =>
+      VariationColor(name: json["name"], code: json["code"]);
+
+  Map<String, dynamic> toJson() => {"name": name, "code": code};
 }
 
 class DataDescriptor {

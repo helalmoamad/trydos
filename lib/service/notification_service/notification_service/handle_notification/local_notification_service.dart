@@ -14,6 +14,8 @@ import 'package:get_it/get_it.dart';
 
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart'
     show GetOrdersByOrderGroupIDEvent;
@@ -155,6 +157,16 @@ class LocalNotificationService {
             fromNotification: true,
             status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
             orderGroupId: data?["order_group_id"].toString() ?? "",
+          ),
+        );
+        return;
+      }
+      if (data?["type"] ==
+          typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+              .greeting]) {
+        GetIt.I<HomeBloc>().add(
+          SendAcceptOfNotificationMarketEvent(
+            firebaseTokenId: GetIt.I<PrefsRepository>().fcmMarketTokenId ?? "",
           ),
         );
         return;

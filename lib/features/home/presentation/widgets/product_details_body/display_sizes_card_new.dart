@@ -270,9 +270,9 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
         currentSelectedSizeIndex.value = index;
         BlocProvider.of<HomeBloc>(context).add(
           AddCurrentColorSizeEvent(
-            choice_1: widget.productItem.choiceOptions?[0].options
-                ?.firstWhere((element) => element.option == sizes?[index])
-                .name,
+            choice_1: widget.productItem.sizes?.firstWhere(
+              (element) => element == sizes?[index],
+            ),
             choiceOption: sizes?[index],
           ),
         );

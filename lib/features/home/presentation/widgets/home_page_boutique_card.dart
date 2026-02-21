@@ -2,13 +2,13 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart' show WidgetsKeys;
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:html/parser.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
@@ -33,23 +33,18 @@ class HomePageBoutiqueCard extends StatelessWidget {
     required this.category_Slug,
     required this.isShowPanelForVerified,
     required this.index,
+    required this.descriptionPlain,
   });
   final String category_Slug;
   final int index;
   final bool withSlidingImages;
   final HomeBoutiques boutique;
   final ValueNotifier<bool> isShowPanelForVerified;
+  /// نص الوصف جاهز بدون HTML (يُمرَّر من الصفحة الرئيسية لتحسين الأداء)
+  final String descriptionPlain;
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
-    return _buildCardContent(context);
-  }
-
-  Widget _buildCardContent(BuildContext context) {
     BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
     AppBloc appBloc = BlocProvider.of<AppBloc>(context);
@@ -224,7 +219,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          stripHtmlTags(boutique.description ?? '').trim(),
+                          descriptionPlain,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: context.textTheme.titleMedium?.mq.copyWith(
@@ -369,8 +364,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
                                               CategoryBanner(
                                                 filePath: boutique
                                                     .mainCategoriesForProductIds![index]
-                                                    .mostViewedProductThumbnail
-                                                    ?.filePath,
+                                                    .mostViewedProductThumbnail,
                                               ),
                                         ),
                                       ],
@@ -432,15 +426,30 @@ class HomePageBoutiqueCard extends StatelessWidget {
                                 ),
                               );
                             },
-                            child: MyCachedNetworkImage(
-                              radius: 15.r,
-                              imageUrl: boutique
-                                  .mainCategoriesForProductIds![index]
-                                  .mostViewedProductThumbnail!
-                                  .filePath!,
-                              width: 90.w,
-                              imageFit: BoxFit.contain,
-                              height: 90.h,
+                            child: Stack(
+                              children: [
+                                MyCachedNetworkImage(
+                                  radius: 15.r,
+                                  imageUrl:
+                                      boutique
+                                          .mainCategoriesForProductIds![index]
+                                          .mostViewedProductThumbnail ??
+                                      "",
+                                  width: 90.w,
+                                  imageFit: BoxFit.contain,
+                                  height: 90.h,
+                                ),
+                                (boutique
+                                            .mainCategoriesForProductIds![index]
+                                            .mostViews ??
+                                        false)
+                                    ? Positioned(
+                                        child: SvgPicture.asset(
+                                          AppAssets.trendingSvg,
+                                        ),
+                                      )
+                                    : const SizedBox.shrink(),
+                              ],
                             ),
                           ),
                         );
@@ -453,10 +462,4 @@ class HomePageBoutiqueCard extends StatelessWidget {
     );
   }
 
-  String stripHtmlTags(String htmlString) {
-    final document = parse(htmlString);
-    final String parsedString =
-        parse(document.body?.text).documentElement?.text ?? '';
-    return parsedString;
-  }
 }

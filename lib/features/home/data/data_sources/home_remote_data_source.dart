@@ -1202,13 +1202,15 @@ class HomeRemoteDatasource {
     return translateCommentsToAppLan();
   }
 
-  Future<bool> storeFcmTokenOfMarket(Map<String, dynamic> params) {
-    PostClient<bool> storeFcmTokenOfMarket = PostClient<bool>(
+  Future<String> storeFcmTokenOfMarket(Map<String, dynamic> params) {
+    PostClient<String> storeFcmTokenOfMarket = PostClient<String>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<bool>(
+      requestPrams: RequestConfig<String>(
         endpoint: MarketEndPoints.storeFcmOfMarketEP,
         data: params,
-        response: ResponseValue<bool>(returnValueOnSuccess: true),
+        response: ResponseValue<String>(
+          fromJson: (response) => response["data"]["id"].toString(),
+        ),
       ),
     );
     return storeFcmTokenOfMarket();
@@ -1247,15 +1249,18 @@ class HomeRemoteDatasource {
 
     return getCustomerWallet();
   }*/
-  Future<CustomerWalletModel> getCustomerWallet({required String assetId}) {
+  Future<CustomerWalletModel> getCustomerWallet({
+    required String currencySymbol,
+  }) {
     GetClient<CustomerWalletModel> getCustomerWallet =
         GetClient<CustomerWalletModel>(
           serverName: ServerName.wallet,
           requestPrams: RequestConfig<CustomerWalletModel>(
-            endpoint: WalletEndPoints.walletBalanceEP(assetId),
+            endpoint: WalletEndPoints.walletBalanceEP,
             queryParameters: {
               'accountSubtype': 'MAIN',
               'assetType': 'CURRENCY',
+              "currencySymbol": currencySymbol,
             },
             response: ResponseValue<CustomerWalletModel>(
               fromJson: (response) => CustomerWalletModel.fromJson(response),
@@ -1428,6 +1433,25 @@ class HomeRemoteDatasource {
         );
 
     return cancelOrderItem();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> sendAcceptOfNotificationMarket(
+    Map<String, dynamic> params,
+  ) {
+    PostClient<ReadOnlyMessageFromApiModel> sendAcceptOfNotificationMarket =
+        PostClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: MarketEndPoints.sendAcceptOfNotificationMarketEP,
+            data: params,
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+
+    return sendAcceptOfNotificationMarket();
   }
 
   Future<CancelOrderModel> cancelOrder(Map<String, dynamic> params) {
@@ -1704,9 +1728,9 @@ class HomeRemoteDatasource {
   Future<GetAuthProductDetailsModel> getAuthProductDetails(String productSlug) {
     GetClient<GetAuthProductDetailsModel> client =
         GetClient<GetAuthProductDetailsModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.webApp,
           requestPrams: RequestConfig<GetAuthProductDetailsModel>(
-            endpoint: MarketEndPoints.getAuthProductDetailsEP(productSlug),
+            endpoint: WebAppEndPoints.getAuthProductDetailsEP(productSlug),
             response: ResponseValue<GetAuthProductDetailsModel>(
               fromJson: (response) =>
                   GetAuthProductDetailsModel.fromJson(response),

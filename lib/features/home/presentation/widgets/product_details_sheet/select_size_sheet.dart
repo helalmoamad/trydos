@@ -70,11 +70,13 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
 
     if (!(homeBloc.state.sizesForEachColor.isNullOrEmpty) &&
         !(widget.fromListingPage)) {
-      currentIndexInSizes =
-          ValueNotifier(homeBloc.state.sizesForEachColor!.indexWhere(
-        (element) =>
-            element == homeBloc.state.currentColorSizeForCart?["choiceOption"],
-      ));
+      currentIndexInSizes = ValueNotifier(
+        homeBloc.state.sizesForEachColor!.indexWhere(
+          (element) =>
+              element ==
+              homeBloc.state.currentColorSizeForCart?["choiceOption"],
+        ),
+      );
       if (currentIndexInSizes.value == -1) {
         currentIndexInSizes.value = 0;
       }
@@ -84,19 +86,20 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                     .state
                     .cachedProductWithoutRelatedProductsModel[widget.productId]
                     ?.product
-                    ?.choiceOptions
+                    ?.sizes
                     ?.length ??
                 0) >
             0) {
-      currentIndexInSizes = ValueNotifier((homeBloc
-                  .state
-                  .cachedProductWithoutRelatedProductsModel[widget.productId]
-                  ?.product
-                  ?.choiceOptions?[0]
-                  .options
-                  ?.length ??
-              0) ~/
-          2);
+      currentIndexInSizes = ValueNotifier(
+        (homeBloc
+                    .state
+                    .cachedProductWithoutRelatedProductsModel[widget.productId]
+                    ?.product
+                    ?.sizes
+                    ?.length ??
+                0) ~/
+            2,
+      );
     }
 
     super.initState();
@@ -118,10 +121,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
         sizes = state.sizesForEachColor ?? [];
         sizesQuantities = state.sizesQuantitiesForEachColor ?? [];
         if (sizes.length == 0) {
-          return Container(
-            color: Colors.white,
-            height: 0,
-          );
+          return Container(color: Colors.white, height: 0);
         }
         return Container(
           decoration: BoxDecoration(
@@ -138,28 +138,28 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SvgPicture.asset(AppAssets.sizeIconSvg),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
                   MyTextWidget(
                     '${LocaleKeys.please_select_the_appropriate.tr()} ',
-                    style: textTheme.titleLarge?.rq
-                        .copyWith(height: 0.86, color: const Color(0xff505050)),
+                    style: textTheme.titleLarge?.rq.copyWith(
+                      height: 0.86,
+                      color: const Color(0xff505050),
+                    ),
                   ),
                   LanguageService.languageCode == "ar"
                       ? const SizedBox.shrink()
                       : MyTextWidget(
                           '${LocaleKeys.size.tr()}',
                           style: textTheme.titleLarge?.mq.copyWith(
-                              height: 0.86, color: const Color(0xff505050)),
-                        )
+                            height: 0.86,
+                            color: const Color(0xff505050),
+                          ),
+                        ),
                 ],
               ),
               const SizedBox(height: 5),
@@ -168,125 +168,121 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 100,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      separatorBuilder: (ctx, index) => const SizedBox(
-                            width: 6,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 100,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    separatorBuilder: (ctx, index) => const SizedBox(width: 6),
+                    itemBuilder: (ctx, index) {
+                      if (index > 0 && index % 10 == 9) {
+                        return const SizedBox(width: 4);
+                      }
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            color: const Color(0xff505050),
+                            width: 0.3,
+                            height: index > 0 && index % 10 == 4 ? 8 : 4.57,
                           ),
-                      itemBuilder: (ctx, index) {
-                        if (index > 0 && index % 10 == 9) {
-                          return const SizedBox(
-                            width: 4,
-                          );
-                        }
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              color: const Color(0xff505050),
-                              width: 0.3,
-                              height: index > 0 && index % 10 == 4 ? 8 : 4.57,
-                            ),
-                          ],
-                        );
-                      }),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: ValueListenableBuilder<int>(
-                    valueListenable: currentIndexInSizes,
-                    builder: (context, currentIndex, _) {
-                      return Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Stack(
-                            children: [
-                              Container(
-                                  height: 70,
-                                  width: 70,
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        // ignore: deprecated_member_use
-                                        color: Colors.black.withOpacity(0.1),
-                                        offset: const Offset(0, 3),
-                                        blurRadius: 3,
-                                      ),
-                                    ],
-                                    borderRadius: BorderRadius.circular(180),
-                                    color: sizesQuantities[currentIndex] == 0
-                                        ? const Color(0xffFF5F61)
-                                        : sizesQuantities[currentIndex] <= 10
-                                            ? const Color(0xffFFAF5F)
-                                            : const Color.fromARGB(
-                                                255, 75, 61, 61),
-                                  )),
-                              Container(
-                                height: 70,
-                                width: 70,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(180),
-                                    border: widget.selectedColor != null
-                                        ? Border.all(
-                                            color: widget.selectedColor!,
-                                            width: 0.5)
-                                        : null,
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: colorScheme.white,
-                                          offset: const Offset(0, 4),
-                                          blurRadius: 6,
-                                          inset: true),
-                                    ]),
-                              )
-                            ],
-                          ),
-                          CarouselSlider.builder(
-                              itemCount: sizes.length,
-                              carouselController: carouselController,
-                              itemBuilder: (ctx, index, _) {
-                                if (widget.requestToNotifyMeFormFirstSize) {
-                                  Future.delayed(
-                                    const Duration(milliseconds: 300),
-                                    () {
-                                      if (sizesQuantities[currentIndex] == 0 &&
-                                          !widget.collectedAfterOrdering) {
-                                        widget.colorIsNotAvailableNotifier
-                                                .value =
-                                            widget.selectedColorName ?? null;
+                  valueListenable: currentIndexInSizes,
+                  builder: (context, currentIndex, _) {
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              height: 70,
+                              width: 70,
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    // ignore: deprecated_member_use
+                                    color: Colors.black.withOpacity(0.1),
+                                    offset: const Offset(0, 3),
+                                    blurRadius: 3,
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(180),
+                                color: sizesQuantities[currentIndex] == 0
+                                    ? const Color(0xffFF5F61)
+                                    : sizesQuantities[currentIndex] <= 10
+                                    ? const Color(0xffFFAF5F)
+                                    : const Color.fromARGB(255, 75, 61, 61),
+                              ),
+                            ),
+                            Container(
+                              height: 70,
+                              width: 70,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(180),
+                                border: widget.selectedColor != null
+                                    ? Border.all(
+                                        color: widget.selectedColor!,
+                                        width: 0.5,
+                                      )
+                                    : null,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: colorScheme.white,
+                                    offset: const Offset(0, 4),
+                                    blurRadius: 6,
+                                    inset: true,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        CarouselSlider.builder(
+                          itemCount: sizes.length,
+                          carouselController: carouselController,
+                          itemBuilder: (ctx, index, _) {
+                            if (widget.requestToNotifyMeFormFirstSize) {
+                              Future.delayed(
+                                const Duration(milliseconds: 300),
+                                () {
+                                  if (sizesQuantities[currentIndex] == 0 &&
+                                      !widget.collectedAfterOrdering) {
+                                    widget.colorIsNotAvailableNotifier.value =
+                                        widget.selectedColorName ?? null;
 
-                                        widget.sizeIsNotAvailableNotifier
-                                            .value = sizes[currentIndex];
-                                        widget.requestToNotifyMeFormFirstSize =
-                                            false;
-                                      } else {
-                                        widget.colorIsNotAvailableNotifier
-                                            .value = null;
-                                        widget.sizeIsNotAvailableNotifier
-                                            .value = null;
-                                      }
-                                    },
-                                  );
-                                }
+                                    widget.sizeIsNotAvailableNotifier.value =
+                                        sizes[currentIndex];
+                                    widget.requestToNotifyMeFormFirstSize =
+                                        false;
+                                  } else {
+                                    widget.colorIsNotAvailableNotifier.value =
+                                        null;
+                                    widget.sizeIsNotAvailableNotifier.value =
+                                        null;
+                                  }
+                                },
+                              );
+                            }
 
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 5),
-                                  child: Container(
-                                    width: 65,
-                                    child: GestureDetector(
-                                      onTap: () =>
-                                          carouselController.animateToPage(
-                                        index,
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          sizes[index],
-                                          style: textTheme.headlineLarge?.bq
-                                              .copyWith(
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: Container(
+                                width: 65,
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      carouselController.animateToPage(index),
+                                  child: Center(
+                                    child: Text(
+                                      sizes[index],
+                                      style: textTheme.headlineLarge?.bq
+                                          .copyWith(
                                             height: 1.3,
                                             fontSize: 18.sp,
                                             /*index != currentIndex
@@ -309,138 +305,148 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                             color: index == currentIndex
                                                 ? Colors.white
                                                 : sizesQuantities[index] == 0
-                                                    ? const Color(0xffFF5F61)
-                                                    : sizesQuantities[index] <=
-                                                            10
-                                                        ? const Color(
-                                                            0xffFFAF5F)
-                                                        : const Color(
-                                                            0xff505050),
+                                                ? const Color(0xffFF5F61)
+                                                : sizesQuantities[index] <= 10
+                                                ? const Color(0xffFFAF5F)
+                                                : const Color(0xff505050),
                                           ),
-                                        ),
-                                      ),
                                     ),
                                   ),
-                                );
-                              },
-                              options: CarouselOptions(
-                                  initialPage: currentIndexInSizes.value,
-                                  height: 80,
-                                  enableInfiniteScroll: false,
-                                  onPageChanged: (index, reason) {
-                                    currentIndexInSizes.value = index;
-                                    homeBloc.add(AddCurrentColorSizeEvent(
-                                        choice_1: widget
-                                            .choiceOptions?[0].options
-                                            ?.firstWhere((element) =>
-                                                element.option == sizes[index])
-                                            .name,
-                                        choiceOption: sizes[index]));
-                                    HapticFeedback.lightImpact();
-                                    if (sizesQuantities[index] == 0 &&
-                                        !widget.collectedAfterOrdering) {
-                                      widget.sizeIsNotAvailableNotifier.value =
-                                          sizes[index];
-                                      widget.colorIsNotAvailableNotifier.value =
-                                          widget.selectedColorName ?? null;
-                                    } else {
-                                      widget.sizeIsNotAvailableNotifier.value =
-                                          null;
-                                      widget.colorIsNotAvailableNotifier.value =
-                                          null;
-                                    }
-                                  },
-                                  viewportFraction: 0.22)),
-                        ],
-                      );
-                    }),
+                                ),
+                              ),
+                            );
+                          },
+                          options: CarouselOptions(
+                            initialPage: currentIndexInSizes.value,
+                            height: 80,
+                            enableInfiniteScroll: false,
+                            onPageChanged: (index, reason) {
+                              currentIndexInSizes.value = index;
+                              homeBloc.add(
+                                AddCurrentColorSizeEvent(
+                                  choice_1: widget.choiceOptions?[0].options
+                                      ?.firstWhere(
+                                        (element) =>
+                                            element.option == sizes[index],
+                                      )
+                                      .name,
+                                  choiceOption: sizes[index],
+                                ),
+                              );
+                              HapticFeedback.lightImpact();
+                              if (sizesQuantities[index] == 0 &&
+                                  !widget.collectedAfterOrdering) {
+                                widget.sizeIsNotAvailableNotifier.value =
+                                    sizes[index];
+                                widget.colorIsNotAvailableNotifier.value =
+                                    widget.selectedColorName ?? null;
+                              } else {
+                                widget.sizeIsNotAvailableNotifier.value = null;
+                                widget.colorIsNotAvailableNotifier.value = null;
+                              }
+                            },
+                            viewportFraction: 0.22,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
               SizedBox(
                 height: 8,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 100,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      separatorBuilder: (ctx, index) => const SizedBox(
-                            width: 6,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 100,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    separatorBuilder: (ctx, index) => const SizedBox(width: 6),
+                    itemBuilder: (ctx, index) {
+                      if (index > 0 && index % 10 == 9) {
+                        return const SizedBox(width: 4);
+                      }
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            color: const Color(0xff505050),
+                            width: 0.3,
+                            height: index > 0 && index % 10 == 4 ? 8 : 4.57,
                           ),
-                      itemBuilder: (ctx, index) {
-                        if (index > 0 && index % 10 == 9) {
-                          return const SizedBox(
-                            width: 4,
-                          );
-                        }
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              color: const Color(0xff505050),
-                              width: 0.3,
-                              height: index > 0 && index % 10 == 4 ? 8 : 4.57,
-                            ),
-                          ],
-                        );
-                      }),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               ValueListenableBuilder<int>(
-                  valueListenable: currentIndexInSizes,
-                  builder: (context, currentIndex, _) {
-                    if (sizesQuantities[currentIndex] == 0) {
-                      return MyTextWidget(
-                        '${LocaleKeys.not_available_now_stock.tr()}',
-                        style: textTheme.titleMedium?.mq.copyWith(
-                            height: 1, color: const Color(0xffFF5F61)),
-                      );
-                    }
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        MyTextWidget(
-                          '${widget.choiceOptions?[0].options?.firstWhere((element) => element.option == sizes[currentIndex]).name ?? ""} ',
-                          style: textTheme.titleMedium?.bq.copyWith(
-                              height: 1, color: const Color(0xff505050)),
-                        ),
-                        MyTextWidget(
-                          '${LocaleKeys.recommended.tr()} ',
-                          style: textTheme.titleMedium?.rq.copyWith(
-                              height: 1, color: const Color(0xff505050)),
-                        ),
-                        MyTextWidget(
-                          '${LocaleKeys.size.tr()} ',
-                          style: textTheme.titleMedium?.bq.copyWith(
-                              height: 1, color: const Color(0xff505050)),
-                        ),
-                        MyTextWidget(
-                          '${LocaleKeys.for_you.tr()} ',
-                          style: textTheme.titleMedium?.rq.copyWith(
-                              height: 1, color: const Color(0xff505050)),
-                        ),
-                        if (sizesQuantities[currentIndex] <= 10) ...{
-                          MyTextWidget(
-                            '${LocaleKeys.last.tr()} ',
-                            style: textTheme.titleMedium?.rq.copyWith(
-                                height: 1, color: const Color(0xffFFAF5F)),
-                          ),
-                          MyTextWidget(
-                            '${sizesQuantities[currentIndex]}',
-                            style: textTheme.titleMedium?.mq.copyWith(
-                                height: 1, color: const Color(0xffFFAF5F)),
-                          ),
-                        }
-                      ],
+                valueListenable: currentIndexInSizes,
+                builder: (context, currentIndex, _) {
+                  if (sizesQuantities[currentIndex] == 0) {
+                    return MyTextWidget(
+                      '${LocaleKeys.not_available_now_stock.tr()}',
+                      style: textTheme.titleMedium?.mq.copyWith(
+                        height: 1,
+                        color: const Color(0xffFF5F61),
+                      ),
                     );
-                  }),
-              const SizedBox(
-                height: 10,
+                  }
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      MyTextWidget(
+                        '${widget.choiceOptions?[0].options?.firstWhere((element) => element.option == sizes[currentIndex]).name ?? ""} ',
+                        style: textTheme.titleMedium?.bq.copyWith(
+                          height: 1,
+                          color: const Color(0xff505050),
+                        ),
+                      ),
+                      MyTextWidget(
+                        '${LocaleKeys.recommended.tr()} ',
+                        style: textTheme.titleMedium?.rq.copyWith(
+                          height: 1,
+                          color: const Color(0xff505050),
+                        ),
+                      ),
+                      MyTextWidget(
+                        '${LocaleKeys.size.tr()} ',
+                        style: textTheme.titleMedium?.bq.copyWith(
+                          height: 1,
+                          color: const Color(0xff505050),
+                        ),
+                      ),
+                      MyTextWidget(
+                        '${LocaleKeys.for_you.tr()} ',
+                        style: textTheme.titleMedium?.rq.copyWith(
+                          height: 1,
+                          color: const Color(0xff505050),
+                        ),
+                      ),
+                      if (sizesQuantities[currentIndex] <= 10) ...{
+                        MyTextWidget(
+                          '${LocaleKeys.last.tr()} ',
+                          style: textTheme.titleMedium?.rq.copyWith(
+                            height: 1,
+                            color: const Color(0xffFFAF5F),
+                          ),
+                        ),
+                        MyTextWidget(
+                          '${sizesQuantities[currentIndex]}',
+                          style: textTheme.titleMedium?.mq.copyWith(
+                            height: 1,
+                            color: const Color(0xffFFAF5F),
+                          ),
+                        ),
+                      },
+                    ],
+                  );
+                },
               ),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Row(
@@ -457,16 +463,13 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SvgPicture.asset(
-                              AppAssets.coloredSizeIconSvg,
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
+                            SvgPicture.asset(AppAssets.coloredSizeIconSvg),
+                            const SizedBox(width: 10),
                             MyTextWidget(
                               '${LocaleKeys.need_help_finding_your_size.tr()}',
-                              style: textTheme.titleLarge?.rq
-                                  .copyWith(color: const Color(0xff505050)),
+                              style: textTheme.titleLarge?.rq.copyWith(
+                                color: const Color(0xff505050),
+                              ),
                             ),
                           ],
                         ),
@@ -481,17 +484,13 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Center(
-                        child: SvgPicture.asset(
-                          AppAssets.recyclingSvg,
-                        ),
+                        child: SvgPicture.asset(AppAssets.recyclingSvg),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 18,
-              ),
+              const SizedBox(height: 18),
             ],
           ),
         );

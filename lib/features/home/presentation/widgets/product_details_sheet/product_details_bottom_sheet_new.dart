@@ -57,6 +57,7 @@ class ProductDetailsBottomSheetNew extends StatefulWidget {
   final String currentColorName;
   final String currentColorOption;
   final String productSlugForTopic;
+  final String variationId;
   final String productDescription;
   final String currentColornum;
   final PanelController panelController;
@@ -94,6 +95,7 @@ class ProductDetailsBottomSheetNew extends StatefulWidget {
     this.isVerified,
     required this.flashDealEndDate,
     required this.isFlashDealEnded,
+    required this.variationId,
     required this.visibleFlashDeal,
     required this.currentVariant,
     required this.productIdForCashData,
@@ -208,9 +210,48 @@ class _ProductDetailsBottomSheetNewState
             }
           });
         });
-        colorsQuantityForEachProduct =
-            state.colorsQuantitiesForEachProduct ?? [];
-        colorsForEachProduct = state.colorsForEachProduct ?? [];
+        final rawQuantities = state.colorsQuantitiesForEachProduct ?? [];
+        final rawColors = state.colorsForEachProduct ?? [];
+        // ترتيب colorsForEachProduct و colorsQuantityForEachProduct حسب ترتيب الألوان في syncColorImages
+        final syncColors = widget.productItem.syncColorImages ?? [];
+        if (syncColors.isNotEmpty && widget.productItem.variation != null) {
+          final colorOrderFromVariation = <String>[];
+          for (final v in widget.productItem.variation!) {
+            final parts = v.type?.split('-');
+            final color = (parts != null && parts.isNotEmpty) ? parts[0] : null;
+            if (color != null &&
+                color.isNotEmpty &&
+                !colorOrderFromVariation.contains(color)) {
+              colorOrderFromVariation.add(color);
+            }
+          }
+          colorsForEachProduct = [
+            for (var i = 0; i < syncColors.length; i++)
+              () {
+                final colorOpt = syncColors[i].colorOption;
+                final j = colorOpt != null
+                    ? colorOrderFromVariation.indexOf(colorOpt)
+                    : -1;
+                if (j >= 0 && j < rawColors.length) return rawColors[j];
+                return '';
+              }(),
+          ];
+          colorsQuantityForEachProduct = [
+            for (var i = 0; i < syncColors.length; i++)
+              () {
+                final colorOpt = syncColors[i].colorOption;
+                final j = colorOpt != null
+                    ? colorOrderFromVariation.indexOf(colorOpt)
+                    : -1;
+                if (j >= 0 && j < rawQuantities.length) return rawQuantities[j];
+                return 0;
+              }(),
+          ];
+        } else {
+          colorsForEachProduct = rawColors;
+          colorsQuantityForEachProduct = rawQuantities;
+        }
+
         sizesForEachProduct = state.sizesForEachColor ?? [];
         qtyForProductWithoutVariant =
             state.authProductDetailsModel?.data?.availableQuantity;
@@ -461,16 +502,9 @@ class _ProductDetailsBottomSheetNewState
                                               0
                                           ? const SizedBox.shrink()
                                           : _availableColorWidget(state: state),
-                                      widget
-                                              .productItem
-                                              .choiceOptions
-                                              .isNullOrEmpty
+                                      widget.productItem.sizes.isNullOrEmpty
                                           ? const SizedBox.shrink()
-                                          : (widget
-                                                        .productItem
-                                                        .choiceOptions?[0]
-                                                        .options
-                                                        ?.length ??
+                                          : (widget.productItem.sizes?.length ??
                                                     0) ==
                                                 0
                                           ? const SizedBox.shrink()
@@ -643,6 +677,7 @@ class _ProductDetailsBottomSheetNewState
                           builder: (context, state) {
                             return ProductDetailsSheetBottomBarNew(
                               isRedeem: widget.isRedeem,
+                              variationId: widget.variationId,
                               isVerified: widget.isVerified,
                               redeemVariantPrice: widget.redeemVariantPrice,
                               flashDealEndDate: widget.flashDealEndDate,
@@ -1155,10 +1190,7 @@ class _ProductDetailsBottomSheetNewState
                                   double offPriceInCart =
                                       state.cartCollection?.firstWhere(
                                         (element) {
-                                          if (element
-                                                  .variations
-                                                  ?.isNullOrEmpty ??
-                                              true) {
+                                          if (element.variations == null) {
                                             return (element.productId
                                                     .toString() ==
                                                 widget.productIdForCashData);
@@ -1166,7 +1198,7 @@ class _ProductDetailsBottomSheetNewState
                                           return (element.productId
                                                       .toString() ==
                                                   widget.productIdForCashData &&
-                                              ('${element.variations![0].colorOption ?? ""}${(((element.variations![0].colorOption ?? "") != "") && ((element.variations![0].sizeOption ?? "") != "")) ? "-" : ""}${element.variations![0].sizeOption ?? ""}') ==
+                                              ('${element.variations!.colorOption ?? ""}${(((element.variations!.colorOption ?? "") != "") && ((element.variations!.sizeOption ?? "") != "")) ? "-" : ""}${element.variations!.sizeOption ?? ""}') ==
                                                   widget.currentVariant);
                                         },
                                         orElse: () =>
@@ -1326,6 +1358,9 @@ class _ProductDetailsBottomSheetNewState
   }
 
   Widget _availableColorWidget({required HomeState state}) {
+    print(
+      "___${widget.productItem.syncColorImages?[0].colorOption}${(state.currentColorSizeForCart?["choiceOption"] ?? "") == "" ? "" : "-"}${state.currentColorSizeForCart?["choiceOption"] ?? ""}____",
+    );
     int tapIndex =
         state.currentSelectedColorForEveryProduct[widget.productItem.slug
             .toString()] ??
@@ -1394,6 +1429,9 @@ class _ProductDetailsBottomSheetNewState
                                 .productItem
                                 .slug
                                 .toString()]) {
+                          print(
+                            "_/__${(widget.productItem.variation?.length)}____",
+                          );
                           return;
                         }
                         FirebaseAnalyticsService.logEventForSession(
@@ -1485,6 +1523,7 @@ class _ProductDetailsBottomSheetNewState
                                               0)
                                           .round() <
                                       11 &&
+                                  (!widget.collectedAfterOrdering) &&
                                   (index !=
                                       ((state.currentSelectedColorForEveryProduct[widget
                                                   .productItem
@@ -1713,14 +1752,9 @@ class _ProductDetailsBottomSheetNewState
                       onTap: () {
                         homeBloc.add(
                           AddCurrentColorSizeEvent(
-                            choice_1: widget
-                                .productItem
-                                .choiceOptions?[0]
-                                .options
-                                ?.firstWhere(
-                                  (element) => element.option == sizes[index],
-                                )
-                                .name,
+                            choice_1: widget.productItem.sizes?.firstWhere(
+                              (element) => element == sizes[index],
+                            ),
                             choiceOption: sizes[index],
                           ),
                         );
@@ -1761,10 +1795,7 @@ class _ProductDetailsBottomSheetNewState
                               return Stack(
                                 children: [
                                   _sizesWidget(
-                                    '${widget.productItem.choiceOptions?[0].options?.firstWhere(
-                                          (element) => element.option == sizes[index],
-                                          orElse: () => Options(name: "", option: ""),
-                                        ).name ?? ""} ',
+                                    '${widget.productItem.sizes?.firstWhere((element) => element == sizes[index], orElse: () => "") ?? ""} ',
                                     "",
                                     sizeIsNotAvailableNotifier.value ==
                                             sizes[index]
@@ -1802,8 +1833,7 @@ class _ProductDetailsBottomSheetNewState
                         },
                       ),
                     ),
-                    itemCount:
-                        widget.productItem.choiceOptions?[0].options?.length,
+                    itemCount: widget.productItem.sizes?.length,
                   ),
                 ),
                 const Spacer(),
@@ -1818,7 +1848,7 @@ class _ProductDetailsBottomSheetNewState
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 MyTextWidget(
-                                  '${widget.productItem.choiceOptions?[0].options?.firstWhere((element) => element.option == state.currentColorSizeForCart?["choiceOption"]).name ?? ""} ',
+                                  '${widget.productItem.sizes?.firstWhere((element) => element == state.currentColorSizeForCart?["choiceOption"]) ?? ""} ',
                                   style: context.textTheme.titleLarge?.bq
                                       .copyWith(
                                         height: 1.1,
@@ -1847,10 +1877,7 @@ class _ProductDetailsBottomSheetNewState
                                 ),
                                 const SizedBox(width: 5),
                                 MyTextWidget(
-                                  '${widget.productItem.choiceOptions?[0].options?.firstWhere(
-                                        (element) => element.option == state.currentColorSizeForCart?["choiceOption"],
-                                        orElse: () => Options(name: "", option: ""),
-                                      ).name ?? ""} ',
+                                  '${widget.productItem.sizes?.firstWhere((element) => element == state.currentColorSizeForCart?["choiceOption"], orElse: () => "") ?? ""} ',
                                   style: context.textTheme.titleLarge?.bq
                                       .copyWith(
                                         height: 1.3,

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
@@ -23,6 +24,7 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/language_service.dart';
+import 'package:trydos_wallet/trydos_wallet.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../common/helper/show_message.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -71,6 +73,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   @override
   void initState() {
+    print(
+      "PlaceOrder PageRRRRRRRRRRRRRRRRRRRRRRRRRRR${widget.paymentMethods.value}",
+    );
     LastPagesTracker.push("PlaceOrder Page");
     super.initState();
   }
@@ -116,11 +121,34 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     element.isCountryRestricted == true ||
                     element.checkAvailability == false),
               )) {
+                if (widget.paymentMethods.value.contains(
+                  PaymentMethods.trydosWallet,
+                )) {
+                  TrydosWallet.init(
+                    TrydosWalletConfig(
+                      baseUrl: dotenv.env['WALLET_URL']!, // رابط الـ API
+                      token: prefsRepository
+                          .walletToken, // أو null قبل تسجيل الدخول
+                      languageCode: 'en', // ar, en, ku
+                      allowBadCertificate: true, // true للتطوير فقط عند خطأ SSL
+                    ),
+                  );
+
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const TrydosWalletWelcomeScreen(),
+                    ),
+                  );
+                  return;
+                }
                 String paymentMethod = '';
                 int payByWallet = 0;
 
                 if (widget.paymentMethods.value.length == 1) {
                   paymentMethod = widget.paymentMethods.value[0];
+                  print(
+                    "paymentMethod:  -------------------------------------${paymentMethod}",
+                  );
                   //////////////
                   payByWallet = 0;
                 } else {

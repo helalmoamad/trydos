@@ -85,17 +85,17 @@ class Data {
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     id: json["id"],
     availableQuantity: int.tryParse(json["available_quantity"].toString()),
-    variation: json["variation"] == null
+    variation: json["variations"] == null
         ? []
         : List<Variation>.from(
-            json["variation"]!.map((x) => Variation.fromJson(x)),
+            json["variations"]!.map((x) => Variation.fromJson(x)),
           ),
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "available_quantity": availableQuantity,
-    "variation": variation == null
+    "variations": variation == null
         ? []
         : List<dynamic>.from(variation!.map((x) => x.toJson())),
   };

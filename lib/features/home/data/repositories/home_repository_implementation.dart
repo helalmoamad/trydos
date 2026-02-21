@@ -604,7 +604,7 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, bool>> storeFcmTokenOfMarket(
+  Future<Either<Failure, String>> storeFcmTokenOfMarket(
     Map<String, dynamic> params,
   ) {
     return handlingExceptionRequest(
@@ -614,10 +614,19 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
-    required String assetId,
+    required String currencySymbol,
   }) {
     return handlingExceptionRequest(
-      tryCall: () => dataSource.getCustomerWallet(assetId: assetId),
+      tryCall: () =>
+          dataSource.getCustomerWallet(currencySymbol: currencySymbol),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>>
+  sendAcceptOfNotificationMarket(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.sendAcceptOfNotificationMarket(params),
     );
   }
 

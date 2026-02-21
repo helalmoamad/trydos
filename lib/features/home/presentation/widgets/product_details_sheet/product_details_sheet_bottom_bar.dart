@@ -52,6 +52,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
     required this.clickOnMoreOptions,
     required this.panelController,
     required this.productIdForCashproducts,
+    required this.variationId,
     required this.productIdForRequestApi,
     required this.colorName,
     required this.colorNum,
@@ -81,7 +82,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
   final PanelController panelController;
   final String imageUrl;
   final int countOfPieces;
-
+  final String variationId;
   final bool collectedAfterOrder;
   final bool isGetFullProductDetails;
   final product.Products products;
@@ -228,6 +229,7 @@ class _ProductDetailsSheetBottomBarState
                                               countOfPieces:
                                                   widget.countOfPieces,
                                               colorNum: widget.colorNum,
+                                              variationId: widget.variationId,
                                               quantity: 1,
                                               images: widget.imageUrl,
                                               colorOption: widget.colorOption,
@@ -1235,6 +1237,7 @@ class ImageForAddToCart {
   final String? images;
   int? quantity;
   final String? choiceName;
+  final String? variationId;
   final int? countOfPieces;
   final String? colorNum;
   final String? choiceOption;
@@ -1246,6 +1249,7 @@ class ImageForAddToCart {
     this.colorNum,
     this.countOfPieces,
     this.images,
+    this.variationId,
     this.colorOption,
     this.choiceOption,
     this.quantity,
@@ -1254,18 +1258,20 @@ class ImageForAddToCart {
   });
 
   ImageForAddToCart copyWith({
-    final String? colorName,
-    final String? images,
+    String? colorName,
+    String? images,
     int? quantity,
-    final String? size,
-    final int? countOfPieces,
-    final String? choiceOption,
-    final String? colorOption,
-    final String? colorNum,
+    String? size,
+    int? countOfPieces,
+    String? choiceOption,
+    String? variationId,
+    String? colorOption,
+    String? colorNum,
     bool? isDuplicate,
   }) => ImageForAddToCart(
     colorName: colorName ?? this.colorName,
     images: images ?? this.images,
+    variationId: variationId ?? this.variationId,
     choiceOption: choiceOption ?? this.choiceOption,
     colorOption: colorOption ?? this.colorOption,
     quantity: quantity ?? this.quantity,
@@ -1279,6 +1285,7 @@ class ImageForAddToCart {
         colorName: json["colorName"],
         images: json["images"],
         choiceName: json["size"],
+        variationId: json["variationId"],
         colorOption: json["colorOption"],
         quantity: json["quantity"],
         choiceOption: json["choiceOption"],
@@ -1290,6 +1297,7 @@ class ImageForAddToCart {
     "colorName": colorName,
     "images": images,
     "size": choiceName,
+    "variationId": variationId,
     "colorOption": colorOption,
     "choiceOption": choiceOption,
     "quantity": quantity,

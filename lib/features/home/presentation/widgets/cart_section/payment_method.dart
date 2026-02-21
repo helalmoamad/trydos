@@ -55,7 +55,9 @@ PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 class _PaymentMethodState extends State<PaymentMethod> {
   @override
   void initState() {
-    if ((widget.amount > 0 && !widget.fromSuccessOrder) &&
+    if ((widget.amount > 0 &&
+            !widget.fromSuccessOrder &&
+            (widget.amount >= widget.totalPrice)) &&
         !widget.paymentMethods.value.contains(PaymentMethods.trydosWallet)) {
       _addItemToPaymentMethods(
         widget.paymentMethods,
@@ -71,7 +73,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
     String item,
   ) {
     Future.delayed(const Duration(milliseconds: 300), () {
-      paymentMethods.value = List.from(paymentMethods.value)..add(item);
+      paymentMethods.value = List.from([item]);
+      // List.from(paymentMethods.value)..add(item);
     });
   }
 
@@ -220,7 +223,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                 widget.fromSuccessOrder) {
                               return;
                             }
-                            if (widget.amount == 0) {
+                            if ((widget.amount == 0) ||
+                                (widget.amount < widget.totalPrice)) {
                               showWarningMessage(
                                 context,
                                 "${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()}",
@@ -542,20 +546,14 @@ class _PaymentMethodState extends State<PaymentMethod> {
                         onTap: () {
                           BlocProvider.of<OrderBloc>(context).add(
                             GetCustomerWalletEvent(
-                              assetId: "",
-                              /*assetId:
+                              currencySymbol:
                                   GetIt.I<HomeBloc>()
                                       .state
-                                      .walletCurrencies!
-                                      .items!
-                                      .firstWhere(
-                                        (element) =>
-                                            element.symbol ==
-                                            widget.currencySymbol,
-                                        orElse: () => CurrencyItem(id: ""),
-                                      )
-                                      .id ??
-                                  "",*/
+                                      .getCurrencyForCountryModel!
+                                      .data!
+                                      .currency!
+                                      .code ??
+                                  "",
                               statusInitToRefreshAmount: true,
                             ),
                           );

@@ -13,8 +13,7 @@ abstract class WalletEndPoints {
   static final loginWithIdTokenEP = 'login-with-id-token'.authScope();
   static const createWalletEP = "wallets";
   static const currenciesEP = "currencies";
-  static String walletBalanceEP(String assetId) =>
-      "wallets/my/balances/$assetId";
+  static const walletBalanceEP = "wallets/myAcounts";
 }
 
 abstract class WalletUrls {

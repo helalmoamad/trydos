@@ -180,14 +180,13 @@ class _CartPageState extends State<CartPage> {
                 }); ////////////////////////////////
                 orderBloc.add(
                   GetCustomerWalletEvent(
-                    assetId: "",
-                    /*    GetIt.I<HomeBloc>().state.walletCurrencies!.items!
-                            .firstWhere(
-                              (element) => element.symbol == priceSymbol,
-                              orElse: () => CurrencyItem(id: ""),
-                            )
-                            .id ??
-                        "",*/
+                    currencySymbol:
+                        state
+                            .getCurrencyForCountryModel!
+                            .data!
+                            .currency!
+                            .code ??
+                        "",
                   ),
                 );
                 Future.delayed(
@@ -245,12 +244,12 @@ class _CartPageState extends State<CartPage> {
             state.cartCollection?.forEach((element) {
               cartImages.add({
                 "image": element.image ?? "",
-                "size": element.variations?.isNullOrEmpty ?? false
+                "size": element.variations == null
                     ? ""
-                    : element.variations?[0].size ?? "",
-                "color": element.variations?.isNullOrEmpty ?? false
+                    : element.variations?.size ?? "",
+                "color": element.variations == null
                     ? ""
-                    : element.variations?[0].color ?? "",
+                    : element.variations?.color ?? "",
               });
             });
             /*if ((prefsRepository.isTokenExpired ??

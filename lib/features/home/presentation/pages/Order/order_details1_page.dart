@@ -4006,7 +4006,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         currentColorName:
                             (details?[index].variation.isNullOrEmpty ?? false)
                             ? ""
-                            : details?[index].variation?[0].colorOption,
+                            : details?[index].variant?.split("-").first,
                         productSlug: details?[index].productSlug ?? "",
                       ),
                     );
@@ -4108,7 +4108,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     : Text(
                         (details?[index].variation.isNullOrEmpty ?? false)
                             ? ''
-                            : details?[index].variation?[0].color ?? '',
+                            : details?[index].variation
+                                      ?.firstWhere(
+                                        (element) =>
+                                            element.type ==
+                                            details[index].variant,
+                                      )
+                                      .color
+                                      ?.name ??
+                                  "",
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: context.textTheme.bodyMedium?.rq.copyWith(

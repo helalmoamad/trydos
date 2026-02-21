@@ -61,6 +61,7 @@ import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usec
 import 'package:trydos/features/home/domain/use_cases/hide_item_from_oldCart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/remove_item_from_cart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/request_for_notification_when_product_became_available_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/send_accept__of_notifications_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/send_error_to_mobile_error_log.dart';
 import 'package:trydos/features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/subscribe_topic_for_notification_usecase.dart';
@@ -149,6 +150,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.changeCountryLanguageFornotificationUseCase,
     this.getOrderRatingUsecase,
     this.updateOrderCommentRatingUseCase,
+    this.sendAcceptOfNotificationsUseCase,
     this.subscribeTopicFornotificationUseCase,
     this.unSubscribeTopicFornotificationUseCase,
     this.getProductDetailWithoutRelatedProductsUseCase,
@@ -306,7 +308,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
 
     on<GetFullProductDetailsEvent>(_onGetFullProductDetailsEvent);
-
+    on<SendAcceptOfNotificationMarketEvent>(
+      _onSendAcceptOfNotificationMarketEvent,
+    );
     on<ConvertItemFromCartToOldCartEvent>(_onConvertItemFromCartToOldCartEvent);
     /*on<GetCommentForProductEvent>(
       _onGetCommentForProductEvent,
@@ -357,6 +361,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final UpdateOrderCommentRatingUseCase updateOrderCommentRatingUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final UpdateUserPhotoUseCase uploadFileCloudinaryUseCase;
+  final SendAcceptOfNotificationsUseCase sendAcceptOfNotificationsUseCase;
   final DeleteOrderCommentRatingUseCase deleteOrderCommentRatingUseCase;
   final GetAuthProductDetailsUseCase getAuthProductDetailsUseCase;
   final UpdateLikeCommentUseCase updateLikeCommentUseCase;
@@ -2220,12 +2225,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         r.data?.cart?.forEach(
           (element) => addVariationToCartId.addAll({
             element.id.toString(): {
-              "size": element.variations.isNullOrEmpty
+              "size": element.variations == null
                   ? ""
-                  : "${element.variations?[0].sizeOption ?? ""}",
-              "color": element.variations.isNullOrEmpty
+                  : "${element.variations?.sizeOption ?? ""}",
+              "color": element.variations == null
                   ? ""
-                  : "${element.variations?[0].colorOption ?? ""}",
+                  : "${element.variations?.colorOption ?? ""}",
             },
           }),
         );
@@ -2237,13 +2242,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             AddQuantityForCartEvent(
               quantity: element.quantity ?? 0,
               productId: element.productId.toString(),
-              currentSize: element.variations.isNullOrEmpty
+              currentSize: element.variations == null
                   ? ""
-                  : element.variations?[0].sizeOption ?? "",
+                  : element.variations?.sizeOption ?? "",
               cartId: element.id ?? 0,
-              colorName: element.variations.isNullOrEmpty
+              colorName: element.variations == null
                   ? ""
-                  : element.variations?[0].colorOption ?? "",
+                  : element.variations?.colorOption ?? "",
             ),
           );
 
@@ -2259,14 +2264,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     ..productId.toString()]![element.id]!
                   .add([
                     element.image ?? "",
-                    element.variations.isNullOrEmpty
+                    element.variations == null
                         ? "null"
-                        : element.variations.isNullOrEmpty
+                        : element.variations == null
                         ? "null"
-                        : element.variations?[0].color ?? "null",
-                    element.variations.isNullOrEmpty
+                        : element.variations?.color ?? "null",
+                    element.variations == null
                         ? "null"
-                        : element.variations?[0].size ?? "null",
+                        : element.variations?.size ?? "null",
                   ]);
             }
             ;
@@ -2284,14 +2289,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                       .toString()]![element.id]!
                   .add([
                     element.image ?? "",
-                    element.variations.isNullOrEmpty
+                    element.variations == null
                         ? "null"
-                        : element.variations.isNullOrEmpty
+                        : element.variations == null
                         ? "null"
-                        : element.variations?[0].color ?? "null",
-                    element.variations.isNullOrEmpty
+                        : element.variations?.color ?? "null",
+                    element.variations == null
                         ? "null"
-                        : element.variations?[0].size ?? "null",
+                        : element.variations?.size ?? "null",
                   ]);
             }
             ;
@@ -2427,13 +2432,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             AddQuantityForCartEvent(
               quantity: element.quantity ?? 0,
               productId: element.productId.toString(),
-              currentSize: element.variations.isNullOrEmpty
+              currentSize: element.variations == null
                   ? ""
-                  : element.variations?[0].sizeOption ?? "",
+                  : element.variations?.sizeOption ?? "",
               cartId: element.id ?? 0,
-              colorName: element.variations.isNullOrEmpty
+              colorName: element.variations == null
                   ? ""
-                  : element.variations?[0].colorOption ?? "",
+                  : element.variations?.colorOption ?? "",
             ),
           );
           if (addImagesToProductIdForCart[element.productId.toString()] ==
@@ -2448,14 +2453,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     ..productId.toString()]![element.id]!
                   .add([
                     element.image ?? "",
-                    element.variations.isNullOrEmpty
+                    element.variations == null
                         ? "null"
-                        : element.variations.isNullOrEmpty
+                        : element.variations == null
                         ? "null"
-                        : element.variations?[0].color ?? "null",
-                    element.variations.isNullOrEmpty
+                        : element.variations?.color ?? "null",
+                    element.variations == null
                         ? "null"
-                        : element.variations?[0].size ?? "null",
+                        : element.variations?.size ?? "null",
                   ]);
             }
             ;
@@ -2473,14 +2478,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                       .toString()]![element.id]!
                   .add([
                     element.image ?? "",
-                    element.variations.isNullOrEmpty
+                    element.variations == null
                         ? "null"
-                        : element.variations.isNullOrEmpty
+                        : element.variations == null
                         ? "null"
-                        : element.variations?[0].color ?? "null",
-                    element.variations.isNullOrEmpty
+                        : element.variations?.color ?? "null",
+                    element.variations == null
                         ? "null"
-                        : element.variations?[0].size ?? "null",
+                        : element.variations?.size ?? "null",
                   ]);
             }
             ;
@@ -2545,7 +2550,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         state.cartCollection?.forEach((elements) {
           oldCartCollection.removeWhere(
             (element) =>
-                elements.variant == element.variant &&
+                elements.variations?.colorOption ==
+                    element.variations?.colorOption &&
+                elements.variations?.sizeOption ==
+                    element.variations?.sizeOption &&
                 elements.productId == element.productId,
           );
         });
@@ -2821,7 +2829,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       price: event.products.price,
       quantity: event.quantity,
       brand: brand,
-      variations: [variation],
+      variations: variation,
       productId: event.products.productId,
     );
     List<Cart>? cartCollection = List.of(state.cartCollection ?? []);
@@ -2838,12 +2846,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     oldCart.OldCart? PreOldCart = oldCartCollection.firstWhere(
       (element) =>
           element.image == event.image &&
-          (element.variations!.isNotEmpty
-              ? ((element.variations?[0].colorOption ?? '') ==
+          (element.variations != null
+              ? ((element.variations?.colorOption ?? '') ==
                     (variation.colorOption ?? ''))
               : true) &&
-          (element.variations!.isNotEmpty
-              ? ((element.variations?[0].sizeOption ?? '') ==
+          (element.variations != null
+              ? ((element.variations?.sizeOption ?? '') ==
                     (variation.sizeOption ?? ''))
               : true),
       orElse: () => oldCart.OldCart(id: -1),
@@ -2851,12 +2859,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     oldCartCollection.removeWhere(
       (element) =>
           element.image == event.image &&
-          (element.variations!.isNotEmpty
-              ? ((element.variations?[0].colorOption ?? "") ==
+          (element.variations != null
+              ? ((element.variations?.colorOption ?? "") ==
                     (variation.colorOption ?? ""))
               : true) &&
-          (element.variations!.isNotEmpty
-              ? ((element.variations?[0].sizeOption ?? "") ==
+          (element.variations != null
+              ? ((element.variations?.sizeOption ?? "") ==
                     (variation.sizeOption ?? ''))
               : true),
     );
@@ -2871,11 +2879,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     final response = await addItemToCartUseCase(
       AddITemToCartParams(
         image: event.image.split("/").last,
-        choice_1: event.choiceOption == null
-            ? null
-            : event.choiceOption!.replaceAll("_", "-"),
+        variationId: event.variationId,
         isRedeem: event.isRedeem,
-        color: event.color,
+
         id: event.products.productId.toString(),
         quantity: event.quantity,
       ),
@@ -2899,6 +2905,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   productSlugForTopic: event.productSlugForTopic,
                   image: event.image,
                   products: event.products,
+                  variationId: event.variationId,
                   choiceOption: event.choiceOption,
                   maxAllowed: event.maxAllowed,
                   color: event.color,
@@ -3393,18 +3400,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               element.type ==
               "${event.colorName}${(event.colorName != "" && event.currentSize != "") ? "-" : ""}${event.currentSize}",
         );
-        if (index != -1) {
+        if (index != -1 && (!event.fromCartPage)) {
           variation = listVariation[index];
           listVariation.removeAt(index);
           variation = variation.copyWith(qty: ((variation.qty)! + 1));
           listVariation.insert(index, variation);
+          getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
+            data: getAuthProductDetailsModel.data?.copyWith(
+              variation: listVariation,
+              availableQuantity: availableQuantity + 1,
+            ),
+          );
         }
-        getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
-          data: getAuthProductDetailsModel.data!.copyWith(
-            variation: listVariation,
-            availableQuantity: availableQuantity + 1,
-          ),
-        );
+
         Map<String, Map<String, String>> addVariationToCartId = Map.of(
           state.addVariationToCartId ?? {},
         );
@@ -3804,7 +3812,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             ? []
             : (state.authProductDetailsModel?.data!.variation) ?? [];
         int availableQuantity =
-            state.authProductDetailsModel?.data!.availableQuantity ?? 0;
+            state.authProductDetailsModel?.data?.availableQuantity ?? 0;
         GetAuthProductDetailsModel getAuthProductDetailsModel =
             state.authProductDetailsModel ?? GetAuthProductDetailsModel();
         int index = listVariation.indexWhere(
@@ -3812,18 +3820,21 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               element.type ==
               "${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}",
         );
+
         print(
           "SSSSSSSSSSSSSSSSAAAAAAAAAAAAAAAAAA${index} ${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}",
         );
         if ((r.data == null || r.data == "") || (r.data?.status ?? 0) != 1) {
-          if (index != -1 && event.totalQuantity == 1) {
+          if (index != -1 &&
+              event.totalQuantity == 1 &&
+              (!event.fromCartPage)) {
             variation = listVariation[index];
             listVariation.removeAt(index);
             variation = variation.copyWith(qty: 0);
             listVariation.insert(index, variation);
 
             getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
-              data: getAuthProductDetailsModel.data!.copyWith(
+              data: getAuthProductDetailsModel.data?.copyWith(
                 variation: listVariation,
               ),
             );
@@ -3948,21 +3959,21 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           return;
         }
         if (r.data!.status == 1) {
-          if (index != -1) {
+          if (index != -1 && (!event.fromCartPage)) {
             variation = listVariation[index];
             listVariation.removeAt(index);
             variation = variation.copyWith(
               qty: ((variation.qty)! - (event.newQuantity)),
             );
             listVariation.insert(index, variation);
+            getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
+              data: getAuthProductDetailsModel.data!.copyWith(
+                variation: listVariation,
+                availableQuantity: ((availableQuantity) - (event.newQuantity))
+                    .round(),
+              ),
+            );
           }
-          getAuthProductDetailsModel = getAuthProductDetailsModel.copyWith(
-            data: getAuthProductDetailsModel.data!.copyWith(
-              variation: listVariation,
-              availableQuantity: ((availableQuantity) - (event.newQuantity))
-                  .round(),
-            ),
-          );
 
           Map<String, Map<int, List<List<String>>>>
           addImagesToProductIdForCart = Map.from(
@@ -4232,7 +4243,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
           oldcartCollection.add(
             oldCart.OldCart(
-              availableQuantity: cart.availableQuantity?.round(),
               boutique: cart.boutique,
               brand: oldCart.Brand(
                 icon: oldCart.Icon(
@@ -4243,25 +4253,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 name: cart.name,
               ),
               image: cart.image,
-              cartGroupId: cart.cartGroupId,
+
               countOfPieces: cart.countOfPieces,
-              discount: cart.discount,
-              maxAllowedQty: cart.maxAllowedQty,
+              offerPrice: cart.offerPrice,
               productId: cart.productId,
               variations: cart.variations,
               shippingDays: cart.shippingDays,
               quantity: cart.quantity,
               thumbnail: cart.thumbnail,
               id: cart.id,
-              variant: cart.variant,
-              priceOfVariant: cart.price,
-              choices: [
-                oldCart.Choice(
-                  choice1: ((cart.choices?.isNullOrEmpty) ?? true)
-                      ? ""
-                      : cart.choices?[0].choice1,
-                ),
-              ],
             ),
           );
         }
@@ -4403,6 +4403,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         AddItemToCartEvent(
           fromCartPage: event.fromCartPage,
           isRedeem: event.isRedeem,
+          variationId: listitemForAddToCart[i].variationId,
           redeemVariantPrice: event.redeemVariantPrice,
           finishAddAllTheItems: i == listitemForAddToCart.length - 1,
           countOfPieces: listitemForAddToCart[i].countOfPieces,
@@ -4503,6 +4504,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
 
     ImageForAddToCart imageForAddToCart = ImageForAddToCart(
+      variationId: event.imageForAddToCart.variationId,
       colorNum: event.imageForAddToCart.colorNum,
       colorOption: event.imageForAddToCart.colorOption,
       quantity: event.imageForAddToCart.quantity,
@@ -4530,11 +4532,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         ImageForAddToCart element = listitemForAddToCart[i];
 
         if (element.images == imageForAddToCart.images &&
-            element.colorOption == imageForAddToCart.colorOption &&
-            element.choiceOption == imageForAddToCart.choiceOption) {
+            element.variationId == imageForAddToCart.variationId) {
           element.quantity = element.quantity! + 1;
           newImageToAddToCart = ImageForAddToCart(
             countOfPieces: element.countOfPieces,
+            variationId: element.variationId,
             isDuplicate: true,
             quantity: 0,
             choiceOption: element.choiceOption,
@@ -4548,8 +4550,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           if (!listitemForAddToCart.any(
             (element) =>
                 (element.images == imageForAddToCart.images &&
-                element.colorOption == imageForAddToCart.colorOption &&
-                element.choiceOption == imageForAddToCart.choiceOption),
+                element.variationId == imageForAddToCart.variationId),
           )) {
             newImageToAddToCart = imageForAddToCart;
           }
@@ -4567,13 +4568,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         if (itemLast.isDuplicate == true) {
           listitemForAddToCart = listitemForAddToCart.map((e) {
             if (e.quantity! > 0 &&
-                e.colorOption == itemLast.colorOption &&
-                e.choiceOption == itemLast.choiceOption &&
+                e.variationId == itemLast.variationId &&
                 e.images == itemLast.images) {
               return ImageForAddToCart(
                 countOfPieces: e.countOfPieces,
                 colorOption: itemLast.colorOption,
                 colorName: itemLast.colorName,
+                variationId: itemLast.variationId,
                 choiceName: itemLast.choiceName,
                 images: e.images,
                 quantity: e.quantity! - 1,
@@ -5160,8 +5161,38 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           return;
         }
       },
-      (r) {
+      (firebaseTokenId) {
         ErrorManager.resetRetry('StoreFcmTokenOfMarketEvent');
+        prefsRepository.setFcmMarketTokenId(firebaseTokenId);
+      },
+    );
+  }
+
+  FutureOr<void> _onSendAcceptOfNotificationMarketEvent(
+    SendAcceptOfNotificationMarketEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    final response = await sendAcceptOfNotificationsUseCase(
+      SendAcceptOfNotificationsUseCaseParams(
+        firebaseTokenId: event.firebaseTokenId,
+      ),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'SendAcceptOfNotificationMarketEvent',
+          l.statusCode,
+        )) {
+          add(
+            SendAcceptOfNotificationMarketEvent(
+              firebaseTokenId: event.firebaseTokenId,
+            ),
+          );
+          ErrorManager.incrementRetry('SendAcceptOfNotificationMarketEvent');
+        }
+      },
+      (r) {
+        ErrorManager.resetRetry('SendAcceptOfNotificationMarketEvent');
       },
     );
   }

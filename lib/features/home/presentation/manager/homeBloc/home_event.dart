@@ -538,6 +538,7 @@ class AddItemToCartEvent extends HomeEvent {
   final String? color;
   final String image;
   final int? quantity;
+  final String? variationId;
   final int? countOfPieces;
   final String? boutiqueIcon;
   final String? choiceOption;
@@ -560,6 +561,7 @@ class AddItemToCartEvent extends HomeEvent {
     this.finishAddAllTheItems = true,
     this.boutiqueId,
     required this.isRedeem,
+    this.variationId,
     required this.redeemVariantPrice,
     required this.colorName,
     required this.sizeName,
@@ -1071,6 +1073,14 @@ class GetCartOverviewEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [];
+}
+
+class SendAcceptOfNotificationMarketEvent extends HomeEvent {
+  final String firebaseTokenId;
+  SendAcceptOfNotificationMarketEvent({required this.firebaseTokenId});
+
+  @override
+  List<Object?> get props => [firebaseTokenId];
 }
 
 class GetUserNotificationEvent extends HomeEvent {

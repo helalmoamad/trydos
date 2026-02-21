@@ -543,7 +543,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (l) {
         if (l.statusCode == 409) {
           _prefsRepository.setIsCearteWallet(true);
-
           GetIt.I<HomeBloc>().add(GetCurrenciesForWalletEvent());
           return;
         }
@@ -882,7 +881,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     bool? previousStatusOfIsVerifiedPhone =
         _prefsRepository.isVerifiedPhone ?? false;
-    _prefsRepository.setIsCearteWallet(false);
+    if ((event.oldGuestUserId?.length ?? 0) == 0) {
+      _prefsRepository.setIsCearteWallet(false);
+    }
+
     _prefsRepository.setVerifiedPhone(false);
     response.fold(
       (l) {

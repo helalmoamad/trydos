@@ -498,8 +498,8 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
 
                                       String currentVariantType =
                                           "${currentSelectedColorOption != "" ? currentSelectedColorOption : ""}" +
-                                          "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["choiceOption"] != "") && (currentSelectedColorOption != "") ? "-" : ""}" +
-                                          "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["choiceOption"] != "") ? "${state.currentColorSizeForCart?["choiceOption"]}" : ""}";
+                                          "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.sizes?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["choiceOption"] != "") && (currentSelectedColorOption != "") ? "-" : ""}" +
+                                          "${(state.currentColorSizeForCart?["choiceOption"] != null && !(state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.sizes?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["choiceOption"] != "") ? "${state.currentColorSizeForCart?["choiceOption"]}" : ""}";
 
                                       Variation? currentVariation = state
                                           .authProductDetailsModel
@@ -510,11 +510,11 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                               currentVariantType,
                                             ),
                                             orElse: () {
-                                              return Variation(
-                                                variantNotifyForUser: false,
-                                              );
+                                              return Variation();
                                             },
                                           );
+                                      String currentVariationId =
+                                          currentVariation?.id ?? "";
 
                                       /*if (state
                                                 .getProductDetailWithoutSimilarRelatedProductsStatus ==
@@ -696,7 +696,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                       ? state
                                                             .cachedProductWithoutRelatedProductsModel[productId]!
                                                             .product!
-                                                            .choiceOptions
+                                                            .sizes
                                                             .isNullOrEmpty
                                                       : true
                                                 : true)) {
@@ -713,7 +713,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                   ? state
                                                         .cachedProductWithoutRelatedProductsModel[productId]!
                                                         .product!
-                                                        .choiceOptions
+                                                        .sizes
                                                         .isNullOrEmpty
                                                   : true
                                             : true)) {
@@ -721,48 +721,40 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                               (state
                                                           .cachedProductWithoutRelatedProductsModel[productId]!
                                                           .product!
-                                                          .choiceOptions
+                                                          .sizes
                                                           ?.length ??
                                                       0) ==
                                                   0
                                               ? ""
                                               : state
-                                                        .cachedProductWithoutRelatedProductsModel[productId]!
-                                                        .product!
-                                                        .choiceOptions![0]
-                                                        .options?[(state
-                                                                    .cachedProductWithoutRelatedProductsModel[productId]!
-                                                                    .product
-                                                                    ?.choiceOptions?[0]
-                                                                    .options
-                                                                    ?.length ??
-                                                                0) ~/
-                                                            2]
-                                                        .name ??
-                                                    "";
+                                                    .cachedProductWithoutRelatedProductsModel[productId]!
+                                                    .product!
+                                                    .sizes![(state
+                                                            .cachedProductWithoutRelatedProductsModel[productId]!
+                                                            .product
+                                                            ?.sizes?[0]
+                                                            .length ??
+                                                        0) ~/
+                                                    2];
                                           String sizeOptionSelect =
                                               (state
                                                           .cachedProductWithoutRelatedProductsModel[productId]!
                                                           .product!
-                                                          .choiceOptions
+                                                          .sizes
                                                           ?.length ??
                                                       0) ==
                                                   0
                                               ? ""
                                               : state
-                                                        .cachedProductWithoutRelatedProductsModel[productId]!
-                                                        .product!
-                                                        .choiceOptions![0]
-                                                        .options?[(state
-                                                                    .cachedProductWithoutRelatedProductsModel[productId]!
-                                                                    .product
-                                                                    ?.choiceOptions?[0]
-                                                                    .options
-                                                                    ?.length ??
-                                                                0) ~/
-                                                            2]
-                                                        .option ??
-                                                    "";
+                                                    .cachedProductWithoutRelatedProductsModel[productId]!
+                                                    .product!
+                                                    .sizes![(state
+                                                            .cachedProductWithoutRelatedProductsModel[productId]!
+                                                            .product
+                                                            ?.sizes
+                                                            ?.length ??
+                                                        0) ~/
+                                                    2];
 
                                           homeBloc.add(
                                             AddCurrentColorSizeEvent(
@@ -866,6 +858,8 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                           showShadowForPanel,
                                                       currentVariant:
                                                           currentVariantType,
+                                                      variationId:
+                                                          currentVariationId,
                                                       visibleRedeemNotifier:
                                                           finishRedeem,
                                                       visibleFlashDeal:
@@ -882,10 +876,10 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                           "",
                                                       redeemVariantPrice:
                                                           (currentVariation
-                                                                  ?.redeemPrice !=
+                                                                  ?.luckPrice !=
                                                               null)
                                                           ? currentVariation
-                                                                    ?.redeemPrice ??
+                                                                    ?.luckPrice ??
                                                                 0
                                                           : state
                                                                     .cachedProductWithoutRelatedProductsModel[products[tapIndex]
@@ -1106,30 +1100,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                                       .toString()]!
                                                                   .product
                                                                   ?.offerPrice,
-                                                        priceFormatted:
-                                                            currentVariation
-                                                                    ?.priceFormated !=
-                                                                null
-                                                            ? currentVariation
-                                                                  ?.priceFormated
-                                                            : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.priceFormatted,
-                                                        offerPriceFormatted:
-                                                            currentVariation
-                                                                    ?.offerPriceFormated !=
-                                                                null
-                                                            ? currentVariation
-                                                                  ?.offerPriceFormated
-                                                            : state
-                                                                  .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  .product
-                                                                  ?.offerPriceFormatted,
+
                                                         availableQuantity:
                                                             state.cachedProductWithoutRelatedProductsModel[products[tapIndex]
                                                                     .productId
@@ -1140,7 +1111,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                                   .authProductDetailsModel
                                                                   ?.data
                                                                   ?.availableQuantity,
-                                                        choiceOptions:
+                                                        sizes:
                                                             state.cachedProductWithoutRelatedProductsModel[products[tapIndex]
                                                                     .productId
                                                                     .toString()] ==
@@ -1151,7 +1122,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                                       .productId
                                                                       .toString()]!
                                                                   .product
-                                                                  ?.choiceOptions,
+                                                                  ?.sizes,
                                                         colors: state
                                                             .cachedProductWithoutRelatedProductsModel[products[tapIndex]
                                                                 .productId

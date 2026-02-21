@@ -77,6 +77,7 @@ class ProductDetailsSheetBottomBarNew extends StatefulWidget {
     required this.visibleFlashDeal,
     required this.isRedeem,
     required this.redeemVariantPrice,
+    required this.variationId,
     required this.choiceOption,
     this.isVerified,
     required this.isGetFullProductDetails,
@@ -107,6 +108,7 @@ class ProductDetailsSheetBottomBarNew extends StatefulWidget {
   final String productSlug;
   final String colorOption;
   final String colorName;
+  final String variationId;
   final String choiceOption;
   final bool isRedeem;
   final String colorNum;
@@ -325,7 +327,9 @@ class _ProductDetailsSheetBottomBarNewState
                                       ImageForAddToCart imageForAddToCart =
                                           ImageForAddToCart(
                                             countOfPieces: widget.countOfPieces,
+                                            variationId: widget.variationId,
                                             colorNum: widget.colorNum,
+                                            choiceOption: widget.choiceOption,
                                             quantity: 1,
                                             images: widget.imageUrl,
                                             colorOption: widget.colorOption,

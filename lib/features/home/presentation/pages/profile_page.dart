@@ -5,6 +5,7 @@ import 'package:country_flags/country_flags.dart';
 import 'package:easy_localization/easy_localization.dart' as transform;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -76,26 +77,18 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     LastPagesTracker.push("ProfileHome Page");
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    authBloc.add(CreateWalletEvent());
+    //authBloc.add(CreateWalletEvent());
     orderBloc = BlocProvider.of<OrderBloc>(context);
     orderBloc.add(
       GetCustomerWalletEvent(
-        assetId: "",
-        /*  GetIt.I<HomeBloc>().state.walletCurrencies!.items!
-                .firstWhere(
-                  (element) =>
-                      element.symbol ==
-                      (homeBloc
-                              .state
-                              .getCurrencyForCountryModel
-                              ?.data
-                              ?.currency
-                              ?.symbol ??
-                          ''),
-                  orElse: () => CurrencyItem(id: ""),
-                )
-                .id ??
-            "",*/
+        currencySymbol:
+            GetIt.I<HomeBloc>()
+                .state
+                .getCurrencyForCountryModel!
+                .data!
+                .currency!
+                .code ??
+            "",
       ),
     );
     authBloc.add(GetCustomerInfoEvent());
@@ -436,25 +429,14 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                           isVerified.value = true;
                           orderBloc.add(
                             GetCustomerWalletEvent(
-                              assetId: "",
-                              /* GetIt.I<HomeBloc>()
+                              currencySymbol:
+                                  GetIt.I<HomeBloc>()
                                       .state
-                                      .walletCurrencies!
-                                      .items!
-                                      .firstWhere(
-                                        (element) =>
-                                            element.symbol ==
-                                            (homeBloc
-                                                    .state
-                                                    .getCurrencyForCountryModel
-                                                    ?.data
-                                                    ?.currency
-                                                    ?.symbol ??
-                                                ''),
-                                        orElse: () => CurrencyItem(id: ""),
-                                      )
-                                      .id ??
-                                  "",*/
+                                      .getCurrencyForCountryModel!
+                                      .data!
+                                      .currency!
+                                      .code ??
+                                  "",
                             ),
                           );
                           orderBloc.add(
@@ -783,11 +765,23 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             borderRadius: BorderRadius.circular(15.r),
           ),
           child: InkWell(
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const TrydosWalletWelcomeScreen(),
-              ),
-            ),
+            onTap: () {
+              TrydosWallet.init(
+                TrydosWalletConfig(
+                  baseUrl: dotenv.env['WALLET_URL']!, // رابط الـ API
+                  token:
+                      prefsRepository.walletToken, // أو null قبل تسجيل الدخول
+                  languageCode: 'en', // ar, en, ku
+                  allowBadCertificate: true, // true للتطوير فقط عند خطأ SSL
+                ),
+              );
+
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const TrydosWalletWelcomeScreen(),
+                ),
+              );
+            },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
