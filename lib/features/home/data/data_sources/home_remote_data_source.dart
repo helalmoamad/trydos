@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/elastic_url_routes.dart';
@@ -1738,5 +1739,29 @@ class HomeRemoteDatasource {
           ),
         );
     return client();
+  }
+
+  /// Wallet Checkout API Call
+  /// Process wallet payment with HMAC signature authentication
+  Future<bool> walletCheckout(
+    Map<String, dynamic> params,
+    String signature,
+    String timestamp,
+    String idempotencyKey,
+  ) {
+    PostClient<bool> walletCheckoutClient = PostClient<bool>(
+      serverName: ServerName.wallet,
+      requestPrams: RequestConfig<bool>(
+        endpoint: WalletEndPoints.checkoutEP,
+        data: params,
+        extraHeaders: {
+          'X-Signature': signature,
+          'X-Timestamp': timestamp,
+          'X-Merchant-Api-Key': dotenv.env['Public_Api_Key'] ?? '',
+        },
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return walletCheckoutClient();
   }
 }

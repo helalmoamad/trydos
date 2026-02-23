@@ -44,12 +44,14 @@ class CartDelivaryAddress extends StatefulWidget {
   final List<Map<String, String>> cartItems;
   final String currencySympole;
   final String maxShippingDay;
+  final List<String> listCartGroupIds;
   final String cartGroupId;
   const CartDelivaryAddress({
     super.key,
     required this.cartItems,
     required this.maxShippingDay,
     required this.currencySympole,
+    required this.listCartGroupIds,
     required this.cartGroupId,
   });
   @override
@@ -755,6 +757,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                               .listOfAddressInfoClassToSave![_indexTap],
                           walletBalance: walletBalance,
                           cartGroupId: widget.cartGroupId,
+                          listCartGroupIds: widget.listCartGroupIds,
                           paymentMethods: paymentMethods,
                           availablePaymentMethod: availablePaymentMethods,
                           cartImages: cartImages,

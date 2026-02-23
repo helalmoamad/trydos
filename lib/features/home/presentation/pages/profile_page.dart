@@ -1,6 +1,8 @@
 //import 'dart:convert';
+import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/scheduler.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:easy_localization/easy_localization.dart' as transform;
 import 'package:flutter/material.dart';
@@ -68,10 +70,14 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   final PanelController panelController = PanelController();
   final PageController pageController = PageController();
   final FocusNode focusNode = FocusNode();
+  late StreamSubscription walletEvents;
   String phoneNumber = '';
   int isVisWhatsApp = 0;
   final ValueNotifier<bool> isVerified = ValueNotifier(true);
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
+
+  // لإدارة الموارد بشكل آمن
+  bool _isWalletInitialized = false;
   @override
   void initState() {
     LastPagesTracker.push("ProfileHome Page");
@@ -94,8 +100,63 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     authBloc.add(GetCustomerInfoEvent());
     orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
+    walletEvents = authEvents.listen((evt) async {
+      if (evt.toString() == 'AuthEvent.unauthenticated' &&
+          (prefsRepository.isVerifiedPhone ?? false)) {
+        prefsRepository.setVerifiedPhone(false);
+        prefsRepository.setVerifiedPhonePeforeExpiredToken(true);
+        await Future.delayed(const Duration(seconds: 1));
+
+        // استخدم SchedulerBinding لتأخير العملية بعد انتهاء البناء
+        if (mounted) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            if (mounted && Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
+          });
+        }
+
+        await Future.delayed(const Duration(seconds: 1));
+        isVerified.value = false;
+
+        authBloc.add(
+          SendOtpEvent(phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1),
+        );
+      }
+    });
+
+    // لاحقًا إذا لم تعد بحاجة:
+
     // TODO: implement initState
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    walletEvents.cancel();
+
+    // تنظيف موارد المحفظة
+    _cleanupWallet();
+
+    // تنظيف باقي الموارد
+    pageController.dispose();
+    focusNode.dispose();
+    isVerified.dispose();
+
+    super.dispose();
+  }
+
+  /// تنظيف موارد المحفظة بشكل آمن
+  Future<void> _cleanupWallet() async {
+    if (_isWalletInitialized) {
+      try {
+        // يمكنك إضافة طلب لإغلاق المحفظة إذا كانت المكتبة توفرها
+        // await TrydosWallet.dispose();
+        _isWalletInitialized = false;
+      } catch (e) {
+        print('Error cleaning up wallet: $e');
+      }
+    }
   }
 
   @override
@@ -766,21 +827,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           ),
           child: InkWell(
             onTap: () {
-              TrydosWallet.init(
-                TrydosWalletConfig(
-                  baseUrl: dotenv.env['WALLET_URL']!, // رابط الـ API
-                  token:
-                      prefsRepository.walletToken, // أو null قبل تسجيل الدخول
-                  languageCode: 'en', // ar, en, ku
-                  allowBadCertificate: true, // true للتطوير فقط عند خطأ SSL
-                ),
-              );
-
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const TrydosWalletWelcomeScreen(),
-                ),
-              );
+              _initializeAndOpenWallet();
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -793,13 +840,11 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                   width: 25,
                 ),
                 Text(
-                  LanguageService.languageCode == "ar"
-                      ? LocaleKeys.wallet.tr() + " " + LocaleKeys.trydos.tr()
-                      : LocaleKeys.trydos.tr() + " " + LocaleKeys.wallet.tr(),
+                  LocaleKeys.wallet.tr(),
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 14,
+                    fontSize: 11,
                     height: 1.3,
                   ),
                 ),
@@ -1170,4 +1215,44 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       "userUserChoosedCountryIso": prefsRepository.userChoosedCountryIso ?? "",
     };
   }*/
+
+  /// فتح المحفظة بشكل آمن مع ضمان الإغلاق
+  Future<void> _initializeAndOpenWallet() async {
+    if (!mounted) return;
+
+    try {
+      // تهيئة المحفظة
+      TrydosWallet.init(
+        TrydosWalletConfig(
+          baseUrl: dotenv.env['WALLET_URL'] ?? '', // رابط الـ API
+          token: "ff", // استخدم القيمة الفعلية
+          languageCode: LanguageService.languageCode, // استخدم اللغة الحالية
+          allowBadCertificate: true, // true للتطوير فقط عند خطأ SSL
+        ),
+      );
+
+      _isWalletInitialized = true;
+
+      // فتح المحفظة
+      if (mounted) {
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const TrydosWalletWelcomeScreen(),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error initializing wallet: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('خطأ في فتح المحفظة: $e')));
+      }
+    } finally {
+      // التأكد من تنظيف الموارد حتى عند حدوث خطأ
+      if (_isWalletInitialized && !mounted) {
+        await _cleanupWallet();
+      }
+    }
+  }
 }

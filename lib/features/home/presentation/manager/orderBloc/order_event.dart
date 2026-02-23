@@ -6,6 +6,7 @@ import 'package:trydos/features/home/domain/use_cases/cancel_return_request_prod
 import 'package:trydos/features/home/domain/use_cases/order_return_requests_view_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/store_return_request_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_return_request_product_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/wallet_checkout_usecase.dart';
 import '../../../data/models/get_list_of_customer_addresses_model.dart';
 import '../../../domain/use_cases/place_order_usecase.dart';
 import '../../../domain/use_cases/cancel_order_item_usecase.dart';
@@ -446,4 +447,14 @@ class FetchOrderReturnDetailsEvent extends OrderEvent {
 
   @override
   List<Object?> get props => [orderGroupId];
+}
+
+/// Wallet Checkout Event
+class WalletCheckoutEvent extends OrderEvent {
+  final WalletCheckoutParams params;
+
+  const WalletCheckoutEvent({required this.params});
+
+  @override
+  List<Object?> get props => [params];
 }

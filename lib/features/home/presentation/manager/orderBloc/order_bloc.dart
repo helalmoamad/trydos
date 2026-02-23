@@ -10,6 +10,7 @@ import 'package:trydos/features/home/domain/use_cases/order_return_requests_view
 import 'package:trydos/features/home/domain/use_cases/store_return_request_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_return_request_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/upload_images_product_return_useCase.dart';
+import 'package:trydos/features/home/domain/use_cases/wallet_checkout_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
@@ -68,6 +69,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   final GetProvincesByIsoUseCase getProvincesByIsoUseCase;
   final GetProductColorSizeSyncAttributeUseCase
   getProductColorSizeSyncAttributeUseCase;
+  final WalletCheckoutUseCase walletCheckoutUseCase;
   final ConfirmReturnRequestUseCase confirmReturnRequestUseCase;
   final OrderReturnRequestsViewUseCase orderReturnRequestsViewUseCase;
   final ChangeOrderItemVariantUsecase changeOrderItemVariantUsecase;
@@ -84,6 +86,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   final UpdateReturnRequestProductUseCase updateReturnRequestProductUseCase;
   OrderBloc(
     this.placeOrderUsecase,
+    this.walletCheckoutUseCase,
     this.cancelOrderItemUsecase,
     this.cancelOrderUsecase,
     this.uploadImagesProductReturnUseCase,
@@ -117,7 +120,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   ) : super(const OrderState()) {
     on<PlaceOrderEvent>(_onPlaceOrderEvent);
     on<GetOrdersByOrderGroupIDEvent>(_onGetOrdersByOrderGroupIDEvent);
-
+    on<WalletCheckoutEvent>(_onWalletCheckoutEvent);
     on<SaveLastAddress>(_onSaveLastAddress);
     on<UploadImagesToCloudinaryEvent>(_onUploadImagesToCloudinaryEvent);
     on<ResetAllStatusEvent>(_onResetAllStatusEvent);
@@ -189,6 +192,28 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             UploadImagesForReturnProductStatus.success,
         imagesForReturn: imagesForReturn,
       ),
+    );
+  }
+
+  FutureOr<void> _onWalletCheckoutEvent(
+    WalletCheckoutEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(state.copyWith(walletCheckoutStatus: WalletCheckoutStatus.loading));
+
+    final response = await walletCheckoutUseCase(event.params);
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(walletCheckoutStatus: WalletCheckoutStatus.failure),
+        );
+      },
+      (r) {
+        emit(
+          state.copyWith(walletCheckoutStatus: WalletCheckoutStatus.success),
+        );
+      },
     );
   }
 
@@ -485,6 +510,10 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetOrdersByCartGroupIDEvent event,
     Emitter<OrderState> emit,
   ) async {
+    if (state.getOrdersByCartGroupIDStatus ==
+        GetOrdersByCartGroupIDStatus.loading) {
+      return;
+    }
     emit(
       state.copyWith(
         getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.loading,
@@ -493,14 +522,10 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     final response = await getOrdersByCartGroupIDUsecase(event.cartGroupId);
     response.fold(
       (l) {
-        if (l.statusCode != 400 &&
-            ErrorManager.shouldRetry(
-              'GetOrdersByCartGroupIDEvent',
-              l.statusCode,
-            )) {
-          ErrorManager.incrementRetry('GetOrdersByCartGroupIDEvent');
+        Future.delayed(const Duration(seconds: 3), () {
           add(GetOrdersByCartGroupIDEvent(cartGroupId: event.cartGroupId));
-        }
+        });
+
         emit(
           state.copyWith(
             getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.failure,
@@ -511,6 +536,11 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         ErrorManager.resetRetry('GetOrdersByCartGroupIDEvent');
         debugPrint('GetOrdersByCartGroupIDEvent success');
         debugPrint('orders length :  r.data!.length}');
+        if (r.data!.length < 1) {
+          Future.delayed(const Duration(seconds: 3), () {
+            add(GetOrdersByCartGroupIDEvent(cartGroupId: event.cartGroupId));
+          });
+        }
         emit(
           state.copyWith(
             getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.success,

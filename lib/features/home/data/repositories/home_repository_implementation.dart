@@ -457,6 +457,23 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, bool>> walletCheckout(
+    Map<String, dynamic> params,
+    String signature,
+    String timestamp,
+    String idempotencyKey,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.walletCheckout(
+        params,
+        signature,
+        timestamp,
+        idempotencyKey,
+      ),
+    );
+  }
+
+  @override
   Future<Either<Failure, GetProductFiltersModel>> getProductFilters(
     Map<String, dynamic> params,
   ) {

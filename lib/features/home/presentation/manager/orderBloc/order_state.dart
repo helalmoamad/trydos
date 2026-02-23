@@ -76,6 +76,8 @@ enum OrderReturnRequestsViewStatus { init, loading, success, failure }
 
 enum ConfirmReturnRequestStatus { init, loading, success, failure }
 
+enum WalletCheckoutStatus { init, loading, success, failure }
+
 enum OrderReturnDetailsStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
@@ -83,6 +85,7 @@ enum OrderReturnDetailsStatus { init, loading, success, failure }
 class OrderState extends Equatable {
   const OrderState({
     this.placeOrderModel,
+    this.walletCheckoutStatus = WalletCheckoutStatus.init,
     this.placeOrderStatus = PlaceOrderStatus.init,
     this.getOrdersByOrderGroupIDModel,
     this.getOrdersByOrderGroupIDStatus = GetOrdersByOrderGroupIDStatus.init,
@@ -180,6 +183,7 @@ class OrderState extends Equatable {
   // final UpdateOrderCommentStatus? updateOrderCommentStatus;
   final GetReturnReasonsStatus? getReturnReasonsStatus;
   final ReturnReasonsModel? returnReasonsModel;
+  final WalletCheckoutStatus? walletCheckoutStatus;
   final UploadImagesForReturnProductStatus uploadImagesForReturnProductStatus;
   final UploadImagesToCloudinaryStatus uploadImagesToCloudinaryStatus;
   final StoreReturnRequestProductStatus? storeReturnRequestProductStatus;
@@ -196,6 +200,7 @@ class OrderState extends Equatable {
     lastAdressInfoClassToSave,
     getOrdersByOrderGroupIDStatus,
     getOrdersByOrderGroupIDModel,
+    walletCheckoutStatus,
     getOrdersByCartGroupIDStatus,
     getOrdersByCartGroupIDModel,
     currentOrederStatus,
@@ -244,6 +249,7 @@ class OrderState extends Equatable {
   OrderState copyWith({
     final PlaceOrderStatus? placeOrderStatus,
     final OrdersGroupModel? placeOrderModel,
+    final WalletCheckoutStatus? walletCheckoutStatus,
     final List<String>? imagesForReturn,
     final List<String>? imagesForComment,
     final OrderReturnRequestsViewStatus? orderReturnRequestsViewStatus,
@@ -302,6 +308,7 @@ class OrderState extends Equatable {
       updateReturnRequestProductStatus:
           updateReturnRequestProductStatus ??
           this.updateReturnRequestProductStatus,
+      walletCheckoutStatus: walletCheckoutStatus ?? this.walletCheckoutStatus,
       storeReturnRequestStatus:
           storeReturnRequestStatus ?? this.storeReturnRequestStatus,
       getOrdersByOrderGroupIDStatus:

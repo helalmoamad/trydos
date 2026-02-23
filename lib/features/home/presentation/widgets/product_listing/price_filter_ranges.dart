@@ -14,6 +14,7 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
+import 'package:trydos/service/language_service.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../data/models/get_product_filters_model.dart';
@@ -188,7 +189,9 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                     dashPattern: const [3, 3],
                     child: Center(
                       child: Text(
-                        '${(widget.priceRanges[index].minPrice! * widget.exchangeRate).toStringAsFixed(widget.decimalPoint.round())} - ${(widget.priceRanges[index].maxPrice! * widget.exchangeRate).toStringAsFixed(2)} ${widget.currencySymbol}',
+                        LanguageService.rtl
+                            ? ' ${widget.currencySymbol} ${(widget.priceRanges[index].maxPrice! * widget.exchangeRate).toStringAsFixed(widget.decimalPoint.round())} - ${(widget.priceRanges[index].minPrice! * widget.exchangeRate).toStringAsFixed(2)}'
+                            : '${(widget.priceRanges[index].minPrice! * widget.exchangeRate).toStringAsFixed(widget.decimalPoint.round())} - ${(widget.priceRanges[index].maxPrice! * widget.exchangeRate).toStringAsFixed(2)} ${widget.currencySymbol}',
                         overflow: TextOverflow.ellipsis,
                         textDirection: TextDirection.ltr,
                         style: textTheme.titleLarge?.mq.copyWith(

@@ -145,6 +145,12 @@ class _CartPageState extends State<CartPage> {
                     element.checkAvailability == false),
               )) {
                 String cartGroupId = state.cartCollection?[0].cartGroupId ?? '';
+                List<String> cartGroupIds =
+                    state.cartCollection
+                        ?.map((e) => e.cartGroupId ?? '')
+                        .toList() ??
+                    [];
+                cartGroupIds = cartGroupIds.toSet().toList();
 
                 String priceSymbol =
                     state.getCurrencyForCountryModel!.data!.currency!.symbol ??
@@ -195,6 +201,7 @@ class _CartPageState extends State<CartPage> {
                     context,
                     CartDelivaryAddress(
                       maxShippingDay: maxShippingDay.toString(),
+                      listCartGroupIds: cartGroupIds,
                       cartItems: cartImages,
                       cartGroupId: cartGroupId,
                       currencySympole: priceSymbol,

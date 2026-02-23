@@ -14,6 +14,7 @@ abstract class WalletEndPoints {
   static const createWalletEP = "wallets";
   static const currenciesEP = "currencies";
   static const walletBalanceEP = "wallets/myAcounts";
+  static const checkoutEP = "wallets/trydos/checkout";
 }
 
 abstract class WalletUrls {

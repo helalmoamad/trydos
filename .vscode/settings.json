@@ -1,7 +1,4 @@
 {
-    "yaml.schemas": {
-        "https://json.schemastore.org/pubspec.json": "file:///d%3A/trrdos/trydos/tyrdos/trydos/pubspec.yaml"
-    },
     "dart.showTodos": false,
     "workbench.colorTheme": "Default Dark Modern"
 }

@@ -353,6 +353,8 @@ import '../../features/home/domain/use_cases/upload_images_product_return_useCas
     as _i291;
 import '../../features/home/domain/use_cases/upload_user_photo_usecase.dart'
     as _i651;
+import '../../features/home/domain/use_cases/wallet_checkout_usecase.dart'
+    as _i682;
 import '../../features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart'
     as _i511;
 import '../../features/home/presentation/manager/categoryBloc/category_bloc.dart'
@@ -785,38 +787,8 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i651.UpdateUserPhotoUseCase>(
     () => _i651.UpdateUserPhotoUseCase(gh<_i0.HomeRepository>()),
   );
-  gh.lazySingleton<_i279.OrderBloc>(
-    () => _i279.OrderBloc(
-      gh<_i649.PlaceOrderUsecase>(),
-      gh<_i197.CancelOrderItemUsecase>(),
-      gh<_i811.CancelOrderUsecase>(),
-      gh<_i291.UploadImagesProductReturnUseCase>(),
-      gh<_i636.ChangeOrderAddressUsecase>(),
-      gh<_i1003.GetOrdersByOrderGroupIDUsecase>(),
-      gh<_i59.GetOrdersByCartGroupIDUsecase>(),
-      gh<_i401.GetProvincesByIsoUseCase>(),
-      gh<_i361.GetCustomerWalletUseCase>(),
-      gh<_i241.StoreReturnRequestUseCase>(),
-      gh<_i943.ConfirmReturnRequestUseCase>(),
-      gh<_i926.OrderReturnRequestsViewUseCase>(),
-      gh<_i558.GetOrdersUseCase>(),
-      gh<_i1064.SetCustomerAddressDefaultUseCase>(),
-      gh<_i489.GetCustomerAddressesUseCase>(),
-      gh<_i71.DeleteCustomerAddressUseCase>(),
-      gh<_i70.AddCustomerAddressUseCase>(),
-      gh<_i418.UpdateCustomerAddressUseCase>(),
-      gh<_i970.GetAddressByCoordinatesUsecase>(),
-      gh<_i976.GetAddressByTextUsecase>(),
-      gh<_i493.ApplyCouponUsecase>(),
-      gh<_i716.GetProductColorSizeSyncAttributeUseCase>(),
-      gh<_i607.ChangeOrderItemVariantUsecase>(),
-      gh<_i815.GetReturnReasonsUseCase>(),
-      gh<_i285.StoreReturnRequestProductUseCase>(),
-      gh<_i441.CancelReturnRequestUseCase>(),
-      gh<_i217.CancelReturnRequestProductUseCase>(),
-      gh<_i799.UpdateReturnRequestProductUseCase>(),
-      gh<_i182.OrderReturnDetailsUseCase>(),
-    ),
+  gh.factory<_i682.WalletCheckoutUseCase>(
+    () => _i682.WalletCheckoutUseCase(gh<_i0.HomeRepository>()),
   );
   gh.lazySingleton<_i702.CommonUseRepository>(
     () => _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()),
@@ -1055,6 +1027,40 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i955.GetProductsWithFiltersUseCase>(),
       gh<_i889.GetRecommendProductsUseCase>(),
       gh<_i290.GetProductFiltersUseCase>(),
+    ),
+  );
+  gh.lazySingleton<_i279.OrderBloc>(
+    () => _i279.OrderBloc(
+      gh<_i649.PlaceOrderUsecase>(),
+      gh<_i682.WalletCheckoutUseCase>(),
+      gh<_i197.CancelOrderItemUsecase>(),
+      gh<_i811.CancelOrderUsecase>(),
+      gh<_i291.UploadImagesProductReturnUseCase>(),
+      gh<_i636.ChangeOrderAddressUsecase>(),
+      gh<_i1003.GetOrdersByOrderGroupIDUsecase>(),
+      gh<_i59.GetOrdersByCartGroupIDUsecase>(),
+      gh<_i401.GetProvincesByIsoUseCase>(),
+      gh<_i361.GetCustomerWalletUseCase>(),
+      gh<_i241.StoreReturnRequestUseCase>(),
+      gh<_i943.ConfirmReturnRequestUseCase>(),
+      gh<_i926.OrderReturnRequestsViewUseCase>(),
+      gh<_i558.GetOrdersUseCase>(),
+      gh<_i1064.SetCustomerAddressDefaultUseCase>(),
+      gh<_i489.GetCustomerAddressesUseCase>(),
+      gh<_i71.DeleteCustomerAddressUseCase>(),
+      gh<_i70.AddCustomerAddressUseCase>(),
+      gh<_i418.UpdateCustomerAddressUseCase>(),
+      gh<_i970.GetAddressByCoordinatesUsecase>(),
+      gh<_i976.GetAddressByTextUsecase>(),
+      gh<_i493.ApplyCouponUsecase>(),
+      gh<_i716.GetProductColorSizeSyncAttributeUseCase>(),
+      gh<_i607.ChangeOrderItemVariantUsecase>(),
+      gh<_i815.GetReturnReasonsUseCase>(),
+      gh<_i285.StoreReturnRequestProductUseCase>(),
+      gh<_i441.CancelReturnRequestUseCase>(),
+      gh<_i217.CancelReturnRequestProductUseCase>(),
+      gh<_i799.UpdateReturnRequestProductUseCase>(),
+      gh<_i182.OrderReturnDetailsUseCase>(),
     ),
   );
   gh.lazySingleton<_i976.DashboardBloc>(

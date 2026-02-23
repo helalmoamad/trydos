@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +8,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:trydos/features/home/domain/use_cases/wallet_checkout_usecase.dart';
+import 'package:uuid/uuid.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -24,7 +28,6 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/language_service.dart';
-import 'package:trydos_wallet/trydos_wallet.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../common/helper/show_message.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -43,6 +46,7 @@ class PlaceOrder extends StatefulWidget {
   final double totalCashed;
   final double walletBalance;
   final String cartGroupId;
+  final List<String> listCartGroupIds;
   final ValueNotifier<List<String>> paymentMethods;
   final String currencySympole;
   final CustomerAddressesInfo customerAddressesInfo;
@@ -55,6 +59,7 @@ class PlaceOrder extends StatefulWidget {
     required this.customerAddressesInfo,
     required this.cartImages,
     required this.paymentMethods,
+    required this.listCartGroupIds,
     required this.currencySympole,
     required this.exchangeRate,
     required this.availablePaymentMethod,
@@ -124,21 +129,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 if (widget.paymentMethods.value.contains(
                   PaymentMethods.trydosWallet,
                 )) {
-                  TrydosWallet.init(
-                    TrydosWalletConfig(
-                      baseUrl: dotenv.env['WALLET_URL']!, // رابط الـ API
-                      token: prefsRepository
-                          .walletToken, // أو null قبل تسجيل الدخول
-                      languageCode: 'en', // ar, en, ku
-                      allowBadCertificate: true, // true للتطوير فقط عند خطأ SSL
-                    ),
-                  );
-
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const TrydosWalletWelcomeScreen(),
-                    ),
-                  );
+                  _showWalletPaymentDialog(context);
                   return;
                 }
                 String paymentMethod = '';
@@ -1065,5 +1056,253 @@ class _PlaceOrderState extends State<PlaceOrder> {
         ],
       ),
     );
+  }
+
+  void _showWalletPaymentDialog(BuildContext context) {
+    const uuid = Uuid();
+    String idempotencyKey = uuid.v4();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child: Container(
+            width: 0.9.sw,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Text(
+                  'Wallet Payment',
+                  style: context.textTheme.headlineSmall?.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                SizedBox(height: 20.h),
+
+                // Select Currency Label
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Select Currency',
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: const Color(0xff999999),
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10.h),
+
+                // Currency Button
+                Container(
+                  width: double.infinity,
+                  height: 50.h,
+                  decoration: BoxDecoration(
+                    color: const Color(0xff346BFF),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Center(
+                    child: Text(
+                      widget.currencySympole,
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20.h),
+
+                // Total Amount
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '',
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '${widget.totalPrice.toStringAsFixed(2)} ${widget.currencySympole}',
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 15.h),
+
+                // Account to Pay / Wallet Balance
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Account to Pay',
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xff999999),
+                        fontSize: 12,
+                      ),
+                    ),
+                    Text(
+                      '${widget.walletBalance.toStringAsFixed(2)} ${widget.currencySympole}',
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xff00C853),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 25.h),
+
+                // Confirm Button
+                BlocListener<OrderBloc, OrderState>(
+                  listenWhen: (previous, current) =>
+                      previous.walletCheckoutStatus !=
+                      current.walletCheckoutStatus,
+                  listener: (context, state) {
+                    if (state.walletCheckoutStatus ==
+                        WalletCheckoutStatus.success) {
+                      Navigator.of(context).pop();
+                      BlocProvider.of<OrderBloc>(context).add(
+                        GetOrdersByCartGroupIDEvent(
+                          cartGroupId: widget.cartGroupId,
+                        ),
+                      );
+                    }
+                  },
+                  child: BlocBuilder<OrderBloc, OrderState>(
+                    buildWhen: (previous, current) =>
+                        previous.walletCheckoutStatus !=
+                        current.walletCheckoutStatus,
+                    builder: (context, state) {
+                      return state.walletCheckoutStatus ==
+                              WalletCheckoutStatus.loading
+                          ? Shimmer.fromColors(
+                              baseColor: Colors.grey[300]!,
+                              highlightColor: Colors.grey[100]!,
+                              child: Container(
+                                width: double.infinity,
+                                height: 50.h,
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                    0xffC4C2C2,
+                                    // ignore: deprecated_member_use
+                                  ).withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                _proceedWithWalletPayment(idempotencyKey);
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                height: 50.h,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xff346BFF),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Confirm Wallet Payment',
+                                    style: context.textTheme.bodyMedium
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                            );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _proceedWithWalletPayment(String idempotencyKey) async {
+    // Generate idempotency key for request uniqueness
+
+    // Get currency ID (assuming you have it)
+    String currencyId =
+        BlocProvider.of<OrderBloc>(
+          context,
+        ).state.customerWalletModel?.wallets?[0].balances?[0].assetId ??
+        ""; // You'll need to pass this or get from context
+
+    // Prepare wallet payment body
+    final walletPayload = {
+      'amount': widget.totalPrice,
+      'currencyId': currencyId,
+      'cart_groub_ids': widget.listCartGroupIds,
+      'idempotencyKey': idempotencyKey,
+      'timestamp': DateTime.now().toString(),
+    };
+
+    // Generate HMAC signature
+    final signature = _generateHmacSignature(walletPayload);
+
+    BlocProvider.of<OrderBloc>(context).add(
+      WalletCheckoutEvent(
+        params: WalletCheckoutParams(
+          amount: widget.totalPrice,
+          cartGroupIds: widget.listCartGroupIds,
+          currencyId: currencyId,
+          idempotencyKey: idempotencyKey,
+          signature: signature,
+          timestamp: DateTime.now().toString(),
+        ),
+      ),
+    );
+  }
+
+  /// Generate HMAC SHA256 signature for wallet payment
+  String _generateHmacSignature(Map<String, dynamic> paymentData) {
+    // Get secret key from environment
+    final secretKey = dotenv.env['Secret_Key'] ?? '';
+
+    // Create payload with required fields
+    final payload = jsonEncode({
+      'amount': paymentData['amount'],
+      'currencyId': paymentData['currencyId'],
+      'cart_groub_ids': paymentData['cart_groub_ids'],
+      'idempotencyKey': paymentData['idempotencyKey'],
+      'timestamp': paymentData['timestamp'],
+    });
+
+    debugPrint('Wallet Payment Payload: $payload');
+    debugPrint('Secret Key: $secretKey');
+
+    // Generate HMAC SHA256 signature
+    final signature = Hmac(
+      sha256,
+      utf8.encode(secretKey),
+    ).convert(utf8.encode(payload)).toString();
+
+    debugPrint('Generated Signature: $signature');
+    return signature;
   }
 }

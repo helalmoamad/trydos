@@ -18,7 +18,6 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
-import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../common/helper/show_message.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
@@ -238,9 +237,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             fromSuccessOrder: widget.fromSuccessOrder,
                             currentPaymentMethod: PaymentMethods.trydosWallet,
                             svg: AppAssets.trydosWalletSvg,
-                            title: LanguageService.languageCode == "ar"
-                                ? "${LocaleKeys.wallet.tr()} ${LocaleKeys.trydos.tr()}"
-                                : "${LocaleKeys.trydos.tr()} ${LocaleKeys.wallet.tr()}",
+                            title: LocaleKeys.wallet.tr(),
                             cardWidgets: buildTrydosWalletWidget(
                               context: context,
                               fromSuccessOrder: widget.fromSuccessOrder,
@@ -635,7 +632,7 @@ class PaymentMethodCard extends StatelessWidget {
                     ? const Color(0xff1D1D1D)
                     : const Color(0xffC4C2C2),
                 letterSpacing: 0.18,
-                fontSize: 12.sp,
+                fontSize: 11.sp,
                 height: 1.33,
               ),
             ),

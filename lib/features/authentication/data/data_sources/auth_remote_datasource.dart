@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/wallet_url_routes.dart';
@@ -316,6 +317,9 @@ class AuthRemoteDatasource {
           requestPrams: RequestConfig<LoginToWalletModel>(
             endpoint: WalletEndPoints.loginWithIdTokenEP,
             data: params,
+            extraHeaders: {
+              'x-merchant-api-key': dotenv.env['Public_Api_Key'] ?? '',
+            },
             response: ResponseValue<LoginToWalletModel>(
               fromJson: (response) => LoginToWalletModel.fromJson(response),
             ),

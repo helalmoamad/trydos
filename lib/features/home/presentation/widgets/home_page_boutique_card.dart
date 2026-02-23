@@ -40,6 +40,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
   final bool withSlidingImages;
   final HomeBoutiques boutique;
   final ValueNotifier<bool> isShowPanelForVerified;
+
   /// نص الوصف جاهز بدون HTML (يُمرَّر من الصفحة الرئيسية لتحسين الأداء)
   final String descriptionPlain;
 
@@ -140,7 +141,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
                             imageUrl: boutique.banners![index].filePath!,
                             imageFit: BoxFit.fitWidth,
                             width: 1.sw,
-                            height: 250.h,
+                            height: 400.h,
                             radius: 0,
                             fromBoutique: true,
                             imageSource: 'home_page_boutique_card',
@@ -461,5 +462,4 @@ class HomePageBoutiqueCard extends StatelessWidget {
       ),
     );
   }
-
 }

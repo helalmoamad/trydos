@@ -25,6 +25,7 @@ class PostClient<T> extends BaseApi<T> {
        _valueOnSuccess = requestPrams.response.returnValueOnSuccess,
        _queryParameters = requestPrams.queryParameters,
        _data = requestPrams.data,
+       _extraHeaders = requestPrams.extraHeaders,
        _endpoint = requestPrams.endpoint,
        _receiveTimeout = requestPrams.receiveTimeout,
        _sendTimeout = requestPrams.sendTimeout,
@@ -36,6 +37,7 @@ class PostClient<T> extends BaseApi<T> {
   final ProgressCallback? onReceiveProgress;
   final Duration? _receiveTimeout;
   final Duration? _sendTimeout;
+  final Map<String, dynamic>? _extraHeaders;
   final FromJson<T>? _fromJson;
   final T? _valueOnSuccess;
   final dynamic _queryParameters;
@@ -65,6 +67,9 @@ class PostClient<T> extends BaseApi<T> {
             options: options.copyWith(
               receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
               sendTimeout: _sendTimeout ?? options.sendTimeout,
+              headers: _extraHeaders != null
+                  ? (options.headers?..addAll(_extraHeaders))
+                  : options.headers,
             ),
             data: _data,
             onSendProgress: onSendProgress,

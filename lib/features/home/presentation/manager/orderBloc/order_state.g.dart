@@ -12,6 +12,12 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
       : OrdersGroupModel.fromJson(
           json['placeOrderModel'] as Map<String, dynamic>,
         ),
+  walletCheckoutStatus:
+      $enumDecodeNullable(
+        _$WalletCheckoutStatusEnumMap,
+        json['walletCheckoutStatus'],
+      ) ??
+      WalletCheckoutStatus.init,
   placeOrderStatus:
       $enumDecodeNullable(
         _$PlaceOrderStatusEnumMap,
@@ -341,6 +347,8 @@ Map<String, dynamic> _$OrderStateToJson(
   'getReturnReasonsStatus':
       _$GetReturnReasonsStatusEnumMap[instance.getReturnReasonsStatus],
   'returnReasonsModel': instance.returnReasonsModel?.toJson(),
+  'walletCheckoutStatus':
+      _$WalletCheckoutStatusEnumMap[instance.walletCheckoutStatus],
   'uploadImagesForReturnProductStatus':
       _$UploadImagesForReturnProductStatusEnumMap[instance
           .uploadImagesForReturnProductStatus]!,
@@ -358,6 +366,13 @@ Map<String, dynamic> _$OrderStateToJson(
   'orderReturnDetailsStatus':
       _$OrderReturnDetailsStatusEnumMap[instance.orderReturnDetailsStatus]!,
   'orderReturnDetailsModel': instance.orderReturnDetailsModel?.toJson(),
+};
+
+const _$WalletCheckoutStatusEnumMap = {
+  WalletCheckoutStatus.init: 'init',
+  WalletCheckoutStatus.loading: 'loading',
+  WalletCheckoutStatus.success: 'success',
+  WalletCheckoutStatus.failure: 'failure',
 };
 
 const _$PlaceOrderStatusEnumMap = {

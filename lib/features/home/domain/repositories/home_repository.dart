@@ -304,4 +304,12 @@ abstract class HomeRepository {
   Future<Either<Failure, GetAuthProductDetailsModel>> getAuthProductDetails(
     String productSlug,
   );
+
+  /// Wallet Payment
+  Future<Either<Failure, bool>> walletCheckout(
+    Map<String, dynamic> params,
+    String signature,
+    String timestamp,
+    String idempotencyKey,
+  );
 }
