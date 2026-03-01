@@ -28,21 +28,26 @@ class WalletCheckoutParams {
   final String idempotencyKey;
   final String timestamp;
   final String signature;
+  final String myMarketId;
 
   WalletCheckoutParams({
     required this.amount,
     required this.currencyId,
     required this.cartGroupIds,
     required this.idempotencyKey,
+    required this.myMarketId,
     required this.timestamp,
     required this.signature,
   });
 
   Map<String, dynamic> get payloadMap => {
-    "amount": amount,
+    // ensure the same key order that we sign in the frontend
     "currencyId": currencyId,
-    "cart_groub_ids": cartGroupIds,
+    // backend requires numeric store_user_id; convert if possible
+    // the prefs repository stores it as String, so try parsing to int
+    "store_user_id": int.tryParse(myMarketId) ?? myMarketId,
+    "amount": amount,
+    "cart_group_ids": cartGroupIds,
     "idempotencyKey": idempotencyKey,
-    "timestamp": timestamp,
   };
 }

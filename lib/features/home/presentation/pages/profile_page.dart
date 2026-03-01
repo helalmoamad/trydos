@@ -70,11 +70,11 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   final PanelController panelController = PanelController();
   final PageController pageController = PageController();
   final FocusNode focusNode = FocusNode();
-  late StreamSubscription walletEvents;
   String phoneNumber = '';
   int isVisWhatsApp = 0;
   final ValueNotifier<bool> isVerified = ValueNotifier(true);
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
+  late StreamSubscription walletEvents;
 
   // لإدارة الموارد بشكل آمن
   bool _isWalletInitialized = false;
@@ -1225,7 +1225,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       TrydosWallet.init(
         TrydosWalletConfig(
           baseUrl: dotenv.env['WALLET_URL'] ?? '', // رابط الـ API
-          token: "ff", // استخدم القيمة الفعلية
+          token: prefsRepository.walletToken, // استخدم القيمة الفعلية
           languageCode: LanguageService.languageCode, // استخدم اللغة الحالية
           allowBadCertificate: true, // true للتطوير فقط عند خطأ SSL
         ),

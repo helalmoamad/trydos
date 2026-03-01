@@ -632,7 +632,7 @@ class PaymentMethodCard extends StatelessWidget {
                     ? const Color(0xff1D1D1D)
                     : const Color(0xffC4C2C2),
                 letterSpacing: 0.18,
-                fontSize: 11.sp,
+                fontSize: 10.sp,
                 height: 1.33,
               ),
             ),

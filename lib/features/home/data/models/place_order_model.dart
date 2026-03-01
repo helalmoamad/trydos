@@ -455,7 +455,7 @@ class PlaceOrderDetailsModel {
   final String? paymentStatus;
   final dynamic shippingMethodId;
   final String? variant;
-  final List<Variation>? variation;
+  final List<GetOrderVariationModel>? variation;
   final bool? collectProductAfterOrdering;
   final String? discountType;
   final int? isStockDecreased;
@@ -506,7 +506,7 @@ class PlaceOrderDetailsModel {
     String? paymentStatus,
     dynamic shippingMethodId,
     String? variant,
-    List<Variation>? variation,
+    List<GetOrderVariationModel>? variation,
     bool? collectProductAfterOrdering,
     String? discountType,
     int? isStockDecreased,
@@ -543,48 +543,49 @@ class PlaceOrderDetailsModel {
     image: image ?? this.image,
   );
 
-  factory PlaceOrderDetailsModel.fromJson(Map<String, dynamic> json) =>
-      PlaceOrderDetailsModel(
-        id: json["id"],
-        orderId: json["order_id"],
-        productId: json["product_id"],
-        productDetails: ProductDetails.fromJson(json["product_details"]),
-        qty: json["qty"] == null ? null : double.parse(json["qty"].toString()),
-        price: json["price"] == null
-            ? 0
-            : double.parse(json["price"].toString()),
-        discount: json["discount"] == null
-            ? 0
-            : double.parse(json["discount"].toString()),
-        priceAfterDiscount: json["price_after_discount"] == null
-            ? 0
-            : double.parse(json["price_after_discount"].toString()),
-        tax: json["tax"] == null ? 0 : double.parse(json["tax"].toString()),
-        deliveryStatus: json["delivery_status"],
-        paymentStatus: json["payment_status"],
-        shippingMethodId: json["shipping_method_id"],
-        variant: json["variant"] == null ? null : json["variant"],
-        collectProductAfterOrdering: json["collect_product_after_ordering"],
-        discountType: json["discount_type"],
-        isStockDecreased: json["is_stock_decreased"],
-        refundRequest: json["refund_request"].toString(),
-        refundRequestStatus: json["refund_request_status"],
-        isOdooProduct: json["is_odoo_product"],
-        odooId: json["odoo_id"],
-        odooOrderId: json["odoo_order_id"],
-        variation: json["variation"] == null
-            ? []
-            : (json["variation"] is List)
-            ? (json["variation"] as List).isEmpty
-                  ? []
-                  : json["variation"]?.first.isEmpty
-                  ? []
-                  : List<Variation>.from(
-                      json["variation"].map((x) => Variation.fromJson(x)),
-                    )
-            : [],
-        image: json["image"],
-      );
+  factory PlaceOrderDetailsModel.fromJson(
+    Map<String, dynamic> json,
+  ) => PlaceOrderDetailsModel(
+    id: json["id"],
+    orderId: json["order_id"],
+    productId: json["product_id"],
+    productDetails: ProductDetails.fromJson(json["product_details"]),
+    qty: json["qty"] == null ? null : double.parse(json["qty"].toString()),
+    price: json["price"] == null ? 0 : double.parse(json["price"].toString()),
+    discount: json["discount"] == null
+        ? 0
+        : double.parse(json["discount"].toString()),
+    priceAfterDiscount: json["price_after_discount"] == null
+        ? 0
+        : double.parse(json["price_after_discount"].toString()),
+    tax: json["tax"] == null ? 0 : double.parse(json["tax"].toString()),
+    deliveryStatus: json["delivery_status"],
+    paymentStatus: json["payment_status"],
+    shippingMethodId: json["shipping_method_id"],
+    variant: json["variant"] == null ? null : json["variant"],
+    collectProductAfterOrdering: json["collect_product_after_ordering"],
+    discountType: json["discount_type"],
+    isStockDecreased: json["is_stock_decreased"],
+    refundRequest: json["refund_request"].toString(),
+    refundRequestStatus: json["refund_request_status"],
+    isOdooProduct: json["is_odoo_product"],
+    odooId: json["odoo_id"],
+    odooOrderId: json["odoo_order_id"],
+    variation: json["variation"] == null
+        ? []
+        : (json["variation"] is List)
+        ? (json["variation"] as List).isEmpty
+              ? []
+              : json["variation"]?.first.isEmpty
+              ? []
+              : List<GetOrderVariationModel>.from(
+                  json["variation"].map(
+                    (x) => GetOrderVariationModel.fromJson(x),
+                  ),
+                ).where((element) => element.type == json["variant"]).toList()
+        : [],
+    image: json["image"],
+  );
 
   Map<String, dynamic> toJson() => {
     "id": id,
@@ -614,48 +615,6 @@ class PlaceOrderDetailsModel {
         : (variation?.first is List)
         ? []
         : List<dynamic>.from(variation!.map((x) => x.toJson())),
-  };
-}
-
-class Variation {
-  final String? sizeOption;
-  final String? colorOption;
-  final String? size;
-  final String? color;
-  Variation({this.sizeOption, this.colorOption, this.size, this.color});
-
-  Variation copyWith({
-    String? sizeOption,
-    String? colorOption,
-    String? size,
-    String? color,
-  }) => Variation(
-    sizeOption: sizeOption ?? this.sizeOption,
-    colorOption: colorOption ?? this.colorOption,
-    size: size ?? this.size,
-    color: color ?? this.color,
-  );
-
-  factory Variation.fromJson(Map<String, dynamic> json) => Variation(
-    sizeOption: json["size_options"] == null
-        ? null
-        : json["size_options"].toString().replaceAll("-", "_"),
-    colorOption: json["color_options"] == null
-        ? null
-        : json["color_options"].toString().replaceAll("-", "_"),
-    size: json["Size"] == null
-        ? null
-        : json["Size"].toString().replaceAll("-", "_"),
-    color: json["color"] == null
-        ? null
-        : json["color"].toString().replaceAll("-", "_"),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "size_options": sizeOption,
-    "color_options": colorOption,
-    "Size": size,
-    "color": color,
   };
 }
 

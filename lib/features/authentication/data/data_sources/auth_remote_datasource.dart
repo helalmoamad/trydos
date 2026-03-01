@@ -88,11 +88,11 @@ class AuthRemoteDatasource {
   }
 
   Future<SendOtpResponseModel> sendOtp(Map<String, dynamic> params) {
-    GetClient<SendOtpResponseModel> sendOtp = GetClient<SendOtpResponseModel>(
+    PostClient<SendOtpResponseModel> sendOtp = PostClient<SendOtpResponseModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<SendOtpResponseModel>(
         endpoint: MarketEndPoints.sendOtpEP,
-        queryParameters: params,
+        data: params,
         response: ResponseValue<SendOtpResponseModel>(
           fromJson: (response) => SendOtpResponseModel.fromJson(response),
         ),
@@ -104,12 +104,12 @@ class AuthRemoteDatasource {
   Future<VerifyOtpSignUpAndInResponseModel> verifyOtpSignUp(
     Map<String, dynamic> params,
   ) {
-    GetClient<VerifyOtpSignUpAndInResponseModel> verifyOtpSignUp =
-        GetClient<VerifyOtpSignUpAndInResponseModel>(
+    PostClient<VerifyOtpSignUpAndInResponseModel> verifyOtpSignUp =
+        PostClient<VerifyOtpSignUpAndInResponseModel>(
           serverName: ServerName.market,
           requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
             endpoint: MarketEndPoints.verifyOtpSignUpEP,
-            queryParameters: params,
+            data: params,
             response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
               fromJson: (response) =>
                   VerifyOtpSignUpAndInResponseModel.fromJson(response),
@@ -122,12 +122,12 @@ class AuthRemoteDatasource {
   Future<VerifyOtpInProfileResponseModel> verifyOtpInProfile(
     Map<String, dynamic> params,
   ) {
-    GetClient<VerifyOtpInProfileResponseModel> verifyOtpInProfile =
-        GetClient<VerifyOtpInProfileResponseModel>(
+    PostClient<VerifyOtpInProfileResponseModel> verifyOtpInProfile =
+        PostClient<VerifyOtpInProfileResponseModel>(
           serverName: ServerName.market,
           requestPrams: RequestConfig<VerifyOtpInProfileResponseModel>(
             endpoint: MarketEndPoints.verifyOtpInProfileEP,
-            queryParameters: params,
+            data: params,
             response: ResponseValue<VerifyOtpInProfileResponseModel>(
               fromJson: (response) =>
                   VerifyOtpInProfileResponseModel.fromJson(response),
@@ -209,12 +209,12 @@ class AuthRemoteDatasource {
   Future<VerifyOtpSignUpAndInResponseModel> verifyOtpSignIn(
     Map<String, dynamic> params,
   ) {
-    GetClient<VerifyOtpSignUpAndInResponseModel> verifyOtpSignIn =
-        GetClient<VerifyOtpSignUpAndInResponseModel>(
+    PostClient<VerifyOtpSignUpAndInResponseModel> verifyOtpSignIn =
+        PostClient<VerifyOtpSignUpAndInResponseModel>(
           serverName: ServerName.market,
           requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
             endpoint: MarketEndPoints.verifyOtpSignInEP,
-            queryParameters: params,
+            data: params,
             response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
               fromJson: (response) =>
                   VerifyOtpSignUpAndInResponseModel.fromJson(response),
@@ -241,12 +241,12 @@ class AuthRemoteDatasource {
   Future<VerifyOtpFromGuestResponseModel> verifyOtpFromGuest(
     Map<String, dynamic> params,
   ) {
-    GetClient<VerifyOtpFromGuestResponseModel> verifyOtpFromGuest =
-        GetClient<VerifyOtpFromGuestResponseModel>(
+    PostClient<VerifyOtpFromGuestResponseModel> verifyOtpFromGuest =
+        PostClient<VerifyOtpFromGuestResponseModel>(
           serverName: ServerName.market,
           requestPrams: RequestConfig<VerifyOtpFromGuestResponseModel>(
             endpoint: MarketEndPoints.verifyOtpFromGuestEP,
-            queryParameters: params,
+            data: params,
             response: ResponseValue<VerifyOtpFromGuestResponseModel>(
               fromJson: (response) =>
                   VerifyOtpFromGuestResponseModel.fromJson(response),

@@ -205,11 +205,24 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
     response.fold(
       (l) {
+        print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${l.statusCode}");
+        if (l.statusCode == 401) {
+          emit(
+            state.copyWith(walletCheckoutStatus: WalletCheckoutStatus.unAuth),
+          );
+          return;
+        }
+        if (ErrorManager.shouldRetry('WalletCheckoutEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('WalletCheckoutEvent');
+          add(WalletCheckoutEvent(params: event.params));
+          return;
+        }
         emit(
           state.copyWith(walletCheckoutStatus: WalletCheckoutStatus.failure),
         );
       },
       (r) {
+        ErrorManager.resetRetry('WalletCheckoutEvent');
         emit(
           state.copyWith(walletCheckoutStatus: WalletCheckoutStatus.success),
         );

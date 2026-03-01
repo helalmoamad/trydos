@@ -1618,7 +1618,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             if ((product.syncColorImages?.length ?? 0) > 0) {
               if ((product.syncColorImages![0].images?.length ?? 0) > 0) {
                 url = addSuitableWidthAndHeightToImage(
-                  imageUrl: product.syncColorImages![0].images![0].filePath!,
+                  imageUrl:
+                      product.syncColorImages![0].images![0].filePath ?? "",
                   width: 200,
                   // the width of the image in the ui
                   height: 290,
@@ -1646,7 +1647,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
 
             if ((product.images?.length ?? 0) > 0) {
               url = addSuitableWidthAndHeightToImage(
-                imageUrl: product.images![0].filePath!,
+                imageUrl: product.images![0].filePath ?? "",
                 width: 200,
                 // the width of the image in the ui
                 height: 290,
@@ -1676,7 +1677,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           }
           r.data?.categories?.forEach((category) {
             url = addSuitableWidthAndHeightToImage(
-              imageUrl: category.mostViewedProductThumbnail!.filePath!,
+              imageUrl: category.mostViewedProductThumbnail?.filePath ?? "",
               width: 70,
               height: 70,
             );
@@ -1689,7 +1690,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             );
             category.subCategories?.forEach((sub) {
               url = addSuitableWidthAndHeightToImage(
-                imageUrl: sub.mostViewedProductThumbnail!.filePath!,
+                imageUrl: sub.mostViewedProductThumbnail?.filePath ?? "",
                 width: 50,
                 height: 50,
               );
@@ -1729,7 +1730,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   ) async {
     List<String> urlHasPredeched =
         prefsRepository.getImageUrlHasPrefeched ?? [];
-    if (urlHasPredeched.contains(url)) {
+    if (urlHasPredeched.contains(url) || url == "") {
       return;
     }
     GetIt.I<PreCachingImageBloc>().add(
@@ -2305,7 +2306,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               //    if (!image.images.isNullOrEmpty) {
 
               url = addSuitableWidthAndHeightToImage(
-                imageUrl: product.syncColorImages![0].images![0].filePath!,
+                imageUrl: product.syncColorImages![0].images![0].filePath ?? "",
                 ordinalHeight: double.tryParse(
                   product.syncColorImages![0].images![0].originalHeight ?? "0",
                 ),
@@ -3077,7 +3078,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               //    if (!image.images.isNullOrEmpty) {
 
               url = addSuitableWidthAndHeightToImage(
-                imageUrl: product.syncColorImages![0].images![0].filePath!,
+                imageUrl: product.syncColorImages![0].images![0].filePath ?? "",
                 ordinalHeight: double.tryParse(
                   product.syncColorImages![0].images![0].originalHeight ?? "0",
                 ),

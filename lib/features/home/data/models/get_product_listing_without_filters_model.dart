@@ -777,7 +777,11 @@ class Brand {
     slug: json["slug"],
     name: json["name"],
     isVerified: int.tryParse(json["is_verified"].toString()),
-    icon: json["icon"] == null ? null : Thumbnail.fromJson(json["icon"]),
+    icon: json["icon"] == null
+        ? null
+        : json["icon"] is String
+        ? Thumbnail.fromJson({"file_path": json["icon"] ?? json["file_path"]})
+        : Thumbnail.fromJson(json["icon"]),
   );
 
   Map<String, dynamic> toJson() => {

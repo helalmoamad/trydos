@@ -371,6 +371,9 @@ String addSuitableWidthAndHeightToImage({
   required double width,
   required double height,
 }) {
+  if (imageUrl.isEmpty || imageUrl == "null" || imageUrl == "undefined") {
+    return imageUrl;
+  }
   // 🔧 إصلاح: إرجاع URL الأصلي للصور غير Cloudinary
   if (!imageUrl.contains("cloudinary")) {
     return imageUrl;

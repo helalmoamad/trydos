@@ -62,7 +62,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
   void initState() {
     LastPagesTracker.push("SuccessfullOrder Page");
     appBloc = BlocProvider.of<AppBloc>(context);
-
+    print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${widget.cartImages}");
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(const RemoveItemsFromCartAfterOrderSuccessEvent());
     homeBloc.add(const GetCartItemEvent());

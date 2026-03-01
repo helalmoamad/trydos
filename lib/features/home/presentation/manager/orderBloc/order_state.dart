@@ -76,7 +76,7 @@ enum OrderReturnRequestsViewStatus { init, loading, success, failure }
 
 enum ConfirmReturnRequestStatus { init, loading, success, failure }
 
-enum WalletCheckoutStatus { init, loading, success, failure }
+enum WalletCheckoutStatus { init, loading, success, failure, unAuth }
 
 enum OrderReturnDetailsStatus { init, loading, success, failure }
 

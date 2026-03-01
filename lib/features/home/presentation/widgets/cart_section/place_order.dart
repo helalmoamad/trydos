@@ -7,7 +7,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
+import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
+import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 import 'package:trydos/features/home/domain/use_cases/wallet_checkout_usecase.dart';
 import 'package:uuid/uuid.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -75,12 +82,17 @@ class PlaceOrder extends StatefulWidget {
 
 class _PlaceOrderState extends State<PlaceOrder> {
   final ValueNotifier<bool> agreeToPolicies = ValueNotifier(false);
-
+  final PanelController panelController = PanelController();
+  final PageController pageController = PageController();
+  final FocusNode focusNode = FocusNode();
+  final OrderBloc orderBloc = GetIt.I<OrderBloc>();
+  String phoneNumber = '';
+  int isVisWhatsApp = 0;
+  final ValueNotifier<bool> isVerified = ValueNotifier(true);
+  PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   void initState() {
-    print(
-      "PlaceOrder PageRRRRRRRRRRRRRRRRRRRRRRRRRRR${widget.paymentMethods.value}",
-    );
+    print("PlaceOrder PageRRRRRRRRRRRRRRRRRRRRRRRRRRR${widget.cartImages}");
     LastPagesTracker.push("PlaceOrder Page");
     super.initState();
   }
@@ -232,7 +244,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               : element.variation?[0].size ?? "",
                           "color": element.variation.isNullOrEmpty
                               ? ""
-                              : element.variation?[0].color ?? "",
+                              : element.variation?[0].color?.name ?? "",
                         });
                         ////////////////////////////
                         analyticsItems.add({
@@ -391,7 +403,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               : element.variation?[0].size ?? "",
                           "color": element.variation.isNullOrEmpty
                               ? ""
-                              : element.variation?[0].color ?? "",
+                              : element.variation?[0].color?.name ?? "",
                         });
                       }
                     });
@@ -501,49 +513,66 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         previous.checkWithGetCartStatus !=
                         current.checkWithGetCartStatus,
                     builder: (context, homeState) {
-                      return Column(
+                      return Stack(
                         children: [
-                          buildPageHeader(context),
-                          /////////////////////
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
-                                alignment: Alignment.topCenter,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    buildBagItemsWidget(context),
-                                    //////////////////////////////////
-                                    SizedBox(height: 12.h),
-                                    //////////////////////////////////
-                                    buildAddress(context),
-                                    //////////////////////////////////
-                                    PaymentMethod(
-                                      fromSuccessOrder: false,
-                                      amount: widget.walletBalance,
-                                      fromPalceOrder: true,
-                                      paymentMethods: widget.paymentMethods,
-                                      availablePaymentMethod:
-                                          widget.availablePaymentMethod,
-                                      totalPrice: widget.totalPrice,
-                                      decimalPointSetting:
-                                          widget.decimalPointSetting,
-                                      currencySymbol: widget.currencySympole,
+                          Column(
+                            children: [
+                              buildPageHeader(context),
+                              /////////////////////
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 10,
                                     ),
-                                    /////////////////////////
-                                    SizedBox(height: 40.h),
-                                    //////////////////////////////////
-                                    buildAgreeToPoliciesWidget(),
-                                  ],
+                                    alignment: Alignment.topCenter,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        buildBagItemsWidget(context),
+                                        //////////////////////////////////
+                                        SizedBox(height: 12.h),
+                                        //////////////////////////////////
+                                        buildAddress(context),
+                                        //////////////////////////////////
+                                        PaymentMethod(
+                                          fromSuccessOrder: false,
+                                          amount: widget.walletBalance,
+                                          fromPalceOrder: true,
+                                          paymentMethods: widget.paymentMethods,
+                                          availablePaymentMethod:
+                                              widget.availablePaymentMethod,
+                                          totalPrice: widget.totalPrice,
+                                          decimalPointSetting:
+                                              widget.decimalPointSetting,
+                                          currencySymbol:
+                                              widget.currencySympole,
+                                        ),
+                                        /////////////////////////
+                                        SizedBox(height: 40.h),
+                                        //////////////////////////////////
+                                        buildAgreeToPoliciesWidget(),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
+                              // //////////////////////////
+                              buildPlaceOrderButton(orderState, homeState),
+                            ],
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            child: ValueListenableBuilder<bool>(
+                              valueListenable: isVerified,
+                              builder: (context, _isverified, _) {
+                                return _isverified
+                                    ? const SizedBox.shrink()
+                                    : _veryfiedOtp(context);
+                              },
                             ),
                           ),
-                          // //////////////////////////
-                          buildPlaceOrderButton(orderState, homeState),
                         ],
                       );
                     },
@@ -563,7 +592,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
       builder: (context, _agreeToPolicies, _) {
         return (orderState.placeOrderStatus == PlaceOrderStatus.loading ||
                 homeState.checkWithGetCartStatus ==
-                    CheckWithGetCartStatus.loading)
+                    CheckWithGetCartStatus.loading ||
+                orderState.getOrdersByCartGroupIDStatus ==
+                    GetOrdersByCartGroupIDStatus.loading)
             ? Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
@@ -667,6 +698,20 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 child: InkWell(
                   onTap: () {
                     if (_agreeToPolicies) {
+                      if (!(prefsRepository.isVerifiedPhone ?? false)) {
+                        isVerified.value = false;
+                        if ((prefsRepository
+                                .isVerifiedPhonePeforeExpiredToken ??
+                            false)) {
+                          GetIt.I<AuthBloc>().add(
+                            SendOtpEvent(
+                              phone: prefsRepository.myPhoneNumber!,
+                              isViaWhatsApp: 1,
+                            ),
+                          );
+                        }
+                        return;
+                      }
                       BlocProvider.of<HomeBloc>(
                         context,
                       ).add(const CheckWithGetCartEvent(isForPlaceOrder: true));
@@ -1058,184 +1103,380 @@ class _PlaceOrderState extends State<PlaceOrder> {
     );
   }
 
+  Widget _veryfiedOtp(BuildContext context) {
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Container(
+        color: Colors.white,
+        height: 265,
+        width: 1.sw,
+        child: Stack(
+          children: [
+            PageView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: pageController,
+              children:
+                  (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
+                  ? [
+                      VerifyOtp(
+                        fromProfile: false,
+                        navigateToProfile: () {},
+                        fromExpired: true,
+                        isVisWhatsApp: 1,
+                        navigateToAddName: () {},
+                        navigateTocartOrProfile: () {
+                          isVerified.value = true;
+                        },
+                        fromLogin: false,
+                        onLoginFailed: () {
+                          //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                        },
+                        goBack: () {
+                          // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                        },
+                        methodIcon: AppAssets.whatsappSvg,
+                        phoneNumber: prefsRepository.myPhoneNumber!,
+                      ),
+                    ]
+                  : [
+                      InsertPhoneTab(
+                        focusNode: focusNode,
+                        moveToNextStep: (String phoneNumber) {
+                          this.phoneNumber = phoneNumber.replaceAll(' ', '');
+                          pageController.animateToPage(
+                            1,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
+                          setState(() {});
+                        },
+                      ),
+                      VerificationMethods(
+                        isFromLogin: false,
+                        phoneNumber: phoneNumber,
+                        onChooseWhatsapp: () {
+                          isVisWhatsApp = 1;
+                          print("###################33333# isVisWhatsApp}");
+                          pageController.animateToPage(
+                            2,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
+
+                          if (prefsRepository.isTimerForOtpRunning ?? false) {
+                            showWarningMessage(
+                              context,
+                              ' ${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}',
+                            );
+                            return;
+                          }
+                          /*   authBloc.add(
+                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));*/
+                        },
+                        goBackToPhone: () {
+                          pageController.animateToPage(
+                            0,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        onChooseSms: () {
+                          isVisWhatsApp = 0;
+                          pageController.animateToPage(
+                            3,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
+                          /* authBloc.add(
+                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));*/
+                        },
+                      ),
+                      VerifyOtp(
+                        fromProfile: false,
+                        navigateToProfile: () {},
+                        fromExpired: true,
+                        isVisWhatsApp: isVisWhatsApp,
+                        navigateToAddName: () {},
+                        navigateTocartOrProfile: () {
+                          isVerified.value = true;
+                          orderBloc.add(
+                            GetCustomerWalletEvent(
+                              currencySymbol:
+                                  GetIt.I<HomeBloc>()
+                                      .state
+                                      .getCurrencyForCountryModel!
+                                      .data!
+                                      .currency!
+                                      .code ??
+                                  "",
+                            ),
+                          );
+                          orderBloc.add(
+                            GetOrdersEvent(
+                              status: "",
+                              getWithPagination: false,
+                            ),
+                          );
+                        },
+                        fromLogin: false,
+                        onLoginFailed: () {
+                          pageController.animateToPage(
+                            3,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        goBack: () {
+                          pageController.animateToPage(
+                            1,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        methodIcon: isVisWhatsApp == 1
+                            ? AppAssets.whatsappSvg
+                            : AppAssets.smsSvg,
+                        phoneNumber: phoneNumber,
+                      ),
+                    ],
+            ),
+            Positioned(
+              top: 0,
+              left: LanguageService.languageCode != "ar" ? null : 0,
+              right: LanguageService.languageCode != "ar" ? 0 : null,
+              child: Container(
+                margin: const EdgeInsets.all(10),
+                height: 20,
+                width: 40,
+                child: InkWell(
+                  onTap: () => isVerified.value = true,
+                  child: SvgPicture.asset(
+                    AppAssets.closeSvg,
+                    height: 15,
+                    width: 30,
+                    // ignore: deprecated_member_use
+                    color: const Color(0xffFF5F61),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showWalletPaymentDialog(BuildContext context) {
     const uuid = Uuid();
     String idempotencyKey = uuid.v4();
+    // dialog should not be dismissible while a checkout request is in progress
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: Container(
-            width: 0.9.sw,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
+        // ignore: deprecated_member_use
+        return WillPopScope(
+          onWillPop: () async {
+            // prevent back-button pop when loading
+            return orderBloc.state.walletCheckoutStatus !=
+                WalletCheckoutStatus.loading;
+          },
+          child: Dialog(
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header
-                Text(
-                  'Wallet Payment',
-                  style: context.textTheme.headlineSmall?.copyWith(
-                    color: const Color(0xff1D1D1D),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                SizedBox(height: 20.h),
-
-                // Select Currency Label
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Select Currency',
-                    style: context.textTheme.bodyMedium?.copyWith(
-                      color: const Color(0xff999999),
-                      fontSize: 12,
+            child: Container(
+              width: 0.9.sw,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Text(
+                    'Wallet Payment',
+                    style: context.textTheme.headlineSmall?.copyWith(
+                      color: const Color(0xff1D1D1D),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
                   ),
-                ),
-                SizedBox(height: 10.h),
+                  SizedBox(height: 20.h),
 
-                // Currency Button
-                Container(
-                  width: double.infinity,
-                  height: 50.h,
-                  decoration: BoxDecoration(
-                    color: const Color(0xff346BFF),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Center(
+                  // Select Currency Label
+                  Align(
+                    alignment: Alignment.centerLeft,
                     child: Text(
-                      widget.currencySympole,
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-
-                // Total Amount
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xff1D1D1D),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '${widget.totalPrice.toStringAsFixed(2)} ${widget.currencySympole}',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xff1D1D1D),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 15.h),
-
-                // Account to Pay / Wallet Balance
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Account to Pay',
+                      'Select Currency',
                       style: context.textTheme.bodyMedium?.copyWith(
                         color: const Color(0xff999999),
                         fontSize: 12,
                       ),
                     ),
-                    Text(
-                      '${widget.walletBalance.toStringAsFixed(2)} ${widget.currencySympole}',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xff00C853),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  ),
+                  SizedBox(height: 10.h),
+
+                  // Currency Button
+                  Container(
+                    width: double.infinity,
+                    height: 50.h,
+                    decoration: BoxDecoration(
+                      color: const Color(0xff346BFF),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Center(
+                      child: Text(
+                        widget.currencySympole,
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                  ],
-                ),
-                SizedBox(height: 25.h),
+                  ),
+                  SizedBox(height: 20.h),
 
-                // Confirm Button
-                BlocListener<OrderBloc, OrderState>(
-                  listenWhen: (previous, current) =>
-                      previous.walletCheckoutStatus !=
-                      current.walletCheckoutStatus,
-                  listener: (context, state) {
-                    if (state.walletCheckoutStatus ==
-                        WalletCheckoutStatus.success) {
-                      Navigator.of(context).pop();
-                      BlocProvider.of<OrderBloc>(context).add(
-                        GetOrdersByCartGroupIDEvent(
-                          cartGroupId: widget.cartGroupId,
+                  // Total Amount
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '',
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          fontWeight: FontWeight.bold,
                         ),
-                      );
-                    }
-                  },
-                  child: BlocBuilder<OrderBloc, OrderState>(
-                    buildWhen: (previous, current) =>
+                      ),
+                      Text(
+                        '${widget.totalPrice.toStringAsFixed(2)} ${widget.currencySympole}',
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 15.h),
+
+                  // Account to Pay / Wallet Balance
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Account to Pay',
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: const Color(0xff999999),
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        '${widget.walletBalance.toStringAsFixed(2)} ${widget.currencySympole}',
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: const Color(0xff00C853),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 25.h),
+
+                  // Confirm Button
+                  BlocListener<OrderBloc, OrderState>(
+                    listenWhen: (previous, current) =>
                         previous.walletCheckoutStatus !=
                         current.walletCheckoutStatus,
-                    builder: (context, state) {
-                      return state.walletCheckoutStatus ==
-                              WalletCheckoutStatus.loading
-                          ? Shimmer.fromColors(
-                              baseColor: Colors.grey[300]!,
-                              highlightColor: Colors.grey[100]!,
-                              child: Container(
-                                width: double.infinity,
-                                height: 50.h,
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xffC4C2C2,
-                                    // ignore: deprecated_member_use
-                                  ).withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(15),
+                    listener: (context, state) {
+                      if (state.walletCheckoutStatus ==
+                          WalletCheckoutStatus.success) {
+                        Navigator.of(context).pop();
+                        BlocProvider.of<OrderBloc>(context).add(
+                          GetOrdersByCartGroupIDEvent(
+                            cartGroupId: widget.cartGroupId,
+                          ),
+                        );
+                      }
+                      if (state.walletCheckoutStatus ==
+                          WalletCheckoutStatus.unAuth) {
+                        Navigator.of(context).pop();
+                        Future.delayed(const Duration(seconds: 1), () {
+                          if (!(prefsRepository.isVerifiedPhone ?? false)) {
+                            isVerified.value = false;
+                            if ((prefsRepository
+                                    .isVerifiedPhonePeforeExpiredToken ??
+                                false)) {
+                              GetIt.I<AuthBloc>().add(
+                                SendOtpEvent(
+                                  phone: prefsRepository.myPhoneNumber!,
+                                  isViaWhatsApp: 1,
                                 ),
-                              ),
-                            )
-                          : GestureDetector(
-                              onTap: () {
-                                _proceedWithWalletPayment(idempotencyKey);
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                height: 50.h,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xff346BFF),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Confirm Wallet Payment',
-                                    style: context.textTheme.bodyMedium
-                                        ?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
+                              );
+                            }
+                            return;
+                          }
+                        });
+                      }
+                    },
+                    child: BlocBuilder<OrderBloc, OrderState>(
+                      buildWhen: (previous, current) =>
+                          previous.walletCheckoutStatus !=
+                          current.walletCheckoutStatus,
+                      builder: (context, state) {
+                        return state.walletCheckoutStatus ==
+                                WalletCheckoutStatus.loading
+                            ? Shimmer.fromColors(
+                                baseColor: Colors.grey[300]!,
+                                highlightColor: Colors.grey[100]!,
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 50.h,
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xffC4C2C2,
+                                      // ignore: deprecated_member_use
+                                    ).withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(15),
                                   ),
                                 ),
-                              ),
-                            );
-                    },
+                              )
+                            : GestureDetector(
+                                onTap: () {
+                                  _proceedWithWalletPayment(idempotencyKey);
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 50.h,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xff346BFF),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Confirm Wallet Payment',
+                                      style: context.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -1253,56 +1494,47 @@ class _PlaceOrderState extends State<PlaceOrder> {
         ).state.customerWalletModel?.wallets?[0].balances?[0].assetId ??
         ""; // You'll need to pass this or get from context
 
-    // Prepare wallet payment body
-    final walletPayload = {
-      'amount': widget.totalPrice,
+    // compute timestamp once (use seconds or ms as agreed by backend)
+    final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+
+    // Build request payload identical to WalletCheckoutParams.payloadMap
+    final requestPayload = {
       'currencyId': currencyId,
-      'cart_groub_ids': widget.listCartGroupIds,
+      'store_user_id':
+          int.tryParse(prefsRepository.myMarketId ?? '') ??
+          prefsRepository.myMarketId,
+      'amount': widget.totalPrice,
+      'cart_group_ids': widget.listCartGroupIds,
       'idempotencyKey': idempotencyKey,
-      'timestamp': DateTime.now().toString(),
     };
 
-    // Generate HMAC signature
-    final signature = _generateHmacSignature(walletPayload);
+    // encode body exactly as sent to server
+    final requestBody = jsonEncode(requestPayload);
+
+    // Generate HMAC signature with computed timestamp
+    final message = '$timestamp.$requestBody';
+    final digest = Hmac(
+      sha256,
+      utf8.encode(dotenv.env['Secret_Key'] ?? ''),
+    ).convert(utf8.encode(message)).toString();
+    final signature = 'sha256=$digest';
+
+    debugPrint('Signing request body: $requestBody');
+    debugPrint('Signature message: $message');
+    debugPrint('Computed signature: $signature');
 
     BlocProvider.of<OrderBloc>(context).add(
       WalletCheckoutEvent(
         params: WalletCheckoutParams(
           amount: widget.totalPrice,
           cartGroupIds: widget.listCartGroupIds,
+          myMarketId: prefsRepository.myMarketId ?? "",
           currencyId: currencyId,
           idempotencyKey: idempotencyKey,
           signature: signature,
-          timestamp: DateTime.now().toString(),
+          timestamp: timestamp,
         ),
       ),
     );
-  }
-
-  /// Generate HMAC SHA256 signature for wallet payment
-  String _generateHmacSignature(Map<String, dynamic> paymentData) {
-    // Get secret key from environment
-    final secretKey = dotenv.env['Secret_Key'] ?? '';
-
-    // Create payload with required fields
-    final payload = jsonEncode({
-      'amount': paymentData['amount'],
-      'currencyId': paymentData['currencyId'],
-      'cart_groub_ids': paymentData['cart_groub_ids'],
-      'idempotencyKey': paymentData['idempotencyKey'],
-      'timestamp': paymentData['timestamp'],
-    });
-
-    debugPrint('Wallet Payment Payload: $payload');
-    debugPrint('Secret Key: $secretKey');
-
-    // Generate HMAC SHA256 signature
-    final signature = Hmac(
-      sha256,
-      utf8.encode(secretKey),
-    ).convert(utf8.encode(payload)).toString();
-
-    debugPrint('Generated Signature: $signature');
-    return signature;
   }
 }

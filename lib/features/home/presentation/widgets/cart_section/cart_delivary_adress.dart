@@ -86,6 +86,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
       vsync: this,
     );
     cartImages = widget.cartItems;
+    print(
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG----------------${cartImages}",
+    );
     // homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -283,7 +286,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   return ValueListenableBuilder<bool>(
                     valueListenable: showDeleteAddress,
                     builder: (context, _showDeleteAddress, _) {
-                      double walletBalance = 20000000;
+                      double walletBalance =
+                          orderState.customerWalletModel!.totalAvailable ?? 0;
                       // *
                       //     state.getCurrencyForCountryModel!.data!.currency!
                       //         .exchangeRate!;
