@@ -521,9 +521,23 @@ class Products {
       collectedAfterOrdering: json["collected_after_ordering"],
       isFavourite: json["is_favourite"],
       isActive: json["is_active"],
-      labelNames: json["label_names"] == null || json["label_names"] == "[]"
-          ? []
-          : List<String>.from(json["label_names"]!.map((x) => x)),
+      labelNames: json["label_names"] == null
+          ? <String>[]
+          : (() {
+              final data = json["label_names"];
+              if (data is String) {
+                // sometimes the API returns a JSON-encoded string
+                try {
+                  final list = (jsonDecode(data) as List<dynamic>?) ?? [];
+                  return list.map((x) => x.toString()).toList();
+                } catch (_) {
+                  return <String>[];
+                }
+              } else if (data is List) {
+                return List<String>.from(data.map((x) => x.toString()));
+              }
+              return <String>[];
+            })(),
       flashDealEndDate: json["flash_deal_end_date"],
       rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
       flashDealDetails: json["flash_deal_details"],

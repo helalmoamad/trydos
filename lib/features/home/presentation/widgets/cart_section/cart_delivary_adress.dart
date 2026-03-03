@@ -287,7 +287,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                     valueListenable: showDeleteAddress,
                     builder: (context, _showDeleteAddress, _) {
                       double walletBalance =
-                          orderState.customerWalletModel!.totalAvailable ?? 0;
+                          orderState.customerWalletModel?.available ?? 0;
                       // *
                       //     state.getCurrencyForCountryModel!.data!.currency!
                       //         .exchangeRate!;
@@ -355,19 +355,15 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                                           .failure
                                                   ? TryAgainWidget(
                                                       tryAgain: () {
-                                                        BlocProvider.of<OrderBloc>(
-                                                          context,
-                                                        ).add(
-                                                          GetCustomerWalletEvent(
+                                                        homeBloc.add(
+                                                          GetCurrenciesForWalletEvent(
                                                             currencySymbol:
-                                                                GetIt.I<
-                                                                      HomeBloc
-                                                                    >()
+                                                                homeBloc
                                                                     .state
-                                                                    .getCurrencyForCountryModel!
-                                                                    .data!
-                                                                    .currency!
-                                                                    .code ??
+                                                                    .getCurrencyForCountryModel
+                                                                    ?.data
+                                                                    ?.currency
+                                                                    ?.code ??
                                                                 "",
                                                           ),
                                                         );

@@ -7,20 +7,23 @@ import 'package:trydos/features/home/domain/repositories/home_repository.dart';
 
 class ChangeOrderItemVariantParams {
   final String orderDetailId;
-  final String choice1;
+  final String size;
   final String color;
+  final String? image;
 
   ChangeOrderItemVariantParams({
     required this.orderDetailId,
-    required this.choice1,
+    required this.size,
     required this.color,
+    this.image,
   });
 
   Map<String, dynamic> toMap() => {
-        'order_detail_id': orderDetailId,
-        'choice_1': choice1,
-        'color': color,
-      };
+    'order_detail_id': orderDetailId,
+    'size': size,
+    'color': color,
+    'image': image?.split("/").last,
+  };
 }
 
 @injectable
@@ -32,7 +35,8 @@ class ChangeOrderItemVariantUsecase
 
   @override
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> call(
-      ChangeOrderItemVariantParams params) {
+    ChangeOrderItemVariantParams params,
+  ) {
     return repository.changeOrderItemVariant(params.toMap());
   }
 }

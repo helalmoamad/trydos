@@ -19,6 +19,8 @@
   "gallery": "گەلەری",
   "camera": "کامێرا",
   "work_days": "ڕۆژانی کار",
+  "succesfully_added_story": "چیرۆکەکەت بە سەرکەوتوویی زیاد کرا",
+  "failed_to_add_story": "زیادکردنی چیرۆکەکەت سەرکەوتوو نەبوو",
   "camera_permission_required_message": "Nakarin kamera bikeyn bê îzinê. Ji kerema xwe destûrê bide û dîsa biceribîne.",
   "account_import_success_message": "Daneyên hesab bi serkeftî hatin têxistin",
   "qr_invalid_code_message": "Ev kod nehate xwendin, ji kerema xwe dîsa biceribîne",

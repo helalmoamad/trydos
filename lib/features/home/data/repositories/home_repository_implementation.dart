@@ -631,11 +631,10 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
-    required String currencySymbol,
+    required String assetId,
   }) {
     return handlingExceptionRequest(
-      tryCall: () =>
-          dataSource.getCustomerWallet(currencySymbol: currencySymbol),
+      tryCall: () => dataSource.getCustomerWallet(assetId: assetId),
     );
   }
 

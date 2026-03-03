@@ -11,8 +11,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -541,8 +541,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       )
                     : InkWell(
                         onTap: () {
-                          BlocProvider.of<OrderBloc>(context).add(
-                            GetCustomerWalletEvent(
+                          BlocProvider.of<HomeBloc>(context).add(
+                            GetCurrenciesForWalletEvent(
                               currencySymbol:
                                   GetIt.I<HomeBloc>()
                                       .state
@@ -551,7 +551,6 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                       .currency!
                                       .code ??
                                   "",
-                              statusInitToRefreshAmount: true,
                             ),
                           );
                         },

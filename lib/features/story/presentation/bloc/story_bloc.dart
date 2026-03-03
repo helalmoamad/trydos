@@ -24,6 +24,7 @@ import 'package:trydos/features/story/domain/useCases/increase_viewers_usecase.d
 import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/delete_story_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../data/models/get_stories_model.dart';
 import '../../domain/useCases/add_story_to_our_server_usecase.dart';
 
@@ -48,46 +49,56 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
   final DeleteStoryUseCase deleteStoryUseCase;
 
   StoryBloc(
-      this.uploadFileCloudinaryUseCase,
-      this.getStoryUseCase,
-      this.getWidthAndHeightUseCase,
-      this.uploadStoryUseCase,
-      this.increaseViewersUseCase,
-      this.addStoryToOurServerUseCase,
-      this.deleteStoryUseCase)
-      : super(StoryState()) {
+    this.uploadFileCloudinaryUseCase,
+    this.getStoryUseCase,
+    this.getWidthAndHeightUseCase,
+    this.uploadStoryUseCase,
+    this.increaseViewersUseCase,
+    this.addStoryToOurServerUseCase,
+    this.deleteStoryUseCase,
+  ) : super(StoryState()) {
     on<UploadStoryEvent>(_uploadStoryEvent);
     on<SetStoryLinkEvent>(_setStoryLinkEvent);
     on<AddStoryToOurServerEvent>(_AddStoryToOurServerEvent);
     on<IncreaseViewersEvent>(_IncreaseViewersEvent);
-    on<ChangeStatusUploadToFailureEvent>(
-      _onChangeStatusUploadToFailureEvent,
-    );
+    on<ChangeStatusUploadToFailureEvent>(_onChangeStatusUploadToFailureEvent);
     on<DeleteStoryEvent>(_onDeleteStoryEvent);
 
     on<UpdateNameForUserInCollectionIfExistEvent>(
-        _onUpdateNameForUserInCollectionIfExistEvent);
+      _onUpdateNameForUserInCollectionIfExistEvent,
+    );
     on<StoryEvent>((event, emit) {});
     on<GetStoryEvent>(
       _onGetStoryEvent,
       // transformer: throttleDroppable(throttleDuration)
     );
-    on<LoadFailureEvent>(((event, emit) => emit(state.copyWith(
-            storiesCollections: state.storiesCollections.map((e) {
-          if (e.id == event.collectionId) {
-            return e.copyWith(
+    on<LoadFailureEvent>(
+      ((event, emit) => emit(
+        state.copyWith(
+          storiesCollections: state.storiesCollections.map((e) {
+            if (e.id == event.collectionId) {
+              return e.copyWith(
                 selectedStoriesStatusForCollection:
-                    SelectedStoriesStatus.failure);
-          }
-          return e;
-        }).toList()))));
+                    SelectedStoriesStatus.failure,
+              );
+            }
+            return e;
+          }).toList(),
+        ),
+      )),
+    );
     on<StorySelectedEvent>(_onStorySelectedEvent);
     on<UploadStoryCloudinaryEvent>(_uploadStoryCloudinaryEvent);
   }
   _onChangeStatusUploadToFailureEvent(
-      ChangeStatusUploadToFailureEvent event, Emitter emit) async {
-    emit(state.copyWith(
-        uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure));
+    ChangeStatusUploadToFailureEvent event,
+    Emitter emit,
+  ) async {
+    emit(
+      state.copyWith(
+        uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure,
+      ),
+    );
   }
 
   _setStoryLinkEvent(SetStoryLinkEvent event, Emitter emit) async {
@@ -95,26 +106,38 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
   }
 
   _uploadStoryCloudinaryEvent(
-      UploadStoryCloudinaryEvent event, Emitter emit) async {
-    emit(state.copyWith(
-        uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.loading));
+    UploadStoryCloudinaryEvent event,
+    Emitter emit,
+  ) async {
+    emit(
+      state.copyWith(
+        uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.loading,
+      ),
+    );
     final response = await uploadFileCloudinaryUseCase(
-        UploadFileCloudinaryParams(
-            file: event.file,
-            usingOnUploadingFinishedFunction: false,
-            usingSendProgressFunction: false));
+      UploadFileCloudinaryParams(
+        file: event.file,
+        usingOnUploadingFinishedFunction: false,
+        usingSendProgressFunction: false,
+      ),
+    );
     // Fluttertoast.showToast(msg: 'tosss');
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry(
-            'UploadStoryCloudinaryEvent', l.statusCode)) {
+          'UploadStoryCloudinaryEvent',
+          l.statusCode,
+        )) {
           ErrorManager.incrementRetry('UploadStoryCloudinaryEvent');
 
           GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
           return;
         }
-        emit(state.copyWith(
-            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure));
+        emit(
+          state.copyWith(
+            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure,
+          ),
+        );
 
         ///////////////////////////
         // FirebaseAnalyticsService.logEventForSession(
@@ -141,11 +164,12 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         //   HelperFunctions.urlToFile(r.secureUrl!).then((value) {
         add(
           AddStoryToOurServerEvent(
-              path: r.secureUrl!,
-              //   file: value,
-              isVideo: isVideoFile ? 1 : 0,
-              width: r.width,
-              height: r.height),
+            path: r.secureUrl!,
+            //   file: value,
+            isVideo: isVideoFile ? 1 : 0,
+            width: r.width,
+            height: r.height,
+          ),
         );
         // });
 
@@ -190,125 +214,170 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
   }
 
   _onStorySelectedEvent(
-      StorySelectedEvent event, Emitter<StoryState> emit) async {
+    StorySelectedEvent event,
+    Emitter<StoryState> emit,
+  ) async {
     //todo make the story seen when he press to show it
     debugPrint(
-        'currentStoryInEachCollection ${event.selectedStoryIndexInCollection}');
+      'currentStoryInEachCollection ${event.selectedStoryIndexInCollection}',
+    );
     debugPrint('selected ${event.collectionIndex}');
     debugPrint(
-        'state.currentStoryInEachCollection ${state.currentStoryInEachCollection[event.collectionIndex]}');
+      'state.currentStoryInEachCollection ${state.currentStoryInEachCollection[event.collectionIndex]}',
+    );
 
-    Map<int, int?> currentStoryInEachCollection =
-        Map.of(state.currentStoryInEachCollection);
+    Map<int, int?> currentStoryInEachCollection = Map.of(
+      state.currentStoryInEachCollection,
+    );
     currentStoryInEachCollection[event.collectionIndex] =
         event.selectedStoryIndexInCollection == -1
-            ? currentStoryInEachCollection[event.collectionIndex]
-            : event.selectedStoryIndexInCollection;
+        ? currentStoryInEachCollection[event.collectionIndex]
+        : event.selectedStoryIndexInCollection;
     //todo make  the state loading
-    emit(state.copyWith(
-      //selectedStoriesStatus: SelectedStoriesStatus.loading,
-      currentPage:
-          event.currentPage == -1 ? state.currentPage : event.currentPage,
-      selectedCollection: event.collectionIndex,
-      currentStoryInEachCollection: currentStoryInEachCollection,
-    ));
+    emit(
+      state.copyWith(
+        //selectedStoriesStatus: SelectedStoriesStatus.loading,
+        currentPage: event.currentPage == -1
+            ? state.currentPage
+            : event.currentPage,
+        selectedCollection: event.collectionIndex,
+        currentStoryInEachCollection: currentStoryInEachCollection,
+      ),
+    );
 
     var currentStoryInSelectedCollection =
         state.storiesCollections[event.collectionIndex].stories![max(
-            state.currentStoryInEachCollection[event.collectionIndex]!,
-            event.selectedStoryIndexInCollection)];
+          state.currentStoryInEachCollection[event.collectionIndex]!,
+          event.selectedStoryIndexInCollection,
+        )];
     if (currentStoryInSelectedCollection.isPhoto == 1) {
-//todo debug
+      //todo debug
       //todo bring the real width and height for selected photo
-      final response = await getWidthAndHeightUseCase(widthAndHeightParams(
+      final response = await getWidthAndHeightUseCase(
+        widthAndHeightParams(
           url: currentStoryInSelectedCollection.photoPath!,
-          collectionId: state.storiesCollections[event.collectionIndex].id!));
-      response.fold((l) {
-        if (ErrorManager.shouldRetry('StorySelectedEvent', l.statusCode)) {
-          ErrorManager.incrementRetry('StorySelectedEvent');
+          collectionId: state.storiesCollections[event.collectionIndex].id!,
+        ),
+      );
+      response.fold(
+        (l) {
+          if (ErrorManager.shouldRetry('StorySelectedEvent', l.statusCode)) {
+            ErrorManager.incrementRetry('StorySelectedEvent');
 
-          emit(state.copyWith(
-              storiesCollections: state.storiesCollections.map((e) {
-            if (e.id == state.storiesCollections[event.collectionIndex].id) {
-              return e.copyWith(
-                  selectedStoriesStatusForCollection:
-                      SelectedStoriesStatus.failure);
-            }
-            return e;
-          }).toList()));
-        } else {
-          ErrorManager.incrementRetry('StorySelectedEvent');
-          GetIt.I<StoryBloc>().add(StorySelectedEvent(
-              collectionIndex: event.collectionIndex,
-              selectedStoryIndexInCollection:
-                  event.selectedStoryIndexInCollection,
-              currentPage: event.currentPage));
-        }
-      }, (r) {
-//todo just make the state success with the width and height for the image and in the emitter above you changed the initial  story
-        emit(state.copyWith(
-            storiesCollections: state.storiesCollections.map((e) {
-          if (e.id == state.storiesCollections[event.collectionIndex].id) {
-            return e.copyWith(
-                selectedStoriesStatusForCollection:
-                    SelectedStoriesStatus.success,
-                imageDetail: r);
-          }
-          return e;
-        }).toList()));
-      });
-    } else {
-      //todo it's a video all what i will do is make it seen
-      emit(state.copyWith(
-        storiesCollections: state.storiesCollections.map((e) {
-          if (e.id == state.storiesCollections[event.collectionIndex].id) {
-            return e.copyWith(
-              selectedStoriesStatusForCollection: SelectedStoriesStatus.success,
+            emit(
+              state.copyWith(
+                storiesCollections: state.storiesCollections.map((e) {
+                  if (e.id ==
+                      state.storiesCollections[event.collectionIndex].id) {
+                    return e.copyWith(
+                      selectedStoriesStatusForCollection:
+                          SelectedStoriesStatus.failure,
+                    );
+                  }
+                  return e;
+                }).toList(),
+              ),
+            );
+          } else {
+            ErrorManager.incrementRetry('StorySelectedEvent');
+            GetIt.I<StoryBloc>().add(
+              StorySelectedEvent(
+                collectionIndex: event.collectionIndex,
+                selectedStoryIndexInCollection:
+                    event.selectedStoryIndexInCollection,
+                currentPage: event.currentPage,
+              ),
             );
           }
-          return e;
-        }).toList(),
-        currentStoryInEachCollection: currentStoryInEachCollection,
-        selectedCollection: event.collectionIndex,
-      ));
+        },
+        (r) {
+          //todo just make the state success with the width and height for the image and in the emitter above you changed the initial  story
+          emit(
+            state.copyWith(
+              storiesCollections: state.storiesCollections.map((e) {
+                if (e.id ==
+                    state.storiesCollections[event.collectionIndex].id) {
+                  return e.copyWith(
+                    selectedStoriesStatusForCollection:
+                        SelectedStoriesStatus.success,
+                    imageDetail: r,
+                  );
+                }
+                return e;
+              }).toList(),
+            ),
+          );
+        },
+      );
+    } else {
+      //todo it's a video all what i will do is make it seen
+      emit(
+        state.copyWith(
+          storiesCollections: state.storiesCollections.map((e) {
+            if (e.id == state.storiesCollections[event.collectionIndex].id) {
+              return e.copyWith(
+                selectedStoriesStatusForCollection:
+                    SelectedStoriesStatus.success,
+              );
+            }
+            return e;
+          }).toList(),
+          currentStoryInEachCollection: currentStoryInEachCollection,
+          selectedCollection: event.collectionIndex,
+        ),
+      );
     }
   }
 
   Future<void> _onGetStoryEvent(
-      GetStoryEvent event, Emitter<StoryState> emit) async {
+    GetStoryEvent event,
+    Emitter<StoryState> emit,
+  ) async {
     if ((state.finishGetAllStory && event.withPaginition) ||
         (state.getStoryWithPagintionStatusLoading && event.withPaginition)) {
       return;
     }
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         getStoryWithPagintionStatusLoading: true,
-        finishGetAllStory:
-            event.withPaginition ? state.finishGetAllStory : false,
+        finishGetAllStory: event.withPaginition
+            ? state.finishGetAllStory
+            : false,
         currentPage: event.withPaginition ? state.currentPage + 1 : 1,
         getStoriesStatus: state.getStoriesStatus == GetStoriesStatus.success
             ? state.getStoriesStatus
-            : GetStoriesStatus.loading));
+            : GetStoriesStatus.loading,
+      ),
+    );
     final response = await getStoryUseCase(
-        StoryRepositoryParams(page: state.currentPage.toString()));
+      StoryRepositoryParams(page: state.currentPage.toString()),
+    );
 
-    response.fold((l) {
-      if (ErrorManager.shouldRetry('GetStoryEvent', l.statusCode)) {
-        ErrorManager.incrementRetry('GetStoryEvent');
-        GetIt.I<StoryBloc>()
-            .add(GetStoryEvent(withPaginition: event.withPaginition));
-        return;
-      }
-      emit(state.copyWith(
-          getStoriesStatus: GetStoriesStatus.failure,
-          getStoryWithPagintionStatusLoading: false));
-    }, (r) {
-      List<CollectionStoryModel> storiesCollections =
-          List.of(state.storiesCollections);
-      ErrorManager.resetRetry('GetStoryEvent');
-      Map<int, int> currentStoryInEachCollection = {};
-      int i = 0;
-      List<CollectionStoryModel>? collections = r.data!.collections;
-      /*  if (!(event.withPaginition)) {
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('GetStoryEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetStoryEvent');
+          GetIt.I<StoryBloc>().add(
+            GetStoryEvent(withPaginition: event.withPaginition),
+          );
+          return;
+        }
+        emit(
+          state.copyWith(
+            getStoriesStatus: GetStoriesStatus.failure,
+            getStoryWithPagintionStatusLoading: false,
+          ),
+        );
+      },
+      (r) {
+        List<CollectionStoryModel> storiesCollections = List.of(
+          state.storiesCollections,
+        );
+        ErrorManager.resetRetry('GetStoryEvent');
+        Map<int, int> currentStoryInEachCollection = {};
+        int i = 0;
+        List<CollectionStoryModel>? collections = r.data!.collections;
+        /*  if (!(event.withPaginition)) {
         if ((collections?.length ?? 0) > 1) {
           int myStoriesIndex = collections!.indexWhere((element) =>
               GetIt.I<PrefsRepository>().myStoriesId ==
@@ -322,71 +391,98 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           }
         }
       }*/
-      r.data?.collections?.forEach((element) {
-        currentStoryInEachCollection[i++] = 0;
-      });
-      if (event.withPaginition) {
-        int i = (storiesCollections).length;
         r.data?.collections?.forEach((element) {
           currentStoryInEachCollection[i++] = 0;
         });
-      }
+        if (event.withPaginition) {
+          int i = (storiesCollections).length;
+          r.data?.collections?.forEach((element) {
+            currentStoryInEachCollection[i++] = 0;
+          });
+        }
 
-      emit(state.copyWith(
-          getStoryWithPagintionStatusLoading: false,
-          finishGetAllStory: (r.data?.collections?.length ?? 0) < 10,
-          getStoriesStatus: GetStoriesStatus.success,
-          storiesCollections: event.withPaginition
-              ? [...(storiesCollections), ...(collections ?? [])]
-              : collections,
-          currentStoryInEachCollection: currentStoryInEachCollection));
-    });
+        emit(
+          state.copyWith(
+            getStoryWithPagintionStatusLoading: false,
+            finishGetAllStory: (r.data?.collections?.length ?? 0) < 10,
+            getStoriesStatus: GetStoriesStatus.success,
+            storiesCollections: event.withPaginition
+                ? [...(storiesCollections), ...(collections ?? [])]
+                : collections,
+            currentStoryInEachCollection: currentStoryInEachCollection,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _AddStoryToOurServerEvent(
-      AddStoryToOurServerEvent event, Emitter<StoryState> emit) async {
+    AddStoryToOurServerEvent event,
+    Emitter<StoryState> emit,
+  ) async {
     final response = await addStoryToOurServerUseCase.call(
-        (AddStoryToOurServerParams(
-            filePath: event.path,
-            isVideo: event.isVideo,
-            link: state.storyLink)));
-    response.fold((l) {
-      emit(state.copyWith(
-          uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
+      (AddStoryToOurServerParams(
+        filePath: event.path,
+        isVideo: event.isVideo,
+        link: state.storyLink,
+      )),
+    );
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success,
+          ),
+        );
 
-      showMessage("Faild To Add Your Story",
-          hasError: true, showInRelease: true);
-      if (ErrorManager.shouldRetry('AddStoryToOurServerEvent', l.statusCode)) {
-      } else {
-        ErrorManager.incrementRetry('AddStoryToOurServerEvent');
-        add(AddStoryToOurServerEvent(
-            path: event.path,
-            isVideo: event.isVideo,
-            width: event.width,
-            height: event.height));
-      }
-    }, (r) {
-      List<CollectionStoryModel> storiesCollections =
-          List.of(state.storiesCollections);
-      //  add(const GetStoryEvent(withPaginition: false));
-      ErrorManager.resetRetry('AddStoryToOurServerEvent');
-      String fileName = event.path.split('/').last;
-      String mimeType = mime(fileName) ?? '';
-      String mimee = mimeType.split('/')[0];
-      bool isVideoFile;
-      if (mimee == 'image') {
-        isVideoFile = false;
-      } else {
-        isVideoFile = true;
-      }
-      DateTime now = DateTime.now().toUtc();
+        showMessage(
+          LocaleKeys.failed_to_add_story.tr(),
+          hasError: true,
+          showInRelease: true,
+        );
+        if (ErrorManager.shouldRetry(
+          'AddStoryToOurServerEvent',
+          l.statusCode,
+        )) {
+        } else {
+          ErrorManager.incrementRetry('AddStoryToOurServerEvent');
+          add(
+            AddStoryToOurServerEvent(
+              path: event.path,
+              isVideo: event.isVideo,
+              width: event.width,
+              height: event.height,
+            ),
+          );
+        }
+      },
+      (r) {
+        showMessage(
+          LocaleKeys.succesfully_added_story.tr(),
+          showInRelease: true,
+        );
+        List<CollectionStoryModel> storiesCollections = List.of(
+          state.storiesCollections,
+        );
+        //  add(const GetStoryEvent(withPaginition: false));
+        ErrorManager.resetRetry('AddStoryToOurServerEvent');
+        String fileName = event.path.split('/').last;
+        String mimeType = mime(fileName) ?? '';
+        String mimee = mimeType.split('/')[0];
+        bool isVideoFile;
+        if (mimee == 'image') {
+          isVideoFile = false;
+        } else {
+          isVideoFile = true;
+        }
+        DateTime now = DateTime.now().toUtc();
 
-      // التاريخ والوقت الحالي بالتوقيت المحلي
-      String formattedYear = DateFormat('yyyy-MM-dd', "en").format(now);
-      String formattedDay = DateFormat('HH:mm:ss', "en").format(now);
-      String formattedDate = "$formattedYear $formattedDay";
+        // التاريخ والوقت الحالي بالتوقيت المحلي
+        String formattedYear = DateFormat('yyyy-MM-dd', "en").format(now);
+        String formattedDay = DateFormat('HH:mm:ss', "en").format(now);
+        String formattedDate = "$formattedYear $formattedDay";
 
-      Story story = Story(
+        Story story = Story(
           isSeen: false,
           userId: GetIt.I<PrefsRepository>().myStoriesId,
           height: event.height,
@@ -396,50 +492,66 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           isVideo: isVideoFile ? 1 : 0,
           isPhoto: !isVideoFile ? 1 : 0,
           photoPath: !isVideoFile ? event.path : null,
-          fullVideoPath: isVideoFile ? event.path : null);
-      r.fold((id) {
-        if (storiesCollections.first.stories?[0].userId !=
-            GetIt.I<PrefsRepository>().myStoriesId) {
-          storiesCollections.insert(
-              0,
-              CollectionStoryModel(
+          fullVideoPath: isVideoFile ? event.path : null,
+        );
+        r.fold(
+          (id) {
+            if (storiesCollections.first.stories?[0].userId !=
+                GetIt.I<PrefsRepository>().myStoriesId) {
+              storiesCollections.insert(
+                0,
+                CollectionStoryModel(
                   id: GetIt.I<PrefsRepository>().myStoriesId,
                   name: GetIt.I<PrefsRepository>().myStoriesName,
                   username: GetIt.I<PrefsRepository>().myStoriesName,
-                  stories: [story.copyWith(id: id)]));
-        } else {
-          List<Story> currentUserStories =
-              List.of(storiesCollections.first.stories ?? []);
-          currentUserStories.insert(
-              currentUserStories.length, story.copyWith(id: id));
-          storiesCollections.first.stories = currentUserStories;
+                  stories: [story.copyWith(id: id)],
+                ),
+              );
+            } else {
+              List<Story> currentUserStories = List.of(
+                storiesCollections.first.stories ?? [],
+              );
+              currentUserStories.insert(
+                currentUserStories.length,
+                story.copyWith(id: id),
+              );
+              storiesCollections.first.stories = currentUserStories;
+            }
+          },
+          (collection) {
+            storiesCollections.insert(0, collection);
+          },
+        );
+        // if (GetIt.I<PrefsRepository>().myStoriesId ==
+        //     state.storiesCollections.first.stories![0].userId) {
+        //   List<Story> currentUserStories =
+        //       List.of(state.storiesCollections.first.stories!);
+        //   currentUserStories.insert(currentUserStories.length, story);
+        //   state.storiesCollections.first.stories = currentUserStories;
+        // } else {
+        //   state.storiesCollections.insert(0, r!);
+        // }
+        Map<int, int?> currentStoryInEachCollection = Map.of(
+          state.currentStoryInEachCollection,
+        );
+        if (storiesCollections
+                .first
+                .stories![currentStoryInEachCollection[0]!]
+                .isSeen ??
+            false) {
+          currentStoryInEachCollection[0] =
+              storiesCollections.first.stories!.length - 1;
         }
-      }, (collection) {
-        storiesCollections.insert(0, collection);
-      });
-      // if (GetIt.I<PrefsRepository>().myStoriesId ==
-      //     state.storiesCollections.first.stories![0].userId) {
-      //   List<Story> currentUserStories =
-      //       List.of(state.storiesCollections.first.stories!);
-      //   currentUserStories.insert(currentUserStories.length, story);
-      //   state.storiesCollections.first.stories = currentUserStories;
-      // } else {
-      //   state.storiesCollections.insert(0, r!);
-      // }
-      Map<int, int?> currentStoryInEachCollection =
-          Map.of(state.currentStoryInEachCollection);
-      if (storiesCollections
-              .first.stories![currentStoryInEachCollection[0]!].isSeen ??
-          false) {
-        currentStoryInEachCollection[0] =
-            storiesCollections.first.stories!.length - 1;
-      }
-      storiesCollections.removeLast();
-      emit(state.copyWith(
-          storiesCollections: storiesCollections,
-          currentStoryInEachCollection: currentStoryInEachCollection,
-          uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
-    });
+        storiesCollections.removeLast();
+        emit(
+          state.copyWith(
+            storiesCollections: storiesCollections,
+            currentStoryInEachCollection: currentStoryInEachCollection,
+            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success,
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -449,167 +561,207 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
 
   @override
   Map<String, dynamic>? toJson(StoryState state) {
-    return state.copyWith(
-        getStoriesStatus: GetStoriesStatus.init,
-        selectedVideoStatus: SelectedVideoStatus.init,
-        uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.init,
-        uploadStoryStatus: UploadStoryStatus.init,
-        deleteStoryStatus: DeleteStoryStatus.init,
-        currentStoryToMakeItViewedInEachCollection: []).toJson();
+    return state
+        .copyWith(
+          getStoriesStatus: GetStoriesStatus.init,
+          selectedVideoStatus: SelectedVideoStatus.init,
+          uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.init,
+          uploadStoryStatus: UploadStoryStatus.init,
+          deleteStoryStatus: DeleteStoryStatus.init,
+          currentStoryToMakeItViewedInEachCollection: [],
+        )
+        .toJson();
   }
 
   FutureOr<void> _IncreaseViewersEvent(
-      IncreaseViewersEvent event, Emitter<StoryState> emit) async {
-    if (state.currentStoryToMakeItViewedInEachCollection
-            .contains(Tuple2(event.collectionId, event.storyId)) ||
-        GetIt.I<PrefsRepository>().isVerifiedPhone == false) return;
+    IncreaseViewersEvent event,
+    Emitter<StoryState> emit,
+  ) async {
+    if (state.currentStoryToMakeItViewedInEachCollection.contains(
+          Tuple2(event.collectionId, event.storyId),
+        ) ||
+        GetIt.I<PrefsRepository>().isVerifiedPhone == false)
+      return;
     List<Tuple2<String, String>> currentStoryToMakeItViewedInEachCollection =
         List.of(state.currentStoryToMakeItViewedInEachCollection);
-    currentStoryToMakeItViewedInEachCollection
-        .add(Tuple2(event.collectionId, event.storyId));
-    emit(state.copyWith(
-      currentStoryToMakeItViewedInEachCollection:
-          currentStoryToMakeItViewedInEachCollection,
-    ));
-    final response = await increaseViewersUseCase(
-        IncreaseViewersParams(storyId: event.storyId));
-    response.fold((l) {
-      currentStoryToMakeItViewedInEachCollection
-          .remove(Tuple2(event.collectionId, event.storyId));
-      emit(state.copyWith(
+    currentStoryToMakeItViewedInEachCollection.add(
+      Tuple2(event.collectionId, event.storyId),
+    );
+    emit(
+      state.copyWith(
         currentStoryToMakeItViewedInEachCollection:
             currentStoryToMakeItViewedInEachCollection,
-      ));
-    }, (r) {
-      emit(state.copyWith(
-          currentStoryToMakeItViewedInEachCollection:
-              currentStoryToMakeItViewedInEachCollection,
-          storiesCollections: state.storiesCollections.map((e) {
-            if (e.id.toString() == event.collectionId) {
-              return e.copyWith(
+      ),
+    );
+    final response = await increaseViewersUseCase(
+      IncreaseViewersParams(storyId: event.storyId),
+    );
+    response.fold(
+      (l) {
+        currentStoryToMakeItViewedInEachCollection.remove(
+          Tuple2(event.collectionId, event.storyId),
+        );
+        emit(
+          state.copyWith(
+            currentStoryToMakeItViewedInEachCollection:
+                currentStoryToMakeItViewedInEachCollection,
+          ),
+        );
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            currentStoryToMakeItViewedInEachCollection:
+                currentStoryToMakeItViewedInEachCollection,
+            storiesCollections: state.storiesCollections.map((e) {
+              if (e.id.toString() == event.collectionId) {
+                return e.copyWith(
                   stories: e.stories?.map((e) {
-                if (e.id.toString() == event.storyId)
-                  return e.copyWith(isSeen: true);
-                return e;
-              }).toList());
-            }
-            return e;
-          }).toList()));
-    });
+                    if (e.id.toString() == event.storyId)
+                      return e.copyWith(isSeen: true);
+                    return e;
+                  }).toList(),
+                );
+              }
+              return e;
+            }).toList(),
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onUpdateNameForUserInCollectionIfExistEvent(
-      UpdateNameForUserInCollectionIfExistEvent event,
-      Emitter<StoryState> emit) {
+    UpdateNameForUserInCollectionIfExistEvent event,
+    Emitter<StoryState> emit,
+  ) {
     int i = 0;
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         storiesCollections: state.storiesCollections.map((e) {
-      if (i == 0) {
-        i++;
-        if (e.stories![0].userId == GetIt.I<PrefsRepository>().myStoriesId) {
-          return e.copyWith(name: event.name);
-        }
-      }
-      i++;
-      return e;
-    }).toList()));
+          if (i == 0) {
+            i++;
+            if (e.stories![0].userId ==
+                GetIt.I<PrefsRepository>().myStoriesId) {
+              return e.copyWith(name: event.name);
+            }
+          }
+          i++;
+          return e;
+        }).toList(),
+      ),
+    );
   }
 
   FutureOr<void> _onDeleteStoryEvent(
-      DeleteStoryEvent event, Emitter<StoryState> emit) async {
+    DeleteStoryEvent event,
+    Emitter<StoryState> emit,
+  ) async {
     emit(state.copyWith(deleteStoryStatus: DeleteStoryStatus.loading));
 
-    final response =
-        await deleteStoryUseCase(DeleteStoryParams(storyId: event.storyId));
+    final response = await deleteStoryUseCase(
+      DeleteStoryParams(storyId: event.storyId),
+    );
 
-    response.fold((l) {
-      emit(state.copyWith(deleteStoryStatus: DeleteStoryStatus.failure));
-      showMessage(l.message, hasError: true, showInRelease: true);
-    }, (deleteStoryModel) {
-      // حذف الستوري من collection المستخدم الحالي فقط
-      List<CollectionStoryModel> updatedCollections = state.storiesCollections
-          .map((collection) {
-            // إذا كان هذا collection المستخدم الحالي
-            if (collection.stories?.isNotEmpty == true &&
-                collection.stories!.first.userId ==
-                    GetIt.I<PrefsRepository>().myStoriesId) {
-              // حذف الستوري المطلوب من المجموعة
-              List<Story> updatedStories = collection.stories!
-                  .where((story) => story.id.toString() != event.storyId)
-                  .toList();
+    response.fold(
+      (l) {
+        emit(state.copyWith(deleteStoryStatus: DeleteStoryStatus.failure));
+        showMessage(l.message, hasError: true, showInRelease: true);
+      },
+      (deleteStoryModel) {
+        // حذف الستوري من collection المستخدم الحالي فقط
+        List<CollectionStoryModel> updatedCollections = state.storiesCollections
+            .map((collection) {
+              // إذا كان هذا collection المستخدم الحالي
+              if (collection.stories?.isNotEmpty == true &&
+                  collection.stories!.first.userId ==
+                      GetIt.I<PrefsRepository>().myStoriesId) {
+                // حذف الستوري المطلوب من المجموعة
+                List<Story> updatedStories = collection.stories!
+                    .where((story) => story.id.toString() != event.storyId)
+                    .toList();
 
-              // إذا لم يتبق ستوريز، لا تعيد المجموعة
-              if (updatedStories.isEmpty) {
-                return null;
+                // إذا لم يتبق ستوريز، لا تعيد المجموعة
+                if (updatedStories.isEmpty) {
+                  return null;
+                }
+
+                // أعد المجموعة مع الستوريز المحدثة
+                return collection.copyWith(stories: updatedStories);
               }
 
-              // أعد المجموعة مع الستوريز المحدثة
-              return collection.copyWith(stories: updatedStories);
-            }
+              // إذا لم يكن collection المستخدم، أبقيه كما هو
+              return collection;
+            })
+            .where((collection) => collection != null)
+            .cast<CollectionStoryModel>()
+            .toList();
 
-            // إذا لم يكن collection المستخدم، أبقيه كما هو
-            return collection;
-          })
-          .where((collection) => collection != null)
-          .cast<CollectionStoryModel>()
-          .toList();
+        // تحديث المؤشرات بعد الحذف
+        Map<int, int?> updatedCurrentStoryInEachCollection = Map.from(
+          state.currentStoryInEachCollection,
+        );
+        int? newSelectedCollection = state.selectedCollection;
 
-      // تحديث المؤشرات بعد الحذف
-      Map<int, int?> updatedCurrentStoryInEachCollection =
-          Map.from(state.currentStoryInEachCollection);
-      int? newSelectedCollection = state.selectedCollection;
-
-      // البحث عن collection المستخدم في القائمة المحدثة
-      int userCollectionIndex = -1;
-      for (int i = 0; i < updatedCollections.length; i++) {
-        if (updatedCollections[i].stories?.isNotEmpty == true &&
-            updatedCollections[i].stories!.first.userId ==
-                GetIt.I<PrefsRepository>().myStoriesId) {
-          userCollectionIndex = i;
-          break;
-        }
-      }
-
-      // إذا لم يجد collection المستخدم (تم حذفه بالكامل)
-      if (userCollectionIndex == -1) {
-        // إذا كان هناك مجموعات أخرى، انتقل لأول مجموعة
-        if (updatedCollections.isNotEmpty) {
-          newSelectedCollection = 0;
-          updatedCurrentStoryInEachCollection[0] =
-              0; // أول ستوري في المجموعة الأولى
-        } else {
-          // لا توجد مجموعات، العودة للصفحة الرئيسية
-          newSelectedCollection = null;
-          updatedCurrentStoryInEachCollection.clear();
-
-          showMessage("تم حذف جميع الستوريز، العودة للصفحة الرئيسية",
-              showInRelease: true);
-        }
-      } else {
-        // collection المستخدم موجود، تحديث المؤشر
-        if (updatedCurrentStoryInEachCollection[userCollectionIndex] != null) {
-          int currentStoryIndex =
-              updatedCurrentStoryInEachCollection[userCollectionIndex]!;
-          int totalStories =
-              updatedCollections[userCollectionIndex].stories!.length;
-
-          // إذا كان المؤشر أكبر من عدد الستوريز المتبقية
-          if (currentStoryIndex >= totalStories) {
-            updatedCurrentStoryInEachCollection[userCollectionIndex] =
-                totalStories - 1;
+        // البحث عن collection المستخدم في القائمة المحدثة
+        int userCollectionIndex = -1;
+        for (int i = 0; i < updatedCollections.length; i++) {
+          if (updatedCollections[i].stories?.isNotEmpty == true &&
+              updatedCollections[i].stories!.first.userId ==
+                  GetIt.I<PrefsRepository>().myStoriesId) {
+            userCollectionIndex = i;
+            break;
           }
         }
-      }
 
-      emit(state.copyWith(
-        storiesCollections: updatedCollections,
-        currentStoryInEachCollection: updatedCurrentStoryInEachCollection,
-        selectedCollection: newSelectedCollection,
-        deleteStoryStatus: DeleteStoryStatus.success,
-      ));
+        // إذا لم يجد collection المستخدم (تم حذفه بالكامل)
+        if (userCollectionIndex == -1) {
+          // إذا كان هناك مجموعات أخرى، انتقل لأول مجموعة
+          if (updatedCollections.isNotEmpty) {
+            newSelectedCollection = 0;
+            updatedCurrentStoryInEachCollection[0] =
+                0; // أول ستوري في المجموعة الأولى
+          } else {
+            // لا توجد مجموعات، العودة للصفحة الرئيسية
+            newSelectedCollection = null;
+            updatedCurrentStoryInEachCollection.clear();
 
-      showMessage(deleteStoryModel.data?.message ?? "تم حذف الستوري بنجاح",
-          showInRelease: true);
-    });
+            showMessage(
+              "تم حذف جميع الستوريز، العودة للصفحة الرئيسية",
+              showInRelease: true,
+            );
+          }
+        } else {
+          // collection المستخدم موجود، تحديث المؤشر
+          if (updatedCurrentStoryInEachCollection[userCollectionIndex] !=
+              null) {
+            int currentStoryIndex =
+                updatedCurrentStoryInEachCollection[userCollectionIndex]!;
+            int totalStories =
+                updatedCollections[userCollectionIndex].stories!.length;
+
+            // إذا كان المؤشر أكبر من عدد الستوريز المتبقية
+            if (currentStoryIndex >= totalStories) {
+              updatedCurrentStoryInEachCollection[userCollectionIndex] =
+                  totalStories - 1;
+            }
+          }
+        }
+
+        emit(
+          state.copyWith(
+            storiesCollections: updatedCollections,
+            currentStoryInEachCollection: updatedCurrentStoryInEachCollection,
+            selectedCollection: newSelectedCollection,
+            deleteStoryStatus: DeleteStoryStatus.success,
+          ),
+        );
+
+        showMessage(
+          deleteStoryModel.data?.message ?? "تم حذف الستوري بنجاح",
+          showInRelease: true,
+        );
+      },
+    );
   }
 }

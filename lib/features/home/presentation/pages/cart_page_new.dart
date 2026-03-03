@@ -88,7 +88,13 @@ class _CartPageState extends State<CartPage> {
 
     fromForGroundNotification =
         appBloc.state.isFromForGroundNotification ?? false;
-
+    homeBloc.add(
+      GetCurrenciesForWalletEvent(
+        currencySymbol:
+            homeBloc.state.getCurrencyForCountryModel?.data?.currency?.code ??
+            "",
+      ),
+    );
     super.initState();
   }
 
@@ -184,17 +190,7 @@ class _CartPageState extends State<CartPage> {
                     },
                   );
                 }); ////////////////////////////////
-                orderBloc.add(
-                  GetCustomerWalletEvent(
-                    currencySymbol:
-                        state
-                            .getCurrencyForCountryModel!
-                            .data!
-                            .currency!
-                            .code ??
-                        "",
-                  ),
-                );
+
                 Future.delayed(
                   const Duration(milliseconds: 600),
                   () => HelperFunctions.slidingNavigation(

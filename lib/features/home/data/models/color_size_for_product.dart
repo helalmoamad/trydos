@@ -99,10 +99,10 @@ class Data {
         : List<Variation>.from(
             json["variation"]!.map((x) => Variation.fromJson(x)),
           ),
-    choiceOptions: json["choice_options"] == null
+    choiceOptions: json["sizes"] == null
         ? []
         : List<ProductChoiceOption>.from(
-            json["choice_options"]!.map((x) => ProductChoiceOption.fromJson(x)),
+            json["sizes"]!.map((x) => ProductChoiceOption.fromJson(x)),
           ),
     colors: json["colors"] == null
         ? []
@@ -123,7 +123,7 @@ class Data {
     "variation": variation == null
         ? []
         : List<dynamic>.from(variation!.map((x) => x.toJson())),
-    "choice_options": choiceOptions == null
+    "sizes": choiceOptions == null
         ? []
         : List<dynamic>.from(choiceOptions!.map((x) => x.toJson())),
     "colors": colors == null
@@ -164,14 +164,14 @@ class Variation {
 class ProductChoiceOption {
   final String? name;
   final String? title;
-  final List<Option>? options;
+  final String? options;
 
   ProductChoiceOption({this.name, this.title, this.options});
 
   ProductChoiceOption copyWith({
     String? name,
     String? title,
-    List<Option>? options,
+    String? options,
   }) => ProductChoiceOption(
     name: name ?? this.name,
     title: title ?? this.title,
@@ -180,43 +180,16 @@ class ProductChoiceOption {
 
   factory ProductChoiceOption.fromJson(Map<String, dynamic> json) =>
       ProductChoiceOption(
-        name: json["name"],
+        name: json["option"],
         title: json["title"],
-        options: json["options"] == null
-            ? []
-            : List<Option>.from(
-                json["options"]!.map((x) => Option.fromJson(x)),
-              ),
+        options: json["option"],
       );
 
   Map<String, dynamic> toJson() => {
-    "name": name,
+    //"option": name,
     "title": title,
-    "options": options == null
-        ? []
-        : List<dynamic>.from(options!.map((x) => x.toJson())),
+    "option": options,
   };
-}
-
-class Option {
-  final String? name;
-  final String? option;
-
-  Option({this.name, this.option});
-
-  Option copyWith({String? name, String? option}) =>
-      Option(name: name ?? this.name, option: option ?? this.option);
-
-  factory Option.fromJson(Map<String, dynamic> json) => Option(
-    name: json["name"] == null
-        ? null
-        : json["name"].toString().replaceAll("-", "_"),
-    option: json["option"] == null
-        ? null
-        : json["option"].toString().replaceAll("-", "_"),
-  );
-
-  Map<String, dynamic> toJson() => {"name": name, "option": option};
 }
 
 class ProductColor {
@@ -235,13 +208,13 @@ class ProductColor {
 
   factory ProductColor.fromJson(Map<String, dynamic> json) => ProductColor(
     name: json["name"],
-    color: json["color"],
+    color: json["color_code"],
     option: json["option"],
   );
 
   Map<String, dynamic> toJson() => {
     "name": name,
-    "color": color,
+    "color_code": color,
     "option": option,
   };
 }
@@ -262,12 +235,12 @@ class ProductSyncColorImage {
   ProductSyncColorImage copyWith({
     String? colorName,
     List<String>? images,
-    String? colorTrend,
+
     String? colorOption,
   }) => ProductSyncColorImage(
     colorName: colorName ?? this.colorName,
     images: images ?? this.images,
-    colorTrend: colorTrend ?? this.colorTrend,
+
     colorOption: colorOption ?? this.colorOption,
   );
 
@@ -277,14 +250,14 @@ class ProductSyncColorImage {
         images: json["images"] == null
             ? []
             : List<String>.from(json["images"]!.map((x) => x)),
-        colorTrend: json["color_trend"],
+
         colorOption: json["color_option"],
       );
 
   Map<String, dynamic> toJson() => {
     "color_name": colorName,
     "images": images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
-    "color_trend": colorTrend,
+
     "color_option": colorOption,
   };
 }

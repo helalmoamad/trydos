@@ -525,7 +525,7 @@ class _ProductCollectionInCartPage1State
                                                   "ar"
                                               ? Alignment.centerLeft
                                               : Alignment.centerRight,
-                                          width: 100,
+                                          width: 125,
                                           height: 15,
                                           child: Row(
                                             children: [
@@ -578,7 +578,7 @@ class _ProductCollectionInCartPage1State
                                                     .bodyMedium
                                                     ?.mq
                                                     .copyWith(
-                                                      fontSize: 13,
+                                                      fontSize: 12,
                                                       height: 1.2,
                                                       color: const Color(
                                                         (0xff505050),

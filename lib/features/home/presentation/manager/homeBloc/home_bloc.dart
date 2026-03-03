@@ -79,6 +79,8 @@ import 'package:trydos/features/home/domain/use_cases/update_whatsapp_notificati
 import 'package:trydos/features/home/domain/use_cases/upload_user_photo_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -429,10 +431,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     GetCurrenciesForWalletEvent event,
     Emitter<HomeState> emit,
   ) async {
-    if ((prefsRepository.walletToken?.length ?? 0) < 5) {
+    if (((prefsRepository.walletToken?.length ?? 0) < 5) ||
+        ((prefsRepository.myPhoneNumber?.length ?? 0) < 3)) {
+      GetIt.I<OrderBloc>().add(GetCustomerWalletEvent(assetId: ""));
       return;
     }
-    /* emit(
+    if (event.currencySymbol != "") {
+      GetIt.I<OrderBloc>().add(GetCustomerWalletEvent(assetId: "LOADING"));
+    }
+    emit(
       state.copyWith(
         getCurrenciesForWalletStatus: GetCurrenciesForWalletStatus.loading,
       ),
@@ -449,10 +456,25 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             getCurrenciesForWalletStatus: GetCurrenciesForWalletStatus.failure,
           ),
         );
+        if (event.currencySymbol != "") {
+          GetIt.I<OrderBloc>().add(GetCustomerWalletEvent(assetId: "FAILED"));
+        }
       },
       (r) {
         ErrorManager.resetRetry('GetCurrenciesEvent');
-
+        if (event.currencySymbol != "" && ((r.items?.length ?? 0) > 0)) {
+          GetIt.I<OrderBloc>().add(
+            GetCustomerWalletEvent(
+              assetId:
+                  r.items!
+                      .firstWhere(
+                        (element) => element.symbol == event.currencySymbol,
+                      )
+                      .id ??
+                  "",
+            ),
+          );
+        }
         emit(
           state.copyWith(
             getCurrenciesForWalletStatus: GetCurrenciesForWalletStatus.success,
@@ -460,7 +482,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           ),
         );
       },
-    );*/
+    );
   }
 
   FutureOr<void> _onGetStartingSettingsEvent(

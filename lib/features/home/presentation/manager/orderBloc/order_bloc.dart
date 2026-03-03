@@ -535,24 +535,30 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     final response = await getOrdersByCartGroupIDUsecase(event.cartGroupId);
     response.fold(
       (l) {
-        Future.delayed(const Duration(seconds: 3), () {
-          add(GetOrdersByCartGroupIDEvent(cartGroupId: event.cartGroupId));
-        });
-
         emit(
           state.copyWith(
             getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.failure,
           ),
         );
+        Future.delayed(const Duration(seconds: 1), () {
+          add(GetOrdersByCartGroupIDEvent(cartGroupId: event.cartGroupId));
+        });
       },
       (r) {
         ErrorManager.resetRetry('GetOrdersByCartGroupIDEvent');
         debugPrint('GetOrdersByCartGroupIDEvent success');
         debugPrint('orders length :  r.data!.length}');
         if (r.data!.length < 1) {
-          Future.delayed(const Duration(seconds: 3), () {
+          emit(
+            state.copyWith(
+              getOrdersByCartGroupIDStatus:
+                  GetOrdersByCartGroupIDStatus.failure,
+            ),
+          );
+          Future.delayed(const Duration(seconds: 1), () {
             add(GetOrdersByCartGroupIDEvent(cartGroupId: event.cartGroupId));
           });
+          return;
         }
         emit(
           state.copyWith(
@@ -616,8 +622,41 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetCustomerWalletEvent event,
     Emitter<OrderState> emit,
   ) async {
-    if (event.currencySymbol == "" ||
+    if (event.assetId == "" ||
         ((prefsRepository.walletToken?.length ?? 0) < 6)) {
+      if ((prefsRepository.myPhoneNumber?.length ?? 0) < 3) {
+        emit(
+          state.copyWith(
+            getCustomerWalletStatus: GetCustomerWalletStatus.loading,
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        emit(
+          state.copyWith(
+            customerWalletModel: state.customerWalletModel?.copyWith(
+              available: 0,
+            ),
+            getCustomerWalletStatus: GetCustomerWalletStatus.success,
+          ),
+        );
+      }
+
+      return;
+    }
+    if (event.assetId == "LOADING") {
+      emit(
+        state.copyWith(
+          getCustomerWalletStatus: GetCustomerWalletStatus.loading,
+        ),
+      );
+      return;
+    }
+    if (event.assetId == "FAILED") {
+      emit(
+        state.copyWith(
+          getCustomerWalletStatus: GetCustomerWalletStatus.failure,
+        ),
+      );
       return;
     }
     if (event.statusInitToRefreshAmount) {
@@ -632,7 +671,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       );
     }
     final response = await getCustomerWalletUseCase.call(
-      CustomerWalletParams(currencySymbol: event.currencySymbol),
+      CustomerWalletParams(assetId: event.assetId),
     );
     response.fold(
       (l) {
@@ -640,7 +679,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           ErrorManager.incrementRetry('GetCustomerWalletEvent');
           add(
             GetCustomerWalletEvent(
-              currencySymbol: event.currencySymbol,
+              assetId: event.assetId,
               statusInitToRefreshAmount: event.statusInitToRefreshAmount,
             ),
           );
@@ -1593,12 +1632,11 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             changeOrderItemVariantStatus: ChangeOrderItemVariantStatus.failure,
           ),
         );
-        showMessage(failure.message, hasError: true);
       },
       (response) {
         ErrorManager.resetRetry('ChangeOrderItemVariantEvent');
         showMessage(
-          response.message ?? 'تم تغيير العنوان بنجاح',
+          response.message ?? "",
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
@@ -1906,6 +1944,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           uploadImagesToCloudinaryStatus: UploadImagesToCloudinaryStatus.init,
           uploadImagesForReturnProductStatus:
               UploadImagesForReturnProductStatus.init,
+          getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.init,
           applyCouponStatus: ApplyCouponStatus.init,
           cancelOrderItemStatus: CancelOrderItemStatus.init,
           cancelOrderStatus: CancelOrderStatus.init,

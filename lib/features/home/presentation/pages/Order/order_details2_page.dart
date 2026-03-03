@@ -3380,19 +3380,27 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     order!.details?[indexTap.value].id
                                         .toString() ??
                                     "",
-                                choice1: sizeIndexTap.value == null
+                                image:
+                                    (productSyncColorImages.length == 0 ||
+                                        colorIndexTap.value == null)
+                                    ? (order!.details?[indexTap.value].image ??
+                                          "")
+                                    : productSyncColorImages[colorIndexTap
+                                                  .value ??
+                                              0]
+                                          .images![0],
+                                size: sizeIndexTap.value == null
                                     ? (firstSizeOption ?? "").replaceAll(
                                         "_",
                                         "-",
                                       )
-                                    : productChoiceOptions[0]
-                                              .options?[sizeIndexTap.value!]
-                                              .option ??
+                                    : productChoiceOptions[sizeIndexTap.value!]
+                                              .options ??
                                           "",
                                 color: colorIndexTap.value == null
-                                    ? firstColorNum ?? ""
+                                    ? firstColorOption ?? ""
                                     : productColors[colorIndexTap.value!]
-                                              .color ??
+                                              .option ??
                                           "",
                               ),
                             ),
@@ -7633,12 +7641,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           .toList()
                           .last ??
                       "";
-                  firstSizeName = productChoiceOptions[0].options!
+                  firstSizeName = productChoiceOptions
                       .firstWhere(
-                        (element) => element.option == firstSizeOption,
-                        orElse: () => Option(
-                          option: firstSizeOption,
+                        (element) => element.options == firstSizeOption,
+                        orElse: () => ProductChoiceOption(
                           name: firstSizeOption,
+                          options: firstSizeOption,
                         ),
                       )
                       .name;
@@ -7650,6 +7658,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ProductColor(color: "", name: "", option: ""),
                     )
                     .color;
+
+                print(
+                  "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG_____$firstColorOption}",
+                );
                 firstColorName = state.colorSizeForProductModel?.data?.colors
                     ?.firstWhere(
                       (element) => element.option == firstColorOption,
@@ -7667,14 +7679,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   );
                 }
                 if (productChoiceOptions.isNotEmpty) {
-                  productChoiceOptions[0].options?.removeWhere(
-                    (element) => element.option == firstSizeOption,
+                  productChoiceOptions.removeWhere(
+                    (element) => element.options == firstSizeOption,
                   );
                 }
                 if (productColors.isNotEmpty) {
                   optionVariant.value = "color";
                 } else if (productChoiceOptions.isNotEmpty) {
-                  if ((productChoiceOptions[0].options?.length ?? 0) > 0) {
+                  if ((productChoiceOptions.length) > 0) {
                     optionVariant.value = "size";
                   } else {
                     optionVariant.value = "qty";
@@ -8441,8 +8453,6 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             ),
                       (productChoiceOptions.isEmpty)
                           ? const SizedBox.shrink()
-                          : (productChoiceOptions[0].options?.isEmpty ?? false)
-                          ? const SizedBox.shrink()
                           : InkWell(
                               onTap: () {
                                 qtyToChangeController.value =
@@ -8705,7 +8715,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       .exchangeRate!)) >
                                               (state
                                                       .customerWalletModel
-                                                      ?.totalAvailable ??
+                                                      ?.available ??
                                                   0)) {
                                             showMessage(
                                               '${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()} , new price : ${(newVariantPrice ?? 0) * ((order!.details?[indexTap.value].qty ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)} ${(GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.symbol!)}',
@@ -8753,9 +8763,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                   withImageShadow: true,
                                                   radius: 40,
                                                   imageUrl:
-                                                      productSyncColorImages[index]
-                                                          .images?[0] ??
-                                                      "",
+                                                      (productSyncColorImages[index]
+                                                          .images![0]
+                                                          .contains(
+                                                            "cloudinary",
+                                                          ))
+                                                      ? productSyncColorImages[index]
+                                                            .images![0]
+                                                      : "${dotenv.env['Images_Url']}${productSyncColorImages[index].images![0]}",
                                                   imageFit: BoxFit.fill,
                                                   width: 70.w,
                                                   height: 70.h,
@@ -8803,7 +8818,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: List.generate(
-                                  productChoiceOptions[0].options?.length ?? 0,
+                                  productChoiceOptions.length,
                                   (index) => Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 5,
@@ -8811,7 +8826,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     child: InkWell(
                                       onTap: () {
                                         String newVariant =
-                                            '${firstColorOption}${(firstColorOption == null || firstColorOption == "") ? "" : '-'}${productChoiceOptions[0].options?[index].option}';
+                                            '${firstColorOption}${(firstColorOption == null || firstColorOption == "") ? "" : '-'}${productChoiceOptions[index].options}';
 
                                         int? newVariantQty = state
                                             .colorSizeForProductModel
@@ -8886,7 +8901,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       .exchangeRate!)) >
                                               (state
                                                       .customerWalletModel
-                                                      ?.totalAvailable ??
+                                                      ?.available ??
                                                   0)) {
                                             showMessage(
                                               '${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()} , new price : ${(newVariantPrice ?? 0) * ((order!.details?[indexTap.value].qty ?? 0)) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)} ${(GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.symbol!)}',
@@ -8943,9 +8958,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           ),
                                           SizedBox(height: 10.h),
                                           Text(
-                                            productChoiceOptions[0]
-                                                    .options?[index]
-                                                    .name ??
+                                            productChoiceOptions[index].name ??
                                                 "",
                                             style: context
                                                 .textTheme

@@ -321,9 +321,23 @@ class Product {
           ? []
           : List<comment_model.Comment>.from(
               json["comments"]!.map((x) => comment_model.Comment.fromJson(x))),*/
-    labelNames: json["label_names"] == null || json["label_names"] == "[]"
+    labelNames: json["label_names"] == null
         ? []
-        : List<String>.from(json["label_names"]!.map((x) => x)),
+        : () {
+            final data = json["label_names"];
+            if (data is String) {
+              // the API sometimes returns a JSON encoded string
+              try {
+                final list = (jsonDecode(data) as List<dynamic>?) ?? [];
+                return list.map((x) => x.toString()).toList();
+              } catch (_) {
+                return <String>[];
+              }
+            } else if (data is List) {
+              return List<String>.from(data.map((x) => x.toString()));
+            }
+            return <String>[];
+          }(),
     flashDealEndDate: json["flash_deal_end_date"],
     priceFormatted: json["price_formatted"] ?? "",
     isLiked: json["is_liked"],

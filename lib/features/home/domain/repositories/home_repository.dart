@@ -215,7 +215,7 @@ abstract class HomeRepository {
   );
 
   Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
-    required String currencySymbol,
+    required String assetId,
   });
 
   Future<Either<Failure, OrdersGroupModel>> placeOrder({

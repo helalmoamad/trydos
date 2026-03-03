@@ -36,9 +36,10 @@ class StorySelectedEvent extends HomeEvent {
 }
 
 class GetCurrenciesForWalletEvent extends HomeEvent {
-  GetCurrenciesForWalletEvent();
+  final String currencySymbol;
+  GetCurrenciesForWalletEvent({this.currencySymbol = ""});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [currencySymbol];
 }
 
 class GetCoutryBoundaryByIsoEvent extends HomeEvent {

@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 
 class OrderModel {
@@ -509,7 +510,9 @@ class OrderListDetailModel {
       isOdooProduct: json["is_odoo_product"],
       odooId: json["odoo_id"],
       odooOrderId: json["odoo_order_id"],
-      image: json["image"],
+      image: (json["image"]?.contains("cloudinary") ?? false)
+          ? json["image"]
+          : "${dotenv.env['Images_Url']}${json["image"]}",
     );
   }
 

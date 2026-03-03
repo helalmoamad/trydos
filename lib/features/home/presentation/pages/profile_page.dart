@@ -85,18 +85,14 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     //authBloc.add(CreateWalletEvent());
     orderBloc = BlocProvider.of<OrderBloc>(context);
-    orderBloc.add(
-      GetCustomerWalletEvent(
+    homeBloc.add(
+      GetCurrenciesForWalletEvent(
         currencySymbol:
-            GetIt.I<HomeBloc>()
-                .state
-                .getCurrencyForCountryModel!
-                .data!
-                .currency!
-                .code ??
+            homeBloc.state.getCurrencyForCountryModel?.data?.currency?.code ??
             "",
       ),
     );
+
     authBloc.add(GetCustomerInfoEvent());
     orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
@@ -488,18 +484,19 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         navigateToAddName: () {},
                         navigateTocartOrProfile: () {
                           isVerified.value = true;
-                          orderBloc.add(
-                            GetCustomerWalletEvent(
+                          homeBloc.add(
+                            GetCurrenciesForWalletEvent(
                               currencySymbol:
-                                  GetIt.I<HomeBloc>()
+                                  homeBloc
                                       .state
-                                      .getCurrencyForCountryModel!
-                                      .data!
-                                      .currency!
-                                      .code ??
+                                      .getCurrencyForCountryModel
+                                      ?.data
+                                      ?.currency
+                                      ?.code ??
                                   "",
                             ),
                           );
+
                           orderBloc.add(
                             GetOrdersEvent(
                               status: "",
@@ -814,10 +811,10 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       builder: (context, state) {
         double walletBalance = state.customerWalletModel == null
             ? 0
-            : state.customerWalletModel!.totalAvailable ?? 0;
+            : state.customerWalletModel!.available ?? 0;
         String symbole = state.customerWalletModel == null
             ? ''
-            : state.customerWalletModel?.currencySymbol ?? "";
+            : state.customerWalletModel?.assetSymbol ?? "";
         return Container(
           padding: const EdgeInsets.all(10),
           width: 195.w,

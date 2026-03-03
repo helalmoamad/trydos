@@ -18,6 +18,8 @@
   "sending_video": "video gönderiliyor...",
   "gallery": "galeri",
   "camera": "kamera",
+  "succesfully_added_story": "Hikayeniz Başarıyla Eklendi",
+  "failed_to_add_story": "Hikayeniz Eklenemedi",
   "out_for_return": "İade Edildi",
   "work_days": "iş günleri",
   "camera_permission_required_message": "İzin olmadan kamerayı açamayız. Lütfen erişime izin verip tekrar deneyin.",

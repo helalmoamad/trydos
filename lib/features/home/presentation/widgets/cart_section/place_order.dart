@@ -1203,18 +1203,19 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         navigateToAddName: () {},
                         navigateTocartOrProfile: () {
                           isVerified.value = true;
-                          orderBloc.add(
-                            GetCustomerWalletEvent(
+                          GetIt.I<HomeBloc>().add(
+                            GetCurrenciesForWalletEvent(
                               currencySymbol:
                                   GetIt.I<HomeBloc>()
                                       .state
-                                      .getCurrencyForCountryModel!
-                                      .data!
-                                      .currency!
-                                      .code ??
+                                      .getCurrencyForCountryModel
+                                      ?.data
+                                      ?.currency
+                                      ?.code ??
                                   "",
                             ),
                           );
+
                           orderBloc.add(
                             GetOrdersEvent(
                               status: "",
@@ -1491,7 +1492,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
     String currencyId =
         BlocProvider.of<OrderBloc>(
           context,
-        ).state.customerWalletModel?.wallets?[0].balances?[0].assetId ??
+        ).state.customerWalletModel?.assetId ??
         ""; // You'll need to pass this or get from context
 
     // compute timestamp once (use seconds or ms as agreed by backend)

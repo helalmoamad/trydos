@@ -1250,18 +1250,15 @@ class HomeRemoteDatasource {
 
     return getCustomerWallet();
   }*/
-  Future<CustomerWalletModel> getCustomerWallet({
-    required String currencySymbol,
-  }) {
+  Future<CustomerWalletModel> getCustomerWallet({required String assetId}) {
     GetClient<CustomerWalletModel> getCustomerWallet =
         GetClient<CustomerWalletModel>(
           serverName: ServerName.wallet,
           requestPrams: RequestConfig<CustomerWalletModel>(
-            endpoint: WalletEndPoints.walletBalanceEP,
+            endpoint: WalletEndPoints.walletBalanceEP(assetId),
             queryParameters: {
               'accountSubtype': 'MAIN',
               'assetType': 'CURRENCY',
-              "currencySymbol": currencySymbol,
             },
             response: ResponseValue<CustomerWalletModel>(
               fromJson: (response) => CustomerWalletModel.fromJson(response),

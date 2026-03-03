@@ -12,7 +12,8 @@ abstract class LocaleKeys {
       'customers_purchased_before_pre_purchase_questions';
   static const all_comments_are_genuine_from_customers_who_purchased_and_actually =
       'all_comments_are_genuine_from_customers_who_purchased_and_actually';
-
+  static const succesfully_added_story = 'succesfully_added_story';
+  static const failed_to_add_story = 'failed_to_add_story';
   static const shipping_company = 'shipping_company';
   static const based_on_previous_delivery_statistics_below_to_your_area_we_conclude =
       'based_on_previous_delivery_statistics_below_to_your_area_we_conclude';

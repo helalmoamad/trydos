@@ -1970,7 +1970,7 @@ class _ProductDetailsBottomSheetNewState
       ),
       alignment: Alignment.center,
       height: 46.h,
-      width: 60,
+      width: 70,
       decoration: BoxDecoration(
         color: color ?? const Color(0xffFCFCFC),
         border: Border.all(color: borderColor ?? const Color(0xffD3D3D3)),
