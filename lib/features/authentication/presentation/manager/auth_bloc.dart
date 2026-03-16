@@ -287,13 +287,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
           ErrorManager.incrementRetry('StoreFcmTokenEvent');
         }
-        emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
+        if (event.serverName == ServerName.chat) {
+          emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
+        }
       },
       (r) {
         ErrorManager.resetRetry('StoreFcmTokenEvent');
         final id = r.data!.id;
         _prefsRepository.setFcmTokenId(id!);
-        emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
+        if (event.serverName == ServerName.chat) {
+          emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
+        }
       },
     );
   }

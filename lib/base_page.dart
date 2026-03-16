@@ -879,6 +879,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             ),
           )
         : null;
+    prefsRepository.addFcmToken("");
     BlocProvider.of<HomeBloc>(context).add(const ClearAllAppCashEvent());
     clearCustomCashe();
     prefsRepository.setIsFoundDataCashed(false);

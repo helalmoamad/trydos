@@ -688,6 +688,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                             ),
                                                           )
                                                         : null;
+                                                    prefsRepository.addFcmToken(
+                                                      "",
+                                                    );
                                                     await Future.delayed(
                                                       const Duration(
                                                         milliseconds: 300,

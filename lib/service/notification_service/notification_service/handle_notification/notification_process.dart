@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -56,12 +55,20 @@ class NotificationProcess {
     String? originalUserId,
     String? otpIdToken,
   ) async {
-    myFcmToken = await FirebaseMessaging.instance.getToken();
+    if (GetIt.I<PrefsRepository>().getFcmTokens.length > 0) {
+      if (GetIt.I<PrefsRepository>().getFcmTokens[0].length > 6) {
+        myFcmToken = GetIt.I<PrefsRepository>().getFcmTokens[0];
+      } else {
+        myFcmToken = await FirebaseMessaging.instance.getToken();
+      }
+    } else {
+      myFcmToken = await FirebaseMessaging.instance.getToken();
+    }
 
     if (otpIdToken != null) {
       GetIt.I<AuthBloc>().add(
         LoginToChatEvent(
-          fcmToken: myFcmToken!,
+          fcmToken: myFcmToken ?? "",
           mobilePhone: mobilePhone,
           name: name,
           originalUserId: originalUserId,
@@ -97,7 +104,6 @@ class NotificationProcess {
         );
       }
     }
-    log(myFcmToken.toString());
   }
 
   Future<void> _setForegroundNotificationPresentationOptions() async {

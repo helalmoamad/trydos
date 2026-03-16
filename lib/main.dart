@@ -391,7 +391,7 @@ Map<String, VideoPlayerController> videoProductInListingController = {};
   }*/
 }*/
 
-int applicationVersion = 115;
+int applicationVersion = 120;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();
@@ -462,9 +462,10 @@ void main() async {
   FirebaseAnalytics.instance.setSessionTimeoutDuration(
     const Duration(seconds: 20),
   );
+  GetIt.I<PrefsRepository>().addFcmToken("");
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
-  // GetIt.I<PrefsRepository>().removeRedeemDateForAnyProductFinished();
+  //* GetIt.I<PrefsRepository>().removeRedeemDateForAnyProductFinished();
 
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
