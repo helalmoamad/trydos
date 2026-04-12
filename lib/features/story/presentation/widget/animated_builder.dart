@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../bloc/story_bloc.dart';
 import '../bloc/story_state.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AnimatedBar extends StatelessWidget {
   final AnimationController animController;
@@ -26,7 +27,7 @@ class AnimatedBar extends StatelessWidget {
       builder: (context1, state) {
         return Flexible(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 1.5),
+            padding: EdgeInsets.symmetric(horizontal: 1.5.w),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 return Stack(
@@ -34,8 +35,8 @@ class AnimatedBar extends StatelessWidget {
                     _buildContainer(
                       double.infinity,
                       position <
-                              state.currentStoryInEachCollection[
-                                  collectionIndex]!
+                              state
+                                  .currentStoryInEachCollection[collectionIndex]!
                           ? Colors.white
                           // ignore: deprecated_member_use
                           : Colors.white.withOpacity(0.5),
@@ -65,15 +66,12 @@ class AnimatedBar extends StatelessWidget {
 
 Container _buildContainer(double width, Color color) {
   return Container(
-    height: 5.0,
+    height: 5.h,
     width: width,
     decoration: BoxDecoration(
       color: color,
-      border: Border.all(
-        color: Colors.black26,
-        width: 0.8,
-      ),
-      borderRadius: BorderRadius.circular(3.0),
+      border: Border.all(color: Colors.black26, width: 0.8.w),
+      borderRadius: BorderRadius.circular(3.r),
     ),
   );
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
@@ -8,19 +9,19 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/search/presentation/widgets/close_circle.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
-
 class SearchHistoryChip extends StatelessWidget {
   final ValueNotifier<int> buildSearchResult;
   final ValueNotifier<bool> appearTrendingAndHistory;
   final TextEditingController controller;
 
-  const SearchHistoryChip(
-      {super.key,
-      required this.text,
-      required this.onClickClose,
-      required this.buildSearchResult,
-      required this.appearTrendingAndHistory,
-      required this.controller});
+  const SearchHistoryChip({
+    super.key,
+    required this.text,
+    required this.onClickClose,
+    required this.buildSearchResult,
+    required this.appearTrendingAndHistory,
+    required this.controller,
+  });
 
   final String text;
   final void Function() onClickClose;
@@ -44,69 +45,79 @@ class SearchHistoryChip extends StatelessWidget {
                   controller.text = text;
                   buildSearchResult.value = 1;
                   appearTrendingAndHistory.value = true;
-                  Filter filters = BlocProvider.of<BoutiqueBloc>(context)
-                          .state
-                          .choosedFiltersByUser['search']
-                          ?.filters ??
+                  Filter filters =
+                      BlocProvider.of<BoutiqueBloc>(
+                        context,
+                      ).state.choosedFiltersByUser['search']?.filters ??
                       Filter();
-                  BlocProvider.of<BoutiqueBloc>(context)
-                      .add(ChangeAppliedFiltersEvent(
-                    boutiqueSlug: 'search',
-                    filtersAppliedByUser: GetProductFiltersModel(
-                        filters: filters.copyWithSaveOtherField(
-                      prices: filters.prices,
-                      searchText: text,
-                    )),
-                  ));
                   BlocProvider.of<BoutiqueBloc>(context).add(
-                      GetProductsWithFiltersEvent(
-                          offset: 1,
-                          boutiqueSlug: 'search',
-                          resetChoosedFilters: false,
-                          fromSearch: true,
-                          searchText: text));
+                    ChangeAppliedFiltersEvent(
+                      boutiqueSlug: 'search',
+                      filtersAppliedByUser: GetProductFiltersModel(
+                        filters: filters.copyWithSaveOtherField(
+                          prices: filters.prices,
+                          searchText: text,
+                        ),
+                      ),
+                    ),
+                  );
+                  BlocProvider.of<BoutiqueBloc>(context).add(
+                    GetProductsWithFiltersEvent(
+                      offset: 1,
+                      boutiqueSlug: 'search',
+                      resetChoosedFilters: false,
+                      fromSearch: true,
+                      searchText: text,
+                    ),
+                  );
 
-                  BlocProvider.of<BoutiqueBloc>(context).add(GetFiltersEvent(
+                  BlocProvider.of<BoutiqueBloc>(context).add(
+                    GetFiltersEvent(
                       fromHomePageSearch: true,
                       boutiqueSlug: 'search',
-                      searchText: text));
+                      searchText: text,
+                    ),
+                  );
                 },
                 child: Container(
-                  height: 28,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  height: 28.h,
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
                   decoration: BoxDecoration(
-                      color: const Color(0xffF8F8F8),
-                      borderRadius: BorderRadius.circular(10)),
+                    color: const Color(0xffF8F8F8),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: Center(
                     child: Text(
                       text,
                       style: context.textTheme.titleLarge?.rq.copyWith(
-                          height: 18 / 14, color: const Color(0xff8D8D8D)),
+                        height: 18 / 14,
+                        color: const Color(0xff8D8D8D),
+                        fontSize: 13.sp,
+                      ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(
-                width: 5,
-              )
+              const SizedBox(width: 5),
             ],
           ),
           GestureDetector(
             onTap: onClickClose,
             child: Container(
-              width: 12,
-              height: 12,
+              width: 12.w,
+              height: 12.h,
               color: Colors.transparent, // don't remove it
-              child: const Align(
+              child: Align(
                 alignment: Alignment.centerRight,
                 child: CloseCircle(
-                    width: 12,
-                    height: 12,
-                    borderColor: Color(0xffC4C2C2),
-                    closeSvgColor: Color(0xffFF5F61)),
+                  width: 12.w,
+                  height: 12.h,
+                  borderColor: const Color(0xffC4C2C2),
+                  closeSvgColor: const Color(0xffFF5F61),
+                ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -142,18 +143,18 @@ class _CopperImageState extends State<CopperImage> {
             ),
           ),
           Positioned(
-            top: 50,
+            top: 50.h,
             child: Container(
               color: Colors.black,
               alignment: Alignment.center,
-              width: 350,
-              height: 50,
+              width: 350.w,
+              height: 50.h,
               child: Text(
                 LocaleKeys.select_the_part_of_the_image.tr(),
                 style: context.textTheme.bodyMedium?.mq.copyWith(
                   color: const ui.Color.fromARGB(255, 253, 253, 253),
                   letterSpacing: 0.18,
-                  fontSize: 14,
+                  fontSize: 14.sp,
                   height: 1.2,
                 ),
               ),

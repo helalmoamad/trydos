@@ -2064,18 +2064,23 @@ class _HomePageState extends State<HomePage> {
           isShowPanelForVerified: widget.isShowPanelForVerified,
         ), // height 220
         Positioned(
-          top: 5,
-          right: LanguageService.languageCode == "ar" ? 10 : null,
-          left: LanguageService.languageCode == "ar" ? null : 10,
+          top: 5.h,
+          right: LanguageService.languageCode == "ar" ? 10.w : null,
+          left: LanguageService.languageCode == "ar" ? null : 10.w,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SvgPicture.asset(AppAssets.storyFilmSvg, width: 20, height: 20),
-              const SizedBox(width: 7),
+              SvgPicture.asset(
+                AppAssets.storyFilmSvg,
+                width: 20.w,
+                height: 20.h,
+              ),
+              SizedBox(width: 10.w),
               MyTextWidget(
                 LocaleKeys.story.tr(),
                 style: context.textTheme.titleLarge?.rq.copyWith(
                   height: 0.86,
+                  fontSize: 16.sp,
                   color: const Color(0xff3C3C3C),
                 ),
               ),

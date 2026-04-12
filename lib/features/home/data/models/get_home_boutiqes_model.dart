@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:trydos/main.dart';
 
 GetHomeBoutiquesModel getHomeBoutiquesModelFromJson(String str) =>
     GetHomeBoutiquesModel.fromJson(json.decode(str));
@@ -190,9 +191,13 @@ class BunnerBoutique {
   );
 
   factory BunnerBoutique.fromJson(Map<String, dynamic> json) => BunnerBoutique(
-    filePath: json["file_path"]?.contains("cloudinary")
-        ? json["file_path"]
-        : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
+    filePath: mediaServerIsS3
+        ? (json["file_path"]?.contains("media_server")
+              ? json["file_path"]
+              : "${dotenv.env['Media_S3_Server']}${json["file_path"]}")
+        : (json["file_path"]?.contains("cloudinary")
+              ? json["file_path"]
+              : ("${dotenv.env['Images_Url']}" + (json["file_path"]))),
     originalWidth: (json["original_width"] ?? "").toString().replaceAll(
       RegExp(r'[^0-9.]'),
       '',
@@ -331,10 +336,17 @@ class MainCategoriesForProductId {
     categoryName: json["name"],
     productName: json["most_viewed_product_name"],
     countProducts: json["num_available_product"],
-    mostViewedProductThumbnail:
-        json["most_viewed_product_thumbnail"].toString().contains("cloudinary")
-        ? json["most_viewed_product_thumbnail"]
-        : "${dotenv.env['Images_Url']}${json["most_viewed_product_thumbnail"]}",
+    mostViewedProductThumbnail: mediaServerIsS3
+        ? (json["most_viewed_product_thumbnail"].toString().contains(
+                "media_server",
+              )
+              ? json["most_viewed_product_thumbnail"]
+              : "${dotenv.env['Media_S3_Server']}${json["most_viewed_product_thumbnail"]}")
+        : (json["most_viewed_product_thumbnail"].toString().contains(
+                "cloudinary",
+              )
+              ? json["most_viewed_product_thumbnail"]
+              : "${dotenv.env['Images_Url']}${json["most_viewed_product_thumbnail"]}"),
     flatPhotoPath: json["flat_photo_path"] == null
         ? null
         : BunnerBoutique.fromJson(json["flat_photo_path"]),

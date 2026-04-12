@@ -167,21 +167,21 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           children: [
             SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
                 child: Column(
                   children: [
-                    SizedBox(height: 25.h, width: 1.sw),
+                    SizedBox(height: 18.h, width: 1.sw),
                     _personInfoWidget(),
-                    SizedBox(height: 20.h, width: 1.sw),
+                    SizedBox(height: 18.h, width: 1.sw),
                     Container(
                       width: 1.sw,
-                      height: 94,
+                      height: 94.h,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [_ordersWidget(), _trydosWalletWidget()],
                       ),
                     ),
-                    SizedBox(height: 12.h, width: 1.sw),
+                    SizedBox(height: 10.h, width: 1.sw),
                     BlocBuilder<
                       dashboard.DashboardBloc,
                       dashboard.DashBoardState
@@ -197,7 +197,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 highlightColor: Colors.grey[100]!,
                                 child: Container(
                                   width: 1.sw,
-                                  height: 53,
+                                  height: 54.h,
                                   decoration: BoxDecoration(
                                     color: const Color(0xffFAFAFA),
                                     borderRadius: BorderRadius.circular(15.r),
@@ -227,7 +227,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                             : const SizedBox.shrink();
                       },
                     ),
-                    SizedBox(height: 12.h, width: 1.sw),
+                    SizedBox(height: 10.h, width: 1.sw),
                     BlocBuilder<
                       dashboard.DashboardBloc,
                       dashboard.DashBoardState
@@ -243,7 +243,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 highlightColor: Colors.grey[100]!,
                                 child: Container(
                                   width: 1.sw,
-                                  height: 53,
+                                  height: 54.h,
                                   decoration: BoxDecoration(
                                     color: const Color(0xffFAFAFA),
                                     borderRadius: BorderRadius.circular(15.r),
@@ -298,7 +298,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                       },
                                       child: Padding(
                                         padding: EdgeInsetsGeometry.only(
-                                          bottom: 12.h,
+                                          bottom: 10.h,
                                         ),
                                         child: _actionWidget(
                                           AppAssets.sellerSvg,
@@ -316,29 +316,29 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       LocaleKeys.settings.tr(),
                     ),
 
-                    SizedBox(height: 12.h, width: 1.sw),
+                    SizedBox(height: 10.h, width: 1.sw),
                     _actionWidget(
                       AppAssets.termSvg,
                       LocaleKeys.terms_conditions.tr(),
                     ),
-                    SizedBox(height: 12.h, width: 1.sw),
+                    SizedBox(height: 10.h, width: 1.sw),
                     _actionWidget(
                       AppAssets.legalInfoSvg,
                       LocaleKeys.legal_information.tr(),
                     ),
-                    SizedBox(height: 12.h, width: 1.sw),
+                    SizedBox(height: 10.h, width: 1.sw),
                     _actionWidget(
                       AppAssets.aboutUsSvg,
                       LocaleKeys.about_us.tr(),
                     ),
-                    SizedBox(height: 12.h, width: 1.sw),
+                    SizedBox(height: 10.h, width: 1.sw),
                     _actionWidget(
                       AppAssets.shareAppSvg,
                       LocaleKeys.share_app.tr(),
                     ),
-                    SizedBox(height: 12.h, width: 1.sw),
+                    SizedBox(height: 10.h, width: 1.sw),
                     Container(
-                      height: 53,
+                      height: 54.h,
                       width: 1.sw,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -572,18 +572,18 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     GetStartingSettingsStatus.success &&
                 languageIndex == -1)
             ? Container(
-                width: 195.w,
-                height: 53,
+                width: 200.w,
+                height: 54.h,
                 child: Shimmer.fromColors(
                   baseColor: Colors.grey[200]!,
                   highlightColor: Colors.grey[100]!,
                   child: Container(
-                    width: 195,
-                    height: 53,
-                    margin: HWEdgeInsets.symmetric(horizontal: 20),
+                    width: 200.w,
+                    height: 54.h,
+                    margin: HWEdgeInsets.symmetric(horizontal: 20.w),
                     decoration: BoxDecoration(
                       color: const Color(0xffFAFAFA),
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                   ),
                 ),
@@ -599,19 +599,19 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     color: const Color(0xffF8F8F8),
                     borderRadius: BorderRadius.circular(15.r),
                   ),
-                  width: 195.w,
-                  height: 53,
+                  width: 200.w,
+                  height: 54.h,
                   child: Row(
                     children: [
                       const SizedBox(width: 10),
-                      SvgPicture.asset(AppAssets.languageSvg),
+                      SvgPicture.asset(AppAssets.languageSvg, height: 25.h),
                       const SizedBox(width: 10),
                       Text(
                         "${language[languageIndex].name}",
                         style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 14,
+                          fontSize: 14.sp,
                           height: 1.3,
                         ),
                       ),
@@ -646,18 +646,18 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
         );
         return (allowCountries.isNullOrEmpty || country?.id == -1)
             ? Container(
-                width: 195.w,
-                height: 53,
+                width: 200.w,
+                height: 54.h,
                 child: Shimmer.fromColors(
                   baseColor: Colors.grey[200]!,
                   highlightColor: Colors.grey[100]!,
                   child: Container(
-                    width: 195,
-                    height: 53,
-                    margin: HWEdgeInsets.symmetric(horizontal: 20),
+                    width: 200.w,
+                    height: 54.h,
+                    margin: HWEdgeInsets.symmetric(horizontal: 20.r),
                     decoration: BoxDecoration(
                       color: const Color(0xffFAFAFA),
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(20.0.r),
                     ),
                   ),
                 ),
@@ -673,30 +673,30 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     color: const Color(0xffF8F8F8),
                     borderRadius: BorderRadius.circular(15.r),
                   ),
-                  width: 195.w,
-                  height: 53,
+                  width: 200.w,
+                  height: 54.h,
                   child: Row(
                     children: [
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10.w),
                       Container(
-                        width: 25,
-                        height: 25,
+                        width: 25.w,
+                        height: 25.h,
                         child: country!.iso!.toUpperCase() == "SY"
                             ? SvgPicture.asset(AppAssets.syriaFlagSvg)
                             : CountryFlag.fromCountryCode(
                                 country!.iso!.toUpperCase(),
-                                height: 25,
-                                width: 25,
+                                width: 25.w,
+                                height: 25.h,
                                 borderRadius: 4.r,
                               ),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10.w),
                       Text(
                         country?.name ?? "",
                         style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 14,
+                          fontSize: 14.sp,
                           height: 1.3,
                         ),
                       ),
@@ -710,8 +710,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
 
   Widget _actionWidget(String svgUrl, String actionName) {
     return Container(
-      padding: const EdgeInsets.all(12),
-      height: 53,
+      padding: EdgeInsets.all(12.r),
+      height: 54.h,
       width: 1.sw,
       decoration: BoxDecoration(
         color: const Color(0xffF8F8F8),
@@ -726,7 +726,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             style: context.textTheme.bodyMedium?.rq.copyWith(
               color: const Color(0xff1D1D1D),
               letterSpacing: 0.18,
-              fontSize: 14,
+              fontSize: 14.sp,
               height: 1.3,
             ),
           ),
@@ -759,7 +759,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             current.getOrdersModel?[""]?.paginationStatus,
         builder: (context, state) {
           return Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(10.h),
             width: 195.w,
             decoration: BoxDecoration(
               color: const Color(0xffF8F8F8),
@@ -769,13 +769,13 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                SvgPicture.asset(AppAssets.bagsSvg, width: 25),
+                SvgPicture.asset(AppAssets.bagsSvg, width: 25.w),
                 Text(
                   LocaleKeys.order_invoice.tr(),
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 1.3,
                   ),
                 ),
@@ -783,16 +783,16 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         PaginationStatus.loading
                     ? Container(
                         alignment: Alignment.center,
-                        width: 40,
-                        height: 20,
-                        child: TrydosLoader(size: 20),
+                        width: 40.w,
+                        height: 20.h,
+                        child: TrydosLoader(size: 20.h),
                       )
                     : Text(
                         '${state.orderTotalSize} ${LocaleKeys.action.tr()}',
                         style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           height: 1.3,
                         ),
                       ),
@@ -816,8 +816,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             ? ''
             : state.customerWalletModel?.assetSymbol ?? "";
         return Container(
-          padding: const EdgeInsets.all(10),
-          width: 195.w,
+          padding: EdgeInsets.all(10.h),
+          width: 200.w,
           decoration: BoxDecoration(
             color: const Color(0xffF8F8F8),
             borderRadius: BorderRadius.circular(15.r),
@@ -834,30 +834,30 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                   AppAssets.trydosWalletSvg,
                   // ignore: deprecated_member_use
                   color: const Color(0xff3C3C3C),
-                  width: 25,
+                  width: 25.w,
                 ),
                 Text(
                   LocaleKeys.wallet.tr(),
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 11,
+                    fontSize: 11.sp,
                     height: 1.3,
                   ),
                 ),
                 state.getCustomerWalletStatus == GetCustomerWalletStatus.loading
                     ? Container(
                         alignment: Alignment.center,
-                        width: 40,
-                        height: 20,
-                        child: TrydosLoader(size: 20),
+                        width: 40.w,
+                        height: 20.h,
+                        child: TrydosLoader(size: 20.h),
                       )
                     : Text(
                         '${LocaleKeys.your_balance.tr()} ${(walletBalance).toStringAsFixed((GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2).round())} ${symbole}',
                         style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           height: 1.3,
                         ),
                       ),
@@ -885,13 +885,13 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             ),
           ),
           child: Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12.r),
             decoration: BoxDecoration(
               color: const Color(0xffF8F8F8),
               borderRadius: BorderRadius.circular(15.r),
             ),
             width: 1.sw,
-            height: 138,
+
             child: BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) =>
                   previous.updateProfileStatus != current.updateProfileStatus,
@@ -905,15 +905,15 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                           // onTap: () => _showShareAccountViaQr(context),
                           child: SvgPicture.asset(AppAssets.parcodeSvg),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10.h),
                         Container(
-                          height: 20,
+                          height: 20.h,
                           child: Text(
                             prefsRepository.myMarketName ?? '',
                             style: context.textTheme.bodyMedium?.mq.copyWith(
                               color: const Color(0xff1D1D1D),
                               letterSpacing: 0.18,
-                              fontSize: 14,
+                              fontSize: 14.sp,
                               height: 1.3,
                             ),
                           ),
@@ -922,7 +922,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         Directionality(
                           textDirection: TextDirection.ltr,
                           child: Container(
-                            height: 16,
+                            height: 16.h,
                             child: Text(
                               (prefsRepository.myPhoneNumber?.length ?? 0) < 4
                                   ? ""
@@ -934,23 +934,23 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                               style: context.textTheme.bodyMedium?.rq.copyWith(
                                 color: const Color(0xff8D8D8D),
                                 letterSpacing: 0.18,
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 height: 1.3,
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 5),
+                        SizedBox(height: 5.h),
                         Container(
-                          height: 16,
-                          width: 130,
+                          height: 16.h,
+                          width: 130.w,
                           child: Text(
                             '${LocaleKeys.add.tr()} ' +
                                 "${LocaleKeys.size.tr()}",
                             style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: const Color(0xff8D8D8D),
                               letterSpacing: 0.18,
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               height: 1.3,
                             ),
                           ),
@@ -962,8 +962,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       right: LanguageService.languageCode == "ar" ? null : 0,
                       left: LanguageService.languageCode != "ar" ? null : 0,
                       child: Container(
-                        height: 70,
-                        width: 70,
+                        height: 70.h,
+                        width: 70.w,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(15.r)),
                           border: Border.all(
@@ -984,16 +984,16 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 child: MyCachedNetworkImage(
                                   imageUrl:
                                       prefsRepository.myProfilePhoto ?? "",
-                                  width: 70,
+                                  width: 70.w,
                                   imageFit: BoxFit.cover,
-                                  height: 70,
+                                  height: 70.h,
                                 ),
                               )
                             : Center(child: SvgPicture.asset(AppAssets.trySvg)),
                       ),
                     ),
                     Positioned(
-                      top: 38,
+                      top: 38.h,
                       left: LanguageService.languageCode == "ar"
                           ? null
                           : max(
@@ -1002,7 +1002,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 context.textTheme.bodyMedium!.mq.copyWith(
                                   color: const Color(0xff1D1D1D),
                                   letterSpacing: 0.18,
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                   height: 1.3,
                                 ),
                               ),
@@ -1011,7 +1011,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 context.textTheme.bodyMedium!.rq.copyWith(
                                   color: const Color(0xff8D8D8D),
                                   letterSpacing: 0.18,
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                   height: 1.3,
                                 ),
                               ),
@@ -1024,7 +1024,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 context.textTheme.bodyMedium!.mq.copyWith(
                                   color: const Color(0xff1D1D1D),
                                   letterSpacing: 0.18,
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                   height: 1.3,
                                 ),
                               ),
@@ -1033,7 +1033,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 context.textTheme.bodyMedium!.rq.copyWith(
                                   color: const Color(0xff8D8D8D),
                                   letterSpacing: 0.18,
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                   height: 1.3,
                                 ),
                               ),
@@ -1061,8 +1061,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                               margin: const EdgeInsets.symmetric(
                                 horizontal: 15,
                               ),
-                              height: 35,
-                              width: 72,
+                              height: 35.h,
+                              width: 72.w,
                               child: Column(
                                 children: [
                                   Stack(
@@ -1072,15 +1072,15 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                         AppAssets.succuessProfileSvg,
                                         // ignore: deprecated_member_use
                                         color: const Color(0xff707070),
-                                        height: 16,
-                                        width: 16,
+                                        height: 16.h,
+                                        width: 16.w,
                                       ),
                                       SvgPicture.asset(
                                         AppAssets.success2Svg,
                                         // ignore: deprecated_member_use
                                         color: const Color(0xff707070),
-                                        height: 5,
-                                        width: 5,
+                                        height: 5.h,
+                                        width: 5.w,
                                       ),
                                     ],
                                   ),
@@ -1098,7 +1098,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                               ? Colors.green
                                               : const Color(0xffFF5F61),
                                           letterSpacing: 0.18,
-                                          fontSize: 10,
+                                          fontSize: 10.sp,
                                           height: 1.3,
                                         ),
                                   ),
@@ -1234,7 +1234,10 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       if (mounted) {
         await Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const TrydosWalletWelcomeScreen(),
+            builder: (context) => BlocProvider(
+              create: (context) => WalletBloc(),
+              child: const TrydosWalletWelcomeScreen(),
+            ),
           ),
         );
       }

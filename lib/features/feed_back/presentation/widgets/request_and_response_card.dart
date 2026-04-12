@@ -11,7 +11,7 @@ import '../pages/requestAndResponseDetailsLayout.dart';
 
 class RequestAndResponseCard extends StatelessWidget {
   const RequestAndResponseCard({Key? key, required this.data})
-      : super(key: key);
+    : super(key: key);
   final Map<String, dynamic> data;
   @override
   Widget build(BuildContext context) {
@@ -31,53 +31,60 @@ class RequestAndResponseCard extends StatelessWidget {
               10.verticalSpace,
               if (data.containsKey('flutter_error')) ...{
                 Expanded(
-                    child: TitledTextWidget(
-                  title: 'Flutter Error: ',
-                  body: data['flutter_error'].toString(),
-                )),
+                  child: TitledTextWidget(
+                    title: 'Flutter Error: ',
+                    body: data['flutter_error'].toString(),
+                  ),
+                ),
               } else ...{
                 Expanded(
-                    child: TitledTextWidget(
-                  title: 'URL: ',
-                  body: data['url'].toString(),
-                  maxLines: 2,
-                )),
+                  child: TitledTextWidget(
+                    title: 'URL: ',
+                    body: data['url'].toString(),
+                    maxLines: 2,
+                  ),
+                ),
                 4.verticalSpace,
                 Expanded(
-                    child: TitledTextWidget(
-                  title: 'Request: ',
-                  body: data['request'].toString(),
-                )),
+                  child: TitledTextWidget(
+                    title: 'Request: ',
+                    body: data['request'].toString(),
+                  ),
+                ),
                 if (data['response_time'] != null) ...{
                   4.verticalSpace,
                   Expanded(
-                      child: TitledTextWidget(
-                    title: 'Response Time: ',
-                    body: data['response_time'].toString(),
-                  )),
+                    child: TitledTextWidget(
+                      title: 'Response Time: ',
+                      body: data['response_time'].toString(),
+                    ),
+                  ),
                 },
                 4.verticalSpace,
                 Expanded(
-                    child: TitledTextWidget(
-                  title: 'Header: ',
-                  body: data['headers'].toString(),
-                  maxLines: 2,
-                )),
+                  child: TitledTextWidget(
+                    title: 'Header: ',
+                    body: data['headers'].toString(),
+                    maxLines: 2,
+                  ),
+                ),
                 if (data['query'] != null) ...{
                   4.verticalSpace,
                   Expanded(
-                      child: TitledTextWidget(
-                    title: 'query: ',
-                    body: data['query'].toString(),
-                  )),
+                    child: TitledTextWidget(
+                      title: 'query: ',
+                      body: data['query'].toString(),
+                    ),
+                  ),
                 },
                 if (data['body'] != null) ...{
                   4.verticalSpace,
                   Expanded(
-                      child: TitledTextWidget(
-                    title: 'body: ',
-                    body: data['body'].toString(),
-                  )),
+                    child: TitledTextWidget(
+                      title: 'body: ',
+                      body: data['body'].toString(),
+                    ),
+                  ),
                 },
                 4.verticalSpace,
                 Expanded(
@@ -93,38 +100,41 @@ class RequestAndResponseCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                      width: 0.4.sw,
-                      child: AppElevatedButton(
-                          text: 'share',
-                          onPressed: () async {
-                            String text = "";
-                            data.forEach((key, value) {
-                              if (value != null) {
-                                text +=
-                                    ('${key.toUpperCase().toString()}: $value');
-                                text += '\n';
-                              }
-                            });
-                            log(text);
-                            await Share.share(text);
-                          })),
+                    width: 0.4.sw,
+                    child: AppElevatedButton(
+                      text: 'share',
+                      onPressed: () async {
+                        String text = "";
+                        data.forEach((key, value) {
+                          if (value != null) {
+                            text += ('${key.toUpperCase().toString()}: $value');
+                            text += '\n';
+                          }
+                        });
+                        log(text);
+                        // ignore: deprecated_member_use
+                        await Share.share(text);
+                      },
+                    ),
+                  ),
                   15.horizontalSpace,
                   SizedBox(
-                      width: 0.4.sw,
-                      child: AppElevatedButton(
-                        text: 'show details',
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) =>
-                                      RequestAndResponseDetailsLayout(
-                                        data: data,
-                                      )));
-                        },
-                      )),
+                    width: 0.4.sw,
+                    child: AppElevatedButton(
+                      text: 'show details',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                RequestAndResponseDetailsLayout(data: data),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),

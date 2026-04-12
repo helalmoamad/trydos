@@ -63,7 +63,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: c0ee15fa3159af5b908b96100cf59ff94e3b7ee2
-      url: "https://github.com/trydos-app/audioplayers-6.4.0.git"
+      url: "https://github.com/helalmoamad/audioplayers-6.4.0.git"
     source: git
     version: "6.4.0"
   audioplayers_android:
@@ -773,7 +773,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "0d9271b6a09c35d520b425051b6e054f2045dace"
-      url: "https://github.com/trydos-app/trydos-app-trydos-flutter_carousel_slider-1.1.0.git"
+      url: "https://github.com/helalmoamad/trydos-app-trydos-flutter_carousel_slider-1.1.0.git"
     source: git
     version: "1.1.0"
   flutter_countdown_timer:
@@ -811,7 +811,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: c36d69309b3493ab4eed713c5a33f38e085b9dd1
-      url: "https://github.com/trydos-app/trydos-app-flutter_gallery_3d-1.1.1.git"
+      url: "https://github.com/helalmoamad/trydos-app-flutter_gallery_3d-1.1.1.git"
     source: git
     version: "1.1.1"
   flutter_gemini:
@@ -908,7 +908,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "7f2114f8b9dd3f155c40d50bcf1cff06ff2953cd"
-      url: "https://github.com/trydos-app/flutter_inset_box_shadow-1.0.8.git"
+      url: "https://github.com/helalmoamad/flutter_inset_box_shadow-1.0.8.git"
     source: git
     version: "1.0.8"
   flutter_launcher_icons:
@@ -1107,6 +1107,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  gal:
+    dependency: transitive
+    description:
+      name: gal
+      sha256: "969598f986789127fd407a750413249e1352116d4c2be66e81837ffeeaafdfee"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.2"
   geocoding:
     dependency: "direct main"
     description:
@@ -1327,10 +1335,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_android
-      sha256: eda9b91b7e266d9041084a42d605a74937d996b87083395c5e47835916a86156
+      sha256: "66810af8e99b2657ee98e5c6f02064f69bb63f7a70e343937f70946c5f8c6622"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.13+14"
+    version: "0.8.13+16"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -1612,10 +1620,10 @@ packages:
     dependency: "direct main"
     description:
       name: mobile_scanner
-      sha256: d234581c090526676fd8fab4ada92f35c6746e3fb4f05a399665d75a399fb760
+      sha256: c92c26bf2231695b6d3477c8dcf435f51e28f87b1745966b1fe4c47a286171ce
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.3"
+    version: "7.2.0"
   mockito:
     dependency: "direct dev"
     description:
@@ -1718,7 +1726,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: af085368b4b1af2d4b8497b3bc3ff5e2327574d5
-      url: "https://github.com/trydos-app/trydos-app-trydos-overscroll_pop-0.1.0.git"
+      url: "https://github.com/helalmoamad/trydos-app-trydos-overscroll_pop-0.1.0.git"
     source: git
     version: "0.1.0"
   package_config:
@@ -1773,10 +1781,10 @@ packages:
     dependency: "direct main"
     description:
       name: path_provider
-      sha256: fec0d61223fba3154d87759e3cc27fe2c8dc498f6386c6d6fc80d1afdd1bf378
+      sha256: "50c5dd5b6e1aaf6fb3a78b33f6aa3afca52bf903a8a5298f53101fdaee55bbcd"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.4"
+    version: "2.1.5"
   path_provider_android:
     dependency: transitive
     description:
@@ -1929,6 +1937,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.1"
+  pretty_qr_code:
+    dependency: transitive
+    description:
+      name: pretty_qr_code
+      sha256: "474f8a4512113fba06f14a6ec9bbf42353b4e651d7a520e3096f2a9b6bbe7a8a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.6.0"
   process:
     dependency: transitive
     description:
@@ -2029,18 +2045,18 @@ packages:
     dependency: "direct main"
     description:
       name: share_plus
-      sha256: "3ef39599b00059db0990ca2e30fca0a29d8b37aae924d60063f8e0184cf20900"
+      sha256: "14c8860d4de93d3a7e53af51bff479598c4e999605290756bbbe45cf65b37840"
       url: "https://pub.dev"
     source: hosted
-    version: "7.2.2"
+    version: "12.0.1"
   share_plus_platform_interface:
     dependency: transitive
     description:
       name: share_plus_platform_interface
-      sha256: "251eb156a8b5fa9ce033747d73535bf53911071f8d3b6f4f0b578505ce0d4496"
+      sha256: "88023e53a13429bd65d8e85e11a9b484f49d4c190abbd96c7932b74d6927cc9a"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.0"
+    version: "6.1.0"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -2148,7 +2164,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "4d0915d55aaed0972f6db5f3c2ab9333d324de80"
-      url: "https://github.com/trydos-app/trydos-app-sliding_up_panel-2.0.0.git"
+      url: "https://github.com/helalmoamad/trydos-app-sliding_up_panel-2.0.0.git"
     source: git
     version: "2.0.0+1"
   source_gen:
@@ -2332,8 +2348,8 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "8d2b814c251f283c4437621407db0203f2f32fdf"
-      url: "https://github.com/trydos-app/trydos_wallet.git"
+      resolved-ref: df86e6cf2a14e1c1d0d418b31b82fa0cddc9478c
+      url: "https://github.com/helalmoamad/trydos_wallet.git"
     source: git
     version: "0.0.1"
   tuple:

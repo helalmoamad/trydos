@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/features/home/data/models/get_buyers_comments_model.dart';
 import 'package:trydos/features/home/data/models/get_fqa_comments_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/main.dart';
 
 GetProductDetailWithoutRelatedProductsModel
 getProductDetailWithoutRelatedProductsModelFromJson(String str) =>
@@ -358,8 +359,8 @@ class Product {
         ? []
         : List<String>.from(json["sizes"]!.map((x) => x)),
     hasDiscount: json["has_discount"],
-    isRedeem: json["is_redeem"],
-    redeemPrice: (json["redeem_price"] ?? 0).toDouble(),
+    isRedeem: json["is_luck"],
+    redeemPrice: (json["luck_price"] ?? 0).toDouble(),
     deliveryAt: json["delivery_at"],
     ratingDetails: json["ratingDetails"] == null
         ? []
@@ -405,7 +406,7 @@ class Product {
     "description": description,
     "is_active": isActive,
     "boutique": boutique?.toJson(),
-    "is_redeem": isRedeem,
+    "is_luck": isRedeem,
     "ratingDetails": ratingDetails == null
         ? []
         : List<dynamic>.from(ratingDetails!.map((x) => x.toJson())),
@@ -419,7 +420,7 @@ class Product {
     "fqa_questions": fqaQuestions?.toJson(),
     "good_quality_product": goodQualityProduct,
     "seller": seller?.toJson(),
-    "redeem_price": redeemPrice,
+    "luck_price": redeemPrice,
 
     "sizes": sizes == null ? [] : List<dynamic>.from(sizes!.map((x) => x)),
     "has_discount": hasDiscount,
@@ -677,9 +678,13 @@ class Icon {
   );
 
   factory Icon.fromJson(Map<String, dynamic> json) => Icon(
-    filePath: json["file_path"]?.contains("cloudinary")
-        ? json["file_path"]
-        : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
+    filePath: mediaServerIsS3
+        ? (json["file_path"].contains("media_server")
+              ? json["file_path"]
+              : "${dotenv.env['Media_S3_Server']}${json["file_path"]}")
+        : (json["file_path"]?.contains("cloudinary")
+              ? json["file_path"]
+              : ("${dotenv.env['Images_Url']}" + (json["file_path"]))),
     originalWidth: json["original_width"],
     originalHeight: json["original_height"],
   );

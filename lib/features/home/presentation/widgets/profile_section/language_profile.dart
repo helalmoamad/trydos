@@ -88,7 +88,7 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 1.3,
                   ),
                 ),
@@ -121,14 +121,14 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                         },
                         child: Container(
                           alignment: Alignment.center,
-                          width: 40,
-                          height: 20,
+                          width: 40.w,
+                          height: 20.h,
                           child: Text(
                             LocaleKeys.save.tr(),
                             style: context.textTheme.bodyMedium?.mq.copyWith(
                               color: const Color(0xff402CDD),
                               letterSpacing: 0.18,
-                              fontSize: 14,
+                              fontSize: 14.sp,
                               height: 1.3,
                             ),
                           ),
@@ -154,7 +154,7 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        height: 50,
+                        height: 50.h,
                         width: 1.sw,
                         decoration: BoxDecoration(
                           color: const Color(0xffF8F8F8),
@@ -176,16 +176,16 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                               style: context.textTheme.bodyMedium?.rq.copyWith(
                                 color: const Color(0xff8D8D8D),
                                 letterSpacing: 0.18,
-                                fontSize: 10.sp,
+                                fontSize: 9.sp,
                                 height: 1.3,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                       _availableLanguage(),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                     ],
                   );
                 },
@@ -202,20 +202,20 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          height: 15,
-          width: 170,
-          margin: const EdgeInsets.symmetric(horizontal: 20),
+          height: 15.h,
+          width: 180.w,
+          margin: EdgeInsets.symmetric(horizontal: 20.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SvgPicture.asset(AppAssets.languageSvg, height: 25),
+              SvgPicture.asset(AppAssets.languageSvg, height: 25.h),
               const SizedBox(width: 5),
               Text(
                 LocaleKeys.available_language.tr(),
                 style: context.textTheme.bodyMedium?.mq.copyWith(
                   color: const Color(0xff404040),
                   letterSpacing: 0.18,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   height: 1.2,
                 ),
               ),
@@ -224,16 +224,16 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                 AppAssets.chatWithQuestionSvg,
                 // ignore: deprecated_member_use
                 color: const Color(0xffD3D3D3),
-                height: 15,
+                height: 15.h,
               ),
             ],
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 20.h),
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 5),
+          margin: EdgeInsets.symmetric(horizontal: 5.w),
           width: 1.sw,
-          height: 245,
+          height: 245.h,
           child: ListView.separated(
             itemBuilder: (context, index) {
               return _LanguageWidget(
@@ -278,21 +278,21 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
             ),
           ),
           width: 1.sw,
-          height: 53,
+          height: 54.h,
           child: Row(
             children: [
               const SizedBox(width: 10),
               code.toUpperCase() == "SY"
-                  ? SvgPicture.asset(AppAssets.syriaFlagSvg)
+                  ? SvgPicture.asset(AppAssets.syriaFlagSvg, height: 25.h)
                   : code.toUpperCase() == "KU"
-                  ? SvgPicture.asset(AppAssets.kurdishFlagSvg)
+                  ? SvgPicture.asset(AppAssets.kurdishFlagSvg, height: 25.h)
                   : Container(
-                      width: 25,
-                      height: 25,
+                      width: 25.w,
+                      height: 25.h,
                       child: CountryFlag.fromCountryCode(
                         code,
-                        height: 25,
-                        width: 25,
+                        height: 25.h,
+                        width: 25.w,
                         borderRadius: 4.r,
                       ),
                     ),
@@ -302,7 +302,7 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                 style: context.textTheme.bodyMedium?.rq.copyWith(
                   color: const Color(0xff1D1D1D),
                   letterSpacing: 0.18,
-                  fontSize: 14,
+                  fontSize: 14.sp,
                   height: 1.3,
                 ),
               ),

@@ -98,7 +98,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 1.3,
                   ),
                 ),
@@ -119,7 +119,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                 style: textTheme.titleMedium?.rq.copyWith(
                                   fontSize: 12.sp,
                                   color: const Color(0xff1D1D1D),
-                                  height: 0,
+                                  height: 1.3,
                                 ),
                               ),
                               actions: [
@@ -198,14 +198,14 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                         },
                         child: Container(
                           alignment: Alignment.center,
-                          width: 40,
-                          height: 20,
+                          width: 40.w,
+                          height: 20.h,
                           child: Text(
                             LocaleKeys.save.tr(),
                             style: context.textTheme.bodyMedium?.mq.copyWith(
                               color: const Color(0xff402CDD),
                               letterSpacing: 0.18,
-                              fontSize: 14,
+                              fontSize: 14.sp,
                               height: 1.3,
                             ),
                           ),
@@ -222,51 +222,49 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
               withShadow: false,
             ),
           ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: ValueListenableBuilder<int>(
-                valueListenable: changeCountry,
-                builder: (context, selectCountry, _) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 50,
-                        width: 1.sw,
-                        decoration: BoxDecoration(
-                          color: const Color(0xffF8F8F8),
-                          border: Border.all(color: const Color(0xffD3D3D3)),
-                        ),
-                        child: Row(
-                          children: [
-                            SizedBox(width: 10.w),
-                            SvgPicture.asset(
-                              AppAssets.infoSvg,
-                              // ignore: deprecated_member_use
-                              color: const Color(0xff402CDD),
-                              width: 25.w,
-                            ),
-                            SizedBox(width: 10.w),
-                            Text(
-                              LocaleKeys.we_operate_in_the_countries.tr(),
-                              style: context.textTheme.bodyMedium?.rq.copyWith(
-                                color: const Color(0xff8D8D8D),
-                                letterSpacing: 0.18,
-                                fontSize: 10.sp,
-                                height: 1.3,
-                              ),
-                            ),
-                          ],
-                        ),
+          body: SingleChildScrollView(
+            child: ValueListenableBuilder<int>(
+              valueListenable: changeCountry,
+              builder: (context, selectCountry, _) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 50.h,
+                      width: 1.sw,
+                      decoration: BoxDecoration(
+                        color: const Color(0xffF8F8F8),
+                        border: Border.all(color: const Color(0xffD3D3D3)),
                       ),
-                      const SizedBox(height: 20),
-                      _availableCountry(),
-                      const SizedBox(height: 20),
-                      _commingSoonCountry(),
-                    ],
-                  );
-                },
-              ),
+                      child: Row(
+                        children: [
+                          SizedBox(width: 10.w),
+                          SvgPicture.asset(
+                            AppAssets.infoSvg,
+                            // ignore: deprecated_member_use
+                            color: const Color(0xff402CDD),
+                            width: 25.w,
+                          ),
+                          SizedBox(width: 10.w),
+                          Text(
+                            LocaleKeys.we_operate_in_the_countries.tr(),
+                            style: context.textTheme.bodyMedium?.rq.copyWith(
+                              color: const Color(0xff8D8D8D),
+                              letterSpacing: 0.18,
+                              fontSize: 9.sp,
+                              height: 1.3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    _availableCountry(),
+                    SizedBox(height: 20.h),
+                    _commingSoonCountry(),
+                  ],
+                );
+              },
             ),
           ),
         );
@@ -279,15 +277,15 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          height: 15,
-          width: 170,
-          margin: const EdgeInsets.symmetric(horizontal: 20),
+          height: 15.h,
+          width: 170.w,
+          margin: EdgeInsets.symmetric(horizontal: 20.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SvgPicture.asset(
                 AppAssets.availableCountrySvg,
-                height: 15,
+                height: 15.h,
                 // ignore: deprecated_member_use
                 color: const Color(0xff707070),
               ),
@@ -297,7 +295,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                 style: context.textTheme.bodyMedium?.mq.copyWith(
                   color: const Color(0xff404040),
                   letterSpacing: 0.18,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   height: 1.2,
                 ),
               ),
@@ -306,16 +304,16 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                 AppAssets.chatWithQuestionSvg,
                 // ignore: deprecated_member_use
                 color: const Color(0xffD3D3D3),
-                height: 15,
+                height: 15.h,
               ),
             ],
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10.h),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 5),
           width: 1.sw,
-          height: 245,
+          height: 245.h,
           child: ListView.separated(
             itemBuilder: (context, index) => _countryWidget(
               homeBloc
@@ -363,15 +361,15 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          height: 15,
-          width: 170,
-          margin: const EdgeInsets.symmetric(horizontal: 20),
+          height: 15.h,
+          width: 290.w,
+          margin: EdgeInsets.symmetric(horizontal: 20.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SvgPicture.asset(
                 AppAssets.availableCountrySvg,
-                height: 15,
+                height: 15.h,
                 // ignore: deprecated_member_use
                 color: const Color(0xff707070),
               ),
@@ -381,7 +379,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                 style: context.textTheme.bodyMedium?.mq.copyWith(
                   color: const Color(0xff404040),
                   letterSpacing: 0.18,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   height: 1.2,
                 ),
               ),
@@ -390,12 +388,12 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                 AppAssets.chatWithQuestionSvg,
                 // ignore: deprecated_member_use
                 color: const Color(0xffD3D3D3),
-                height: 15,
+                height: 15.h,
               ),
             ],
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10.h),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 5),
           width: 1.sw,
@@ -403,7 +401,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
           child: ListView.separated(
             itemBuilder: (context, index) =>
                 _countryWidget("TR", "Turkiy", index, false),
-            separatorBuilder: (context, index) => const SizedBox(height: 5),
+            separatorBuilder: (context, index) => SizedBox(height: 5.h),
             itemCount: 5,
           ),
         ),
@@ -440,19 +438,19 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
             ),
           ),
           width: 1.sw,
-          height: 53,
+          height: 54.h,
           child: Row(
             children: [
               const SizedBox(width: 10),
               Container(
-                width: 25,
-                height: 25,
+                width: 25.w,
+                height: 25.h,
                 child: code.toUpperCase() == "SY"
                     ? SvgPicture.asset(AppAssets.syriaFlagSvg, width: 18.w)
                     : CountryFlag.fromCountryCode(
                         code,
-                        height: 25,
-                        width: 25,
+                        height: 25.h,
+                        width: 25.w,
                         borderRadius: 4.r,
                       ),
               ),
@@ -462,7 +460,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                 style: context.textTheme.bodyMedium?.rq.copyWith(
                   color: const Color(0xff1D1D1D),
                   letterSpacing: 0.18,
-                  fontSize: 14,
+                  fontSize: 14.sp,
                   height: 1.3,
                 ),
               ),

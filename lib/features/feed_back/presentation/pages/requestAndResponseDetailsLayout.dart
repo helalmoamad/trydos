@@ -10,7 +10,7 @@ import '../../../app/feed_back_app_bar/humy_appbar.dart';
 
 class RequestAndResponseDetailsLayout extends StatelessWidget {
   const RequestAndResponseDetailsLayout({Key? key, required this.data})
-      : super(key: key);
+    : super(key: key);
   final Map<String, dynamic> data;
   static String routeName = 'RequestAndResponseDetailsLayout';
 
@@ -18,12 +18,11 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-          preferredSize: Size.fromHeight(65.0.h),
-          child: FeedBackAppBar(
-            appBarParams: AppBarParams(
-              title: 'request details',
-            ),
-          )),
+        preferredSize: Size.fromHeight(65.0.h),
+        child: FeedBackAppBar(
+          appBarParams: AppBarParams(title: 'request details'),
+        ),
+      ),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -34,62 +33,78 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
                 children: [
                   SelectableText.rich(
                     data.containsKey('flutter_error')
-                        ? TextSpan(children: <TextSpan>[
-                            TextSpan(
+                        ? TextSpan(
+                            children: <TextSpan>[
+                              TextSpan(
                                 text: 'Error Details: ',
-                                style: titleStyle(context)),
-                            TextSpan(
+                                style: titleStyle(context),
+                              ),
+                              TextSpan(
                                 text: data['flutter_error'] + '\n',
-                                style: bodyStyle(context)),
-                          ])
+                                style: bodyStyle(context),
+                              ),
+                            ],
+                          )
                         : TextSpan(
                             children: <TextSpan>[
                               TextSpan(
-                                  text: 'URL: ', style: titleStyle(context)),
+                                text: 'URL: ',
+                                style: titleStyle(context),
+                              ),
                               TextSpan(
-                                  text: data['url'] + '\n',
-                                  style: bodyStyle(context)),
+                                text: data['url'] + '\n',
+                                style: bodyStyle(context),
+                              ),
                               TextSpan(
                                 children: <TextSpan>[
                                   TextSpan(
-                                      text: 'Request: ',
-                                      style: titleStyle(context)),
+                                    text: 'Request: ',
+                                    style: titleStyle(context),
+                                  ),
                                   TextSpan(
-                                      text: data['request'].toString() + '\n',
-                                      style: bodyStyle(context)),
+                                    text: data['request'].toString() + '\n',
+                                    style: bodyStyle(context),
+                                  ),
                                 ],
                               ),
                               if (data['response_time'] != null)
                                 TextSpan(
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: 'Response Time: ',
-                                        style: titleStyle(context)),
+                                      text: 'Response Time: ',
+                                      style: titleStyle(context),
+                                    ),
                                     TextSpan(
-                                        text: data['response_time'].toString() +
-                                            '\n',
-                                        style: bodyStyle(context)),
+                                      text:
+                                          data['response_time'].toString() +
+                                          '\n',
+                                      style: bodyStyle(context),
+                                    ),
                                   ],
                                 ),
                               TextSpan(
                                 children: <TextSpan>[
                                   TextSpan(
-                                      text: 'Header: ',
-                                      style: titleStyle(context)),
+                                    text: 'Header: ',
+                                    style: titleStyle(context),
+                                  ),
                                   TextSpan(
-                                      text: '${data['headers'].toString()}\n',
-                                      style: bodyStyle(context)),
+                                    text: '${data['headers'].toString()}\n',
+                                    style: bodyStyle(context),
+                                  ),
                                 ],
                               ),
                               if (data['query'] != null) ...{
                                 TextSpan(
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: 'query: ',
-                                        style: titleStyle(context)),
+                                      text: 'query: ',
+                                      style: titleStyle(context),
+                                    ),
                                     TextSpan(
-                                        text: '${data['query'].toString()}\n',
-                                        style: bodyStyle(context)),
+                                      text: '${data['query'].toString()}\n',
+                                      style: bodyStyle(context),
+                                    ),
                                   ],
                                 ),
                               },
@@ -97,32 +112,34 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
                                 TextSpan(
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: 'body: ',
-                                        style: titleStyle(context)),
+                                      text: 'body: ',
+                                      style: titleStyle(context),
+                                    ),
                                     TextSpan(
-                                        text: '${data['body']}\n',
-                                        style: bodyStyle(context)),
+                                      text: '${data['body']}\n',
+                                      style: bodyStyle(context),
+                                    ),
                                   ],
                                 ),
                               },
                               TextSpan(
                                 children: <TextSpan>[
                                   TextSpan(
-                                      text: 'Response: ',
-                                      style: titleStyle(context)),
+                                    text: 'Response: ',
+                                    style: titleStyle(context),
+                                  ),
                                   TextSpan(
-                                      text: '${data['response'].toString()}\n',
-                                      style: bodyStyle(context)),
+                                    text: '${data['response'].toString()}\n',
+                                    style: bodyStyle(context),
+                                  ),
                                 ],
                               ),
                             ],
                           ),
                     // ignore: deprecated_member_use
-                    toolbarOptions: const ToolbarOptions(
-                      copy: true,
-                    ),
+                    toolbarOptions: const ToolbarOptions(copy: true),
                   ),
-                  40.verticalSpace
+                  40.verticalSpace,
                 ],
               ),
             ),
@@ -134,18 +151,20 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15.0.w),
                 child: AppElevatedButton(
-                    text: 'Share',
-                    onPressed: () async {
-                      String text = "";
-                      data.forEach((key, value) {
-                        if (value != null) {
-                          text += ('${key.toUpperCase()}: $value');
-                          text += '\n';
-                        }
-                      });
-                      log(text);
-                      await Share.share(text);
-                    }),
+                  text: 'Share',
+                  onPressed: () async {
+                    String text = "";
+                    data.forEach((key, value) {
+                      if (value != null) {
+                        text += ('${key.toUpperCase()}: $value');
+                        text += '\n';
+                      }
+                    });
+                    log(text);
+                    // ignore: deprecated_member_use
+                    await Share.share(text);
+                  },
+                ),
               ),
             ),
           ),
@@ -156,10 +175,10 @@ class RequestAndResponseDetailsLayout extends StatelessWidget {
 
   TextStyle titleStyle(BuildContext context) =>
       context.textTheme.bodyMedium!.copyWith(
-          fontWeight: FontWeight.w700, color: context.colorScheme.tertiary);
+        fontWeight: FontWeight.w700,
+        color: context.colorScheme.tertiary,
+      );
 
   TextStyle bodyStyle(BuildContext context) =>
-      context.textTheme.bodyMedium!.copyWith(
-        fontWeight: FontWeight.w400,
-      );
+      context.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w400);
 }

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -19,6 +20,7 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_with_silder.dart';
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/main.dart';
 import 'package:trydos/service/language_service.dart';
 
 class ProductItem extends StatefulWidget {
@@ -221,7 +223,7 @@ class _ProductItemState extends State<ProductItem> {
                     ? null
                     : widget.productItem.videos!.first.contains("cloudinary")
                     ? widget.productItem.videos!.first
-                    : ("${dotenv.env['Video_url']}" +
+                    : ("${mediaServerIsS3 ? dotenv.env['Vedio_S3_Server'] : dotenv.env['Video_url']}" +
                           (widget.productItem.videos!.first)),
                 productIsFlashDeal: widget.productIsFlashDeal,
                 productIsRecommend: widget.productIsRecommend,
@@ -241,7 +243,7 @@ class _ProductItemState extends State<ProductItem> {
                     ? null
                     : widget.productItem.videos!.first.contains("cloudinary")
                     ? widget.productItem.videos!.first
-                    : ("${dotenv.env['Video_url']}" +
+                    : ("${mediaServerIsS3 ? dotenv.env['Vedio_S3_Server'] : dotenv.env['Video_url']}" +
                           (widget.productItem.videos!.first)),
                 showShadowForColorImages: widget.showShadowForColorImages,
                 colorImagesPanelController: widget.colorImagesPanelController,
@@ -424,33 +426,33 @@ class _ProductItemState extends State<ProductItem> {
                                 margin: EdgeInsets.only(
                                   left: LanguageService.languageCode != "ar"
                                       ? 1
-                                      : 10,
+                                      : 10.w,
                                   right: LanguageService.languageCode == "ar"
                                       ? 1
-                                      : 10,
+                                      : 10.w,
                                 ),
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: const Color(0xffFF6200),
                                   ),
                                   color: const Color(0xffFFF3E8),
-                                  borderRadius: BorderRadius.circular(15),
+                                  borderRadius: BorderRadius.circular(15.r),
                                 ),
-                                height: 20,
+                                height: 25.h,
                                 child: Transform(
                                   transform: Matrix4.skewX(
                                     0.4,
                                   ), // انحراف بسيط للشكل
                                   child: Row(
                                     children: [
-                                      const SizedBox(width: 3),
+                                      SizedBox(width: 3.w),
                                       SvgPicture.asset(
                                         AppAssets.flashDealSvg,
-                                        height: 12,
+                                        height: 9.h,
                                         // ignore: deprecated_member_use
                                         color: const Color(0xffFF6200),
                                       ),
-                                      const SizedBox(width: 2),
+                                      SizedBox(width: 2.w),
                                       Text(
                                         "${LocaleKeys.flash_deal.tr()}",
                                         maxLines: 1,
@@ -459,11 +461,11 @@ class _ProductItemState extends State<ProductItem> {
                                             .copyWith(
                                               color: const Color(0xffFF6200),
                                               letterSpacing: 0.18,
-                                              fontSize: 9,
+                                              fontSize: 9.sp,
                                               height: 1.3,
                                             ),
                                       ),
-                                      const SizedBox(width: 5),
+                                      SizedBox(width: 5.w),
                                       FlashDealCountdownTimerWidget(
                                         visibleFlashDeal: visibleFlashDeal,
                                         refreshFlashDeal:
@@ -474,7 +476,7 @@ class _ProductItemState extends State<ProductItem> {
                                                 .flashDealEndDate ??
                                             "",
                                       ),
-                                      const SizedBox(width: 5),
+                                      SizedBox(width: 5.w),
                                     ],
                                   ),
                                 ),
@@ -517,38 +519,43 @@ class _ProductItemState extends State<ProductItem> {
                         transform: Matrix4.skewX(-0.4), // انحراف بسيط للشكل
                         child: Container(
                           margin: EdgeInsets.only(
-                            left: LanguageService.languageCode != "ar" ? 1 : 10,
+                            left: LanguageService.languageCode != "ar"
+                                ? 1
+                                : 10.w,
                             right: LanguageService.languageCode == "ar"
                                 ? 1
-                                : 10,
+                                : 10.w,
                           ),
                           decoration: BoxDecoration(
                             border: Border.all(color: const Color(0xffFF6200)),
                             color: const Color(0xffFFF3E8),
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15.r),
                           ),
-                          height: 20,
+                          height: 25.h,
                           child: Transform(
                             transform: Matrix4.skewX(0.4), // انحراف بسيط للشكل
                             child: Row(
                               children: [
-                                const SizedBox(width: 3),
-                                SvgPicture.asset(AppAssets.redeemClockSvg),
-                                const SizedBox(width: 3),
+                                SizedBox(width: 3.w),
+                                SvgPicture.asset(
+                                  AppAssets.redeemClockSvg,
+                                  height: 9.h,
+                                ),
+                                SizedBox(width: 3.w),
                                 Text(
                                   LocaleKeys.luck.tr(),
                                   style: context.textTheme.bodyMedium?.bq
                                       .copyWith(
-                                        fontSize: 9,
+                                        fontSize: 9.sp,
                                         color: const Color(0xffFF6200),
                                       ),
                                 ),
-                                const SizedBox(width: 1),
+                                SizedBox(width: 1.w),
                                 Text(
                                   " ${LocaleKeys.add_to_bag_within.tr()} ",
                                   style: context.textTheme.bodyMedium?.mq
                                       .copyWith(
-                                        fontSize: 9,
+                                        fontSize: 9.sp,
                                         color: const Color(0xffFF6200),
                                       ),
                                 ),
@@ -569,11 +576,11 @@ class _ProductItemState extends State<ProductItem> {
                                   " ${LocaleKeys.seconds.tr()} ",
                                   style: context.textTheme.bodyMedium?.bq
                                       .copyWith(
-                                        fontSize: 9,
+                                        fontSize: 9.sp,
                                         color: const Color(0xffFF6200),
                                       ),
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                               ],
                             ),
                           ),

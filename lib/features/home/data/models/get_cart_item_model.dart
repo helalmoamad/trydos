@@ -353,7 +353,7 @@ class Cart {
     customerId: json["customer_id"],
     cartGroupId: json["cart_group_id"],
     productId: json["product_id"],
-    isRedeem: json["is_redeem"],
+    isRedeem: json["is_luck"],
     choices: json["choices"] == null
         ? []
         : List<Choice>.from(json["choices"]!.map((x) => Choice.fromJson(x))),
@@ -411,7 +411,7 @@ class Cart {
     "variant": variant,
     "available_quantity": availableQuantity,
     "max_allowed_qty": maxAllowedQty,
-    "is_redeem": isRedeem,
+    "is_luck": isRedeem,
     "vendor_name": vendorName,
     "quantity": quantity,
     "discount": discount,

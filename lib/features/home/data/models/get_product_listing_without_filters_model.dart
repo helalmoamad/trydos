@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
+import 'package:trydos/main.dart';
 
 GetProductListingWithoutFiltersModel
 getProductListingWithoutFiltersModelFromJson(String str) =>
@@ -437,14 +438,14 @@ class Products {
           : FqaQuestions.fromJson(json["fqa_questions"]),
       slug: json["slug"],
       shareLink: json["share_link"],
-      isRedeem: json["is_redeem"],
+      isRedeem: json["is_luck"],
       categoriesTree: json["categories_tree"],
-      redeemPrice: double.tryParse(json["redeem_price"].toString()),
+      redeemPrice: double.tryParse(json["luck_price"].toString()),
       details: json["details"],
       countryIsRestricted: json["is_country_restricted"],
       ownerType: json["owner_type"],
       ownerId: json["owner_id"].toString(),
-      hasRedeemDiscount: json["has_redeem_discount"],
+      hasRedeemDiscount: json["is_luck"],
       commentOffset: json["comment_offset"],
       ratingDetails: json["ratingDetails"] == null
           ? []
@@ -596,7 +597,7 @@ class Products {
     "boutique_id": boutiqueId.toString(),
     "name": name,
     "is_redeem": isRedeem,
-    "redeem_price": redeemPrice,
+    "luck_price": redeemPrice,
     "slug": slug,
     "share_link": shareLink,
     "flash_deal_status": flashDealStatus,
@@ -619,7 +620,7 @@ class Products {
     /*"comments": comments == null
             ? []
             : List<dynamic>.from(comments!.map((x) => x.toJson())),*/
-    "has_redeem_discount": hasRedeemDiscount,
+    "is_luck": hasRedeemDiscount,
 
     "details": details,
     //"thumbnail": thumbnail?.toJson(),
@@ -825,9 +826,13 @@ class Thumbnail {
   );
 
   factory Thumbnail.fromJson(Map<String, dynamic> json) => Thumbnail(
-    filePath: json["file_path"]?.contains("cloudinary")
-        ? json["file_path"]
-        : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
+    filePath: mediaServerIsS3
+        ? (json["file_path"].contains("media_server")
+              ? json["file_path"]
+              : "${dotenv.env['Media_S3_Server']}${json["file_path"]}")
+        : (json["file_path"]?.contains("cloudinary")
+              ? json["file_path"]
+              : ("${dotenv.env['Images_Url']}" + (json["file_path"]))),
     originalWidth: json["original_width"] == null
         ? "0"
         : (json["original_width"] ?? "").toString().replaceAll(

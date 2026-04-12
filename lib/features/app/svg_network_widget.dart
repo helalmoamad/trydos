@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_svg_image/flutter_svg_image.dart';
+import 'package:trydos/main.dart';
 
 class SvgNetworkWidget extends StatefulWidget {
   final double? width;
@@ -46,23 +47,29 @@ class _SvgNetworkWidgetState extends State<SvgNetworkWidget>
     super.build(context);
 
     if (currentUrl == 'null' || currentUrl.isEmpty) {
-      return SizedBox(
-        height: widget.height,
-        width: widget.width,
-      );
+      return SizedBox(height: widget.height, width: widget.width);
     }
-    if (!(currentUrl.contains("cloudinary"))) {
+    if (mediaServerIsS3) {
+      if (!(currentUrl.contains("media_server"))) {
+        currentUrl = "${dotenv.env['Media_S3_Server']}${currentUrl}";
+      }
+      List<String> list = currentUrl.split('upload');
+      currentUrl = list[0] + 'upload/f_svg' + list[1];
+    } else if (!(currentUrl.contains("cloudinary"))) {
       currentUrl = "${dotenv.env['Images_Url']}${currentUrl}";
     }
-    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${currentUrl}");
 
     try {
       return SizedBox(
         height: widget.height,
         child: Image(
           fit: BoxFit.cover,
-          image: SvgImage.cachedNetwork(currentUrl,
-              width: widget.width, height: widget.height),
+          image: SvgImage.cachedNetwork(
+            currentUrl,
+            width: widget.width,
+            height: widget.height,
+          ),
+
           errorBuilder: (context, error, stackTrace) {
             return const Icon(Icons.error, color: Colors.red);
           },
@@ -71,8 +78,16 @@ class _SvgNetworkWidgetState extends State<SvgNetworkWidget>
     } catch (e) {
       return SizedBox(
         height: widget.height,
-        child: SvgPicture.network(currentUrl,
-            width: widget.width, height: widget.height),
+        child: SvgPicture.network(
+          currentUrl,
+          width: widget.width,
+
+          height: widget.height,
+
+          errorBuilder: (context, error, stackTrace) {
+            return const Icon(Icons.error, color: Colors.red);
+          },
+        ),
       );
     }
   }

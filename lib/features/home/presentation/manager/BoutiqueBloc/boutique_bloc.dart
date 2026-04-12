@@ -75,6 +75,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     );
     on<GetProductWithFiltersWithoutCancelingPreviousEvents>(
       _onGetWithProductFiltersWithoutCancelingPreviousEvents,
+      transformer: concurrent(),
     );
     on<GetFiltersEvent>(_onGetProductFiltersEvent, transformer: restartable());
     on<GetFiltersForNavigatorFromLinkToListingPageEvent>(

@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:simple_image_cropper/simple_image_cropper.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../../app/my_text_widget.dart';
@@ -38,7 +39,8 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
     super.initState();
     print('SearchImagePreviewWidget: initState called');
     print(
-        'SearchImagePreviewWidget: imageFile path = ${widget.imageFile.path}');
+      'SearchImagePreviewWidget: imageFile path = ${widget.imageFile.path}',
+    );
     _image = FileImage(widget.imageFile);
     _checkFileExists();
     _preloadImage();
@@ -60,9 +62,11 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
       // تحميل الصورة مسبقاً
       final ImageStream stream = _image.resolve(ImageConfiguration.empty);
       final Completer<void> completer = Completer();
-      stream.addListener(ImageStreamListener((image, _) {
-        completer.complete();
-      }));
+      stream.addListener(
+        ImageStreamListener((image, _) {
+          completer.complete();
+        }),
+      );
       await completer.future;
       if (mounted) {
         setState(() {
@@ -75,12 +79,15 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
   }
 
   Future<ui.Image> convertImageProviderToUiImage(
-      ImageProvider imageProvider) async {
+    ImageProvider imageProvider,
+  ) async {
     final ImageStream stream = imageProvider.resolve(ImageConfiguration.empty);
     final Completer<ui.Image> completer = Completer();
-    stream.addListener(ImageStreamListener((image, _) {
-      completer.complete(image.image);
-    }));
+    stream.addListener(
+      ImageStreamListener((image, _) {
+        completer.complete(image.image);
+      }),
+    );
     return completer.future;
   }
 
@@ -109,8 +116,9 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
       Image? croppedImage = await cropKey.currentState?.cropImage();
       if (croppedImage != null) {
         // إذا تم تحديد جزء من الصورة، أرسل الجزء المحدد
-        final ui.Image uiImage =
-            await convertImageProviderToUiImage(croppedImage.image);
+        final ui.Image uiImage = await convertImageProviderToUiImage(
+          croppedImage.image,
+        );
         final File file = await convertImageToFile(uiImage);
         widget.onSend(file);
       } else {
@@ -153,20 +161,21 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
                   borderRadius: BorderRadius.circular(12),
                   child: _fileExists
                       ? _imageLoaded
-                          ? SimpleImageCropper(
-                              key: cropKey,
-                              height: MediaQuery.of(context).size.height * 0.7,
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              image: _image,
-                            )
-                          : Container(
-                              color: Colors.grey[800],
-                              child: const Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
+                            ? SimpleImageCropper(
+                                key: cropKey,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.7,
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                image: _image,
+                              )
+                            : Container(
+                                color: Colors.grey[800],
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                            )
+                              )
                       : Container(
                           color: Colors.grey[800],
                           child: const Center(
@@ -196,8 +205,8 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
 
             // زر الإرسال - في الزاوية اليسرى السفلية
             Positioned(
-              bottom: 40,
-              left: 20,
+              bottom: 40.h,
+              left: 20.w,
               child: FloatingActionButton(
                 backgroundColor: Colors.green,
                 child: _isLoading
@@ -213,13 +222,13 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
               child: Container(
                 color: Colors.black,
                 alignment: Alignment.center,
-                width: 350,
-                height: 50,
+                width: 350.w,
+                height: 50.h,
                 child: MyTextWidget(
                   LocaleKeys.select_image_part.tr(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 1.2,
                   ),
                 ),
@@ -228,12 +237,12 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
 
             // زر الإلغاء - في الزاوية العليا اليمنى بلون أحمر
             Positioned(
-              top: 40,
-              right: 20,
+              top: 40.h,
+              right: 20.w,
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.red,
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(25.r),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.3),
@@ -243,7 +252,7 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
                   ],
                 ),
                 child: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                  icon: Icon(Icons.close, color: Colors.white, size: 28.h),
                   onPressed: widget.onCancel,
                 ),
               ),

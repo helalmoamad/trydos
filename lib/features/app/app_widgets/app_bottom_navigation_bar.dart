@@ -201,9 +201,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           state.currentIndex == 0
                               ? SvgPicture.asset(
                                   AppAssets.bottomBarLogoActiveSvg,
+                                  height: 30.h,
                                 )
                               : SvgPicture.asset(
                                   AppAssets.bottomBarLogoActiveSvg,
+                                  height: 30.h,
                                 ),
                           10.verticalSpace,
                           state.currentIndex == 0

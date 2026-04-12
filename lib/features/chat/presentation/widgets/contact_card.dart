@@ -175,6 +175,7 @@ class ContactCard extends StatelessWidget {
   void shareAppLink() {
     final String appLink =
         '${dotenv.env['WEB_APP']}/${(GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso : GetIt.I<PrefsRepository>().countryIso)?.toLowerCase()}-${LanguageService.isKurdish ? "ku" : LanguageService.languageCode}'; // رابط التطبيق الخاص بك
+    // ignore: deprecated_member_use
     Share.share('${LocaleKeys.download_the_app_here.tr()}:$appLink');
   }
 }

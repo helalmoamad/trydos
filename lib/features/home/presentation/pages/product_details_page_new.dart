@@ -3634,6 +3634,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                       videoSource:
                                           productItem.videos.isNullOrEmpty
                                           ? null
+                                          : mediaServerIsS3
+                                          ? (productItem.videos!.first.contains(
+                                                  "media_server",
+                                                )
+                                                ? productItem.videos!.first
+                                                : "${dotenv.env['Vedio_S3_Server']}${productItem.videos!.first}")
                                           : productItem.videos!.first.contains(
                                               "cloudinary",
                                             )

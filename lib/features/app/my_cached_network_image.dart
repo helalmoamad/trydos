@@ -374,10 +374,6 @@ String addSuitableWidthAndHeightToImage({
   if (imageUrl.isEmpty || imageUrl == "null" || imageUrl == "undefined") {
     return imageUrl;
   }
-  // 🔧 إصلاح: إرجاع URL الأصلي للصور غير Cloudinary
-  if (!imageUrl.contains("cloudinary")) {
-    return imageUrl;
-  }
 
   // 🔧 إصلاح: تحسين معالجة عدم توفر الأبعاد الأصلية
   if (!imageUrl.contains('upload')) {
@@ -392,22 +388,30 @@ String addSuitableWidthAndHeightToImage({
 
   List<String> list = imageUrl.split('upload');
   String url = '';
+  if (imageUrl.contains('media_server')) {
+    if (fromBoutique ?? false) {
+      url =
+          list[0] +
+          'upload/w_${fWidth},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
+          list[1];
+    } else if (width > height) {
+      // الصورة أعرض من الارتفاع - استخدم العرض
+      url =
+          list[0] +
+          'upload/w_${fWidth},h_${fHeight},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
+          list[1];
+    } else {
+      // الصورة أطول من العرض - استخدم الارتفاع
+      url =
+          list[0] +
+          'upload/w_${fWidth},h_${fHeight},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
+          list[1];
+    }
+    //}
 
-  /*if (ordinalHeight != null &&
-      ordinalWidth != null &&
-      ordinalHeight != 0 &&
-      ordinalWidth != 0) {
-    // 🎯 حالة وجود الأبعاد الأصلية (مثل listing)
-    url = ordinalWidth >= ordinalHeight
-        ? list[0] +
-            'upload/c_pad,so_0,f_auto,q_auto,fl_lossy,c_scale,h_${fHeight != 0 ? fHeight : fWidth}' +
-            list[1]
-        : list[0] +
-            'upload/c_pad,so_0,f_auto,q_auto,fl_lossy,c_scale,w_${fWidth != 0 ? fWidth : fHeight}' +
-            list[1];
-  } else {*/
-  // 🔧 إصلاح: حالة عدم وجود الأبعاد الأصلية (مثل home page)
-  // استخدام استراتيجية ذكية بدلاً من h_ فقط
+    return url;
+  }
+
   if (fromBoutique ?? false) {
     url = list[0] + 'upload/w_${fWidth},c_fit,f_webp,q_85' + list[1];
   } else if (width > height) {

@@ -431,7 +431,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           '${(widget.category ?? '')}']
                       ?.filters;
             }
-          }*/ else {
+          }*/
+        else {
           filters =
               (state
                               .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
@@ -1822,8 +1823,8 @@ Widget choosedOrAppliedFiltersWidget({
           ).state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ??
           1;
       Widget widget = SizedBox(
-        height: 23,
-        width: 30,
+        height: 23.h,
+        width: 30.w,
         child: ListView(
           key: TestVariables.kTestMode == false
               ? null
@@ -1892,11 +1893,11 @@ Widget choosedOrAppliedFiltersWidget({
                 child: Center(
                   child: Row(
                     children: [
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10.w),
                       SvgPicture.asset(
                         AppAssets.closeSvg,
-                        width: 15,
-                        height: 15,
+
+                        height: 15.h,
                         // ignore: deprecated_member_use
                         color: const Color(0xffFF5F61),
                       ),
@@ -1953,8 +1954,8 @@ Widget choosedOrAppliedFiltersWidget({
                       const SizedBox(width: 5),
                       SvgPicture.asset(
                         AppAssets.closeSvg,
-                        width: 15,
-                        height: 15,
+
+                        height: 15.h,
                         // ignore: deprecated_member_use
                         color: const Color(0xffFF5F61),
                       ),
@@ -1986,6 +1987,7 @@ Widget choosedOrAppliedFiltersWidget({
                     color: const Color(0xffFF5F61),
                     letterSpacing: 0,
                     height: 1.25,
+                    fontSize: 13.sp,
                   ),
                 ),
               ),
@@ -2008,7 +2010,7 @@ Widget choosedOrAppliedFiltersWidget({
                     : 0,
               ),
               SizedBox(
-                height: 28,
+                height: 28.h,
                 child: InkWell(
                   onTap: () {
                     Filter? filter = state.appliedFiltersByUser[key]?.filters;
@@ -2078,6 +2080,7 @@ Widget choosedOrAppliedFiltersWidget({
                               color: const Color(0xff8E8E8E),
                               letterSpacing: 0,
                               height: 1.25,
+                              fontSize: 13.sp,
                             ),
                           )
                         : const SizedBox.shrink(),
@@ -2145,6 +2148,7 @@ Widget choosedOrAppliedFiltersWidget({
                             color: const Color.fromARGB(255, 86, 60, 201),
                             letterSpacing: 0,
                             height: 1.25,
+                            fontSize: 13.sp,
                           ),
                         ),
                       ),
@@ -2158,7 +2162,7 @@ Widget choosedOrAppliedFiltersWidget({
               const Center(child: FilterSelectedMark(width: 15, height: 15)),
               const SizedBox(width: 10),
               SizedBox(
-                height: 28,
+                height: 28.h,
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -2219,8 +2223,8 @@ Widget choosedOrAppliedFiltersWidget({
                             imageUrl:
                                 filters!.boutiques![index].banner!.filePath!,
                             imageFit: BoxFit.cover,
-                            height: choosedFilter ? 40 : 30,
-                            width: 60,
+                            height: choosedFilter ? 40.h : 30.h,
+                            width: 60.w,
                             circleDimensions: 8,
                             logoTextHeight: 5,
                           ),
@@ -2238,9 +2242,10 @@ Widget choosedOrAppliedFiltersWidget({
                               color: const Color(0xff8E8E8E),
                               letterSpacing: 0,
                               height: 1.25,
+                              fontSize: 13.sp,
                             ),
                           ),
-                          const SizedBox(width: 15),
+                          SizedBox(width: 15.w),
                         ],
                       ),
                     );
@@ -2253,7 +2258,7 @@ Widget choosedOrAppliedFiltersWidget({
               const SizedBox(width: 5),
             },
             SizedBox(
-              height: 28,
+              height: 28.h,
               child: ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -2313,11 +2318,11 @@ Widget choosedOrAppliedFiltersWidget({
                         FilterImage(
                           isSvg: true,
                           width: filters!.categories![index].isSubCategory
-                              ? 15
-                              : 20,
+                              ? 15.w
+                              : 20.w,
                           height: filters.categories![index].isSubCategory
-                              ? 15
-                              : 20,
+                              ? 15.h
+                              : 20.h,
                           imageUrl: filters
                               .categories![index]
                               .flatPhotoPath!
@@ -2335,6 +2340,7 @@ Widget choosedOrAppliedFiltersWidget({
                             color: const Color(0xff8E8E8E),
                             letterSpacing: 0,
                             height: 1.25,
+                            fontSize: 13.sp,
                           ),
                         ),
                         const SizedBox(width: 5),
@@ -2345,7 +2351,9 @@ Widget choosedOrAppliedFiltersWidget({
               ),
             ),
             if (!(filters?.brands.isNullOrEmpty ?? true)) ...{
-              const Center(child: FilterSelectedMark(width: 15, height: 15)),
+              Center(
+                child: FilterSelectedMark(width: 15.w, height: 15.h),
+              ),
               const SizedBox(width: 10),
             },
             SizedBox(
@@ -2403,8 +2411,8 @@ Widget choosedOrAppliedFiltersWidget({
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         FilterImage(
-                          width: 20,
-                          height: 20,
+                          width: 20.w,
+                          height: 20.h,
                           imageUrl: filters!.brands![index].icon!.filePath
                               .toString(),
                           isSvg: true,
@@ -2420,6 +2428,7 @@ Widget choosedOrAppliedFiltersWidget({
                             color: const Color(0xff8E8E8E),
                             letterSpacing: 0,
                             height: 1.25,
+                            fontSize: 13.sp,
                           ),
                         ),
                         const SizedBox(width: 5),
@@ -2434,7 +2443,7 @@ Widget choosedOrAppliedFiltersWidget({
               const SizedBox(width: 10),
             },
             SizedBox(
-              height: 28,
+              height: 28.h,
               child: ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -2504,6 +2513,7 @@ Widget choosedOrAppliedFiltersWidget({
                             color: const Color(0xff8E8E8E),
                             letterSpacing: 0,
                             height: 1.25,
+                            fontSize: 13.sp,
                           ),
                         ),
                         const SizedBox(width: 5),
@@ -2517,7 +2527,7 @@ Widget choosedOrAppliedFiltersWidget({
               const Center(child: FilterSelectedMark(width: 15, height: 15)),
               const SizedBox(width: 10),
               SizedBox(
-                height: 28,
+                height: 28.h,
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -2652,6 +2662,7 @@ Widget choosedOrAppliedFiltersWidget({
                         color: const Color(0xff8E8E8E),
                         letterSpacing: 0,
                         height: 1.25,
+                        fontSize: 13.sp,
                       ),
                     ),
                     MyTextWidget(
@@ -2664,6 +2675,7 @@ Widget choosedOrAppliedFiltersWidget({
                         color: const Color(0xff8E8E8E),
                         letterSpacing: 0,
                         height: 1.25,
+                        fontSize: 13.sp,
                       ),
                     ),
                     MyTextWidget(
@@ -2676,6 +2688,7 @@ Widget choosedOrAppliedFiltersWidget({
                         color: const Color(0xff8E8E8E),
                         letterSpacing: 0,
                         height: 1.25,
+                        fontSize: 13.sp,
                       ),
                     ),
                     const SizedBox(width: 5),
@@ -2826,6 +2839,7 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                         color: const Color(0xff8E8E8E),
                         letterSpacing: 0,
                         height: 1.25,
+                        fontSize: 13.sp,
                       ),
                     ),
                   ),
@@ -2889,7 +2903,7 @@ class FilterImage extends StatelessWidget {
             : null,
       ),
       child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(180.0)),
+        borderRadius: BorderRadius.all(Radius.circular(180.r)),
         child: Stack(
           children: [
             isSvg

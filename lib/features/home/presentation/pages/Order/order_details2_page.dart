@@ -8762,12 +8762,20 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                   withInnerShadow: true,
                                                   withImageShadow: true,
                                                   radius: 40,
-                                                  imageUrl:
-                                                      (productSyncColorImages[index]
-                                                          .images![0]
-                                                          .contains(
-                                                            "cloudinary",
-                                                          ))
+                                                  imageUrl: mediaServerIsS3
+                                                      ? (productSyncColorImages[index]
+                                                                .images![0]
+                                                                .contains(
+                                                                  "media_server",
+                                                                )
+                                                            ? productSyncColorImages[index]
+                                                                  .images![0]
+                                                            : "${dotenv.env['Media_S3_Server']}${productSyncColorImages[index].images![0]}")
+                                                      : (productSyncColorImages[index]
+                                                            .images![0]
+                                                            .contains(
+                                                              "cloudinary",
+                                                            ))
                                                       ? productSyncColorImages[index]
                                                             .images![0]
                                                       : "${dotenv.env['Images_Url']}${productSyncColorImages[index].images![0]}",

@@ -75,7 +75,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 1.3,
                   ),
                 ),
@@ -100,14 +100,14 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                         },
                         child: Container(
                           alignment: Alignment.center,
-                          width: 40,
-                          height: 20,
+                          width: 40.w,
+                          height: 20.h,
                           child: Text(
                             LocaleKeys.save.tr(),
                             style: context.textTheme.bodyMedium?.mq.copyWith(
                               color: const Color(0xff402CDD),
                               letterSpacing: 0.18,
-                              fontSize: 14,
+                              fontSize: 14.sp,
                               height: 1.3,
                             ),
                           ),
@@ -157,7 +157,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    height: 50,
+                                    height: 50.h,
                                     width: 1.sw,
                                     decoration: BoxDecoration(
                                       color: const Color(0xffF8F8F8),
@@ -186,7 +186,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                                               .copyWith(
                                                 color: const Color(0xff8D8D8D),
                                                 letterSpacing: 0.18,
-                                                fontSize: 10.sp,
+                                                fontSize: 9.sp,
                                                 height: 1.3,
                                               ),
                                         ),
@@ -195,16 +195,16 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                                   ),
                                   const SizedBox(height: 20),
                                   Container(
-                                    height: 15,
-                                    width: 150,
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 20,
+                                    height: 15.h,
+                                    width: 175.w,
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: 20.w,
                                     ),
                                     child: Row(
                                       children: [
                                         SvgPicture.asset(
                                           AppAssets.addressSvg,
-                                          height: 15,
+                                          height: 15.h,
                                           // ignore: deprecated_member_use
                                           color: const Color(0xff404040),
                                         ),
@@ -218,21 +218,21 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                                               .copyWith(
                                                 color: const Color(0xff404040),
                                                 letterSpacing: 0.18,
-                                                fontSize: 12,
+                                                fontSize: 12.sp,
                                                 height: 1.2,
                                               ),
                                         ),
-                                        const SizedBox(width: 15),
+                                        SizedBox(width: 15.w),
                                         SvgPicture.asset(
                                           AppAssets.chatWithQuestionSvg,
                                           // ignore: deprecated_member_use
                                           color: const Color(0xffD3D3D3),
-                                          height: 15,
+                                          height: 15.h,
                                         ),
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(height: 15),
+                                  SizedBox(height: 15.h),
                                   !state
                                           .listOfAddressInfoClassToSave
                                           .isNullOrEmpty
@@ -278,22 +278,22 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
             AppAssets.deletecartSvg,
             // ignore: deprecated_member_use
             color: const Color(0xffFFFFFF),
-            width: 50,
-            height: 50,
+            width: 50.w,
+            height: 50.h,
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           Text(
             "${LocaleKeys.delete_below_address.tr()} ",
             style: context.textTheme.bodyMedium?.mq.copyWith(
               color: const Color(0xffFFFFFF),
               letterSpacing: 0.18,
-              fontSize: 16,
+              fontSize: 16.sp,
               height: 1.33,
             ),
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: 15.h),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: addressInfoWithContactInfoCart(
               cartChoosed: false,
               context: context,
@@ -332,7 +332,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                   style: context.textTheme.bodyMedium?.bq.copyWith(
                     color: const Color(0xffFF5F61),
                     letterSpacing: 0.18,
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     height: 1.3,
                   ),
                 ),
@@ -354,14 +354,14 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xffFFFFFF),
                     letterSpacing: 0.18,
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     height: 1.3,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
         ],
       ),
     );
@@ -371,7 +371,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
     return Container(
       // height: !(state.listOfAddressInfoClassToSave.isNullOrEmpty) ? 225 : 203,
       width: 1.sw,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -379,7 +379,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
           Container(
             height: 85.h,
             width: 1.sw,
-            margin: const EdgeInsets.symmetric(horizontal: 20),
+            margin: EdgeInsets.symmetric(horizontal: 20.w),
             decoration: BoxDecoration(
               color: const Color(0xffF8F8F8),
               borderRadius: BorderRadius.circular(15),
@@ -395,7 +395,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xffC4C2C2),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 0.8,
                   ),
                 ),
@@ -405,7 +405,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xffC4C2C2),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 0.8,
                   ),
                 ),
@@ -419,9 +419,9 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
               const AddShippingAdress(),
             ),
             child: Container(
-              height: 40,
+              height: 40.h,
               width: 1.sw,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
+              margin: EdgeInsets.symmetric(horizontal: 20.w),
               decoration: BoxDecoration(
                 color: const Color(0xffE8FFED),
                 borderRadius: BorderRadius.circular(15),
@@ -450,7 +450,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                     style: context.textTheme.bodyMedium?.mq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
-                      fontSize: 12,
+                      fontSize: 12.sp,
                       height: 1.33,
                     ),
                   ),
@@ -524,7 +524,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
               );
             },
             child: Container(
-              height: 40,
+              height: 40.h,
               width: 1.sw,
               margin: EdgeInsets.symmetric(horizontal: 24.w),
               decoration: BoxDecoration(
@@ -555,7 +555,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                     style: context.textTheme.bodyMedium?.mq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
-                      fontSize: 12,
+                      fontSize: 12.sp,
                       height: 1.33,
                     ),
                   ),
@@ -563,7 +563,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
         ],
       ),
     );
@@ -588,10 +588,10 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
       //         ? 125
       //         : 90,
       width: 1.sw,
-      height: 90,
+      height: 90.h,
       padding: EdgeInsets.only(
-        right: LanguageService.languageCode == "ar" ? 20 : 10,
-        left: LanguageService.languageCode != "ar" ? 20 : 10,
+        right: LanguageService.languageCode == "ar" ? 20.w : 10.w,
+        left: LanguageService.languageCode != "ar" ? 20.w : 10.w,
         bottom: 5,
       ),
       decoration: BoxDecoration(
@@ -600,7 +600,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
             : isDelete
             ? const Color.fromRGBO(0, 0, 0, 0)
             : const Color(0xffF8F8F8),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15.r),
         border: (placeOrder ?? false)
             ? Border.all(color: const Color(0xffC4C2C2))
             : isDelete || (successfulOrder ?? false)
@@ -616,7 +616,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
           const SizedBox(height: 5),
           Container(
             width: 360.w,
-            height: 16,
+            height: 16.h,
             child: Row(
               children: [
                 SvgPicture.asset(
@@ -627,8 +627,8 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                       : index != indexTap
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
-                  height: 12,
-                  width: 12,
+                  height: 12.h,
+                  width: 12.w,
                 ),
                 const SizedBox(width: 5),
                 Text(
@@ -640,7 +640,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                         ? const Color(0xff8D8D8D)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.w,
                     height: 1.3,
                   ),
                 ),
@@ -653,12 +653,12 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                         onTap: onTapEdit,
                         child: Container(
                           margin: const EdgeInsets.only(top: 5),
-                          width: 15,
-                          height: 12,
+                          width: 15.w,
+                          height: 12.h,
                           child: SvgPicture.asset(
                             AppAssets.editSvg,
-                            height: 30,
-                            width: 20,
+                            height: 30.h,
+                            width: 20.w,
                           ),
                         ),
                       ),
@@ -671,12 +671,12 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                         onTap: onTapDelete,
                         child: Container(
                           margin: const EdgeInsets.only(top: 5),
-                          width: 20,
-                          height: 30,
+                          width: 20.w,
+                          height: 30.h,
                           child: SvgPicture.asset(
                             AppAssets.deletecartSvg,
-                            height: 14,
-                            width: 14,
+                            height: 14.h,
+                            width: 14.w,
                           ),
                         ),
                       ),
@@ -685,7 +685,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
           ),
           Container(
             width: 350.w,
-            height: 16,
+            height: 16.h,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
@@ -698,7 +698,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                         ? const Color(0xff8D8D8D)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.w,
                     height: 1.3,
                   ),
                 ),
@@ -707,7 +707,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
           ),
           Container(
             width: 350.w,
-            height: 16,
+            height: 16.h,
             child: Row(
               children: [
                 Text(
@@ -719,7 +719,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                         ? const Color(0xff8D8D8D)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.w,
                     height: 1.3,
                   ),
                 ),
@@ -728,7 +728,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
           ),
           Container(
             width: 350.w,
-            height: 16,
+            height: 16.h,
             child: Row(
               children: [
                 SvgPicture.asset(
@@ -739,8 +739,8 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                       : index != indexTap
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
-                  height: 12,
-                  width: 12,
+                  height: 12.h,
+                  width: 12.w,
                 ),
                 const SizedBox(width: 5),
                 Text(
@@ -752,13 +752,13 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                         ? const Color(0xff8D8D8D)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.w,
                     height: 1.3,
                   ),
                 ),
-                const SizedBox(width: 40),
+                SizedBox(width: 40.w),
                 Container(
-                  height: 16,
+                  height: 16.h,
                   child: Row(
                     children: [
                       SvgPicture.asset(
@@ -769,8 +769,8 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                             : index != indexTap
                             ? const Color(0xff8D8D8D)
                             : const Color(0xff1D1D1D),
-                        height: 12,
-                        width: 12,
+                        height: 12.h,
+                        width: 12.w,
                       ),
                       const SizedBox(width: 5),
                       Text(
@@ -782,7 +782,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                               ? const Color(0xff8D8D8D)
                               : const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 12,
+                          fontSize: 12.w,
                           height: 1.3,
                         ),
                       ),

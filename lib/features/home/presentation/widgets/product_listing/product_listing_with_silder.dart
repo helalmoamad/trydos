@@ -448,6 +448,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                 // Product Name and Category
                 _buildProductCategoryRow(),
 
+                const SizedBox(height: 5),
                 Directionality(
                   textDirection: LanguageService.languageCode == "ar"
                       ? TextDirection.rtl
@@ -464,88 +465,80 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                         ),
                       ),
                       SizedBox(
-                        width: 50,
-                        height: 13,
-                        child: SizedBox(
-                          width: 40,
-                          height: 12,
-                          child: ValueListenableBuilder<bool>(
-                            valueListenable: widget.visibleRedeem,
-                            builder: (context, _visibleRedeem, _) {
-                              return (GetIt.I<PrefsRepository>()
-                                                  .getRedeemDateForProduct(
-                                                    widget.productItem.productId
-                                                        .toString(),
-                                                  )
-                                                  ?.isAfter(
-                                                    DateTime.now().add(
-                                                      const Duration(
-                                                        seconds: 1,
-                                                      ),
-                                                    ),
-                                                  ) ==
-                                              true &&
-                                          widget
-                                                  .productItem
-                                                  .hasRedeemDiscount ==
-                                              true) ||
-                                      (GetIt.I<PrefsRepository>()
-                                                  .getRedeemSecondRemainingForProduct(
-                                                    widget.productItem.productId
-                                                        .toString(),
-                                                  ) ??
-                                              0) >
-                                          0
-                                  ? Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          AppAssets.redeemClockSvg,
-                                          // ignore: deprecated_member_use
-                                          color: const Color(0xffFF6200),
-                                        ),
-                                        const SizedBox(width: 2),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            SecondsCountdown(
-                                              productId: widget
-                                                  .productItem
-                                                  .productId
-                                                  .toString(),
-                                              finishRedeem: widget.finishRedeem,
-                                              visibleRedeem:
-                                                  widget.visibleRedeem,
-                                              endTime:
-                                                  GetIt.I<PrefsRepository>()
-                                                      .getRedeemDateForProduct(
-                                                        widget
-                                                            .productItem
-                                                            .productId
-                                                            .toString(),
-                                                      ) ??
-                                                  DateTime.now(),
-                                            ),
-                                            Text(
-                                              " ${LocaleKeys.seconds.tr()} ",
-                                              style: context
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.rq
-                                                  .copyWith(
-                                                    fontSize: 9,
-                                                    color: const Color(
-                                                      0xffFF6200,
-                                                    ),
+                        width: 100,
+                        height: 14,
+                        child: ValueListenableBuilder<bool>(
+                          valueListenable: widget.visibleRedeem,
+                          builder: (context, _visibleRedeem, _) {
+                            return (GetIt.I<PrefsRepository>()
+                                                .getRedeemDateForProduct(
+                                                  widget.productItem.productId
+                                                      .toString(),
+                                                )
+                                                ?.isAfter(
+                                                  DateTime.now().add(
+                                                    const Duration(seconds: 1),
                                                   ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    )
-                                  : const SizedBox.shrink();
-                            },
-                          ),
+                                                ) ==
+                                            true &&
+                                        widget.productItem.hasRedeemDiscount ==
+                                            true) ||
+                                    (GetIt.I<PrefsRepository>()
+                                                .getRedeemSecondRemainingForProduct(
+                                                  widget.productItem.productId
+                                                      .toString(),
+                                                ) ??
+                                            0) >
+                                        0
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      SvgPicture.asset(
+                                        AppAssets.redeemClockSvg,
+                                        // ignore: deprecated_member_use
+                                        color: const Color(0xffFF6200),
+                                      ),
+                                      const SizedBox(width: 2),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SecondsCountdown(
+                                            productId: widget
+                                                .productItem
+                                                .productId
+                                                .toString(),
+                                            finishRedeem: widget.finishRedeem,
+                                            visibleRedeem: widget.visibleRedeem,
+                                            endTime:
+                                                GetIt.I<PrefsRepository>()
+                                                    .getRedeemDateForProduct(
+                                                      widget
+                                                          .productItem
+                                                          .productId
+                                                          .toString(),
+                                                    ) ??
+                                                DateTime.now(),
+                                          ),
+                                          Text(
+                                            " ${LocaleKeys.seconds.tr()} ",
+                                            style: context
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.rq
+                                                .copyWith(
+                                                  fontSize: 9,
+                                                  color: const Color(
+                                                    0xffFF6200,
+                                                  ),
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                                : const SizedBox.shrink();
+                          },
                         ),
                       ),
                     ],

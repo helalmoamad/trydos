@@ -884,6 +884,7 @@ abstract class LocaleKeys {
   static const location_name_is_required = 'location_name_is_required';
   static const location_address_is_required = 'location_address_is_required';
   static const document_type_is_required = 'document_type_is_required';
+  static const related_categories = 'related_categories';
   static const please_upload_a_document = 'please_upload_a_document';
   static const registration_successful = 'registration_successful';
   static const select_location = 'select_location';

@@ -123,7 +123,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                     style: context.textTheme.bodyMedium?.mq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       height: 1.3,
                     ),
                   ),
@@ -214,19 +214,19 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               },
                               child: Container(
                                 alignment: Alignment.center,
-                                width: 40,
-                                height: 20,
+                                width: 40.w,
+                                height: 20.h,
                                 child:
                                     state.updateProfileStatus ==
                                         UpdateProfileStatus.loading
-                                    ? TrydosLoader(size: 18)
+                                    ? TrydosLoader(size: 18.h)
                                     : Text(
                                         LocaleKeys.save.tr(),
                                         style: context.textTheme.bodyMedium?.mq
                                             .copyWith(
                                               color: const Color(0xff402CDD),
                                               letterSpacing: 0.18,
-                                              fontSize: 14,
+                                              fontSize: 14.sp,
                                               height: 1.3,
                                             ),
                                       ),
@@ -255,7 +255,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            height: 50,
+                            height: 50.h,
                             width: 1.sw,
                             decoration: BoxDecoration(
                               color: const Color(0xffF8F8F8),
@@ -280,7 +280,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                       .copyWith(
                                         color: const Color(0xff8D8D8D),
                                         letterSpacing: 0.18,
-                                        fontSize: 10.sp,
+                                        fontSize: 9.sp,
                                         height: 1.3,
                                       ),
                                 ),
@@ -289,41 +289,41 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                           ),
                           const SizedBox(height: 20),
                           Container(
-                            height: 15,
-                            width: 150,
-                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            height: 15.h,
+                            width: 150.w,
+                            margin: EdgeInsets.symmetric(horizontal: 20.w),
                             child: Row(
                               children: [
                                 SvgPicture.asset(
                                   AppAssets.personalInfoSvg,
-                                  height: 15,
+                                  height: 15.h,
                                   // ignore: deprecated_member_use
                                   color: const Color(0xff1D1D1D),
                                 ),
-                                const SizedBox(width: 10),
+                                SizedBox(width: 10.w),
                                 Text(
                                   "${LocaleKeys.personal_info.tr()}",
                                   style: context.textTheme.bodyMedium?.mq
                                       .copyWith(
                                         color: const Color(0xff404040),
                                         letterSpacing: 0.18,
-                                        fontSize: 12,
+                                        fontSize: 12.sp,
                                         height: 1.2,
                                       ),
                                 ),
-                                const SizedBox(width: 15),
+                                SizedBox(width: 15.w),
                                 SvgPicture.asset(
                                   AppAssets.chatWithQuestionSvg,
                                   // ignore: deprecated_member_use
                                   color: const Color(0xffD3D3D3),
-                                  height: 15,
+                                  height: 15.h,
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: 15),
+                          SizedBox(height: 15.h),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
                             child: _personInfoWidget(
                               controller: widget.fullNameController,
                               isPhone: false,
@@ -336,9 +336,9 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               hint: LocaleKeys.enter_full_name.tr(),
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          SizedBox(height: 10.h),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
                             child: _personInfoWidget(
                               controller: widget.phoneController,
                               isPhone: true,
@@ -351,9 +351,9 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               hint: LocaleKeys.enter_phone.tr(),
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          SizedBox(height: 10.h),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
                             child: _personInfoWidgetOptional(
                               height: 50,
                               context: context,
@@ -366,9 +366,9 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               title2: LocaleKeys.optional.tr(),
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          SizedBox(height: 10.h),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
                             child: _personInfoWidget(
                               controller: widget.emailController,
                               isPhone: false,
@@ -381,9 +381,9 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               hint: LocaleKeys.enter_email_address.tr(),
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          SizedBox(height: 10.h),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
                             child: _genderWidget(),
                           ),
                         ],
@@ -439,7 +439,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
       genderIndex = "3";
     }
     return Container(
-      height: 150,
+      height: 150.h,
       child: Stack(
         children: [
           VerifyOtp(
@@ -486,17 +486,17 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
             left: LanguageService.languageCode != "ar" ? null : 0,
             right: LanguageService.languageCode != "ar" ? 0 : null,
             child: Container(
-              margin: const EdgeInsets.all(10),
-              height: 20,
-              width: 40,
+              margin: EdgeInsets.all(10.w),
+              height: 20.h,
+              width: 40.w,
               child: InkWell(
                 onTap: () {
                   visibleOtp.value = false;
                 },
                 child: SvgPicture.asset(
                   AppAssets.closeSvg,
-                  height: 15,
-                  width: 30,
+                  height: 15.h,
+                  width: 30.w,
                   // ignore: deprecated_member_use
                   color: const Color(0xffFF5F61),
                 ),
@@ -513,7 +513,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
       valueListenable: widget.changeGender,
       builder: (context, _changeGender, _) {
         return Container(
-          height: 85,
+          height: 85.h,
           width: 1.sw,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15.r),
@@ -523,22 +523,22 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.only(top: 7, left: 8, right: 8),
-                height: 18,
+                padding: EdgeInsets.only(top: 7.h, left: 8.w, right: 8.w),
+                height: 18.h,
                 child: Text(
                   LocaleKeys.gender.tr(),
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xff505050),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: LanguageService.languageCode == "ar" ? 0.5 : 0.8,
                   ),
                 ),
               ),
-              const SizedBox(height: 5),
+              SizedBox(height: 5.h),
               Container(
-                padding: const EdgeInsets.only(left: 8, right: 8),
-                height: 50,
+                padding: EdgeInsets.only(left: 8.w, right: 8.w),
+                height: 50.h,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -550,7 +550,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                       child: Container(
                         alignment: Alignment.center,
                         width: 120.w,
-                        height: 50,
+                        height: 50.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.r),
                           border: Border.all(
@@ -566,7 +566,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                 ? const Color(0xff1D1D1D)
                                 : const Color(0xffD3D3D3),
                             letterSpacing: 0.18,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             height: LanguageService.languageCode == "ar"
                                 ? 0.5
                                 : 0.8,
@@ -582,7 +582,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                       child: Container(
                         alignment: Alignment.center,
                         width: 120.w,
-                        height: 50,
+                        height: 50.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.r),
                           border: Border.all(
@@ -598,7 +598,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                 ? const Color(0xff1D1D1D)
                                 : const Color(0xffD3D3D3),
                             letterSpacing: 0.18,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             height: LanguageService.languageCode == "ar"
                                 ? 0.5
                                 : 0.8,
@@ -614,7 +614,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                       child: Container(
                         alignment: Alignment.center,
                         width: 120.w,
-                        height: 50,
+                        height: 50.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.r),
                           border: Border.all(
@@ -630,7 +630,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                 ? const Color(0xff1D1D1D)
                                 : const Color(0xffD3D3D3),
                             letterSpacing: 0.18,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             height: LanguageService.languageCode == "ar"
                                 ? 0.5
                                 : 0.8,
@@ -673,7 +673,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
           valueListenable: widget.visiblePrefixOptional,
           builder: (context, isVisiblePrefixOptional, _) {
             return Container(
-              height: height.toDouble(),
+              height: height.h,
               width: 1.sw,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15.r),
@@ -683,8 +683,8 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.only(top: 5, left: 8, right: 8),
-                    height: 18,
+                    padding: EdgeInsets.only(top: 5.h, left: 8.w, right: 8.w),
+                    height: 18.h,
                     child: Row(
                       children: [
                         Text(
@@ -692,7 +692,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: const Color(0xff505050),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: LanguageService.languageCode == "ar"
                                 ? 0.5
                                 : 0.8,
@@ -706,7 +706,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                     .copyWith(
                                       color: const Color(0xffD3D3D3),
                                       letterSpacing: 0.18,
-                                      fontSize: 12,
+                                      fontSize: 12.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -728,7 +728,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                         .copyWith(
                                           color: const Color(0xff1D1D1D),
                                           letterSpacing: 0.18,
-                                          fontSize: 16,
+                                          fontSize: 16.sp,
                                           height: 0.8,
                                         ),
                                   )
@@ -821,7 +821,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                 '${hint}' +
                                 "${hint2 == "" ? "" : "\n${hint2}"}",
                             contentPadding: HWEdgeInsetsDirectional.only(
-                              start: 8,
+                              start: 8.w,
                               end: 1,
                               bottom: 1,
                               top: 1,
@@ -832,14 +832,14 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                 .copyWith(
                                   color: const Color(0xff1D1D1D),
                                   letterSpacing: 0.18,
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                   height: 1.1,
                                 ),
                             hintTextStyle: context.textTheme.bodyMedium?.rq
                                 .copyWith(
                                   color: const Color(0xffD3D3D3),
                                   letterSpacing: 0.18,
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                   height: hint2 == "" ? 1 : 1.3,
                                 ),
                           );
@@ -931,7 +931,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                   0,
                 ),
                 child: Container(
-                  height: height.toDouble(),
+                  height: height.h,
                   width: 1.sw,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15.r),
@@ -945,12 +945,12 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.only(
-                          top: 5,
-                          left: 8,
-                          right: 8,
+                        padding: EdgeInsets.only(
+                          top: 5.h,
+                          left: 8.w,
+                          right: 8.w,
                         ),
-                        height: 18,
+                        height: 18.h,
                         child: Row(
                           children: [
                             Text(
@@ -958,7 +958,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               style: context.textTheme.bodyMedium?.rq.copyWith(
                                 color: const Color(0xff505050),
                                 letterSpacing: 0.18,
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 height: LanguageService.languageCode == "ar"
                                     ? 0.5
                                     : 0.8,
@@ -972,7 +972,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                         .copyWith(
                                           color: const Color(0xffD3D3D3),
                                           letterSpacing: 0.18,
-                                          fontSize: 12,
+                                          fontSize: 12.sp,
                                           height: 0.8,
                                         ),
                                   ),
@@ -1000,7 +1000,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                                       0xff1D1D1D,
                                                     ),
                                                     letterSpacing: 0.18,
-                                                    fontSize: 16,
+                                                    fontSize: 16.sp,
                                                     height: 0.8,
                                                   ),
                                             )
@@ -1102,8 +1102,8 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                             start:
                                                 (LanguageService.languageCode !=
                                                     "ar")
-                                                ? 8
-                                                : 8,
+                                                ? 8.h
+                                                : 8.h,
                                             end: 1,
                                             bottom: 1,
                                             top: 1,
@@ -1117,7 +1117,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                           .copyWith(
                                             color: const Color(0xff1D1D1D),
                                             letterSpacing: 0.18,
-                                            fontSize: 14,
+                                            fontSize: 14.sp,
                                             height: 1.1,
                                           ),
                                       hintTextStyle: context
@@ -1127,7 +1127,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                           .copyWith(
                                             color: const Color(0xffD3D3D3),
                                             letterSpacing: 0.18,
-                                            fontSize: 14,
+                                            fontSize: 14.sp,
                                             height: hint2 == "" ? 1 : 1.3,
                                           ),
                                     );
@@ -1185,7 +1185,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                       .copyWith(
                                         color: const Color(0xff1D1D1D),
                                         letterSpacing: 0.18,
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                         height: 1.1,
                                       ),
                                   hintTextStyle: context
@@ -1195,7 +1195,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                       .copyWith(
                                         color: const Color(0xffD3D3D3),
                                         letterSpacing: 0.18,
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                         height: hint2 == "" ? 1 : 1.3,
                                       ),
                                 ),

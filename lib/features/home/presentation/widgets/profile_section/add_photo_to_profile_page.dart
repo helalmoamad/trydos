@@ -81,7 +81,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 1.3,
                   ),
                 ),
@@ -119,8 +119,8 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                             },
                             child: Container(
                               alignment: Alignment.center,
-                              width: 40,
-                              height: 20,
+                              width: 40.w,
+                              height: 20.h,
                               child:
                                   state.updateProfileStatus ==
                                           UpdateProfileStatus.loading ||
@@ -134,7 +134,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                                           .copyWith(
                                             color: const Color(0xff402CDD),
                                             letterSpacing: 0.18,
-                                            fontSize: 14,
+                                            fontSize: 14.sp,
                                             height: 1.3,
                                           ),
                                     ),
@@ -213,19 +213,23 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
       },
       child: Container(
         alignment: Alignment.center,
-        height: 20,
-        width: 150,
+        height: 20.h,
+        width: 150.w,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset(AppAssets.deletecartSvg, width: 18),
-            const SizedBox(width: 10),
+            SvgPicture.asset(
+              AppAssets.deletecartSvg,
+              width: 18.w,
+              height: 18.h,
+            ),
+            SizedBox(width: 10.w),
             Text(
               LocaleKeys.remove_photo.tr(),
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff5D5C5D),
                 letterSpacing: 0.18,
-                fontSize: 14,
+                fontSize: 14.sp,
                 height: 1.3,
               ),
             ),
@@ -246,18 +250,18 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
       },
       child: Container(
         alignment: Alignment.center,
-        width: 160,
-        height: 20,
+        width: 160.w,
+        height: 20.h,
         child: Row(
           children: [
             SvgPicture.asset(AppAssets.takphotoSvg),
-            const SizedBox(width: 10),
+            SizedBox(width: 10.w),
             Text(
               LocaleKeys.take_photo.tr(),
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff5D5C5D),
                 letterSpacing: 0.18,
-                fontSize: 14,
+                fontSize: 14.sp,
                 height: 1.3,
               ),
             ),
@@ -296,18 +300,18 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
       },
       child: Container(
         alignment: Alignment.center,
-        width: 160,
-        height: 20,
+        width: 160.w,
+        height: 20.h,
         child: Row(
           children: [
             SvgPicture.asset(AppAssets.galarySvg),
-            const SizedBox(width: 10),
+            SizedBox(width: 10.w),
             Text(
               LocaleKeys.choose_from_library.tr(),
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff5D5C5D),
                 letterSpacing: 0.18,
-                fontSize: 14,
+                fontSize: 14.sp,
                 height: 1.3,
               ),
             ),
@@ -377,25 +381,25 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                   left: 1.sw / 2 - 95,
                   child: Container(
                     alignment: Alignment.center,
-                    width: 165,
-                    height: 20,
+                    width: 165.w,
+                    height: 20.h,
                     child: Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           SvgPicture.asset(
                             AppAssets.addPhotoSvg,
                             // ignore: deprecated_member_use
                             color: const Color(0xff5D5C5D),
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           Text(
                             LocaleKeys.add_profile_photo.tr(),
                             style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: const Color(0xff5D5C5D),
                               letterSpacing: 0.18,
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               height: 1.3,
                             ),
                           ),
@@ -406,7 +410,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                 ),
                 Center(
                   child: SvgPicture.asset(
-                    width: 50,
+                    width: 50.w,
                     AppAssets.trySvg,
                     // ignore: deprecated_member_use
                     color: const Color(0xffD3D3D3),

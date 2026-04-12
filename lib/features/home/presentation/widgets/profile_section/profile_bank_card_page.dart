@@ -57,7 +57,7 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
               style: context.textTheme.bodyMedium?.mq.copyWith(
                 color: const Color(0xff1D1D1D),
                 letterSpacing: 0.18,
-                fontSize: 14,
+                fontSize: 14.sp,
                 height: 1.3,
               ),
             ),
@@ -74,7 +74,7 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 50,
+                height: 50.h,
                 width: 1.sw,
                 decoration: BoxDecoration(
                   color: const Color(0xffF8F8F8),
@@ -95,43 +95,43 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff8D8D8D),
                         letterSpacing: 0.18,
-                        fontSize: 10.sp,
+                        fontSize: 9.sp,
                         height: 1.3,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               Container(
-                height: 15,
-                width: 170,
-                margin: const EdgeInsets.symmetric(horizontal: 20),
+                height: 15.h,
+                width: 180.w,
+                margin: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SvgPicture.asset(
                       AppAssets.bankCardSvg,
-                      height: 15,
+                      height: 15.h,
                       // ignore: deprecated_member_use
                       color: const Color(0xff707070),
                     ),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     Text(
                       LocaleKeys.your_bank_cards_info.tr(),
                       style: context.textTheme.bodyMedium?.mq.copyWith(
                         color: const Color(0xff404040),
                         letterSpacing: 0.18,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         height: 1.2,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12.w),
                     SvgPicture.asset(
                       AppAssets.chatWithQuestionSvg,
                       // ignore: deprecated_member_use
                       color: const Color(0xffD3D3D3),
-                      height: 15,
+                      height: 15.h,
                     ),
                   ],
                 ),

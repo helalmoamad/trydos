@@ -21,6 +21,7 @@ import 'package:trydos/features/home/presentation/pages/product_listing_page.dar
 import 'package:trydos/features/search/presentation/widgets/search_Circle_boutique.dart';
 import 'package:trydos/features/search/presentation/widgets/search_circle_brand.dart';
 import 'package:trydos/features/search/presentation/widgets/search_circle_category.dart';
+import 'package:trydos/features/search/presentation/widgets/search_circle_related_category.dart';
 import 'package:trydos/features/search/presentation/widgets/trendig_section.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/test_utils/test_var.dart';
@@ -39,12 +40,13 @@ import '../widgets/search_result.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage(
-      {super.key,
-      required this.buildSearchResult,
-      required this.appearTrendingAndHistory,
-      required this.isShowPanelForVerified,
-      required this.controller});
+  const SearchPage({
+    super.key,
+    required this.buildSearchResult,
+    required this.appearTrendingAndHistory,
+    required this.isShowPanelForVerified,
+    required this.controller,
+  });
 
   final TextEditingController controller;
 
@@ -66,8 +68,12 @@ class _SearchPageState extends ThemeState<SearchPage> {
   @override
   void initState() {
     LastPagesTracker.push('SearchPage');
-    BlocProvider.of<BoutiqueBloc>(context).add(ChangeSelectedFiltersEvent(
-        fromHomePageSearch: true, boutiqueSlug: 'search'));
+    BlocProvider.of<BoutiqueBloc>(context).add(
+      ChangeSelectedFiltersEvent(
+        fromHomePageSearch: true,
+        boutiqueSlug: 'search',
+      ),
+    );
     widget.appearTrendingAndHistory.value = true;
     widget.controller.addListener(() {
       if (widget.controller.text.length > 2) {
@@ -106,12 +112,18 @@ class _SearchPageState extends ThemeState<SearchPage> {
 
   @override
   void dispose() {
-    boutiqueBloc.add(ChangeAppliedFiltersEvent(
-        boutiqueSlug: 'search', resetAppliedFilters: true));
-    boutiqueBloc.add(ChangeSelectedFiltersEvent(
-      fromHomePageSearch: true,
-      boutiqueSlug: 'search',
-    ));
+    boutiqueBloc.add(
+      ChangeAppliedFiltersEvent(
+        boutiqueSlug: 'search',
+        resetAppliedFilters: true,
+      ),
+    );
+    boutiqueBloc.add(
+      ChangeSelectedFiltersEvent(
+        fromHomePageSearch: true,
+        boutiqueSlug: 'search',
+      ),
+    );
 
     super.dispose();
   }
@@ -135,9 +147,11 @@ class _SearchPageState extends ThemeState<SearchPage> {
             buildWhen: (previous, current) {
               return previous.getProductFiltersStatus[key] !=
                       current.getProductFiltersStatus[key] ||
-                  previous.getProductListingWithFiltersPaginationModels[key]
+                  previous
+                          .getProductListingWithFiltersPaginationModels[key]
                           ?.paginationStatus !=
-                      current.getProductListingWithFiltersPaginationModels[key]
+                      current
+                          .getProductListingWithFiltersPaginationModels[key]
                           ?.paginationStatus ||
                   previous.cashedOrginalBoutique !=
                       current.cashedOrginalBoutique ||
@@ -146,224 +160,291 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   previous.choosedFiltersByUser[key] !=
                       current.choosedFiltersByUser[key] ||
                   previous
-                          .getProductListingWithFiltersPaginationModels[
-                              'search' +
-                                  (current
-                                          .cashedOrginalBoutique
-                                      ? 'withoutFilter'
-                                      : "")]
+                          .getProductListingWithFiltersPaginationModels['search' +
+                              (current.cashedOrginalBoutique
+                                  ? 'withoutFilter'
+                                  : "")]
                           ?.paginationStatus !=
                       current
-                          .getProductListingWithFiltersPaginationModels[
-                              'search' +
-                                  (current.cashedOrginalBoutique
-                                      ? 'withoutFilter'
-                                      : "")]
+                          .getProductListingWithFiltersPaginationModels['search' +
+                              (current.cashedOrginalBoutique
+                                  ? 'withoutFilter'
+                                  : "")]
                           ?.paginationStatus;
             },
             builder: (context, state) {
               return SafeArea(
-                  child: CustomScrollView(
-                      physics: const ClampingScrollPhysics(),
-                      controller: scrollController,
-                      scrollBehavior: const CupertinoScrollBehavior(),
-                      slivers: [
+                child: CustomScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  controller: scrollController,
+                  scrollBehavior: const CupertinoScrollBehavior(),
+                  slivers: [
                     SliverToBoxAdapter(child: 50.verticalSpace),
                     ValueListenableBuilder<int>(
-                        valueListenable: widget.buildSearchResult,
-                        builder: (context, value, _) {
-                          return SliverMainAxisGroup(slivers: [
+                      valueListenable: widget.buildSearchResult,
+                      builder: (context, value, _) {
+                        return SliverMainAxisGroup(
+                          slivers: [
                             ValueListenableBuilder<bool>(
-                                valueListenable:
+                              valueListenable: widget.appearTrendingAndHistory,
+                              child: SearchHistory(
+                                controller: widget.controller,
+                                buildSearchResult: widget.buildSearchResult,
+                                appearTrendingAndHistory:
                                     widget.appearTrendingAndHistory,
-                                child: SearchHistory(
-                                  controller: widget.controller,
-                                  buildSearchResult: widget.buildSearchResult,
-                                  appearTrendingAndHistory:
-                                      widget.appearTrendingAndHistory,
-                                  items: homeState.searchHistory ?? [],
-                                ),
-                                builder: (context, appear, child) {
-                                  return SliverToBoxAdapter(
-                                    child: appear
-                                        ? child!
-                                        : const SizedBox.shrink(),
-                                  );
-                                }),
+                                items: homeState.searchHistory ?? [],
+                              ),
+                              builder: (context, appear, child) {
+                                return SliverToBoxAdapter(
+                                  child: appear
+                                      ? child!
+                                      : const SizedBox.shrink(),
+                                );
+                              },
+                            ),
                             ValueListenableBuilder<bool>(
-                                valueListenable:
+                              valueListenable: widget.appearTrendingAndHistory,
+                              child: TrendingSection(
+                                controller: widget.controller,
+                                buildSearchResult: widget.buildSearchResult,
+                                appearTrendingAndHistory:
                                     widget.appearTrendingAndHistory,
-                                child: TrendingSection(
-                                  controller: widget.controller,
-                                  buildSearchResult: widget.buildSearchResult,
-                                  appearTrendingAndHistory:
-                                      widget.appearTrendingAndHistory,
-                                  popularSearchTerms:
-                                      homeState.popularSearchTerm ?? [],
-                                ),
-                                builder: (context, appear, child) {
-                                  return SliverToBoxAdapter(
-                                    child: Visibility(
-                                      visible: appear,
-                                      child: child!,
-                                    ),
-                                  );
-                                }),
-                          ]);
-                        }),
-                    SliverToBoxAdapter(
-                      child: SearchResult(
-                        controller: widget.controller,
-                      ),
+                                popularSearchTerms:
+                                    homeState.popularSearchTerm ?? [],
+                              ),
+                              builder: (context, appear, child) {
+                                return SliverToBoxAdapter(
+                                  child: Visibility(
+                                    visible: appear,
+                                    child: child!,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        );
+                      },
                     ),
                     SliverToBoxAdapter(
-                        child: SizedBox(
-                      height: state.getProductListingWithFiltersPaginationModels[
-                                  'search' +
+                      child: SearchResult(controller: widget.controller),
+                    ),
+                    SliverToBoxAdapter(
+                      child: SizedBox(
+                        height:
+                            state.getProductListingWithFiltersPaginationModels['search' +
+                                    (state.cashedOrginalBoutique
+                                        ? 'withoutFilter'
+                                        : "")] ==
+                                null
+                            ? 250.h
+                            : state
+                                  .getProductListingWithFiltersPaginationModels['search' +
                                       (state.cashedOrginalBoutique
                                           ? 'withoutFilter'
-                                          : "")] ==
-                              null
-                          ? 250.h
-                          : state
-                                  .getProductListingWithFiltersPaginationModels[
-                                      'search' +
-                                          (state.cashedOrginalBoutique
-                                              ? 'withoutFilter'
-                                              : "")]!
+                                          : "")]!
                                   .items
                                   .isNullOrEmpty
-                              ? 250.h
-                              : 150.h,
-                    )),
+                            ? 250.h
+                            : 150.h,
+                      ),
+                    ),
                     if (state.getProductFiltersStatus ==
                             GetProductFiltersStatus.loading &&
                         state.getProductFiltersModel[key]?.filters == null)
-                      SliverToBoxAdapter(
-                          child: Center(
-                        child: TrydosLoader(),
-                      )),
-                    if (!(state.getProductFiltersModel[key]?.filters?.brands
+                      SliverToBoxAdapter(child: Center(child: TrydosLoader())),
+                    if (!(state
+                            .getProductFiltersModel[key]
+                            ?.filters
+                            ?.brands
                             .isNullOrEmpty ??
                         true))
                       ValueListenableBuilder<bool>(
-                          valueListenable: widget.appearTrendingAndHistory,
-                          child: SearchChipBrand(
-                            isLoading: state.getProductFiltersStatus[key] ==
-                                    GetProductFiltersStatus.loading ||
-                                state
-                                        .getProductListingWithFiltersPaginationModels[
-                                            [
-                                      'search' +
-                                          (state.cashedOrginalBoutique
-                                              ? 'withoutFilter'
-                                              : "")
-                                    ]]
-                                        ?.paginationStatus ==
-                                    PaginationStatus.loading,
-                            controller: widget.controller,
-                            title: LocaleKeys.Brands.tr(),
-                          ),
-                          builder: (context, appear, child) {
-                            return SliverToBoxAdapter(
-                              child: Visibility(
-                                visible: appear,
-                                child: child!,
-                              ),
-                            );
-                          }),
-                    if (!(state.getProductFiltersModel[key]?.filters?.categories
+                        valueListenable: widget.appearTrendingAndHistory,
+                        child: SearchChipBrand(
+                          isLoading:
+                              state.getProductFiltersStatus[key] ==
+                                  GetProductFiltersStatus.loading ||
+                              state
+                                      .getProductListingWithFiltersPaginationModels[[
+                                        'search' +
+                                            (state.cashedOrginalBoutique
+                                                ? 'withoutFilter'
+                                                : ""),
+                                      ]]
+                                      ?.paginationStatus ==
+                                  PaginationStatus.loading,
+                          controller: widget.controller,
+                          title: LocaleKeys.Brands.tr(),
+                        ),
+                        builder: (context, appear, child) {
+                          return SliverToBoxAdapter(
+                            child: Visibility(visible: appear, child: child!),
+                          );
+                        },
+                      ),
+                    if (!(state
+                            .getProductFiltersModel[key]
+                            ?.filters
+                            ?.categories
                             .isNullOrEmpty ??
                         true))
                       ValueListenableBuilder<bool>(
-                          valueListenable: widget.appearTrendingAndHistory,
-                          child: SearchChipCategory(
-                            isLoading: state.getProductFiltersStatus[key] ==
-                                    GetProductFiltersStatus.loading ||
-                                state
-                                        .getProductListingWithFiltersPaginationModels[
-                                            [
-                                      'search' +
-                                          (state.cashedOrginalBoutique
-                                              ? 'withoutFilter'
-                                              : "")
-                                    ]]
-                                        ?.paginationStatus ==
-                                    PaginationStatus.loading,
-                            controller: widget.controller,
-                            title: LocaleKeys.categories.tr(),
-                          ),
-                          builder: (context, appear, child) {
-                            return SliverToBoxAdapter(
-                              child: Visibility(
-                                visible: appear,
-                                child: child!,
-                              ),
-                            );
-                          }),
-                    if (!(state.getProductFiltersModel[key]?.filters?.boutiques
+                        valueListenable: widget.appearTrendingAndHistory,
+                        child: SearchChipCategory(
+                          isLoading:
+                              state.getProductFiltersStatus[key] ==
+                                  GetProductFiltersStatus.loading ||
+                              state
+                                      .getProductListingWithFiltersPaginationModels[[
+                                        'search' +
+                                            (state.cashedOrginalBoutique
+                                                ? 'withoutFilter'
+                                                : ""),
+                                      ]]
+                                      ?.paginationStatus ==
+                                  PaginationStatus.loading,
+                          controller: widget.controller,
+                          title: LocaleKeys.categories.tr(),
+                        ),
+                        builder: (context, appear, child) {
+                          return SliverToBoxAdapter(
+                            child: Visibility(visible: appear, child: child!),
+                          );
+                        },
+                      ),
+
+                    if (!(state
+                            .getProductFiltersModel[key]
+                            ?.filters
+                            ?.relatedCategories
                             .isNullOrEmpty ??
                         true))
                       ValueListenableBuilder<bool>(
-                          valueListenable: widget.appearTrendingAndHistory,
-                          child: SearchChipBoutique(
-                            isLoading: state.getProductFiltersStatus[key] ==
-                                    GetProductFiltersStatus.loading ||
-                                state
-                                        .getProductListingWithFiltersPaginationModels[
-                                            [
-                                      'search' +
-                                          (state.cashedOrginalBoutique
-                                              ? 'withoutFilter'
-                                              : "")
-                                    ]]
-                                        ?.paginationStatus ==
-                                    PaginationStatus.loading,
-                            controller: widget.controller,
-                            title: LocaleKeys.boutiques.tr(),
-                          ),
-                          builder: (context, appear, child) {
-                            return SliverToBoxAdapter(
-                              child: Visibility(
-                                visible: appear,
-                                child: child!,
-                              ),
-                            );
-                          }),
+                        valueListenable: widget.appearTrendingAndHistory,
+                        child: SearchChipRelatedCategory(
+                          isLoading:
+                              state.getProductFiltersStatus[key] ==
+                                  GetProductFiltersStatus.loading ||
+                              state
+                                      .getProductListingWithFiltersPaginationModels[[
+                                        'search' +
+                                            (state.cashedOrginalBoutique
+                                                ? 'withoutFilter'
+                                                : ""),
+                                      ]]
+                                      ?.paginationStatus ==
+                                  PaginationStatus.loading,
+                          controller: widget.controller,
+                          title: LocaleKeys.related_categories.tr(),
+                        ),
+                        builder: (context, appear, child) {
+                          return SliverToBoxAdapter(
+                            child: Visibility(visible: appear, child: child!),
+                          );
+                        },
+                      ),
+                    if (!(state
+                            .getProductFiltersModel[key]
+                            ?.filters
+                            ?.boutiques
+                            .isNullOrEmpty ??
+                        true))
+                      ValueListenableBuilder<bool>(
+                        valueListenable: widget.appearTrendingAndHistory,
+                        child: SearchChipBoutique(
+                          isLoading:
+                              state.getProductFiltersStatus[key] ==
+                                  GetProductFiltersStatus.loading ||
+                              state
+                                      .getProductListingWithFiltersPaginationModels[[
+                                        'search' +
+                                            (state.cashedOrginalBoutique
+                                                ? 'withoutFilter'
+                                                : ""),
+                                      ]]
+                                      ?.paginationStatus ==
+                                  PaginationStatus.loading,
+                          controller: widget.controller,
+                          title: LocaleKeys.boutiques.tr(),
+                        ),
+                        builder: (context, appear, child) {
+                          return SliverToBoxAdapter(
+                            child: Visibility(visible: appear, child: child!),
+                          );
+                        },
+                      ),
                     BlocBuilder<BoutiqueBloc, BoutiqueState>(
                       builder: (context, state) {
                         return SliverToBoxAdapter(
-                          child: ((state.choosedFiltersByUser[key]?.filters
-                                              ?.attributes?.isNullOrEmpty ??
+                          child:
+                              ((state
+                                              .choosedFiltersByUser[key]
+                                              ?.filters
+                                              ?.attributes
+                                              ?.isNullOrEmpty ??
                                           true) &&
-                                      (state.choosedFiltersByUser[key]?.filters
-                                              ?.colors?.isNullOrEmpty ??
+                                      (state
+                                              .choosedFiltersByUser[key]
+                                              ?.filters
+                                              ?.colors
+                                              ?.isNullOrEmpty ??
                                           true) &&
-                                      (state.choosedFiltersByUser[key]?.filters
-                                              ?.brands?.isNullOrEmpty ??
+                                      (state
+                                              .choosedFiltersByUser[key]
+                                              ?.filters
+                                              ?.brands
+                                              ?.isNullOrEmpty ??
                                           true) &&
-                                      (state.choosedFiltersByUser[key]?.filters
-                                              ?.boutiques?.isNullOrEmpty ??
+                                      (state
+                                              .choosedFiltersByUser[key]
+                                              ?.filters
+                                              ?.boutiques
+                                              ?.isNullOrEmpty ??
                                           true) &&
-                                      (state.choosedFiltersByUser[key]?.filters
-                                              ?.categories?.isNullOrEmpty ??
+                                      (state
+                                              .choosedFiltersByUser[key]
+                                              ?.filters
+                                              ?.categories
+                                              ?.isNullOrEmpty ??
                                           true) &&
-                                      ((state.appliedFiltersByUser[key]?.filters
-                                                  ?.searchText?.isEmpty ??
+                                      ((state
+                                                  .appliedFiltersByUser[key]
+                                                  ?.filters
+                                                  ?.searchText
+                                                  ?.isEmpty ??
                                               true) ||
-                                          (state.appliedFiltersByUser[key]?.filters?.searchText?.length ?? 0) < 2) &&
-                                      (state.choosedFiltersByUser[key]?.filters?.prices?.maxPrice == null) &&
-                                      (state.choosedFiltersByUser[key]?.filters?.prices?.minPrice == null)) &&
+                                          (state
+                                                      .appliedFiltersByUser[key]
+                                                      ?.filters
+                                                      ?.searchText
+                                                      ?.length ??
+                                                  0) <
+                                              2) &&
+                                      (state
+                                              .choosedFiltersByUser[key]
+                                              ?.filters
+                                              ?.prices
+                                              ?.maxPrice ==
+                                          null) &&
+                                      (state
+                                              .choosedFiltersByUser[key]
+                                              ?.filters
+                                              ?.prices
+                                              ?.minPrice ==
+                                          null)) &&
                                   widget.controller.text.length < 3
                               ? const SizedBox.shrink()
                               : Container(
-                                  padding: const EdgeInsets.all(8),
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 10),
+                                  padding: EdgeInsets.all(5.h),
+                                  margin: EdgeInsets.symmetric(
+                                    horizontal: 20.w,
+                                    vertical: 10.h,
+                                  ),
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      color: Colors.grey.shade300),
-                                  height: 30,
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: Colors.grey.shade300,
+                                  ),
+                                  height: 30.h,
                                   width: 1.sw,
                                   child: choosedOrAppliedFiltersWidget(
                                     controller: widget.controller,
@@ -382,16 +463,18 @@ class _SearchPageState extends ThemeState<SearchPage> {
                         if (choosedFilterToAddToIt == null &&
                             widget.controller.text.length < 3) {
                           return const SliverToBoxAdapter(
-                              child: SizedBox.shrink());
+                            child: SizedBox.shrink(),
+                          );
                         }
                         return SliverToBoxAdapter(
                           child: Container(
-                            width: 300,
+                            width: 300.w,
                             margin: EdgeInsets.only(
-                                bottom: !hideAppleyResetButtom.value ? 0 : 30,
-                                left: 20,
-                                top: 20,
-                                right: 20),
+                              bottom: !hideAppleyResetButtom.value ? 0 : 30.h,
+                              left: 20.w,
+                              top: 20.h,
+                              right: 20.w,
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -399,66 +482,77 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                   flex: 3,
                                   child: InkWell(
                                     onTap: () {
-                                      Filter filters = state
+                                      Filter filters =
+                                          state
                                               .choosedFiltersByUser[key]
                                               ?.filters ??
                                           Filter();
                                       String text = widget.controller.text;
 
-                                      boutiqueBloc
-                                          .add(ChangeAppliedFiltersEvent(
-                                        boutiqueSlug: key,
-                                        filtersAppliedByUser:
-                                            GetProductFiltersModel(
+                                      boutiqueBloc.add(
+                                        ChangeAppliedFiltersEvent(
+                                          boutiqueSlug: key,
+                                          filtersAppliedByUser:
+                                              GetProductFiltersModel(
                                                 filters: filters
                                                     .copyWithSaveOtherField(
-                                                        searchText:
-                                                            (text.length) > 2
-                                                                ? text
-                                                                : null,
-                                                        prices:
-                                                            filters.prices)),
-                                      ));
-                                      boutiqueBloc
-                                          .add(GetProductsWithFiltersEvent(
-                                        offset: 1,
-                                        boutiqueSlug: key,
-                                        fromSearch: true,
-                                        searchText:
-                                            (text.length) > 2 ? text : null,
-                                      ));
+                                                      searchText:
+                                                          (text.length) > 2
+                                                          ? text
+                                                          : null,
+                                                      prices: filters.prices,
+                                                    ),
+                                              ),
+                                        ),
+                                      );
+                                      boutiqueBloc.add(
+                                        GetProductsWithFiltersEvent(
+                                          offset: 1,
+                                          boutiqueSlug: key,
+                                          fromSearch: true,
+                                          searchText: (text.length) > 2
+                                              ? text
+                                              : null,
+                                        ),
+                                      );
                                       homeBloc.add(
-                                          const IsChangedVariationWhenQtyZeroEvent(
-                                              isChangedVariationWhenQtyZero:
-                                                  false));
+                                        const IsChangedVariationWhenQtyZeroEvent(
+                                          isChangedVariationWhenQtyZero: false,
+                                        ),
+                                      );
                                       homeBloc.add(
-                                          const IsChangedVariationWhenQtyZeroEvent(
-                                              isChangedVariationWhenQtyZero:
-                                                  false));
+                                        const IsChangedVariationWhenQtyZeroEvent(
+                                          isChangedVariationWhenQtyZero: false,
+                                        ),
+                                      );
 
                                       boutiqueBloc.add(
-                                          AddSizeAndColorFilterinTextToSearchEvent(
-                                              sizeAndColorFilterinTextToSearch: const {}));
-                                      appBloc
-                                          .add(HideBottomNavigationBar(false));
+                                        AddSizeAndColorFilterinTextToSearchEvent(
+                                          sizeAndColorFilterinTextToSearch:
+                                              const {},
+                                        ),
+                                      );
+                                      appBloc.add(
+                                        HideBottomNavigationBar(false),
+                                      );
                                       appBloc.add(ShowOrHideBars(true));
                                       appBloc.add(ChangeIndexForSearch(1));
 
                                       Future.delayed(
-                                          const Duration(milliseconds: 600),
-                                          () =>
-                                              HelperFunctions.slidingNavigation(
-                                                context,
-                                                listing_page.ProductListingPage(
-                                                  isShowPanelForVerified: widget
-                                                      .isShowPanelForVerified,
-                                                  controllerFormSearchPage:
-                                                      widget.controller,
-                                                  boutiqueIcon: "",
-                                                  fromSearch: true,
-                                                  boutiqueSlug: key,
-                                                ),
-                                              ));
+                                        const Duration(milliseconds: 600),
+                                        () => HelperFunctions.slidingNavigation(
+                                          context,
+                                          listing_page.ProductListingPage(
+                                            isShowPanelForVerified:
+                                                widget.isShowPanelForVerified,
+                                            controllerFormSearchPage:
+                                                widget.controller,
+                                            boutiqueIcon: "",
+                                            fromSearch: true,
+                                            boutiqueSlug: key,
+                                          ),
+                                        ),
+                                      );
                                       /////////////////////////////////
                                       // FirebaseAnalyticsService
                                       //     .logEventForSession(
@@ -470,31 +564,36 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                       // );
                                     },
                                     child: Container(
-                                      height: 65,
-                                      width: 300,
+                                      height: 65.h,
+                                      width: 300.w,
                                       key: TestVariables.kTestMode
-                                          ? const Key(WidgetsKeys
-                                              .searchButtonInSearchPageKey)
+                                          ? const Key(
+                                              WidgetsKeys
+                                                  .searchButtonInSearchPageKey,
+                                            )
                                           : null,
                                       decoration: BoxDecoration(
-                                          color: const Color(0xffFF5F61),
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors.black
-                                                    // ignore: deprecated_member_use
-                                                    .withOpacity(0.1),
-                                                blurRadius: 6,
-                                                offset: const Offset(0, 3)),
-                                            BoxShadow(
-                                              color:
-                                                  // ignore: deprecated_member_use
-                                                  Colors.white.withOpacity(0.4),
-                                              blurRadius: 6,
-                                              offset: const Offset(0, 3),
-                                            )
-                                          ],
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
+                                        color: const Color(0xffFF5F61),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black
+                                                // ignore: deprecated_member_use
+                                                .withOpacity(0.1),
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                          BoxShadow(
+                                            color:
+                                                // ignore: deprecated_member_use
+                                                Colors.white.withOpacity(0.4),
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                        ],
+                                        borderRadius: BorderRadius.circular(
+                                          20.r,
+                                        ),
+                                      ),
                                       child: Center(
                                         child: Row(
                                           mainAxisAlignment:
@@ -504,24 +603,29 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                               '${LocaleKeys.search.tr()} ',
                                               style: textTheme.bodyLarge?.rq
                                                   .copyWith(
-                                                      color: const Color(
-                                                          0xffFEFEFE),
-                                                      height: 23 / 18),
+                                                    color: const Color(
+                                                      0xffFEFEFE,
+                                                    ),
+                                                    height: (23 / 18).h,
+                                                    fontSize: 16.sp,
+                                                  ),
                                             ),
-                                            state.countOfProductExpectedByFiltering?[
-                                                        'search'] !=
+                                            state.countOfProductExpectedByFiltering?['search'] !=
                                                     null
                                                 ? MyTextWidget(
                                                     "(${LocaleKeys.number_of_products.tr()} ${state.countOfProductExpectedByFiltering?['search']})",
                                                     style: textTheme
-                                                        .bodyMedium?.rq
+                                                        .bodyMedium
+                                                        ?.rq
                                                         .copyWith(
-                                                            fontSize: 12,
-                                                            color: const Color(
-                                                                0xffFEFEFE),
-                                                            height: 1.2),
+                                                          fontSize: 12.sp,
+                                                          color: const Color(
+                                                            0xffFEFEFE,
+                                                          ),
+                                                          height: 1.2,
+                                                        ),
                                                   )
-                                                : const SizedBox.shrink()
+                                                : const SizedBox.shrink(),
                                           ],
                                         ),
                                       ),
@@ -533,14 +637,17 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                   child: InkWell(
                                     onTap: () {
                                       boutiqueBloc.add(
-                                          ChangeAppliedFiltersEvent(
-                                              boutiqueSlug: key,
-                                              resetAppliedFilters: true));
-                                      boutiqueBloc
-                                          .add(ChangeSelectedFiltersEvent(
-                                        boutiqueSlug: key,
-                                        fromHomePageSearch: true,
-                                      ));
+                                        ChangeAppliedFiltersEvent(
+                                          boutiqueSlug: key,
+                                          resetAppliedFilters: true,
+                                        ),
+                                      );
+                                      boutiqueBloc.add(
+                                        ChangeSelectedFiltersEvent(
+                                          boutiqueSlug: key,
+                                          fromHomePageSearch: true,
+                                        ),
+                                      );
                                       widget.controller.clear();
                                       /////////////////////////////////
                                       // FirebaseAnalyticsService
@@ -553,36 +660,41 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                       // );
                                     },
                                     child: Container(
-                                      height: 65,
+                                      height: 65.h,
                                       decoration: BoxDecoration(
-                                          color: colorScheme.white,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors.black
-                                                    // ignore: deprecated_member_use
-                                                    .withOpacity(0.1),
-                                                blurRadius: 6,
-                                                offset: const Offset(0, 3)),
-                                            BoxShadow(
-                                              color:
-                                                  // ignore: deprecated_member_use
-                                                  Colors.white.withOpacity(0.4),
-                                              blurRadius: 6,
-                                              offset: const Offset(0, 3),
-                                            )
-                                          ],
-                                          border: Border.all(
-                                              color: const Color(0xff388CFF))),
+                                        color: colorScheme.white,
+                                        borderRadius: BorderRadius.circular(
+                                          20.r,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black
+                                                // ignore: deprecated_member_use
+                                                .withOpacity(0.1),
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                          BoxShadow(
+                                            color:
+                                                // ignore: deprecated_member_use
+                                                Colors.white.withOpacity(0.4),
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                        ],
+                                        border: Border.all(
+                                          color: const Color(0xff388CFF),
+                                        ),
+                                      ),
                                       child: Center(
                                         child: MyTextWidget(
                                           '${LocaleKeys.reset.tr()}',
                                           style: textTheme.bodyLarge?.rq
                                               .copyWith(
-                                                  color:
-                                                      const Color(0xff388CFF),
-                                                  height: 23 / 18),
+                                                color: const Color(0xff388CFF),
+                                                height: (23 / 18).h,
+                                                fontSize: 16.sp,
+                                              ),
                                         ),
                                       ),
                                     ),
@@ -594,7 +706,9 @@ class _SearchPageState extends ThemeState<SearchPage> {
                         );
                       },
                     ),
-                  ]));
+                  ],
+                ),
+              );
             },
           );
         },

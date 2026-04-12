@@ -189,7 +189,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                     context,
                   ).size.height;
                   final double dy = details.localPosition.dy;
-                  if (dy > screenHeight * 3 / 3.7) {
+                  if (dy > screenHeight * 3 / (3.7.h)) {
                     return;
                   }
                   widget.animatedController.forward();
@@ -208,7 +208,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   final double screenWidth = MediaQuery.of(context).size.width;
                   final double dx = details.localPosition.dx;
                   final double dy = details.localPosition.dy;
-                  if (dy > screenHeight * 3 / 3.7) {
+                  if (dy > screenHeight * 3 / (3.7.h)) {
                     return;
                   }
                   debugPrint(dx.toString());
@@ -405,9 +405,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           SelectedStoriesStatus.loading) {
                         widget.animatedController.stop();
                         return TrydosShimmerLoading(
-                          width: 60,
-                          height: 60,
-                          logoTextHeight: 14,
+                          width: 60.w,
+                          height: 60.h,
+                          logoTextHeight: 14.h,
                           logoTextWidth: 20.w,
                         );
                       }
@@ -669,8 +669,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             );
                           return Container(
                             color: Colors.amberAccent,
-                            width: 200,
-                            height: 200,
+                            width: 200.w,
+                            height: 200.h,
                           );
                         },
                       );
@@ -683,9 +683,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                 ),
               ),
               positioned.Positioned(
-                top: 40.0,
-                left: 10.0,
-                right: 10.0,
+                top: 40.h,
+                left: 10.w,
+                right: 10.w,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -721,11 +721,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                 onPressed: () => Navigator.of(context).pop(),
                               ),
                               Container(
-                                width: 40,
-                                height: 40,
+                                width: 40.w,
+                                height: 40.h,
                                 clipBehavior: Clip.hardEdge,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(20.r),
                                 ),
                                 child:
                                     state
@@ -734,8 +734,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                             .photoPath ==
                                         null
                                     ? NoImageWidget(
-                                        height: 40,
-                                        width: 40,
+                                        height: 40.h,
+                                        width: 40.w,
                                         textStyle: context
                                             .textTheme
                                             .bodyMedium
@@ -760,8 +760,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                               ),
                                       )
                                     : MyCachedNetworkImage(
-                                        width: 40,
-                                        height: 40,
+                                        width: 40.w,
+                                        height: 40.h,
                                         imageFit: BoxFit.cover,
                                         imageUrl:
                                             ((state
@@ -779,8 +779,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                       ),
                               ),
                               Padding(
-                                padding: const EdgeInsetsDirectional.only(
-                                  start: 10,
+                                padding: EdgeInsetsDirectional.only(
+                                  start: 10.w,
                                 ),
                                 child: MyTextWidget(
                                   style: textTheme.bodyLarge?.rq.copyWith(
@@ -821,9 +821,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                             },
                                           );
                                         },
-                                        child: const Icon(
+                                        child: Icon(
                                           Icons.error,
-                                          size: 26,
+                                          size: 26.h,
                                           color: Colors.red,
                                         ),
                                       ),
@@ -884,14 +884,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             ],
                           ),
                           Container(
-                            width: 200,
-                            height: 20,
+                            width: 200.w,
+                            height: 20.h,
                             child: Text(
                               "${(HelperFunctions.getZonedDateWithoutUtcForm(state.storiesCollections[widget.collectionIndex].stories![state.currentStoryInEachCollection[widget.collectionIndex]!].createdAt ?? "")).toString().split(".").first}",
                               textAlign: TextAlign.center,
                               maxLines: 1,
                               style: context.textTheme.bodyMedium?.bq.copyWith(
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 color: Colors.blue,
                                 letterSpacing: 0.18,
                               ),
@@ -917,7 +917,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       builder: (BuildContext context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
+            borderRadius: BorderRadius.circular(12.r),
           ),
           child: Container(
             padding: const EdgeInsets.all(24.0),
@@ -927,24 +927,24 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                 // العنوان
                 Text(
                   LocaleKeys.report_story.tr(),
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
                   textAlign: TextAlign.center,
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
 
                 // الرسالة
                 Text(
                   LocaleKeys.confirm_report_story.tr(),
-                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  style: TextStyle(fontSize: 14.sp, color: Colors.black87),
                   textAlign: TextAlign.center,
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
 
                 // الأزرار
                 Row(
@@ -959,21 +959,21 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           backgroundColor: Colors.grey[300],
                           foregroundColor: Colors.black87,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(8.0.r),
                           ),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
                         ),
                         child: Text(
                           LocaleKeys.cancel.tr(),
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: TextStyle(
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
                     ),
 
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12.w),
 
                     // زر التأكيد
                     Expanded(
@@ -987,14 +987,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(8.0.r),
                           ),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
                         ),
                         child: Text(
                           LocaleKeys.confirm.tr(),
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: TextStyle(
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -1309,8 +1309,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                     .getFiltersForNavigatorFromLinkToListingPageStatus ==
                 GetFiltersForNavigatorFromLinkToListingPageStatus.loading) {}
             return Container(
-              width: 150,
-              height: 35,
+              width: 150.w,
+              height: 35.h,
               child: InkWell(
                 onTap: () {
                   _videoController?.pause();
@@ -1324,17 +1324,17 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           GetFiltersForNavigatorFromLinkToListingPageStatus
                               .loading
                       ? Container(
-                          height: 30,
-                          width: 30,
+                          height: 30.h,
+                          width: 30.w,
                           color: Colors.white,
                           child: TrydosLoader(size: 28, color: Colors.black),
                         )
                       : Container(
-                          width: 150,
-                          height: 35,
+                          width: 150.w,
+                          height: 35.h,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15.r),
                           ),
                           child: Center(
                             child: Text(
@@ -1343,7 +1343,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               maxLines: 1,
                               style: context.textTheme.bodyMedium?.rq.copyWith(
                                 color: const Color(0xff1D1D1D),
-                                fontSize: 10,
+                                fontSize: 10.sp,
                                 letterSpacing: 0.18,
                               ),
                             ),

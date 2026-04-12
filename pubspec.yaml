@@ -43,7 +43,7 @@ dependencies:
   intl: ^0.20.2
   carousel_slider: ^5.0.0
   qr_flutter: ^4.1.0
-  mobile_scanner: ^5.1.1
+  mobile_scanner: ^7.1.2
   cached_network_image: ^3.2.3
   easy_localization: ^3.0.3
   url_launcher: ^6.1.14
@@ -55,30 +55,30 @@ dependencies:
   eraser: ^3.0.0
   step_progress_indicator: ^1.0.2
   flutter_bloc: ^8.1.3
-  share_plus: ^7.2.1
+  share_plus: ^12.0.1
   dropdown_button2: ^2.3.9
   equatable: ^2.0.5
   sliding_up_panel: 
     git:
-      url: https://github.com/trydos-app/trydos-app-sliding_up_panel-2.0.0.git
+      url: https://github.com/helalmoamad/trydos-app-sliding_up_panel-2.0.0.git
   overscroll_pop:
     git:
-      url: https://github.com/trydos-app/trydos-app-trydos-overscroll_pop-0.1.0.git  
+      url: https://github.com/helalmoamad/trydos-app-trydos-overscroll_pop-0.1.0.git  
   flutter_carousel_slider:
     git:
-      url: https://github.com/trydos-app/trydos-app-trydos-flutter_carousel_slider-1.1.0.git
+      url: https://github.com/helalmoamad/trydos-app-trydos-flutter_carousel_slider-1.1.0.git
   audioplayers:
     git:
-      url: https://github.com/trydos-app/audioplayers-6.4.0.git
+      url: https://github.com/helalmoamad/audioplayers-6.4.0.git
   flutter_gallery_3d:
     git:
-        url: https://github.com/trydos-app/trydos-app-flutter_gallery_3d-1.1.1.git
+        url: https://github.com/helalmoamad/trydos-app-flutter_gallery_3d-1.1.1.git
   flutter_inset_box_shadow:
     git:
-        url: https://github.com/trydos-app/flutter_inset_box_shadow-1.0.8.git
+        url: https://github.com/helalmoamad/flutter_inset_box_shadow-1.0.8.git
   trydos_wallet:
     git:
-        url: https://github.com/trydos-app/trydos_wallet.git
+        url: https://github.com/helalmoamad/trydos_wallet.git
         ref: main
   flutter_slidable: ^4.0.0
   path_provider: ^2.1.1

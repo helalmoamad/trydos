@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -19,91 +20,90 @@ class SearchChip extends StatelessWidget {
       FlutterError.dumpErrorToConsole(error);
     };
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 10),
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      margin: EdgeInsets.symmetric(horizontal: 10.w).copyWith(bottom: 10.h),
+      padding: EdgeInsets.symmetric(vertical: 10.h),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color(0xffC4C2C2), width: 0.3)),
+        borderRadius: BorderRadius.circular(15.r),
+        border: Border.all(color: const Color(0xffC4C2C2), width: 0.3),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            padding: EdgeInsets.symmetric(horizontal: 10.0.w),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MyTextWidget(
                   title,
                   style: context.textTheme.titleMedium?.rq.copyWith(
-                      color: const Color(0xff505050), height: 15 / 12),
+                    color: const Color(0xff505050),
+                    height: 15 / 12,
+                    fontSize: 13.sp,
+                  ),
                 ),
                 SvgPicture.asset(
                   AppAssets.backArrowArabic,
                   // ignore: deprecated_member_use
                   color: const Color(0xffC4C2C2),
-                  width: 10,
-                  height: 10,
-                )
+                  width: 10.w,
+                  height: 10.w,
+                ),
               ],
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10.h),
           SizedBox(
-            height: 30,
+            height: 30.h,
             child: ScrollConfiguration(
               behavior: const CupertinoScrollBehavior(),
               child: Stack(
                 alignment: Alignment.centerRight,
                 children: [
                   ListView.separated(
-                      shrinkWrap: true,
-                      physics: const ClampingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: const Color(0xffF8F8F8),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 6, horizontal: 10),
-                          child: Center(
-                            child: justLogo
-                                ? SvgPicture.asset(
-                                    AppAssets.mangoSvg,
-                                    height: 10,
-                                  )
-                                : Row(
-                                    children: [
-                                      SvgPicture.asset(
-                                        AppAssets.qualityBadgeSvg,
-                                        width: 15,
-                                        height: 15,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      MyTextWidget(
-                                        'T-Shirt',
-                                        style: context.textTheme.titleLarge?.rq
-                                            .copyWith(
-                                                height: 18 / 14,
-                                                color: const Color(0xff8D8D8D)),
-                                      )
-                                    ],
-                                  ),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const SizedBox(
-                          width: 10,
-                        );
-                      },
-                      itemCount: 8),
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12.r),
+                          color: const Color(0xffF8F8F8),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 10.w,
+                        ),
+                        child: Center(
+                          child: justLogo
+                              ? SvgPicture.asset(AppAssets.mangoSvg, height: 10)
+                              : Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      AppAssets.qualityBadgeSvg,
+                                      width: 15.w,
+                                      height: 15.h,
+                                    ),
+                                    const SizedBox(width: 5),
+                                    MyTextWidget(
+                                      'T-Shirt',
+                                      style: context.textTheme.titleLarge?.rq
+                                          .copyWith(
+                                            height: 18 / 14,
+                                            color: const Color(0xff8D8D8D),
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return const SizedBox(width: 10);
+                    },
+                    itemCount: 8,
+                  ),
                   // Container(
                   //   height: 28,
                   //   width: 15,

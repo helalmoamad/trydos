@@ -850,46 +850,106 @@ class _ProductDetailsSheetBottomBarNewState
                                                           "" ||
                                                       (widget.isFlashDealEnded ??
                                                           true))
-                                                ? Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Container(
-                                                        decoration: BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                10,
-                                                              ),
-                                                          border: Border.all(
-                                                            color: const Color(
-                                                              0xffFF6200,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            const SizedBox(
-                                                              width: 2,
-                                                            ),
-                                                            SvgPicture.asset(
-                                                              AppAssets
-                                                                  .flashDealSvg,
-                                                              height: 9.sp,
-                                                              // ignore: deprecated_member_use
+                                                ? SingleChildScrollView(
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Container(
+                                                          decoration: BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  10,
+                                                                ),
+                                                            border: Border.all(
                                                               color:
                                                                   const Color(
                                                                     0xffFF6200,
                                                                   ),
                                                             ),
-                                                            const SizedBox(
-                                                              width: 2,
+                                                          ),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              const SizedBox(
+                                                                width: 2,
+                                                              ),
+                                                              SvgPicture.asset(
+                                                                AppAssets
+                                                                    .flashDealSvg,
+                                                                height: 9.sp,
+                                                                // ignore: deprecated_member_use
+                                                                color:
+                                                                    const Color(
+                                                                      0xffFF6200,
+                                                                    ),
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 2,
+                                                              ),
+                                                              Text(
+                                                                "${LocaleKeys.flash_deal.tr()}",
+                                                                maxLines: 1,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: context
+                                                                    .textTheme
+                                                                    .bodyMedium
+                                                                    ?.bq
+                                                                    .copyWith(
+                                                                      color: const Color(
+                                                                        0xffFF6200,
+                                                                      ),
+                                                                      letterSpacing:
+                                                                          0.18,
+                                                                      fontSize:
+                                                                          9.sp,
+                                                                      height:
+                                                                          1.3,
+                                                                    ),
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 2,
+                                                              ),
+                                                              FlashDealCountdownTimerWidget(
+                                                                visibleFlashDeal:
+                                                                    widget
+                                                                        .visibleFlashDeal,
+                                                                endDateString:
+                                                                    widget
+                                                                        .flashDealEndDate ??
+                                                                    "",
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 2,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 2,
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            // ignore: deprecated_member_use
+                                                            SvgPicture.asset(
+                                                              AppAssets
+                                                                  .fastPackingManIconSvg,
+                                                              // ignore: deprecated_member_use
+                                                              color:
+                                                                  const Color(
+                                                                    0xff388CFF,
+                                                                  ),
+                                                              height: 12,
                                                             ),
                                                             Text(
-                                                              "${LocaleKeys.flash_deal.tr()}",
+                                                              " ${LocaleKeys.fast_packing.tr()} ",
                                                               maxLines: 1,
                                                               overflow:
                                                                   TextOverflow
@@ -900,7 +960,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                   ?.bq
                                                                   .copyWith(
                                                                     color: const Color(
-                                                                      0xffFF6200,
+                                                                      0xff388CFF,
                                                                     ),
                                                                     letterSpacing:
                                                                         0.18,
@@ -909,126 +969,75 @@ class _ProductDetailsSheetBottomBarNewState
                                                                     height: 1.3,
                                                                   ),
                                                             ),
-                                                            const SizedBox(
-                                                              width: 2,
+                                                            Text(
+                                                              LocaleKeys
+                                                                  .today_shipping_if_buy_before
+                                                                  .tr(),
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: context
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.rq
+                                                                  .copyWith(
+                                                                    color: const Color(
+                                                                      0xff388CFF,
+                                                                    ),
+                                                                    letterSpacing:
+                                                                        0.18,
+                                                                    fontSize:
+                                                                        9.sp,
+                                                                    height: 1.3,
+                                                                  ),
                                                             ),
-                                                            FlashDealCountdownTimerWidget(
-                                                              visibleFlashDeal:
-                                                                  widget
-                                                                      .visibleFlashDeal,
-                                                              endDateString:
-                                                                  widget
-                                                                      .flashDealEndDate ??
-                                                                  "",
+                                                            Text(
+                                                              " 13:00",
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: context
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.bq
+                                                                  .copyWith(
+                                                                    color: const Color(
+                                                                      0xff388CFF,
+                                                                    ),
+                                                                    letterSpacing:
+                                                                        0.18,
+                                                                    fontSize:
+                                                                        9.sp,
+                                                                    height: 1.3,
+                                                                  ),
                                                             ),
-                                                            const SizedBox(
-                                                              width: 2,
+                                                            Text(
+                                                              " ${LocaleKeys.today.tr()} ",
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: context
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.rq
+                                                                  .copyWith(
+                                                                    color: const Color(
+                                                                      0xff388CFF,
+                                                                    ),
+                                                                    letterSpacing:
+                                                                        0.18,
+                                                                    fontSize:
+                                                                        9.sp,
+                                                                    height: 1.3,
+                                                                  ),
                                                             ),
                                                           ],
                                                         ),
-                                                      ),
-                                                      const SizedBox(width: 2),
-                                                      Row(
-                                                        children: [
-                                                          // ignore: deprecated_member_use
-                                                          SvgPicture.asset(
-                                                            AppAssets
-                                                                .fastPackingManIconSvg,
-                                                            // ignore: deprecated_member_use
-                                                            color: const Color(
-                                                              0xff388CFF,
-                                                            ),
-                                                            height: 12,
-                                                          ),
-                                                          Text(
-                                                            " ${LocaleKeys.fast_packing.tr()} ",
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: context
-                                                                .textTheme
-                                                                .bodyMedium
-                                                                ?.bq
-                                                                .copyWith(
-                                                                  color: const Color(
-                                                                    0xff388CFF,
-                                                                  ),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize:
-                                                                      9.sp,
-                                                                  height: 1.3,
-                                                                ),
-                                                          ),
-                                                          Text(
-                                                            LocaleKeys
-                                                                .today_shipping_if_buy_before
-                                                                .tr(),
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: context
-                                                                .textTheme
-                                                                .bodyMedium
-                                                                ?.rq
-                                                                .copyWith(
-                                                                  color: const Color(
-                                                                    0xff388CFF,
-                                                                  ),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize:
-                                                                      9.sp,
-                                                                  height: 1.3,
-                                                                ),
-                                                          ),
-                                                          Text(
-                                                            " 13:00",
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: context
-                                                                .textTheme
-                                                                .bodyMedium
-                                                                ?.bq
-                                                                .copyWith(
-                                                                  color: const Color(
-                                                                    0xff388CFF,
-                                                                  ),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize:
-                                                                      9.sp,
-                                                                  height: 1.3,
-                                                                ),
-                                                          ),
-                                                          Text(
-                                                            " ${LocaleKeys.today.tr()} ",
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: context
-                                                                .textTheme
-                                                                .bodyMedium
-                                                                ?.rq
-                                                                .copyWith(
-                                                                  color: const Color(
-                                                                    0xff388CFF,
-                                                                  ),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize:
-                                                                      9.sp,
-                                                                  height: 1.3,
-                                                                ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   )
                                                 : Row(
                                                     mainAxisAlignment:

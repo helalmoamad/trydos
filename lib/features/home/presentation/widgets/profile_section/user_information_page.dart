@@ -169,7 +169,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
               style: context.textTheme.bodyMedium?.mq.copyWith(
                 color: const Color(0xff1D1D1D),
                 letterSpacing: 0.18,
-                fontSize: 14,
+                fontSize: 14.sp,
                 height: 1.3,
               ),
             ),
@@ -183,11 +183,11 @@ class _UserInformationPageState extends State<UserInformationPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12.h),
             child: Column(
               children: [
                 _addPhotoWidget(),
-                SizedBox(height: 30, width: 1.sw),
+                SizedBox(height: 30.h, width: 1.sw),
                 InkWell(
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
@@ -208,7 +208,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                     LocaleKeys.personal_info.tr(),
                   ),
                 ),
-                SizedBox(height: 5, width: 1.sw),
+                SizedBox(height: 5.h, width: 1.sw),
                 InkWell(
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
@@ -220,7 +220,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                     LocaleKeys.size.tr(),
                   ),
                 ),
-                SizedBox(height: 5, width: 1.sw),
+                SizedBox(height: 5.h, width: 1.sw),
                 InkWell(
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
@@ -232,7 +232,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
                     LocaleKeys.address.tr(),
                   ),
                 ),
-                SizedBox(height: 5, width: 1.sw),
+                SizedBox(height: 5.h, width: 1.sw),
                 InkWell(
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
@@ -266,8 +266,8 @@ class _UserInformationPageState extends State<UserInformationPage> {
             alignment: Alignment.center,
             children: [
               Container(
-                width: 128,
-                height: 128,
+                width: 128.w,
+                height: 128.h,
                 decoration: BoxDecoration(
                   color: const Color(0xffF8F8F8),
                   borderRadius: BorderRadius.circular(22.r),
@@ -276,8 +276,8 @@ class _UserInformationPageState extends State<UserInformationPage> {
               Positioned(
                 bottom: 0,
                 child: Container(
-                  width: 128,
-                  height: 40,
+                  width: 128.w,
+                  height: 40.h,
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(0, 0, 0, 0.6),
                     borderRadius: BorderRadius.only(
@@ -293,18 +293,19 @@ class _UserInformationPageState extends State<UserInformationPage> {
                           AppAssets.addPhotoSvg,
                           // ignore: deprecated_member_use
                           color: const Color(0xffFFFFFF),
+                          height: 15.h,
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         Text(
                           LocaleKeys.add.tr() + " " + LocaleKeys.photo.tr(),
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: const Color(0xffFFFFFF),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 20),
+                        SizedBox(width: 20.w),
                       ],
                     ),
                   ),
@@ -314,15 +315,15 @@ class _UserInformationPageState extends State<UserInformationPage> {
                       prefsRepository.myProfilePhoto == "")
                   ? MyCachedNetworkImage(
                       imageUrl: prefsRepository.myProfilePhoto!,
-                      width: 128,
+                      width: 128.w,
                       imageFit: BoxFit.cover,
-                      height: 128,
+                      height: 128.h,
                     )
                   : Positioned(
-                      top: 35,
-                      left: 40,
+                      top: 35.h,
+                      left: 40.w,
                       child: SvgPicture.asset(
-                        width: 50,
+                        width: 50.w,
                         AppAssets.trySvg,
                         // ignore: deprecated_member_use
                         color: const Color(0xffD3D3D3),
@@ -337,8 +338,8 @@ class _UserInformationPageState extends State<UserInformationPage> {
 
   Widget _actionWidget(String svgUrl, String actionName) {
     return Container(
-      padding: const EdgeInsets.all(12),
-      height: 53,
+      padding: EdgeInsets.all(12.h),
+      height: 54.h,
       width: 1.sw,
       decoration: BoxDecoration(
         color: const Color(0xffF8F8F8),
@@ -353,7 +354,7 @@ class _UserInformationPageState extends State<UserInformationPage> {
             style: context.textTheme.bodyMedium?.rq.copyWith(
               color: const Color(0xff1D1D1D),
               letterSpacing: 0.18,
-              fontSize: 14,
+              fontSize: 14.sp,
               height: 1.3,
             ),
           ),

@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 
@@ -133,7 +134,7 @@ class _StoriesListState extends State<StoriesList> {
                           key: TestVariables.kTestMode
                               ? const Key(WidgetsKeys.storiesSuccessStatusKey)
                               : null,
-                          height: 220,
+                          height: 220.h,
                           child: ListView.separated(
                             controller: listViewController,
                             itemBuilder: (context, index) {
@@ -143,17 +144,17 @@ class _StoriesListState extends State<StoriesList> {
                                       !(state
                                           .getStoryWithPagintionStatusLoading)
                                       ? 0
-                                      : 50,
+                                      : 50.h,
                                   width:
                                       !(state
                                           .getStoryWithPagintionStatusLoading)
                                       ? 0
-                                      : 50,
+                                      : 50.h,
                                   child:
                                       !(state
                                           .getStoryWithPagintionStatusLoading)
                                       ? const SizedBox.shrink()
-                                      : TrydosLoader(size: 20),
+                                      : TrydosLoader(size: 20.w),
                                 );
                               }
                               //todo FIRST ELEMENT IN THE LISTvIEW IT WILL BE THE UPLOAD BUTTON
@@ -164,7 +165,7 @@ class _StoriesListState extends State<StoriesList> {
                                     : Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          const SizedBox(height: 40),
+                                          SizedBox(height: 40.h),
                                           Material(
                                             color: const Color.fromARGB(
                                               0,
@@ -173,24 +174,24 @@ class _StoriesListState extends State<StoriesList> {
                                               222,
                                             ),
                                             child: SizedBox(
-                                              width: 100,
-                                              height: 150,
+                                              width: 100.w,
+                                              height: 150.h,
                                               child: Stack(
                                                 alignment: Alignment.center,
                                                 children: [
                                                   ClipRRect(
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                          20,
+                                                          20.r,
                                                         ),
                                                     child: MyCachedNetworkImage(
                                                       imageUrl:
                                                           prefsRepository
                                                               .myProfilePhoto ??
                                                           "",
-                                                      width: 100,
+                                                      width: 100.w,
                                                       imageFit: BoxFit.cover,
-                                                      height: 150,
+                                                      height: 150.h,
                                                     ),
                                                   ),
                                                   InkWell(
@@ -206,7 +207,7 @@ class _StoriesListState extends State<StoriesList> {
                                                         ? ClipRRect(
                                                             borderRadius:
                                                                 BorderRadius.circular(
-                                                                  20,
+                                                                  20.r,
                                                                 ),
                                                             child: Container(
                                                               color:
@@ -214,8 +215,8 @@ class _StoriesListState extends State<StoriesList> {
                                                               alignment:
                                                                   Alignment
                                                                       .center,
-                                                              height: 150,
-                                                              width: 100,
+                                                              height: 150.h,
+                                                              width: 100.w,
                                                               child:
                                                                   TrydosLoader(
                                                                     size: 25,
@@ -236,7 +237,7 @@ class _StoriesListState extends State<StoriesList> {
                                                             decoration: BoxDecoration(
                                                               borderRadius:
                                                                   BorderRadius.circular(
-                                                                    20.0,
+                                                                    20.0.r,
                                                                   ),
                                                               color:
                                                                   (prefsRepository
@@ -253,7 +254,7 @@ class _StoriesListState extends State<StoriesList> {
                                                                       0.7,
                                                                     ),
                                                             ),
-                                                            width: 100,
+                                                            width: 100.w,
                                                           ),
                                                     onTap: () async {
                                                       if (authState
@@ -419,7 +420,7 @@ class _StoriesListState extends State<StoriesList> {
                                     left:
                                         focused.value1 != -1 &&
                                             focused.value1 == (index - 1)
-                                        ? 30
+                                        ? 30.w
                                         : 0,
                                   ),
                                   child: GestureDetector(
@@ -431,27 +432,27 @@ class _StoriesListState extends State<StoriesList> {
                                             value1:
                                                 (details.globalPosition.dx +
                                                     listViewController.offset -
-                                                    115) ~/
-                                                115,
+                                                    115.w) ~/
+                                                115.w,
                                           );
                                       if (details.localPosition.dx <=
-                                              (40 +
+                                              (40.w +
                                                   resizeStories.value.value1 *
-                                                      115 +
+                                                      115.w +
                                                   (resizeStories.value.value1 ==
                                                           resizeStories
                                                               .value
                                                               .value2
-                                                      ? 45
+                                                      ? 45.w
                                                       : 0)) &&
                                           details.localPosition.dy <=
-                                              (40 +
-                                                  (isFirstPress ? 20 : 0) +
+                                              (40.h +
+                                                  (isFirstPress ? 20.h : 0) +
                                                   (resizeStories.value.value1 ==
                                                           resizeStories
                                                               .value
                                                               .value2
-                                                      ? 45
+                                                      ? 45.h
                                                       : 0))) {
                                         resizeStories.value = resizeStories
                                             .value
@@ -477,26 +478,26 @@ class _StoriesListState extends State<StoriesList> {
                                             value1:
                                                 (details.globalPosition.dx +
                                                     listViewController.offset -
-                                                    115) ~/
-                                                115,
+                                                    115.w) ~/
+                                                115.w,
                                           );
                                       if (details.localPosition.dx <=
-                                              (40 +
+                                              (40.w +
                                                   resizeStories.value.value1 *
-                                                      115 +
+                                                      115.w +
                                                   (resizeStories.value.value1 ==
                                                           resizeStories
                                                               .value
                                                               .value2
-                                                      ? 50
+                                                      ? 50.w
                                                       : 0)) &&
                                           details.localPosition.dy <=
-                                              (40 +
+                                              (40.h +
                                                   (resizeStories.value.value1 ==
                                                           resizeStories
                                                               .value
                                                               .value2
-                                                      ? 50
+                                                      ? 50.h
                                                       : 0))) {
                                         resizeStories.value = resizeStories
                                             .value
@@ -613,12 +614,12 @@ class _StoriesListState extends State<StoriesList> {
                               }
                             },
                             physics: const ClampingScrollPhysics(),
-                            padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: 10,
+                            padding: EdgeInsetsDirectional.symmetric(
+                              horizontal: 10.w,
                             ),
                             scrollDirection: Axis.horizontal,
                             separatorBuilder: (context, index) =>
-                                const SizedBox(width: 15),
+                                SizedBox(width: 15.w),
                             itemCount: storiesCollections.length + 2,
                           ),
                         );
@@ -640,24 +641,24 @@ class _StoriesListState extends State<StoriesList> {
                           highlightColor: Colors.grey.shade100,
                           child: SizedBox(
                             width: double.infinity,
-                            height: 220,
+                            height: 220.h,
                             child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) => Padding(
-                                padding: const EdgeInsetsDirectional.only(
-                                  start: 10,
-                                  top: 35,
-                                  bottom: 30,
+                                padding: EdgeInsetsDirectional.only(
+                                  start: 10.w,
+                                  top: 35.h,
+                                  bottom: 30.h,
                                 ),
                                 child: Stack(
                                   alignment: Alignment.center,
                                   children: [
                                     Container(
-                                      width: 100,
-                                      height: 150,
+                                      width: 100.w,
+                                      height: 150.h,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(
-                                          20.0,
+                                          20.0.r,
                                         ),
                                         boxShadow: [
                                           BoxShadow(
@@ -665,26 +666,26 @@ class _StoriesListState extends State<StoriesList> {
                                                 // ignore: deprecated_member_use
                                                 .withOpacity(0.4),
                                             offset: const Offset(0, 3),
-                                            blurRadius: 6,
+                                            blurRadius: 6.r,
                                           ),
                                         ],
                                       ),
                                     ),
-                                    const Positioned(
+                                    Positioned(
                                       left: 0,
                                       top: 0,
-                                      child: CircleAvatar(radius: 15),
+                                      child: CircleAvatar(radius: 15.r),
                                     ),
                                     SvgPicture.asset(
                                       AppAssets.storyFilmSvg,
-                                      width: 20,
-                                      height: 20,
+                                      width: 20.w,
+                                      height: 20.h,
                                     ),
                                   ],
                                 ),
                               ),
                               separatorBuilder: (context, index) =>
-                                  const SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                               itemCount: 7,
                             ),
                           ),

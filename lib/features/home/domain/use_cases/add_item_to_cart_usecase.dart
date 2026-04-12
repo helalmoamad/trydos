@@ -36,7 +36,7 @@ class AddITemToCartParams {
   Map<String, dynamic> get map => {
     "id": id,
     "quantity": quantity,
-    "is_redeem": isRedeem,
+    "is_luck": isRedeem,
     "product_variation_id": variationId,
     "image": image,
   }..removeWhere((key, value) => value == null || value == "");

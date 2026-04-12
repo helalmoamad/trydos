@@ -1332,8 +1332,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                 GetAllowedCountriesStatus.failure) {
                               return Center(
                                 child: Container(
-                                  width: 200,
-                                  height: 200,
+                                  width: 200.w,
+                                  height: 200.h,
                                   child: TryAgainWidget(
                                     tryAgain: () {
                                       homeBloc.add(GetAllowedCountriesEvent());

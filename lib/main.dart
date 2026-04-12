@@ -330,9 +330,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           NotifyThatIReceivedMessageEvent(channelId: myMessage.channelId!),
         );
       }
-      print(
-        "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ//////////////////////******",
-      );
+
       GetIt.I<PrefsRepository>().setMessageFromBackground(
         convert.jsonEncode(remoteMessage['message']),
       );
@@ -372,6 +370,7 @@ bool isHydratedStorageInitialized = false;
 //final Semaphore prefechFiveFilter = Semaphore(3); // زيادة من 1 → 3
 bool isLoadDotenvFile = false;
 bool isDependencyInitialized = false;
+bool mediaServerIsS3 = true;
 Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool notificationClicked = false;

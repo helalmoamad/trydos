@@ -6,7 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
 
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -129,20 +131,25 @@ class FlashDealProductsWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        width: 250,
-                        height: 20,
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
+                        margin: EdgeInsets.symmetric(horizontal: 10.w),
+
+                        height: 50.h,
+                        decoration: BoxDecoration(
+                          color: const Color(0xffF3F3F3),
+                          borderRadius: BorderRadius.all(Radius.circular(15.r)),
+                        ),
                         child: Row(
                           children: [
                             SvgPicture.asset(
                               AppAssets.flashDealSvg,
-                              height: 18,
+                              height: 24.h,
                             ),
                             MyTextWidget(
                               " ${LocaleKeys.flash_deal.tr()}",
-                              style: const TextStyle(
+                              style: context.textTheme.titleLarge?.rq.copyWith(
                                 color: Colors.black,
-                                fontSize: 14,
+                                fontSize: 18.sp,
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -155,11 +162,11 @@ class FlashDealProductsWidget extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       Container(
                         margin: const EdgeInsets.only(bottom: 5),
                         width: 1.sw,
-                        height: 300,
+                        height: 345.w,
                         child: ListView.separated(
                           addAutomaticKeepAlives: false,
                           addRepaintBoundaries: false,
@@ -189,7 +196,7 @@ class FlashDealProductsWidget extends StatelessWidget {
                           ),
                           scrollDirection: Axis.horizontal,
                           separatorBuilder: (context, index) =>
-                              const SizedBox(width: 15),
+                              SizedBox(width: 10.w),
                           itemCount: products.length > 6 ? 6 : products.length,
                         ),
                       ),
@@ -246,28 +253,31 @@ class FlashDealProductsWidget extends StatelessWidget {
             itemIndex: index,
           ),
           Container(
-            decoration: const BoxDecoration(
-              color: Color.fromRGBO(0, 0, 0, 0.4),
-              borderRadius: BorderRadius.all(Radius.circular(12)),
+            decoration: BoxDecoration(
+              color: const Color.fromRGBO(0, 0, 0, 0.4),
+              borderRadius: BorderRadius.all(Radius.circular(12.r)),
             ),
-            width: 200,
-            height: 300,
+            width: 200.w,
+            height: 300.h,
           ),
           Positioned(
-            top: 100,
-            left: 75,
+            top: 100.h,
+            left: 75.w,
             child: Container(
               alignment: Alignment.center,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(30)),
+                borderRadius: BorderRadius.all(Radius.circular(15.r)),
               ),
-              width: 60,
-              height: 60,
+              width: 60.w,
+              height: 60.h,
               child: MyTextWidget(
                 textAlign: TextAlign.center,
                 "${LocaleKeys.more.tr()}",
-                style: const TextStyle(color: Colors.black, fontSize: 18),
+                style: context.textTheme.titleLarge?.rq.copyWith(
+                  color: Colors.black,
+                  fontSize: 16.sp,
+                ),
               ),
             ),
           ),

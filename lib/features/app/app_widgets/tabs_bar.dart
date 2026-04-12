@@ -354,16 +354,13 @@ class _TabsBarState extends State<TabsBar> {
                     ? const Key(WidgetsKeys.mainCategoriesTabNullKey)
                     : null,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(
-                  5,
-                  (index) => TrydosLoader(size: 15.sp),
-                ),
+                children: List.generate(5, (index) => TrydosLoader(size: 15.h)),
               ),
             );
           }
           return Container(
             width: 1.sw,
-            height: 45 + 5.h,
+            height: 60.h,
             padding: EdgeInsets.all(4.r),
             decoration: BoxDecoration(
               color: colorScheme.white,
@@ -389,7 +386,7 @@ class _TabsBarState extends State<TabsBar> {
                       }
                     },
                     width: 1.sw,
-                    height: 50,
+                    height: 50.h,
                     onClickClose: () {
                       if (widget.controller.text.length > 0) {
                         categoryBloc.add(
@@ -489,17 +486,17 @@ class _TabsBarState extends State<TabsBar> {
                           : null,
                       child: SvgPicture.asset(
                         AppAssets.searchOutlinedSvg,
-                        height: 20,
-                        width: 40,
+                        height: 20.h,
+                        width: 40.w,
                         // ignore: deprecated_member_use
                         color: const Color(0xff388CFF),
                       ),
                     ),
                     prefixWidget: Padding(
-                      padding: const EdgeInsets.only(
-                        right: 15,
-                        top: 10,
-                        bottom: 10,
+                      padding: EdgeInsets.only(
+                        right: 15.w,
+                        top: 10.h,
+                        bottom: 10.h,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -514,11 +511,11 @@ class _TabsBarState extends State<TabsBar> {
                             child:
                                 homeState.sendRequestToGeminiStatus ==
                                     SendRequestToGeminiStatus.loading
-                                ? TrydosLoader(size: 18)
+                                ? TrydosLoader(size: 18.h)
                                 : SvgPicture.asset(
                                     AppAssets.realCameraSvg,
-                                    height: 20,
-                                    width: 20,
+                                    height: 20.h,
+                                    width: 20.w,
                                   ),
                           ),
                           ValueListenableBuilder<bool>(
@@ -542,7 +539,7 @@ class _TabsBarState extends State<TabsBar> {
                                       : _stopListening();
                                 },
                                 child: Container(
-                                  width: 20,
+                                  width: 20.w,
                                   child: Icon(
                                     _speechToText.isNotListening ||
                                             !recordeForSearchWithMic
@@ -613,20 +610,20 @@ class _TabsBarState extends State<TabsBar> {
                           ? colorScheme.white
                           : const Color(0xffF8F8F8),
                       prefixIcon: Padding(
-                        padding: const EdgeInsets.only(top: 12, bottom: 12),
+                        padding: EdgeInsets.only(top: 12.h, bottom: 12.h),
                         child: SvgPicture.asset(
                           AppAssets.searchOutlinedSvg,
-                          height: 20,
-                          width: 40,
+                          height: 20.h,
+                          width: 40.w,
                           // ignore: deprecated_member_use
                           color: const Color(0xff388CFF),
                         ),
                       ),
                       suffixIcon: Padding(
-                        padding: const EdgeInsets.only(
-                          right: 15,
-                          top: 10,
-                          bottom: 10,
+                        padding: EdgeInsets.only(
+                          right: 15.w,
+                          top: 10.h,
+                          bottom: 10.h,
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -650,14 +647,14 @@ class _TabsBarState extends State<TabsBar> {
                               child:
                                   homeState.sendRequestToGeminiStatus ==
                                       SendRequestToGeminiStatus.loading
-                                  ? TrydosLoader(size: 18)
+                                  ? TrydosLoader(size: 18.h)
                                   : SvgPicture.asset(
                                       AppAssets.realCameraSvg,
-                                      height: 20,
-                                      width: 20,
+                                      height: 20.h,
+                                      width: 20.w,
                                     ),
                             ),
-                            const SizedBox(width: 20),
+                            SizedBox(width: 20.w),
                             ValueListenableBuilder<bool>(
                               valueListenable: isRecordeForSearchWithMic,
                               builder: (context, recordeForSearchWithMic, _) {
@@ -688,7 +685,7 @@ class _TabsBarState extends State<TabsBar> {
                                     }
                                   },
                                   child: Container(
-                                    width: 20,
+                                    width: 20.w,
                                     child: Icon(
                                       _speechToText.isNotListening ||
                                               !recordeForSearchWithMic
@@ -704,10 +701,10 @@ class _TabsBarState extends State<TabsBar> {
                       ),
                       //context.colorScheme.white,
                       contentPadding: HWEdgeInsetsDirectional.only(
-                        start: 20,
-                        end: 10,
-                        bottom: 12,
-                        top: 12,
+                        start: 20.w,
+                        end: 10.w,
+                        bottom: 12.h,
+                        top: 12.h,
                       ),
                       hintText: 'Search',
                       hintStyle: context.textTheme.bodyMedium?.lq.copyWith(
@@ -877,16 +874,18 @@ class _TabsBarState extends State<TabsBar> {
                       if (state.currentIndex != 4) {
                         return Container(
                           padding: EdgeInsets.only(
-                            left: LanguageService.languageCode == "ar" ? 15 : 0,
+                            left: LanguageService.languageCode == "ar"
+                                ? 15.w
+                                : 0,
                             right: LanguageService.languageCode != "ar"
-                                ? 15
+                                ? 15.w
                                 : 0,
                           ),
                           width: 1.sw - 40,
-                          height: 80,
+                          height: 80.h,
                           child: ListView.builder(
                             //controller: scrollController,
-                            padding: const EdgeInsets.only(right: 15),
+                            padding: EdgeInsets.only(right: 15.w),
                             key: TestVariables.kTestMode
                                 ? const Key(WidgetsKeys.mainCategoriesTabKey)
                                 : null,
@@ -1122,7 +1121,7 @@ class _TabsBarState extends State<TabsBar> {
                                                         .flatPhotoPath!
                                                         .filePath
                                                         .toString(),
-                                                    height: 24,
+                                                    height: 24.h,
                                                     // color: state.tabIndex ==
                                                     //         index
                                                     //     ? Colors.black
@@ -1145,9 +1144,9 @@ class _TabsBarState extends State<TabsBar> {
                                                               state.tabIndex ==
                                                               index,
                                                           child:
-                                                              const FilterSelectedMark(
-                                                                width: 12,
-                                                                height: 12,
+                                                              FilterSelectedMark(
+                                                                width: 12.w,
+                                                                height: 12.h,
                                                               ),
                                                         ),
                                                       );

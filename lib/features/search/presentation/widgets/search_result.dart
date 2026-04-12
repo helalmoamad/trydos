@@ -20,7 +20,6 @@ import 'package:trydos/features/home/presentation/pages/product_details_page_new
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 
-
 import '../../../../core/utils/theme_state.dart';
 
 class SearchResult extends StatefulWidget {
@@ -53,50 +52,47 @@ class _SearchResultState extends ThemeState<SearchResult> {
     };
     return ValueListenableBuilder<bool>(
       valueListenable: appearSearchResult,
-      builder: (context, value, child) =>
-          BlocBuilder<BoutiqueBloc, BoutiqueState>(
+      builder: (context, value, child) => BlocBuilder<BoutiqueBloc, BoutiqueState>(
         buildWhen: (p, c) =>
             p.getProductListingWithFiltersPaginationModels['search'] !=
                 c.getProductListingWithFiltersPaginationModels['search'] ||
-            p.getProductListingWithFiltersPaginationModels[
-                    'searchwithoutFilter'] !=
-                c.getProductListingWithFiltersPaginationModels[
-                    'searchwithoutFilter'] ||
+            p.getProductListingWithFiltersPaginationModels['searchwithoutFilter'] !=
+                c.getProductListingWithFiltersPaginationModels['searchwithoutFilter'] ||
             p.getProductFiltersStatus != c.getProductFiltersStatus ||
             p.cashedOrginalBoutique != c.cashedOrginalBoutique,
         builder: (context, state) {
           String key =
               'search' + (state.cashedOrginalBoutique ? 'withoutFilter' : "");
-          if (state.getProductListingWithFiltersPaginationModels['search']
+          if (state
+                  .getProductListingWithFiltersPaginationModels['search']
                   ?.paginationStatus ==
               PaginationStatus.loading) {
-            return Column(children: [
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.only(start: 20.0),
-                child: MyTextWidget(
-                  LocaleKeys.find_products.tr(),
-                  style: textTheme.titleMedium?.rq.copyWith(
-                      height: 15 / 12, color: const Color(0xff505050)),
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Container(
-                  width: 15,
-                  height: 15,
-                  child: Center(
-                    child: TrydosLoader(
-                      color: Colors.black,
-                      size: 15,
+            return Column(
+              children: [
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 20.0),
+                  child: MyTextWidget(
+                    LocaleKeys.find_products.tr(),
+                    style: textTheme.titleMedium?.rq.copyWith(
+                      height: 15 / 12,
+                      color: const Color(0xff505050),
                     ),
-                  ))
-            ]);
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Container(
+                  width: 15.w,
+                  height: 15.h,
+                  child: Center(
+                    child: TrydosLoader(color: Colors.black, size: 15.h),
+                  ),
+                ),
+              ],
+            );
           }
-          if (state.getProductListingWithFiltersPaginationModels[key]
+          if (state
+                      .getProductListingWithFiltersPaginationModels[key]
                       ?.paginationStatus !=
                   PaginationStatus.success ||
               state.getProductListingWithFiltersPaginationModels[key] == null ||
@@ -194,7 +190,9 @@ class _SearchResultState extends ThemeState<SearchResult> {
           if (state.getProductListingWithFiltersPaginationModels[key] == null) {
             return const SizedBox.shrink();
           }
-          if (state.getProductListingWithFiltersPaginationModels[key]!.items
+          if (state
+              .getProductListingWithFiltersPaginationModels[key]!
+              .items
               .isNullOrEmpty) {
             return const Padding(
               padding: EdgeInsets.all(10),
@@ -209,50 +207,51 @@ class _SearchResultState extends ThemeState<SearchResult> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                height: 15,
-              ),
+              SizedBox(height: 15.h),
               Padding(
-                padding: const EdgeInsetsDirectional.only(start: 20.0),
+                padding: EdgeInsetsDirectional.only(start: 20.w),
                 child: MyTextWidget(
                   LocaleKeys.find_products.tr(),
                   style: textTheme.titleMedium?.rq.copyWith(
-                      height: 15 / 12, color: const Color(0xff505050)),
+                    fontSize: 13.sp,
+                    height: 15 / 12,
+                    color: const Color(0xff505050),
+                  ),
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               ScrollConfiguration(
                 behavior: const CupertinoScrollBehavior(),
                 child: ListView.separated(
                   shrinkWrap: true,
                   physics: const ClampingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
                   itemBuilder: (ctx, index) {
-                    String filePath = ((state
-                                    .getProductListingWithFiltersPaginationModels[
-                                        key]!
+                    String filePath =
+                        ((state
+                                    .getProductListingWithFiltersPaginationModels[key]!
                                     .items[index]
                                     .syncColorImages
                                     ?.length ??
                                 0) >
                             0)
                         ? (state
-                                .getProductListingWithFiltersPaginationModels[
-                                    key]!
-                                .items[index]
-                                .syncColorImages?[0]
-                                .images?[0]
-                                .filePath) ??
-                            ""
+                                  .getProductListingWithFiltersPaginationModels[key]!
+                                  .items[index]
+                                  .syncColorImages?[0]
+                                  .images?[0]
+                                  .filePath) ??
+                              ""
                         : state
-                            .getProductListingWithFiltersPaginationModels[key]!
-                            .items[index]
-                            .images![0]
-                            .filePath!;
+                              .getProductListingWithFiltersPaginationModels[key]!
+                              .items[index]
+                              .images![0]
+                              .filePath!;
                     filePath = addSuitableWidthAndHeightToImage(
-                        imageUrl: filePath, height: 50, width: 35);
+                      imageUrl: filePath,
+                      height: 50,
+                      width: 35,
+                    );
 
                     return Stack(
                       alignment: Alignment.centerLeft,
@@ -260,112 +259,122 @@ class _SearchResultState extends ThemeState<SearchResult> {
                         InkWell(
                           onTap: () {
                             BlocProvider.of<HomeBloc>(context).add(
-                                AddSearchTextToHistoryEvent(
-                                    searchTitle: widget.controller.text));
+                              AddSearchTextToHistoryEvent(
+                                searchTitle: widget.controller.text,
+                              ),
+                            );
                             BlocProvider.of<HomeBloc>(context).add(
-                                GetFullProductDetailsEvent(
-                                    currentColorName: state
-                                            .getProductListingWithFiltersPaginationModels[
-                                                key]!
-                                            .items[index]
-                                            .syncColorImages
-                                            .isNullOrEmpty
-                                        ? null
-                                        : state
-                                            .getProductListingWithFiltersPaginationModels[
-                                                key]!
-                                            .items[index]
-                                            .syncColorImages
-                                            ?.first
-                                            .colorName,
-                                    productSlug: state
-                                            .getProductListingWithFiltersPaginationModels[
-                                                key]!
-                                            .items[index]
-                                            .slug ??
-                                        ""));
+                              GetFullProductDetailsEvent(
+                                currentColorName:
+                                    state
+                                        .getProductListingWithFiltersPaginationModels[key]!
+                                        .items[index]
+                                        .syncColorImages
+                                        .isNullOrEmpty
+                                    ? null
+                                    : state
+                                          .getProductListingWithFiltersPaginationModels[key]!
+                                          .items[index]
+                                          .syncColorImages
+                                          ?.first
+                                          .colorName,
+                                productSlug:
+                                    state
+                                        .getProductListingWithFiltersPaginationModels[key]!
+                                        .items[index]
+                                        .slug ??
+                                    "",
+                              ),
+                            );
                             Future.delayed(
-                                const Duration(milliseconds: 300),
-                                () =>
-                                    Navigator.of(context).push(PageRouteBuilder(
-                                      pageBuilder: (context, animation,
-                                              secondaryAnimation) =>
-                                          ProductDetailsPageNew(
-                                              productSlugForOpeningChatDirectly:
-                                                  state
-                                                      .getProductListingWithFiltersPaginationModels[
-                                                          key]!
-                                                      .items[index]
-                                                      .slug,
-                                              productIdForOpeningChatDirectly: state
-                                                  .getProductListingWithFiltersPaginationModels[
-                                                      key]!
-                                                  .items[index]
-                                                  .productId
-                                                  .toString()),
-                                    )));
+                              const Duration(milliseconds: 300),
+                              () => Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  pageBuilder:
+                                      (
+                                        context,
+                                        animation,
+                                        secondaryAnimation,
+                                      ) => ProductDetailsPageNew(
+                                        productSlugForOpeningChatDirectly: state
+                                            .getProductListingWithFiltersPaginationModels[key]!
+                                            .items[index]
+                                            .slug,
+                                        productIdForOpeningChatDirectly: state
+                                            .getProductListingWithFiltersPaginationModels[key]!
+                                            .items[index]
+                                            .productId
+                                            .toString(),
+                                      ),
+                                ),
+                              ),
+                            );
                           },
                           child: Container(
-                              height: 50,
-                              width: 1.sw,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                  color: const Color(0xffF8F8F8),
-                                  borderRadius: BorderRadius.circular(15)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const SizedBox(
-                                    width: 35,
+                            height: 54.h,
+                            width: 1.sw,
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffF8F8F8),
+                              borderRadius: BorderRadius.circular(15.r),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(width: 35.w),
+                                Flexible(
+                                  child: MyTextWidget(
+                                    state
+                                        .getProductListingWithFiltersPaginationModels[key]!
+                                        .items[index]
+                                        .name!,
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: context.textTheme.titleLarge?.lq
+                                        .copyWith(
+                                          height: 15 / 12,
+                                          fontSize: 13.sp,
+                                          color: const Color(0xffC4C2C2),
+                                        ),
                                   ),
-                                  Flexible(
-                                    child: MyTextWidget(
-                                      state
-                                          .getProductListingWithFiltersPaginationModels[
-                                              key]!
-                                          .items[index]
-                                          .name!,
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      style: context.textTheme.titleLarge?.lq
-                                          .copyWith(
-                                              height: 15 / 12,
-                                              color: const Color(0xffC4C2C2)),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                ],
-                              )),
+                                ),
+                                const SizedBox(width: 8),
+                              ],
+                            ),
+                          ),
                         ),
                         Container(
-                            height: 50,
-                            width: 35,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                  color: const Color(0xff388CFF), width: 0.3),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                topRight: Radius.circular(5),
-                                bottomLeft: Radius.circular(15),
-                                bottomRight: Radius.circular(5),
-                              ),
+                          height: 54.h,
+                          width: 35.w,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: const Color(0xff388CFF),
+                              width: 0.3,
                             ),
-                            child: ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(15),
-                                  topRight: Radius.circular(5),
-                                  bottomLeft: Radius.circular(15),
-                                  bottomRight: Radius.circular(5),
-                                ),
-                                child: Image.network(
-                                  filePath,
-                                  height: 50,
-                                  fit: BoxFit.contain,
-                                  width: 35,
-                                )))
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(15.r),
+                              topRight: Radius.circular(5.r),
+                              bottomLeft: Radius.circular(15.r),
+                              bottomRight: Radius.circular(5.r),
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(15.r),
+                              topRight: Radius.circular(5.r),
+                              bottomLeft: Radius.circular(15.r),
+                              bottomRight: Radius.circular(5.r),
+                            ),
+                            child: Image.network(
+                              filePath,
+                              height: 54.h,
+                              fit: BoxFit.contain,
+                              width: 35.w,
+                            ),
+                          ),
+                        ),
                       ],
                     );
                   },
@@ -373,11 +382,9 @@ class _SearchResultState extends ThemeState<SearchResult> {
                       .getProductListingWithFiltersPaginationModels[key]!
                       .items
                       .length,
-                  separatorBuilder: (ctx, index) => const SizedBox(
-                    height: 5,
-                  ),
+                  separatorBuilder: (ctx, index) => const SizedBox(height: 5),
                 ),
-              )
+              ),
             ],
           );
         },

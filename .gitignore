@@ -48,3 +48,7 @@ app.*.map.json
 /.flutter-plugins-dependencies
 
 *.env
+
+# Android signing secrets (do not commit)
+android/key.properties
+android/app/upload-keystore.jks

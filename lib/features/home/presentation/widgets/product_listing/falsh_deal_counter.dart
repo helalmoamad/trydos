@@ -112,7 +112,7 @@ class _FlashDealCountdownTimerWidgetState
         alignment: LanguageService.languageCode == "ar"
             ? Alignment.centerRight
             : Alignment.centerLeft,
-        height: 20,
+        height: 20.h,
         child: Text(
           _duration > Duration.zero ? _formatDuration(_duration) : "",
           style: context.textTheme.bodyMedium?.mq.copyWith(

@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
+import 'package:trydos/main.dart';
 
 GetProductFiltersModel getProductFiltersModelFromJson(String str) =>
     GetProductFiltersModel.fromJson(json.decode(str));
@@ -54,6 +55,7 @@ class Filter {
   final String? boutiqueSlug;
   final String? searchText;
   List<Category>? categories;
+  List<Category>? relatedCategories;
 
   Filter({
     this.brands,
@@ -62,6 +64,8 @@ class Filter {
     this.attributes,
     this.searchText,
     this.categories,
+    this.relatedCategories,
+
     this.colors,
     this.prices,
     this.boutiqueSlug,
@@ -74,6 +78,7 @@ class Filter {
     List<String>? colors,
     String? searchText,
     int? totalSize,
+    List<Category>? relatedCategories,
     Prices? prices,
     String? boutiqueSlug,
     List<Boutique>? boutiques,
@@ -85,6 +90,7 @@ class Filter {
     searchText: searchText ?? this.searchText,
     boutiques: boutiques ?? this.boutiques,
     totalSize: totalSize ?? this.totalSize,
+    relatedCategories: relatedCategories ?? this.relatedCategories,
     categories: categories ?? this.categories,
     boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
   );
@@ -98,6 +104,7 @@ class Filter {
     int? totalSize,
     Prices? prices,
     String? boutiqueSlug,
+    List<Category>? relatedCategories,
     List<Boutique>? boutiques,
   }) => Filter(
     brands: brands ?? this.brands,
@@ -108,6 +115,7 @@ class Filter {
     boutiques: boutiques ?? this.boutiques,
     totalSize: totalSize ?? this.totalSize,
     categories: categories ?? this.categories,
+    relatedCategories: relatedCategories ?? this.relatedCategories,
     boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
   );
 
@@ -121,6 +129,7 @@ class Filter {
     List<Boutique>? boutiques,
     Prices? prices,
     String? boutiqueSlug,
+    List<Category>? relatedCategories,
   }) => Filter(
     brands: brands,
     attributes: attributes,
@@ -130,6 +139,7 @@ class Filter {
     boutiques: boutiques ?? this.boutiques,
     prices: prices,
     categories: categories,
+    relatedCategories: relatedCategories ?? this.relatedCategories,
     boutiqueSlug: boutiqueSlug,
   );
 
@@ -139,6 +149,11 @@ class Filter {
       brands: json["brands"] == null
           ? []
           : List<Brand>.from(json["brands"]!.map((x) => Brand.fromJson(x))),
+      relatedCategories: json["related_categories"] == null
+          ? []
+          : List<Category>.from(
+              json["related_categories"]!.map((x) => Category.fromJson(x)),
+            ),
       boutiques: json["boutiques"] == null
           ? []
           : List<Boutique>.from(
@@ -171,6 +186,9 @@ class Filter {
       "boutiques": boutiques == null
           ? []
           : List<dynamic>.from(boutiques!.map((x) => x.toJson())),
+      "related_categories": relatedCategories == null
+          ? []
+          : List<dynamic>.from(relatedCategories!.map((x) => x.toJson())),
       "categories": categories.isNullOrEmpty
           ? []
           : List<dynamic>.from(categories!.map((x) => x.toJson())),
@@ -202,9 +220,13 @@ class CategoryBanner {
   );
 
   factory CategoryBanner.fromJson(Map<String, dynamic> json) => CategoryBanner(
-    filePath: json["file_path"]?.contains("cloudinary")
-        ? json["file_path"]
-        : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
+    filePath: mediaServerIsS3
+        ? (json["file_path"].contains("media_server")
+              ? json["file_path"]
+              : "${dotenv.env['Media_S3_Server']}${json["file_path"]}")
+        : (json["file_path"]?.contains("cloudinary")
+              ? json["file_path"]
+              : ("${dotenv.env['Images_Url']}" + (json["file_path"]))),
     originalWidth: (json["original_width"] ?? "").toString().replaceAll(
       RegExp(r'[^0-9.]'),
       '',
@@ -358,9 +380,13 @@ class Thumbnail {
   );
 
   factory Thumbnail.fromJson(Map<String, dynamic> json) => Thumbnail(
-    filePath: json["file_path"]?.contains("cloudinary")
-        ? json["file_path"]
-        : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
+    filePath: mediaServerIsS3
+        ? (json["file_path"].contains("media_server")
+              ? json["file_path"]
+              : "${dotenv.env['Media_S3_Server']}${json["file_path"]}")
+        : (json["file_path"]?.contains("cloudinary")
+              ? json["file_path"]
+              : ("${dotenv.env['Images_Url']}" + (json["file_path"]))),
     originalWidth: (json["original_width"] ?? "").toString().replaceAll(
       RegExp(r'[^0-9.]'),
       '',
