@@ -398,13 +398,13 @@ String addSuitableWidthAndHeightToImage({
       // الصورة أعرض من الارتفاع - استخدم العرض
       url =
           list[0] +
-          'upload/w_${fWidth},h_${fHeight},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
+          'upload/h_${fHeight},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
           list[1];
     } else {
       // الصورة أطول من العرض - استخدم الارتفاع
       url =
           list[0] +
-          'upload/w_${fWidth},h_${fHeight},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
+          'upload/w_${fWidth},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
           list[1];
     }
     //}

@@ -34,6 +34,7 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_share_content.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -907,12 +908,22 @@ class _ProductDetailsBottomSheetNewState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: 5.h),
-                        SvgNetworkWidget(
-                          svgUrl:
-                              widget.productItem.brand?.icon?.filePath ?? '',
-                          color: const Color(0xff1D1D1D),
-                          height: 10.h,
-                        ),
+                        mediaServerIsS3
+                            ? MyCachedNetworkImage(
+                                imageUrl:
+                                    widget.productItem.brand?.icon?.filePath ??
+                                    '',
+                                height: 10.h,
+                                imageFit: BoxFit.contain,
+                                width: 11.h,
+                              )
+                            : SvgNetworkWidget(
+                                svgUrl:
+                                    widget.productItem.brand?.icon?.filePath ??
+                                    '',
+                                color: const Color(0xff1D1D1D),
+                                height: 10.h,
+                              ),
 
                         ///////////////////
                         SizedBox(height: 5.h),

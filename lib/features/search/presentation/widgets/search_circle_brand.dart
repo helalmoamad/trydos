@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
+import 'package:trydos/main.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';
@@ -242,13 +244,24 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                                             .icon!
                                                             .filePath !=
                                                         null
-                                                    ? SvgNetworkWidget(
-                                                        svgUrl: filters
-                                                            .brands![index]
-                                                            .icon!
-                                                            .filePath!,
-                                                        width: 40,
-                                                      )
+                                                    ? mediaServerIsS3
+                                                          ? MyCachedNetworkImage(
+                                                              imageUrl: filters
+                                                                  .brands![index]
+                                                                  .icon!
+                                                                  .filePath!,
+                                                              height: 40.h,
+                                                              imageFit: BoxFit
+                                                                  .contain,
+                                                              width: 41.w,
+                                                            )
+                                                          : SvgNetworkWidget(
+                                                              svgUrl: filters
+                                                                  .brands![index]
+                                                                  .icon!
+                                                                  .filePath!,
+                                                              width: 40,
+                                                            )
                                                     : const SizedBox.shrink()
                                               : const SizedBox.shrink(),
                                         ],

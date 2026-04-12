@@ -26,6 +26,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -239,11 +240,18 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           boutique.icon?.filePath != null
-                              ? SvgNetworkWidget(
-                                  svgUrl: boutique.icon!.filePath!,
-                                  height: 20,
-                                  width: 40,
-                                )
+                              ? mediaServerIsS3
+                                    ? MyCachedNetworkImage(
+                                        imageUrl: boutique.icon!.filePath!,
+                                        height: 20,
+                                        width: 40,
+                                        imageFit: BoxFit.contain,
+                                      )
+                                    : SvgNetworkWidget(
+                                        svgUrl: boutique.icon!.filePath!,
+                                        height: 20,
+                                        width: 40,
+                                      )
                               : const cupertino.SizedBox.shrink(),
                           const SizedBox(height: 5),
                           MyTextWidget(
@@ -501,20 +509,36 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                             ),
                           );
                         },
-                        child: SvgNetworkWidget(
-                          svgUrl:
-                              boutique
-                                      .mainCategoriesForProductIds![index]
-                                      .flatPhotoPath !=
-                                  null
-                              ? boutique
-                                    .mainCategoriesForProductIds![index]
-                                    .flatPhotoPath!
-                                    .filePath!
-                              : "",
-                          width: 12,
-                          height: 12,
-                        ),
+                        child: mediaServerIsS3
+                            ? MyCachedNetworkImage(
+                                imageUrl:
+                                    boutique
+                                            .mainCategoriesForProductIds![index]
+                                            .flatPhotoPath !=
+                                        null
+                                    ? boutique
+                                          .mainCategoriesForProductIds![index]
+                                          .flatPhotoPath!
+                                          .filePath!
+                                    : "",
+                                height: 12,
+                                imageFit: BoxFit.contain,
+                                width: 12,
+                              )
+                            : SvgNetworkWidget(
+                                svgUrl:
+                                    boutique
+                                            .mainCategoriesForProductIds![index]
+                                            .flatPhotoPath !=
+                                        null
+                                    ? boutique
+                                          .mainCategoriesForProductIds![index]
+                                          .flatPhotoPath!
+                                          .filePath!
+                                    : "",
+                                width: 12,
+                                height: 12,
+                              ),
                       );
                     },
                     itemCount: boutique.mainCategoriesForProductIds!.length > 5

@@ -139,11 +139,13 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/main.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';
@@ -469,13 +471,24 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                           .flatPhotoPath
                                                           ?.filePath !=
                                                       null
-                                                  ? SvgNetworkWidget(
-                                                      svgUrl: filters
-                                                          .categories![index]
-                                                          .flatPhotoPath!
-                                                          .filePath!,
-                                                      height: 15.h,
-                                                    )
+                                                  ? mediaServerIsS3
+                                                        ? MyCachedNetworkImage(
+                                                            imageUrl: filters
+                                                                .categories![index]
+                                                                .flatPhotoPath!
+                                                                .filePath!,
+                                                            height: 15,
+                                                            imageFit:
+                                                                BoxFit.contain,
+                                                            width: 15.w,
+                                                          )
+                                                        : SvgNetworkWidget(
+                                                            svgUrl: filters
+                                                                .categories![index]
+                                                                .flatPhotoPath!
+                                                                .filePath!,
+                                                            height: 15.h,
+                                                          )
                                                   : const SizedBox.shrink(),
                                             ),
                                           ],
@@ -703,14 +716,30 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                                     .flatPhotoPath
                                                                     ?.filePath !=
                                                                 null
-                                                            ? SvgNetworkWidget(
-                                                                svgUrl: filters
-                                                                    .categories![index]
-                                                                    .subCategories![indexs]
-                                                                    .flatPhotoPath!
-                                                                    .filePath!,
-                                                                height: 15.r,
-                                                              )
+                                                            ? mediaServerIsS3
+                                                                  ? MyCachedNetworkImage(
+                                                                      imageUrl: filters
+                                                                          .categories![index]
+                                                                          .subCategories![indexs]
+                                                                          .flatPhotoPath!
+                                                                          .filePath!,
+                                                                      height:
+                                                                          15,
+                                                                      imageFit:
+                                                                          BoxFit
+                                                                              .contain,
+                                                                      width:
+                                                                          15.w,
+                                                                    )
+                                                                  : SvgNetworkWidget(
+                                                                      svgUrl: filters
+                                                                          .categories![index]
+                                                                          .subCategories![indexs]
+                                                                          .flatPhotoPath!
+                                                                          .filePath!,
+                                                                      height:
+                                                                          15,
+                                                                    )
                                                             : const SizedBox.shrink(),
                                                       ),
                                                     ],

@@ -9,6 +9,7 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
@@ -16,6 +17,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/main.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../../../app/my_text_widget.dart';
@@ -360,11 +362,18 @@ class _ProductListingLightSliderState
               : CrossAxisAlignment.start,
           children: [
             if (widget.productItem.brand?.icon?.filePath != null)
-              SvgNetworkWidget(
-                svgUrl: widget.productItem.brand!.icon!.filePath!,
-                width: 30.w,
-                height: 15,
-              ),
+              mediaServerIsS3
+                  ? MyCachedNetworkImage(
+                      imageUrl: widget.productItem.brand!.icon!.filePath!,
+                      height: 15,
+                      imageFit: BoxFit.contain,
+                      width: 30.w,
+                    )
+                  : SvgNetworkWidget(
+                      svgUrl: widget.productItem.brand!.icon!.filePath!,
+                      width: 30.w,
+                      height: 15,
+                    ),
             const SizedBox(height: 5),
             Row(
               mainAxisAlignment: LanguageService.languageCode == 'ar'
@@ -372,11 +381,27 @@ class _ProductListingLightSliderState
                   : MainAxisAlignment.start,
               children: [
                 if (widget.productItem.category != null)
-                  SvgNetworkWidget(
-                    svgUrl: widget.productItem.category!.flatPhotoPath!.filePath
-                        .toString(),
-                    height: 10,
-                  ),
+                  mediaServerIsS3
+                      ? MyCachedNetworkImage(
+                          imageUrl: widget
+                              .productItem
+                              .category!
+                              .flatPhotoPath!
+                              .filePath
+                              .toString(),
+                          height: 10,
+                          imageFit: BoxFit.contain,
+                          width: 11,
+                        )
+                      : SvgNetworkWidget(
+                          svgUrl: widget
+                              .productItem
+                              .category!
+                              .flatPhotoPath!
+                              .filePath
+                              .toString(),
+                          height: 10,
+                        ),
                 const SizedBox(width: 3),
                 Flexible(
                   child: MyTextWidget(

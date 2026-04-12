@@ -17,6 +17,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -683,10 +684,32 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                     ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)
                     : const SizedBox.shrink(),
                 SizedBox(width: isVerified ? 5 : 0),
-                SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 15),
+                mediaServerIsS3
+                    ? MyCachedNetworkImage(
+                        imageUrl: brandIcon,
+                        height: 15,
+                        imageFit: BoxFit.contain,
+                        width: 30.w,
+                      )
+                    : SvgNetworkWidget(
+                        svgUrl: brandIcon,
+                        width: 30.w,
+                        height: 15,
+                      ),
               ]
             : [
-                SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 15),
+                mediaServerIsS3
+                    ? MyCachedNetworkImage(
+                        imageUrl: brandIcon,
+                        height: 15,
+                        imageFit: BoxFit.contain,
+                        width: 30.w,
+                      )
+                    : SvgNetworkWidget(
+                        svgUrl: brandIcon,
+                        width: 30.w,
+                        height: 15,
+                      ),
                 SizedBox(width: isVerified ? 5 : 0),
                 isVerified
                     ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)

@@ -906,13 +906,24 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     child:
                                                         widget.boutiqueIcon !=
                                                             null
-                                                        ? SvgNetworkWidget(
-                                                            svgUrl:
-                                                                widget
-                                                                    .boutiqueIcon ??
-                                                                "",
-                                                            height: 20,
-                                                          )
+                                                        ? mediaServerIsS3
+                                                              ? MyCachedNetworkImage(
+                                                                  imageUrl:
+                                                                      widget
+                                                                          .boutiqueIcon ??
+                                                                      "",
+                                                                  height: 20,
+                                                                  imageFit: BoxFit
+                                                                      .contain,
+                                                                  width: 21,
+                                                                )
+                                                              : SvgNetworkWidget(
+                                                                  svgUrl:
+                                                                      widget
+                                                                          .boutiqueIcon ??
+                                                                      "",
+                                                                  height: 20,
+                                                                )
                                                         : const SizedBox.shrink(),
                                                   ),
                                                   builder:
@@ -1870,13 +1881,21 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 children: [
                                                                   widget.boutiqueIcon !=
                                                                           null
-                                                                      ? SvgNetworkWidget(
-                                                                          svgUrl:
-                                                                              widget.boutiqueIcon ??
-                                                                              "",
-                                                                          height:
-                                                                              20,
-                                                                        )
+                                                                      ? mediaServerIsS3
+                                                                            ? MyCachedNetworkImage(
+                                                                                imageUrl:
+                                                                                    widget.boutiqueIcon ??
+                                                                                    "",
+                                                                                height: 20,
+                                                                                imageFit: BoxFit.contain,
+                                                                                width: 20,
+                                                                              )
+                                                                            : SvgNetworkWidget(
+                                                                                svgUrl:
+                                                                                    widget.boutiqueIcon ??
+                                                                                    "",
+                                                                                height: 20,
+                                                                              )
                                                                       : const SizedBox.shrink(),
                                                                   const SizedBox(
                                                                     width: 8,

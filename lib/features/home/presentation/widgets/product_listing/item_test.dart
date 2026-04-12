@@ -20,6 +20,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/main.dart';
 import 'package:tuple/tuple.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
@@ -844,7 +845,14 @@ class _ProductListing3DSliderOptimizedState
     final brandIcon = widget.productItem.brand?.icon?.filePath;
     if (brandIcon == null) return const SizedBox.shrink();
 
-    return SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 15);
+    return mediaServerIsS3
+        ? MyCachedNetworkImage(
+            imageUrl: brandIcon,
+            height: 15.h,
+            imageFit: BoxFit.contain,
+            width: 30.h,
+          )
+        : SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 15);
   }
 
   /// 📝 Product Name Row
@@ -882,7 +890,14 @@ class _ProductListing3DSliderOptimizedState
       height: 10,
       child: Transform.translate(
         offset: const Offset(0, 1),
-        child: SvgNetworkWidget(svgUrl: categoryIcon, height: 10),
+        child: mediaServerIsS3
+            ? MyCachedNetworkImage(
+                imageUrl: categoryIcon,
+                height: 10.h,
+                imageFit: BoxFit.contain,
+                width: 10.h,
+              )
+            : SvgNetworkWidget(svgUrl: categoryIcon, height: 10),
       ),
     );
   }

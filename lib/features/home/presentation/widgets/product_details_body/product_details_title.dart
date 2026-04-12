@@ -5,11 +5,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as Brand;
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
+import 'package:trydos/main.dart';
 import '../../../../app/svg_network_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
@@ -61,10 +63,17 @@ class ProductDetailsTitle extends StatelessWidget {
                         ? brand!.icon!.filePath != null
                               ? Row(
                                   children: [
-                                    SvgNetworkWidget(
-                                      svgUrl: brand!.icon!.filePath!,
-                                      height: 18,
-                                    ),
+                                    mediaServerIsS3
+                                        ? MyCachedNetworkImage(
+                                            imageUrl: brand!.icon!.filePath!,
+                                            height: 18,
+                                            imageFit: BoxFit.contain,
+                                            width: 19,
+                                          )
+                                        : SvgNetworkWidget(
+                                            svgUrl: brand!.icon!.filePath!,
+                                            height: 18,
+                                          ),
                                     const SizedBox(width: 10),
                                     (brand!.isVerified ?? 0) == 1
                                         ? SvgPicture.asset(

@@ -8,12 +8,14 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
+import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 
 import '../../../../../common/test_utils/test_var.dart';
@@ -339,14 +341,25 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                                       const EdgeInsets.symmetric(
                                                         horizontal: 5.0,
                                                       ),
-                                                  child: SvgNetworkWidget(
-                                                    //  width: 70,
-                                                    width: 70,
-                                                    svgUrl: widget
-                                                        .filters[index]
-                                                        .icon!
-                                                        .filePath!,
-                                                  ),
+                                                  child: mediaServerIsS3
+                                                      ? MyCachedNetworkImage(
+                                                          imageUrl: widget
+                                                              .filters[index]
+                                                              .icon!
+                                                              .filePath!,
+                                                          height: 72,
+                                                          imageFit:
+                                                              BoxFit.contain,
+                                                          width: 70,
+                                                        )
+                                                      : SvgNetworkWidget(
+                                                          //  width: 70,
+                                                          width: 70,
+                                                          svgUrl: widget
+                                                              .filters[index]
+                                                              .icon!
+                                                              .filePath!,
+                                                        ),
                                                 )
                                               : const SizedBox.shrink()
                                         : const SizedBox.shrink()

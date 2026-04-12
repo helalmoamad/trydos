@@ -14,6 +14,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
@@ -26,6 +27,7 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
+import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../common/constant/design/assets_provider.dart';
@@ -1116,18 +1118,29 @@ class _TabsBarState extends State<TabsBar> {
                                             builder: (context, state) {
                                               return Stack(
                                                 children: [
-                                                  SvgNetworkWidget(
-                                                    svgUrl: mainCategory
-                                                        .flatPhotoPath!
-                                                        .filePath
-                                                        .toString(),
-                                                    height: 24.h,
-                                                    // color: state.tabIndex ==
-                                                    //         index
-                                                    //     ? Colors.black
-                                                    //     : Color(
-                                                    //         0xffC4C2C2),
-                                                  ),
+                                                  mediaServerIsS3
+                                                      ? MyCachedNetworkImage(
+                                                          imageUrl: mainCategory
+                                                              .flatPhotoPath!
+                                                              .filePath
+                                                              .toString(),
+                                                          height: 24.h,
+                                                          imageFit:
+                                                              BoxFit.contain,
+                                                          width: 24.h,
+                                                        )
+                                                      : SvgNetworkWidget(
+                                                          svgUrl: mainCategory
+                                                              .flatPhotoPath!
+                                                              .filePath
+                                                              .toString(),
+                                                          height: 24.h,
+                                                          // color: state.tabIndex ==
+                                                          //         index
+                                                          //     ? Colors.black
+                                                          //     : Color(
+                                                          //         0xffC4C2C2),
+                                                        ),
                                                   BlocBuilder<
                                                     AppBloc,
                                                     AppState

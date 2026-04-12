@@ -11,6 +11,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -23,6 +24,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
+import 'package:trydos/main.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
 
@@ -261,10 +263,32 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                     ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)
                     : const SizedBox.shrink(),
                 SizedBox(width: isVerified ? 5 : 0),
-                SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 11),
+                mediaServerIsS3
+                    ? MyCachedNetworkImage(
+                        imageUrl: brandIcon,
+                        height: 11,
+                        imageFit: BoxFit.contain,
+                        width: 30.w,
+                      )
+                    : SvgNetworkWidget(
+                        svgUrl: brandIcon,
+                        width: 30.w,
+                        height: 11,
+                      ),
               ]
             : [
-                SvgNetworkWidget(svgUrl: brandIcon, width: 30.w, height: 15),
+                mediaServerIsS3
+                    ? MyCachedNetworkImage(
+                        imageUrl: brandIcon,
+                        height: 15,
+                        imageFit: BoxFit.contain,
+                        width: 30.w,
+                      )
+                    : SvgNetworkWidget(
+                        svgUrl: brandIcon,
+                        width: 30.w,
+                        height: 15,
+                      ),
                 SizedBox(width: isVerified ? 5 : 0),
                 isVerified
                     ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)
