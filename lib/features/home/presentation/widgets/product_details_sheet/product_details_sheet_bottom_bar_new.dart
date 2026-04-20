@@ -657,8 +657,8 @@ class _ProductDetailsSheetBottomBarNewState
                                                                   allCart[index]
                                                                       .values
                                                                       .first[0][0],
-                                                              width: 10,
-                                                              height: 10,
+                                                              width: 10.w,
+                                                              height: 10.h,
                                                             );
                                                             return SizedBox(
                                                               width: 1.sw - 40,

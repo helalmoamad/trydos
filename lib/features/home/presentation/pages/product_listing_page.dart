@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -721,10 +721,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   ),
                             slivers: [
                               // 🛡️ حماية من تجاوز شريط الحالة
-                              const SliverSafeArea(
+                              SliverSafeArea(
                                 bottom: false,
                                 sliver: SliverToBoxAdapter(
-                                  child: SizedBox(height: 0), // placeholder
+                                  child: SizedBox(height: 0.h), // placeholder
                                 ),
                               ),
                               ValueListenableBuilder<int>(
@@ -733,7 +733,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   return /* tapIndex != -1
                                                 ? const SliverToBoxAdapter(
                                                     child: SizedBox(
-                                                      height: 0,
+                                                      height: 0.h,
                                                     ),
                                                   )
                                                 :*/ SliverAppBar(
@@ -744,9 +744,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       valueListenable: searchVisible,
                                       builder: (context, searchOpen, _) {
                                         return Padding(
-                                          padding: const EdgeInsets.only(
-                                            right: 5,
-                                            left: 5,
+                                          padding: EdgeInsets.only(
+                                            right: 5.w,
+                                            left: 5.w,
                                           ),
                                           child: /*TrydosAppBar(
                                                                     appBarParams: AppBarParams(
@@ -758,7 +758,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               : const SizedBox.shrink(),
                                                                           Padding(
                                                                             padding:
-                                                                                const EdgeInsetsDirectional.only(end: 10.0),
+                                                                                EdgeInsetsDirectional.only(end: 10.0),
                                                                             child:
                                                                                 BlocBuilder<HomeBloc, HomeState>(
                                                                               buildWhen: (previous, current) => previous.getProductDetailWithoutSimilarRelatedProductsStatus != current.getProductDetailWithoutSimilarRelatedProductsStatus || previous.authProductDetailsStatus != current.authProductDetailsStatus || previous.updateItemInCartStatus != current.updateItemInCartStatus || previous.addItemInCartStatus != current.addItemInCartStatus || previous.deleteItemInCartStatus != current.deleteItemInCartStatus || previous.getCartItemsStatus != current.getCartItemsStatus,
@@ -772,7 +772,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                                                                 return Container(
                                                                                   alignment: Alignment.center,
-                                                                                  height: 40,
+                                                                                  height: 40.h,
                                                                                   width: LanguageService.languageCode != "ar" ? 40 : 50,
                                                                                   child: InkWell(
                                                                                       onTap: () {
@@ -794,21 +794,21 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                           child: SvgPicture.asset(AppAssets.bagsSvg),
                                                                                           right: LanguageService.languageCode != "ar" ? 0 : null,
                                                                                           left: LanguageService.languageCode == "ar" ? 0 : null,
-                                                                                          bottom: 5,
+                                                                                          bottom: 5.h,
                                                                                         ),
                                                                                         Positioned(
                                                                                           child: Container(
                                                                                             width: (qtyItemsInCart > 0) ? 15 : 0,
                                                                                             alignment: Alignment.center,
                                                                                             height: (qtyItemsInCart > 0) ? 15 : 0,
-                                                                                            decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(20)),
+                                                                                            decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(20.r)),
                                                                                             child: MyTextWidget(
                                                                                               (qtyItemsInCart > 0) ? "${qtyItemsInCart}" : "",
                                                                                               maxLines: 1,
-                                                                                              style: textTheme.titleSmall?.ra.copyWith(fontSize: 12, color: Colors.white, letterSpacing: 0.28),
+                                                                                              style: textTheme.titleSmall?.ra.copyWith(fontSize: 12.sp, color: Colors.white, letterSpacing: 0.28),
                                                                                             ),
                                                                                           ),
-                                                                                          top: 0,
+                                                                                          top: 0.h,
                                                                                           left: LanguageService.languageCode != "ar" ? 5 : null,
                                                                                           right: LanguageService.languageCode != "en"
                                                                                               ? (qtyItemsInCart.toString().length > 1)
@@ -912,17 +912,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       widget
                                                                           .boutiqueIcon ??
                                                                       "",
-                                                                  height: 20,
+                                                                  height: 20.h,
                                                                   imageFit: BoxFit
                                                                       .contain,
-                                                                  width: 21,
+                                                                  width: 21.w,
                                                                 )
                                                               : SvgNetworkWidget(
                                                                   svgUrl:
                                                                       widget
                                                                           .boutiqueIcon ??
                                                                       "",
-                                                                  height: 20,
+                                                                  height: 20.h,
                                                                 )
                                                         : const SizedBox.shrink(),
                                                   ),
@@ -941,8 +941,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   padding:
                                                       EdgeInsetsDirectional.only(
                                                         end: searchOpen
-                                                            ? 10
-                                                            : 20.0,
+                                                            ? 10.w
+                                                            : 20.w,
                                                       ),
                                                   child: AnimatedSearchBar(
                                                     key: TestVariables.kTestMode
@@ -952,9 +952,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           )
                                                         : null,
                                                     width: isExpanded
-                                                        ? (1.sw - 90)
-                                                        : (1.sw - 120),
-                                                    height: 40,
+                                                        ? (1.sw - 90.w)
+                                                        : (1.sw - 120.w),
+                                                    height: 40.h,
                                                     onClickClose: () {
                                                       boutiqueBloc.add(
                                                         AddSizeAndColorFilterinTextToSearchEvent(
@@ -1068,8 +1068,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       child: SvgPicture.asset(
                                                         AppAssets
                                                             .searchOutlinedSvg,
-                                                        height: 20,
-                                                        width: 20,
+                                                        height: 20.h,
+                                                        width: 20.w,
                                                         // ignore: deprecated_member_use
                                                         color: const Color(
                                                           0xff388CFF,
@@ -1077,12 +1077,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       ),
                                                     ),
                                                     prefixWidget: Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                            right: 15,
-                                                            top: 10,
-                                                            bottom: 10,
-                                                          ),
+                                                      padding: EdgeInsets.only(
+                                                        right: 15.w,
+                                                        top: 10.h,
+                                                        bottom: 10.h,
+                                                      ),
                                                       child: Row(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
@@ -1106,13 +1105,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     SendRequestToGeminiStatus
                                                                         .loading
                                                                 ? TrydosLoader(
-                                                                    size: 18,
+                                                                    size: 18.h,
                                                                   )
                                                                 : SvgPicture.asset(
                                                                     AppAssets
                                                                         .realCameraSvg,
-                                                                    height: 20,
-                                                                    width: 20,
+                                                                    height:
+                                                                        20.h,
+                                                                    width: 20.w,
                                                                   ),
                                                           ),
                                                           ValueListenableBuilder<
@@ -1149,7 +1149,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       }
                                                                     },
                                                                     child: SizedBox(
-                                                                      width: 20,
+                                                                      width:
+                                                                          20.w,
                                                                       child: Icon(
                                                                         _speechToText.isNotListening ||
                                                                                 !recordeForSearchWithMic
@@ -1269,15 +1270,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             ),
                                                       prefixIcon: Padding(
                                                         padding:
-                                                            const EdgeInsets.only(
-                                                              top: 12,
-                                                              bottom: 12,
+                                                            EdgeInsets.only(
+                                                              top: 12.h,
+                                                              bottom: 12.h,
                                                             ),
                                                         child: SvgPicture.asset(
                                                           AppAssets
                                                               .searchOutlinedSvg,
-                                                          height: 20,
-                                                          width: 20,
+                                                          height: 20.h,
+                                                          width: 20.w,
                                                           // ignore: deprecated_member_use
                                                           color: const Color(
                                                             0xff388CFF,
@@ -1286,10 +1287,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       ),
                                                       suffixIcon: Padding(
                                                         padding:
-                                                            const EdgeInsets.only(
-                                                              right: 15,
-                                                              top: 10,
-                                                              bottom: 10,
+                                                            EdgeInsets.only(
+                                                              right: 15.w,
+                                                              top: 10.h,
+                                                              bottom: 10.h,
                                                             ),
                                                         child: Row(
                                                           mainAxisSize:
@@ -1314,18 +1315,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       SendRequestToGeminiStatus
                                                                           .loading
                                                                   ? TrydosLoader(
-                                                                      size: 18,
+                                                                      size:
+                                                                          18.h,
                                                                     )
                                                                   : SvgPicture.asset(
                                                                       AppAssets
                                                                           .realCameraSvg,
                                                                       height:
-                                                                          20,
-                                                                      width: 20,
+                                                                          20.h,
+                                                                      width:
+                                                                          20.w,
                                                                     ),
                                                             ),
-                                                            const SizedBox(
-                                                              width: 20,
+                                                            SizedBox(
+                                                              width: 20.w,
                                                             ),
                                                             ValueListenableBuilder<
                                                               bool
@@ -1361,7 +1364,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       },
                                                                       child: SizedBox(
                                                                         width:
-                                                                            20,
+                                                                            20.w,
                                                                         child: Icon(
                                                                           _speechToText.isNotListening ||
                                                                                   !recordeForSearchWithMic
@@ -1378,10 +1381,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       //context.colorScheme.white,
                                                       contentPadding:
                                                           HWEdgeInsetsDirectional.only(
-                                                            start: 20,
-                                                            end: 10,
-                                                            bottom: 12,
-                                                            top: 12,
+                                                            start: 20.w,
+                                                            end: 10.w,
+                                                            bottom: 12.h,
+                                                            top: 12.h,
                                                           ),
                                                       hintText:
                                                           '${LocaleKeys.search.tr()}',
@@ -1592,14 +1595,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   EdgeInsetsDirectional.only(
                                                                     end:
                                                                         searchOpen
-                                                                        ? 10
-                                                                        : 20.0,
+                                                                        ? 10.w
+                                                                        : 20.w,
                                                                   ),
                                                               child: SvgPicture.asset(
                                                                 AppAssets
                                                                     .sortingSvg,
-                                                                width: 20,
-                                                                height: 20,
+                                                                width: 20.w,
+                                                                height: 20.h,
                                                               ),
                                                             ),
                                                       BlocBuilder<
@@ -1640,8 +1643,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 EdgeInsetsDirectional.only(
                                                                   end:
                                                                       searchOpen
-                                                                      ? 10
-                                                                      : 20.0,
+                                                                      ? 10.w
+                                                                      : 20.w,
                                                                 ),
                                                             child: InkWell(
                                                               key:
@@ -1721,8 +1724,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               child: SvgPicture.asset(
                                                                 AppAssets
                                                                     .filtersSvg,
-                                                                width: 20,
-                                                                height: 20,
+                                                                width: 20.w,
+                                                                height: 20.h,
                                                                 // ignore: deprecated_member_use
                                                                 color:
                                                                     isExpanded
@@ -1788,7 +1791,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               false;
                                                         },
                                                         child: SizedBox(
-                                                          height: 30,
+                                                          height: 30.h,
                                                           child: Row(
                                                             children: [
                                                               SizedBox(
@@ -1796,16 +1799,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     searchOpen
                                                                     ? 0
                                                                     : !isExpanded
-                                                                    ? 10.0
-                                                                    : 12.5,
+                                                                    ? 10.w
+                                                                    : 12.5.w,
                                                               ),
                                                               !isExpanded
                                                                   ? SvgPicture.asset(
                                                                       AppAssets
                                                                           .shareSvg,
-                                                                      width: 20,
+                                                                      width:
+                                                                          20.w,
                                                                       height:
-                                                                          20,
+                                                                          20.h,
                                                                       // ignore: deprecated_member_use
                                                                       color: const Color(
                                                                         0xff3C3C3C,
@@ -1821,9 +1825,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           : null,
                                                                       AppAssets
                                                                           .closeSvg,
-                                                                      width: 15,
+                                                                      width:
+                                                                          15.w,
                                                                       height:
-                                                                          15,
+                                                                          15.h,
                                                                       // ignore: deprecated_member_use
                                                                       color: const Color(
                                                                         0xffFF5F61,
@@ -1832,8 +1837,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               SizedBox(
                                                                 width:
                                                                     !isExpanded
-                                                                    ? 10.0
-                                                                    : 12.5,
+                                                                    ? 10.w
+                                                                    : 12.5.w,
                                                               ),
                                                             ],
                                                           ),
@@ -1864,7 +1869,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 ? const SliverToBoxAdapter()
                                                 : SliverAppBar(
                                                     collapsedHeight:
-                                                        180 + htmlHeight,
+                                                        180.h + htmlHeight,
                                                     backgroundColor:
                                                         colorScheme.white,
                                                     automaticallyImplyLeading:
@@ -1886,39 +1891,41 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 imageUrl:
                                                                                     widget.boutiqueIcon ??
                                                                                     "",
-                                                                                height: 20,
+                                                                                height: 20.h,
                                                                                 imageFit: BoxFit.contain,
-                                                                                width: 20,
+                                                                                width: 20.w,
                                                                               )
                                                                             : SvgNetworkWidget(
                                                                                 svgUrl:
                                                                                     widget.boutiqueIcon ??
                                                                                     "",
-                                                                                height: 20,
+                                                                                height: 20.h,
                                                                               )
                                                                       : const SizedBox.shrink(),
-                                                                  const SizedBox(
-                                                                    width: 8,
+                                                                  SizedBox(
+                                                                    width: 8.w,
                                                                   ),
                                                                   SvgPicture.asset(
                                                                     AppAssets
                                                                         .verifiedBadgeSvg,
-                                                                    height: 15,
-                                                                    width: 15,
+                                                                    height:
+                                                                        15.h,
+                                                                    width: 15.w,
                                                                   ),
-                                                                  const SizedBox(
-                                                                    width: 8,
+                                                                  SizedBox(
+                                                                    width: 8.w,
                                                                   ),
                                                                   SvgPicture.asset(
                                                                     AppAssets
                                                                         .starBadgeSvg,
-                                                                    height: 15,
-                                                                    width: 15,
+                                                                    height:
+                                                                        15.h,
+                                                                    width: 15.w,
                                                                   ),
                                                                 ],
                                                               ),
-                                                              const SizedBox(
-                                                                height: 5,
+                                                              SizedBox(
+                                                                height: 5.h,
                                                               ),
                                                               Text(
                                                                 widget.boutiqueName ??
@@ -1937,17 +1944,18 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       letterSpacing:
                                                                           0.18,
                                                                       fontSize:
-                                                                          12,
-                                                                      height: 1,
+                                                                          12.sp,
+                                                                      height:
+                                                                          1.h,
                                                                     ),
                                                               ),
-                                                              const SizedBox(
-                                                                height: 5,
+                                                              SizedBox(
+                                                                height: 5.h,
                                                               ),
                                                               widget.withSlidingImages
                                                                   ? SizedBox(
                                                                       height:
-                                                                          128,
+                                                                          128.h,
                                                                       //color: Colors.red,
                                                                       child: CarouselSlider.builder(
                                                                         itemCount: widget
@@ -1966,12 +1974,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   2; // عرض أول 3 صور فقط
 
                                                                               return Padding(
-                                                                                padding: const EdgeInsets.only(
-                                                                                  right: 10,
-                                                                                  left: 10,
+                                                                                padding: EdgeInsets.only(
+                                                                                  right: 10.w,
+                                                                                  left: 10.w,
                                                                                 ),
                                                                                 child: Container(
-                                                                                  height: 128,
+                                                                                  height: 128.h,
                                                                                   width: 1.sw,
                                                                                   decoration: BoxDecoration(
                                                                                     borderRadius: BorderRadius.circular(
@@ -2008,7 +2016,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                             imageUrl: widget.banner![index].filePath!,
                                                                                             imageFit: BoxFit.cover,
                                                                                             width: 1.sw,
-                                                                                            height: 128,
+                                                                                            height: 128.h,
                                                                                           ),
                                                                                         )
                                                                                       : Container(
@@ -2023,7 +2031,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                             child: Icon(
                                                                                               Icons.image,
                                                                                               color: Colors.grey[400],
-                                                                                              size: 40,
+                                                                                              size: 40.h,
                                                                                             ),
                                                                                           ),
                                                                                         ),
@@ -2040,7 +2048,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 300,
                                                                           ), // 🔧 تقليل مدة الحركة
                                                                           height:
-                                                                              128,
+                                                                              128.h,
                                                                           enableInfiniteScroll:
                                                                               false,
                                                                           viewportFraction:
@@ -2051,15 +2059,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       ),
                                                                     )
                                                                   : Padding(
-                                                                      padding: const EdgeInsets.symmetric(
+                                                                      padding: EdgeInsets.symmetric(
                                                                         horizontal:
-                                                                            25.0,
+                                                                            25.w,
                                                                       ),
                                                                       child: Stack(
                                                                         children: [
                                                                           Container(
                                                                             height:
-                                                                                135,
+                                                                                135.h,
                                                                             width:
                                                                                 1.sw,
                                                                             decoration: BoxDecoration(
@@ -2093,7 +2101,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 imageUrl: widget.boutiqueFirstBanner!,
                                                                                 imageFit: BoxFit.cover,
                                                                                 width: 1.sw,
-                                                                                height: 130,
+                                                                                height: 130.h,
                                                                               ),
                                                                             ),
                                                                           ),
@@ -2102,7 +2110,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 htmlHeight ==
                                                                                     0
                                                                                 ? 0
-                                                                                : 128,
+                                                                                : 128.h,
                                                                             width:
                                                                                 1.sw,
                                                                             decoration: BoxDecoration(
@@ -2314,7 +2322,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         automaticallyImplyLeading: false,
                                         titleSpacing: 0,
                                         toolbarHeight: isExpanded
-                                            ? 860
+                                            ? 860.h
                                             : (((state
                                                               .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
                                                                   '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
@@ -2343,10 +2351,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               ?.paginationStatus ==
                                                           PaginationStatus
                                                               .success)
-                                            ? 35
+                                            ? 35.h
                                             : state.cashedOrginalBoutique
-                                            ? 115
-                                            : 145,
+                                            ? 115.h
+                                            : 145.h,
                                         flexibleSpace: StackedFiltersList(
                                           expandingFiltersStack:
                                               expandingFiltersStack,
@@ -2622,8 +2630,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   ? Key(WidgetsKeys
                                                       .productsListKey)
                                                   : gridViewKeyForRendering,
-                                              padding: const EdgeInsets.only(
-                                                  top: 10),
+                                              padding: EdgeInsets.only(
+                                                  top: 10.h),
                                               sliver: SliverGrid(
                                                 gridDelegate:
                                                     SliverGridDelegateWithFixedCrossAxisCount(
@@ -2782,9 +2790,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             child: Center(
                                               child: MyTextWidget(
                                                 "${LocaleKeys.no_internet_connected.tr()}",
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   color: Colors.black,
-                                                  fontSize: 18,
+                                                  fontSize: 18.sp,
                                                 ),
                                               ),
                                             ),
@@ -2815,9 +2823,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             child: Center(
                                               child: MyTextWidget(
                                                 "${LocaleKeys.no_products_found.tr()}",
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   color: Colors.black,
-                                                  fontSize: 18,
+                                                  fontSize: 18.sp,
                                                 ),
                                               ),
                                             ),
@@ -2886,9 +2894,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               child: Center(
                                                 child: MyTextWidget(
                                                   "${LocaleKeys.no_products_found.tr()}",
-                                                  style: const TextStyle(
+                                                  style: TextStyle(
                                                     color: Colors.black,
-                                                    fontSize: 18,
+                                                    fontSize: 18.sp,
                                                   ),
                                                 ),
                                               ),
@@ -2924,16 +2932,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                         return SliverPadding(
                                           key: gridViewKeyForRendering,
-                                          padding: const EdgeInsets.only(
-                                            top: 10,
-                                          ),
+                                          padding: EdgeInsets.only(top: 10.h),
                                           sliver: SliverGrid(
                                             gridDelegate:
                                                 SliverGridDelegateWithFixedCrossAxisCount(
                                                   crossAxisCount: 2,
-                                                  childAspectRatio: 200.w / 350,
-                                                  crossAxisSpacing: 10,
-                                                  mainAxisSpacing: 15,
+                                                  childAspectRatio:
+                                                      1.sw / ((392.w) * 2),
+                                                  crossAxisSpacing: 10.w,
+                                                  mainAxisSpacing: 15.h,
                                                 ),
                                             delegate: SliverChildBuilderDelegate(
                                               addSemanticIndexes: false,
@@ -3021,7 +3028,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 // }),
               ),
               Positioned(
-                top: 10,
+                top: 10.h,
                 child: Stack(
                   children: [
                     ValueListenableBuilder<String?>(
@@ -3032,8 +3039,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           child: Stack(
                             children: [
                               Container(
-                                height: 40,
-                                width: 140,
+                                height: 40.h,
+                                width: 140.w,
                                 decoration: BoxDecoration(
                                   boxShadow: const [
                                     BoxShadow(
@@ -3042,7 +3049,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       blurRadius: 6,
                                     ),
                                   ],
-                                  borderRadius: BorderRadius.circular(15),
+                                  borderRadius: BorderRadius.circular(15.r),
                                   color: const Color(0xff505050),
                                 ),
                                 child: Center(
@@ -3056,8 +3063,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                 ),
                               ),
                               Container(
-                                width: 140,
-                                height: 40,
+                                width: 140.w,
+                                height: 40.h,
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
@@ -3140,9 +3147,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         bottom: -20.h,
                         child: _loadingForRquestProductDetails
                             ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: TrydosLoader(size: 15),
+                                width: 20.w,
+                                height: 20.h,
+                                child: TrydosLoader(size: 15.h),
                               )
                             : SizedBox(
                                 height: tapIndex == -1 ? 0 : 1.sh,
@@ -3567,7 +3574,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               0,
                                               0.3,
                                             ),
-                                            child: TrydosLoader(size: 25),
+                                            child: TrydosLoader(size: 25.h),
                                           )
                                         : ValueListenableBuilder<bool>(
                                             valueListenable: finishRedeem,
@@ -4056,7 +4063,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       valueListenable: showShadowForColorImages,
       builder: (context, isShowPanel, _) {
         return Positioned(
-          bottom: 0,
+          bottom: 0.h,
           child: Container(
             width: 1.sw,
             height: isShowPanel ? (1.sh - 100.h) : 0,
@@ -4098,12 +4105,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
         child: Column(
           children: [
             Container(
-              margin: const EdgeInsets.all(10),
-              height: 2,
-              width: 40,
+              margin: EdgeInsets.all(10.w),
+              height: 2.h,
+              width: 40.w,
               decoration: const BoxDecoration(color: Color(0xffC4C2C2)),
             ),
-            const SizedBox(height: 5),
+            SizedBox(height: 5.h),
             ValueListenableBuilder<bool>(
               valueListenable: finishRedeem,
               builder: (context, _finishRedeem, _) => ValueListenableBuilder<int>(
@@ -4123,9 +4130,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                               ?.length,
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                                mainAxisSpacing: 5,
-                                crossAxisSpacing: 5,
-                                childAspectRatio: 1.sw / (392 * 2),
+                                mainAxisSpacing: 5.h,
+                                crossAxisSpacing: 5.w,
+                                childAspectRatio: 1.sw / ((392.w) * 2),
                                 crossAxisCount: 2,
                               ),
                           itemBuilder: (context, index) => InkWell(

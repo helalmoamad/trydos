@@ -90,7 +90,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
   Widget _buildSimpleProductCard() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        borderRadius: BorderRadius.all(Radius.circular(15.r)),
         color: const Color(0xffF8F8F8),
         border: Border.all(color: Colors.white),
       ),
@@ -101,8 +101,8 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
         children: [
           // 🖼️ صورة المنتج - بدون مسافات إضافية
           Container(
-            height: 300,
-            width: 200,
+            height: 300.h,
+            width: 200.w,
             child: buildSingleImage(widget.colorImages),
           ),
 
@@ -211,7 +211,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
         // معلومات المنتج
         SizedBox(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             child: Column(
               crossAxisAlignment: LanguageService.languageCode == "ar"
                   ? CrossAxisAlignment.end
@@ -224,7 +224,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                 _buildProductNameRow(),
 
                 (widget.productItem.labelNames?.length ?? 0) == 0
-                    ? const SizedBox(height: 10)
+                    ? SizedBox(height: 10.h)
                     : RotatingTextWidget(
                         texts: widget.productItem.labelNames ?? [],
                         textStyle: textTheme.titleMedium?.bq.copyWith(
@@ -254,44 +254,44 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
 
     return SizedBox(
       width: isVerified ? 55.w : 30.w,
-      height: 15,
+      height: 15.h,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: LanguageService.languageCode == "ar"
             ? [
                 isVerified
-                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)
+                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8.h)
                     : const SizedBox.shrink(),
-                SizedBox(width: isVerified ? 5 : 0),
+                SizedBox(width: isVerified ? 5.w : 0),
                 mediaServerIsS3
                     ? MyCachedNetworkImage(
                         imageUrl: brandIcon,
-                        height: 11,
+                        height: 11.h,
                         imageFit: BoxFit.contain,
                         width: 30.w,
                       )
                     : SvgNetworkWidget(
                         svgUrl: brandIcon,
                         width: 30.w,
-                        height: 11,
+                        height: 11.h,
                       ),
               ]
             : [
                 mediaServerIsS3
                     ? MyCachedNetworkImage(
                         imageUrl: brandIcon,
-                        height: 15,
+                        height: 15.h,
                         imageFit: BoxFit.contain,
                         width: 30.w,
                       )
                     : SvgNetworkWidget(
                         svgUrl: brandIcon,
                         width: 30.w,
-                        height: 15,
+                        height: 15.h,
                       ),
-                SizedBox(width: isVerified ? 5 : 0),
+                SizedBox(width: isVerified ? 5.w : 0),
                 isVerified
-                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)
+                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8.h)
                     : const SizedBox.shrink(),
               ],
       ),
@@ -343,9 +343,9 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
   /// 💰 Price Section - FIXED: أبعاد أصلية
   Widget _buildPriceSection() {
     return SizedBox(
-      width: 200,
+      width: 200.w,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
         child: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.getCurrencyForCountryModel !=
@@ -419,7 +419,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                                 height: 0,
                               ),
                             ),
-                            const SizedBox(width: 2),
+                            SizedBox(width: 2.w),
                             MyTextWidget(
                               HelperFunctions.formatNumber(
                                 numberToFormate:
@@ -447,7 +447,7 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                                 height: 0,
                               ),
                             ),
-                            const SizedBox(width: 2),
+                            SizedBox(width: 2.w),
                             MyTextWidget(
                               state.getCurrencyForCountryModel == null
                                   ? ""
@@ -533,11 +533,11 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                   0;
 
           return Container(
-            height: 25, // الارتفاع الأصلي
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            height: 25.h, // الارتفاع الأصلي
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
             decoration: BoxDecoration(
               color: const Color(0x1D1D1D),
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(4.r),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -592,8 +592,8 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
                         ),
                       )
                     : const SizedBox.shrink(),
-                const SizedBox(width: 3),
-                SvgPicture.asset(AppAssets.bagSvg, height: 12, width: 12),
+                SizedBox(width: 3.w),
+                SvgPicture.asset(AppAssets.bagSvg, height: 12.h, width: 12.w),
               ],
             ),
           );
@@ -605,8 +605,8 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
 
 Widget buildSingleImage(List<String> colorImages) {
   return SizedBox(
-    width: 200,
-    height: 300,
+    width: 200.w,
+    height: 300.h,
     child: colorImages.isNotEmpty
         ? _ImagePageViewWithDots(images: colorImages)
         : Container(
@@ -637,21 +637,19 @@ class _ImagePageViewWithDotsState extends State<_ImagePageViewWithDots> {
     return Column(
       children: [
         SizedBox(
-          width: 200,
-          height: 290,
+          width: 200.w,
+          height: 290.h,
           child: PageView.builder(
             itemCount: widget.images.length,
             onPageChanged: (i) => setState(() => _page = i),
             itemBuilder: (context, i) => ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(16),
-              ),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
               child: ProductListingImageWidget(
                 imageUrl: widget.images[i],
-                width: 200,
-                height: 290,
-                orginalWidth: 200,
-                orginalHeight: 290,
+                width: 200.w,
+                height: 290.h,
+                orginalWidth: 200.w,
+                orginalHeight: 290.h,
                 circleShape: false,
                 innerShadowYOffset: 3,
               ),
@@ -664,9 +662,9 @@ class _ImagePageViewWithDotsState extends State<_ImagePageViewWithDots> {
             children: List.generate(
               widget.images.length,
               (i) => Container(
-                margin: const EdgeInsets.symmetric(horizontal: 2),
-                width: 4,
-                height: 4,
+                margin: EdgeInsets.symmetric(horizontal: 2.w),
+                width: 4.w,
+                height: 4.h,
                 decoration: BoxDecoration(
                   color: _page == i
                       ? const Color(0xff8D8D8D)

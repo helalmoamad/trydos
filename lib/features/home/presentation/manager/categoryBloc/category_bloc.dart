@@ -437,8 +437,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     String url,
     BuildContext context,
     String type,
-    int width,
-    int height,
+    double width,
+    double height,
   ) {
     List<String> urlHasPredeched =
         prefsRepository.getImageUrlHasPrefeched ?? [];

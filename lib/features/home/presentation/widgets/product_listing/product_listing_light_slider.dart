@@ -1,4 +1,4 @@
-import 'package:carousel_slider/carousel_slider.dart';
+/*import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart' as trans;
 import 'package:flutter/material.dart' hide BoxShadow;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -529,3 +529,4 @@ class _ProductListingLightSliderState
     });
   }
 }
+*/

@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart' hide BoxDecoration, BoxShadow;
@@ -195,22 +195,22 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           return Center(
             child: Column(
               children: [
-                const SizedBox(height: 150),
+                SizedBox(height: 150.h),
                 state.getProductFiltersStatus[key] ==
                         GetProductFiltersStatus.loading
-                    ? Center(child: TrydosLoader(size: 20))
+                    ? Center(child: TrydosLoader(size: 20.h))
                     : Center(
                         child: MyTextWidget(
                           "${LocaleKeys.no_filters_found.tr()}",
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.black,
-                            fontSize: 18,
+                            fontSize: 18.sp,
                           ),
                         ),
                       ),
-                const SizedBox(height: 100),
+                SizedBox(height: 100.h),
                 Container(
-                  width: 200,
+                  width: 200.w,
                   child: InkWell(
                     onTap: () {
                       widget.textController.text = "";
@@ -255,10 +255,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                     child: Stack(
                       children: [
                         Container(
-                          height: 65,
+                          height: 65.h,
                           decoration: BoxDecoration(
                             color: colorScheme.white,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(20.r),
                             boxShadow: [
                               BoxShadow(
                                 // ignore: deprecated_member_use
@@ -524,14 +524,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               if (isExpanded) ...{
                 !filters!.categories.isNullOrEmpty
                     ? Padding(
-                        padding: const EdgeInsetsDirectional.only(start: 25),
+                        padding: EdgeInsetsDirectional.only(start: 25.w),
                         child: Row(
                           key: TestVariables.kTestMode
                               ? const Key(WidgetsKeys.filterByCategoryHeadKey)
                               : null,
                           children: [
-                            const FilterSelectedMark(width: 20, height: 20),
-                            const SizedBox(width: 10),
+                            FilterSelectedMark(width: 20.w, height: 20.h),
+                            SizedBox(width: 10.w),
                             MyTextWidget(
                               '${LocaleKeys.filter_by.tr()} ${LocaleKeys.categories.tr()}',
                               style: context.textTheme.titleMedium?.rq.copyWith(
@@ -539,7 +539,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 height: 15 / 12,
                               ),
                             ),
-                            const SizedBox(width: 5),
+                            SizedBox(width: 5.w),
                             SvgPicture.asset(
                               AppAssets.registerInfoSvg,
                               // ignore: deprecated_member_use
@@ -554,15 +554,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                       )
                                     : null,
                                 children: [
-                                  const SizedBox(width: 5),
-                                  TrydosLoader(size: 20),
+                                  SizedBox(width: 5.w),
+                                  TrydosLoader(size: 20.h),
                                 ],
                               ),
                           ],
                         ),
                       )
                     : const SizedBox.shrink(),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
               },
               if ((widget.displayAppliedFiltersOnly && !isExpanded)) ...{
                 const SizedBox.shrink(),
@@ -570,11 +570,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               if ((!widget.displayAppliedFiltersOnly && !isExpanded) ||
                   isExpanded) ...{
                 SizedBox(
-                  height: 110,
+                  height: 110.h,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(width: isExpanded ? 20 : 15),
+                      SizedBox(width: isExpanded ? 20.w : 15.w),
                       Visibility(
                         visible: !isExpanded,
                         child: InkWell(
@@ -594,14 +594,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             );
                           },
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 35.0),
+                            padding: EdgeInsets.only(top: 35.w),
                             child: ValueListenableBuilder<int>(
                               valueListenable: currentActiveSection,
                               builder: (context, currentActive, _) {
                                 return Column(
                                   children: [
                                     SizedBox(
-                                      height: 8,
+                                      height: 8.h,
                                       child: ListView.builder(
                                         itemCount: countOfFilters,
                                         physics:
@@ -612,8 +612,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                           return Row(
                                             children: [
                                               Container(
-                                                height: 8,
-                                                width: 8,
+                                                height: 8.h,
+                                                width: 8.w,
                                                 decoration: BoxDecoration(
                                                   color: currentActive == index
                                                       ? const Color(0xff505050)
@@ -639,7 +639,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                         },
                                       ),
                                     ),
-                                    const SizedBox(height: 10),
+                                    SizedBox(height: 10.h),
                                   ],
                                 );
                               },
@@ -647,7 +647,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 5),
+                      SizedBox(width: 5.w),
                       /*
                  key: Key('$index-section'),
                                       onVisibilityChanged: (visibilityInfo) {
@@ -723,8 +723,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
                             padding: EdgeInsets.only(
-                              left: LanguageService.rtl ? 0 : 5,
-                              right: !LanguageService.rtl ? 0 : 5,
+                              left: LanguageService.rtl ? 0 : 5.w,
+                              right: !LanguageService.rtl ? 0 : 5.w,
                             ),
                             builder: (ctx, index) {
                               if (index & 1 == 0)
@@ -882,15 +882,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 );
                               return Container(
                                 margin: EdgeInsetsDirectional.only(
-                                  top: 10,
-                                  end: 10,
+                                  top: 10.h,
+                                  end: 10.w,
                                   start:
                                       (index - 1) == 0 &&
                                           titleOfFilterSection[0] ==
                                               '${LocaleKeys.view_by.tr()} ${LocaleKeys.categories.tr()}'
                                       ? 0
-                                      : 10,
-                                  bottom: 45,
+                                      : 10.w,
+                                  bottom: 45.h,
                                 ),
                                 width: 0.5,
                                 color: const Color(0xff707070),
@@ -904,7 +904,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                 ),
               },
               if (isExpanded) ...{
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 !filters!.brands.isNullOrEmpty
                     ? FiltersNormalList(
                         filterListTitle:
@@ -1039,7 +1039,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   ?.minPrice ==
                               null)
                       ? 0
-                      : 5,
+                      : 5.h,
                 ),
                 color: const Color(0xffF8F8F8),
                 child: Container(
@@ -1104,12 +1104,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   ?.minPrice ==
                               null)
                       ? 0
-                      : 30,
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  padding: const EdgeInsets.only(left: 10),
+                      : 30.h,
+                  margin: EdgeInsets.symmetric(horizontal: 10.w),
+                  padding: EdgeInsets.only(left: 10.w),
                   decoration: BoxDecoration(
                     color: const Color(0xffEFEFEF),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: choosedOrAppliedFiltersWidget(
                     controller: widget.textController,
@@ -1128,7 +1128,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             if (countOfFilters != 0 ||
                 state.choosedFiltersByUser[key] != null) ...{
               if (isExpanded) ...{
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 Column(
                   children: [
                     ValueListenableBuilder<Tuple2<double, double>>(
@@ -1192,9 +1192,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                               minPrice! ||
                                           lowerAndUpperPrices!.value.item2 <
                                               maxPrice!)))
-                              ? 55
+                              ? 65.h
                               : 0,
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          margin: EdgeInsets.symmetric(horizontal: 10.w),
                           decoration: BoxDecoration(
                             color: colorScheme.white,
                             boxShadow: [
@@ -1204,16 +1204,16 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 color: Colors.black.withOpacity(0.1),
                               ),
                             ],
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10.r),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 5,
-                                ).copyWith(left: 10),
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 5.h,
+                                ).copyWith(left: 10.w),
                                 child: MyTextWidget(
                                   '${LocaleKeys.the_products_will_be_shown_as_below.tr()}',
                                   style: context.textTheme.titleMedium?.rq
@@ -1291,15 +1291,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                         .value
                                                         .item2 <
                                                     maxPrice!)))
-                                    ? 30
+                                    ? 30.h
                                     : 0,
-                                padding: const EdgeInsets.only(left: 10),
+                                padding: EdgeInsets.only(left: 10.w),
                                 decoration: BoxDecoration(
                                   color: const Color(0xffEFEFEF),
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(10.r),
                                 ),
                                 child: SizedBox(
-                                  height: 15,
+                                  height: 18.h,
                                   child: choosedOrAppliedFiltersWidget(
                                     controller: widget.textController,
                                     boutiqueSlug: widget.boutiqueSlug,
@@ -1318,14 +1318,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         );
                       },
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10.h),
                     ValueListenableBuilder<Tuple2<double, double>>(
                       valueListenable:
                           lowerAndUpperPrices ??
                           ValueNotifier(const Tuple2(-1, -1)),
                       builder: (context, _, __) {
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          padding: EdgeInsets.symmetric(horizontal: 20.w),
                           child: Row(
                             children: [
                               if (state.choosedFiltersByUser[key] != null ||
@@ -1521,7 +1521,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                       widget.closeFilterPage.call();
                                     },
                                     child: Container(
-                                      height: 65,
+                                      height: 54.h,
                                       decoration: BoxDecoration(
                                         color: const Color(0xffFF5F61),
                                         boxShadow: [
@@ -1541,7 +1541,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                             inset: true,
                                           ),
                                         ],
-                                        borderRadius: BorderRadius.circular(20),
+                                        borderRadius: BorderRadius.circular(
+                                          20.r,
+                                        ),
                                       ),
                                       child: Center(
                                         child: Row(
@@ -1556,7 +1558,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                 '( ${LocaleKeys.number_of_products.tr()} ${state.countOfProductExpectedByFiltering?[widget.boutiqueSlug]})',
                                                 style: textTheme.bodyMedium?.mq
                                                     .copyWith(
-                                                      fontSize: 12,
+                                                      fontSize: 12.sp,
                                                       color: const Color(
                                                         0xffFEFEFE,
                                                       ),
@@ -1580,7 +1582,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                               },
                               ValueListenableBuilder<Tuple2<double, double>>(
                                 valueListenable:
@@ -1663,11 +1665,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                           child: Stack(
                                             children: [
                                               Container(
-                                                height: 65,
+                                                height: 54.h,
                                                 decoration: BoxDecoration(
                                                   color: colorScheme.white,
                                                   borderRadius:
-                                                      BorderRadius.circular(20),
+                                                      BorderRadius.circular(
+                                                        20.r,
+                                                      ),
                                                   boxShadow: [
                                                     BoxShadow(
                                                       color: Colors.black
@@ -1731,7 +1735,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         );
                       },
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 16.h),
                   ],
                 ),
               },
@@ -1824,7 +1828,7 @@ Widget choosedOrAppliedFiltersWidget({
           ).state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ??
           1;
       Widget widget = SizedBox(
-        height: 23.h,
+        height: 25.h,
         width: 30.w,
         child: ListView(
           key: TestVariables.kTestMode == false
@@ -1902,7 +1906,7 @@ Widget choosedOrAppliedFiltersWidget({
                         // ignore: deprecated_member_use
                         color: const Color(0xffFF5F61),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10.w),
                     ],
                   ),
                 ),
@@ -1952,7 +1956,7 @@ Widget choosedOrAppliedFiltersWidget({
                 child: Center(
                   child: Row(
                     children: [
-                      const SizedBox(width: 5),
+                      SizedBox(width: 5.w),
                       SvgPicture.asset(
                         AppAssets.closeSvg,
 
@@ -1960,7 +1964,7 @@ Widget choosedOrAppliedFiltersWidget({
                         // ignore: deprecated_member_use
                         color: const Color(0xffFF5F61),
                       ),
-                      const SizedBox(width: 5),
+                      SizedBox(width: 5.w),
                     ],
                   ),
                 ),
@@ -1974,7 +1978,7 @@ Widget choosedOrAppliedFiltersWidget({
                   style: context.textTheme.titleLarge?.bq.copyWith(
                     color: const Color(0xffFF5F61),
                     letterSpacing: 0,
-                    height: 1,
+                    height: 1.h,
                   ),
                 ),
               )
@@ -1996,8 +2000,8 @@ Widget choosedOrAppliedFiltersWidget({
               (filtersForSearchText?.searchText?.replaceAll(" ", "").length ??
                           0) >
                       1
-                  ? const Center(
-                      child: FilterSelectedMark(width: 15, height: 15),
+                  ? Center(
+                      child: FilterSelectedMark(width: 15.w, height: 15.h),
                     )
                   : const SizedBox.shrink(),
               SizedBox(
@@ -2088,13 +2092,13 @@ Widget choosedOrAppliedFiltersWidget({
                   ),
                 ),
               ),
-              const SizedBox(width: 15),
+              SizedBox(width: 15.w),
             },
             if (!(GetIt.I<PrefsRepository>()
                 .getTagsInUrlToFilter
                 .isNullOrEmpty)) ...{
               SizedBox(
-                height: 28,
+                height: 28.h,
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -2158,10 +2162,12 @@ Widget choosedOrAppliedFiltersWidget({
                 ),
               ),
             },
-            const SizedBox(width: 15),
+            SizedBox(width: 15.w),
             if (!(filters?.boutiques.isNullOrEmpty ?? true)) ...{
-              const Center(child: FilterSelectedMark(width: 15, height: 15)),
-              const SizedBox(width: 10),
+              Center(
+                child: FilterSelectedMark(width: 15.w, height: 15.h),
+              ),
+              SizedBox(width: 10.w),
               SizedBox(
                 height: 28.h,
                 child: ListView.builder(
@@ -2220,16 +2226,16 @@ Widget choosedOrAppliedFiltersWidget({
                         children: [
                           MyCachedNetworkImage(
                             //                  progressIndicatorBuilderWidget:
-                            //const SizedBox.shrink(),
+                            //SizedBox.shrink(),
                             imageUrl:
                                 filters!.boutiques![index].banner!.filePath!,
                             imageFit: BoxFit.cover,
                             height: choosedFilter ? 40.h : 30.h,
                             width: 60.w,
                             circleDimensions: 8,
-                            logoTextHeight: 5,
+                            logoTextHeight: 5.h,
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           MyTextWidget(
                             key: TestVariables.kTestMode
                                 ? const Key(
@@ -2255,8 +2261,10 @@ Widget choosedOrAppliedFiltersWidget({
               ),
             },
             if (!(filters?.categories.isNullOrEmpty ?? true)) ...{
-              const Center(child: FilterSelectedMark(width: 15, height: 15)),
-              const SizedBox(width: 5),
+              Center(
+                child: FilterSelectedMark(width: 15.w, height: 15.h),
+              ),
+              SizedBox(width: 5.w),
             },
             SizedBox(
               height: 28.h,
@@ -2332,7 +2340,7 @@ Widget choosedOrAppliedFiltersWidget({
                           withInnerShadow: true,
                           withBackGroundShadow: false,
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         MyTextWidget(
                           filters.categories![index].name.toString(),
                           maxLines: 1,
@@ -2344,7 +2352,7 @@ Widget choosedOrAppliedFiltersWidget({
                             fontSize: 13.sp,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                       ],
                     ),
                   );
@@ -2355,10 +2363,10 @@ Widget choosedOrAppliedFiltersWidget({
               Center(
                 child: FilterSelectedMark(width: 15.w, height: 15.h),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 10.w),
             },
             SizedBox(
-              height: 28,
+              height: 28.h,
               child: ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -2420,7 +2428,7 @@ Widget choosedOrAppliedFiltersWidget({
                           withInnerShadow: true,
                           withBackGroundShadow: false,
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         MyTextWidget(
                           filters.brands![index].name.toString(),
                           maxLines: 1,
@@ -2432,7 +2440,7 @@ Widget choosedOrAppliedFiltersWidget({
                             fontSize: 13.sp,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                       ],
                     ),
                   );
@@ -2440,8 +2448,10 @@ Widget choosedOrAppliedFiltersWidget({
               ),
             ),
             if (!(filters?.attributes.isNullOrEmpty ?? true)) ...{
-              const Center(child: FilterSelectedMark(width: 15, height: 15)),
-              const SizedBox(width: 10),
+              Center(
+                child: FilterSelectedMark(width: 15.w, height: 15.h),
+              ),
+              SizedBox(width: 10.w),
             },
             SizedBox(
               height: 28.h,
@@ -2505,7 +2515,7 @@ Widget choosedOrAppliedFiltersWidget({
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         MyTextWidget(
                           filters!.attributes![0].options![index].toString(),
                           maxLines: 1,
@@ -2517,7 +2527,7 @@ Widget choosedOrAppliedFiltersWidget({
                             fontSize: 13.sp,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                       ],
                     ),
                   );
@@ -2525,8 +2535,10 @@ Widget choosedOrAppliedFiltersWidget({
               ),
             ),
             if (!(filters?.colors.isNullOrEmpty ?? true)) ...{
-              const Center(child: FilterSelectedMark(width: 15, height: 15)),
-              const SizedBox(width: 10),
+              Center(
+                child: FilterSelectedMark(width: 15.w, height: 15.h),
+              ),
+              SizedBox(width: 10.w),
               SizedBox(
                 height: 28.h,
                 child: ListView.builder(
@@ -2579,10 +2591,10 @@ Widget choosedOrAppliedFiltersWidget({
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Container(
-                            width: 20,
-                            height: 20,
+                            width: 20.w,
+                            height: 20.h,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Color(
@@ -2595,7 +2607,7 @@ Widget choosedOrAppliedFiltersWidget({
                               ),
                             ),
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                         ],
                       ),
                     );
@@ -2609,8 +2621,10 @@ Widget choosedOrAppliedFiltersWidget({
                     lowerAndUpperPrices != null &&
                     (lowerAndUpperPrices.value.item1 > minPrice! ||
                         lowerAndUpperPrices.value.item2 < maxPrice!))) ...{
-              const Center(child: FilterSelectedMark(width: 15, height: 15)),
-              const SizedBox(width: 10),
+              Center(
+                child: FilterSelectedMark(width: 15.w, height: 15.h),
+              ),
+              SizedBox(width: 10.w),
               InkWell(
                 onTap: () {
                   filter_model.GetProductFiltersModel
@@ -2651,7 +2665,7 @@ Widget choosedOrAppliedFiltersWidget({
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     MyTextWidget(
                       filters?.prices?.minPrice != null ||
                               filters?.prices?.maxPrice != null
@@ -2692,7 +2706,7 @@ Widget choosedOrAppliedFiltersWidget({
                         fontSize: 13.sp,
                       ),
                     ),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                   ],
                 ),
               ),
@@ -2715,12 +2729,12 @@ Widget choosedOrAppliedFiltersWidget({
       return widget;
 
       /* return Container(
-          padding: EdgeInsets.all(8),
-          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: EdgeInsets.all(8.w),
+          margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.r),
               color: Colors.grey.shade300),
-          height: 30,
+          height: 30.h,
           width: 1.sw,
           child: widget);*/
     },
@@ -2785,8 +2799,8 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
     return Padding(
       padding: EdgeInsetsDirectional.only(end: widget.paddingValue),
       child: Container(
-        width: widget.isSubSubCategory! ? widget.width + 22 : null,
-        height: widget.isSubSubCategory! ? widget.height + 22 : null,
+        width: widget.isSubSubCategory! ? widget.width + 22.w : null,
+        height: widget.isSubSubCategory! ? widget.height + 22.h : null,
         child: Column(
           children: [
             Column(
@@ -2828,7 +2842,7 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                   ),
                 ),
                 if (widget.isExpanded || widget.isTopItem) ...{
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   SizedBox(
                     width: widget.width,
                     child: MyTextWidget(
@@ -2888,7 +2902,7 @@ class FilterImage extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(180.0)),
+        borderRadius: BorderRadius.all(Radius.circular(180.r)),
         border: borderColor != null
             ? Border.all(width: 0.5, color: borderColor!)
             : null,
@@ -2989,7 +3003,7 @@ class FilterSelectedMark extends StatelessWidget {
                 blurRadius: 3,
               ),
             ],
-            borderRadius: BorderRadius.circular(180),
+            borderRadius: BorderRadius.circular(180.r),
             color: const Color(0xffFF5F61),
           ),
           child: Center(
@@ -3005,7 +3019,7 @@ class FilterSelectedMark extends StatelessWidget {
           height: height,
           width: width,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(180),
+            borderRadius: BorderRadius.circular(180.r),
             border: Border.all(color: const Color(0xffFF5F61)),
             boxShadow: [
               BoxShadow(

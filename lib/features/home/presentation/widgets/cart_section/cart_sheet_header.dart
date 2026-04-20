@@ -108,33 +108,33 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10),
+      margin: EdgeInsets.symmetric(horizontal: 10.w),
       decoration: BoxDecoration(
         color: colorScheme.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
       ),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10),
+        margin: EdgeInsets.symmetric(horizontal: 10.w),
         child: Row(
           children: [
             Flexible(
               child: SizedBox(
-                height: 15 + 12.h,
+                height: 27.h,
                 child: ListView.builder(
                   controller: _scrollController,
-                  padding: HWEdgeInsets.only(bottom: 12),
+                  padding: HWEdgeInsets.only(bottom: 12.h),
                   itemBuilder: (BuildContext context, int index) {
                     return Row(
                       children: [
-                        SvgPicture.asset(svg[index], height: 15),
-                        const SizedBox(width: 5),
+                        SvgPicture.asset(svg[index], height: 15.h),
+                        SizedBox(width: 5.w),
                         index == 0
                             ? MyTextWidget(
                                 '2 June',
                                 style: textTheme.titleMedium?.bq.copyWith(
                                   color: const Color(0xff505050),
                                   height: 0,
-                                  fontSize: 11,
+                                  fontSize: 11.sp,
                                 ),
                               )
                             : MyTextWidget(
@@ -142,10 +142,10 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
                                 style: textTheme.titleMedium?.rq.copyWith(
                                   color: const Color(0xff505050),
                                   height: 0,
-                                  fontSize: 11,
+                                  fontSize: 11.sp,
                                 ),
                               ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                       ],
                     );
                   },

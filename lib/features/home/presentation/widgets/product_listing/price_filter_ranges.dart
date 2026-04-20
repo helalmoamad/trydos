@@ -64,12 +64,12 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
       return const SizedBox.shrink();
     }
     return SizedBox(
-      height: 70,
+      height: 70.h,
       child: ListView.separated(
         itemCount: widget.priceRanges.length,
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
-        separatorBuilder: (ctx, index) => const SizedBox(width: 10),
+        separatorBuilder: (ctx, index) => SizedBox(width: 10.w),
         itemBuilder: (ctx, index) {
           BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
           bool isSelected =
@@ -175,18 +175,18 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                   );
                 },
                 child: Container(
-                  height: 50,
-                  margin: const EdgeInsets.only(top: 20),
+                  height: 50.h,
+                  margin: EdgeInsets.only(top: 20.h),
                   child: DottedBorder(
-                    radius: const Radius.circular(180),
+                    radius: Radius.circular(180.r),
                     borderType: BorderType.RRect,
                     strokeCap: StrokeCap.square,
                     strokeWidth: 0.5,
                     color: isSelected
                         ? const Color(0xffFF5F61)
                         : const Color(0xff6B6B6B),
-                    padding: const EdgeInsets.all(8),
-                    dashPattern: const [3, 3],
+                    padding: EdgeInsets.all(8.r),
+                    dashPattern: [3.r, 3.r],
                     child: Center(
                       child: Text(
                         LanguageService.rtl

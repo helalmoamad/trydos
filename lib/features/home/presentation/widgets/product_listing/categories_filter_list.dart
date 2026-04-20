@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
@@ -164,12 +165,12 @@ class CategoriesFilterList extends StatelessWidget {
                   return AnimatedContainer(
                     curve: Curves.fastEaseInToSlowEaseOut,
                     duration: const Duration(milliseconds: 300),
-                    margin: const EdgeInsetsDirectional.only(end: 5),
+                    margin: EdgeInsetsDirectional.only(end: 5.w),
                     width:
                         (currentExpandedIndex == index) || isChildCategorySlug
-                        ? (75 + subCategories.length * 55)
-                        : 80.0,
-                    height: 70.0,
+                        ? (75.w + subCategories.length * 55.w)
+                        : 80.w,
+                    height: 70.h,
                     child: Stack(
                       children: [
                         ...List.generate(
@@ -182,13 +183,13 @@ class CategoriesFilterList extends StatelessWidget {
                                     isChildCategorySlug)
                                 ? subCategories[innerIndex].isSubSubCategory ??
                                           false
-                                      ? 35
-                                      : (70 - 50)
-                                : (70 - 50) / 2,
+                                      ? 35.h
+                                      : (20.h)
+                                : (20.h) / 2,
                             end:
                                 currentExpandedIndex == index ||
                                     isChildCategorySlug
-                                ? innerIndex * 55
+                                ? innerIndex * 55.w
                                 : innerIndex >= (subCategories.length - 2)
                                 ? (innerIndex - 1) * 3
                                 : 0,
@@ -205,14 +206,14 @@ class CategoriesFilterList extends StatelessWidget {
                                         subCategories[innerIndex]
                                                 .isSubSubCategory ??
                                             false
-                                        ? 35
-                                        : 50,
+                                        ? 35.w
+                                        : 50.w,
                                     height:
                                         subCategories[innerIndex]
                                                 .isSubSubCategory ??
                                             false
-                                        ? 35
-                                        : 50,
+                                        ? 35.h
+                                        : 50.h,
                                     originalWidth: double.tryParse(
                                       subCategories[innerIndex]
                                           .mostViewedProductThumbnail!
@@ -454,8 +455,8 @@ class CategoriesFilterList extends StatelessWidget {
                                         : Key(
                                             '${WidgetsKeys.categoryCircleWithSubProductListingFilterKey}$index',
                                           ),
-                                    width: 70,
-                                    height: 70,
+                                    width: 70.w,
+                                    height: 70.h,
                                     isTopItem: true,
                                     originalWidth: double.tryParse(
                                       filters
@@ -711,8 +712,8 @@ class CategoriesFilterList extends StatelessWidget {
                           : Key(
                               '${WidgetsKeys.categoryCircleWithOutSubProductListingFilterKey}$index',
                             ),
-                      width: 70,
-                      height: 70,
+                      width: 70.w,
+                      height: 70.h,
                       imageUrl: filters
                           .categories![index]
                           .mostViewedProductThumbnail!

@@ -371,6 +371,7 @@ String addSuitableWidthAndHeightToImage({
   required double width,
   required double height,
 }) {
+  print("original image url: $imageUrl");
   if (imageUrl.isEmpty || imageUrl == "null" || imageUrl == "undefined") {
     return imageUrl;
   }
@@ -394,20 +395,13 @@ String addSuitableWidthAndHeightToImage({
           list[0] +
           'upload/w_${fWidth},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
           list[1];
-    } else if (width > height) {
+    } else {
       // الصورة أعرض من الارتفاع - استخدم العرض
       url =
           list[0] +
-          'upload/h_${fHeight},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
-          list[1];
-    } else {
-      // الصورة أطول من العرض - استخدم الارتفاع
-      url =
-          list[0] +
-          'upload/w_${fWidth},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
+          'upload/h_${fHeight},w_${fWidth},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
           list[1];
     }
-    //}
 
     return url;
   }
@@ -418,13 +412,13 @@ String addSuitableWidthAndHeightToImage({
     // الصورة أعرض من الارتفاع - استخدم العرض
     url =
         list[0] +
-        'upload/w_${fWidth},h_${fHeight},c_fit,b_rgb:f0f0f0,f_webp,q_85' +
+        'upload/w_${fWidth},h_${fHeight},c_pad,b_auto,f_webp,q_85' +
         list[1];
   } else {
     // الصورة أطول من العرض - استخدم الارتفاع
     url =
         list[0] +
-        'upload/w_${fWidth},h_${fHeight},c_fit,b_rgb:f0f0f0,f_webp,q_85' +
+        'upload/w_${fWidth},h_${fHeight},c_pad,b_auto,f_webp,q_85' +
         list[1];
   }
   //}

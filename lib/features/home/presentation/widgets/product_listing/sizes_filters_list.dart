@@ -104,15 +104,15 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
       FlutterError.dumpErrorToConsole(error);
     };
     return Padding(
-      padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 25.0),
+      padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 25.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!widget.hideTitle) ...{
             Row(
               children: [
-                const FilterSelectedMark(width: 20, height: 20),
-                const SizedBox(width: 10),
+                FilterSelectedMark(width: 20.w, height: 20.h),
+                SizedBox(width: 10.w),
                 MyTextWidget(
                   '${LocaleKeys.filter_by.tr()} ${LocaleKeys.sizes.tr()}',
                   style: context.textTheme.titleMedium?.rq.copyWith(
@@ -120,7 +120,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                     height: 15 / 12,
                   ),
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
                   // ignore: deprecated_member_use
@@ -132,8 +132,8 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                         GetProductFiltersStatus.loading) {
                       return Row(
                         children: [
-                          const SizedBox(width: 5),
-                          TrydosLoader(size: 20),
+                          SizedBox(width: 5.w),
+                          TrydosLoader(size: 20.h),
                         ],
                       );
                     }
@@ -142,10 +142,10 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
           },
           SizedBox(
-            height: 70,
+            height: 70.h,
             child: ValueListenableBuilder<int>(
               valueListenable: currentIndexInSizes,
               builder: (context, currentIndex, _) {
@@ -154,7 +154,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                   itemCount: widget.attribute.options?.length ?? 0,
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
-                  separatorBuilder: (ctx, index) => const SizedBox(width: 10),
+                  separatorBuilder: (ctx, index) => SizedBox(width: 10.w),
                   itemBuilder: (ctx, index) {
                     BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(
                       context,
@@ -345,10 +345,10 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                             }
                           },
                           child: Container(
-                            height: 70,
-                            width: 70,
+                            height: 70.h,
+                            width: 70.w,
                             child: DottedBorder(
-                              radius: const Radius.circular(180),
+                              radius: Radius.circular(180.r),
                               borderType: BorderType.RRect,
                               strokeCap: StrokeCap.round,
                               strokeWidth: 0.5,
@@ -380,10 +380,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                         ),
                         Visibility(
                           visible: isSelected,
-                          child: const FilterSelectedMark(
-                            width: 20,
-                            height: 20,
-                          ),
+                          child: FilterSelectedMark(width: 20.w, height: 20.h),
                         ),
                       ],
                     );

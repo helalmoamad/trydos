@@ -249,8 +249,8 @@ class _SearchResultState extends ThemeState<SearchResult> {
                               .filePath!;
                     filePath = addSuitableWidthAndHeightToImage(
                       imageUrl: filePath,
-                      height: 50,
-                      width: 35,
+                      height: 50.h,
+                      width: 35.w,
                     );
 
                     return Stack(

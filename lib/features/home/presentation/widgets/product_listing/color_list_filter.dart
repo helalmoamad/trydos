@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
@@ -92,23 +93,23 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
       return const SizedBox.shrink();
     }
     return Padding(
-      padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 25.0),
+      padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 25.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!widget.hideTitle) ...{
             Row(
               children: [
-                const FilterSelectedMark(width: 20, height: 20),
-                const SizedBox(width: 10),
+                FilterSelectedMark(width: 20.w, height: 20.h),
+                SizedBox(width: 10.w),
                 MyTextWidget(
                   '${LocaleKeys.filter_by_color.tr()}',
                   style: context.textTheme.titleMedium?.rq.copyWith(
                     color: const Color(0xff505050),
-                    height: 15 / 12,
+                    height: (15 / 12).h,
                   ),
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 SvgPicture.asset(
                   AppAssets.registerInfoSvg,
                   // ignore: deprecated_member_use
@@ -120,8 +121,8 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                         GetProductFiltersStatus.loading) {
                       return Row(
                         children: [
-                          const SizedBox(width: 5),
-                          TrydosLoader(size: 20),
+                          SizedBox(width: 5.w),
+                          TrydosLoader(size: 20.h),
                         ],
                       );
                     }
@@ -130,10 +131,10 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
           },
           SizedBox(
-            height: 105,
+            height: 105.h,
             child: ListView.separated(
               controller: scrollController,
               shrinkWrap: true,
@@ -271,8 +272,8 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                       child: Stack(
                         children: [
                           Container(
-                            width: 70,
-                            height: 70,
+                            width: 70.w,
+                            height: 70.h,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Color(
@@ -295,9 +296,9 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                           ),
                           Visibility(
                             visible: isSelected,
-                            child: const FilterSelectedMark(
-                              width: 20,
-                              height: 20,
+                            child: FilterSelectedMark(
+                              width: 20.w,
+                              height: 20.h,
                             ),
                           ),
                         ],
@@ -306,11 +307,11 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                   ],
                 );
               },
-              separatorBuilder: (ctx, index) => const SizedBox(width: 10),
+              separatorBuilder: (ctx, index) => SizedBox(width: 10.w),
               itemCount: widget.colors.length,
             ),
           ),
-          SizedBox(height: !widget.hideTitle ? 20 : 0),
+          SizedBox(height: !widget.hideTitle ? 20.h : 0),
         ],
       ),
     );

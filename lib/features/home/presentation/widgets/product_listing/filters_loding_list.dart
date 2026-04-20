@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
@@ -35,63 +36,55 @@ class _FiltersLoadingListPageState extends State<FiltersLoadingListPage> {
       FlutterError.dumpErrorToConsole(error);
     };
     return Shimmer.fromColors(
-        baseColor: Colors.grey.shade300,
-        highlightColor: Colors.grey.shade100,
-        child: ListView.builder(
-            itemCount: widget.countOfListInPage,
-            padding: const EdgeInsetsDirectional.only(start: 15),
-            shrinkWrap: true,
-            itemBuilder: (ctx, index) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: ListView.builder(
+        itemCount: widget.countOfListInPage,
+        padding: EdgeInsetsDirectional.only(start: 15.w),
+        shrinkWrap: true,
+        itemBuilder: (ctx, index) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      Center(child: SvgPicture.asset(AppAssets.filtersSvg)),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text('${LocaleKeys.filter_by.tr()} ${titles[index]}'),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    height: 70,
-                    child: index == 5
-                        ? FlutterSlider(
-                            values: const [1, 1000],
-                            max: 1000,
-                            min: 1,
-                            disabled: true,
-                            handlerWidth: 40,
-                            handlerHeight: 40,
-                            handler: FlutterSliderHandler(),
-                            rightHandler: FlutterSliderHandler(),
-                            rangeSlider: true,
-                          )
-                        : ListView.separated(
-                            physics: const NeverScrollableScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            separatorBuilder: (ctx, index) {
-                              return const SizedBox(
-                                width: 10,
-                              );
-                            },
-                            itemBuilder: (ctx, index) {
-                              return const CircleAvatar(
-                                radius: 35,
-                              );
-                            },
-                            itemCount: 6,
-                          ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  )
+                  Center(child: SvgPicture.asset(AppAssets.filtersSvg)),
+                  SizedBox(width: 10.w),
+                  Text('${LocaleKeys.filter_by.tr()} ${titles[index]}'),
                 ],
-              );
-            }));
+              ),
+              SizedBox(height: 10.h),
+              SizedBox(
+                height: 70.h,
+                child: index == 5
+                    ? FlutterSlider(
+                        values: const [1, 1000],
+                        max: 1000,
+                        min: 1,
+                        disabled: true,
+                        handlerWidth: 40.w,
+                        handlerHeight: 40.h,
+                        handler: FlutterSliderHandler(),
+                        rightHandler: FlutterSliderHandler(),
+                        rangeSlider: true,
+                      )
+                    : ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        separatorBuilder: (ctx, index) {
+                          return SizedBox(width: 10.w);
+                        },
+                        itemBuilder: (ctx, index) {
+                          return CircleAvatar(radius: 35.r);
+                        },
+                        itemCount: 6,
+                      ),
+              ),
+              SizedBox(height: 20.h),
+            ],
+          );
+        },
+      ),
+    );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart' as local;
+﻿import 'package:easy_localization/easy_localization.dart' as local;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -380,13 +380,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        const SizedBox(width: 12),
+                                        SizedBox(width: 12.w),
                                         SvgPicture.asset(
                                           AppAssets.bagsSvg,
-                                          width: 23,
+                                          width: 23.w,
                                         ),
                                         ///////////////////////////
-                                        const SizedBox(width: 4),
+                                        SizedBox(width: 4.w),
                                         ///////////////////////////
                                         Text(
                                           LocaleKeys.order_details.tr(),
@@ -397,12 +397,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                               .copyWith(
                                                 color: const Color(0xff1D1D1D),
                                                 letterSpacing: 0.18,
-                                                fontSize: 14,
+                                                fontSize: 14.sp,
                                                 height: 1.3,
                                               ),
                                         ),
                                         ///////////////////////////
-                                        const SizedBox(width: 15),
+                                        SizedBox(width: 15.w),
                                         ///////////////////////////
                                       ],
                                     ),
@@ -422,8 +422,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         showShadowForPanel.value = true;
                                       },
                                       child: Container(
-                                        width: 40,
-                                        height: 20,
+                                        width: 40.w,
+                                        height: 20.h,
                                         child:
                                             state.getOrdersByOrderGroupIDStatus ==
                                                 GetOrdersByOrderGroupIDStatus
@@ -431,12 +431,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                             ? TrydosLoader(size: 16)
                                             : SvgPicture.asset(
                                                 AppAssets.orderMenuSvg,
-                                                width: 20,
+                                                width: 20.w,
                                               ),
                                       ),
                                     ),
                                     ///////////////////////////
-                                    const SizedBox(width: 12),
+                                    SizedBox(width: 12.w),
                                   ],
                                 ),
                               ),
@@ -485,7 +485,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           );
 
                                           return SizedBox(
-                                            height: 95,
+                                            height: 95.h,
                                             child: buildFirstSection(
                                               context: context,
                                               orderNumber:
@@ -515,10 +515,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                       SizedBox(height: 8.h),
                                       ///////////////////////
                                       SizedBox(
-                                        height: 85,
+                                        height: 85.h,
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 10.w,
                                           ),
                                           child:
                                               state.getOrdersByOrderGroupIDStatus ==
@@ -538,15 +538,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                           ? SvgPicture.asset(
                                                               AppAssets
                                                                   .orderCanselSvg,
-                                                              width: 20,
+                                                              width: 20.w,
                                                             )
                                                           : SvgPicture.asset(
                                                               AppAssets
                                                                   .pendingBagSvg,
-                                                              width: 15,
+                                                              width: 15.w,
                                                             ),
                                                       ////////////////////
-                                                      const SizedBox(width: 3),
+                                                      SizedBox(width: 3.w),
 
                                                       ///////////////////
                                                       orders[_indexTapPackage]
@@ -561,15 +561,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                           ? SvgPicture.asset(
                                                               AppAssets
                                                                   .whiteBagSvg,
-                                                              width: 15,
+                                                              width: 15.w,
                                                             )
                                                           : SvgPicture.asset(
                                                               AppAssets
                                                                   .preparingBagSvg,
-                                                              width: 15,
+                                                              width: 15.w,
                                                             ),
                                                       ////////////////////
-                                                      const SizedBox(width: 3),
+                                                      SizedBox(width: 3.w),
                                                       ///////////////////
                                                       orders[_indexTapPackage]
                                                                   .orderGroupStatus
@@ -587,15 +587,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                           ? SvgPicture.asset(
                                                               AppAssets
                                                                   .whiteBagSvg,
-                                                              width: 15,
+                                                              width: 15.w,
                                                             )
                                                           : SvgPicture.asset(
                                                               AppAssets
                                                                   .shippedAndOutOfDeliveryBagSvg,
-                                                              width: 15,
+                                                              width: 15.w,
                                                             ),
                                                       ////////////////////
-                                                      const SizedBox(width: 3),
+                                                      SizedBox(width: 3.w),
                                                       ///////////////////
                                                       orders[_indexTapPackage]
                                                                   .orderGroupStatus
@@ -617,12 +617,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                           ? SvgPicture.asset(
                                                               AppAssets
                                                                   .whiteBagSvg,
-                                                              width: 15,
+                                                              width: 15.w,
                                                             )
                                                           : SvgPicture.asset(
                                                               AppAssets
                                                                   .delivered_bagSvg,
-                                                              width: 15,
+                                                              width: 15.w,
                                                             ),
                                                     ],
                                                   ),
@@ -660,13 +660,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                       ),
                                       SizedBox(height: 8.h),
                                       Container(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 10,
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 10.w,
                                         ),
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xffF4F4F4),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xffF4F4F4),
                                           borderRadius: BorderRadius.all(
-                                            Radius.circular(15),
+                                            Radius.circular(15.r),
                                           ),
                                         ),
                                         child: Row(
@@ -699,7 +699,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                   }
                                                 },
                                                 child: Container(
-                                                  height: 30,
+                                                  height: 30.h,
                                                   width:
                                                       (1.sw - 40) /
                                                       (orders.length),
@@ -714,8 +714,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                             ),
                                                           ),
                                                     borderRadius:
-                                                        const BorderRadius.all(
-                                                          Radius.circular(15),
+                                                        BorderRadius.all(
+                                                          Radius.circular(15.r),
                                                         ),
                                                   ),
                                                   alignment: Alignment.center,
@@ -735,7 +735,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                                     ),
                                                                 letterSpacing:
                                                                     0.18,
-                                                                fontSize: 12,
+                                                                fontSize: 12.sp,
                                                                 height: 1.3,
                                                               )
                                                         : context
@@ -749,7 +749,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                                     ),
                                                                 letterSpacing:
                                                                     0.18,
-                                                                fontSize: 12,
+                                                                fontSize: 12.sp,
                                                                 height: 1.3,
                                                               ),
                                                   ),
@@ -764,7 +764,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                       SizedBox(height: 8.h),
                                       ///////////////////
                                       SizedBox(
-                                        height: 85,
+                                        height: 85.h,
                                         child:
                                             state.getOrdersByOrderGroupIDStatus ==
                                                 GetOrdersByOrderGroupIDStatus
@@ -1023,11 +1023,11 @@ class _OrderDetails1State extends State<OrderDetails1> {
       ),
       child: Container(
         color: Colors.white,
-        height: 450,
+        height: 450.h,
         width: 1.sw,
         child: Scaffold(
           body: SizedBox(
-            height: 400,
+            height: 400.h,
             width: 1.sw,
             child: Stack(
               children: [
@@ -1151,15 +1151,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   left: LanguageService.languageCode != "ar" ? null : 0,
                   right: LanguageService.languageCode != "ar" ? 0 : null,
                   child: Container(
-                    margin: const EdgeInsets.all(10),
-                    height: 20,
-                    width: 40,
+                    margin: EdgeInsets.all(10.w),
+                    height: 20.h,
+                    width: 40.w,
                     child: InkWell(
                       onTap: () => isVerified.value = true,
                       child: SvgPicture.asset(
                         AppAssets.closeSvg,
-                        height: 15,
-                        width: 30,
+                        height: 15.h,
+                        width: 30.w,
                         // ignore: deprecated_member_use
                         color: const Color(0xffFF5F61),
                       ),
@@ -1234,7 +1234,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           ),
                     SizedBox(height: 20.h),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
                       child: Text(
                         "${LocaleKeys.repeated_cancellations_affect_rating.tr()} \n ",
                         textAlign: TextAlign.start,
@@ -1278,14 +1278,14 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                       ? const Color(0xff388CFF)
                                       : const Color(0xff8E8E8E),
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                                 Text(
                                   "${LocaleKeys.i_read_and_agree_to_the.tr()} ",
                                   style: context.textTheme.bodyMedium?.rq
                                       .copyWith(
                                         color: Colors.white,
                                         letterSpacing: 0.18,
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                         height: 1.3,
                                       ),
                                 ),
@@ -1348,12 +1348,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                       baseColor: Colors.grey[500]!,
                                       highlightColor: Colors.grey[300]!,
                                       child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 24,
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 24.w,
                                         ),
                                         alignment: Alignment.center,
                                         width: 1.sw,
-                                        height: 50,
+                                        height: 50.h,
                                         decoration: BoxDecoration(
                                           color: agreeToPolicies.value == true
                                               ? const Color(0xff3066CC)
@@ -1394,12 +1394,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         );
                                       },
                                       child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 24,
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 24.w,
                                         ),
                                         alignment: Alignment.center,
                                         width: 1.sw,
-                                        height: 50,
+                                        height: 50.h,
                                         decoration: BoxDecoration(
                                           color: agreeToPolicies.value == true
                                               ? const Color(0xff3066CC)
@@ -1442,7 +1442,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     ),
                     SizedBox(height: 20.h),
                     Container(
-                      width: 200,
+                      width: 200.w,
                       height: 40.h,
                       child: BlocBuilder<OrderBloc, OrderState>(
                         buildWhen: (previous, current) =>
@@ -1538,7 +1538,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         SizedBox(height: 20.h),
                         SvgPicture.asset(
                           AppAssets.orderChangeAddressSvg,
-                          width: 50,
+                          width: 50.w,
                           // ignore: deprecated_member_use
                           color: Colors.white,
                         ),
@@ -1554,7 +1554,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         ),
                         SizedBox(height: 10.h),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          padding: EdgeInsets.symmetric(horizontal: 24.w),
                           child: addressInfoWithContactInfoCart(
                             isChange: true,
                             customerAddressesInfo: CustomerAddressesInfo(
@@ -1652,7 +1652,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         SizedBox(height: 10.h),
                         SizedBox(height: 10.h),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          padding: EdgeInsets.symmetric(horizontal: 24.w),
                           child: addressInfoWithContactInfoCart(
                             isChange: true,
                             customerAddressesInfo:
@@ -1719,7 +1719,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           ? const Color(0xff388CFF)
                                           : const Color(0xff8E8E8E),
                                     ),
-                                    const SizedBox(width: 5),
+                                    SizedBox(width: 5.w),
                                     Text(
                                       "${LocaleKeys.i_read_and_agree_to_the.tr()} ",
                                       style: context.textTheme.bodyMedium?.rq
@@ -1787,8 +1787,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                       baseColor: Colors.grey[500]!,
                                       highlightColor: Colors.grey[300]!,
                                       child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 24,
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 24.w,
                                         ),
                                         alignment: Alignment.center,
                                         width: 1.sw,
@@ -1844,10 +1844,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         builder:
                                             (context, _agreeToPolicies, _) {
                                               return Container(
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 24,
-                                                    ),
+                                                margin: EdgeInsets.symmetric(
+                                                  horizontal: 24.w,
+                                                ),
                                                 alignment: Alignment.center,
                                                 width: 1.sw,
                                                 height: 50.h,
@@ -1867,7 +1866,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                           ),
                                                         ),
                                                   borderRadius:
-                                                      BorderRadius.circular(15),
+                                                      BorderRadius.circular(
+                                                        15.r,
+                                                      ),
                                                 ),
                                                 child: Text(
                                                   LocaleKeys.i_agree_change
@@ -1900,7 +1901,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         ),
                         SizedBox(height: 10.h),
                         Container(
-                          width: 200,
+                          width: 200.w,
                           height: 40.h,
                           child: BlocBuilder<OrderBloc, OrderState>(
                             buildWhen: (previous, current) =>
@@ -1970,15 +1971,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
       width: 1.sw,
       height: 100.h,
       padding: EdgeInsets.only(
-        right: LanguageService.languageCode == "ar" ? 20 : 10,
-        left: LanguageService.languageCode != "ar" ? 20 : 10,
-        bottom: 5,
+        right: LanguageService.languageCode == "ar" ? 20.w : 10.w,
+        left: LanguageService.languageCode != "ar" ? 20.w : 10.w,
+        bottom: 5.h,
       ),
       decoration: BoxDecoration(
         color: isChange
             ? const Color.fromRGBO(0, 0, 0, 0)
             : const Color(0xffF8F8F8),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15.r),
         border: isChange
             ? Border.all(
                 color: (isChange && index != indexTap)
@@ -1991,7 +1992,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
       ),
       child: Column(
         children: [
-          const SizedBox(height: 5),
+          SizedBox(height: 5.h),
           Container(
             width: 360.w,
             height: 16.h,
@@ -2008,9 +2009,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
                   height: 12.h,
-                  width: 12,
+                  width: 12.w,
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 Text(
                   customerAddressesInfo.address ?? "",
                   style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -2032,33 +2033,33 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     : InkWell(
                         onTap: onTapEdit,
                         child: Container(
-                          margin: const EdgeInsets.only(top: 5),
-                          width: 20,
+                          margin: EdgeInsets.only(top: 5.h),
+                          width: 20.w,
                           height: 30.h,
                           child: SvgPicture.asset(
                             AppAssets.editSvg,
                             height: 30.h,
-                            width: 20,
+                            width: 20.w,
                           ),
                         ),
                       ),
                 /*  isDelete || cartChoosed
                       ? SizedBox.shrink()
                       : SizedBox(
-                          width: 10,
+                          width: 10.w,
                         ),
                   isDelete || cartChoosed
                       ? SizedBox.shrink()
                       : InkWell(
                           onTap: onTapDelete,
                           child: Container(
-                            margin: EdgeInsets.only(top: 5),
-                            width: 20,
+                            margin: EdgeInsets.only(top: 5.h),
+                            width: 20.w,
                             height: 30,
                             child: SvgPicture.asset(
                               AppAssets.deletecartSvg,
                               height: 14,
-                              width: 14,
+                              width: 14.w,
                             ),
                           ),
                         ),*/
@@ -2128,9 +2129,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
                   height: 12.h,
-                  width: 12,
+                  width: 12.w,
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 Text(
                   '+${(customerAddressesInfo.contactInfo?.phone ?? "").replaceAll("+", "")}',
                   style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -2146,7 +2147,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     height: 1.3,
                   ),
                 ),
-                const SizedBox(width: 40),
+                SizedBox(width: 40.w),
                 Container(
                   height: 16.h,
                   child: Row(
@@ -2162,11 +2163,11 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             ? const Color(0xff8D8D8D)
                             : const Color(0xff1D1D1D),
                         height: 12.h,
-                        width: 12,
+                        width: 12.w,
                       ),
-                      const SizedBox(width: 5),
+                      SizedBox(width: 5.w),
                       SizedBox(
-                        width: 130,
+                        width: 130.w,
                         child: Text(
                           '${customerAddressesInfo.contactInfo?.name ?? ""}',
                           maxLines: 1,
@@ -2198,7 +2199,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               : Color(0xff388CFF),
                           allowDrawingOutsideViewBox: true,
                           height: 12,
-                          width: 12,
+                          width: 12.w,
                         ),*/
               ],
             ),
@@ -2212,7 +2213,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     decoration: BoxDecoration(
                         color:
                           Color(0xffFFFFFF),
-                        borderRadius: BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(10.r)),
                     alignment: Alignment.center,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -2222,7 +2223,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.rr.copyWith(
                               color: const Color(0xff8D8D8D),
                               letterSpacing: 0.18,
-                              fontSize: 10,
+                              fontSize: 10.sp,
                               height: 1.3),
                         ),
                         Text(
@@ -2230,7 +2231,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.rr.copyWith(
                               color: const Color(0xff1D1D1D),
                               letterSpacing: 0.18,
-                              fontSize: 10,
+                              fontSize: 10.sp,
                               height: 1.3),
                         ),
                         Text(
@@ -2240,7 +2241,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               decorationColor: const Color(0xff388CFF),
                               color: const Color(0xff388CFF),
                               letterSpacing: 0.18,
-                              fontSize: 10,
+                              fontSize: 10.sp,
                               height: 1.3),
                         ),
                       ],
@@ -2264,11 +2265,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
               return Container(
                 width: 1.sw,
                 height: isShowPanel
-                    ? ((_option == null)
-                          ? 512
-                          : (_option == "All_Order")
-                          ? 512
-                          : (1.sh - 70))
+                    ? ((_option == null) ? 512 : (1.sh - 70.h))
                     : 0,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
@@ -2296,9 +2293,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   },
                   onPanelOpened: () {},
                   minHeight: 0,
-                  maxHeight: (_option == null || (_option == "All_Order"))
-                      ? 512
-                      : (1.sh - 70),
+                  maxHeight: (_option == null) ? 512 : (1.sh - 70.h),
                   panelBuilder: (sc) => panelBuilderContent(_option, sc),
                 ),
               );
@@ -2336,23 +2331,23 @@ class _OrderDetails1State extends State<OrderDetails1> {
           children: [
             SizedBox(height: 10.h),
             Container(
-              width: 40,
-              height: 2,
+              width: 40.w,
+              height: 2.h,
               decoration: BoxDecoration(
                 color: const Color(0xffC4C2C2),
                 border: Border.all(color: const Color(0xffC4C2C2)),
-                borderRadius: const BorderRadius.all(Radius.circular(2)),
+                borderRadius: BorderRadius.all(Radius.circular(2.r)),
               ),
             ),
             SizedBox(height: 15.h),
             Container(
               width: 1.sw,
               height: 205.h,
-              margin: const EdgeInsets.symmetric(horizontal: 10),
+              margin: EdgeInsets.symmetric(horizontal: 10.w),
               decoration: BoxDecoration(
                 color: const Color(0xffF8F8F8),
                 border: Border.all(color: const Color(0xffF8F8F8)),
-                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                borderRadius: BorderRadius.all(Radius.circular(15.r)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -2363,9 +2358,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     height: 16.h,
                     child: Row(
                       children: [
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         SvgPicture.asset(AppAssets.orderClockSvg, height: 15.h),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           HelperFunctions.orderFormatDate(
                             DateTime.tryParse(
@@ -2382,7 +2377,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         ),
                         const Spacer(),
                         SvgPicture.asset(AppAssets.orderBag1Svg, height: 15.h),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           orders[_indexTapPackage].orderGroupId ?? "",
                           style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -2392,7 +2387,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                       ],
                     ),
                   ),
@@ -2402,12 +2397,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     height: 16.h,
                     child: Row(
                       children: [
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         SvgPicture.asset(
                           AppAssets.preparingBagSvg,
                           height: 15.h,
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           orders[_indexTapPackage].orderGroupStatus?.label ??
                               "",
@@ -2418,7 +2413,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         SvgPicture.asset(
                           AppAssets.orderPreparingSvg,
                           height: 15.h,
@@ -2428,7 +2423,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           AppAssets.orderInvoice2Svg,
                           height: 15.h,
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           (orders[_indexTapPackage].details?.length ?? "")
                               .toString(),
@@ -2439,7 +2434,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           LocaleKeys.item.tr(),
                           style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -2449,7 +2444,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           HelperFunctions.formatNumber(
                             numberToFormate:
@@ -2477,7 +2472,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           homeBloc
                               .state
@@ -2492,7 +2487,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                       ],
                     ),
                   ),
@@ -2501,8 +2496,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     height: 125.h,
                     width: 1.sw,
                     padding: EdgeInsets.only(
-                      left: LanguageService.languageCode == "ar" ? 0 : 10,
-                      right: LanguageService.languageCode != "ar" ? 0 : 10,
+                      left: LanguageService.languageCode == "ar" ? 0 : 10.w,
+                      right: LanguageService.languageCode != "ar" ? 0 : 10.w,
                     ),
                     child: ListView.builder(
                       itemCount: orders[_indexTapPackage].details?.length,
@@ -2510,13 +2505,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       itemBuilder: (context, index) {
                         return Container(
                           height: 125.h,
-                          width: 92,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                          width: 92.w,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
+                            ),
                           ),
                           child: ClipRRect(
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(15),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
                             ),
                             child: MyCachedNetworkImage(
                               imageUrl:
@@ -2524,7 +2521,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                       .details?[index]
                                       .image ??
                                   "",
-                              width: 92,
+                              width: 92.w,
                               imageFit: BoxFit.contain,
                               height: 125.h,
                             ),
@@ -2538,7 +2535,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
               ),
             ),
             SizedBox(height: 8.h),
-            SvgPicture.asset(AppAssets.orderCanselSvg, width: 30),
+            SvgPicture.asset(AppAssets.orderCanselSvg, width: 30.w),
             SizedBox(height: 14.h),
             Text(
               "${LocaleKeys.cancel_this_order.tr()}",
@@ -2599,11 +2596,11 @@ class _OrderDetails1State extends State<OrderDetails1> {
             Container(
               width: 1.sw,
               height: 0.5,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
+              margin: EdgeInsets.symmetric(horizontal: 20.w),
               decoration: BoxDecoration(
                 color: const Color(0xffC4C2C2),
                 border: Border.all(color: const Color(0xffC4C2C2)),
-                borderRadius: const BorderRadius.all(Radius.circular(2)),
+                borderRadius: BorderRadius.all(Radius.circular(2.r)),
               ),
             ),
             SizedBox(height: 30.h),
@@ -2643,7 +2640,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
   Widget canselContent() {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: Column(
           children: [
             SizedBox(height: 20.h),
@@ -2670,7 +2667,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         optionCanselOrReturn.value = [...options];
                       },
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10.w),
                     optionOfCanselOrReturnOrder(
                       LocaleKeys.i_fear_quality.tr(),
                       100,
@@ -2714,7 +2711,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         optionCanselOrReturn.value = [...options];
                       },
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10.w),
                     optionOfCanselOrReturnOrder(
                       LocaleKeys.i_am_afraid_sizes.tr(),
                       125,
@@ -2769,7 +2766,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
               height: 53.h,
               decoration: BoxDecoration(
                 color: const Color(0xff388CFF),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(
                 LocaleKeys.we_have_other_solutions_instead_cancellation.tr(),
@@ -2799,7 +2796,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       color: (_optionCanselOrReturn?.length ?? 0) > 0
                           ? const Color(0xffFF5F61)
                           : const Color(0xffD3D3D3),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: Text(
                       LocaleKeys.cancel_request.tr(),
@@ -2833,21 +2830,21 @@ class _OrderDetails1State extends State<OrderDetails1> {
         builder: (context, _optionCansel, _) {
           return Container(
             alignment: Alignment.center,
-            height: 40,
+            height: 40.h,
             width: width,
             decoration: BoxDecoration(
               border: !_optionCansel.contains(text)
                   ? null
                   : Border.all(color: const Color(0xff402CDD)),
               color: const Color(0xffF8F8F8),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.r),
             ),
             child: Text(
               text,
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff5D5C5D),
                 letterSpacing: 0.18,
-                fontSize: 12,
+                fontSize: 12.sp,
                 height: 1.3,
               ),
             ),
@@ -2989,27 +2986,23 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     children: [
                       SizedBox(height: 10.h),
                       Container(
-                        width: 40,
-                        height: 2,
+                        width: 40.w,
+                        height: 2.h,
                         decoration: BoxDecoration(
                           color: const Color(0xffC4C2C2),
                           border: Border.all(color: const Color(0xffC4C2C2)),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(2),
-                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(2.r)),
                         ),
                       ),
                       SizedBox(height: 10.h),
                       Container(
                         width: 1.sw,
-                        height: 200.h,
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        height: 205.h,
+                        margin: EdgeInsets.symmetric(horizontal: 10.w),
                         decoration: BoxDecoration(
                           color: const Color(0xffF8F8F8),
                           border: Border.all(color: const Color(0xffF8F8F8)),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(15),
-                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(15.r)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -3020,12 +3013,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               height: 16.h,
                               child: Row(
                                 children: [
-                                  const SizedBox(width: 10),
+                                  SizedBox(width: 10.w),
                                   SvgPicture.asset(
                                     AppAssets.orderClockSvg,
                                     height: 15.h,
                                   ),
-                                  const SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   Text(
                                     HelperFunctions.orderFormatDate(
                                       DateTime.tryParse(
@@ -3048,7 +3041,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                     AppAssets.orderBag1Svg,
                                     height: 15.h,
                                   ),
-                                  const SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   Text(
                                     orders[_indexTapPackage].orderGroupId ?? "",
                                     style: context.textTheme.bodyMedium?.mq
@@ -3059,7 +3052,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           height: 1.3,
                                         ),
                                   ),
-                                  const SizedBox(width: 10),
+                                  SizedBox(width: 10.w),
                                 ],
                               ),
                             ),
@@ -3069,12 +3062,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               height: 16.h,
                               child: Row(
                                 children: [
-                                  const SizedBox(width: 10),
+                                  SizedBox(width: 10.w),
                                   SvgPicture.asset(
                                     AppAssets.preparingBagSvg,
                                     height: 15.h,
                                   ),
-                                  const SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   Text(
                                     orders[_indexTapPackage]
                                             .orderGroupStatus
@@ -3088,7 +3081,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           height: 1.3,
                                         ),
                                   ),
-                                  const SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   SvgPicture.asset(
                                     AppAssets.orderPreparingSvg,
                                     height: 15.h,
@@ -3098,7 +3091,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                     AppAssets.orderInvoice2Svg,
                                     height: 15.h,
                                   ),
-                                  const SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   Text(
                                     (orders[_indexTapPackage].details?.length ??
                                             "")
@@ -3111,7 +3104,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           height: 1.3,
                                         ),
                                   ),
-                                  const SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   Text(
                                     LocaleKeys.item.tr(),
                                     style: context.textTheme.bodyMedium?.mq
@@ -3122,7 +3115,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           height: 1.3,
                                         ),
                                   ),
-                                  const SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   Text(
                                     HelperFunctions.formatNumber(
                                       numberToFormate:
@@ -3152,7 +3145,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           height: 1.3,
                                         ),
                                   ),
-                                  const SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   Text(
                                     homeBloc
                                         .state
@@ -3168,7 +3161,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           height: 1.3,
                                         ),
                                   ),
-                                  const SizedBox(width: 10),
+                                  SizedBox(width: 10.w),
                                 ],
                               ),
                             ),
@@ -3179,10 +3172,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               padding: EdgeInsets.only(
                                 left: LanguageService.languageCode == "ar"
                                     ? 0
-                                    : 10,
+                                    : 10.w,
                                 right: LanguageService.languageCode != "ar"
                                     ? 0
-                                    : 10,
+                                    : 10.w,
                               ),
                               child: ListView.builder(
                                 itemCount:
@@ -3191,15 +3184,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                 itemBuilder: (context, index) {
                                   return Container(
                                     height: 125.h,
-                                    width: 92,
-                                    decoration: const BoxDecoration(
+                                    width: 92.w,
+                                    decoration: BoxDecoration(
                                       borderRadius: BorderRadius.all(
-                                        Radius.circular(15),
+                                        Radius.circular(15.r),
                                       ),
                                     ),
                                     child: ClipRRect(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(15),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(15.r),
                                       ),
                                       child: MyCachedNetworkImage(
                                         imageUrl:
@@ -3207,7 +3200,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                 .details?[index]
                                                 .image ??
                                             "",
-                                        width: 92,
+                                        width: 92.w,
                                         imageFit: BoxFit.contain,
                                         height: 125.h,
                                       ),
@@ -3246,13 +3239,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           height: 1.3,
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24),
-                        child: Divider(color: Color(0xffC4C2C2)),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        child: const Divider(color: Color(0xffC4C2C2)),
                       ),
                       SizedBox(height: 10.h),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        padding: EdgeInsets.symmetric(horizontal: 5.w),
                         child: addressWidgets(context, state, _indexTap, sc),
                       ),
                       const Spacer(),
@@ -3266,13 +3259,11 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               }
                             },
                             child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                              ),
+                              margin: EdgeInsets.symmetric(horizontal: 24.w),
                               width: 1.sw,
                               height: 53.h,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(20.r),
                                 color: _enableChangeAddress
                                     ? const Color(0xff402CDD)
                                     : const Color(0xffD3D3D3),
@@ -3319,10 +3310,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
           Container(
             height: 50.h,
             width: 1.sw,
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            decoration: const BoxDecoration(
-              color: Color(0xffF8F8F8),
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+            margin: EdgeInsets.symmetric(horizontal: 24.w),
+            decoration: BoxDecoration(
+              color: const Color(0xffF8F8F8),
+              borderRadius: BorderRadius.all(Radius.circular(15.r)),
             ),
             child: Row(
               children: [
@@ -3332,14 +3323,14 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   width: ((1.sw - 58) / 2),
                   decoration: BoxDecoration(
                     border: Border.all(color: const Color(0xff402CDD)),
-                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    borderRadius: BorderRadius.all(Radius.circular(15.r)),
                   ),
                   child: Text(
                     LocaleKeys.delivery_address.tr(),
                     style: context.textTheme.bodyMedium?.mq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       height: 1.33,
                     ),
                   ),
@@ -3348,16 +3339,16 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   alignment: Alignment.center,
                   height: 50.h,
                   width: ((1.sw - 58) / 2),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     //   border: Border.all(color: Color(0xff402CDD)),
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    borderRadius: BorderRadius.all(Radius.circular(15.r)),
                   ),
                   child: Text(
                     LocaleKeys.delivery_note.tr(),
                     style: context.textTheme.bodyMedium?.rq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       height: 1.33,
                     ),
                   ),
@@ -3380,7 +3371,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.33,
                   ),
                 ),
@@ -3400,10 +3391,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       height: 295.h,
                       width: 1.sw,
                       child: ListView.separated(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
                         itemBuilder: (context, index) =>
                             index == state.listOfAddressInfoClassToSave!.length
-                            ? SizedBox(height: 50, width: 1.sw)
+                            ? SizedBox(height: 50.h, width: 1.sw)
                             : InkWell(
                                 onTap: () {
                                   if (index != firstAddressChoosed ||
@@ -3524,7 +3515,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                 ),
                               ),
                         separatorBuilder: (context, index) =>
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10.h),
                         itemCount:
                             state.listOfAddressInfoClassToSave!.length + 1,
                         controller: sc,
@@ -3540,12 +3531,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           );
                         },
                         child: Container(
-                          height: 40,
+                          height: 40.h,
                           width: 1.sw - 56,
 
                           decoration: BoxDecoration(
                             color: const Color(0xffE8FFED),
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15.r),
                             border: Border.all(color: const Color(0xffC4C2C2)),
                           ),
                           child: Row(
@@ -3567,14 +3558,14 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 3),
+                              SizedBox(width: 3.w),
                               Text(
                                 "${LocaleKeys.add_new_shipping_address.tr()} ",
                                 style: context.textTheme.bodyMedium?.mq
                                     .copyWith(
                                       color: const Color(0xff1D1D1D),
                                       letterSpacing: 0.18,
-                                      fontSize: 12,
+                                      fontSize: 12.sp,
                                       height: 1.33,
                                     ),
                               ),
@@ -3600,23 +3591,23 @@ class _OrderDetails1State extends State<OrderDetails1> {
           children: [
             SizedBox(height: 10.h),
             Container(
-              width: 40,
-              height: 2,
+              width: 40.w,
+              height: 2.h,
               decoration: BoxDecoration(
                 color: const Color(0xffC4C2C2),
                 border: Border.all(color: const Color(0xffC4C2C2)),
-                borderRadius: const BorderRadius.all(Radius.circular(2)),
+                borderRadius: BorderRadius.all(Radius.circular(2.r)),
               ),
             ),
             SizedBox(height: 20.h),
             Container(
               width: 1.sw,
-              height: 200.h,
-              margin: const EdgeInsets.symmetric(horizontal: 10),
+              height: 205.h,
+              margin: EdgeInsets.symmetric(horizontal: 10.w),
               decoration: BoxDecoration(
                 color: const Color(0xffF8F8F8),
                 border: Border.all(color: const Color(0xffF8F8F8)),
-                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                borderRadius: BorderRadius.all(Radius.circular(15.r)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -3627,9 +3618,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     height: 16.h,
                     child: Row(
                       children: [
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         SvgPicture.asset(AppAssets.orderClockSvg, height: 15.h),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           HelperFunctions.orderFormatDate(
                             DateTime.tryParse(
@@ -3646,7 +3637,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         ),
                         const Spacer(),
                         SvgPicture.asset(AppAssets.orderBag1Svg, height: 15.h),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           orders[_indexTapPackage].orderGroupId ?? "",
                           style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -3656,7 +3647,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                       ],
                     ),
                   ),
@@ -3666,12 +3657,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     height: 16.h,
                     child: Row(
                       children: [
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         SvgPicture.asset(
                           AppAssets.preparingBagSvg,
                           height: 15.h,
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           orders[_indexTapPackage].orderGroupStatus?.label ??
                               "",
@@ -3682,7 +3673,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         SvgPicture.asset(
                           AppAssets.orderPreparingSvg,
                           height: 15.h,
@@ -3692,7 +3683,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           AppAssets.orderInvoice2Svg,
                           height: 15.h,
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           (orders[_indexTapPackage].details?.length ?? "")
                               .toString(),
@@ -3703,7 +3694,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           LocaleKeys.item.tr(),
                           style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -3713,7 +3704,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           HelperFunctions.formatNumber(
                             numberToFormate:
@@ -3741,7 +3732,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           homeBloc
                               .state
@@ -3756,7 +3747,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                       ],
                     ),
                   ),
@@ -3765,8 +3756,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     height: 125.h,
                     width: 1.sw,
                     padding: EdgeInsets.only(
-                      left: LanguageService.languageCode == "ar" ? 0 : 10,
-                      right: LanguageService.languageCode != "ar" ? 0 : 10,
+                      left: LanguageService.languageCode == "ar" ? 0 : 10.w,
+                      right: LanguageService.languageCode != "ar" ? 0 : 10.w,
                     ),
                     child: ListView.builder(
                       itemCount: orders[_indexTapPackage].details?.length,
@@ -3774,13 +3765,15 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       itemBuilder: (context, index) {
                         return Container(
                           height: 125.h,
-                          width: 92,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                          width: 92.w,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
+                            ),
                           ),
                           child: ClipRRect(
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(15),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
                             ),
                             child: MyCachedNetworkImage(
                               imageUrl:
@@ -3788,7 +3781,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                       .details?[index]
                                       .image ??
                                   "",
-                              width: 92,
+                              width: 92.w,
                               imageFit: BoxFit.contain,
                               height: 125.h,
                             ),
@@ -3801,30 +3794,30 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 ],
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Text(
               "${LocaleKeys.action_about_order.tr()}",
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff8D8D8D),
                 letterSpacing: 0.18,
-                fontSize: 12,
+                fontSize: 12.sp,
                 height: 1.3,
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Container(
               width: 1.sw,
               height: 0.5,
               decoration: BoxDecoration(
                 color: const Color(0xffC4C2C2),
                 border: Border.all(color: const Color(0xffC4C2C2)),
-                borderRadius: const BorderRadius.all(Radius.circular(2)),
+                borderRadius: BorderRadius.all(Radius.circular(2.r)),
               ),
             ),
             SizedBox(height: 30.h),
             orders[_indexTapPackage].canUpdateAddress ?? false
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
                     child: optionOfModify(
                       onTap: () {
                         orderBloc.add(const ResetAllStatusEvent());
@@ -3838,9 +3831,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     ),
                   )
                 : const SizedBox.shrink(),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: optionOfModify(
                 onTap: () {
                   orderBloc.add(const ResetAllStatusEvent());
@@ -3852,10 +3845,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 body: "${LocaleKeys.hide_this_product_from_list.tr()}",
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             (orders[_indexTapPackage].canCanceleOrder ?? false)
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
                     child: optionOfModify(
                       onTap: () {
                         orderBloc.add(const ResetAllStatusEvent());
@@ -3890,9 +3883,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
       },
       child: Container(
         width: 1.sw,
-        height: 60,
+        height: 60.h,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20.r),
           color: const Color(0xffF8F8F8),
         ),
         child: Row(
@@ -3903,25 +3896,25 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 : Stack(
                     alignment: Alignment.center,
                     children: [
-                      SvgPicture.asset(svg, width: 30),
+                      SvgPicture.asset(svg, width: 30.w),
                       image2 == ""
                           ? const SizedBox.shrink()
                           : image2.split(".").last != "svg"
                           ? ClipRRect(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(15),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.r),
                               ),
                               child: MyCachedNetworkImage(
                                 radius: 15,
                                 imageUrl: image2,
                                 imageFit: BoxFit.fill,
-                                width: 15,
-                                height: 15,
+                                width: 15.w,
+                                height: 15.h,
                               ),
                             )
                           : SvgPicture.asset(
                               image2,
-                              width: 10,
+                              width: 10.w,
                               // ignore: deprecated_member_use
                               color: const Color(0xff402CDD),
                             ),
@@ -3941,7 +3934,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     height: 1.3,
                   ),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2.h),
                 Text(
                   body,
                   style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -3989,9 +3982,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
     required String orderStatusLabel,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: SizedBox(
-        height: orderStatus == 'delivered' ? 190 : 180,
+        height: orderStatus == 'delivered' ? 190.h : 180.h,
         child: ListView.separated(
           itemCount: details?.length ?? 0,
           scrollDirection: Axis.horizontal,
@@ -4028,23 +4021,23 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     );
                   },
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(15.r),
                     child: Container(
                       color: Colors.white,
                       child: MyCachedNetworkImage(
                         imageUrl: details?[index].image ?? '',
                         imageFit: BoxFit.contain,
-                        width: 91,
-                        height: 125,
+                        width: 91.w,
+                        height: 125.h,
                       ),
                     ),
                   ),
                 ),
                 ///////////////////
-                const SizedBox(height: 3),
+                SizedBox(height: 3.h),
                 ///////////////////
                 OrderStatusClass.statusOrderIsDelivered(orderStatus)
-                    ? SvgPicture.asset(AppAssets.delivered_bagSvg, width: 13)
+                    ? SvgPicture.asset(AppAssets.delivered_bagSvg, width: 13.w)
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -4064,10 +4057,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         )
                                       ? AppAssets.shippedAndOutOfDeliveryBagSvg
                                       : AppAssets.delivered_bagSvg,
-                                  width: 13,
+                                  width: 13.w,
                                 ),
                           //////////////////////////
-                          const SizedBox(width: 2),
+                          SizedBox(width: 2.w),
                           //////////////////////////
                           SvgPicture.asset(
                             OrderStatusClass.statusOrderIsCanceled(orderStatus)
@@ -4085,12 +4078,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                   )
                                 ? AppAssets.pendeingBlackCheck
                                 : AppAssets.deliveredBlackSvg,
-                            width: 13,
+                            width: 13.w,
                           ),
                         ],
                       ),
                 ///////////////////
-                const SizedBox(height: 2),
+                SizedBox(height: 2.h),
 
                 ///////////////////
                 OrderStatusClass.statusOrderIsDelivered(orderStatus)
@@ -4101,7 +4094,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 10,
+                          fontSize: 10.sp,
                           height: 1.3,
                         ),
                       )
@@ -4122,12 +4115,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 10,
+                          fontSize: 10.sp,
                           height: 1.3,
                         ),
                       ),
                 ///////////////////
-                const SizedBox(height: 2),
+                SizedBox(height: 2.h),
                 ///////////////////
                 OrderStatusClass.statusOrderIsDelivered(orderStatus)
                     ? BlocListener<HomeBloc, HomeState>(
@@ -4196,20 +4189,20 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                       baseColor: Colors.grey[300]!,
                                       highlightColor: Colors.grey[100]!,
                                       child: SizedBox(
-                                        width: 80,
-                                        height: 16,
+                                        width: 80.w,
+                                        height: 16.h,
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: List.generate(
                                             5,
                                             (index) => Container(
-                                              width: 16,
-                                              height: 16,
+                                              width: 16.w,
+                                              height: 16.h,
                                               child: Center(
                                                 child: SvgPicture.asset(
                                                   AppAssets.starOutlineSvg,
-                                                  width: 14,
-                                                  height: 14,
+                                                  width: 14.w,
+                                                  height: 14.h,
                                                 ),
                                               ),
                                             ),
@@ -4367,7 +4360,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 10,
+                          fontSize: 10.sp,
                           height: 1.3,
                         ),
                       ),
@@ -4375,7 +4368,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
             );
           },
           separatorBuilder: (context, index) {
-            return const SizedBox(width: 5);
+            return SizedBox(width: 5.w);
           },
         ),
       ),
@@ -4391,7 +4384,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
           previous.orderReturnDetailsStatus != current.orderReturnDetailsStatus,
       builder: (context, state) {
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
           child:
               state.orderReturnDetailsStatus == OrderReturnDetailsStatus.loading
               ? Shimmer.fromColors(
@@ -4400,43 +4393,43 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   child: Container(
                     alignment: Alignment.center,
                     width: 1.sw,
-                    height: 74,
+                    height: 74.h,
                     decoration: BoxDecoration(
                       color: const Color(0xffC4C2C2),
                       border: Border.all(color: const Color(0xffC4C2C2)),
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(15.r),
                     ),
                   ),
                 )
               : Container(
-                  height: 74,
+                  height: 74.h,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 237, 237, 237),
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(15.r),
                   ),
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(8.w),
                   child: Row(
                     children: [
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SvgPicture.asset(AppAssets.bagsSvg, width: 20),
+                          SvgPicture.asset(AppAssets.bagsSvg, width: 20.w),
                           ///////////////////
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2.h),
                           ///////////////////
                           Text(
                             LocaleKeys.order_details.tr(),
                             style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: const Color(0xff8D8D8D),
                               letterSpacing: 0.18,
-                              fontSize: 10,
+                              fontSize: 10.sp,
                               height: 1.3,
                             ),
                           ),
                           ///////////////////
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2.h),
                           ///////////////////
                           RichText(
                             overflow: TextOverflow.ellipsis,
@@ -4444,7 +4437,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               style: context.textTheme.bodyMedium?.rq.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 14,
+                                fontSize: 14.sp,
                                 height: 1.3,
                               ),
                               children: [
@@ -4454,7 +4447,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                       .copyWith(
                                         color: const Color(0xff1D1D1D),
                                         letterSpacing: 0.18,
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                         height: 1.3,
                                       ),
                                 ),
@@ -4509,7 +4502,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                   "-1")))))
                               ? const SizedBox.shrink()
                               : Container(
-                                  height: 40,
+                                  height: 40.h,
                                   child: BlocListener<CallsBloc, CallsState>(
                                     listenWhen: (p, c) =>
                                         p.makeCallStatus != c.makeCallStatus &&
@@ -4684,17 +4677,16 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                   GetOrderRecipientIdStatus
                                                       .loading) {
                                                 return Container(
-                                                  width: 30,
-                                                  height: 30,
+                                                  width: 30.w,
+                                                  height: 30.h,
                                                   child: TrydosLoader(size: 16),
                                                 );
                                               }
                                               return Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 5,
-                                                    ),
-                                                decoration: const BoxDecoration(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 5.w,
+                                                ),
+                                                decoration: BoxDecoration(
                                                   color: const Color.fromARGB(
                                                     255,
                                                     82,
@@ -4703,12 +4695,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                   ),
                                                   borderRadius:
                                                       BorderRadius.all(
-                                                        Radius.circular(12),
+                                                        Radius.circular(12.r),
                                                       ),
                                                 ),
                                                 alignment: Alignment.center,
 
-                                                height: 30,
+                                                height: 30.h,
 
                                                 child: InkWell(
                                                   onTap: () {
@@ -4758,9 +4750,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                     children: [
                                                       SvgPicture.asset(
                                                         AppAssets.chatSvg,
-                                                        width: 15,
+                                                        width: 15.w,
                                                       ),
-                                                      const SizedBox(width: 5),
+                                                      SizedBox(width: 5.w),
                                                       Text(
                                                         LocaleKeys
                                                             .chat_with_delivery_person
@@ -4774,7 +4766,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                                   const Color(
                                                                     0xffFFFFFF,
                                                                   ),
-                                                              fontSize: 9,
+                                                              fontSize: 9.sp,
                                                               height: 1.3,
                                                               letterSpacing:
                                                                   0.18,
@@ -4803,40 +4795,40 @@ class _OrderDetails1State extends State<OrderDetails1> {
 
   Widget buildThirdSectionForRating() {
     return Container(
-      padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      height: 158,
+      padding: EdgeInsets.only(top: 12.h, left: 12.w, right: 12.w),
+      margin: EdgeInsets.symmetric(horizontal: 12.w),
+      height: 158.h,
       width: 1.sw,
       decoration: BoxDecoration(
         color: const Color(0xffF4F4F4),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15.r),
         border: Border.all(color: const Color(0xff402CDD)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SvgPicture.asset(AppAssets.groupStarsRattingSvg),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             LocaleKeys.rate_and_get_money.tr(),
             style: context.textTheme.bodyMedium?.mq.copyWith(
               color: const Color(0xff1D1D1D),
               letterSpacing: 0.18,
-              fontSize: 12,
+              fontSize: 12.sp,
               height: 1.3,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             LocaleKeys.rating_section_description.tr(),
             style: context.textTheme.bodyMedium?.rq.copyWith(
               color: const Color(0xff5D5C5D),
               letterSpacing: 0.18,
-              fontSize: 10,
+              fontSize: 10.sp,
               height: 1.3,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -4849,10 +4841,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 child: Container(
                   alignment: Alignment.center,
                   width: 290.w,
-                  height: 42,
+                  height: 42.h,
                   decoration: BoxDecoration(
                     color: const Color(0xff402CDD),
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(15.r),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -4862,16 +4854,16 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         // ignore: deprecated_member_use
                         color: const Color(0xffFFD800),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       Text(
                         LocaleKeys.rate_and_get_money.tr(),
                         style: context.textTheme.bodyMedium?.mq.copyWith(
-                          fontSize: 14,
+                          fontSize: 14.sp,
                           height: 1.7,
                           color: const Color(0xffFFD800),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       SvgPicture.asset(
                         AppAssets.groupStarsRattingSvg,
                         // ignore: deprecated_member_use
@@ -4895,14 +4887,14 @@ class _OrderDetails1State extends State<OrderDetails1> {
     required String contactInfo,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
           color: const Color(0xffF4F4F4),
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(15.r),
         ),
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -4914,12 +4906,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff8D8D8D),
                 letterSpacing: 0.18,
-                fontSize: 10,
+                fontSize: 10.sp,
                 height: 1.3,
               ),
             ),
             ///////////////////
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             ///////////////////
             Text(
               LocaleKeys.my_home.tr(),
@@ -4928,12 +4920,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
               style: context.textTheme.bodyMedium?.mq.copyWith(
                 color: const Color(0xff8D8D8D),
                 letterSpacing: 0.18,
-                fontSize: 12,
+                fontSize: 12.sp,
                 height: 1.3,
               ),
             ),
             ///////////////////
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             ///////////////////
             BlocBuilder<OrderBloc, OrderState>(
               buildWhen: (previous, current) =>
@@ -4950,14 +4942,14 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         style: context.textTheme.bodyMedium?.mq.copyWith(
                           color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           height: 1.3,
                         ),
                       );
               },
             ),
             ///////////////////
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             ///////////////////
             Text(
               LocaleKeys.recipient.tr(),
@@ -4966,12 +4958,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff8D8D8D),
                 letterSpacing: 0.18,
-                fontSize: 10,
+                fontSize: 10.sp,
                 height: 1.3,
               ),
             ),
             ///////////////////
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             ///////////////////
             Text(
               recipientName,
@@ -4980,12 +4972,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff1D1D1D),
                 letterSpacing: 0.18,
-                fontSize: 12,
+                fontSize: 12.sp,
                 height: 1.3,
               ),
             ),
             ///////////////////
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             ///////////////////
             Text(
               LocaleKeys.phone.tr(),
@@ -4994,12 +4986,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff8D8D8D),
                 letterSpacing: 0.18,
-                fontSize: 10,
+                fontSize: 10.sp,
                 height: 1.3,
               ),
             ),
             ///////////////////
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             ///////////////////
             Directionality(
               textDirection: TextDirection.ltr,
@@ -5010,7 +5002,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 style: context.textTheme.bodyMedium?.rq.copyWith(
                   color: const Color(0xff1D1D1D),
                   letterSpacing: 0.18,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   height: 1.3,
                 ),
               ),
@@ -5030,7 +5022,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
     String deliverdTo = '',
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: Row(
         children: [
           Expanded(
@@ -5039,9 +5031,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
               firstItem: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SvgPicture.asset(AppAssets.orderAddressSvg, width: 20),
+                  SvgPicture.asset(AppAssets.orderAddressSvg, width: 20.w),
                   ///////////////////
-                  SvgPicture.asset(AppAssets.orderDeliveryDateSvg, width: 20),
+                  SvgPicture.asset(AppAssets.orderDeliveryDateSvg, width: 20.w),
                 ],
               ),
               title: LocaleKeys.expected_delivery_date.tr(),
@@ -5054,7 +5046,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
             ),
           ),
           //////////////////////////
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
           //////////////////////////
           Expanded(
             child: buildDetailsMainInfoWidget(
@@ -5063,18 +5055,21 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   OrderStatusClass.statusOrderIsCanceled(orderStatus)
-                      ? SvgPicture.asset(AppAssets.orderCanselSvg, width: 20)
-                      : SvgPicture.asset(AppAssets.pendingBagSvg, width: 15),
+                      ? SvgPicture.asset(AppAssets.orderCanselSvg, width: 20.w)
+                      : SvgPicture.asset(AppAssets.pendingBagSvg, width: 15.w),
                   ////////////////////
-                  const SizedBox(width: 3),
+                  SizedBox(width: 3.w),
                   ///////////////////
                   OrderStatusClass.statusOrderIsCanceled(orderStatus)
                       ? const SizedBox.shrink()
                       : OrderStatusClass.statusOrderIsPending(orderStatus)
-                      ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15)
-                      : SvgPicture.asset(AppAssets.preparingBagSvg, width: 15),
+                      ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15.w)
+                      : SvgPicture.asset(
+                          AppAssets.preparingBagSvg,
+                          width: 15.w,
+                        ),
                   ////////////////////
-                  const SizedBox(width: 3),
+                  SizedBox(width: 3.w),
                   ///////////////////
                   OrderStatusClass.statusOrderIsCanceled(orderStatus)
                       ? const SizedBox.shrink()
@@ -5082,13 +5077,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             OrderStatusClass.statusOrderIsPreparing(
                               orderStatus,
                             ))
-                      ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15)
+                      ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15.w)
                       : SvgPicture.asset(
                           AppAssets.shippedAndOutOfDeliveryBagSvg,
-                          width: 15,
+                          width: 15.w,
                         ),
                   ////////////////////
-                  const SizedBox(width: 3),
+                  SizedBox(width: 3.w),
                   ///////////////////
                   OrderStatusClass.statusOrderIsCanceled(orderStatus)
                       ? const SizedBox.shrink()
@@ -5097,8 +5092,11 @@ class _OrderDetails1State extends State<OrderDetails1> {
                               orderStatus,
                             ) ||
                             OrderStatusClass.statusOrderIsShipped(orderStatus))
-                      ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15)
-                      : SvgPicture.asset(AppAssets.delivered_bagSvg, width: 15),
+                      ? SvgPicture.asset(AppAssets.whiteBagSvg, width: 15.w)
+                      : SvgPicture.asset(
+                          AppAssets.delivered_bagSvg,
+                          width: 15.w,
+                        ),
                 ],
               ),
               title: LocaleKeys.order_status.tr(),
@@ -5121,17 +5119,17 @@ class _OrderDetails1State extends State<OrderDetails1> {
     if (OrderStatusClass.statusOrderIsPending(status))
       return Row(
         children: [
-          const SizedBox(width: 5),
+          SizedBox(width: 5.w),
           //////////////////////////
-          SvgPicture.asset(AppAssets.pendingBlueCheckSvg, width: 15),
+          SvgPicture.asset(AppAssets.pendingBlueCheckSvg, width: 15.w),
         ],
       );
     else if (OrderStatusClass.statusOrderIsPreparing(status))
       return Row(
         children: [
-          const SizedBox(width: 5),
+          SizedBox(width: 5.w),
           //////////////////////////
-          SvgPicture.asset(AppAssets.preparingBlueSvg, width: 15),
+          SvgPicture.asset(AppAssets.preparingBlueSvg, width: 15.w),
         ],
       );
     else
@@ -5142,49 +5140,49 @@ class _OrderDetails1State extends State<OrderDetails1> {
     if (OrderStatusClass.statusOrderIsPending(status))
       return Row(
         children: [
-          const SizedBox(width: 5),
+          SizedBox(width: 5.w),
           //////////////////////////
-          SvgPicture.asset(AppAssets.pendeingBlackCheck, width: 15),
+          SvgPicture.asset(AppAssets.pendeingBlackCheck, width: 15.w),
         ],
       );
     else if (OrderStatusClass.statusOrderIsPreparing(status))
       return Row(
         children: [
-          const SizedBox(width: 5),
+          SizedBox(width: 5.w),
           //////////////////////////
-          SvgPicture.asset(AppAssets.preparingBlackSvg, width: 15),
+          SvgPicture.asset(AppAssets.preparingBlackSvg, width: 15.w),
           /////////////////////////////
-          const SizedBox(width: 5),
+          SizedBox(width: 5.w),
           //////////////////////////
-          SvgPicture.asset(AppAssets.preparingGreySvg, width: 15),
+          SvgPicture.asset(AppAssets.preparingGreySvg, width: 15.w),
           /////////////////////////////
-          const SizedBox(width: 5),
+          SizedBox(width: 5.w),
           //////////////////////////
-          SvgPicture.asset(AppAssets.preparingGrey2Svg, width: 15),
+          SvgPicture.asset(AppAssets.preparingGrey2Svg, width: 15.w),
         ],
       );
     else if (OrderStatusClass.statusOrderIsShipped(status))
       return Row(
         children: [
-          const SizedBox(width: 5),
+          SizedBox(width: 5.w),
           //////////////////////////
-          SvgPicture.asset(AppAssets.shippedBlackSvg, width: 15),
+          SvgPicture.asset(AppAssets.shippedBlackSvg, width: 15.w),
           /////////////////////////////
-          const SizedBox(width: 5),
+          SizedBox(width: 5.w),
           //////////////////////////
-          SvgPicture.asset(AppAssets.shippedGreySvg, width: 15),
+          SvgPicture.asset(AppAssets.shippedGreySvg, width: 15.w),
           /////////////////////////////
-          const SizedBox(width: 5),
+          SizedBox(width: 5.w),
           //////////////////////////
-          SvgPicture.asset(AppAssets.shippedGrey_2Svg, width: 15),
+          SvgPicture.asset(AppAssets.shippedGrey_2Svg, width: 15.w),
         ],
       );
     else
       return Row(
         children: [
-          const SizedBox(width: 5),
+          SizedBox(width: 5.w),
           //////////////////////////
-          SvgPicture.asset(AppAssets.deliveredBlackSvg, width: 15),
+          SvgPicture.asset(AppAssets.deliveredBlackSvg, width: 15.w),
         ],
       );
   }
@@ -5197,13 +5195,13 @@ class _OrderDetails1State extends State<OrderDetails1> {
     required String orderCurrency,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: Row(
         children: [
           Expanded(
             child: buildDetailsMainInfoWidget(
               context: context,
-              firstItem: SvgPicture.asset(AppAssets.orderBag1Svg, width: 20),
+              firstItem: SvgPicture.asset(AppAssets.orderBag1Svg, width: 20.w),
               title: LocaleKeys.order_number.tr(),
               value: orderNumber,
               amount: '',
@@ -5214,12 +5212,12 @@ class _OrderDetails1State extends State<OrderDetails1> {
             ),
           ),
           //////////////////////////
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
           //////////////////////////
           Expanded(
             child: buildDetailsMainInfoWidget(
               context: context,
-              firstItem: SvgPicture.asset(AppAssets.orderClockSvg, width: 20),
+              firstItem: SvgPicture.asset(AppAssets.orderClockSvg, width: 20.w),
               title: LocaleKeys.order_date.tr(),
               value: orderDate,
               amount: '',
@@ -5230,7 +5228,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
             ),
           ),
           //////////////////////////
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
           //////////////////////////
           Expanded(
             child: buildDetailsMainInfoWidget(
@@ -5238,8 +5236,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
               firstItem: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SvgPicture.asset(AppAssets.orderInvoice2Svg, width: 20),
-                  SvgPicture.asset(AppAssets.orderWalletSvg, width: 15),
+                  SvgPicture.asset(AppAssets.orderInvoice2Svg, width: 20.w),
+                  SvgPicture.asset(AppAssets.orderWalletSvg, width: 15.w),
                 ],
               ),
               title: LocaleKeys.order_invoice.tr(),
@@ -5271,9 +5269,9 @@ class _OrderDetails1State extends State<OrderDetails1> {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xffF4F4F4),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15.r),
       ),
-      padding: const EdgeInsets.all(8),
+      padding: EdgeInsets.all(8.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -5289,7 +5287,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xff8D8D8D),
                     letterSpacing: 0.18,
-                    fontSize: 10,
+                    fontSize: 10.sp,
                     height: 1.3,
                   ),
                 ),
@@ -5307,7 +5305,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff505050),
                         letterSpacing: 0.18,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         height: 1.3,
                       ),
                       children: [
@@ -5316,7 +5314,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                           style: context.textTheme.bodyMedium?.bq.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -5335,7 +5333,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                         style: context.textTheme.bodyMedium?.bq.copyWith(
                           color: const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           height: 1.3,
                         ),
                       ),

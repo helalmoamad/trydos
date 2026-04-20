@@ -107,21 +107,21 @@ class _OrdersPageState extends State<OrdersPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SvgPicture.asset(AppAssets.bagsSvg, width: 23),
+                    SvgPicture.asset(AppAssets.bagsSvg, width: 23.w),
                     ///////////////////////////
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4.w),
                     ///////////////////////////
                     Text(
                       LocaleKeys.orders.tr(),
                       style: context.textTheme.bodyMedium?.mq.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                         height: 1.3,
                       ),
                     ),
                     ///////////////////////////
-                    const SizedBox(width: 15),
+                    SizedBox(width: 15.w),
                     ///////////////////////////
                   ],
                 ),
@@ -131,11 +131,11 @@ class _OrdersPageState extends State<OrdersPage> {
           ),
           body: Column(
             children: [
-              SizedBox(height: 11.h),
+              SizedBox(height: 10.h),
               ///////////////////
               buildStatusBar(),
               ///////////////////
-              SizedBox(height: 50.h),
+              SizedBox(height: 20.h),
               ///////////////////
               BlocListener<OrderBloc, OrderState>(
                 listenWhen: (p, c) =>
@@ -225,7 +225,7 @@ class _OrdersPageState extends State<OrdersPage> {
                             style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: const Color(0xff1D1D1D),
                               letterSpacing: 0.18,
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               height: 1.3,
                             ),
                           )
@@ -270,8 +270,8 @@ class _OrdersPageState extends State<OrdersPage> {
                                   } else {
                                     if (itemsCount > 4) {
                                       return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 10,
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 10.h,
                                         ),
                                         child:
                                             state
@@ -293,7 +293,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                                           0xff8D8D8D,
                                                         ),
                                                         letterSpacing: 0.18,
-                                                        fontSize: 15,
+                                                        fontSize: 15.sp,
                                                         height: 1.3,
                                                       ),
                                                 ),
@@ -329,9 +329,9 @@ class _OrdersPageState extends State<OrdersPage> {
     List<OrderListDetailModel> details = [];
     item.forEach((element) => details.addAll(element.details ?? []));
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
         decoration: BoxDecoration(
           color: const Color(0xffF8F8F8),
           borderRadius: BorderRadius.circular(10),
@@ -354,7 +354,7 @@ class _OrdersPageState extends State<OrdersPage> {
               itemsCount: '',
             ),
             ///////////////////
-            const SizedBox(height: 11),
+            SizedBox(height: 11.h),
             ///////////////////
             BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) =>
@@ -423,11 +423,11 @@ class _OrdersPageState extends State<OrdersPage> {
               },
             ),
             ///////////////////
-            const SizedBox(height: 11),
+            SizedBox(height: 11.h),
 
             ///////////////////
             SizedBox(
-              height: 125,
+              height: 125.h,
               width: double.infinity,
               child: ListView.separated(
                 itemCount: details.length,
@@ -453,15 +453,15 @@ class _OrdersPageState extends State<OrdersPage> {
                         child: MyCachedNetworkImage(
                           imageUrl: details[index].image ?? '',
                           imageFit: BoxFit.contain,
-                          width: 90,
-                          height: 125,
+                          width: 90.w,
+                          height: 125.h,
                         ),
                       ),
                     ),
                   );
                 },
                 separatorBuilder: (context, index) {
-                  return const SizedBox(width: 5);
+                  return SizedBox(width: 5.w);
                 },
               ),
             ),
@@ -486,7 +486,7 @@ class _OrdersPageState extends State<OrdersPage> {
     required String currency,
   }) {
     return SizedBox(
-      height: 16,
+      height: 16.h,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -495,9 +495,9 @@ class _OrdersPageState extends State<OrdersPage> {
               children: [
                 svgIcon1 == ""
                     ? const SizedBox.shrink()
-                    : SvgPicture.asset(svgIcon1, width: 15),
+                    : SvgPicture.asset(svgIcon1, width: 15.w),
                 ///////////////////////////
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 ///////////////////////////
                 Flexible(
                   child: Text(
@@ -506,18 +506,16 @@ class _OrdersPageState extends State<OrdersPage> {
                     style: context.textTheme.bodyMedium?.rq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
-                      fontSize: 12,
+                      fontSize: 12.sp,
                       height: 1.3,
                     ),
                   ),
                 ),
                 ////////////////////////////
-                isSecondInfo
-                    ? const SizedBox(width: 5)
-                    : const SizedBox.shrink(),
+                isSecondInfo ? SizedBox(width: 5.w) : const SizedBox.shrink(),
                 ///////////////////
                 isSecondInfo
-                    ? SvgPicture.asset(secondInfoSvgIcon ?? '', width: 15)
+                    ? SvgPicture.asset(secondInfoSvgIcon ?? '', width: 15.w)
                     : const SizedBox.shrink(),
               ],
             ),
@@ -527,9 +525,9 @@ class _OrdersPageState extends State<OrdersPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                SvgPicture.asset(svgIcon2, width: 15),
+                SvgPicture.asset(svgIcon2, width: 15.w),
                 ///////////////////////////
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 ///////////////////////////
                 isTextSpan
                     ? Flexible(
@@ -539,7 +537,7 @@ class _OrdersPageState extends State<OrdersPage> {
                             style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: const Color(0xff505050),
                               letterSpacing: 0.18,
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               height: 1.3,
                             ),
                             children: [
@@ -549,7 +547,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                     .copyWith(
                                       color: const Color(0xff505050),
                                       letterSpacing: 0.18,
-                                      fontSize: 12,
+                                      fontSize: 12.sp,
                                       height: 1.3,
                                     ),
                               ),
@@ -560,7 +558,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                     .copyWith(
                                       color: const Color(0xff505050),
                                       letterSpacing: 0.18,
-                                      fontSize: 12,
+                                      fontSize: 12.sp,
                                       height: 1.3,
                                     ),
                               ),
@@ -576,7 +574,7 @@ class _OrdersPageState extends State<OrdersPage> {
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -613,9 +611,9 @@ class _OrdersPageState extends State<OrdersPage> {
                 .toList();
             return (state.startingSetting == null)
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 17),
+                    padding: EdgeInsets.symmetric(horizontal: 17.w),
                     child: SizedBox(
-                      height: 40,
+                      height: 40.h,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: 10,
@@ -625,8 +623,8 @@ class _OrdersPageState extends State<OrdersPage> {
                             highlightColor: Colors.grey.shade50,
                             child: Container(
                               margin: EdgeInsets.symmetric(vertical: 10.h),
-                              height: 40,
-                              width: 80,
+                              height: 40.h,
+                              width: 80.w,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 color: const Color.fromARGB(255, 247, 247, 247),
@@ -635,15 +633,15 @@ class _OrdersPageState extends State<OrdersPage> {
                           );
                         },
                         separatorBuilder: (context, index) {
-                          return const SizedBox(width: 5);
+                          return SizedBox(width: 5.w);
                         },
                       ),
                     ),
                   )
                 : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 17),
+                    padding: EdgeInsets.symmetric(horizontal: 17.w),
                     child: SizedBox(
-                      height: 26,
+                      height: 26.h,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: orderStatuseValue.length + 2,
@@ -651,7 +649,7 @@ class _OrdersPageState extends State<OrdersPage> {
                           return index == 0
                               ? SvgPicture.asset(
                                   AppAssets.orderStatusFilterSvg,
-                                  width: 25,
+                                  width: 25.w,
                                 )
                               : index == 1
                               ? InkWell(
@@ -666,8 +664,8 @@ class _OrdersPageState extends State<OrdersPage> {
                                     );
                                   },
                                   child: Container(
-                                    height: 26,
-                                    width: 34,
+                                    height: 26.h,
+                                    width: 34.w,
                                     decoration: BoxDecoration(
                                       color: const Color(0xffF8F8F8),
                                       borderRadius: BorderRadius.circular(10),
@@ -686,7 +684,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                             .copyWith(
                                               color: const Color(0xff8D8D8D),
                                               letterSpacing: 0.18,
-                                              fontSize: 12,
+                                              fontSize: 12.sp,
                                               height: 1.3,
                                             ),
                                       ),
@@ -706,8 +704,8 @@ class _OrdersPageState extends State<OrdersPage> {
                                     );
                                   },
                                   child: Container(
-                                    height: 26,
-                                    width: 130,
+                                    height: 26.h,
+                                    width: 130.w,
                                     decoration: BoxDecoration(
                                       color: const Color(0xffF8F8F8),
                                       borderRadius: BorderRadius.circular(10),
@@ -729,7 +727,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                             .copyWith(
                                               color: const Color(0xff8D8D8D),
                                               letterSpacing: 0.18,
-                                              fontSize: 12,
+                                              fontSize: 12.sp,
                                               height: 1.3,
                                             ),
                                       ),
@@ -738,7 +736,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                 );
                         },
                         separatorBuilder: (context, index) {
-                          return const SizedBox(width: 10);
+                          return SizedBox(width: 10.w);
                         },
                       ),
                     ),

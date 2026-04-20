@@ -8,15 +8,16 @@ abstract class PreCachingImageEvent {
 class CacheImageEvent extends PreCachingImageEvent {
   final String imageUrl;
   final String type;
-  final int? width;
-  final int? height;
+  final double? width;
+  final double? height;
   final BuildContext context;
-  const CacheImageEvent(
-      {required this.imageUrl,
-      required this.type,
-      required this.height,
-      required this.width,
-      required this.context});
+  const CacheImageEvent({
+    required this.imageUrl,
+    required this.type,
+    required this.height,
+    required this.width,
+    required this.context,
+  });
 }
 
 class CacheSvgEvent extends PreCachingImageEvent {
@@ -25,19 +26,22 @@ class CacheSvgEvent extends PreCachingImageEvent {
   final double? width;
   final double? height;
   final String type;
-  const CacheSvgEvent(
-      {required this.svgUrl,
-      required this.type,
-      required this.height,
-      required this.width,
-      required this.context});
+  const CacheSvgEvent({
+    required this.svgUrl,
+    required this.type,
+    required this.height,
+    required this.width,
+    required this.context,
+  });
 }
 
 class SetImageCacheStatusEvent extends PreCachingImageEvent {
   final bool isLoaded;
   final String imageUrl;
-  const SetImageCacheStatusEvent(
-      {required this.isLoaded, required this.imageUrl});
+  const SetImageCacheStatusEvent({
+    required this.isLoaded,
+    required this.imageUrl,
+  });
 }
 
 class RemoveUrlThatNotUsedEvent extends PreCachingImageEvent {

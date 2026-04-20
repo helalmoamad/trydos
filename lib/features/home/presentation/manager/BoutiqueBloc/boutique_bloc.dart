@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
@@ -1621,9 +1622,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 url = addSuitableWidthAndHeightToImage(
                   imageUrl:
                       product.syncColorImages![0].images![0].filePath ?? "",
-                  width: 200,
+                  width: 200.w,
                   // the width of the image in the ui
-                  height: 290,
+                  height: 290.h,
                   // the height of the image in the ui
                   ordinalWidth: double.tryParse(
                     product.syncColorImages![0].images![0].originalWidth
@@ -1639,8 +1640,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                     url,
                     event.context!,
                     "productListingImages",
-                    200,
-                    290,
+                    200.w,
+                    290.h,
                   );
                 }
               }
@@ -1649,9 +1650,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             if ((product.images?.length ?? 0) > 0) {
               url = addSuitableWidthAndHeightToImage(
                 imageUrl: product.images![0].filePath ?? "",
-                width: 200,
+                width: 200.w,
                 // the width of the image in the ui
-                height: 290,
+                height: 290.h,
                 // the height of the image in the ui
               );
               /*url2 = addSuitableWidthAndHeightToImage(
@@ -1665,8 +1666,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                   url,
                   event.context!,
                   "productListingImages",
-                  200,
-                  290,
+                  200.w,
+                  290.h,
                 );
               }
             }
@@ -1679,28 +1680,28 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           r.data?.categories?.forEach((category) {
             url = addSuitableWidthAndHeightToImage(
               imageUrl: category.mostViewedProductThumbnail?.filePath ?? "",
-              width: 70,
-              height: 70,
+              width: 70.w,
+              height: 70.h,
             );
             prefetchImages(
               url,
               event.context!,
               "categoryListingImages",
-              70,
-              70,
+              70.w,
+              70.h,
             );
             category.subCategories?.forEach((sub) {
               url = addSuitableWidthAndHeightToImage(
                 imageUrl: sub.mostViewedProductThumbnail?.filePath ?? "",
-                width: 50,
-                height: 50,
+                width: 50.w,
+                height: 50.h,
               );
               prefetchImages(
                 url,
                 event.context!,
                 "categoryListingImages",
-                50,
-                50,
+                50.w,
+                50.h,
               );
             });
           });
@@ -1726,8 +1727,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     String url,
     BuildContext context,
     String type,
-    int width,
-    int height,
+    double width,
+    double height,
   ) async {
     List<String> urlHasPredeched =
         prefsRepository.getImageUrlHasPrefeched ?? [];
@@ -2314,17 +2315,17 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 ordinalWidth: double.tryParse(
                   product.syncColorImages![0].images![0].originalHeight ?? "0",
                 ),
-                width: 320,
+                width: 320.w,
                 // the width of the image in the ui
-                height: 464,
+                height: 464.h,
               );
 
               prefetchImages(
                 url,
                 event.context!,
                 "productDetailsImages",
-                320,
-                464,
+                320.w,
+                464.h,
               );
               //   });
               //   }
@@ -2339,17 +2340,17 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 ordinalWidth: double.tryParse(
                   product.images![0].originalHeight ?? "0",
                 ),
-                width: 320,
+                width: 320.w,
                 // the width of the image in the ui
-                height: 464,
+                height: 464.h,
               );
 
               prefetchImages(
                 url,
                 event.context!,
                 "productDetailsImages",
-                320,
-                464,
+                320.w,
+                464.h,
               );
               //    });
             }
@@ -3086,17 +3087,17 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 ordinalWidth: double.tryParse(
                   product.syncColorImages![0].images![0].originalHeight ?? "0",
                 ),
-                width: 320,
+                width: 320.w,
                 // the width of the image in the ui
-                height: 464,
+                height: 464.h,
               );
 
               prefetchImages(
                 url,
                 event.context!,
                 "productDetailsImages",
-                320,
-                464,
+                320.w,
+                464.h,
               );
               //   });
               //   }
@@ -3111,17 +3112,17 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 ordinalWidth: double.tryParse(
                   product.images![0].originalHeight ?? "0",
                 ),
-                width: 320,
+                width: 320.w,
                 // the width of the image in the ui
-                height: 464,
+                height: 464.h,
               );
 
               prefetchImages(
                 url,
                 event.context!,
                 "productDetailsImages",
-                320,
-                464,
+                320.w,
+                464.h,
               );
               //    });
             }

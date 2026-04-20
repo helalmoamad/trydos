@@ -111,7 +111,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  margin: EdgeInsets.symmetric(horizontal: 10.w),
                   alignment: Alignment.topCenter,
                   child: Column(
                     children: [
@@ -143,7 +143,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
             ),
             ////////////////////////////////
             Container(
-              height: 80,
+              height: 80.h,
               decoration: BoxDecoration(
                 border: Border.all(
                   color: const Color.fromRGBO(255, 255, 255, 1),
@@ -165,12 +165,12 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 },
                 child: Container(
                   height: 70.h,
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 10,
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 10.w,
+                    vertical: 10.h,
                   ),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                     color: const Color(0xff1D1D1D),
                   ),
                   child: Center(
@@ -182,7 +182,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                           style: context.textTheme.bodyMedium?.mq.copyWith(
                             color: const Color(0xffFEFEFE),
                             letterSpacing: 0.18,
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             height: 0.8,
                           ),
                         ),
@@ -192,7 +192,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: const Color(0xffFEFEFE),
                             letterSpacing: 0.18,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             height: 0.8,
                           ),
                         ),
@@ -210,23 +210,23 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
 
   Widget buildAddressSuccessWidget(BuildContext context) {
     return Container(
-      height: 160,
+      height: 180.h,
       width: 1.sw,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            margin: const EdgeInsets.only(left: 10, right: 10),
+            margin: EdgeInsets.only(left: 10.w, right: 10.w),
             child: Row(
               children: [
-                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 15),
+                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 15.h),
                 SizedBox(width: 7.w),
                 Text(
                   "${LocaleKeys.shipping_delivery_address.tr()} ",
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 0.8,
                   ),
                 ),
@@ -243,14 +243,14 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff8D8D8D),
                 letterSpacing: 0.18,
-                fontSize: 12,
+                fontSize: 12.sp,
                 height: 0.8,
               ),
             ),
           ),
           const SizedBox(height: 5),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             child: addressInfoWithContactInfoCart(
               cartChoosed: true,
               placeOrder: false,
@@ -273,23 +273,23 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
 
   Widget buildBagWidget(BuildContext context) {
     return Container(
-      height: 165,
+      height: 170.h,
       width: 1.sw,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            height: 22,
+            height: 22.h,
             child: Row(
               children: [
-                SvgPicture.asset(AppAssets.bagsSvg, height: 20),
+                SvgPicture.asset(AppAssets.bagsSvg, height: 20.h),
                 SizedBox(width: 7.w),
                 Text(
                   "${LocaleKeys.your_shopping_bag.tr()} ",
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 1.33,
                   ),
                 ),
@@ -298,7 +298,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                   style: context.textTheme.bodyMedium?.bq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 13,
+                    fontSize: 13.sp,
                     height: 1.33,
                   ),
                 ),
@@ -309,10 +309,10 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
           Container(
             margin: EdgeInsets.only(
               top: 5.h,
-              left: (LanguageService.languageCode == "ar") ? 0 : 10,
-              right: (LanguageService.languageCode == "ar") ? 10 : 0,
+              left: (LanguageService.languageCode == "ar") ? 0 : 10.w,
+              right: (LanguageService.languageCode == "ar") ? 10.w : 0,
             ),
-            height: 135,
+            height: 135.h,
             child: ListView.separated(
               separatorBuilder: (context, index) => const SizedBox(width: 5),
               scrollDirection: Axis.horizontal,
@@ -326,14 +326,14 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 child: Column(
                   children: [
                     Container(
-                      height: 100,
+                      height: 100.h,
                       child: ProductDetailsImageWidget(
                         withInnerShadow: false,
                         imageFit: BoxFit.cover,
                         blurRadius: 0,
                         imageUrl: widget.cartImages[index]["image"],
                         width: 91.w,
-                        radius: 15,
+                        radius: 15.r,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -342,7 +342,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 10,
+                        fontSize: 10.sp,
                         height: 1.33,
                       ),
                     ),
@@ -351,7 +351,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 10,
+                        fontSize: 10.sp,
                         height: 1.33,
                       ),
                     ),
@@ -368,36 +368,36 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
   Container buildPurchaseWasCompletedWidget(BuildContext context) {
     return Container(
       alignment: Alignment.topCenter,
-      margin: const EdgeInsets.only(top: 50),
+      margin: EdgeInsets.only(top: 40.h),
       width: 1.sw,
-      height: 255,
+      height: 350.h,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Stack(
             alignment: Alignment.center,
             children: [
-              SvgPicture.asset(AppAssets.success1Svg),
-              SvgPicture.asset(AppAssets.success2Svg),
+              SvgPicture.asset(AppAssets.success1Svg, height: 64.h),
+              SvgPicture.asset(AppAssets.success2Svg, height: 20.h),
             ],
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           Text(
             "${LocaleKeys.the_purchase_was_completed_successfully.tr()} ",
             style: context.textTheme.bodyMedium?.rq.copyWith(
               color: const Color(0xff1D1D1D),
               letterSpacing: 0.18,
-              fontSize: 14,
+              fontSize: 14.sp,
               height: 1.33,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 10.h),
           Text(
             "${LocaleKeys.your_order_number.tr()} ",
             style: context.textTheme.bodyMedium?.rq.copyWith(
               color: const Color(0xff1D1D1D),
               letterSpacing: 0.18,
-              fontSize: 12,
+              fontSize: 12.sp,
               height: 1.33,
             ),
           ),
@@ -406,11 +406,11 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
             style: context.textTheme.bodyMedium?.bq.copyWith(
               color: const Color(0xff404040),
               letterSpacing: 0.18,
-              fontSize: 20,
+              fontSize: 20.sp,
               height: 1.33,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 10.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -421,31 +421,31 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 style: context.textTheme.bodyMedium?.rq.copyWith(
                   color: const Color(0xff1D1D1D),
                   letterSpacing: 0.18,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   height: 1.33,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 10.h),
           SvgPicture.asset(AppAssets.infoSvg),
-          const SizedBox(height: 8),
+          SizedBox(height: 10.h),
           Text(
             "${LocaleKeys.you_can_track_the_status_of_your_order_through.tr()} ",
             style: context.textTheme.bodyMedium?.rq.copyWith(
               color: const Color(0xff388CFF),
               letterSpacing: 0.18,
-              fontSize: 12,
+              fontSize: 12.sp,
               height: 1.33,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 15.h),
           Text(
             "${LocaleKeys.my_account_my_orders.tr()} ",
             style: context.textTheme.bodyMedium?.rq.copyWith(
-              color: const Color(0xff388CFF),
+              color: const Color.fromARGB(255, 3, 3, 3),
               letterSpacing: 0.18,
-              fontSize: 12,
+              fontSize: 12.sp,
               height: 1.33,
             ),
           ),

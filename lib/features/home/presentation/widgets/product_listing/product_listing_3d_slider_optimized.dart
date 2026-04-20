@@ -367,7 +367,7 @@ class _ProductListing3DSliderOptimizedState
                   ),
                 ),
               buffering
-                  ? TrydosLoader(size: 20)
+                  ? TrydosLoader(size: 20.h)
                   : /* videoProductInListingController[
                                 widget.productItem.slug ?? ""]!
                             .value

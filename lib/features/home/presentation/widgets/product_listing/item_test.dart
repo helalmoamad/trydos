@@ -268,7 +268,7 @@ class _ProductListing3DSliderOptimizedState
   /// 🏗️ Main Content Builder - FIXED: منع Bottom Overflow
   Widget _buildOptimizedSliderContent() {
     return SizedBox(
-      height: widget.fromHomePage ? 350 : 400, // ارتفاع محدد لمنع overflow
+      height: widget.fromHomePage ? 350.h : 400.h, // ارتفاع محدد لمنع overflow
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -278,7 +278,7 @@ class _ProductListing3DSliderOptimizedState
             left: 0,
             right: 0,
             child: SizedBox(
-              height: widget.fromHomePage ? 250 : 300, // مساحة للصور
+              height: widget.fromHomePage ? 250.h : 300.h, // مساحة للصور
               child: _buildMainImageArea(),
             ),
           ),
@@ -288,14 +288,14 @@ class _ProductListing3DSliderOptimizedState
               _processedColorImages?.isNotEmpty == true)
             Positioned(
               bottom: widget.fromHomePage
-                  ? 80
-                  : 90, // مساحة كافية للمعلومات السفلية
+                  ? 80.h
+                  : 90.h, // مساحة كافية للمعلومات السفلية
               child: _buildColorSelectorWidget(),
             ),
 
           // 💰 Product Info Section (في الأسفل)
           Positioned(
-            bottom: 5, // مساحة آمنة من الأسفل
+            bottom: 5.h, // مساحة آمنة من الأسفل
             left: 0,
             right: 0,
             child: _buildProductInfoWidget(),
@@ -334,9 +334,9 @@ class _ProductListing3DSliderOptimizedState
       children: [
         // معلومات المنتج
         SizedBox(
-          width: 200,
+          width: 200.w,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            padding: EdgeInsets.symmetric(horizontal: 15.w),
             child: Column(
               crossAxisAlignment: LanguageService.languageCode == "ar"
                   ? CrossAxisAlignment.end
@@ -344,14 +344,14 @@ class _ProductListing3DSliderOptimizedState
               children: [
                 // Brand Icon
                 _buildBrandIcon(),
-                const SizedBox(height: 3), // تقليل المسافة
+                SizedBox(height: 3.h), // تقليل المسافة
                 // Product Name and Category
                 _buildProductNameRow(),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 5), // تقليل المسافة
+        SizedBox(height: 5.h), // تقليل المسافة
         // Price Section
         _buildPriceSection(),
       ],
@@ -408,13 +408,13 @@ class _ProductListing3DSliderOptimizedState
     if (currentColorImages.isEmpty) return const SizedBox();
 
     return SizedBox(
-      height: 45,
-      width: 200,
+      height: 45.h,
+      width: 200.w,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
         itemCount: currentColorImages.length,
-        padding: const EdgeInsets.only(left: 5, top: 5),
+        padding: EdgeInsets.only(left: 5.w, top: 5.h),
         itemBuilder: (context, index) {
           // 🛡️ Safe array access
           if (index >= currentColorImages.length) return const SizedBox();
@@ -423,7 +423,7 @@ class _ProductListing3DSliderOptimizedState
         separatorBuilder: (context, index) =>
             index == currentColorImages.length - 1
             ? const SizedBox.shrink()
-            : const SizedBox(width: 2),
+            : SizedBox(width: 2.w),
       ),
     );
   }
@@ -439,8 +439,8 @@ class _ProductListing3DSliderOptimizedState
         });
       },
       child: Container(
-        width: 30,
-        height: 40,
+        width: 30.w,
+        height: 40.h,
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
@@ -451,7 +451,7 @@ class _ProductListing3DSliderOptimizedState
               blurRadius: 6,
             ),
           ],
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
             width: index == _sliderState.currentImageIndex ? 2.0 : 0.5,
             color: index == _sliderState.currentImageIndex
@@ -460,22 +460,22 @@ class _ProductListing3DSliderOptimizedState
           ),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
           child: Stack(
             children: [
               MyCachedNetworkImage(
                 imageSource: widget.imageSource,
                 imageUrl: image.filePath!,
-                height: 40,
-                width: 30,
-                logoTextHeight: 15,
-                logoTextWidth: 20,
-                circleDimensions: 7,
+                height: 40.h,
+                width: 30.w,
+                logoTextHeight: 15.h,
+                logoTextWidth: 20.w,
+                circleDimensions: 7.h,
                 imageFit: BoxFit.cover,
               ),
               Container(
-                height: 40,
-                width: 30,
+                height: 40.h,
+                width: 30.w,
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -483,7 +483,7 @@ class _ProductListing3DSliderOptimizedState
                       color: Colors.white.withOpacity(0.5),
                       offset: const Offset(0, 3),
                       inset: true,
-                      blurRadius: 6,
+                      blurRadius: 6.r,
                     ),
                   ],
                 ),
@@ -515,11 +515,11 @@ class _ProductListing3DSliderOptimizedState
         });
         widget.setThisEnabled(-1, -1);
       },
-      galleryHeight: 240,
-      itemHeight: 240,
+      galleryHeight: 240.h,
+      itemHeight: 240.h,
       onItemChanged: _handleImageChanged,
-      galleryWidth: 200,
-      radius: 15,
+      galleryWidth: 200.w,
+      radius: 15.r,
       itemCount: productImages.length,
     );
   }
@@ -538,7 +538,7 @@ class _ProductListing3DSliderOptimizedState
           gallery3dControllerForCircles: _colorController,
           stopScrollingOnEdges: (primaryDelta) => false,
           itemWidth: widget.fromHomePage ? 150.w : 170.w,
-          itemHeight: widget.fromHomePage ? 200 : 240,
+          itemHeight: widget.fromHomePage ? 200.h : 240.h,
           threeImages: _buildThreeColorsList(),
           onItemClick: (index) {
             // تحسين: التعامل مع النقر بشكل صحيح
@@ -551,10 +551,10 @@ class _ProductListing3DSliderOptimizedState
             _debounceNotifyColorChange();
             widget.setThisEnabled(-1, -1);
           },
-          galleryHeight: widget.fromHomePage ? 200 : 240,
+          galleryHeight: widget.fromHomePage ? 200.h : 240.h,
           onItemChanged: _handleColorChanged,
-          galleryWidth: widget.fromHomePage ? 170 : 200,
-          radius: 15,
+          galleryWidth: widget.fromHomePage ? 170.w : 200.w,
+          radius: 15.r,
           itemCount: colorCount, // 🔥 استخدام العدد الفعلي للألوان
         ),
       ),
@@ -622,15 +622,15 @@ class _ProductListing3DSliderOptimizedState
         children: [
           // Main carousel
           SizedBox(
-            height: widget.fromHomePage ? 220 : 290,
-            width: widget.fromHomePage ? 170 : 200,
+            height: widget.fromHomePage ? 220.h : 290.h,
+            width: widget.fromHomePage ? 170.w : 200.w,
             child: CarouselSlider.builder(
               key: UniqueKey(),
               itemCount: widget.fromHomePage ? 1 : currentColorImages!.length,
               carouselController: _carouselController,
               options: CarouselOptions(
                 initialPage: _sliderState.currentImageIndex,
-                height: 290,
+                height: 290.h,
                 onPageChanged: _handleCarouselPageChanged,
                 enableInfiniteScroll: false,
                 viewportFraction: 1,
@@ -664,9 +664,9 @@ class _ProductListing3DSliderOptimizedState
     return ProductListingImageWidget(
       orginalHeight: double.tryParse(image.originalHeight ?? '290') ?? 290,
       orginalWidth: double.tryParse(image.originalWidth ?? '200') ?? 200,
-      width: 200,
+      width: 200.w,
       imageUrl: image.filePath!,
-      height: 290,
+      height: 290.h,
       circleShape: false,
       innerShadowYOffset: 3,
     );
@@ -727,10 +727,10 @@ class _ProductListing3DSliderOptimizedState
     return InkWell(
       onTap: () => widget.setThisEnabled(widget.itemIndex, 2),
       child: Container(
-        padding: const EdgeInsets.all(5.0),
-        child: const Icon(
+        padding: EdgeInsets.all(5.0.r),
+        child: Icon(
           Icons.photo_library_outlined,
-          size: 16,
+          size: 16.r,
           color: Colors.white54,
         ),
       ),
@@ -748,16 +748,16 @@ class _ProductListing3DSliderOptimizedState
       changingPagesScrollOffset: 0.2, // 🔥 تقليل الحساسية لمنع الحركة العفوية
       isClip: false,
       onItemChanged: _handleColorCircleChanged,
-      itemConfig: const GalleryItemConfig(
-        width: 40,
-        height: 40,
-        radius: 360,
+      itemConfig: GalleryItemConfig(
+        width: 40.w,
+        height: 40.h,
+        radius: 360.r,
         isShowTransformMask: false,
         shadows: [
           BoxShadow(
-            color: Color(0x19000000),
-            offset: Offset(0, 3),
-            blurRadius: 6,
+            color: const Color(0x19000000),
+            offset: const Offset(0, 3),
+            blurRadius: 6.r,
           ),
         ],
       ),
@@ -774,8 +774,8 @@ class _ProductListing3DSliderOptimizedState
       child: ProductListingImageWidget(
         orginalHeight: _getColorImageHeight(index),
         orginalWidth: _getColorImageWidth(index),
-        width: 40,
-        height: 40,
+        width: 40.w,
+        height: 40.h,
         imageUrl: _getColorImageUrl(index),
         innerShadowYOffset: 4,
         borderColor: _getBorderColorForCircle(index),
@@ -887,7 +887,7 @@ class _ProductListing3DSliderOptimizedState
     if (categoryIcon == null) return const SizedBox.shrink();
 
     return SizedBox(
-      height: 10,
+      height: 10.h,
       child: Transform.translate(
         offset: const Offset(0, 1),
         child: mediaServerIsS3
@@ -905,9 +905,9 @@ class _ProductListing3DSliderOptimizedState
   /// 💰 Optimized Price Section - FIXED: تقليل المساحة
   Widget _buildPriceSection() {
     return SizedBox(
-      width: 200, // تقليل العرض
+      width: 200.w, // تقليل العرض
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15), // تقليل padding
+        padding: EdgeInsets.symmetric(horizontal: 15.w), // تقليل padding
         child: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.getCurrencyForCountryModel !=
@@ -949,7 +949,7 @@ class _ProductListing3DSliderOptimizedState
                             height: 1.0, // تقليل الارتفاع
                           ),
                         ),
-                        const SizedBox(width: 2),
+                        SizedBox(width: 2.w),
                         MyTextWidget(
                           HelperFunctions.formatNumber(
                             numberToFormate: offerPrice * exchangeRate,
@@ -960,10 +960,10 @@ class _ProductListing3DSliderOptimizedState
                             height: 1.0, // تقليل الارتفاع
                           ),
                         ),
-                        const SizedBox(width: 2),
+                        SizedBox(width: 2.w),
                         MyTextWidget(
                           currencySymbol,
-                          style: const TextStyle(fontSize: 8), // تقليل حجم الخط
+                          style: TextStyle(fontSize: 8.sp), // تقليل حجم الخط
                         ),
                       ],
                     ),
@@ -996,11 +996,11 @@ class _ProductListing3DSliderOptimizedState
         );
       },
       child: Container(
-        height: 25, // تقليل الارتفاع
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        height: 25.h, // تقليل الارتفاع
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
         decoration: BoxDecoration(
           color: const Color(0x1D1D1D),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(4.r),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -1010,14 +1010,14 @@ class _ProductListing3DSliderOptimizedState
               style: textTheme.titleSmall?.lq.copyWith(
                 color: const Color(0xff414141),
                 height: 1.2, // تقليل الارتفاع
-                fontSize: 12, // تقليل حجم الخط
+                fontSize: 12.sp, // تقليل حجم الخط
               ),
             ),
-            const SizedBox(width: 3),
+            SizedBox(width: 3.w),
             SvgPicture.asset(
               AppAssets.bagSvg,
-              height: 12, // تقليل حجم الأيقونة
-              width: 12,
+              height: 12.h, // تقليل حجم الأيقونة
+              width: 12.w,
             ),
           ],
         ),

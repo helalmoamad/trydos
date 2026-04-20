@@ -412,12 +412,12 @@ class _ProductItemState extends State<ProductItem> {
                     return !isFlashDealEnded
                         ? Positioned(
                             left: LanguageService.languageCode != "ar"
-                                ? 1
+                                ? 5.w
                                 : null,
                             right: LanguageService.languageCode == "ar"
-                                ? 1
+                                ? 5.w
                                 : null,
-                            top: 0,
+                            top: -5.h,
                             child: Transform(
                               transform: Matrix4.skewX(
                                 -0.4,
@@ -476,7 +476,7 @@ class _ProductItemState extends State<ProductItem> {
                                                 .flashDealEndDate ??
                                             "",
                                       ),
-                                      SizedBox(width: 5.w),
+                                      SizedBox(width: 10.w),
                                     ],
                                   ),
                                 ),
@@ -512,18 +512,18 @@ class _ProductItemState extends State<ProductItem> {
                               0) >
                           0
                   ? Positioned(
-                      left: LanguageService.languageCode == "ar" ? null : 1,
-                      right: LanguageService.languageCode != "ar" ? null : 1,
-                      top: 0,
+                      left: LanguageService.languageCode != "ar" ? 5.w : null,
+                      right: LanguageService.languageCode == "ar" ? 5.w : null,
+                      top: -5.h,
                       child: Transform(
                         transform: Matrix4.skewX(-0.4), // انحراف بسيط للشكل
                         child: Container(
                           margin: EdgeInsets.only(
                             left: LanguageService.languageCode != "ar"
-                                ? 1
+                                ? 0
                                 : 10.w,
                             right: LanguageService.languageCode == "ar"
-                                ? 1
+                                ? 0
                                 : 10.w,
                           ),
                           decoration: BoxDecoration(
@@ -580,7 +580,7 @@ class _ProductItemState extends State<ProductItem> {
                                         color: const Color(0xffFF6200),
                                       ),
                                 ),
-                                SizedBox(width: 5.w),
+                                SizedBox(width: 10.w),
                               ],
                             ),
                           ),

@@ -3021,7 +3021,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     imageUrl: message.mediaMessageContent![0].filePath!,
                     width: 200.w,
                     // the width of the image in the ui
-                    height: 400,
+                    height: 400.h,
                     // the height of the image in the ui
                     ordinalWidth: 200
                         .w, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
@@ -3046,20 +3046,20 @@ class _SinglePageChatState extends State<SinglePageChat> {
               imageUrl: message.shareProductContent!.productImageUrl!,
               width: (((message.shareProductContent!.imageWidth ?? 0) > 0)
                   ? message.shareProductContent!.imageWidth
-                  : 1.sw - 100)!,
+                  : 1.sw - 100.w)!,
               // the width of the image in the ui
               height: (((message.shareProductContent!.imageHeight ?? 0) > 0)
                   ? message.shareProductContent!.imageHeight
-                  : 464)!,
+                  : 464.h)!,
               // the height of the image in the ui
               ordinalWidth: ((message.shareProductContent!.imageWidth ?? 0) > 0)
                   ? message.shareProductContent!.imageWidth
                   : 1.sw -
-                        100, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
+                        100.w, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
               ordinalHeight:
                   ((message.shareProductContent!.imageHeight ?? 0) > 0)
                   ? message.shareProductContent!.imageHeight
-                  : 464,
+                  : 464.h,
               //double.tryParse(image.originalHeight.toString())
             ),
             productName: message.shareProductContent!.productName ?? "",

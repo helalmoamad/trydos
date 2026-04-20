@@ -312,8 +312,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                         physics:
                                             const AlwaysScrollableScrollPhysics(),
                                         child: Container(
-                                          margin: const EdgeInsets.symmetric(
-                                            horizontal: 10,
+                                          margin: EdgeInsets.symmetric(
+                                            horizontal: 10.w,
                                           ),
                                           color: const Color.fromARGB(
                                             255,
@@ -375,9 +375,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                                             .loading
                                                   ? TrydosShimmerLoading(
                                                       width: 1.sw,
-                                                      logoTextWidth: 15,
-                                                      height: 70,
-                                                      logoTextHeight: 15,
+                                                      logoTextWidth: 15.w,
+                                                      height: 70.h,
+                                                      logoTextHeight: 15.h,
                                                     )
                                                   : PaymentMethod(
                                                       fromSuccessOrder: false,
@@ -497,13 +497,13 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                               Positioned(
                                 bottom: 0,
                                 child: Container(
-                                  height: 510,
+                                  height: 700.h,
                                   width: 1.sw,
                                   child: SlidingUpPanel(
                                     controller: panelController,
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(30),
-                                      topRight: Radius.circular(30),
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(30.r),
+                                      topRight: Radius.circular(30.r),
                                     ),
                                     onPanelClosed: () {
                                       showPanel.value = false;
@@ -520,17 +520,14 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                       showPanel.value = true;
                                     },
                                     minHeight: 0,
-                                    maxHeight: 510,
-                                    panelBuilder: (sc) => Container(
-                                      height: 93,
-                                      width: 1.sw,
-                                      child: buildSlidingUpPanelWidgets(
-                                        context,
-                                        orderState,
-                                        _indexTap,
-                                        sc,
-                                      ),
-                                    ),
+                                    maxHeight: 700.h,
+                                    panelBuilder: (sc) =>
+                                        buildSlidingUpPanelWidgets(
+                                          context,
+                                          orderState,
+                                          _indexTap,
+                                          sc,
+                                        ),
                                   ),
                                 ),
                               ),
@@ -566,7 +563,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
     List<String> availablePaymentMethods,
   ) {
     return Container(
-      height: 80,
+      height: 80.h,
       decoration: BoxDecoration(
         border: Border.all(color: const Color.fromRGBO(255, 255, 255, 1)),
         boxShadow: const [
@@ -617,13 +614,13 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[100]!,
                   child: Container(
-                    height: 60,
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 10,
+                    height: 60.h,
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 10.h,
                     ),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                       // ignore: deprecated_member_use
                       color: const Color(0xffC4C2C2).withOpacity(0.5),
                     ),
@@ -636,7 +633,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                             style: context.textTheme.bodyMedium?.mq.copyWith(
                               color: const Color(0xffFEFEFE),
                               letterSpacing: 0.18,
-                              fontSize: 18,
+                              fontSize: 18.sp,
                               height: 0.8,
                             ),
                           ),
@@ -650,7 +647,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 13.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -660,7 +657,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 13.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -680,7 +677,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 13.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -690,7 +687,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 13.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -781,12 +778,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   },
                   child: Container(
                     height: 70.h,
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 10,
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 10.h,
                     ),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                       color: check
                           ? const Color(0xff346BFF)
                           : const Color(0xffC4C2C2),
@@ -800,7 +797,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                             style: context.textTheme.bodyMedium?.mq.copyWith(
                               color: const Color(0xffFEFEFE),
                               letterSpacing: 0.18,
-                              fontSize: 18,
+                              fontSize: 18.sp,
                               height: 0.8,
                             ),
                           ),
@@ -814,7 +811,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 13.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -824,7 +821,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 13.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -844,18 +841,18 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 13.sp,
                                       height: 0.8,
                                     ),
                               ),
-                              const SizedBox(width: 2),
+                              SizedBox(width: 2.w),
                               Text(
                                 "${widget.currencySympole}",
                                 style: context.textTheme.bodyMedium?.rq
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 13.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -885,12 +882,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
         onTap: () => isExpandedCoupon.value = !expandedCoupon,
         child: Container(
           width: 1.sw,
-          padding: const EdgeInsets.all(10),
+          padding: EdgeInsets.all(10.h),
           decoration: BoxDecoration(
             color: expandedCoupon
                 ? const Color(0xffFFFFFF)
                 : const Color(0xffF8F8F8),
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(15.r),
             border: Border.all(
               color: !expandedCoupon
                   ? const Color(0xffFFFFFF)
@@ -903,14 +900,14 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
             children: [
               Row(
                 children: [
-                  SvgPicture.asset(AppAssets.paymentMethodSvg),
+                  SvgPicture.asset(AppAssets.paymentMethodSvg, height: 20.h),
                   SizedBox(width: 10.w),
                   Text(
                     "${LocaleKeys.i_have_discount_coupon.tr()} ",
                     style: context.textTheme.bodyMedium?.rq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
-                      fontSize: 14,
+                      fontSize: 13.sp,
                       height: 1.33,
                     ),
                   ),
@@ -920,7 +917,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
               !expandedCoupon
                   ? const SizedBox.shrink()
                   : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 27),
+                      padding: EdgeInsets.symmetric(horizontal: 27.w),
                       child: Text(
                         couponDiscount > 0
                             ? "${LocaleKeys.applied_your_coupon.tr()} $couponCode"
@@ -928,7 +925,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                         style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           height: LanguageService.languageCode == "ar"
                               ? 0.8
                               : 1.33,
@@ -946,7 +943,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                       width: 1.sw,
                       padding: EdgeInsets.all(10.h),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(15.r),
                         border: Border.all(color: const Color(0xff388CFF)),
                       ),
                       child: Text(
@@ -955,7 +952,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                         style: context.textTheme.bodyMedium?.bq.copyWith(
                           color: const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 14,
+                          fontSize: 13.sp,
                           height: 1.33,
                         ),
                       ),
@@ -967,10 +964,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                           Expanded(
                             flex: 3,
                             child: Container(
-                              height: 60,
-                              margin: const EdgeInsets.symmetric(vertical: 5),
+                              height: 60.h,
+                              margin: EdgeInsets.symmetric(vertical: 5.w),
                               color: colorScheme.white,
-                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              padding: EdgeInsets.symmetric(vertical: 5.w),
                               child: AppTextField(
                                 controller: couponKey,
                                 textInputType: TextInputType.text,
@@ -997,13 +994,13 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                     ),
                                 isPrefixIconConstraints: false,
                                 prefixIcon: Container(
-                                  width: 20,
-                                  height: 20,
+                                  width: 20.w,
+                                  height: 20.h,
                                   child: Row(
                                     children: [
                                       const Spacer(),
                                       Padding(
-                                        padding: const EdgeInsets.all(9),
+                                        padding: EdgeInsets.all(9.h),
                                         child: SvgPicture.asset(
                                           AppAssets.trydosWalletSvg,
                                         ),
@@ -1028,7 +1025,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                       padding: EdgeInsets.all(16.h),
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
+                                        borderRadius: BorderRadius.circular(
+                                          15.r,
+                                        ),
                                         border: Border.all(
                                           color: const Color(0xff388CFF),
                                         ),
@@ -1040,7 +1039,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                             .copyWith(
                                               color: const Color(0xff1D1D1D),
                                               letterSpacing: 0.18,
-                                              fontSize: 14,
+                                              fontSize: 13.sp,
                                               height: 1,
                                             ),
                                       ),
@@ -1060,7 +1059,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                       padding: EdgeInsets.all(16.h),
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
+                                        borderRadius: BorderRadius.circular(
+                                          15.r,
+                                        ),
                                         border: Border.all(
                                           color: const Color(0xff388CFF),
                                         ),
@@ -1072,7 +1073,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                             .copyWith(
                                               color: const Color(0xff1D1D1D),
                                               letterSpacing: 0.18,
-                                              fontSize: 14,
+                                              fontSize: 13.sp,
                                               height: 1,
                                             ),
                                       ),
@@ -1099,7 +1100,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
       width: 1.sw,
       child: Column(
         children: [
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           Container(
             height: 25.h,
             width: 145.w,
@@ -1109,8 +1110,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                 Center(
                   child: SvgPicture.asset(
                     AppAssets.deliveryAddressSvg,
-                    width: 18,
-                    height: 18,
+                    width: 18.w,
+                    height: 18.h,
                     // ignore: deprecated_member_use
                     color: const Color(0xff1D1D1D),
                   ),
@@ -1121,16 +1122,16 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 14,
+                    fontSize: 13.sp,
                     height: 1.33,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           Container(
-            height: 425.h,
+            height: 570.h,
             width: 1.sw,
             margin: EdgeInsets.symmetric(horizontal: 24.w),
             child: ListView.separated(
@@ -1168,7 +1169,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   },
                 ),
               ),
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
+              separatorBuilder: (context, index) => SizedBox(height: 10.h),
               itemCount: state.listOfAddressInfoClassToSave!.length,
               controller: sc,
             ),
@@ -1193,12 +1194,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
               );
             },
             child: Container(
-              height: 40,
+              height: 40.h,
               width: 1.sw,
               margin: EdgeInsets.symmetric(horizontal: 24.w),
               decoration: BoxDecoration(
                 color: const Color(0xffE8FFED),
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(15.r),
                 border: Border.all(color: const Color(0xffC4C2C2)),
               ),
               child: Row(
@@ -1218,13 +1219,13 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                       ],
                     ),
                   ),
-                  const SizedBox(width: 3),
+                  SizedBox(width: 3.w),
                   Text(
                     "${LocaleKeys.add_new_shipping_address.tr()} ",
                     style: context.textTheme.bodyMedium?.mq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
-                      fontSize: 12,
+                      fontSize: 12.sp,
                       height: 1.33,
                     ),
                   ),
@@ -1232,7 +1233,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
         ],
       ),
     );
@@ -1264,7 +1265,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   // height: !(state.listOfAddressInfoClassToSave.isNullOrEmpty) ? 225 : 203,
                   width: 1.sw,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(15.r),
                     border: Border.all(
                       color:
                           (state.listOfAddressInfoClassToSave?.length == 0) &&
@@ -1274,22 +1275,22 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          margin: const EdgeInsets.only(
-                            top: 10,
-                            left: 10,
-                            right: 10,
+                          margin: EdgeInsets.only(
+                            top: 10.h,
+                            left: 10.w,
+                            right: 10.w,
                           ),
                           child: Row(
                             children: [
                               SvgPicture.asset(
                                 AppAssets.deliveryAddressSvg,
-                                height: 16,
+                                height: 24.h,
                               ),
                               SizedBox(width: 7.w),
                               Text(
@@ -1298,7 +1299,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                     .copyWith(
                                       color: const Color(0xff1D1D1D),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 13.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -1317,7 +1318,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                             style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: const Color(0xff8D8D8D),
                               letterSpacing: 0.18,
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               height: 0.8,
                             ),
                           ),
@@ -1325,9 +1326,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                         SizedBox(height: 12.h),
                         !state.listOfAddressInfoClassToSave.isNullOrEmpty
                             ? Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
+                                padding: EdgeInsets.symmetric(horizontal: 10.w),
                                 child: addressInfoWithContactInfoCart(
                                   cartChoosed: true,
                                   shippingDays: widget.maxShippingDay,
@@ -1354,9 +1353,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                 height: 85.h,
                                 width: 1.sw,
                                 padding: const EdgeInsets.symmetric(),
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
+                                margin: EdgeInsets.symmetric(horizontal: 10.h),
                                 decoration: BoxDecoration(
                                   color: const Color(0xffF8F8F8),
                                   borderRadius: BorderRadius.circular(15),
@@ -1382,7 +1379,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                           .copyWith(
                                             color: const Color(0xffC4C2C2),
                                             letterSpacing: 0.18,
-                                            fontSize: 12,
+                                            fontSize: 12.sp,
                                             height: 0.8,
                                           ),
                                     ),
@@ -1393,7 +1390,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                           .copyWith(
                                             color: const Color(0xffC4C2C2),
                                             letterSpacing: 0.18,
-                                            fontSize: 12,
+                                            fontSize: 12.sp,
                                             height: 0.8,
                                           ),
                                     ),
@@ -1405,7 +1402,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                               !(state
                                   .listOfAddressInfoClassToSave
                                   .isNullOrEmpty)
-                              ? 10
+                              ? 10.h
                               : 20.h,
                         ),
                         !state.listOfAddressInfoClassToSave.isNullOrEmpty
@@ -1432,9 +1429,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                           GetCountryBoundaryByIsoStatus.loading)
                                     ? TrydosShimmerLoading(
                                         width: 1.sw,
-                                        logoTextWidth: 15,
+                                        logoTextWidth: 15.w,
                                         height: 16.w,
-                                        logoTextHeight: 15,
+                                        logoTextHeight: 15.h,
                                       )
                                     : Container(
                                         height: 16.h,
@@ -1446,13 +1443,13 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                             Center(
                                               child: SvgPicture.asset(
                                                 AppAssets.deliveryAddressSvg,
-                                                width: 15,
-                                                height: 15,
+                                                width: 15.w,
+                                                height: 15.h,
                                                 // ignore: deprecated_member_use
                                                 color: const Color(0xff8D8D8D),
                                               ),
                                             ),
-                                            const SizedBox(width: 3),
+                                            SizedBox(width: 3.w),
                                             Text(
                                               "${LocaleKeys.show_address_list.tr()} ",
                                               style: context
@@ -1464,7 +1461,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                                       0xff8D8D8D,
                                                     ),
                                                     letterSpacing: 0.18,
-                                                    fontSize: 12,
+                                                    fontSize: 12.sp,
                                                     height: 1,
                                                   ),
                                             ),
@@ -1498,20 +1495,20 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                           GetCountryBoundaryByIsoStatus.loading)
                                     ? TrydosShimmerLoading(
                                         width: 1.sw,
-                                        logoTextWidth: 15,
+                                        logoTextWidth: 15.w,
                                         height: 40,
-                                        logoTextHeight: 15,
+                                        logoTextHeight: 15.h,
                                       )
                                     : Container(
-                                        height: 40,
+                                        height: 40.h,
                                         width: 1.sw,
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 10,
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 10.w,
                                         ),
                                         decoration: BoxDecoration(
                                           color: const Color(0xffE8FFED),
                                           borderRadius: BorderRadius.circular(
-                                            15,
+                                            15.r,
                                           ),
                                           border: Border.all(
                                             color: const Color(0xffC4C2C2),
@@ -1530,7 +1527,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                                         .addShippingAddressSvg,
                                                   ),
                                                   Positioned(
-                                                    top: 2,
+                                                    top: 2.h,
                                                     child: SvgPicture.asset(
                                                       AppAssets
                                                           .addShippingAddressWhiteSvg,
@@ -1551,7 +1548,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                                       0xff1D1D1D,
                                                     ),
                                                     letterSpacing: 0.18,
-                                                    fontSize: 12,
+                                                    fontSize: 12.sp,
                                                     height: 1.33,
                                                   ),
                                             ),
@@ -1576,10 +1573,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
       duration: const Duration(seconds: 2),
       curve: Curves.easeInOut,
       child: Container(
-        height: expanded ? 200 : 45,
+        height: expanded ? 210.h : 45.h,
         width: 1.sw,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(15.r),
           border: Border.all(color: const Color(0xffC4C2C2)),
         ),
         child: Column(
@@ -1588,18 +1585,18 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
             InkWell(
               onTap: () => isExpanded.value = !expanded,
               child: Container(
-                margin: const EdgeInsets.all(10),
-                height: 20,
+                margin: EdgeInsets.all(10.w),
+                height: 20.h,
                 child: Row(
                   children: [
-                    SvgPicture.asset(AppAssets.bagsSvg, height: 20),
+                    SvgPicture.asset(AppAssets.bagsSvg, height: 20.h),
                     SizedBox(width: 7.w),
                     Text(
                       "${LocaleKeys.your_shopping_bag.tr()} ",
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                         height: 1.33,
                       ),
                     ),
@@ -1608,7 +1605,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                       style: context.textTheme.bodyMedium?.bq.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 13,
+                        fontSize: 13.sp,
                         height: 1.33,
                       ),
                     ),
@@ -1617,7 +1614,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                       angle: expanded ? pi : 0,
                       child: SvgPicture.asset(
                         AppAssets.expandDetaileSvg,
-                        height: 8,
+                        height: 8.h,
                         width: 12,
                         // ignore: deprecated_member_use
                         color: const Color(0xff8D8D8D),
@@ -1627,15 +1624,15 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                 ),
               ),
             ),
-            !expanded ? const SizedBox.shrink() : const SizedBox(height: 5),
+            !expanded ? const SizedBox.shrink() : SizedBox(height: 5.h),
             !expanded
                 ? const SizedBox.shrink()
                 : Container(
                     margin: EdgeInsets.only(
-                      left: (LanguageService.languageCode == "ar") ? 0 : 10,
-                      right: (LanguageService.languageCode == "ar") ? 10 : 0,
+                      left: (LanguageService.languageCode == "ar") ? 0 : 10.w,
+                      right: (LanguageService.languageCode == "ar") ? 10.w : 0,
                     ),
-                    height: 150,
+                    height: 160.h,
                     child: ListView.separated(
                       separatorBuilder: (context, index) =>
                           const SizedBox(width: 5),
@@ -1643,21 +1640,21 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                       itemCount: cartImages.length,
                       itemBuilder: (context, index) => Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(15.r),
                           color: const Color(0x707070),
                         ),
                         width: 91.w,
                         child: Column(
                           children: [
                             Container(
-                              height: 125.h,
+                              height: 120.h,
                               child: ProductDetailsImageWidget(
                                 withInnerShadow: false,
                                 imageFit: BoxFit.cover,
                                 blurRadius: 0,
                                 imageUrl: cartImages[index]["image"],
                                 width: 91.w,
-                                radius: 15,
+                                radius: 15.r,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -1666,7 +1663,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                               style: context.textTheme.bodyMedium?.rq.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 10,
+                                fontSize: 10.sp,
                                 height: 1.33,
                               ),
                             ),
@@ -1675,7 +1672,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                               style: context.textTheme.bodyMedium?.rq.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 10,
+                                fontSize: 10.sp,
                                 height: 1.33,
                               ),
                             ),
@@ -1702,22 +1699,22 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
             AppAssets.deletecartSvg,
             // ignore: deprecated_member_use
             color: const Color(0xffFFFFFF),
-            width: 50,
-            height: 50,
+            width: 50.w,
+            height: 50.h,
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           Text(
             "${LocaleKeys.delete_below_address.tr()} ",
             style: context.textTheme.bodyMedium?.mq.copyWith(
               color: const Color(0xffFFFFFF),
               letterSpacing: 0.18,
-              fontSize: 16,
+              fontSize: 16.sp,
               height: 1.33,
             ),
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: 15.h),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: addressInfoWithContactInfoCart(
               cartChoosed: false,
               context: context,
@@ -1748,7 +1745,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
               width: 1.sw,
               decoration: BoxDecoration(
                 color: const Color(0xffF8F8F8),
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(15.r),
                 border: Border.all(color: const Color(0xffFF5F61)),
               ),
               child: Center(
@@ -1757,14 +1754,14 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   style: context.textTheme.bodyMedium?.bq.copyWith(
                     color: const Color(0xffFF5F61),
                     letterSpacing: 0.18,
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     height: 1.3,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           InkWell(
             onTap: () {
               showDeleteAddress.value = false;
@@ -1779,14 +1776,14 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xffFFFFFF),
                     letterSpacing: 0.18,
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     height: 1.3,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
         ],
       ),
     );
@@ -1794,7 +1791,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
 
   Widget buildPageHeader(BuildContext context, OrderState state) {
     return Container(
-      margin: const EdgeInsets.only(top: 50),
+      margin: EdgeInsets.only(top: 50.h),
       width: 1.sw,
       height: 50.h,
       child: Column(
@@ -1819,18 +1816,18 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                     } else {}
                   },
                   child: Container(
-                    width: 40,
+                    width: 40.w,
                     child: Transform.rotate(
                       angle: LanguageService.languageCode == "ar" ? pi : 0,
                       child: SvgPicture.asset(
                         AppAssets.backIconArrowSvg,
-                        height: 20,
+                        height: 20.h,
                       ),
                     ),
                   ),
                 ),
                 const Spacer(),
-                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 20),
+                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 20.h),
                 SizedBox(width: 5.w),
                 Text(
                   !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
@@ -1839,7 +1836,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.2,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 1.33,
                   ),
                 ),
@@ -1881,15 +1878,11 @@ Widget addressInfoWithContactInfoCart({
     //         ? 125
     //         : 90,
     width: 1.sw,
-    height: (isDelete || cartChoosed)
-        ? (placeOrder ?? false)
-              ? 126
-              : 124
-        : 100,
+
     padding: EdgeInsets.only(
-      right: LanguageService.languageCode == "ar" ? 20 : 10,
-      left: LanguageService.languageCode != "ar" ? 20 : 10,
-      bottom: 5,
+      right: LanguageService.languageCode == "ar" ? 20.w : 10.w,
+      left: LanguageService.languageCode != "ar" ? 20.w : 10.w,
+      bottom: 5.h,
     ),
     decoration: BoxDecoration(
       color: (placeOrder ?? false) || (successfulOrder ?? false)
@@ -1897,7 +1890,7 @@ Widget addressInfoWithContactInfoCart({
           : isDelete
           ? const Color.fromRGBO(0, 0, 0, 0)
           : const Color(0xffF8F8F8),
-      borderRadius: BorderRadius.circular(15),
+      borderRadius: BorderRadius.circular(15.r),
       border: (placeOrder ?? false)
           ? Border.all(color: const Color(0xffC4C2C2))
           : isDelete || (successfulOrder ?? false)
@@ -1910,10 +1903,10 @@ Widget addressInfoWithContactInfoCart({
     ),
     child: Column(
       children: [
-        const SizedBox(height: 5),
+        SizedBox(height: 5.h),
         Container(
           width: 360.w,
-          height: 16,
+          height: 16.h,
           child: Row(
             children: [
               SvgPicture.asset(
@@ -1924,8 +1917,8 @@ Widget addressInfoWithContactInfoCart({
                     : index != indexTap
                     ? const Color(0xff8D8D8D)
                     : const Color(0xff1D1D1D),
-                height: 12,
-                width: 12,
+                height: 12.h,
+                width: 12.w,
               ),
               const SizedBox(width: 5),
               Text(
@@ -1937,7 +1930,7 @@ Widget addressInfoWithContactInfoCart({
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
                   letterSpacing: 0.18,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   height: 1.3,
                 ),
               ),
@@ -1950,30 +1943,30 @@ Widget addressInfoWithContactInfoCart({
                       onTap: onTapEdit,
                       child: Container(
                         margin: const EdgeInsets.only(top: 5),
-                        width: 20,
-                        height: 30,
+                        width: 20.w,
+                        height: 30.h,
                         child: SvgPicture.asset(
                           AppAssets.editSvg,
-                          height: 30,
-                          width: 20,
+                          height: 30.h,
+                          width: 20.w,
                         ),
                       ),
                     ),
               isDelete || cartChoosed
                   ? const SizedBox.shrink()
-                  : const SizedBox(width: 10),
+                  : SizedBox(width: 10.w),
               isDelete || cartChoosed
                   ? const SizedBox.shrink()
                   : InkWell(
                       onTap: onTapDelete,
                       child: Container(
-                        margin: const EdgeInsets.only(top: 5),
-                        width: 20,
-                        height: 30,
+                        margin: EdgeInsets.only(top: 5.h),
+                        width: 20.w,
+                        height: 30.h,
                         child: SvgPicture.asset(
                           AppAssets.deletecartSvg,
-                          height: 14,
-                          width: 14,
+                          height: 14.h,
+                          width: 14.w,
                         ),
                       ),
                     ),
@@ -1982,7 +1975,7 @@ Widget addressInfoWithContactInfoCart({
         ),
         Container(
           width: 350.w,
-          height: 16,
+          height: 16.h,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
@@ -1995,7 +1988,7 @@ Widget addressInfoWithContactInfoCart({
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
                   letterSpacing: 0.18,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   height: 1.3,
                 ),
               ),
@@ -2004,7 +1997,7 @@ Widget addressInfoWithContactInfoCart({
         ),
         Container(
           width: 350.w,
-          height: 16,
+          height: 16.h,
           child: Row(
             children: [
               Text(
@@ -2016,7 +2009,7 @@ Widget addressInfoWithContactInfoCart({
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
                   letterSpacing: 0.18,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   height: 1.3,
                 ),
               ),
@@ -2025,7 +2018,7 @@ Widget addressInfoWithContactInfoCart({
         ),
         Container(
           width: 350.w,
-          height: 16,
+          height: 16.sp,
           child: Row(
             children: [
               SvgPicture.asset(
@@ -2036,8 +2029,8 @@ Widget addressInfoWithContactInfoCart({
                     : index != indexTap
                     ? const Color(0xff8D8D8D)
                     : const Color(0xff1D1D1D),
-                height: 12,
-                width: 12,
+                height: 12.h,
+                width: 12.w,
               ),
               const SizedBox(width: 5),
               Text(
@@ -2049,13 +2042,13 @@ Widget addressInfoWithContactInfoCart({
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
                   letterSpacing: 0.18,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   height: 1.3,
                 ),
               ),
-              const SizedBox(width: 40),
+              SizedBox(width: 40.w),
               Container(
-                height: 16,
+                height: 16.h,
                 child: Row(
                   children: [
                     SvgPicture.asset(
@@ -2066,12 +2059,12 @@ Widget addressInfoWithContactInfoCart({
                           : index != indexTap
                           ? const Color(0xff8D8D8D)
                           : const Color(0xff1D1D1D),
-                      height: 12,
-                      width: 12,
+                      height: 12.h,
+                      width: 12.w,
                     ),
                     const SizedBox(width: 5),
                     SizedBox(
-                      width: 130,
+                      width: 130.w,
                       child: Text(
                         '${customerAddressesInfo.contactInfo?.name ?? ""}',
                         style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -2081,7 +2074,7 @@ Widget addressInfoWithContactInfoCart({
                               ? const Color(0xff8D8D8D)
                               : const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           height: 1.3,
                         ),
                       ),
@@ -2099,8 +2092,8 @@ Widget addressInfoWithContactInfoCart({
                           ? const Color(0xffFFFFFF)
                           : const Color(0xff388CFF),
                       allowDrawingOutsideViewBox: true,
-                      height: 12,
-                      width: 12,
+                      height: 12.h,
+                      width: 12.w,
                     ),
             ],
           ),
@@ -2114,7 +2107,7 @@ Widget addressInfoWithContactInfoCart({
         !(!isDelete && cartChoosed)
             ? const SizedBox.shrink()
             : Container(
-                height: 30,
+                height: 30.h,
                 width: 1.sw,
                 decoration: BoxDecoration(
                   color: (placeOrder ?? false) || (successfulOrder ?? false)
@@ -2131,7 +2124,7 @@ Widget addressInfoWithContactInfoCart({
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff8D8D8D),
                         letterSpacing: 0.18,
-                        fontSize: 10,
+                        fontSize: 10.sp,
                         height: 1.3,
                       ),
                     ),
@@ -2140,7 +2133,7 @@ Widget addressInfoWithContactInfoCart({
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 10,
+                        fontSize: 10.sp,
                         height: 1.3,
                       ),
                     ),
@@ -2151,7 +2144,7 @@ Widget addressInfoWithContactInfoCart({
                         decorationColor: const Color(0xff388CFF),
                         color: const Color(0xff388CFF),
                         letterSpacing: 0.18,
-                        fontSize: 10,
+                        fontSize: 10.sp,
                         height: 1.3,
                       ),
                     ),

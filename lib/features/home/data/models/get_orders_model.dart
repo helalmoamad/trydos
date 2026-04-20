@@ -75,7 +75,7 @@ class OrderDataModel {
   );
 
   factory OrderDataModel.fromJson(Map<String, dynamic> json) => OrderDataModel(
-    total: json["total"],
+    total: json["total_order_group"],
     limit: json["limit"],
     offset: json["offset"],
     orders: json["orders"] == null
@@ -86,7 +86,7 @@ class OrderDataModel {
   );
 
   Map<String, dynamic> toJson() => {
-    "total": total,
+    "total_order_group": total,
     "limit": limit,
     "offset": offset,
     "orders": orders == null
@@ -511,7 +511,9 @@ class OrderListDetailModel {
       isOdooProduct: json["is_odoo_product"],
       odooId: json["odoo_id"],
       odooOrderId: json["odoo_order_id"],
-      image: mediaServerIsS3
+      image: (json["image"]?.contains("cloudinary") ?? false)
+          ? json["image"]
+          : mediaServerIsS3
           ? ((json["image"].contains("media_server") ?? false)
                 ? json["image"]
                 : "${dotenv.env['Media_S3_Server']}${json["image"]}")

@@ -81,272 +81,299 @@ class _PriceFilterState extends State<PriceFilter> {
     }
     return Padding(
       padding: EdgeInsetsDirectional.only(
-          start: widget.hideTitle ? 0 : 30.0, end: 20),
+        start: widget.hideTitle ? 0 : 30.w,
+        end: 20.w,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: widget.hideTitle ? 80 : 110,
-            width: 1.sw - 50,
+            height: widget.hideTitle ? 80.h : 110.h,
+            width: 1.sw - 50.w,
             child: Stack(
               alignment: Alignment.bottomCenter,
               children: [
                 Positioned(
-                  bottom: 20,
+                  bottom: 20.h,
                   child: CustomPaint(
-                    size: Size(1.sw - 50, 0),
+                    size: Size(1.sw - 50.w, 0),
                     painter: RPSCustomPainter(
-                        points: List.generate(
-                            widget.pricesFiltersRanges.priceRanges?.length ??
-                                0 + 1,
-                            (index) => Offset(
-                                index *
-                                    (1.sw - 50) /
-                                    widget.pricesFiltersRanges.priceRanges!
-                                        .length,
-                                index == 0
-                                    ? 0
-                                    : -widget.pricesFiltersRanges
-                                        .priceRanges![index - 1].count!
-                                        .toDouble()))),
+                      points: List.generate(
+                        widget.pricesFiltersRanges.priceRanges?.length ?? 0 + 1,
+                        (index) => Offset(
+                          index *
+                              (1.sw - 50.w) /
+                              widget.pricesFiltersRanges.priceRanges!.length,
+                          index == 0
+                              ? 0
+                              : -widget
+                                    .pricesFiltersRanges
+                                    .priceRanges![index - 1]
+                                    .count!
+                                    .toDouble(),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 Container(
-                    //color: Colors.white,
-                    height: 40,
-                    width: 1.sw - 50,
-                    child: FlutterSlider(
-                      minimumDistance: 1,
-                      values: [
-                        (widget.pricesFiltersRanges.minPrice! *
-                            widget.pricrRate),
-                        (widget.pricesFiltersRanges.maxPrice! *
-                            widget.pricrRate),
-                      ],
-                      step: FlutterSliderStep(
-                        step: (widget.pricesFiltersRanges.maxPrice! *
-                                widget.pricrRate) /
-                            100,
+                  //color: Colors.white,
+                  height: 40.h,
+                  width: 1.sw - 50.w,
+                  child: FlutterSlider(
+                    minimumDistance: 1,
+                    values: [
+                      (widget.pricesFiltersRanges.minPrice! * widget.pricrRate),
+                      (widget.pricesFiltersRanges.maxPrice! * widget.pricrRate),
+                    ],
+                    step: FlutterSliderStep(
+                      step:
+                          (widget.pricesFiltersRanges.maxPrice! *
+                              widget.pricrRate) /
+                          100,
+                    ),
+                    selectByTap: false,
+                    trackBar: const FlutterSliderTrackBar(
+                      activeTrackBarHeight: 1,
+                      inactiveTrackBarHeight: 1,
+                      activeTrackBar: BoxDecoration(color: Color(0xff5D5C5D)),
+                      inactiveTrackBar: BoxDecoration(color: Color(0xff5D5C5D)),
+                    ),
+                    handlerWidth: 40.w,
+                    handlerHeight: 40.h,
+                    rightHandler: FlutterSliderHandler(
+                      decoration: const BoxDecoration(),
+                      child: ValueListenableBuilder<Tuple2<double, double>>(
+                        valueListenable: widget.lowerAndUpperBound,
+                        builder: (context, filterData, _) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                                  filterData.item2 <
+                                      (widget.pricesFiltersRanges.maxPrice! *
+                                          widget.pricrRate)
+                                  ? const Color(0xffFF5F61)
+                                  : Colors.white,
+                              border: Border.all(
+                                width: 0.5,
+                                color: const Color(0xffC4C2C2),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 3,
+                                  offset: const Offset(0, 3),
+                                  color:
+                                      // ignore: deprecated_member_use
+                                      Colors.black.withOpacity(0.05),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                      selectByTap: false,
-                      trackBar: const FlutterSliderTrackBar(
-                          activeTrackBarHeight: 1,
-                          inactiveTrackBarHeight: 1,
-                          activeTrackBar: BoxDecoration(
-                            color: Color(0xff5D5C5D),
-                          ),
-                          inactiveTrackBar: BoxDecoration(
-                            color: Color(0xff5D5C5D),
-                          )),
-                      handlerWidth: 40,
-                      handlerHeight: 40,
-                      rightHandler: FlutterSliderHandler(
-                          decoration: const BoxDecoration(),
-                          child: ValueListenableBuilder<Tuple2<double, double>>(
-                              valueListenable: widget.lowerAndUpperBound,
-                              builder: (context, filterData, _) {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: filterData.item2 <
-                                              (widget.pricesFiltersRanges
-                                                      .maxPrice! *
-                                                  widget.pricrRate)
-                                          ? const Color(0xffFF5F61)
-                                          : Colors.white,
-                                      border: Border.all(
-                                          width: 0.5,
-                                          color: const Color(0xffC4C2C2)),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            blurRadius: 3,
-                                            offset: const Offset(0, 3),
-                                            color:
-                                                // ignore: deprecated_member_use
-                                                Colors.black.withOpacity(0.05))
-                                      ]),
-                                );
-                              })),
-                      handler: FlutterSliderHandler(
-                          decoration: const BoxDecoration(),
-                          child: ValueListenableBuilder<Tuple2<double, double>>(
-                              valueListenable: widget.lowerAndUpperBound,
-                              builder: (context, filterData, _) {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: filterData.item1 >
-                                              (widget.pricesFiltersRanges
-                                                      .minPrice! *
-                                                  widget.pricrRate)
-                                          ? const Color(0xffFF5F61)
-                                          : Colors.white,
-                                      border: Border.all(
-                                          width: 0.5,
-                                          color: const Color(0xffC4C2C2)),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            blurRadius: 3,
-                                            offset: const Offset(0, 3),
-                                            color:
-                                                // ignore: deprecated_member_use
-                                                Colors.black.withOpacity(0.05))
-                                      ]),
-                                );
-                              })),
-                      rangeSlider: true,
-                      max: (widget.pricesFiltersRanges.maxPrice! *
-                          widget.pricrRate),
-                      min: (widget.pricesFiltersRanges.minPrice! *
-                          widget.pricrRate),
-                      handlerAnimation: const FlutterSliderHandlerAnimation(
-                          scale: 1, duration: Duration()),
-                      tooltip: FlutterSliderTooltip(
-                          alwaysShowTooltip: false,
-                          disabled: true,
-                          disableAnimation: true),
-                      onDragging: (handlerIndex, lowerValue, upperValue) {
-                        print('ssssssss');
-                        widget.lowerAndUpperBound.value =
-                            Tuple2(lowerValue, upperValue);
-                      },
-                      onDragCompleted: (handlerIndex, lowerValue, upperValue) {
-                        Filter filter = boutiqueBloc
-                                .state.choosedFiltersByUser[key]?.filters ??
-                            Filter();
-                        boutiqueBloc.add(ChangeSelectedFiltersEvent(
+                    ),
+                    handler: FlutterSliderHandler(
+                      decoration: const BoxDecoration(),
+                      child: ValueListenableBuilder<Tuple2<double, double>>(
+                        valueListenable: widget.lowerAndUpperBound,
+                        builder: (context, filterData, _) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                                  filterData.item1 >
+                                      (widget.pricesFiltersRanges.minPrice! *
+                                          widget.pricrRate)
+                                  ? const Color(0xffFF5F61)
+                                  : Colors.white,
+                              border: Border.all(
+                                width: 0.5,
+                                color: const Color(0xffC4C2C2),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 3,
+                                  offset: const Offset(0, 3),
+                                  color:
+                                      // ignore: deprecated_member_use
+                                      Colors.black.withOpacity(0.05),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    rangeSlider: true,
+                    max:
+                        (widget.pricesFiltersRanges.maxPrice! *
+                        widget.pricrRate),
+                    min:
+                        (widget.pricesFiltersRanges.minPrice! *
+                        widget.pricrRate),
+                    handlerAnimation: const FlutterSliderHandlerAnimation(
+                      scale: 1,
+                      duration: Duration(),
+                    ),
+                    tooltip: FlutterSliderTooltip(
+                      alwaysShowTooltip: false,
+                      disabled: true,
+                      disableAnimation: true,
+                    ),
+                    onDragging: (handlerIndex, lowerValue, upperValue) {
+                      print('ssssssss');
+                      widget.lowerAndUpperBound.value = Tuple2(
+                        lowerValue,
+                        upperValue,
+                      );
+                    },
+                    onDragCompleted: (handlerIndex, lowerValue, upperValue) {
+                      Filter filter =
+                          boutiqueBloc
+                              .state
+                              .choosedFiltersByUser[key]
+                              ?.filters ??
+                          Filter();
+                      boutiqueBloc.add(
+                        ChangeSelectedFiltersEvent(
                           boutiqueSlug: widget.boutiqueSlug!,
                           fromHomePageSearch: widget.fromHomeSearch,
                           category: widget.category,
                           filtersChoosedByUser: GetProductFiltersModel(
-                              filters: filter.copyWithSaveOtherField(
-                                  searchText: widget.searchText,
-                                  prices: Prices(
-                                      maxPrice:
-                                          upperValue / widget.exchangeRate,
-                                      minPrice:
-                                          lowerValue / widget.exchangeRate,
-                                      currencySymbol: widget.pricrSymbol))),
-                        ));
-                      },
-                    )),
+                            filters: filter.copyWithSaveOtherField(
+                              searchText: widget.searchText,
+                              prices: Prices(
+                                maxPrice: upperValue / widget.exchangeRate,
+                                minPrice: lowerValue / widget.exchangeRate,
+                                currencySymbol: widget.pricrSymbol,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
                 Positioned(
-                    top: widget.hideTitle ? 10 : 40,
-                    left: 0,
-                    child: ValueListenableBuilder<Tuple2<double, double>>(
-                        valueListenable: widget.lowerAndUpperBound,
-                        builder: (context, filterData, _) {
-                          return Row(
-                            children: [
-                              MyTextWidget(
-                                'Min ${filterData.item1.toStringAsFixed(widget.decimalPoint.round())} ',
-                                style: textTheme.titleMedium?.rq.copyWith(
-                                    color: filterData.item1 >
-                                            (widget.pricesFiltersRanges
-                                                    .minPrice! *
-                                                widget.pricrRate)
-                                        ? const Color(0xffFF5F61)
-                                        : const Color(0xff505050)),
-                              ),
-                              MyTextWidget(
-                                widget.pricrSymbol,
-                                style: textTheme.titleMedium?.rq.copyWith(
-                                    color: filterData.item1 >
-                                            widget.pricesFiltersRanges
-                                                    .minPrice! *
-                                                widget.pricrRate
-                                        ? const Color(0xffFF5F61)
-                                        : const Color(0xff505050)),
-                              ),
-                            ],
-                          );
-                        })),
+                  top: widget.hideTitle ? 10.h : 40.h,
+                  left: 0,
+                  child: ValueListenableBuilder<Tuple2<double, double>>(
+                    valueListenable: widget.lowerAndUpperBound,
+                    builder: (context, filterData, _) {
+                      return Row(
+                        children: [
+                          MyTextWidget(
+                            'Min ${filterData.item1.toStringAsFixed(widget.decimalPoint.round())} ',
+                            style: textTheme.titleMedium?.rq.copyWith(
+                              color:
+                                  filterData.item1 >
+                                      (widget.pricesFiltersRanges.minPrice! *
+                                          widget.pricrRate)
+                                  ? const Color(0xffFF5F61)
+                                  : const Color(0xff505050),
+                            ),
+                          ),
+                          MyTextWidget(
+                            widget.pricrSymbol,
+                            style: textTheme.titleMedium?.rq.copyWith(
+                              color:
+                                  filterData.item1 >
+                                      widget.pricesFiltersRanges.minPrice! *
+                                          widget.pricrRate
+                                  ? const Color(0xffFF5F61)
+                                  : const Color(0xff505050),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
                 Positioned(
-                    right: 0,
-                    top: widget.hideTitle ? 10 : 40,
-                    child: ValueListenableBuilder<Tuple2<double, double>>(
-                        valueListenable: widget.lowerAndUpperBound,
-                        builder: (context, filterData, _) {
-                          return Row(
-                            children: [
-                              MyTextWidget(
-                                'Max ${filterData.item2.toStringAsFixed(widget.decimalPoint.round())} ',
-                                style: textTheme.titleMedium?.rq.copyWith(
-                                    color: filterData.item2 <
-                                            widget.pricesFiltersRanges
-                                                    .maxPrice! *
-                                                widget.pricrRate
-                                        ? const Color(0xffFF5F61)
-                                        : const Color(0xff505050)),
-                              ),
-                              MyTextWidget(
-                                widget.pricrSymbol,
-                                style: textTheme.titleMedium?.rq.copyWith(
-                                    color: filterData.item2 <
-                                            widget.pricesFiltersRanges
-                                                    .maxPrice! *
-                                                widget.pricrRate
-                                        ? const Color(0xffFF5F61)
-                                        : const Color(0xff505050)),
-                              ),
-                            ],
-                          );
-                        })),
+                  right: 0,
+                  top: widget.hideTitle ? 10.h : 40.h,
+                  child: ValueListenableBuilder<Tuple2<double, double>>(
+                    valueListenable: widget.lowerAndUpperBound,
+                    builder: (context, filterData, _) {
+                      return Row(
+                        children: [
+                          MyTextWidget(
+                            'Max ${filterData.item2.toStringAsFixed(widget.decimalPoint.round())} ',
+                            style: textTheme.titleMedium?.rq.copyWith(
+                              color:
+                                  filterData.item2 <
+                                      widget.pricesFiltersRanges.maxPrice! *
+                                          widget.pricrRate
+                                  ? const Color(0xffFF5F61)
+                                  : const Color(0xff505050),
+                            ),
+                          ),
+                          MyTextWidget(
+                            widget.pricrSymbol,
+                            style: textTheme.titleMedium?.rq.copyWith(
+                              color:
+                                  filterData.item2 <
+                                      widget.pricesFiltersRanges.maxPrice! *
+                                          widget.pricrRate
+                                  ? const Color(0xffFF5F61)
+                                  : const Color(0xff505050),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
                 if (!widget.hideTitle)
                   Positioned(
-                    top: 0,
+                    top: 0.h,
                     left: 0,
-                    width: 1.sw - 50,
+                    width: 1.sw - 50.w,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const FilterSelectedMark(width: 20, height: 20),
-                            const SizedBox(
-                              width: 10,
-                            ),
+                            FilterSelectedMark(width: 20.w, height: 20.h),
+                            SizedBox(width: 10.w),
                             MyTextWidget(
                               '${LocaleKeys.filter_by.tr()} ${LocaleKeys.prices.tr()}',
                               style: context.textTheme.titleMedium?.rq.copyWith(
-                                  color: const Color(0xff505050),
-                                  height: 15 / 12),
+                                color: const Color(0xff505050),
+                                height: (15 / 12).h,
+                              ),
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
+                            SizedBox(width: 5.w),
                             SvgPicture.asset(
                               AppAssets.registerInfoSvg,
                               // ignore: deprecated_member_use
                               color: const Color(0xffD3D3D3),
                             ),
                             BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                                builder: (context, state) {
-                              if (state.getProductFiltersStatus[key] ==
-                                  GetProductFiltersStatus.loading) {
-                                return Row(
-                                  children: [
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    TrydosLoader(
-                                      size: 20,
-                                    ),
-                                  ],
-                                );
-                              }
-                              return const SizedBox.shrink();
-                            })
+                              builder: (context, state) {
+                                if (state.getProductFiltersStatus[key] ==
+                                    GetProductFiltersStatus.loading) {
+                                  return Row(
+                                    children: [
+                                      SizedBox(width: 5.w),
+                                      TrydosLoader(size: 20.w),
+                                    ],
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              },
+                            ),
                           ],
                         ),
                       ],
                     ),
-                  )
+                  ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
         ],
       ),
     );

@@ -183,16 +183,13 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                   children: [
                     Container(
                       alignment: Alignment.bottomRight,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      width: 150,
-                      height: 30,
+                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      width: 150.w,
+                      height: 30.h,
                       child: MyTextWidget(
                         textAlign: TextAlign.start,
                         "${LocaleKeys.feature_product.tr()}",
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.black, fontSize: 14.sp),
                       ),
                     ),
                     BlocBuilder<BoutiqueBloc, BoutiqueState>(
@@ -219,8 +216,8 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                 width: 1.sw,
                                 height:
                                     state.isGettingProductListingWithPagination
-                                    ? 1.sh - 100
-                                    : 1.sh - 70,
+                                    ? 1.sh - 100.h
+                                    : 1.sh - 70.h,
                                 child: /* ValueListenableBuilder<Tuple2<int, int>>(
                                     valueListenable: setThisEnabledNotifier,
                                     builder: (context, slidingMode, _) {
@@ -237,7 +234,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                     final double itemWidth =
                                         (constraints.maxWidth - totalSpacing) /
                                         crossAxisCount;
-                                    const double itemHeight = 375;
+                                    double itemHeight = 375.h;
 
                                     return Column(
                                       children: [
@@ -423,9 +420,9 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                           bottom: 0,
                           child: _loadingForRquestProductDetails
                               ? Container(
-                                  width: 20,
-                                  height: 20,
-                                  child: TrydosLoader(size: 15),
+                                  width: 20.w,
+                                  height: 20.h,
+                                  child: TrydosLoader(size: 15.h),
                                 )
                               : Container(
                                   height: tapIndex == -1 ? 0 : (1.sh),
@@ -1250,12 +1247,12 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
         child: Column(
           children: [
             Container(
-              margin: const EdgeInsets.all(10),
-              height: 2,
-              width: 40,
+              margin: EdgeInsets.all(10.h),
+              height: 2.h,
+              width: 40.w,
               decoration: const BoxDecoration(color: Color(0xffC4C2C2)),
             ),
-            const SizedBox(height: 5),
+            SizedBox(height: 5.h),
             ValueListenableBuilder<bool>(
               valueListenable: finishRedeem,
               builder: (context, _finishRedeem, _) => ValueListenableBuilder<int>(
@@ -1271,9 +1268,9 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                         .syncColorImages
                         ?.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      mainAxisSpacing: 5,
-                      crossAxisSpacing: 5,
-                      childAspectRatio: 1.sw / (392 * 2),
+                      mainAxisSpacing: 5.h,
+                      crossAxisSpacing: 5.w,
+                      childAspectRatio: 1.sw / (392.h * 2),
                       crossAxisCount: 2,
                     ),
                     itemBuilder: (context, index) => InkWell(

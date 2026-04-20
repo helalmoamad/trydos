@@ -522,8 +522,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               Expanded(
                                 child: SingleChildScrollView(
                                   child: Container(
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 10,
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: 10.w,
                                     ),
                                     alignment: Alignment.topCenter,
                                     child: Column(
@@ -599,13 +599,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
                 child: Container(
-                  height: 60,
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 10,
+                  height: 60.h,
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 10.w,
+                    vertical: 10.h,
                   ),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                     // ignore: deprecated_member_use
                     color: const Color(0xffC4C2C2).withOpacity(0.5),
                   ),
@@ -618,7 +618,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                           style: context.textTheme.bodyMedium?.mq.copyWith(
                             color: const Color(0xffFEFEFE),
                             letterSpacing: 0.18,
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             height: 0.8,
                           ),
                         ),
@@ -631,7 +631,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               style: context.textTheme.bodyMedium?.bq.copyWith(
                                 color: const Color(0xffFEFEFE),
                                 letterSpacing: 0.18,
-                                fontSize: 14,
+                                fontSize: 14.sp,
                                 height: 0.8,
                               ),
                             ),
@@ -640,7 +640,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               style: context.textTheme.bodyMedium?.rq.copyWith(
                                 color: const Color(0xffFEFEFE),
                                 letterSpacing: 0.18,
-                                fontSize: 14,
+                                fontSize: 14.sp,
                                 height: 0.8,
                               ),
                             ),
@@ -659,7 +659,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               style: context.textTheme.bodyMedium?.bq.copyWith(
                                 color: const Color(0xffFEFEFE),
                                 letterSpacing: 0.18,
-                                fontSize: 14,
+                                fontSize: 14.sp,
                                 height: 0.8,
                               ),
                             ),
@@ -668,7 +668,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               style: context.textTheme.bodyMedium?.rq.copyWith(
                                 color: const Color(0xffFEFEFE),
                                 letterSpacing: 0.18,
-                                fontSize: 14,
+                                fontSize: 14.sp,
                                 height: 0.8,
                               ),
                             ),
@@ -680,7 +680,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 ),
               )
             : Container(
-                height: 80,
+                height: 80.h,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: const Color.fromRGBO(255, 255, 255, 1),
@@ -719,12 +719,12 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   },
                   child: Container(
                     height: 70.h,
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 10,
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 10.h,
                     ),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                       color: _agreeToPolicies
                           ? const Color(0xff346BFF)
                           : const Color(0xffC4C2C2),
@@ -738,7 +738,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             style: context.textTheme.bodyMedium?.mq.copyWith(
                               color: const Color(0xffFEFEFE),
                               letterSpacing: 0.18,
-                              fontSize: 18,
+                              fontSize: 18.sp,
                               height: 0.8,
                             ),
                           ),
@@ -752,7 +752,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -762,7 +762,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -782,7 +782,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -793,7 +793,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     .copyWith(
                                       color: const Color(0xffFEFEFE),
                                       letterSpacing: 0.18,
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       height: 0.8,
                                     ),
                               ),
@@ -818,7 +818,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
         valueListenable: agreeToPolicies,
         builder: (context, _agreeToPolicies, _) {
           return Container(
-            margin: const EdgeInsets.all(15),
+            margin: EdgeInsets.all(15.r),
             height: 40.h,
             width: 1.sw,
             decoration: BoxDecoration(
@@ -833,12 +833,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 SizedBox(width: 28.w),
                 SvgPicture.asset(
                   AppAssets.detectedSvg,
+                  height: 18.h,
                   // ignore: deprecated_member_use
                   color: _agreeToPolicies
                       ? const Color(0xff388CFF)
                       : const Color(0xff8E8E8E),
                 ),
-                const SizedBox(width: 20),
+                SizedBox(width: 20.w),
 
                 Text(
                   "${LocaleKeys.i_read_and_agree_to_the.tr()}",
@@ -856,7 +857,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     decorationColor: const Color(0xff388CFF),
                     color: const Color(0xff388CFF),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.33,
                   ),
                 ),
@@ -865,7 +866,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.33,
                   ),
                 ),
@@ -876,7 +877,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     decorationColor: const Color(0xff388CFF),
                     color: const Color(0xff388CFF),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.33,
                   ),
                 ),
@@ -896,22 +897,22 @@ class _PlaceOrderState extends State<PlaceOrder> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
+            margin: EdgeInsets.only(top: 10.h, left: 10.w, right: 10.w),
             child: Row(
               children: [
-                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 16),
+                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 16.h),
                 SizedBox(width: 7.w),
                 Text(
                   "${LocaleKeys.shipping_delivery_address.tr()} ",
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 0.8,
                   ),
                 ),
                 SizedBox(width: 5.w),
-                SvgPicture.asset(AppAssets.freeShippingSvg),
+                SvgPicture.asset(AppAssets.freeShippingSvg, height: 16.h),
               ],
             ),
           ),
@@ -923,14 +924,14 @@ class _PlaceOrderState extends State<PlaceOrder> {
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff8D8D8D),
                 letterSpacing: 0.18,
-                fontSize: 12,
+                fontSize: 12.sp,
                 height: 0.8,
               ),
             ),
           ),
           SizedBox(height: 12.h),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             child: addressInfoWithContactInfoCart(
               cartChoosed: true,
               placeOrder: true,
@@ -952,23 +953,23 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   Widget buildBagItemsWidget(BuildContext context) {
     return Container(
-      height: 190,
+      height: 200.h,
       width: 1.sw,
       child: Column(
         children: [
           Container(
-            margin: const EdgeInsets.all(10),
-            height: 20,
+            margin: EdgeInsets.all(10.w),
+            height: 20.h,
             child: Row(
               children: [
-                SvgPicture.asset(AppAssets.bagsSvg, height: 20),
+                SvgPicture.asset(AppAssets.bagsSvg, height: 20.h),
                 SizedBox(width: 7.w),
                 Text(
                   "${LocaleKeys.your_shopping_bag.tr()} ",
                   style: context.textTheme.bodyMedium?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 1.33,
                   ),
                 ),
@@ -977,7 +978,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   style: context.textTheme.bodyMedium?.bq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 13,
+                    fontSize: 13.sp,
                     height: 1.33,
                   ),
                 ),
@@ -989,7 +990,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
               left: (LanguageService.languageCode == "ar") ? 0 : 10,
               right: (LanguageService.languageCode == "ar") ? 10 : 0,
             ),
-            height: 150,
+            height: 160.h,
             child: ListView.separated(
               separatorBuilder: (context, index) => const SizedBox(width: 5),
               scrollDirection: Axis.horizontal,
@@ -1010,7 +1011,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         blurRadius: 0,
                         imageUrl: widget.cartImages[index]["image"],
                         width: 91.w,
-                        radius: 15,
+                        radius: 15.r,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -1019,7 +1020,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 10,
+                        fontSize: 10.sp,
                         height: 1.33,
                       ),
                     ),
@@ -1029,7 +1030,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
-                        fontSize: 10,
+                        fontSize: 10.sp,
                         height: 1.33,
                       ),
                     ),
@@ -1045,7 +1046,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   Widget buildPageHeader(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 60),
+      margin: EdgeInsets.only(top: 50.h),
       width: 1.sw,
       height: 50.h,
       child: Column(
@@ -1070,25 +1071,25 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     } else {}
                   },
                   child: Container(
-                    width: 40,
+                    width: 40.w,
                     child: Transform.rotate(
                       angle: LanguageService.languageCode == "ar" ? pi : 0,
                       child: SvgPicture.asset(
                         AppAssets.backIconArrowSvg,
-                        height: 20,
+                        height: 20.h,
                       ),
                     ),
                   ),
                 ),
                 const Spacer(),
-                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 20),
+                SvgPicture.asset(AppAssets.deliveryAddressSvg, height: 16.h),
                 SizedBox(width: 5.w),
                 Text(
                   "${LocaleKeys.shipping_payment.tr()} ",
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.2,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     height: 1.33,
                   ),
                 ),
@@ -1250,15 +1251,15 @@ class _PlaceOrderState extends State<PlaceOrder> {
               left: LanguageService.languageCode != "ar" ? null : 0,
               right: LanguageService.languageCode != "ar" ? 0 : null,
               child: Container(
-                margin: const EdgeInsets.all(10),
-                height: 20,
-                width: 40,
+                margin: EdgeInsets.all(10.w),
+                height: 20.h,
+                width: 40.w,
                 child: InkWell(
                   onTap: () => isVerified.value = true,
                   child: SvgPicture.asset(
                     AppAssets.closeSvg,
-                    height: 15,
-                    width: 30,
+                    height: 15.h,
+                    width: 30.w,
                     // ignore: deprecated_member_use
                     color: const Color(0xffFF5F61),
                   ),
@@ -1292,10 +1293,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
             ),
             child: Container(
               width: 0.9.sw,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(25.r),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -1306,7 +1307,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     style: context.textTheme.headlineSmall?.copyWith(
                       color: const Color(0xff1D1D1D),
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 18.sp,
                     ),
                   ),
                   SizedBox(height: 20.h),
@@ -1318,7 +1319,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       'Select Currency',
                       style: context.textTheme.bodyMedium?.copyWith(
                         color: const Color(0xff999999),
-                        fontSize: 12,
+                        fontSize: 12.sp,
                       ),
                     ),
                   ),
@@ -1330,7 +1331,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     height: 50.h,
                     decoration: BoxDecoration(
                       color: const Color(0xff346BFF),
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(15.r),
                     ),
                     child: Center(
                       child: Text(
@@ -1338,7 +1339,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         style: context.textTheme.bodyMedium?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         ),
                       ),
                     ),
@@ -1361,7 +1362,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         style: context.textTheme.bodyMedium?.copyWith(
                           color: const Color(0xff1D1D1D),
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         ),
                       ),
                     ],
@@ -1376,7 +1377,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         'Account to Pay',
                         style: context.textTheme.bodyMedium?.copyWith(
                           color: const Color(0xff999999),
-                          fontSize: 12,
+                          fontSize: 12.sp,
                         ),
                       ),
                       Text(
@@ -1384,7 +1385,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         style: context.textTheme.bodyMedium?.copyWith(
                           color: const Color(0xff00C853),
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 14.sp,
                         ),
                       ),
                     ],
@@ -1445,7 +1446,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                       0xffC4C2C2,
                                       // ignore: deprecated_member_use
                                     ).withOpacity(0.5),
-                                    borderRadius: BorderRadius.circular(15),
+                                    borderRadius: BorderRadius.circular(15.r),
                                   ),
                                 ),
                               )
@@ -1467,7 +1468,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                           ?.copyWith(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 16,
+                                            fontSize: 16.sp,
                                           ),
                                     ),
                                   ),

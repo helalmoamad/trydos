@@ -98,9 +98,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
           builder: (context, _paymentMethods, _) {
             return Container(
               width: 1.sw,
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10.h),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(15.r),
                 border: (widget.fromPalceOrder)
                     ? null
                     : Border.all(color: const Color(0xff388CFF)),
@@ -111,7 +111,10 @@ class _PaymentMethodState extends State<PaymentMethod> {
                 children: [
                   Row(
                     children: [
-                      SvgPicture.asset(AppAssets.paymentMethodSvg),
+                      SvgPicture.asset(
+                        AppAssets.paymentMethodSvg,
+                        height: 20.h,
+                      ),
                       SizedBox(width: 10.w),
                       InkWell(
                         onTap: () {
@@ -140,12 +143,12 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff8D8D8D),
                         letterSpacing: 0.18,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         height: 1.33,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 10.h),
                   (!(_paymentMethods.contains(PaymentMethods.cod)) &&
                               (widget.fromPalceOrder)) ||
                           !widget.availablePaymentMethod.contains(
@@ -413,7 +416,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
           style: context.textTheme.bodyMedium?.rq.copyWith(
             color: const Color(0xffD3D3D3),
             letterSpacing: 0.18,
-            fontSize: 12,
+            fontSize: 12.sp,
             height: 1.33,
           ),
         ),
@@ -424,7 +427,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,
-            fontSize: 12,
+            fontSize: 12.sp,
             height: 1.33,
           ),
         ),
@@ -442,7 +445,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                 style: context.textTheme.bodyMedium?.rq.copyWith(
                   color: const Color(0xffD3D3D3),
                   letterSpacing: 0.18,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   height: 1.33,
                 ),
               ),
@@ -451,7 +454,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                 style: context.textTheme.bodyMedium?.sbt.copyWith(
                   color: const Color(0xff1D1D1D),
                   letterSpacing: 0.18,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   height: 1.33,
                 ),
               ),
@@ -510,7 +513,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
           style: context.textTheme.bodyMedium?.rq.copyWith(
             color: const Color(0xffD3D3D3),
             letterSpacing: 0.18,
-            fontSize: 12,
+            fontSize: 12.sp,
             height: 1.33,
           ),
         ),
@@ -521,7 +524,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,
-            fontSize: 12,
+            fontSize: 12.sp,
             height: 1.33,
           ),
         ),
@@ -535,9 +538,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
                     state.getCustomerWalletStatus ==
                         GetCustomerWalletStatus.init
                     ? SizedBox(
-                        width: 30,
-                        height: 40,
-                        child: TrydosLoader(size: 17),
+                        width: 30.w,
+                        height: 40.h,
+                        child: TrydosLoader(size: 17.h),
                       )
                     : InkWell(
                         onTap: () {
@@ -554,10 +557,10 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             ),
                           );
                         },
-                        child: const SizedBox(
-                          width: 30,
-                          height: 40,
-                          child: Icon(Icons.refresh_sharp, size: 17),
+                        child: SizedBox(
+                          width: 30.w,
+                          height: 40.h,
+                          child: Icon(Icons.refresh_sharp, size: 17.h),
                         ),
                       ),
               ),
@@ -608,14 +611,15 @@ class PaymentMethodCard extends StatelessWidget {
         color: fromSuccessOrder || fromPalceOrder
             ? const Color.fromARGB(255, 255, 255, 255)
             : const Color(0xffF8F8F8),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15.r),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 26.w),
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Row(
           children: [
             SvgPicture.asset(
               svg,
+              height: 16.h,
               // ignore: deprecated_member_use
               color:
                   paymentMethod.contains(currentPaymentMethod) &&

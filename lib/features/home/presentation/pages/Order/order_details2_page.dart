@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
@@ -273,10 +273,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const SizedBox(width: 12),
-                                SvgPicture.asset(AppAssets.bagsSvg, width: 23),
+                                SizedBox(width: 12.w),
+                                SvgPicture.asset(
+                                  AppAssets.bagsSvg,
+                                  width: 23.w,
+                                ),
                                 ///////////////////////////
-                                const SizedBox(width: 4),
+                                SizedBox(width: 4.w),
                                 ///////////////////////////
                                 Text(
                                   LocaleKeys.order_details.tr(),
@@ -284,12 +287,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       .copyWith(
                                         color: const Color(0xff1D1D1D),
                                         letterSpacing: 0.18,
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                         height: 1.3,
                                       ),
                                 ),
                                 ///////////////////////////
-                                const SizedBox(width: 15),
+                                SizedBox(width: 15.w),
                                 ///////////////////////////
                               ],
                             ),
@@ -310,20 +313,20 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 showShadowForPanel.value = true;
                               },
                               child: Container(
-                                width: 40,
-                                height: 20,
+                                width: 40.w,
+                                height: 20.h,
                                 child:
                                     state.getOrdersByOrderGroupIDStatus ==
                                         GetOrdersByOrderGroupIDStatus.loading
                                     ? TrydosLoader(size: 16)
                                     : SvgPicture.asset(
                                         AppAssets.orderMenuSvg,
-                                        width: 20,
+                                        width: 20.w,
                                       ),
                               ),
                             ),
                             ///////////////////////////
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12.w),
                           ],
                         ),
                       ),
@@ -340,9 +343,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ///////////////////
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 10,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.w,
+                                vertical: 10.h,
                               ),
                               child: Container(
                                 width: double.infinity,
@@ -353,21 +356,21 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     255,
                                     255,
                                   ),
-                                  borderRadius: BorderRadius.circular(15),
+                                  borderRadius: BorderRadius.circular(15.r),
                                 ),
-                                padding: const EdgeInsets.all(8),
+                                padding: EdgeInsets.all(8.w),
                                 child: SingleChildScrollView(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Container(
-                                        height: 10,
-                                        width: 60,
+                                        height: 10.h,
+                                        width: 60.w,
                                         color: Colors.black,
                                       ),
                                       ///////////////////
-                                      const SizedBox(height: 5),
+                                      SizedBox(height: 5.h),
                                       ///////////////////
                                       BlocBuilder<HomeBloc, HomeState>(
                                         buildWhen: (previous, current) =>
@@ -413,7 +416,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       0xff505050,
                                                     ),
                                                     letterSpacing: 0.18,
-                                                    fontSize: 12,
+                                                    fontSize: 12.sp,
                                                     height: 1.3,
                                                   ),
                                               children: [
@@ -434,7 +437,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           0xff1D1D1D,
                                                         ),
                                                         letterSpacing: 0.18,
-                                                        fontSize: 12,
+                                                        fontSize: 12.sp,
                                                         height: 1.3,
                                                       ),
                                                 ),
@@ -455,7 +458,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           0xff1D1D1D,
                                                         ),
                                                         letterSpacing: 0.18,
-                                                        fontSize: 12,
+                                                        fontSize: 12.sp,
                                                         height: 1.3,
                                                       ),
                                                 ),
@@ -481,10 +484,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               children: [
                                                 SvgPicture.asset(
                                                   AppAssets.orderAddressSvg,
-                                                  width: 20,
+                                                  width: 20.w,
                                                 ),
                                                 ///////////////////
-                                                const SizedBox(height: 5),
+                                                SizedBox(height: 5.h),
                                                 ///////////////////
                                                 Text(
                                                   LocaleKeys
@@ -501,12 +504,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           0xff8D8D8D,
                                                         ),
                                                         letterSpacing: 0.18,
-                                                        fontSize: 10,
+                                                        fontSize: 10.sp,
                                                         height: 1.3,
                                                       ),
                                                 ),
                                                 ///////////////////
-                                                const SizedBox(height: 5),
+                                                SizedBox(height: 5.h),
                                                 ///////////////////
                                                 Text(
                                                   'Monday 2.Jun | 3 ${LocaleKeys.work_days.tr()}',
@@ -521,7 +524,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           0xff1D1D1D,
                                                         ),
                                                         letterSpacing: 0.18,
-                                                        fontSize: 12,
+                                                        fontSize: 12.sp,
                                                         height: 1.3,
                                                       ),
                                                 ),
@@ -557,16 +560,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                 ? SvgPicture.asset(
                                                                     AppAssets
                                                                         .orderCanselSvg,
-                                                                    width: 20,
+                                                                    width: 20.w,
                                                                   )
                                                                 : SvgPicture.asset(
                                                                     AppAssets
                                                                         .pendingBagSvg,
-                                                                    width: 15,
+                                                                    width: 15.w,
                                                                   ),
                                                             ////////////////////
-                                                            const SizedBox(
-                                                              width: 3,
+                                                            SizedBox(
+                                                              width: 3.w,
                                                             ),
 
                                                             ///////////////////
@@ -582,16 +585,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                 ? SvgPicture.asset(
                                                                     AppAssets
                                                                         .whiteBagSvg,
-                                                                    width: 15,
+                                                                    width: 15.w,
                                                                   )
                                                                 : SvgPicture.asset(
                                                                     AppAssets
                                                                         .preparingBagSvg,
-                                                                    width: 15,
+                                                                    width: 15.w,
                                                                   ),
                                                             ////////////////////
-                                                            const SizedBox(
-                                                              width: 3,
+                                                            SizedBox(
+                                                              width: 3.w,
                                                             ),
                                                             ///////////////////
                                                             order!
@@ -608,16 +611,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                 ? SvgPicture.asset(
                                                                     AppAssets
                                                                         .whiteBagSvg,
-                                                                    width: 15,
+                                                                    width: 15.w,
                                                                   )
                                                                 : SvgPicture.asset(
                                                                     AppAssets
                                                                         .shippedAndOutOfDeliveryBagSvg,
-                                                                    width: 15,
+                                                                    width: 15.w,
                                                                   ),
                                                             ////////////////////
-                                                            const SizedBox(
-                                                              width: 3,
+                                                            SizedBox(
+                                                              width: 3.w,
                                                             ),
                                                             ///////////////////
                                                             order!
@@ -638,19 +641,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                 ? SvgPicture.asset(
                                                                     AppAssets
                                                                         .whiteBagSvg,
-                                                                    width: 15,
+                                                                    width: 15.w,
                                                                   )
                                                                 : SvgPicture.asset(
                                                                     AppAssets
                                                                         .delivered_bagSvg,
-                                                                    width: 15,
+                                                                    width: 15.w,
                                                                   ),
                                                           ],
                                                         ),
                                                         ///////////////////
-                                                        const SizedBox(
-                                                          height: 5,
-                                                        ),
+                                                        SizedBox(height: 5.h),
                                                         ///////////////////
                                                         Row(
                                                           children: [
@@ -673,19 +674,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                     letterSpacing:
                                                                         0.18,
                                                                     fontSize:
-                                                                        10,
+                                                                        10.sp,
                                                                     height: 1.3,
                                                                   ),
                                                             ),
-                                                            const SizedBox(
-                                                              width: 12,
+                                                            SizedBox(
+                                                              width: 12.w,
                                                             ),
                                                           ],
                                                         ),
                                                         ///////////////////
-                                                        const SizedBox(
-                                                          height: 5,
-                                                        ),
+                                                        SizedBox(height: 5.h),
                                                         ///////////////////
                                                         Row(
                                                           mainAxisAlignment:
@@ -711,13 +710,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                     letterSpacing:
                                                                         0.18,
                                                                     fontSize:
-                                                                        12,
+                                                                        12.sp,
                                                                     height: 1.3,
                                                                   ),
                                                             ),
                                                             ///////////////////
-                                                            const SizedBox(
-                                                              width: 10,
+                                                            SizedBox(
+                                                              width: 10.w,
                                                             ),
                                                             ///////////////////
                                                             SvgPicture.asset(
@@ -749,7 +748,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                         .pendeingBlackCheck
                                                                   : AppAssets
                                                                         .orderPreparingSvg,
-                                                              width: 15,
+                                                              width: 15.w,
                                                             ),
                                                           ],
                                                         ),
@@ -760,14 +759,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         ],
                                       ),
                                       ///////////////////
-                                      const SizedBox(height: 12),
+                                      SizedBox(height: 12.h),
                                       ///////////////////
                                       /*  (order?.returnRequestId != null &&
                                               (order?.editReturnRequest ??
                                                   false))
                                           ? Container(
                                               width: double.infinity,
-                                              height: 1,
+                                              height: 1.h,
                                               color: const Color(0xffC4C2C2),
                                             )
                                           : const SizedBox.shrink(),*/
@@ -854,7 +853,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                     .underline,
                                                             color: Colors.red,
                                                             letterSpacing: 0.18,
-                                                            fontSize: 12,
+                                                            fontSize: 12.sp,
                                                             height: 1.5,
                                                           ),
                                                     ),
@@ -862,7 +861,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                 );
                                         },
                                       ),
-                                      const SizedBox(height: 2),
+                                      SizedBox(height: 2.h),
 
                                       BlocBuilder<OrderBloc, OrderState>(
                                         buildWhen: (previous, current) =>
@@ -954,7 +953,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                     .underline,
                                                             color: Colors.green,
                                                             letterSpacing: 0.18,
-                                                            fontSize: 12,
+                                                            fontSize: 12.sp,
                                                             height: 1.5,
                                                           ),
                                                     ),
@@ -964,15 +963,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       ),
                                       order?.returnRequestId == null
                                           ? const SizedBox.shrink()
-                                          : const SizedBox(height: 10),
+                                          : SizedBox(height: 10.h),
                                       order?.returnRequestId == null
                                           ? const SizedBox.shrink()
                                           : Container(
                                               width: double.infinity,
-                                              height: 1,
+                                              height: 1.h,
                                               color: const Color(0xffC4C2C2),
                                             ),
-                                      const SizedBox(height: 10),
+                                      SizedBox(height: 10.h),
                                       ///////////////////
                                       ListView.separated(
                                         itemCount: order!.details?.length ?? 0,
@@ -988,11 +987,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         separatorBuilder: (context, index) {
                                           return Container(
                                             width: double.infinity,
-                                            height: 1,
+                                            height: 1.h,
                                             color: const Color(0xffC4C2C2),
-                                            margin: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 12,
+                                            margin: EdgeInsets.symmetric(
+                                              horizontal: 10.w,
+                                              vertical: 12.h,
                                             ),
                                           );
                                         },
@@ -1043,23 +1042,23 @@ class _OrderDetails2 extends State<OrderDetails2> {
       children: [
         SizedBox(height: 10.h),
         Container(
-          width: 40,
-          height: 2,
+          width: 40.w,
+          height: 2.h,
           decoration: BoxDecoration(
             color: const Color(0xffC4C2C2),
             border: Border.all(color: const Color(0xffC4C2C2)),
-            borderRadius: const BorderRadius.all(Radius.circular(2)),
+            borderRadius: BorderRadius.all(Radius.circular(2.r)),
           ),
         ),
         SizedBox(height: 20.h),
         Container(
           width: 1.sw,
-          height: 200.h,
-          margin: const EdgeInsets.symmetric(horizontal: 10),
+          height: 205.h,
+          margin: EdgeInsets.symmetric(horizontal: 10.w),
           decoration: BoxDecoration(
             color: const Color(0xffF8F8F8),
             border: Border.all(color: const Color(0xffF8F8F8)),
-            borderRadius: const BorderRadius.all(Radius.circular(15)),
+            borderRadius: BorderRadius.all(Radius.circular(15.r)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1070,9 +1069,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 height: 16.h,
                 child: Row(
                   children: [
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10.w),
                     SvgPicture.asset(AppAssets.orderClockSvg, height: 15.h),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     Text(
                       HelperFunctions.orderFormatDate(
                         DateTime.tryParse(order!.createdAt ?? '') ??
@@ -1087,7 +1086,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     ),
                     const Spacer(),
                     SvgPicture.asset(AppAssets.orderBag1Svg, height: 15.h),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     Text(
                       order!.orderGroupId ?? "",
                       style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -1097,7 +1096,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 1.3,
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10.w),
                   ],
                 ),
               ),
@@ -1107,9 +1106,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 height: 16.h,
                 child: Row(
                   children: [
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10.w),
                     SvgPicture.asset(AppAssets.preparingBagSvg, height: 15.h),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     Text(
                       order!.orderGroupStatus?.label ?? "",
                       style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -1119,7 +1118,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 1.3,
                       ),
                     ),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     SvgPicture.asset(
                       order!.orderGroupStatus?.value == 'canceled'
                           ? AppAssets.orderCanselSvg
@@ -1137,7 +1136,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     ),
                     const Spacer(),
                     SvgPicture.asset(AppAssets.orderInvoice2Svg, height: 15.h),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     Text(
                       (order!.details?.length ?? "").toString(),
                       style: context.textTheme.bodyMedium?.bq.copyWith(
@@ -1147,7 +1146,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 1.3,
                       ),
                     ),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     Text(
                       LocaleKeys.item.tr(),
                       style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -1157,7 +1156,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 1.3,
                       ),
                     ),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     Text(
                       HelperFunctions.formatNumber(
                         numberToFormate:
@@ -1185,7 +1184,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 1.3,
                       ),
                     ),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     Text(
                       homeBloc
                           .state
@@ -1200,7 +1199,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 1.3,
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10.w),
                   ],
                 ),
               ),
@@ -1209,8 +1208,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 height: 125.h,
                 width: 1.sw,
                 padding: EdgeInsets.only(
-                  left: LanguageService.languageCode == "ar" ? 0 : 10,
-                  right: LanguageService.languageCode != "ar" ? 0 : 10,
+                  left: LanguageService.languageCode == "ar" ? 0 : 10.w,
+                  right: LanguageService.languageCode != "ar" ? 0 : 10.w,
                 ),
                 child: ListView.builder(
                   itemCount: order!.details?.length,
@@ -1218,17 +1217,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   itemBuilder: (context, index) {
                     return Container(
                       height: 125.h,
-                      width: 92,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                      width: 92.w,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(15.r)),
                       ),
                       child: ClipRRect(
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(15),
-                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(15.r)),
                         child: MyCachedNetworkImage(
                           imageUrl: order!.details?[index].image ?? "",
-                          width: 92,
+                          width: 92.w,
                           imageFit: BoxFit.contain,
                           height: 125.h,
                         ),
@@ -1241,30 +1238,30 @@ class _OrderDetails2 extends State<OrderDetails2> {
             ],
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10.h),
         Text(
           "${LocaleKeys.action_about_order.tr()}",
           style: context.textTheme.bodyMedium?.rq.copyWith(
             color: const Color(0xff8D8D8D),
             letterSpacing: 0.18,
-            fontSize: 12,
+            fontSize: 12.sp,
             height: 1.3,
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10.h),
         Container(
           width: 1.sw,
           height: 0.5,
           decoration: BoxDecoration(
             color: const Color(0xffC4C2C2),
             border: Border.all(color: const Color(0xffC4C2C2)),
-            borderRadius: const BorderRadius.all(Radius.circular(2)),
+            borderRadius: BorderRadius.all(Radius.circular(2.r)),
           ),
         ),
         SizedBox(height: 30.h),
         order?.canUpdateAddress ?? false
             ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: optionOfModify(
                   onTap: () {
                     orderBloc.add(const ResetAllStatusEvent());
@@ -1278,9 +1275,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 ),
               )
             : const SizedBox.shrink(),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: optionOfModify(
             onTap: () {
               orderBloc.add(const ResetAllStatusEvent());
@@ -1292,10 +1289,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
             body: "${LocaleKeys.hide_this_product_from_list.tr()}",
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         (order?.canCanceleOrder ?? false)
             ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: optionOfModify(
                   onTap: () {
                     orderBloc.add(const ResetAllStatusEvent());
@@ -1364,12 +1361,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 170,
+                height: 170.h,
                 width: 1.sw,
                 child: Row(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(15.r),
                       child: InkWell(
                         onTap: () {
                           BlocProvider.of<HomeBloc>(
@@ -1418,18 +1415,18 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           child: MyCachedNetworkImage(
                             imageUrl: orderListDetailModel.image ?? '',
                             imageFit: BoxFit.contain,
-                            width: 100,
-                            height: 150,
+                            width: 100.w,
+                            height: 150.h,
                           ),
                         ),
                       ),
                     ),
                     ///////////////////
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12.w),
                     ///////////////////
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        padding: EdgeInsets.symmetric(vertical: 10.h),
                         child: Stack(
                           alignment: AlignmentDirectional.topEnd,
                           children: [
@@ -1482,12 +1479,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    height: 8,
-                                    width: 50,
+                                    height: 8.h,
+                                    width: 50.w,
                                     color: Colors.black,
                                   ),
                                   ///////////////////
-                                  const SizedBox(height: 15),
+                                  SizedBox(height: 15.h),
                                   ///////////////////
                                   Text(
                                     orderListDetailModel.productDetails?.name ??
@@ -1498,12 +1495,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         .copyWith(
                                           color: const Color(0xff505050),
                                           letterSpacing: 0.18,
-                                          fontSize: 12,
+                                          fontSize: 12.sp,
                                           height: 1.3,
                                         ),
                                   ),
                                   ///////////////////
-                                  const SizedBox(height: 5),
+                                  SizedBox(height: 5.h),
                                   ///////////////////
                                   (orderListDetailModel.variation.isNullOrEmpty)
                                       ? const SizedBox.shrink()
@@ -1541,7 +1538,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                         0xff8D8D8D,
                                                       ),
                                                       letterSpacing: 0.18,
-                                                      fontSize: 10,
+                                                      fontSize: 10.sp,
                                                       height: 1.3,
                                                     ),
                                                 children: [
@@ -1590,7 +1587,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             0xff505050,
                                                           ),
                                                           letterSpacing: 0.18,
-                                                          fontSize: 10,
+                                                          fontSize: 10.sp,
                                                           height: 1.3,
                                                         ),
                                                   ),
@@ -1632,7 +1629,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           0xff8D8D8D,
                                                         ),
                                                         letterSpacing: 0.18,
-                                                        fontSize: 10,
+                                                        fontSize: 10.sp,
                                                         height: 1.3,
                                                       ),
                                                   children: [
@@ -1682,7 +1679,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                               0xff505050,
                                                             ),
                                                             letterSpacing: 0.18,
-                                                            fontSize: 10,
+                                                            fontSize: 10.sp,
                                                             height: 1.3,
                                                           ),
                                                     ),
@@ -1693,7 +1690,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           ],
                                         ),
                                   ///////////////////
-                                  const SizedBox(height: 5),
+                                  SizedBox(height: 5.h),
                                   ///////////////////
                                   Row(
                                     children: [
@@ -1708,7 +1705,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               .copyWith(
                                                 color: const Color(0xff8D8D8D),
                                                 letterSpacing: 0.18,
-                                                fontSize: 10,
+                                                fontSize: 10.sp,
                                                 height: 1.3,
                                               ),
                                           children: [
@@ -1729,7 +1726,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       0xff505050,
                                                     ),
                                                     letterSpacing: 0.18,
-                                                    fontSize: 10,
+                                                    fontSize: 10.sp,
                                                     height: 1.3,
                                                   ),
                                             ),
@@ -1737,7 +1734,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         ),
                                       ),
                                       ///////////////////
-                                      const SizedBox(width: 12),
+                                      SizedBox(width: 12.w),
                                       ///////////////////
                                       Flexible(
                                         child: RichText(
@@ -1753,7 +1750,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     0xff8D8D8D,
                                                   ),
                                                   letterSpacing: 0.18,
-                                                  fontSize: 10,
+                                                  fontSize: 10.sp,
                                                   height: 1.3,
                                                 ),
                                             children: [
@@ -1774,7 +1771,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                         0xff505050,
                                                       ),
                                                       letterSpacing: 0.18,
-                                                      fontSize: 10,
+                                                      fontSize: 10.sp,
                                                       height: 1.3,
                                                     ),
                                               ),
@@ -1785,7 +1782,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     ],
                                   ),
                                   ///////////////////
-                                  const SizedBox(height: 5),
+                                  SizedBox(height: 5.h),
                                   ///////////////////
                                   BlocBuilder<OrderBloc, OrderState>(
                                     buildWhen: (p, c) =>
@@ -1824,7 +1821,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             0xff8D8D8D,
                                                           ),
                                                           letterSpacing: 0.18,
-                                                          fontSize: 10,
+                                                          fontSize: 10.sp,
                                                           height: 1.3,
                                                         ),
                                                     children: [
@@ -1847,7 +1844,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                   ),
                                                               letterSpacing:
                                                                   0.18,
-                                                              fontSize: 10,
+                                                              fontSize: 10.sp,
                                                               height: 1.3,
                                                             ),
                                                       ),
@@ -1860,7 +1857,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               ///
                                               ///
                                               ///
-                                              const SizedBox(width: 12),
+                                              SizedBox(width: 12.w),
                                               ///////////////////
                                               SvgPicture.asset(
                                                 (OrderStatusClass.statusOrderIsCanceled(
@@ -1899,13 +1896,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           .pendeingBlackCheck
                                                     : AppAssets
                                                           .orderPreparingSvg,
-                                                width: 15,
+                                                width: 15.w,
                                               ),
                                             ],
                                           ),
                                   ),
 
-                                  const SizedBox(height: 5),
+                                  SizedBox(height: 5.h),
                                   ///////////////////
                                   /*  Row(
                               children: [
@@ -1915,7 +1912,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       context.textTheme.bodyMedium?.mr.copyWith(
                                     color: const Color(0xffFFB16F),
                                     letterSpacing: 0.18,
-                                    fontSize: 10,
+                                    fontSize: 10.sp,
                                     height: 1.3,
                                   ),
                                 ),
@@ -1925,12 +1922,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 ///
                                 ///
                                 SizedBox(
-                                  width: 12,
+                                  width: 12.w,
                                 ),
                                 ///////////////////
                                 SvgPicture.asset(
                                   AppAssets.returnThisProductSvg,
-                                  width: 15,
+                                  width: 15.w,
                                 ),
                               ],
                             ),*/
@@ -1942,7 +1939,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       context.textTheme.bodyMedium?.mr.copyWith(
                                     color: const Color(0xff505050),
                                     letterSpacing: 0.18,
-                                    fontSize: 10,
+                                    fontSize: 10.sp,
                                     height: 1.3,
                                   ),
                                 ),
@@ -1952,12 +1949,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 ///
                                 ///
                                 SizedBox(
-                                  width: 12,
+                                  width: 12.w,
                                 ),
                                 ///////////////////
                                 SvgPicture.asset(
                                   AppAssets.orderCanselSvg,
-                                  width: 15,
+                                  width: 15.w,
                                 ),
                               ],
                             ),*/
@@ -1972,7 +1969,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           .copyWith(
                                             color: const Color(0xffC4C2C2),
                                             letterSpacing: 0.18,
-                                            fontSize: 12,
+                                            fontSize: 12.sp,
                                             height: 1.3,
                                           ),
                                       children: [
@@ -1993,7 +1990,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                         0xffC4C2C2,
                                                       ),
                                                       letterSpacing: 0.18,
-                                                      fontSize: 12,
+                                                      fontSize: 12.sp,
                                                       height: 1.3,
                                                       decoration: TextDecoration
                                                           .lineThrough,
@@ -2010,7 +2007,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               .copyWith(
                                                 color: const Color(0xff1D1D1D),
                                                 letterSpacing: 0.18,
-                                                fontSize: 12,
+                                                fontSize: 12.sp,
                                                 height: 1.3,
                                               ),
                                         ),
@@ -2025,7 +2022,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               .copyWith(
                                                 color: const Color(0xff1D1D1D),
                                                 letterSpacing: 0.18,
-                                                fontSize: 12,
+                                                fontSize: 12.sp,
                                                 height: 1.3,
                                               ),
                                         ),
@@ -2045,7 +2042,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                         0xff388CFF,
                                                       ),
                                                       letterSpacing: 0.18,
-                                                      fontSize: 10,
+                                                      fontSize: 10.sp,
                                                       height: 1.3,
                                                     ),
                                               ),
@@ -2057,8 +2054,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             ),
                             ///////////////////
                             Container(
-                              width: 40,
-                              height: 25,
+                              width: 40.w,
+                              height: 25.h,
                               child: BlocBuilder<OrderBloc, OrderState>(
                                 buildWhen: (previous, current) =>
                                     previous.getCustomerAddressStatus !=
@@ -2084,12 +2081,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       indexTap.value = index;
                                     },
                                     child: Container(
-                                      width: 40,
-                                      height: 25,
+                                      width: 40.w,
+                                      height: 25.h,
                                       child: SvgPicture.asset(
                                         AppAssets.orderMenuSvg,
-                                        width: 20,
-                                        height: 20,
+                                        width: 20.w,
+                                        height: 20.h,
                                       ),
                                     ),
                                   );
@@ -2103,7 +2100,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               orderDetail.returnRequestProductId == null ||
                       order?.returnRequestId == null
                   ? const SizedBox.shrink()
@@ -2114,10 +2111,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   ? TrydosLoader(size: 18)
                   : Container(
                       width: 1.sw,
-                      padding: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                        top: 5,
+                      padding: EdgeInsets.only(
+                        left: 10.w,
+                        right: 10.w,
+                        top: 5.h,
                       ),
                       height:
                           (returnRequestsData!.status?.value?.contains(
@@ -2134,9 +2131,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   false)
                           ? 30
                           : (53 + 100),
-                      decoration: const BoxDecoration(
-                        color: Color(0xffFFFCF0),
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffFFFCF0),
+                        borderRadius: BorderRadius.all(Radius.circular(10.r)),
                       ),
                       child:
                           (returnRequestsData!.status?.value?.contains(
@@ -2277,7 +2274,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               ],
                             ),
                     ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               (!((orderDetail.alreadyReturn ?? false) &&
                       (returnRequestsData?.status?.value != "cancelled") &&
                       (order?.orderHasReturnRequest ?? false) &&
@@ -2312,7 +2309,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 decoration: TextDecoration.underline,
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 height: 1.5,
                               ),
                             ),
@@ -2322,7 +2319,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 decoration: TextDecoration.underline,
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 height: 1.5,
                               ),
                             ),
@@ -2348,19 +2345,19 @@ class _OrderDetails2 extends State<OrderDetails2> {
     bool isWaiting,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 4),
+      margin: EdgeInsets.only(bottom: 4.h),
       width: 1.sw,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
             width: 1.sw,
-            height: 16,
+            height: 16.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SvgPicture.asset(svg),
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 Text(
                   tilte,
                   style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -2368,7 +2365,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ? const Color(0xffC4C2C2)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.3,
                   ),
                 ),
@@ -2380,11 +2377,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ? const Color(0xffC4C2C2)
                         : const Color(0xffC4C2C2),
                     letterSpacing: 0.18,
-                    fontSize: 10,
+                    fontSize: 10.sp,
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 SvgPicture.asset(AppAssets.orderClockSvg),
               ],
             ),
@@ -2393,11 +2390,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
               ? const SizedBox.shrink()
               : Container(
                   width: 1.sw,
-                  height: 15,
+                  height: 15.h,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const SizedBox(width: 20),
+                      SizedBox(width: 20.w),
                       Text(
                         isWaiting ? "${LocaleKeys.waiting.tr()}" : "",
                         style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -2405,7 +2402,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               ? const Color(0xffC4C2C2)
                               : const Color(0xff388CFF),
                           letterSpacing: 0.18,
-                          fontSize: 10,
+                          fontSize: 10.sp,
                           height: 1.5,
                         ),
                       ),
@@ -2416,7 +2413,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               ? const Color(0xffC4C2C2)
                               : const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 10,
+                          fontSize: 10.sp,
                           height: 1.5,
                         ),
                       ),
@@ -2428,11 +2425,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               ? const Color(0xffC4C2C2)
                               : const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 10,
+                          fontSize: 10.sp,
                           height: 1.5,
                         ),
                       ),
-                      const SizedBox(width: 5),
+                      SizedBox(width: 5.w),
                       SvgPicture.asset(
                         AppAssets.orderClockSvg,
                         // ignore: deprecated_member_use
@@ -2441,7 +2438,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     ],
                   ),
                 ),
-          const SizedBox(height: 5),
+          SizedBox(height: 5.h),
         ],
       ),
     );
@@ -2459,18 +2456,18 @@ class _OrderDetails2 extends State<OrderDetails2> {
   ) {
     return Container(
       width: 1.sw,
-      height: 45,
+      height: 45.h,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
             width: 1.sw,
-            height: 16,
+            height: 16.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SvgPicture.asset(svg),
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 Text(
                   tilte,
                   style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -2478,7 +2475,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ? const Color(0xffC4C2C2)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.3,
                   ),
                 ),
@@ -2490,22 +2487,22 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ? const Color(0xffC4C2C2)
                         : const Color(0xffC4C2C2),
                     letterSpacing: 0.18,
-                    fontSize: 10,
+                    fontSize: 10.sp,
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 SvgPicture.asset(AppAssets.orderClockSvg),
               ],
             ),
           ),
           Container(
             width: 1.sw,
-            height: 14,
+            height: 14.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const SizedBox(width: 20),
+                SizedBox(width: 20.w),
                 Text(
                   " $body",
                   style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -2513,7 +2510,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ? const Color(0xffC4C2C2)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 10,
+                    fontSize: 10.sp,
                     height: 1.5,
                   ),
                 ),
@@ -2524,7 +2521,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ? const Color(0xffC4C2C2)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 10,
+                    fontSize: 10.sp,
                     height: 1.5,
                   ),
                 ),
@@ -2536,11 +2533,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ? const Color(0xffC4C2C2)
                         : const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 10,
+                    fontSize: 10.sp,
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 SvgPicture.asset(
                   AppAssets.orderClockSvg,
                   // ignore: deprecated_member_use
@@ -2549,7 +2546,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               ],
             ),
           ),
-          const SizedBox(height: 5),
+          SizedBox(height: 5.h),
         ],
       ),
     );
@@ -2575,24 +2572,24 @@ class _OrderDetails2 extends State<OrderDetails2> {
           }
         }
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
           child: Container(
             width: double.infinity,
             decoration: BoxDecoration(
               color: const Color(0xffF4F4F4),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(15.r),
               border: Border.all(color: const Color(0xffC4C2C2)),
             ),
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(10.w),
             child: Row(
               children: [
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SvgPicture.asset(AppAssets.bagsSvg, width: 20),
+                    SvgPicture.asset(AppAssets.bagsSvg, width: 20.w),
                     ///////////////////
-                    const SizedBox(height: 3),
+                    SizedBox(height: 3.h),
                     ///////////////////
                     Text(
                       LocaleKeys.order_details.tr(),
@@ -2600,12 +2597,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff8D8D8D),
                         letterSpacing: 0.18,
-                        fontSize: 12,
+                        fontSize: 12.sp,
                         height: 1.3,
                       ),
                     ),
                     ///////////////////
-                    const SizedBox(height: 3),
+                    SizedBox(height: 3.h),
                     ///////////////////
                     RichText(
                       overflow: TextOverflow.ellipsis,
@@ -2613,7 +2610,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         style: context.textTheme.bodyMedium?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
                           letterSpacing: 0.18,
-                          fontSize: 14,
+                          fontSize: 14.sp,
                           height: 1.3,
                         ),
                         children: [
@@ -2622,7 +2619,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             style: context.textTheme.bodyMedium?.bq.copyWith(
                               color: const Color(0xff1D1D1D),
                               letterSpacing: 0.18,
-                              fontSize: 14,
+                              fontSize: 14.sp,
                               height: 1.3,
                             ),
                           ),
@@ -2639,7 +2636,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         orderReturnDetail?.status?.value != "out_for_return"
                     ? const SizedBox.shrink()
                     : Container(
-                        height: 30,
+                        height: 30.h,
                         child: BlocListener<ChatBloc, ChatState>(
                           listenWhen: (previous, current) =>
                               previous.getOrderRecipientIdStatus !=
@@ -2707,16 +2704,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               if (state.getOrderRecipientIdStatus ==
                                   GetOrderRecipientIdStatus.loading) {
                                 return Container(
-                                  width: 30,
-                                  height: 30,
+                                  width: 30.w,
+                                  height: 30.h,
                                   child: TrydosLoader(size: 16),
                                 );
                               }
                               return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 2,
-                                ),
-                                decoration: const BoxDecoration(
+                                padding: EdgeInsets.symmetric(horizontal: 2.w),
+                                decoration: BoxDecoration(
                                   color: const Color.fromARGB(
                                     255,
                                     82,
@@ -2724,12 +2719,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     236,
                                   ),
                                   borderRadius: BorderRadius.all(
-                                    Radius.circular(12),
+                                    Radius.circular(12.r),
                                   ),
                                 ),
                                 alignment: Alignment.center,
 
-                                height: 30,
+                                height: 30.h,
                                 child: InkWell(
                                   onTap: () {
                                     GetIt.I<ChatBloc>().add(
@@ -2757,16 +2752,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     children: [
                                       SvgPicture.asset(
                                         AppAssets.chatSvg,
-                                        width: 10,
+                                        width: 10.w,
                                       ),
-                                      const SizedBox(width: 1),
+                                      SizedBox(width: 1.w),
                                       Text(
                                         LocaleKeys.chat_with_delivery_person
                                             .tr(),
                                         style: context.textTheme.bodyMedium?.rq
                                             .copyWith(
                                               color: const Color(0xffFFFFFF),
-                                              fontSize: 8,
+                                              fontSize: 8.sp,
                                               height: 1.3,
                                               letterSpacing: 0.18,
                                             ),
@@ -2835,13 +2830,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         children: [
                           SvgPicture.asset(
                             AppAssets.modifyOrderSvg,
-                            width: 50,
+                            width: 50.w,
                             color: Colors.white,
                           ),
                           SvgPicture.asset(
                             AppAssets.bagsOrderSvg,
                             color: Colors.white,
-                            width: 25,
+                            width: 25.w,
                           ),
                         ],
                       ),
@@ -2853,7 +2848,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         style: context.textTheme.bodyMedium?.mr.copyWith(
                           color: const Color(0xffD3D3D3),
                           letterSpacing: 0.18,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           height: 1.3,
                         ),
                       ),
@@ -2861,50 +2856,50 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 10.h,
                       ),
                       Container(
-                        margin: EdgeInsets.symmetric(horizontal: 24),
-                        height: 138,
+                        margin: EdgeInsets.symmetric(horizontal: 24.w),
+                        height: 138.h,
                         width: 1.sw,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15.r),
                             border: Border.all(color: Color(0xffD3D3D3))),
                         child: Column(
                           children: [
                             SizedBox(
-                              height: 20,
+                              height: 20.h,
                             ),
                             Container(
-                              width: 70,
-                              height: 70,
+                              width: 70.w,
+                              height: 70.h,
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(40))),
+                                      BorderRadius.all(Radius.circular(40.r))),
                               child: ClipRRect(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
+                                    BorderRadius.all(Radius.circular(40.r)),
                                 child: MyCachedNetworkImage(
                                     imageUrl: widget.order
                                             .details?[indexTap.value].image ??
                                         "",
-                                    width: 70,
+                                    width: 70.w,
                                     imageFit: BoxFit.contain,
-                                    height: 70),
+                                    height: 70.h),
                               ),
                             ),
                             SizedBox(
-                              height: 12,
+                              height: 12.h,
                             ),
                             Container(
                                 alignment: Alignment.center,
-                                width: 150,
-                                height: 20,
+                                width: 150.w,
+                                height: 20.h,
                                 child: Text(
                                   "xxl",
                                   style:
                                       context.textTheme.bodyMedium?.mr.copyWith(
                                     color: Colors.white,
                                     letterSpacing: 0.18,
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     height: 1.3,
                                   ),
                                 ))
@@ -2919,7 +2914,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         style: context.textTheme.bodyMedium?.mr.copyWith(
                           color: Colors.white,
                           letterSpacing: 0.18,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           height: 1.3,
                         ),
                       ),
@@ -2930,11 +2925,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         valueListenable: sizeIndexTap,
                         builder: (context, _sizeIndexTap, _) {
                           return Container(
-                            margin: EdgeInsets.symmetric(horizontal: 24),
-                            height: 138,
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            height: 138.h,
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(15.r),
                               border: Border.all(color: Color(0xffD3D3D3)),
                             ),
                             child: CarouselSlider.builder(
@@ -2967,18 +2962,18 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 return AnimatedContainer(
                                   duration: Duration(milliseconds: 250),
                                   curve: Curves.ease,
-                                  width: 70,
-                                  height: 70,
+                                  width: 70.w,
+                                  height: 70.h,
                                   margin: EdgeInsets.symmetric(
                                     vertical: 10 - distance * 2,
                                     horizontal:
-                                        4, // تقليل المسافة الأفقية قليلاً
+                                        4.w, // تقليل المسافة الأفقية قليلاً
                                   ),
                                   child: Transform.scale(
                                     scale: !isCenter ? 1.0 : scale,
                                     child: Container(
-                                      width: 70,
-                                      height: 70,
+                                      width: 70.w,
+                                      height: 70.h,
                                       decoration: BoxDecoration(
                                         border: isCenter
                                             ? Border.all(
@@ -2993,7 +2988,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       alignment: Alignment.center,
                                       padding: EdgeInsets.symmetric(
                                           horizontal:
-                                              8), // مساحة داخلية حول النص
+                                              8.w), // مساحة داخلية حول النص
                                       child: FittedBox(
                                         fit: BoxFit.scaleDown,
                                         child: Text(
@@ -3014,7 +3009,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 );
                               },
                               options: CarouselOptions(
-                                height: 140,
+                                height: 140.h,
                                 initialPage: _sizeIndexTap,
                                 viewportFraction: 0.14, // لعرض 7 عناصر تقريبًا
                                 enableInfiniteScroll: false,
@@ -3035,7 +3030,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           builder: (context, _agreeToPolicies, _) {
                             return Container(
                                 alignment: Alignment.center,
-                                height: 40,
+                                height: 40.h,
                                 width: 1.sw,
                                 child: InkWell(
                                   onTap: () =>
@@ -3049,7 +3044,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               ? Color(0xff388CFF)
                                               : Color(0xff8E8E8E)),
                                       SizedBox(
-                                        width: 5,
+                                        width: 5.w,
                                       ),
                                       Text(
                                         "${LocaleKeys.i_read_and_agree_to_the.tr()} ",
@@ -3057,7 +3052,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             .copyWith(
                                           color: Colors.white,
                                           letterSpacing: 0.18,
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                           height: 1.3,
                                         ),
                                       ),
@@ -3069,7 +3064,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           decoration: TextDecoration.underline,
                                           color: Colors.white,
                                           letterSpacing: 0.18,
-                                          fontSize: 16,
+                                          fontSize: 16.sp,
                                           height: 1.3,
                                         ),
                                       ),
@@ -3081,7 +3076,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 30.h,
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
                         child: Text(
                           '${LocaleKeys.we_will_ignore_size.tr()} "xxl" ${LocaleKeys.and_send_you_size.tr()} "xl"',
                           textAlign: TextAlign.center,
@@ -3090,7 +3085,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.mr.copyWith(
                             color: Colors.white,
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -3115,10 +3110,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             valueListenable: agreeToPolicies,
                             builder: (context, _agreeToPolicies, _) {
                               return Container(
-                                margin: EdgeInsets.symmetric(horizontal: 24),
+                                margin: EdgeInsets.symmetric(horizontal: 24.w),
                                 alignment: Alignment.center,
                                 width: 1.sw,
-                                height: 50,
+                                height: 50.h,
                                 decoration: BoxDecoration(
                                     color: agreeToPolicies.value == true
                                         ? Colors.white
@@ -3128,7 +3123,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         : Border.all(
                                             color: const Color(0xff402CDD),
                                           ),
-                                    borderRadius: BorderRadius.circular(15)),
+                                    borderRadius: BorderRadius.circular(15.r)),
                                 child: Text(
                                   LocaleKeys.yes_agree.tr(),
                                   textAlign: TextAlign.center,
@@ -3138,7 +3133,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         ? const Color(0xff402CDD)
                                         : Colors.white,
                                     letterSpacing: 0.18,
-                                    fontSize: 16,
+                                    fontSize: 16.sp,
                                     height: 1.3,
                                   ),
                                 ),
@@ -3149,8 +3144,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 20.h,
                       ),
                       Container(
-                        width: 200,
-                        height: 40,
+                        width: 200.w,
+                        height: 40.h,
                         child: InkWell(
                           onTap: () {
                             agreeToPolicies.value = false;
@@ -3167,7 +3162,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             style: context.textTheme.bodyMedium?.rr.copyWith(
                               color: Colors.white,
                               letterSpacing: 0.18,
-                              fontSize: 16,
+                              fontSize: 16.sp,
                               height: 1.3,
                             ),
                           ),
@@ -3240,7 +3235,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ),
                     SizedBox(height: 20.h),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
                       child: Text(
                         "${LocaleKeys.repeated_cancellations_affect_rating.tr()} \n ",
                         textAlign: TextAlign.start,
@@ -3284,7 +3279,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       ? const Color(0xff388CFF)
                                       : const Color(0xff8E8E8E),
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                                 Text(
                                   "${LocaleKeys.i_read_and_agree_to_the.tr()} ",
                                   style: context.textTheme.bodyMedium?.rq
@@ -3425,8 +3420,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         baseColor: Colors.grey[500]!,
                                         highlightColor: Colors.grey[300]!,
                                         child: Container(
-                                          margin: const EdgeInsets.symmetric(
-                                            horizontal: 24,
+                                          margin: EdgeInsets.symmetric(
+                                            horizontal: 24.w,
                                           ),
                                           alignment: Alignment.center,
                                           width: 1.sw,
@@ -3454,8 +3449,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         ),
                                       )
                                     : Container(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 24,
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 24.w,
                                         ),
                                         alignment: Alignment.center,
                                         width: 1.sw,
@@ -3509,7 +3504,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               current.cancelOrderItemStatus,
                       builder: (context, state) {
                         return Container(
-                          width: 200,
+                          width: 200.w,
                           height: 40.h,
                           child: InkWell(
                             onTap: () {
@@ -3632,7 +3627,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ),
                     SizedBox(height: 20.h),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
                       child: Text(
                         "${LocaleKeys.repeated_cancellations_affect_rating.tr()} \n ",
                         textAlign: TextAlign.start,
@@ -3646,33 +3641,33 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     ),
                     Container(
                       height: 130.h,
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 24,
+                      margin: EdgeInsets.symmetric(
+                        vertical: 10.h,
+                        horizontal: 24.w,
                       ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.white),
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(15),
-                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(15.r)),
                       ),
                       child: ListView.builder(
                         itemCount: images.length,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) => Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          margin: EdgeInsets.symmetric(horizontal: 5.w),
                           height: 130.h,
-                          width: 100,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                          width: 100.w,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
+                            ),
                           ),
                           child: ClipRRect(
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(15),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
                             ),
                             child: MyCachedNetworkImage(
                               imageUrl: images[index],
-                              width: 100,
+                              width: 100.w,
                               imageFit: BoxFit.contain,
                               height: 130.h,
                             ),
@@ -3711,7 +3706,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       ? const Color(0xff388CFF)
                                       : const Color(0xff8E8E8E),
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                                 Text(
                                   "${LocaleKeys.i_read_and_agree_to_the.tr()} ",
                                   style: context.textTheme.bodyMedium?.rq
@@ -3784,8 +3779,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       baseColor: Colors.grey[500]!,
                                       highlightColor: Colors.grey[300]!,
                                       child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 24,
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 24.w,
                                         ),
                                         alignment: Alignment.center,
                                         width: 1.sw,
@@ -3830,10 +3825,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         builder:
                                             (context, _agreeToPolicies, _) {
                                               return Container(
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 24,
-                                                    ),
+                                                margin: EdgeInsets.symmetric(
+                                                  horizontal: 24.w,
+                                                ),
                                                 alignment: Alignment.center,
                                                 width: 1.sw,
                                                 height: 50.h,
@@ -3857,7 +3851,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           ),
                                                         ),
                                                   borderRadius:
-                                                      BorderRadius.circular(15),
+                                                      BorderRadius.circular(
+                                                        15.r,
+                                                      ),
                                                 ),
                                                 child: Text(
                                                   LocaleKeys.i_agree_return
@@ -3885,7 +3881,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     ),
                     SizedBox(height: 20.h),
                     Container(
-                      width: 200,
+                      width: 200.w,
                       height: 40.h,
                       child: BlocBuilder<OrderBloc, OrderState>(
                         buildWhen: (previous, current) =>
@@ -3990,7 +3986,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: Colors.white,
                         letterSpacing: 0.18,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         height: 1.3,
                       ),
                     ),
@@ -4018,7 +4014,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ),
                     SizedBox(height: 20.h),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
                       child: Text(
                         "${LocaleKeys.repeated_cancellations_affect_rating.tr()} \n ",
                         textAlign: TextAlign.start,
@@ -4034,37 +4030,35 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ? const SizedBox.shrink()
                         : Container(
                             height: 130.h,
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 24,
+                            margin: EdgeInsets.symmetric(
+                              vertical: 10.h,
+                              horizontal: 24.w,
                             ),
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.white),
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(15),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.r),
                               ),
                             ),
                             child: ListView.builder(
                               itemCount: images.length,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) => Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                ),
+                                margin: EdgeInsets.symmetric(horizontal: 5.w),
                                 height: 130.h,
-                                width: 100,
-                                decoration: const BoxDecoration(
+                                width: 100.w,
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.all(
-                                    Radius.circular(15),
+                                    Radius.circular(15.r),
                                   ),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(15),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.r),
                                   ),
                                   child: MyCachedNetworkImage(
                                     imageUrl: images[index],
-                                    width: 100,
+                                    width: 100.w,
                                     imageFit: BoxFit.contain,
                                     height: 130.h,
                                   ),
@@ -4103,7 +4097,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       ? const Color(0xff388CFF)
                                       : const Color(0xff8E8E8E),
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                                 Text(
                                   "${LocaleKeys.i_read_and_agree_to_the.tr()} ",
                                   style: context.textTheme.bodyMedium?.rq
@@ -4176,8 +4170,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       baseColor: Colors.grey[500]!,
                                       highlightColor: Colors.grey[300]!,
                                       child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 24,
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 24.w,
                                         ),
                                         alignment: Alignment.center,
                                         width: 1.sw,
@@ -4222,10 +4216,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         builder:
                                             (context, _agreeToPolicies, _) {
                                               return Container(
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 24,
-                                                    ),
+                                                margin: EdgeInsets.symmetric(
+                                                  horizontal: 24.w,
+                                                ),
                                                 alignment: Alignment.center,
                                                 width: 1.sw,
                                                 height: 50.h,
@@ -4249,7 +4242,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           ),
                                                         ),
                                                   borderRadius:
-                                                      BorderRadius.circular(15),
+                                                      BorderRadius.circular(
+                                                        15.r,
+                                                      ),
                                                 ),
                                                 child: Text(
                                                   LocaleKeys
@@ -4278,7 +4273,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     ),
                     SizedBox(height: 20.h),
                     Container(
-                      width: 200,
+                      width: 200.w,
                       height: 40.h,
                       child: BlocBuilder<OrderBloc, OrderState>(
                         buildWhen: (previous, current) =>
@@ -4425,7 +4420,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ),
                     SizedBox(height: 20.h),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
                       child: Text(
                         "${LocaleKeys.repeated_cancellations_affect_rating.tr()} \n ",
                         textAlign: TextAlign.start,
@@ -4446,37 +4441,35 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ? const SizedBox.shrink()
                         : Container(
                             height: 130.h,
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 24,
+                            margin: EdgeInsets.symmetric(
+                              vertical: 10.h,
+                              horizontal: 24.w,
                             ),
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.white),
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(15),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.r),
                               ),
                             ),
                             child: ListView.builder(
                               itemCount: images.length,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) => Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                ),
+                                margin: EdgeInsets.symmetric(horizontal: 5.w),
                                 height: 130.h,
-                                width: 100,
-                                decoration: const BoxDecoration(
+                                width: 100.w,
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.all(
-                                    Radius.circular(15),
+                                    Radius.circular(15.r),
                                   ),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(15),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.r),
                                   ),
                                   child: MyCachedNetworkImage(
                                     imageUrl: images[index],
-                                    width: 100,
+                                    width: 100.w,
                                     imageFit: BoxFit.contain,
                                     height: 130.h,
                                   ),
@@ -4515,7 +4508,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       ? const Color(0xff388CFF)
                                       : const Color(0xff8E8E8E),
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                                 Text(
                                   "${LocaleKeys.i_read_and_agree_to_the.tr()} ",
                                   style: context.textTheme.bodyMedium?.rq
@@ -4625,8 +4618,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       baseColor: Colors.grey[500]!,
                                       highlightColor: Colors.grey[300]!,
                                       child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 24,
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 24.w,
                                         ),
                                         alignment: Alignment.center,
                                         width: 1.sw,
@@ -4824,10 +4817,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         builder:
                                             (context, _agreeToPolicies, _) {
                                               return Container(
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 24,
-                                                    ),
+                                                margin: EdgeInsets.symmetric(
+                                                  horizontal: 24.w,
+                                                ),
                                                 alignment: Alignment.center,
                                                 width: 1.sw,
                                                 height: 50.h,
@@ -4851,7 +4843,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           ),
                                                         ),
                                                   borderRadius:
-                                                      BorderRadius.circular(15),
+                                                      BorderRadius.circular(
+                                                        15.r,
+                                                      ),
                                                 ),
                                                 child: Text(
                                                   optionModifyPanel.value ==
@@ -4979,10 +4973,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             baseColor: Colors.grey[500]!,
                                             highlightColor: Colors.grey[300]!,
                                             child: Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 24,
-                                                  ),
+                                              margin: EdgeInsets.symmetric(
+                                                horizontal: 24.w,
+                                              ),
                                               alignment: Alignment.center,
                                               width: 1.sw,
                                               height: 50.h,
@@ -5006,7 +4999,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                         ),
                                                       ),
                                                 borderRadius:
-                                                    BorderRadius.circular(15),
+                                                    BorderRadius.circular(15.r),
                                               ),
                                             ),
                                           )
@@ -5088,10 +5081,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               }
                                             },
                                             child: Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 24,
-                                                  ),
+                                              margin: EdgeInsets.symmetric(
+                                                horizontal: 24.w,
+                                              ),
                                               alignment: Alignment.center,
                                               width: 1.sw,
                                               height: 50.h,
@@ -5108,7 +5100,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                   ),
                                                 ),
                                                 borderRadius:
-                                                    BorderRadius.circular(15),
+                                                    BorderRadius.circular(15.r),
                                               ),
                                               child: Text(
                                                 LocaleKeys
@@ -5135,7 +5127,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ),
                     SizedBox(height: 20.h),
                     Container(
-                      width: 200,
+                      width: 200.w,
                       height: 40.h,
                       child: BlocBuilder<OrderBloc, OrderState>(
                         buildWhen: (previous, current) =>
@@ -5221,13 +5213,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         children: [
                           SvgPicture.asset(
                             AppAssets.modifyOrderSvg,
-                            width: 50,
+                            width: 50.w,
                             color: Colors.white,
                           ),
                           SvgPicture.asset(
                             AppAssets.bagsOrderSvg,
                             color: Colors.white,
-                            width: 25,
+                            width: 25.w,
                           ),
                         ],
                       ),
@@ -5239,7 +5231,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         style: context.textTheme.bodyMedium?.mr.copyWith(
                           color: const Color(0xffD3D3D3),
                           letterSpacing: 0.18,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           height: 1.3,
                         ),
                       ),
@@ -5247,50 +5239,50 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 10.h,
                       ),
                       Container(
-                        margin: EdgeInsets.symmetric(horizontal: 24),
-                        height: 138,
+                        margin: EdgeInsets.symmetric(horizontal: 24.w),
+                        height: 138.h,
                         width: 1.sw,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15.r),
                             border: Border.all(color: Color(0xffD3D3D3))),
                         child: Column(
                           children: [
                             SizedBox(
-                              height: 20,
+                              height: 20.h,
                             ),
                             Container(
-                              width: 70,
-                              height: 70,
+                              width: 70.w,
+                              height: 70.h,
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(40))),
+                                      BorderRadius.all(Radius.circular(40.r))),
                               child: ClipRRect(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
+                                    BorderRadius.all(Radius.circular(40.r)),
                                 child: MyCachedNetworkImage(
                                     imageUrl: widget.order
                                             .details?[indexTap.value].image ??
                                         "",
-                                    width: 70,
+                                    width: 70.w,
                                     imageFit: BoxFit.contain,
-                                    height: 70),
+                                    height: 70.h),
                               ),
                             ),
                             SizedBox(
-                              height: 12,
+                              height: 12.h,
                             ),
                             Container(
                                 alignment: Alignment.center,
-                                width: 150,
-                                height: 20,
+                                width: 150.w,
+                                height: 20.h,
                                 child: Text(
                                   "Denim Blue",
                                   style:
                                       context.textTheme.bodyMedium?.mr.copyWith(
                                     color: Colors.white,
                                     letterSpacing: 0.18,
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     height: 1.3,
                                   ),
                                 ))
@@ -5305,7 +5297,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         style: context.textTheme.bodyMedium?.mr.copyWith(
                           color: Colors.white,
                           letterSpacing: 0.18,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           height: 1.3,
                         ),
                       ),
@@ -5313,55 +5305,55 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 30.h,
                       ),
                       Container(
-                          margin: EdgeInsets.symmetric(horizontal: 24),
-                          height: 138,
+                          margin: EdgeInsets.symmetric(horizontal: 24.w),
+                          height: 138.h,
                           width: 1.sw,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(15.r),
                               border: Border.all(color: Color(0xffD3D3D3))),
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) => Container(
-                              width: 78,
-                              height: 138,
+                              width: 78.w,
+                              height: 138.h,
                               child: InkWell(
                                 onTap: () => colorIndexTap.value = index,
                                 child: Column(
                                   children: [
                                     SizedBox(
-                                      height: 20,
+                                      height: 20.h,
                                     ),
                                     Container(
-                                      width: 70,
-                                      height: 70,
+                                      width: 70.w,
+                                      height: 70.h,
                                       decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius: BorderRadius.all(
-                                              Radius.circular(40))),
+                                              Radius.circular(40.r))),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(40)),
+                                            Radius.circular(40.r)),
                                         child: MyCachedNetworkImage(
                                             imageUrl: widget
                                                     .order
                                                     .details?[indexTap.value]
                                                     .image ??
                                                 "",
-                                            width: 70,
+                                            width: 70.w,
                                             imageFit: BoxFit.contain,
-                                            height: 70),
+                                            height: 70.h),
                                       ),
                                     ),
                                     SizedBox(
-                                      height: 12,
+                                      height: 12.h,
                                     ),
                                     ValueListenableBuilder<int>(
                                         valueListenable: colorIndexTap,
                                         builder: (context, _colorIndexTap, _) {
                                           return Container(
                                               alignment: Alignment.center,
-                                              width: 150,
-                                              height: 20,
+                                              width: 150.w,
+                                              height: 20.h,
                                               child: Text(
                                                 "Denim Blue",
                                                 style: index != _colorIndexTap
@@ -5371,7 +5363,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                         color: const Color(
                                                             0xffD3D3D3),
                                                         letterSpacing: 0.18,
-                                                        fontSize: 14,
+                                                        fontSize: 14.sp,
                                                         height: 1.3,
                                                       )
                                                     : context.textTheme
@@ -5379,7 +5371,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                         .copyWith(
                                                         color: Colors.white,
                                                         letterSpacing: 0.18,
-                                                        fontSize: 14,
+                                                        fontSize: 14.sp,
                                                         height: 1.3,
                                                       ),
                                               ));
@@ -5398,7 +5390,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           builder: (context, _agreeToPolicies, _) {
                             return Container(
                                 alignment: Alignment.center,
-                                height: 40,
+                                height: 40.h,
                                 width: 1.sw,
                                 child: InkWell(
                                   onTap: () =>
@@ -5412,7 +5404,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               ? Color(0xff388CFF)
                                               : Color(0xff8E8E8E)),
                                       SizedBox(
-                                        width: 5,
+                                        width: 5.w,
                                       ),
                                       Text(
                                         "${LocaleKeys.i_read_and_agree_to_the.tr()} ",
@@ -5420,7 +5412,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             .copyWith(
                                           color: Colors.white,
                                           letterSpacing: 0.18,
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                           height: 1.3,
                                         ),
                                       ),
@@ -5432,7 +5424,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           decoration: TextDecoration.underline,
                                           color: Colors.white,
                                           letterSpacing: 0.18,
-                                          fontSize: 16,
+                                          fontSize: 16.sp,
                                           height: 1.3,
                                         ),
                                       ),
@@ -5444,7 +5436,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 30.h,
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
                         child: Text(
                           '${LocaleKeys.we_will_ignore_first_color.tr()} "Blue" ${LocaleKeys.and_send_you_color.tr()} "Blue"',
                           textAlign: TextAlign.center,
@@ -5453,7 +5445,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.mr.copyWith(
                             color: Colors.white,
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -5478,10 +5470,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             valueListenable: agreeToPolicies,
                             builder: (context, _agreeToPolicies, _) {
                               return Container(
-                                margin: EdgeInsets.symmetric(horizontal: 24),
+                                margin: EdgeInsets.symmetric(horizontal: 24.w),
                                 alignment: Alignment.center,
                                 width: 1.sw,
-                                height: 50,
+                                height: 50.h,
                                 decoration: BoxDecoration(
                                     color: agreeToPolicies.value == true
                                         ? Colors.white
@@ -5491,7 +5483,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         : Border.all(
                                             color: const Color(0xff402CDD),
                                           ),
-                                    borderRadius: BorderRadius.circular(15)),
+                                    borderRadius: BorderRadius.circular(15.r)),
                                 child: Text(
                                   LocaleKeys.yes_agree.tr(),
                                   textAlign: TextAlign.center,
@@ -5501,7 +5493,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         ? const Color(0xff402CDD)
                                         : Colors.white,
                                     letterSpacing: 0.18,
-                                    fontSize: 16,
+                                    fontSize: 16.sp,
                                     height: 1.3,
                                   ),
                                 ),
@@ -5512,8 +5504,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         height: 20.h,
                       ),
                       Container(
-                        width: 200,
-                        height: 40,
+                        width: 200.w,
+                        height: 40.h,
                         child: InkWell(
                           onTap: () {
                             agreeToPolicies.value = false;
@@ -5530,7 +5522,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             style: context.textTheme.bodyMedium?.rr.copyWith(
                               color: Colors.white,
                               letterSpacing: 0.18,
-                              fontSize: 16,
+                              fontSize: 16.sp,
                               height: 1.3,
                             ),
                           ),
@@ -5594,7 +5586,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         SizedBox(height: 20.h),
                         SvgPicture.asset(
                           AppAssets.orderChangeAddressSvg,
-                          width: 50,
+                          width: 50.w,
                           // ignore: deprecated_member_use
                           color: Colors.white,
                         ),
@@ -5610,7 +5602,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ),
                         SizedBox(height: 10.h),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          padding: EdgeInsets.symmetric(horizontal: 24.w),
                           child: addressInfoWithContactInfoCart(
                             isChange: true,
                             customerAddressesInfo: CustomerAddressesInfo(
@@ -5678,7 +5670,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         SizedBox(height: 10.h),
                         SizedBox(height: 10.h),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          padding: EdgeInsets.symmetric(horizontal: 24.w),
                           child: addressInfoWithContactInfoCart(
                             isChange: true,
                             customerAddressesInfo:
@@ -5745,7 +5737,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           ? const Color(0xff388CFF)
                                           : const Color(0xff8E8E8E),
                                     ),
-                                    const SizedBox(width: 5),
+                                    SizedBox(width: 5.w),
                                     Text(
                                       "${LocaleKeys.i_read_and_agree_to_the.tr()} ",
                                       style: context.textTheme.bodyMedium?.rq
@@ -5815,8 +5807,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       baseColor: Colors.grey[500]!,
                                       highlightColor: Colors.grey[300]!,
                                       child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 24,
+                                        margin: EdgeInsets.symmetric(
+                                          horizontal: 24.w,
                                         ),
                                         alignment: Alignment.center,
                                         width: 1.sw,
@@ -5869,10 +5861,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         builder:
                                             (context, _agreeToPolicies, _) {
                                               return Container(
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 24,
-                                                    ),
+                                                margin: EdgeInsets.symmetric(
+                                                  horizontal: 24.w,
+                                                ),
                                                 alignment: Alignment.center,
                                                 width: 1.sw,
                                                 height: 50.h,
@@ -5892,7 +5883,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                           ),
                                                         ),
                                                   borderRadius:
-                                                      BorderRadius.circular(15),
+                                                      BorderRadius.circular(
+                                                        15.r,
+                                                      ),
                                                 ),
                                                 child: Text(
                                                   LocaleKeys.i_agree_change
@@ -5930,7 +5923,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               current.changeOrderAddressStatus,
                           builder: (context, state) {
                             return Container(
-                              width: 200,
+                              width: 200.w,
                               height: 40.h,
                               child: InkWell(
                                 onTap: () {
@@ -5985,18 +5978,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
       valueListenable: showPanel,
       builder: (context, isShowPanel, _) {
         return Positioned(
-          bottom: 0,
+          bottom: 0.h,
           child: ValueListenableBuilder<String?>(
             valueListenable: optionModifyPanel,
             builder: (context, _option, _) {
               return Container(
                 width: 1.sw,
                 height: isShowPanel
-                    ? ((_option == null)
-                          ? 524
-                          : (_option == "All_Order")
-                          ? 512
-                          : (1.sh - 70))
+                    ? ((_option == null) ? 524 : (1.sh - 70.h))
                     : 0,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
@@ -6034,7 +6023,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   },
                   onPanelOpened: () {},
                   minHeight: 0,
-                  maxHeight: _option == null ? 524 : (1.sh - 70),
+                  maxHeight: _option == null ? 524 : (1.sh - 70.h),
                   panelBuilder: (sc) => panelBuilderContent(_option, sc),
                 ),
               );
@@ -6148,23 +6137,23 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 children: [
                   SizedBox(height: 10.h),
                   Container(
-                    width: 40,
-                    height: 2,
+                    width: 40.w,
+                    height: 2.h,
                     decoration: BoxDecoration(
                       color: const Color(0xffC4C2C2),
                       border: Border.all(color: const Color(0xffC4C2C2)),
-                      borderRadius: const BorderRadius.all(Radius.circular(2)),
+                      borderRadius: BorderRadius.all(Radius.circular(2.r)),
                     ),
                   ),
                   SizedBox(height: 10.h),
                   Container(
                     width: 1.sw,
-                    height: 200.h,
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    height: 205.h,
+                    margin: EdgeInsets.symmetric(horizontal: 10.w),
                     decoration: BoxDecoration(
                       color: const Color(0xffF8F8F8),
                       border: Border.all(color: const Color(0xffF8F8F8)),
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      borderRadius: BorderRadius.all(Radius.circular(15.r)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -6175,12 +6164,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           height: 16.h,
                           child: Row(
                             children: [
-                              const SizedBox(width: 10),
+                              SizedBox(width: 10.w),
                               SvgPicture.asset(
                                 AppAssets.orderClockSvg,
                                 height: 15.h,
                               ),
-                              const SizedBox(width: 5),
+                              SizedBox(width: 5.w),
                               Text(
                                 HelperFunctions.orderFormatDate(
                                   DateTime.tryParse(order!.createdAt ?? '') ??
@@ -6199,7 +6188,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 AppAssets.orderBag1Svg,
                                 height: 15.h,
                               ),
-                              const SizedBox(width: 5),
+                              SizedBox(width: 5.w),
                               Text(
                                 order!.orderGroupId ?? "",
                                 style: context.textTheme.bodyMedium?.mq
@@ -6210,7 +6199,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       height: 1.3,
                                     ),
                               ),
-                              const SizedBox(width: 10),
+                              SizedBox(width: 10.w),
                             ],
                           ),
                         ),
@@ -6220,12 +6209,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           height: 16.h,
                           child: Row(
                             children: [
-                              const SizedBox(width: 10),
+                              SizedBox(width: 10.w),
                               SvgPicture.asset(
                                 AppAssets.preparingBagSvg,
                                 height: 15.h,
                               ),
-                              const SizedBox(width: 5),
+                              SizedBox(width: 5.w),
                               Text(
                                 order!.orderGroupStatus?.label ?? "",
                                 style: context.textTheme.bodyMedium?.rq
@@ -6236,7 +6225,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       height: 1.3,
                                     ),
                               ),
-                              const SizedBox(width: 5),
+                              SizedBox(width: 5.w),
                               SvgPicture.asset(
                                 order!.orderGroupStatus?.value == 'canceled'
                                     ? AppAssets.orderCanselSvg
@@ -6259,7 +6248,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 AppAssets.orderInvoice2Svg,
                                 height: 15.h,
                               ),
-                              const SizedBox(width: 5),
+                              SizedBox(width: 5.w),
                               Text(
                                 (order!.details?.length ?? "").toString(),
                                 style: context.textTheme.bodyMedium?.bq
@@ -6270,7 +6259,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       height: 1.3,
                                     ),
                               ),
-                              const SizedBox(width: 5),
+                              SizedBox(width: 5.w),
                               Text(
                                 LocaleKeys.item.tr(),
                                 style: context.textTheme.bodyMedium?.mq
@@ -6281,7 +6270,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       height: 1.3,
                                     ),
                               ),
-                              const SizedBox(width: 5),
+                              SizedBox(width: 5.w),
                               Text(
                                 HelperFunctions.formatNumber(
                                   numberToFormate:
@@ -6310,7 +6299,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       height: 1.3,
                                     ),
                               ),
-                              const SizedBox(width: 5),
+                              SizedBox(width: 5.w),
                               Text(
                                 homeBloc
                                     .state
@@ -6326,7 +6315,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       height: 1.3,
                                     ),
                               ),
-                              const SizedBox(width: 10),
+                              SizedBox(width: 10.w),
                             ],
                           ),
                         ),
@@ -6335,10 +6324,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           height: 125.h,
                           width: 1.sw,
                           padding: EdgeInsets.only(
-                            left: LanguageService.languageCode == "ar" ? 0 : 10,
+                            left: LanguageService.languageCode == "ar"
+                                ? 0
+                                : 10.w,
                             right: LanguageService.languageCode != "ar"
                                 ? 0
-                                : 10,
+                                : 10.w,
                           ),
                           child: ListView.builder(
                             itemCount: order!.details?.length,
@@ -6346,20 +6337,20 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             itemBuilder: (context, index) {
                               return Container(
                                 height: 125.h,
-                                width: 92,
-                                decoration: const BoxDecoration(
+                                width: 92.w,
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.all(
-                                    Radius.circular(15),
+                                    Radius.circular(15.r),
                                   ),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(15),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.r),
                                   ),
                                   child: MyCachedNetworkImage(
                                     imageUrl:
                                         order!.details?[index].image ?? "",
-                                    width: 92,
+                                    width: 92.w,
                                     imageFit: BoxFit.contain,
                                     height: 125.h,
                                   ),
@@ -6399,13 +6390,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     ),
                   ),
                   SizedBox(height: 10.h),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: Divider(color: Color(0xffC4C2C2)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: const Divider(color: Color(0xffC4C2C2)),
                   ),
                   SizedBox(height: 10.h),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    padding: EdgeInsets.symmetric(horizontal: 5.w),
                     child: addressWidgets(context, state, _indexTap, sc),
                   ),
                   const Spacer(),
@@ -6419,11 +6410,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           }
                         },
                         child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 24),
+                          margin: EdgeInsets.symmetric(horizontal: 24.w),
                           width: 1.sw,
                           height: 53.h,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(20.r),
                             color: _enableChangeAddress
                                 ? const Color(0xff402CDD)
                                 : const Color(0xffD3D3D3),
@@ -6458,14 +6449,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            height: 10,
+            height: 10.h,
           ),
           Stack(
             alignment: Alignment.center,
             children: [
               SvgPicture.asset(
                 AppAssets.modifyOrderSvg,
-                width: 23,
+                width: 23.w,
               ),
               SvgPicture.asset(
                 AppAssets.bagsOrderSvg,
@@ -6474,26 +6465,26 @@ class _OrderDetails2 extends State<OrderDetails2> {
             ],
           ),
           SizedBox(
-            height: 5,
+            height: 5.h,
           ),
           Text(
             LocaleKeys.modify_order.tr(),
             style: context.textTheme.bodyMedium?.mq.copyWith(
               color: const Color(0xff402CDD),
               letterSpacing: 0.18,
-              fontSize: 14,
+              fontSize: 14.sp,
               height: 1.3,
             ),
           ),
           SizedBox(
-            height: 10,
+            height: 10.h,
           ),
           Text(
             LocaleKeys.you_can_modify_order_within_specific_period.tr(),
             style: context.textTheme.bodyMedium?.rr.copyWith(
               color: const Color(0xff8D8D8D),
               letterSpacing: 0.18,
-              fontSize: 12,
+              fontSize: 12.sp,
               height: 1.3,
             ),
           ),
@@ -6502,15 +6493,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
             style: context.textTheme.bodyMedium?.rr.copyWith(
               color: const Color(0xff8D8D8D),
               letterSpacing: 0.18,
-              fontSize: 12,
+              fontSize: 12.sp,
               height: 1.3,
             ),
           ),
           SizedBox(
-            height: 10,
+            height: 10.h,
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 24),
+            margin: EdgeInsets.symmetric(horizontal: 24.w),
             width: 1.sw,
             height: 1.sh - 330.h,
             child: ListView.builder(
@@ -6518,7 +6509,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               controller: sc,
               itemBuilder: (context, index) {
                 if (index == (widget.order.details?.length ?? 0)) {
-                  return SizedBox(height: 20);
+                  return SizedBox(height: 20.h);
                 }
 
                 return productWidget(index);
@@ -6537,11 +6528,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     }
                   },
                   child: Container(
-                      margin: EdgeInsets.all(24),
+                      margin: EdgeInsets.all(24.w),
                       width: 1.sw,
-                      height: 53,
+                      height: 53.h,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(20.r),
                         color: _variantHasBeenChanged
                             ? const Color(0xff3066CC)
                             : const Color(0xffD3D3D3),
@@ -6552,7 +6543,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         style: context.textTheme.bodyMedium?.mr.copyWith(
                             color: const Color(0xffFFFFFF),
                             letterSpacing: 0.18,
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             height: 1.33),
                       )),
                 );
@@ -6563,53 +6554,53 @@ class _OrderDetails2 extends State<OrderDetails2> {
   /*Widget productWidget(int index) {
     return Container(
       width: 1.sw,
-      height: 187,
+      height: 187.h,
       color: Colors.white,
       child: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(bottom: 8),
+            margin: EdgeInsets.only(bottom: 8.h),
             height: 0.5,
             width: 1.sw,
             color: Color(0xffC4C2C2),
           ),
           Container(
-            height: 170,
+            height: 170.h,
             child: Row(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(15.r),
                   child: Container(
                     color: Colors.white,
                     child: MyCachedNetworkImage(
                       imageUrl: widget.order.details?[index].image ?? '',
                       imageFit: BoxFit.contain,
-                      width: 100,
-                      height: 150,
+                      width: 100.w,
+                      height: 150.h,
                     ),
                   ),
                 ),
                 ///////////////////
-                const SizedBox(
-                  width: 12,
+                SizedBox(
+                  width: 12.w,
                 ),
                 ///////////////////
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
+                    padding: EdgeInsets.symmetric(
+                      vertical: 10.h,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          height: 8,
-                          width: 50,
+                          height: 8.h,
+                          width: 50.w,
                           color: Colors.black,
                         ),
                         ///////////////////
-                        const SizedBox(
-                          height: 5,
+                        SizedBox(
+                          height: 5.h,
                         ),
                         ///////////////////
                         Text(
@@ -6620,7 +6611,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: const Color(0xff505050),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.3,
                           ),
                         ),
@@ -6629,8 +6620,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 widget.order.details?[index].variation?.color ==
                                     null
                             ? SizedBox.shrink()
-                            : const SizedBox(
-                                height: 5,
+                            : SizedBox(
+                                height: 5.h,
                               ),
                         ///////////////////
                         widget.order.details?[index].variation?.color == "" ||
@@ -6647,7 +6638,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           .copyWith(
                                         color: const Color(0xff8D8D8D),
                                         letterSpacing: 0.18,
-                                        fontSize: 10,
+                                        fontSize: 10.sp,
                                         height: 1.3,
                                       ),
                                       children: [
@@ -6668,7 +6659,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               .copyWith(
                                             color: const Color(0xff505050),
                                             letterSpacing: 0.18,
-                                            fontSize: 10,
+                                            fontSize: 10.sp,
                                             height: 1.3,
                                           ),
                                         ),
@@ -6680,8 +6671,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     onTap: () =>
                                         showShadowForChangeColor.value = true,
                                     child: Container(
-                                      width: 50,
-                                      height: 15,
+                                      width: 50.w,
+                                      height: 15.h,
                                       child: Text(
                                         LocaleKeys.change.tr(),
                                         overflow: TextOverflow.ellipsis,
@@ -6692,7 +6683,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           decoration: TextDecoration.underline,
                                           color: const Color(0xff388CFF),
                                           letterSpacing: 0.18,
-                                          fontSize: 10,
+                                          fontSize: 10.sp,
                                           height: 1.3,
                                         ),
                                       ),
@@ -6705,8 +6696,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 widget.order.details?[index].variation?.size ==
                                     null
                             ? SizedBox.shrink()
-                            : const SizedBox(
-                                height: 5,
+                            : SizedBox(
+                                height: 5.h,
                               ),
                         widget.order.details?[index].variation?.size == "" ||
                                 widget.order.details?[index].variation?.size ==
@@ -6722,7 +6713,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           .copyWith(
                                         color: const Color(0xff8D8D8D),
                                         letterSpacing: 0.18,
-                                        fontSize: 10,
+                                        fontSize: 10.sp,
                                         height: 1.3,
                                       ),
                                       children: [
@@ -6748,7 +6739,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               .copyWith(
                                             color: const Color(0xff505050),
                                             letterSpacing: 0.18,
-                                            fontSize: 10,
+                                            fontSize: 10.sp,
                                             height: 1.3,
                                           ),
                                         ),
@@ -6760,8 +6751,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     onTap: () =>
                                         showShadowForChangeSize.value = true,
                                     child: Container(
-                                      width: 50,
-                                      height: 15,
+                                      width: 50.w,
+                                      height: 15.h,
                                       child: Text(
                                         LocaleKeys.change.tr(),
                                         overflow: TextOverflow.ellipsis,
@@ -6772,7 +6763,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           decoration: TextDecoration.underline,
                                           color: const Color(0xff388CFF),
                                           letterSpacing: 0.18,
-                                          fontSize: 10,
+                                          fontSize: 10.sp,
                                           height: 1.3,
                                         ),
                                       ),
@@ -6782,8 +6773,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               ),
 
                         ///////////////////
-                        const SizedBox(
-                          height: 5,
+                        SizedBox(
+                          height: 5.h,
                         ),
                         ///////////////////
                         Row(
@@ -6797,7 +6788,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       context.textTheme.bodyMedium?.rq.copyWith(
                                     color: const Color(0xff8D8D8D),
                                     letterSpacing: 0.18,
-                                    fontSize: 10,
+                                    fontSize: 10.sp,
                                     height: 1.3,
                                   ),
                                   children: [
@@ -6814,7 +6805,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           .copyWith(
                                         color: const Color(0xff505050),
                                         letterSpacing: 0.18,
-                                        fontSize: 10,
+                                        fontSize: 10.sp,
                                         height: 1.3,
                                       ),
                                     ),
@@ -6824,18 +6815,18 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             ),
                             ///////////////////
                             SizedBox(
-                              width: 12,
+                              width: 12.w,
                             ),
                             ///////////////////
                             SvgPicture.asset(
                               AppAssets.orderPreparingSvg,
-                              width: 15,
+                              width: 15.w,
                             ),
                           ],
                         ),
                         ////////////////////
-                        const SizedBox(
-                          height: 5,
+                        SizedBox(
+                          height: 5.h,
                         ),
                         ////////////////////
                         RichText(
@@ -6845,7 +6836,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: const Color(0xffC4C2C2),
                               letterSpacing: 0.18,
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               height: 1.3,
                             ),
                             children: [
@@ -6856,7 +6847,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     context.textTheme.bodyMedium?.rq.copyWith(
                                   color: const Color(0xffC4C2C2),
                                   letterSpacing: 0.18,
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                   height: 1.3,
                                   decoration: TextDecoration.lineThrough,
                                 ),
@@ -6869,7 +6860,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     context.textTheme.bodyMedium?.bq.copyWith(
                                   color: const Color(0xff1D1D1D),
                                   letterSpacing: 0.18,
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                   height: 1.3,
                                 ),
                               ),
@@ -6881,7 +6872,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     context.textTheme.bodyMedium?.lq.copyWith(
                                   color: const Color(0xff1D1D1D),
                                   letterSpacing: 0.18,
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                   height: 1.3,
                                 ),
                               ),
@@ -6890,16 +6881,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         ),
                         Spacer(),
                         Container(
-                          width: 200,
-                          height: 20,
+                          width: 200.w,
+                          height: 20.h,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SvgPicture.asset(
                                 AppAssets.orderCanselSvg,
                               ),
-                              const SizedBox(
-                                width: 5,
+                              SizedBox(
+                                width: 5.w,
                               ),
                               Text(
                                 LocaleKeys.cancel_this_product.tr(),
@@ -6910,15 +6901,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   decoration: TextDecoration.underline,
                                   color: const Color(0xffFF5F61),
                                   letterSpacing: 0.18,
-                                  fontSize: 10,
+                                  fontSize: 10.sp,
                                   height: 1.3,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(
-                          height: 5,
+                        SizedBox(
+                          height: 5.h,
                         ),
                       ],
                     ),
@@ -6929,7 +6920,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
           ),
           (index == ((order.details?.length ?? 0) - 1))
               ? Container(
-                  margin: EdgeInsets.only(top: 8),
+                  margin: EdgeInsets.only(top: 8.h),
                   height: 0.5,
                   width: 1.sw,
                   color: Color(0xffC4C2C2),
@@ -6955,10 +6946,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
           Container(
             height: 50.h,
             width: 1.sw,
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            decoration: const BoxDecoration(
-              color: Color(0xffF8F8F8),
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+            margin: EdgeInsets.symmetric(horizontal: 24.w),
+            decoration: BoxDecoration(
+              color: const Color(0xffF8F8F8),
+              borderRadius: BorderRadius.all(Radius.circular(15.r)),
             ),
             child: Row(
               children: [
@@ -6968,14 +6959,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   width: ((1.sw - 58) / 2),
                   decoration: BoxDecoration(
                     border: Border.all(color: const Color(0xff402CDD)),
-                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    borderRadius: BorderRadius.all(Radius.circular(15.r)),
                   ),
                   child: Text(
                     LocaleKeys.delivery_address.tr(),
                     style: context.textTheme.bodyMedium?.mq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       height: 1.33,
                     ),
                   ),
@@ -6984,16 +6975,16 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   alignment: Alignment.center,
                   height: 50.h,
                   width: ((1.sw - 58) / 2),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     //   border: Border.all(color: Color(0xff402CDD)),
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    borderRadius: BorderRadius.all(Radius.circular(15.r)),
                   ),
                   child: Text(
                     LocaleKeys.delivery_note.tr(),
                     style: context.textTheme.bodyMedium?.rq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       height: 1.33,
                     ),
                   ),
@@ -7016,7 +7007,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     height: 1.33,
                   ),
                 ),
@@ -7036,10 +7027,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       height: 295.h,
                       width: 1.sw,
                       child: ListView.separated(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
                         itemBuilder: (context, index) =>
                             index == state.listOfAddressInfoClassToSave!.length
-                            ? SizedBox(height: 50, width: 1.sw)
+                            ? SizedBox(height: 50.h, width: 1.sw)
                             : InkWell(
                                 onTap: () {
                                   if (index != firstAddressChoosed ||
@@ -7160,7 +7151,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 ),
                               ),
                         separatorBuilder: (context, index) =>
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10.h),
                         itemCount:
                             state.listOfAddressInfoClassToSave!.length + 1,
                         controller: sc,
@@ -7176,12 +7167,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           );
                         },
                         child: Container(
-                          height: 40,
+                          height: 40.h,
                           width: 1.sw - 56,
 
                           decoration: BoxDecoration(
                             color: const Color(0xffE8FFED),
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15.r),
                             border: Border.all(color: const Color(0xffC4C2C2)),
                           ),
                           child: Row(
@@ -7195,7 +7186,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       AppAssets.addShippingAddressSvg,
                                     ),
                                     Positioned(
-                                      top: 2,
+                                      top: 2.h,
                                       child: SvgPicture.asset(
                                         AppAssets.addShippingAddressWhiteSvg,
                                       ),
@@ -7203,14 +7194,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 3),
+                              SizedBox(width: 3.w),
                               Text(
                                 "${LocaleKeys.add_new_shipping_address.tr()} ",
                                 style: context.textTheme.bodyMedium?.mq
                                     .copyWith(
                                       color: const Color(0xff1D1D1D),
                                       letterSpacing: 0.18,
-                                      fontSize: 12,
+                                      fontSize: 12.sp,
                                       height: 1.33,
                                     ),
                               ),
@@ -7218,7 +7209,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ),
                         ),
                       ),
-                      bottom: 0,
+                      bottom: 0.h,
                     ),
                   ],
                   alignment: Alignment.center,
@@ -7243,18 +7234,18 @@ class _OrderDetails2 extends State<OrderDetails2> {
       //     : (!isDelete && cartChoosed)
       //         ? 125
       //         : 90,
-      margin: const EdgeInsets.all(1),
+      margin: EdgeInsets.all(1.w),
       width: 1.sw,
       // height: 100.h,
       padding: EdgeInsets.only(
-        right: LanguageService.languageCode == "ar" ? 19 : 9,
-        left: LanguageService.languageCode != "ar" ? 19 : 9,
-        bottom: 5,
-        top: 1,
+        right: LanguageService.languageCode == "ar" ? 19.w : 9.w,
+        left: LanguageService.languageCode != "ar" ? 19.w : 9.w,
+        bottom: 5.h,
+        top: 1.h,
       ),
       decoration: BoxDecoration(
         color: isChange ? Colors.transparent : const Color(0xffF8F8F8),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15.r),
         border: isChange
             ? Border.all(
                 color: (index != indexTap)
@@ -7283,9 +7274,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
                   height: 12.h,
-                  width: 12,
+                  width: 12.w,
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 Text(
                   customerAddressesInfo.address ?? "",
                   style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -7307,12 +7298,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     : InkWell(
                         onTap: onTapEdit,
                         child: Container(
-                          margin: const EdgeInsets.only(top: 5),
-                          width: 20,
+                          margin: EdgeInsets.only(top: 5.h),
+                          width: 20.w,
                           height: 30.h,
                           child: SvgPicture.asset(
                             AppAssets.editSvg,
-                            height: 30,
+                            height: 30.h,
                             width: 20.h,
                           ),
                         ),
@@ -7320,20 +7311,20 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 /*  isDelete || cartChoosed
                       ? SizedBox.shrink()
                       : SizedBox(
-                          width: 10,
+                          width: 10.w,
                         ),
                   isDelete || cartChoosed
                       ? SizedBox.shrink()
                       : InkWell(
                           onTap: onTapDelete,
                           child: Container(
-                            margin: EdgeInsets.only(top: 5),
-                            width: 20,
-                            height: 30,
+                            margin: EdgeInsets.only(top: 5.h),
+                            width: 20.w,
+                            height: 30.h,
                             child: SvgPicture.asset(
                               AppAssets.deletecartSvg,
-                              height: 14,
-                              width: 14,
+                              height: 14.h,
+                              width: 14.w,
                             ),
                           ),
                         ),*/
@@ -7401,9 +7392,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       ? const Color(0xff8D8D8D)
                       : const Color(0xff1D1D1D),
                   height: 12.h,
-                  width: 12,
+                  width: 12.w,
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5.w),
                 Text(
                   '+${(customerAddressesInfo.contactInfo?.phone ?? "").replaceAll("+", "")}',
                   style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -7419,7 +7410,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     height: 1.3,
                   ),
                 ),
-                const SizedBox(width: 40),
+                SizedBox(width: 40.w),
                 SizedBox(
                   height: 16.h,
                   child: Row(
@@ -7435,11 +7426,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             ? const Color(0xff8D8D8D)
                             : const Color(0xff1D1D1D),
                         height: 12.h,
-                        width: 12,
+                        width: 12.w,
                       ),
-                      const SizedBox(width: 5),
+                      SizedBox(width: 5.w),
                       SizedBox(
-                        width: 130,
+                        width: 130.w,
                         child: Text(
                           '${customerAddressesInfo.contactInfo?.name ?? ""}',
                           style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -7468,22 +7459,22 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               ? Color(0xffFFFFFF)
                               : Color(0xff388CFF),
                           allowDrawingOutsideViewBox: true,
-                          height: 12,
-                          width: 12,
+                          height: 12.h,
+                          width: 12.w,
                         ),*/
               ],
             ),
           ),
           /*   SizedBox(
-                    height: 5,
+                    height: 5.h,
                   ),
             Container(
-                    height: 30,
+                    height: 30.h,
                     width: 1.sw,
                     decoration: BoxDecoration(
                         color:
                           Color(0xffFFFFFF),
-                        borderRadius: BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(10.r)),
                     alignment: Alignment.center,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -7493,7 +7484,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.rr.copyWith(
                               color: const Color(0xff8D8D8D),
                               letterSpacing: 0.18,
-                              fontSize: 10,
+                              fontSize: 10.sp,
                               height: 1.3),
                         ),
                         Text(
@@ -7501,7 +7492,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           style: context.textTheme.bodyMedium?.rr.copyWith(
                               color: const Color(0xff1D1D1D),
                               letterSpacing: 0.18,
-                              fontSize: 10,
+                              fontSize: 10.sp,
                               height: 1.3),
                         ),
                         Text(
@@ -7511,7 +7502,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               decorationColor: const Color(0xff388CFF),
                               color: const Color(0xff388CFF),
                               letterSpacing: 0.18,
-                              fontSize: 10,
+                              fontSize: 10.sp,
                               height: 1.3),
                         ),
                       ],
@@ -7554,29 +7545,29 @@ class _OrderDetails2 extends State<OrderDetails2> {
           topRight: Radius.circular(30.r),
         ),
       ),
-      height: _option == null ? 524 : (1.sh - 85.h),
+      height: _option == null ? 524 : (1.sh - 70.h),
       width: 1.sw,
       child: Column(
         children: [
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           Container(
-            width: 40,
-            height: 2,
+            width: 40.w,
+            height: 2.h,
             decoration: BoxDecoration(
               color: const Color(0xffC4C2C2),
               border: Border.all(color: const Color(0xffC4C2C2)),
-              borderRadius: const BorderRadius.all(Radius.circular(2)),
+              borderRadius: BorderRadius.all(Radius.circular(2.r)),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           Container(
-            width: 104,
-            height: 144,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+            width: 104.w,
+            height: 144.h,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(15.r)),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(15.r),
               child: Container(
                 color: Colors.white,
                 child: MyCachedNetworkImage(
@@ -7585,33 +7576,33 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   radius: 15,
                   imageUrl: order!.details?[indexTap.value].image ?? "",
                   imageFit: BoxFit.contain,
-                  width: 100,
-                  height: 150,
+                  width: 100.w,
+                  height: 150.h,
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           Text(
             "${LocaleKeys.action_about_product.tr()}",
             style: context.textTheme.bodyMedium?.rq.copyWith(
               color: const Color(0xff8D8D8D),
               letterSpacing: 0.18,
-              fontSize: 12,
+              fontSize: 12.sp,
               height: 1.3,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           Container(
             width: 1.sw,
             height: 0.5,
             decoration: BoxDecoration(
               color: const Color(0xffC4C2C2),
               border: Border.all(color: const Color(0xffC4C2C2)),
-              borderRadius: const BorderRadius.all(Radius.circular(2)),
+              borderRadius: BorderRadius.all(Radius.circular(2.r)),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           BlocListener<OrderBloc, OrderState>(
             listenWhen: (previous, current) =>
                 previous.getProductColorSizeSyncAttributeStatus !=
@@ -7700,7 +7691,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               }
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: BlocBuilder<OrderBloc, OrderState>(
                 buildWhen: (previous, current) =>
                     previous.getProductColorSizeSyncAttributeStatus !=
@@ -7714,9 +7705,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         highlightColor: Colors.grey[100]!,
                         child: Container(
                           width: 1.sw,
-                          height: 60,
+                          height: 60.h,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(20.r),
                             color: const Color(0xffF8F8F8),
                           ),
                         ),
@@ -7747,7 +7738,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               ),
             ),
           ),
-          const SizedBox(height: 5),
+          SizedBox(height: 5.h),
           ((orderDetail.alreadyReturn ?? false) &&
                   !(order?.editReturnRequest ?? false))
               ? const SizedBox.shrink()
@@ -7755,7 +7746,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         false || (order?.editReturnRequest ?? false)) &&
                     (order!.details?[indexTap.value].qty ?? 0) > 0)
               ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: optionOfModify(
                     onTap: () {
                       orderBloc.add(const ResetAllStatusEvent());
@@ -7807,9 +7798,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   ),
                 )
               : const SizedBox.shrink(),
-          const SizedBox(height: 5),
+          SizedBox(height: 5.h),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: optionOfModify(
               onTap: () {
                 orderBloc.add(const ResetAllStatusEvent());
@@ -7823,12 +7814,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
             ),
           ),
           (order?.canCanceleOrder ?? false)
-              ? const SizedBox(height: 5)
+              ? SizedBox(height: 5.h)
               : const SizedBox.shrink(),
           (order?.canCanceleOrder ?? false) &&
                   (order!.details?[indexTap.value].qty ?? 0) > 0
               ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: optionOfModify(
                     onTap: () {
                       orderBloc.add(const ResetAllStatusEvent());
@@ -7843,10 +7834,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   ),
                 )
               : const SizedBox.shrink(),
-          const SizedBox(height: 5),
+          SizedBox(height: 5.h),
 
           /*  Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: optionOfModify(
                     onTap: () { orderBloc.add(ResetAllStatusEvent());
                       optionModifyPanel.value = "Change_Address";
@@ -7858,7 +7849,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         "${LocaleKeys.you_can_change_delivery_address_delivery_note.tr()}"),
               ),*/
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: optionOfModify(
               onTap: () {
                 orderBloc.add(const ResetAllStatusEvent());
@@ -7881,12 +7872,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
       children: [
         SizedBox(height: 10.h),
         Container(
-          width: 40,
-          height: 2,
+          width: 40.w,
+          height: 2.h,
           decoration: BoxDecoration(
             color: const Color(0xffC4C2C2),
             border: Border.all(color: const Color(0xffC4C2C2)),
-            borderRadius: const BorderRadius.all(Radius.circular(2)),
+            borderRadius: BorderRadius.all(Radius.circular(2.r)),
           ),
         ),
         SizedBox(height: 15.h),
@@ -7894,11 +7885,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
             ? Container(
                 width: 1.sw,
                 height: 205.h,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
+                margin: EdgeInsets.symmetric(horizontal: 10.w),
                 decoration: BoxDecoration(
                   color: const Color(0xffF8F8F8),
                   border: Border.all(color: const Color(0xffF8F8F8)),
-                  borderRadius: const BorderRadius.all(Radius.circular(15)),
+                  borderRadius: BorderRadius.all(Radius.circular(15.r)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -7909,12 +7900,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       height: 16.h,
                       child: Row(
                         children: [
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           SvgPicture.asset(
                             AppAssets.orderClockSvg,
                             height: 15.h,
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text(
                             HelperFunctions.orderFormatDate(
                               DateTime.tryParse(order!.createdAt ?? '') ??
@@ -7932,7 +7923,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             AppAssets.orderBag1Svg,
                             height: 15.h,
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text(
                             order!.orderGroupId ?? "",
                             style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -7942,7 +7933,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               height: 1.3,
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                         ],
                       ),
                     ),
@@ -7952,12 +7943,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       height: 16.h,
                       child: Row(
                         children: [
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           SvgPicture.asset(
                             AppAssets.preparingBagSvg,
                             height: 15.h,
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text(
                             order!.orderGroupStatus?.label ?? "",
                             style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -7967,7 +7958,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               height: 1.3,
                             ),
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           SvgPicture.asset(
                             order!.orderGroupStatus?.value == 'canceled'
                                 ? AppAssets.orderCanselSvg
@@ -7988,7 +7979,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             AppAssets.orderInvoice2Svg,
                             height: 15.h,
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text(
                             (order!.details?.length ?? "").toString(),
                             style: context.textTheme.bodyMedium?.bq.copyWith(
@@ -7998,7 +7989,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               height: 1.3,
                             ),
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text(
                             LocaleKeys.item.tr(),
                             style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -8008,7 +7999,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               height: 1.3,
                             ),
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text(
                             HelperFunctions.formatNumber(
                               numberToFormate:
@@ -8036,7 +8027,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               height: 1.3,
                             ),
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text(
                             homeBloc
                                 .state
@@ -8051,7 +8042,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               height: 1.3,
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                         ],
                       ),
                     ),
@@ -8060,8 +8051,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       height: 125.h,
                       width: 1.sw,
                       padding: EdgeInsets.only(
-                        left: LanguageService.languageCode == "ar" ? 0 : 10,
-                        right: LanguageService.languageCode != "ar" ? 0 : 10,
+                        left: LanguageService.languageCode == "ar" ? 0 : 10.w,
+                        right: LanguageService.languageCode != "ar" ? 0 : 10.w,
                       ),
                       child: ListView.builder(
                         itemCount: order!.details?.length,
@@ -8069,19 +8060,19 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         itemBuilder: (context, index) {
                           return Container(
                             height: 125.h,
-                            width: 92,
-                            decoration: const BoxDecoration(
+                            width: 92.w,
+                            decoration: BoxDecoration(
                               borderRadius: BorderRadius.all(
-                                Radius.circular(15),
+                                Radius.circular(15.r),
                               ),
                             ),
                             child: ClipRRect(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(15),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.r),
                               ),
                               child: MyCachedNetworkImage(
                                 imageUrl: order!.details?[index].image ?? "",
-                                width: 92,
+                                width: 92.w,
                                 imageFit: BoxFit.contain,
                                 height: 125.h,
                               ),
@@ -8095,13 +8086,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 ),
               )
             : Container(
-                width: 104,
+                width: 104.w,
                 height: 140.h,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(15.r)),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(15.r),
                   child: Container(
                     color: Colors.white,
                     child: MyCachedNetworkImage(
@@ -8110,14 +8101,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       radius: 15,
                       imageUrl: order!.details?[indexTap.value].image ?? "",
                       imageFit: BoxFit.contain,
-                      width: 100,
+                      width: 100.w,
                       height: 140.h,
                     ),
                   ),
                 ),
               ),
         SizedBox(height: 8.h),
-        SvgPicture.asset(AppAssets.orderCanselSvg, width: 30),
+        SvgPicture.asset(AppAssets.orderCanselSvg, width: 30.w),
         SizedBox(height: 14.h),
         Text(
           "${allOrder ? LocaleKeys.cancel_this_order.tr() : LocaleKeys.cancel_this_product.tr()}",
@@ -8178,11 +8169,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
         Container(
           width: 1.sw,
           height: 0.5,
-          margin: const EdgeInsets.symmetric(horizontal: 20),
+          margin: EdgeInsets.symmetric(horizontal: 20.w),
           decoration: BoxDecoration(
             color: const Color(0xffC4C2C2),
             border: Border.all(color: const Color(0xffC4C2C2)),
-            borderRadius: const BorderRadius.all(Radius.circular(2)),
+            borderRadius: BorderRadius.all(Radius.circular(2.r)),
           ),
         ),
         SizedBox(height: 30.h),
@@ -8222,23 +8213,23 @@ class _OrderDetails2 extends State<OrderDetails2> {
       children: [
         SizedBox(height: 10.h),
         Container(
-          width: 40,
-          height: 2,
+          width: 40.w,
+          height: 2.h,
           decoration: BoxDecoration(
             color: const Color(0xffC4C2C2),
             border: Border.all(color: const Color(0xffC4C2C2)),
-            borderRadius: const BorderRadius.all(Radius.circular(2)),
+            borderRadius: BorderRadius.all(Radius.circular(2.r)),
           ),
         ),
         SizedBox(height: 15.h),
         Container(
-          width: 104,
+          width: 104.w,
           height: 140.h,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(15.r)),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(15.r),
             child: Container(
               color: Colors.white,
               child: MyCachedNetworkImage(
@@ -8247,8 +8238,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 radius: 15,
                 imageUrl: order!.details?[indexTap.value].image ?? "",
                 imageFit: BoxFit.contain,
-                width: 100,
-                height: 140,
+                width: 100.w,
+                height: 140.h,
               ),
             ),
           ),
@@ -8259,18 +8250,18 @@ class _OrderDetails2 extends State<OrderDetails2> {
           children: [
             SvgPicture.asset(
               AppAssets.changeProductRequestSvg,
-              width: 30,
+              width: 30.w,
               // ignore: deprecated_member_use
               color: const Color(0xff1D1D1D),
             ),
             ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(15)),
+              borderRadius: BorderRadius.all(Radius.circular(15.r)),
               child: MyCachedNetworkImage(
                 radius: 15,
                 imageUrl: order!.details?[indexTap.value].image ?? "",
                 imageFit: BoxFit.fill,
-                width: 20,
-                height: 20,
+                width: 20.w,
+                height: 20.h,
               ),
             ),
           ],
@@ -8281,13 +8272,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
           style: context.textTheme.bodyMedium?.mq.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,
-            fontSize: 14,
+            fontSize: 14.sp,
             height: 1.3,
           ),
         ),
         SizedBox(height: 8.h),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 45),
+          padding: EdgeInsets.symmetric(horizontal: 45.w),
           child: Text(
             "${LocaleKeys.you_can_change_variant_product_without_conditions.tr()}",
             maxLines: 2,
@@ -8300,18 +8291,18 @@ class _OrderDetails2 extends State<OrderDetails2> {
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10.h),
         Container(
           width: 1.sw,
-          margin: const EdgeInsets.symmetric(horizontal: 24),
+          margin: EdgeInsets.symmetric(horizontal: 24.w),
           height: 0.5,
           decoration: BoxDecoration(
             color: const Color(0xffC4C2C2),
             border: Border.all(color: const Color(0xffC4C2C2)),
-            borderRadius: const BorderRadius.all(Radius.circular(2)),
+            borderRadius: BorderRadius.all(Radius.circular(2.r)),
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10.h),
         changeSizeOrColorOrQty(),
         const Spacer(),
         ValueListenableBuilder<String?>(
@@ -8341,7 +8332,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             child: Container(
                               alignment: Alignment.center,
                               width: 1.sw,
-                              height: 53,
+                              height: 53.h,
                               decoration: BoxDecoration(
                                 color:
                                     (_sizeIndexTap != null ||
@@ -8353,8 +8344,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         _colorIndexTap != null)
                                     ? const Color(0xff402CDD)
                                     : const Color(0xffD3D3D3),
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(20),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20.r),
                                 ),
                               ),
                               child: Text(
@@ -8364,7 +8355,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     .copyWith(
                                       color: Colors.white,
                                       letterSpacing: 0.18,
-                                      fontSize: 16,
+                                      fontSize: 16.sp,
                                       height: 1.3,
                                     ),
                               ),
@@ -8396,11 +8387,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
               children: [
                 Container(
                   width: 1.sw,
-                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  margin: EdgeInsets.symmetric(horizontal: 24.w),
                   height: 50.h,
-                  decoration: const BoxDecoration(
-                    color: Color(0xffF8F8F8),
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffF8F8F8),
+                    borderRadius: BorderRadius.all(Radius.circular(20.r)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -8426,8 +8417,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           color: const Color(0xff402CDD),
                                         )
                                       : null,
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(20),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(20.r),
                                   ),
                                 ),
                                 child: Text(
@@ -8472,8 +8463,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           color: const Color(0xff402CDD),
                                         )
                                       : null,
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(20),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(20.r),
                                   ),
                                 ),
                                 child: Text(
@@ -8509,8 +8500,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             border: _option == "qty"
                                 ? Border.all(color: const Color(0xff402CDD))
                                 : null,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(20),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(20.r),
                             ),
                           ),
                           child: Text(
@@ -8539,11 +8530,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 Container(
                   width: 70.w,
                   height: 70.h,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(50.r)),
                   ),
                   child: ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(50)),
+                    borderRadius: BorderRadius.all(Radius.circular(50.r)),
                     child: MyCachedNetworkImage(
                       withInnerShadow: true,
                       withImageShadow: true,
@@ -8555,7 +8546,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Text(
                   "${LocaleKeys.change_from.tr()} ${(_option == "color")
                       ? "${firstColorName}"
@@ -8570,15 +8561,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     height: 1.3,
                   ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Container(
                   width: 1.sw,
-                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  margin: EdgeInsets.symmetric(horizontal: 24.w),
                   height: 0.5,
                   decoration: BoxDecoration(
                     color: const Color(0xffC4C2C2),
                     border: Border.all(color: const Color(0xffC4C2C2)),
-                    borderRadius: const BorderRadius.all(Radius.circular(2)),
+                    borderRadius: BorderRadius.all(Radius.circular(2.r)),
                   ),
                 ),
                 SizedBox(height: 10.h),
@@ -8623,7 +8614,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             width: 1.sw,
                             height: 105.h,
                             alignment: Alignment.center,
-                            margin: const EdgeInsets.symmetric(horizontal: 24),
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
@@ -8636,8 +8627,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           ?.length ??
                                       0,
                                   (index) => Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 5,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 5.w,
                                     ),
                                     child: InkWell(
                                       onTap: () {
@@ -8748,16 +8739,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                         ),
                                                       )
                                                     : null,
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                      Radius.circular(40),
-                                                    ),
+                                                borderRadius: BorderRadius.all(
+                                                  Radius.circular(40.r),
+                                                ),
                                               ),
                                               child: ClipRRect(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                      Radius.circular(40),
-                                                    ),
+                                                borderRadius: BorderRadius.all(
+                                                  Radius.circular(40.r),
+                                                ),
                                                 child: MyCachedNetworkImage(
                                                   withInnerShadow: true,
                                                   withImageShadow: true,
@@ -8820,7 +8809,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             width: 1.sw,
                             height: 105.h,
                             alignment: Alignment.center,
-                            margin: const EdgeInsets.symmetric(horizontal: 24),
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
@@ -8828,8 +8817,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 children: List.generate(
                                   productChoiceOptions.length,
                                   (index) => Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 5,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 5.w,
                                     ),
                                     child: InkWell(
                                       onTap: () {
@@ -8938,16 +8927,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       ),
                                                     )
                                                   : null,
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                    Radius.circular(40),
-                                                  ),
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(40.r),
+                                              ),
                                             ),
                                             child: ClipRRect(
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                    Radius.circular(40),
-                                                  ),
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(40.r),
+                                              ),
                                               child: MyCachedNetworkImage(
                                                 withInnerShadow: true,
                                                 withImageShadow: true,
@@ -8992,7 +8979,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         },
                       )
                     : SizedBox(
-                        width: 130,
+                        width: 130.w,
                         height: 50.h,
                         child: ValueListenableBuilder<int>(
                           valueListenable: qtyToChangeController,
@@ -9003,8 +8990,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 border: Border.all(
                                   color: const Color(0xFF1D1D1D),
                                 ),
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(15),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(15.r),
                                 ),
                               ),
                               height: 50.h,
@@ -9030,15 +9017,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             },
                                             child: Container(
                                               alignment: Alignment.center,
-                                              width: 30,
+                                              width: 30.w,
                                               height: 50.h,
-                                              decoration: const BoxDecoration(
+                                              decoration: BoxDecoration(
                                                 color: Colors.grey,
                                                 borderRadius: BorderRadius.only(
                                                   bottomRight: Radius.circular(
-                                                    14,
+                                                    14.r,
                                                   ),
-                                                  topRight: Radius.circular(14),
+                                                  topRight: Radius.circular(
+                                                    14.r,
+                                                  ),
                                                 ),
                                               ),
                                               child: Text(
@@ -9081,15 +9070,17 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             },
                                             child: Container(
                                               alignment: Alignment.center,
-                                              width: 30,
+                                              width: 30.w,
                                               height: 50.h,
-                                              decoration: const BoxDecoration(
+                                              decoration: BoxDecoration(
                                                 color: Colors.grey,
                                                 borderRadius: BorderRadius.only(
                                                   bottomLeft: Radius.circular(
-                                                    14,
+                                                    14.r,
                                                   ),
-                                                  topLeft: Radius.circular(14),
+                                                  topLeft: Radius.circular(
+                                                    14.r,
+                                                  ),
                                                 ),
                                               ),
                                               child: Text(
@@ -9167,23 +9158,23 @@ class _OrderDetails2 extends State<OrderDetails2> {
           children: [
             SizedBox(height: 10.h),
             Container(
-              width: 40,
-              height: 2,
+              width: 40.w,
+              height: 2.h,
               decoration: BoxDecoration(
                 color: const Color(0xffC4C2C2),
                 border: Border.all(color: const Color(0xffC4C2C2)),
-                borderRadius: const BorderRadius.all(Radius.circular(2)),
+                borderRadius: BorderRadius.all(Radius.circular(2.r)),
               ),
             ),
             SizedBox(height: 15.h),
             Container(
-              width: 104,
+              width: 104.w,
               height: 140.h,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(15)),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(15.r)),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(15.r),
                 child: Container(
                   color: Colors.white,
                   child: MyCachedNetworkImage(
@@ -9192,7 +9183,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     radius: 15,
                     imageUrl: order?.details?[indexTap.value].image ?? "",
                     imageFit: BoxFit.contain,
-                    width: 100,
+                    width: 100.w,
                     height: 140.h,
                   ),
                 ),
@@ -9272,11 +9263,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
             Container(
               width: 1.sw,
               height: 0.5,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
+              margin: EdgeInsets.symmetric(horizontal: 20.w),
               decoration: BoxDecoration(
                 color: const Color(0xffC4C2C2),
                 border: Border.all(color: const Color(0xffC4C2C2)),
-                borderRadius: const BorderRadius.all(Radius.circular(2)),
+                borderRadius: BorderRadius.all(Radius.circular(2.r)),
               ),
             ),
             SizedBox(height: 5.h),
@@ -9292,9 +9283,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         width: 1.sw - 50,
                         decoration: BoxDecoration(
                           border: Border.all(color: const Color(0xFF1D1D1D)),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(15),
-                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(15.r)),
                         ),
                         height: _optionReturn == 0 ? 60.h : 30.h,
                         child: Row(
@@ -9314,13 +9303,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     },
                                     child: Container(
                                       alignment: Alignment.center,
-                                      width: 20,
+                                      width: 20.w,
                                       height: _optionReturn == 0 ? 60.h : 30.h,
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         color: Colors.grey,
                                         borderRadius: BorderRadius.only(
-                                          bottomRight: Radius.circular(14),
-                                          topRight: Radius.circular(14),
+                                          bottomRight: Radius.circular(14.r),
+                                          topRight: Radius.circular(14.r),
                                         ),
                                       ),
                                       child: Text(
@@ -9391,13 +9380,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     },
                                     child: Container(
                                       alignment: Alignment.center,
-                                      width: 20,
+                                      width: 20.w,
                                       height: _optionReturn == 0 ? 60.h : 30.h,
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         color: Colors.grey,
                                         borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(14),
-                                          topLeft: Radius.circular(14),
+                                          bottomLeft: Radius.circular(14.r),
+                                          topLeft: Radius.circular(14.r),
                                         ),
                                       ),
                                       child: Text(
@@ -9433,7 +9422,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             fontSize: _optionReturn == 0 ? 12.sp : 11.sp,
                           ),
                           contentPadding:
-                              EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                              EdgeInsets.symmetric(vertical: 2.h, horizontal: 8.w),
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Color(0xFF8D8D8D)),
                           ),
@@ -9456,11 +9445,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
             Container(
               width: 1.sw,
               height: 0.5,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
+              margin: EdgeInsets.symmetric(horizontal: 20.w),
               decoration: BoxDecoration(
                 color: const Color(0xffC4C2C2),
                 border: Border.all(color: const Color(0xffC4C2C2)),
-                borderRadius: const BorderRadius.all(Radius.circular(2)),
+                borderRadius: BorderRadius.all(Radius.circular(2.r)),
               ),
             ),
             SizedBox(height: 5.h),
@@ -9531,7 +9520,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -9571,7 +9560,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   )
                 : state.getReturnReasonsStatus == GetReturnReasonsStatus.failure
                 ? Container(
-                    width: 120,
+                    width: 120.w,
                     height: 50.h,
                     child: TryAgainWidget(
                       tryAgain: () =>
@@ -9582,10 +9571,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     children: [
                       for (final row in rows)
                         Padding(
-                          padding: const EdgeInsets.only(
-                            left: 5,
-                            right: 5,
-                            bottom: 10,
+                          padding: EdgeInsets.only(
+                            left: 5.w,
+                            right: 5.w,
+                            bottom: 10.h,
                           ), // نفس المسافة بين الصفوف
                           child: Row(
                             children: [
@@ -9618,7 +9607,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         : reason.cost ?? 0;
                                   },
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                               ],
                             ],
                           ),
@@ -9629,12 +9618,12 @@ class _OrderDetails2 extends State<OrderDetails2> {
             SizedBox(height: 10.h),
             Container(
               width: 1.sw,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
+              margin: EdgeInsets.symmetric(horizontal: 20.w),
               height: 0.5,
               decoration: BoxDecoration(
                 color: const Color(0xffC4C2C2),
                 border: Border.all(color: const Color(0xffC4C2C2)),
-                borderRadius: const BorderRadius.all(Radius.circular(2)),
+                borderRadius: BorderRadius.all(Radius.circular(2.r)),
               ),
             ),
             SizedBox(height: 12.h),
@@ -9656,8 +9645,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     return _optionReturn == 0
                         ? const SizedBox.shrink()
                         : Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20.w,
                             ), // نفس المسافة بين الصفوف
                             child: ValueListenableBuilder<List<String?>?>(
                               valueListenable: orderPhotos,
@@ -9726,13 +9715,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                           15.r,
                                                                         ),
                                                                   ),
-                                                                  width: 57,
+                                                                  width: 57.w,
                                                                   height: 80.h,
                                                                 ),
                                                               );
                                                             }
                                                             return Container(
-                                                              width: 57,
+                                                              width: 57.w,
 
                                                               height: 80.h,
                                                               margin: EdgeInsets.only(
@@ -9770,7 +9759,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                       imageFit:
                                                                           BoxFit
                                                                               .fill,
-                                                                      width: 57,
+                                                                      width:
+                                                                          57.w,
                                                                       height:
                                                                           80.h,
                                                                     ),
@@ -9790,7 +9780,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                               2,
                                                                             ),
                                                                         width:
-                                                                            15,
+                                                                            15.w,
                                                                         height:
                                                                             15.h,
                                                                         decoration: BoxDecoration(
@@ -9807,14 +9797,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
 
                                                                           // ignore: deprecated_member_use
                                                                           height:
-                                                                              5,
+                                                                              5.h,
                                                                           width:
-                                                                              5,
+                                                                              5.w,
                                                                         ),
                                                                       ),
                                                                     ),
                                                                     right: 0,
-                                                                    top: 0,
+                                                                    top: 0.h,
                                                                   ),
                                                                 ],
                                                               ),
@@ -9829,7 +9819,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                               .length,
                                                           itemBuilder: (context, index) {
                                                             return Container(
-                                                              width: 57,
+                                                              width: 57.w,
                                                               height: 80.h,
                                                               margin: EdgeInsets.only(
                                                                 right:
@@ -9866,7 +9856,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                       imageFit:
                                                                           BoxFit
                                                                               .fill,
-                                                                      width: 57,
+                                                                      width:
+                                                                          57.w,
                                                                       height:
                                                                           80.h,
                                                                     ),
@@ -9893,7 +9884,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                           ),
                                                                         ),
                                                                         width:
-                                                                            15,
+                                                                            15.w,
                                                                         height:
                                                                             15.h,
                                                                         child: SvgPicture.asset(
@@ -9902,14 +9893,14 @@ class _OrderDetails2 extends State<OrderDetails2> {
 
                                                                           // ignore: deprecated_member_use
                                                                           height:
-                                                                              5,
+                                                                              5.h,
                                                                           width:
-                                                                              5,
+                                                                              5.w,
                                                                         ),
                                                                       ),
                                                                     ),
                                                                     right: 0,
-                                                                    top: 0,
+                                                                    top: 0.h,
                                                                   ),
                                                                 ],
                                                               ),
@@ -9929,7 +9920,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             "ar"
                                                         ? null
                                                         : 20,
-                                                    top: 30,
+                                                    top: 30.h,
                                                     child: InkWell(
                                                       onTap: () async {
                                                         void _showImagePreview(
@@ -10084,7 +10075,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             color: const Color(
                                                               0xff402CDD,
                                                             ),
-                                                            width: 20,
+                                                            width: 20.w,
                                                           ),
                                                         ],
                                                       ),
@@ -10237,9 +10228,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       color: const Color(
                                                         0xff402CDD,
                                                       ),
-                                                      width: 20,
+                                                      width: 20.w,
                                                     ),
-                                                    const SizedBox(height: 5),
+                                                    SizedBox(height: 5.h),
                                                     Text(
                                                       "${LocaleKeys.add_photo.tr()}",
                                                       textAlign:
@@ -10313,8 +10304,8 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 }
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
+                padding: EdgeInsets.symmetric(
+                  horizontal: 24.w,
                 ), // نفس المسافة بين الصفوف
                 child: ValueListenableBuilder<int>(
                   valueListenable: qtyOfReturnValueNotifier,
@@ -10396,10 +10387,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                         0
                                                 ? const Color(0xff402CDD)
                                                 : const Color(0xffD3D3D3),
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                  Radius.circular(20),
-                                                ),
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(20.r),
+                                            ),
                                           ),
                                           child: Text(
                                             "${(orderDetail.alreadyReturn ?? false) && order?.returnRequestId != null && (order?.editReturnRequest ?? false) ? LocaleKeys.edit_return_request.tr() : LocaleKeys.return_request.tr()}",
@@ -10437,7 +10427,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
   Widget canselContent() {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: Column(
           children: [
             SizedBox(height: 20.h),
@@ -10464,7 +10454,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         optionCansel.value = [...options];
                       },
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10.w),
                     optionOfCanselOrder(
                       LocaleKeys.i_fear_quality.tr(),
                       100,
@@ -10508,7 +10498,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         optionCansel.value = [...options];
                       },
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10.w),
                     optionOfCanselOrder(
                       LocaleKeys.i_am_afraid_sizes.tr(),
                       125,
@@ -10563,7 +10553,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               height: 53.h,
               decoration: BoxDecoration(
                 color: const Color(0xff388CFF),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(
                 LocaleKeys.we_have_other_solutions_instead_cancellation.tr(),
@@ -10593,7 +10583,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       color: (_optionCanselOrReturn?.length ?? 0) > 0
                           ? const Color(0xffFF5F61)
                           : const Color(0xffD3D3D3),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: Text(
                       allOrder
@@ -10636,7 +10626,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   ? null
                   : Border.all(color: const Color(0xff402CDD)),
               color: const Color(0xffF8F8F8),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.r),
             ),
             child: Text(
               text,
@@ -10673,7 +10663,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   ? null
                   : Border.all(color: const Color(0xff402CDD)),
               color: const Color(0xffF8F8F8),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.r),
             ),
             child: Text(
               text,
@@ -10704,9 +10694,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
       },
       child: Container(
         width: 1.sw,
-        height: 60,
+        height: 60.h,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20.r),
           color: const Color(0xffF8F8F8),
         ),
         child: Row(
@@ -10717,25 +10707,25 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 : Stack(
                     alignment: Alignment.center,
                     children: [
-                      SvgPicture.asset(svg, width: 30),
+                      SvgPicture.asset(svg, width: 30.w),
                       image2 == ""
                           ? const SizedBox.shrink()
                           : image2.split(".").last != "svg"
                           ? ClipRRect(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(15),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.r),
                               ),
                               child: MyCachedNetworkImage(
                                 radius: 15,
                                 imageUrl: image2,
                                 imageFit: BoxFit.fill,
-                                width: 15,
-                                height: 15,
+                                width: 15.w,
+                                height: 15.h,
                               ),
                             )
                           : SvgPicture.asset(
                               image2,
-                              width: 10,
+                              width: 10.w,
                               // ignore: deprecated_member_use
                               color: const Color(0xff402CDD),
                             ),
@@ -10755,7 +10745,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     height: 1.3,
                   ),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2.h),
                 Text(
                   body,
                   style: context.textTheme.bodyMedium?.rq.copyWith(

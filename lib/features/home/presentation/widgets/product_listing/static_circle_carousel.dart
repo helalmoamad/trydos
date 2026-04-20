@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
@@ -28,10 +29,10 @@ class StaticCircleCarousel extends StatelessWidget {
       FlutterError.dumpErrorToConsole(error);
     };
     // إعداد أحجام الدوائر
-    const double big = 22;
-    const double medium = 22;
-    const double small = 18;
-    const double overlap = 12; // مقدار التداخل بين الدوائر
+    double big = 22.h;
+    double medium = 22.h;
+    double small = 18.h;
+    double overlap = 12.h; // مقدار التداخل بين الدوائر
 
     if (imageUrls.isEmpty) return const SizedBox.shrink();
     int center = imageUrls.length ~/ 2;
@@ -61,33 +62,34 @@ class StaticCircleCarousel extends StatelessWidget {
         Positioned(
           left: left + (imageUrls.length * overlap) / 2,
           child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                    color: Color(int.parse('0xff${colors[i].substring(1)}'))),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Color(int.parse('0xff${colors[i].substring(1)}')),
               ),
-              child: MyCachedNetworkImage(
-                  imageUrl: imageUrls[i],
-                  width: size,
-                  imageFit: BoxFit.cover,
-                  height: size)),
+            ),
+            child: MyCachedNetworkImage(
+              imageUrl: imageUrls[i],
+              width: size,
+              imageFit: BoxFit.cover,
+              height: size,
+            ),
+          ),
         ),
       );
     }
 
     return InkWell(
-        onTap: () {
-          tapIndexToShowColorImages?.value = itemIndex;
-          showShadowForColorImages?.value = true;
-          colorImagesPanelController?.open();
-        },
-        child: SizedBox(
-          height: big + 16,
-          width: (imageUrls.length * overlap) + big,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: circles,
-          ),
-        ));
+      onTap: () {
+        tapIndexToShowColorImages?.value = itemIndex;
+        showShadowForColorImages?.value = true;
+        colorImagesPanelController?.open();
+      },
+      child: SizedBox(
+        height: big + 16.h,
+        width: (imageUrls.length * overlap) + big,
+        child: Stack(clipBehavior: Clip.none, children: circles),
+      ),
+    );
   }
 }

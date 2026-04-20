@@ -170,8 +170,8 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
         children: [
           // 🖼️ صورة المنتج - بدون مسافات إضافية
           SizedBox(
-            height: 290,
-            width: 200,
+            height: 290.h,
+            width: 200.w,
             child: _buildSingleImage(
               (GetIt.I<PrefsRepository>()
                               .getRedeemDateForProduct(
@@ -225,8 +225,8 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
   Widget _buildSingleImage(bool isRedeem) {
     // الحصول على أول صورة متاحة
     String? imageUrl;
-    double imageHeight = 290;
-    double imageWidth = 200;
+    double imageHeight = 290.h;
+    double imageWidth = 200.w;
 
     // محاولة الحصول على الصورة من syncColorImages أولاً
     if (widget.productItem.syncColorImages?.isNotEmpty == true) {
@@ -236,13 +236,13 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
         imageHeight =
             double.tryParse(
               firstColorImage.images!.first.originalHeight ?? '290',
-            ) ??
-            290;
+            )?.h ??
+            290.h;
         imageWidth =
             double.tryParse(
               firstColorImage.images!.first.originalWidth ?? '200',
-            ) ??
-            200;
+            )?.w ??
+            200.w;
       }
     }
 
@@ -250,8 +250,10 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
     if (imageUrl == null && widget.productItem.images?.isNotEmpty == true) {
       final firstImage = widget.productItem.images!.first;
       imageUrl = firstImage.filePath;
-      imageHeight = double.tryParse(firstImage.originalHeight ?? '290') ?? 290;
-      imageWidth = double.tryParse(firstImage.originalWidth ?? '200') ?? 200;
+      imageHeight =
+          double.tryParse(firstImage.originalHeight ?? '290')?.h ?? 290.h;
+      imageWidth =
+          double.tryParse(firstImage.originalWidth ?? '200')?.w ?? 200.w;
     }
 
     return ValueListenableBuilder<bool>(
@@ -276,7 +278,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
             (widget.videoSource != null && widget.videoSource!.isNotEmpty);
 
         return SizedBox(
-          height: 290,
+          height: 290.h,
           child: (imageUrl != null
               ? Stack(
                   alignment: Alignment.bottomCenter,
@@ -289,9 +291,9 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                                 : null,
                             orginalHeight: imageHeight,
                             orginalWidth: imageWidth,
-                            width: 200,
+                            width: 200.w,
                             imageUrl: imageUrl,
-                            height: 290,
+                            height: 290.h,
                             circleShape: false,
                             innerShadowYOffset: 3,
                           ),
@@ -321,7 +323,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                 )
               : Container(
                   color: Colors.grey[200],
-                  child: Icon(Icons.image, size: 50, color: Colors.grey[400]),
+                  child: Icon(Icons.image, size: 50.h, color: Colors.grey[400]),
                 )),
         );
       },
@@ -335,7 +337,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
     }
 
     return SizedBox(
-      height: 290,
+      height: 290.h,
       child: FutureBuilder<void>(
         future: _initializeVideoFuture,
         builder: (context, snapshot) {
@@ -354,10 +356,10 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
             videoChild = FittedBox(
               fit: BoxFit.cover,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(15.r),
                 child: SizedBox(
-                  width: 190,
-                  height: 290,
+                  width: 190.w,
+                  height: 290.h,
                   child: VideoPlayer(
                     videoProductInListingController[widget.productItem.slug ??
                         ""]!,
@@ -375,20 +377,20 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
               videoChild,
               if (showLoading)
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(15.r),
                   child: ProductListingImageWidget(
                     borderColor: isRedeem ? const Color(0xffFF6200) : null,
-                    orginalHeight: 200,
-                    orginalWidth: 200,
-                    width: 200,
+                    orginalHeight: 200.h,
+                    orginalWidth: 200.w,
+                    width: 200.w,
                     imageUrl: imageUrl,
-                    height: 290,
+                    height: 290.h,
                     circleShape: false,
-                    innerShadowYOffset: 3,
+                    innerShadowYOffset: 3.h,
                   ),
                 ),
               buffering
-                  ? TrydosLoader(size: 20)
+                  ? TrydosLoader(size: 20.h)
                   : /* videoProductInListingController[
                                 widget.productItem.slug ?? ""]!
                             .value
@@ -437,19 +439,21 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
         // معلومات المنتج
         SizedBox(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             child: Column(
               crossAxisAlignment: LanguageService.languageCode == "ar"
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
                 // Brand Icon
+                SizedBox(height: 5.h),
                 _buildBrandIcon(),
+                SizedBox(height: 5.h),
 
                 // Product Name and Category
                 _buildProductCategoryRow(),
 
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 Directionality(
                   textDirection: LanguageService.languageCode == "ar"
                       ? TextDirection.rtl
@@ -466,8 +470,8 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                         ),
                       ),
                       SizedBox(
-                        width: 100,
-                        height: 14,
+                        width: 100.w,
+                        height: 14.h,
                         child: ValueListenableBuilder<bool>(
                           valueListenable: widget.visibleRedeem,
                           builder: (context, _visibleRedeem, _) {
@@ -499,7 +503,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                                         // ignore: deprecated_member_use
                                         color: const Color(0xffFF6200),
                                       ),
-                                      const SizedBox(width: 2),
+                                      SizedBox(width: 2.w),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -528,7 +532,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                                                 .bodyMedium
                                                 ?.rq
                                                 .copyWith(
-                                                  fontSize: 9,
+                                                  fontSize: 9.sp,
                                                   color: const Color(
                                                     0xffFF6200,
                                                   ),
@@ -675,44 +679,44 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
 
     return SizedBox(
       width: isVerified ? 56.w : 31.w,
-      height: 16,
+      height: 16.h,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: LanguageService.languageCode == "ar"
             ? [
                 isVerified
-                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)
+                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8.h)
                     : const SizedBox.shrink(),
-                SizedBox(width: isVerified ? 5 : 0),
+                SizedBox(width: isVerified ? 5.w : 0),
                 mediaServerIsS3
                     ? MyCachedNetworkImage(
                         imageUrl: brandIcon,
-                        height: 15,
+                        height: 15.h,
                         imageFit: BoxFit.contain,
                         width: 30.w,
                       )
                     : SvgNetworkWidget(
                         svgUrl: brandIcon,
                         width: 30.w,
-                        height: 15,
+                        height: 15.h,
                       ),
               ]
             : [
                 mediaServerIsS3
                     ? MyCachedNetworkImage(
                         imageUrl: brandIcon,
-                        height: 15,
+                        height: 15.h,
                         imageFit: BoxFit.contain,
                         width: 30.w,
                       )
                     : SvgNetworkWidget(
                         svgUrl: brandIcon,
                         width: 30.w,
-                        height: 15,
+                        height: 15.h,
                       ),
-                SizedBox(width: isVerified ? 5 : 0),
+                SizedBox(width: isVerified ? 5.w : 0),
                 isVerified
-                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8)
+                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8.h)
                     : const SizedBox.shrink(),
               ],
       ),
@@ -767,9 +771,9 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
   /// 💰 Price Section - FIXED: أبعاد أصلية
   Widget _buildPriceSection() {
     return SizedBox(
-      width: 200,
+      width: 200.w,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
         child: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.getCurrencyForCountryModel !=
@@ -853,8 +857,8 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                                 price == offerPrice
                                     ? const SizedBox.shrink()
                                     : Container(
-                                        constraints: const BoxConstraints(
-                                          maxWidth: 45,
+                                        constraints: BoxConstraints(
+                                          maxWidth: 45.w,
                                         ),
                                         child: AutoSizeText(
                                           HelperFunctions.formatNumber(
@@ -878,9 +882,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                                       ),
                                 const SizedBox(width: 2),
                                 Container(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 45,
-                                  ),
+                                  constraints: BoxConstraints(maxWidth: 45.w),
                                   child: AutoSizeText(
                                     HelperFunctions.formatNumber(
                                       numberToFormate:
@@ -998,8 +1000,8 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                   0;
 
           return Container(
-            height: 25, // الارتفاع الأصلي
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            height: 25.h, // الارتفاع الأصلي
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
             decoration: BoxDecoration(
               color: const Color(0x1D1D1D),
               borderRadius: BorderRadius.circular(4),
@@ -1019,7 +1021,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                 ),
                 isRedeem
                     ? Container(
-                        constraints: const BoxConstraints(maxWidth: 25),
+                        constraints: BoxConstraints(maxWidth: 25.w),
                         child: AutoSizeText(
                           HelperFunctions.formatNumber(
                             numberToFormate: redeemPrice * exchangeRate,
@@ -1053,8 +1055,8 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                         ),
                       )
                     : const SizedBox.shrink(),
-                const SizedBox(width: 3),
-                SvgPicture.asset(AppAssets.bagSvg, height: 15),
+                SizedBox(width: 3.w),
+                SvgPicture.asset(AppAssets.bagSvg, height: 15.h),
               ],
             ),
           );

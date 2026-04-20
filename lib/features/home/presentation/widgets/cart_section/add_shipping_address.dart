@@ -563,7 +563,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                     0,
                   ),
                   child: Container(
-                    height: height.toDouble(),
+                    height: height.h,
                     width: 1.sw,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15.r),
@@ -577,12 +577,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          padding: const EdgeInsets.only(
-                            top: 5,
-                            left: 8,
-                            right: 8,
+                          padding: EdgeInsets.only(
+                            top: 5.h,
+                            left: 8.w,
+                            right: 8.w,
                           ),
-                          height: 18,
+                          height: 18.h,
                           child: Row(
                             children: [
                               Text(
@@ -591,7 +591,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                     .copyWith(
                                       color: const Color(0xff505050),
                                       letterSpacing: 0.18,
-                                      fontSize: 12,
+                                      fontSize: 12.sp,
                                       height:
                                           LanguageService.languageCode == "ar"
                                           ? 0.5
@@ -606,7 +606,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                           .copyWith(
                                             color: const Color(0xffD3D3D3),
                                             letterSpacing: 0.18,
-                                            fontSize: 12,
+                                            fontSize: 12.sp,
                                             height: 0.8,
                                           ),
                                     ),
@@ -634,7 +634,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                         0xff1D1D1D,
                                                       ),
                                                       letterSpacing: 0.18,
-                                                      fontSize: 16,
+                                                      fontSize: 16.sp,
                                                       height: 0.8,
                                                     ),
                                               )
@@ -755,7 +755,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                             .copyWith(
                                               color: const Color(0xff1D1D1D),
                                               letterSpacing: 0.18,
-                                              fontSize: 14,
+                                              fontSize: 14.sp,
                                               height: 1.1,
                                             ),
                                         hintTextStyle: context
@@ -765,7 +765,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                             .copyWith(
                                               color: const Color(0xffD3D3D3),
                                               letterSpacing: 0.18,
-                                              fontSize: 14,
+                                              fontSize: 14.sp,
                                               height: hint2 == "" ? 1 : 1.3,
                                             ),
                                       );
@@ -811,7 +811,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                       '${hint}' +
                                       "${hint2 == "" ? "" : "\n${hint2}"}",
                                   contentPadding: HWEdgeInsetsDirectional.only(
-                                    start: 8,
+                                    start: 8.w,
                                     end: 1,
                                     bottom: 1,
                                     top: 1,
@@ -822,7 +822,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                       .copyWith(
                                         color: const Color(0xff1D1D1D),
                                         letterSpacing: 0.18,
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                         height: 1.1,
                                       ),
                                   hintTextStyle: context
@@ -832,7 +832,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                       .copyWith(
                                         color: const Color(0xffD3D3D3),
                                         letterSpacing: 0.18,
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                         height: hint2 == "" ? 1 : 1.3,
                                       ),
                                 ),
@@ -914,7 +914,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
             valueListenable: visiblePrefixOptional,
             builder: (context, isVisiblePrefixOptional, _) {
               return Container(
-                height: height.toDouble(),
+                height: height.h,
                 width: 1.sw,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15.r),
@@ -924,8 +924,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.only(top: 5, left: 8, right: 8),
-                      height: 18,
+                      padding: EdgeInsets.only(top: 5.h, left: 8.w, right: 8.w),
+                      height: 18.h,
                       child: Row(
                         children: [
                           Text(
@@ -933,7 +933,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                             style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: const Color(0xff505050),
                               letterSpacing: 0.18,
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               height: LanguageService.languageCode == "ar"
                                   ? 0.5
                                   : 0.8,
@@ -947,7 +947,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                       .copyWith(
                                         color: const Color(0xffD3D3D3),
                                         letterSpacing: 0.18,
-                                        fontSize: 12,
+                                        fontSize: 12.sp,
                                         height: 0.8,
                                       ),
                                 ),
@@ -969,7 +969,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                           .copyWith(
                                             color: const Color(0xff1D1D1D),
                                             letterSpacing: 0.18,
-                                            fontSize: 16,
+                                            fontSize: 16.sp,
                                             height: 0.8,
                                           ),
                                     )
@@ -1065,7 +1065,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                   '${hint}' +
                                   "${hint2 == "" ? "" : "\n${hint2}"}",
                               contentPadding: HWEdgeInsetsDirectional.only(
-                                start: 8,
+                                start: 8.w,
                                 end: 1,
                                 bottom: 1,
                                 top: 1,
@@ -1076,14 +1076,14 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                   .copyWith(
                                     color: const Color(0xff1D1D1D),
                                     letterSpacing: 0.18,
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     height: 1.1,
                                   ),
                               hintTextStyle: context.textTheme.bodyMedium?.rq
                                   .copyWith(
                                     color: const Color(0xffD3D3D3),
                                     letterSpacing: 0.18,
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     height: hint2 == "" ? 1 : 1.3,
                                   ),
                             );
@@ -1380,7 +1380,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                           } else {}
                                         },
                                         child: Container(
-                                          width: 40,
+                                          width: 40.w,
                                           child: Transform.rotate(
                                             angle:
                                                 LanguageService.languageCode ==
@@ -1389,7 +1389,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                 : 0,
                                             child: SvgPicture.asset(
                                               AppAssets.backIconArrowSvg,
-                                              height: 20,
+                                              height: 20.h,
                                             ),
                                           ),
                                         ),
@@ -1400,11 +1400,11 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                           alignment: Alignment.center,
                                           children: [
                                             SvgPicture.asset(
-                                              height: 18,
+                                              height: 18.h,
                                               AppAssets.addShippingAddressSvg,
                                             ),
                                             Positioned(
-                                              height: 18,
+                                              height: 18.h,
                                               top: -2,
                                               child: SvgPicture.asset(
                                                 AppAssets
@@ -1421,7 +1421,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                             .copyWith(
                                               color: const Color(0xff1D1D1D),
                                               letterSpacing: 0.2,
-                                              fontSize: 14,
+                                              fontSize: 14.sp,
                                               height: 1.33,
                                             ),
                                       ),
@@ -1456,7 +1456,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                       ),
                                                     ),
                                                   ),
-                                                  height: 50,
+                                                  height: 50.h,
                                                   child: Row(
                                                     children: [
                                                       SizedBox(width: 20.w),
@@ -1466,7 +1466,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                       SizedBox(width: 10.w),
                                                       Container(
                                                         width: 370.w,
-                                                        height: 32,
+                                                        height: 32.h,
                                                         child: Column(
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment
@@ -1488,7 +1488,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     letterSpacing:
                                                                         0.18,
                                                                     fontSize:
-                                                                        11,
+                                                                        11.sp,
                                                                     height: 0.8,
                                                                   ),
                                                             ),
@@ -1505,7 +1505,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     letterSpacing:
                                                                         0.18,
                                                                     fontSize:
-                                                                        11,
+                                                                        11.sp,
                                                                     height: 0.8,
                                                                   ),
                                                             ),
@@ -1517,9 +1517,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                 ),
                                                 isShowFulMap
                                                     ? const SizedBox.shrink()
-                                                    : const SizedBox(
-                                                        height: 10,
-                                                      ),
+                                                    : SizedBox(height: 10.h),
                                                 isShowFulMap
                                                     ? Stack(
                                                         children: [
@@ -1527,10 +1525,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                             width: 1.sw,
                                                             height: 1.sh / 1.7,
                                                             margin:
-                                                                const EdgeInsets.only(
-                                                                  left: 15,
-                                                                  right: 15,
-                                                                  top: 15,
+                                                                EdgeInsets.only(
+                                                                  left: 15.w,
+                                                                  right: 15.w,
+                                                                  top: 15.h,
                                                                 ),
                                                             decoration: BoxDecoration(
                                                               borderRadius:
@@ -1551,8 +1549,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               height:
                                                                   1.sh / 1.7,
                                                               margin:
-                                                                  const EdgeInsets.all(
-                                                                    10,
+                                                                  EdgeInsets.all(
+                                                                    10.w,
                                                                   ),
                                                               decoration: BoxDecoration(
                                                                 borderRadius:
@@ -1688,15 +1686,16 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                   _,
                                                                 ) {
                                                                   return Positioned(
-                                                                    bottom: 120,
-                                                                    right: 35,
+                                                                    bottom:
+                                                                        120.h,
+                                                                    right: 35.w,
                                                                     child:
                                                                         _loadingToGoCurrentLoacation
                                                                         ? Container(
                                                                             width:
-                                                                                50,
+                                                                                50.w,
                                                                             height:
-                                                                                50,
+                                                                                50.h,
                                                                             color: const Color(
                                                                               0xffFFFFFF,
                                                                             ),
@@ -1704,7 +1703,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               color: const Color(
                                                                                 0xff1D1D1D,
                                                                               ),
-                                                                              size: 15,
+                                                                              size: 15.h,
                                                                             ),
                                                                           )
                                                                         : InkWell(
@@ -1734,8 +1733,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             child: Container(
                                                                               color: Colors.black12,
                                                                               alignment: Alignment.center,
-                                                                              width: 50,
-                                                                              height: 50,
+                                                                              width: 50.w,
+                                                                              height: 50.h,
                                                                               child: const Icon(
                                                                                 Icons.my_location,
                                                                               ),
@@ -1771,7 +1770,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     ),
                                                               ),
                                                             ),
-                                                            height: 118,
+                                                            height: 118.h,
                                                             child: Column(
                                                               children: [
                                                                 Stack(
@@ -1783,7 +1782,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       height:
-                                                                          80,
+                                                                          80.h,
                                                                       margin:
                                                                           EdgeInsets.all(
                                                                             10.w,
@@ -1848,7 +1847,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                   0xffF4F4F4,
                                                                                 ),
                                                                                 letterSpacing: 0.18,
-                                                                                fontSize: 12,
+                                                                                fontSize: 12.sp,
                                                                                 height: 0.8,
                                                                               ),
                                                                             ),
@@ -1858,7 +1857,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           ],
                                                                         ),
                                                                         height:
-                                                                            35,
+                                                                            35.h,
                                                                         width:
                                                                             210.w,
                                                                         margin:
@@ -1893,7 +1892,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                         letterSpacing:
                                                                             0.18,
                                                                         fontSize:
-                                                                            12,
+                                                                            12.sp,
                                                                         height:
                                                                             0.8,
                                                                       ),
@@ -1905,13 +1904,11 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                       ),
                                                 isShowFulMap
                                                     ? SizedBox.fromSize()
-                                                    : const SizedBox(
-                                                        height: 28,
-                                                      ),
+                                                    : SizedBox(height: 20.h),
                                                 isShowFulMap
                                                     ? SizedBox.fromSize()
                                                     : Container(
-                                                        height: 280,
+                                                        height: 300.h,
                                                         width: 1.sw,
                                                         margin:
                                                             EdgeInsets.symmetric(
@@ -1923,8 +1920,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                   .start,
                                                           children: [
                                                             Container(
-                                                              height: 15,
-                                                              width: 116,
+                                                              height: 15.h,
+                                                              width: 120.w,
                                                               margin:
                                                                   EdgeInsets.symmetric(
                                                                     horizontal:
@@ -1948,7 +1945,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       letterSpacing:
                                                                           0.18,
                                                                       fontSize:
-                                                                          12,
+                                                                          12.sp,
                                                                       height:
                                                                           LanguageService.languageCode ==
                                                                               "ar"
@@ -1967,11 +1964,11 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                 ],
                                                               ),
                                                             ),
-                                                            const SizedBox(
-                                                              height: 10,
+                                                            SizedBox(
+                                                              height: 10.h,
                                                             ),
                                                             Container(
-                                                              height: 50,
+                                                              height: 50.h,
                                                               width: 1.sw,
                                                               decoration: BoxDecoration(
                                                                 borderRadius:
@@ -1986,9 +1983,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               ),
                                                               child: Padding(
                                                                 padding:
-                                                                    const EdgeInsets.symmetric(
+                                                                    EdgeInsets.symmetric(
                                                                       horizontal:
-                                                                          8,
+                                                                          8.w,
                                                                     ),
                                                                 child: Column(
                                                                   mainAxisAlignment:
@@ -2009,7 +2006,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                         letterSpacing:
                                                                             0.18,
                                                                         fontSize:
-                                                                            12,
+                                                                            12.sp,
                                                                         height:
                                                                             0.8,
                                                                       ),
@@ -2026,10 +2023,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                   "SY"
                                                                               ? SvgPicture.asset(
                                                                                   AppAssets.syriaFlagSvg,
+                                                                                  width: 18.w,
+                                                                                  height: 18.h,
                                                                                 )
                                                                               : Container(
-                                                                                  width: 18,
-                                                                                  height: 18,
+                                                                                  width: 18.w,
+                                                                                  height: 18.h,
                                                                                   child: CountryFlag.fromCountryCode(
                                                                                     "${country?.iso}",
                                                                                     height: 18.h,
@@ -2048,7 +2047,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                 0xff1D1D1D,
                                                                               ),
                                                                               letterSpacing: 0.18,
-                                                                              fontSize: 14,
+                                                                              fontSize: 14.sp,
                                                                               height: 1.2,
                                                                             ),
                                                                           ),
@@ -2157,7 +2156,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                   vertical: 10.h,
                                                                                                 ),
                                                                                                 width: 1.sw,
-                                                                                                height: 53.h,
+                                                                                                height: 58.h,
                                                                                                 decoration: BoxDecoration(
                                                                                                   borderRadius: BorderRadius.circular(
                                                                                                     15.r,
@@ -2185,7 +2184,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                 vertical: 10.h,
                                                                                               ),
                                                                                               width: 1.sw,
-                                                                                              height: 53,
+                                                                                              height: 60.h,
                                                                                               decoration: BoxDecoration(
                                                                                                 borderRadius: BorderRadius.circular(
                                                                                                   15.r,
@@ -2219,7 +2218,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                           0xff505050,
                                                                                                         ),
                                                                                                         letterSpacing: 0.18,
-                                                                                                        fontSize: 12,
+                                                                                                        fontSize: 12.sp,
                                                                                                         height:
                                                                                                             LanguageService.languageCode ==
                                                                                                                 "ar"
@@ -2229,6 +2228,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                     ),
                                                                                                     Container(
                                                                                                       width: 350.w,
+                                                                                                      padding: EdgeInsets.only(
+                                                                                                        top: 5.h,
+                                                                                                      ),
                                                                                                       child: Row(
                                                                                                         children: [
                                                                                                           SvgPicture.asset(
@@ -2243,7 +2245,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                                 : const Color(
                                                                                                                     0xffD3D3D3,
                                                                                                                   ),
-                                                                                                            height: 16,
+                                                                                                            height: 16.h,
                                                                                                           ),
                                                                                                           SizedBox(
                                                                                                             width: 5.w,
@@ -2252,7 +2254,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                                   0
                                                                                                               ? Container(
                                                                                                                   width: 300.w,
-                                                                                                                  height: 20,
+                                                                                                                  height: 20.h,
                                                                                                                   child: ListView.builder(
                                                                                                                     scrollDirection: Axis.horizontal,
                                                                                                                     itemCount: finishSelectedByUserToAppear.length,
@@ -2271,7 +2273,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                                               0xff1D1D1D,
                                                                                                                             ),
                                                                                                                             letterSpacing: 0.18,
-                                                                                                                            fontSize: 14,
+                                                                                                                            fontSize: 14.sp,
                                                                                                                             height: 1.3,
                                                                                                                           ),
                                                                                                                         ),
@@ -2284,7 +2286,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                                                       0xffD3D3D3,
                                                                                                                     ),
                                                                                                                     letterSpacing: 0.18,
-                                                                                                                    fontSize: 14,
+                                                                                                                    fontSize: 14.sp,
                                                                                                                     height: 0.8,
                                                                                                                   ),
                                                                                                                 ),
@@ -2308,7 +2310,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               context: context,
                                                               isPhone: false,
                                                               isComplate: false,
-                                                              height: 72,
+                                                              height: 73,
                                                               title2: "",
                                                               hint2:
                                                                   '${LocaleKeys.street_address_building_flat_door_unit.tr()}.',
@@ -2318,8 +2320,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               hint:
                                                                   '${LocaleKeys.write_the_address_clearly_including.tr()}',
                                                             ),
-                                                            const SizedBox(
-                                                              height: 10,
+                                                            SizedBox(
+                                                              height: 10.h,
                                                             ),
                                                             AddressInfoWidget(
                                                               controller:
@@ -2327,7 +2329,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               context: context,
                                                               isPhone: false,
                                                               isComplate: false,
-                                                              height: 50,
+                                                              height: 54,
                                                               title2: "",
                                                               hint2: "",
                                                               title: LocaleKeys
@@ -2341,13 +2343,11 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                       ),
                                                 isShowFulMap
                                                     ? SizedBox.fromSize()
-                                                    : const SizedBox(
-                                                        height: 20,
-                                                      ),
+                                                    : SizedBox(height: 15.h),
                                                 isShowFulMap
                                                     ? SizedBox.fromSize()
                                                     : Container(
-                                                        height: 197,
+                                                        height: 300.h,
                                                         width: 1.sw,
                                                         margin:
                                                             EdgeInsets.symmetric(
@@ -2359,8 +2359,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                   .start,
                                                           children: [
                                                             Container(
-                                                              height: 15,
-                                                              width: 116,
+                                                              height: 15.h,
+                                                              width: 120.w,
                                                               margin:
                                                                   EdgeInsets.symmetric(
                                                                     horizontal:
@@ -2384,7 +2384,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       letterSpacing:
                                                                           0.18,
                                                                       fontSize:
-                                                                          12,
+                                                                          12.sp,
                                                                       height:
                                                                           LanguageService.languageCode ==
                                                                               "ar"
@@ -2403,8 +2403,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                 ],
                                                               ),
                                                             ),
-                                                            const SizedBox(
-                                                              height: 10,
+                                                            SizedBox(
+                                                              height: 10.h,
                                                             ),
                                                             AddressInfoWidget(
                                                               controller:
@@ -2413,7 +2413,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               title2: "",
                                                               context: context,
                                                               isComplate: false,
-                                                              height: 50,
+                                                              height: 54,
                                                               hint2: "",
                                                               title: LocaleKeys
                                                                   .recipient_name
@@ -2421,8 +2421,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               hint:
                                                                   '${LocaleKeys.enter_ful_recipient_name.tr()}',
                                                             ),
-                                                            const SizedBox(
-                                                              height: 10,
+                                                            SizedBox(
+                                                              height: 10.h,
                                                             ),
                                                             AddressInfoWidget(
                                                               controller:
@@ -2431,7 +2431,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               context: context,
                                                               isComplate: false,
                                                               title2: "",
-                                                              height: 50,
+                                                              height: 54,
                                                               hint2: "",
                                                               title: LocaleKeys
                                                                   .contact_phone
@@ -2440,11 +2440,11 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                   "${LocaleKeys.county_code.tr()} + " +
                                                                   '${LocaleKeys.enter_recipient_phone.tr()}',
                                                             ),
-                                                            const SizedBox(
-                                                              height: 10,
+                                                            SizedBox(
+                                                              height: 10.h,
                                                             ),
                                                             AddressInfoWidgetOptional(
-                                                              height: 50,
+                                                              height: 54,
                                                               context: context,
                                                               isPhone: true,
                                                               isComplate: false,
@@ -2466,7 +2466,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                           ],
                                                         ),
                                                       ),
-                                                const SizedBox(height: 20),
+                                                SizedBox(height: 20.h),
                                               ],
                                             ),
                                           ),
@@ -2482,7 +2482,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                       valueListenable: showFulMap,
                                       builder: (context, isShowFulMap, _) {
                                         return Container(
-                                          height: 92,
+                                          height: 100.h,
                                           decoration: BoxDecoration(
                                             border: Border.all(
                                               color: const Color.fromRGBO(
@@ -2519,7 +2519,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                             },
                                             child: isShowFulMap
                                                 ? Container(
-                                                    height: 70,
+                                                    height: 70.h,
                                                     width: 1.sw,
                                                     child: Row(
                                                       children: [
@@ -2562,13 +2562,14 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                           );*/
                                                           },
                                                           child: Container(
-                                                            height: 70,
+                                                            height: 70.h,
                                                             width: 280.w,
                                                             margin:
-                                                                const EdgeInsets.symmetric(
+                                                                EdgeInsets.symmetric(
                                                                   horizontal:
-                                                                      20,
-                                                                  vertical: 10,
+                                                                      20.w,
+                                                                  vertical:
+                                                                      10.h,
                                                                 ),
                                                             decoration: BoxDecoration(
                                                               borderRadius:
@@ -2596,7 +2597,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       letterSpacing:
                                                                           0.18,
                                                                       fontSize:
-                                                                          18,
+                                                                          18.sp,
                                                                       height:
                                                                           0.8,
                                                                     ),
@@ -2617,7 +2618,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                           child: Container(
                                                             alignment: Alignment
                                                                 .center,
-                                                            height: 70,
+                                                            height: 50.h,
                                                             width: 70.w,
                                                             child: Text(
                                                               "${LocaleKeys.cansel.tr()} ",
@@ -2632,7 +2633,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     letterSpacing:
                                                                         0.18,
                                                                     fontSize:
-                                                                        18,
+                                                                        18.sp,
                                                                     height: 1.2,
                                                                   ),
                                                             ),
@@ -2889,13 +2890,13 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               }
                                                             },
                                                             child: Container(
-                                                              height: 70,
+                                                              height: 54.h,
                                                               margin:
-                                                                  const EdgeInsets.symmetric(
+                                                                  EdgeInsets.symmetric(
                                                                     horizontal:
-                                                                        20,
+                                                                        20.w,
                                                                     vertical:
-                                                                        10,
+                                                                        10.h,
                                                                   ),
                                                               decoration: BoxDecoration(
                                                                 borderRadius:
@@ -2941,7 +2942,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                         letterSpacing:
                                                                             0.18,
                                                                         fontSize:
-                                                                            18,
+                                                                            18.sp,
                                                                         height:
                                                                             0.8,
                                                                       ),
@@ -3029,7 +3030,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                         bottom: 0,
                                         child: Container(
                                           width: 1.sw,
-                                          height: isShowPanel ? 400 : 0,
+                                          height: isShowPanel ? 500.h : 0,
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.only(
                                               topLeft: Radius.circular(30.r),
@@ -3117,9 +3118,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                 },
                                                 onPanelOpened: () {},
                                                 minHeight: 0,
-                                                maxHeight: 400,
+                                                maxHeight: 500.h,
                                                 panelBuilder: (sc) => Container(
-                                                  height: 400,
+                                                  height: 500.h,
                                                   width: 1.sw,
                                                   child: Column(
                                                     crossAxisAlignment:
@@ -3131,8 +3132,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                       ),
                                                       Center(
                                                         child: Container(
-                                                          width: 125,
-                                                          height: 20,
+                                                          width: 150.w,
+                                                          height: 25.h,
                                                           child: Row(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
@@ -3141,6 +3142,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               SvgPicture.asset(
                                                                 AppAssets
                                                                     .detectedSvg,
+                                                                height: 16.h,
                                                                 // ignore: deprecated_member_use
                                                                 color:
                                                                     const Color(
@@ -3148,7 +3150,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     ),
                                                               ),
                                                               Text(
-                                                                "${LocaleKeys.select_from_list.tr()} ",
+                                                                "  ${LocaleKeys.select_from_list.tr()} ",
                                                                 style: context
                                                                     .textTheme
                                                                     .bodyMedium
@@ -3160,7 +3162,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       letterSpacing:
                                                                           0.18,
                                                                       fontSize:
-                                                                          14,
+                                                                          14.sp,
                                                                       height:
                                                                           1.2,
                                                                     ),
@@ -3169,13 +3171,11 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                           ),
                                                         ),
                                                       ),
-                                                      const SizedBox(
-                                                        height: 10,
-                                                      ),
+                                                      SizedBox(height: 10.h),
                                                       Container(
                                                         margin:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 10,
+                                                            EdgeInsets.symmetric(
+                                                              horizontal: 10.w,
                                                             ),
                                                         child: Row(
                                                           mainAxisAlignment:
@@ -3183,8 +3183,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                   .center,
                                                           children: [
                                                             Container(
-                                                              width: 18,
-                                                              height: 18,
+                                                              width: 18.w,
+                                                              height: 18.h,
                                                               child:
                                                                   country?.iso
                                                                           ?.toUpperCase() ==
@@ -3194,6 +3194,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           .syriaFlagSvg,
                                                                       width:
                                                                           18.w,
+                                                                      height:
+                                                                          18.h,
                                                                     )
                                                                   : CountryFlag.fromCountryCode(
                                                                       "${country?.iso}",
@@ -3218,7 +3220,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     letterSpacing:
                                                                         0.18,
                                                                     fontSize:
-                                                                        14,
+                                                                        14.sp,
                                                                     height: 1.2,
                                                                   ),
                                                             ),
@@ -3238,7 +3240,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           letterSpacing:
                                                                               0.18,
                                                                           fontSize:
-                                                                              14,
+                                                                              14.sp,
                                                                           height:
                                                                               1.2,
                                                                         ),
@@ -3256,7 +3258,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           letterSpacing:
                                                                               0.18,
                                                                           fontSize:
-                                                                              14,
+                                                                              14.sp,
                                                                           height:
                                                                               1.2,
                                                                         ),
@@ -3279,7 +3281,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       letterSpacing:
                                                                           0.18,
                                                                       fontSize:
-                                                                          14,
+                                                                          14.sp,
                                                                       height:
                                                                           1.2,
                                                                     ),
@@ -3297,7 +3299,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           letterSpacing:
                                                                               0.18,
                                                                           fontSize:
-                                                                              14,
+                                                                              14.sp,
                                                                           height:
                                                                               1.2,
                                                                         ),
@@ -3320,7 +3322,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       letterSpacing:
                                                                           0.18,
                                                                       fontSize:
-                                                                          14,
+                                                                          14.sp,
                                                                       height:
                                                                           1.2,
                                                                     ),
@@ -3338,7 +3340,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           letterSpacing:
                                                                               0.18,
                                                                           fontSize:
-                                                                              14,
+                                                                              14.sp,
                                                                           height:
                                                                               1.2,
                                                                         ),
@@ -3361,7 +3363,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       letterSpacing:
                                                                           0.18,
                                                                       fontSize:
-                                                                          14,
+                                                                          14.sp,
                                                                       height:
                                                                           1.2,
                                                                     ),
@@ -3379,7 +3381,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           letterSpacing:
                                                                               0.18,
                                                                           fontSize:
-                                                                              14,
+                                                                              14.sp,
                                                                           height:
                                                                               1.2,
                                                                         ),
@@ -3392,14 +3394,14 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                       ),
                                                       Container(
                                                         padding:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 10,
+                                                            EdgeInsets.symmetric(
+                                                              horizontal: 10.w,
                                                             ),
                                                         margin:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 15,
+                                                            EdgeInsets.symmetric(
+                                                              horizontal: 15.w,
                                                             ),
-                                                        height: 40,
+                                                        height: 40.h,
                                                         width: 1.sw,
                                                         decoration: BoxDecoration(
                                                           borderRadius:
@@ -3488,19 +3490,19 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     ),
                                                                 letterSpacing:
                                                                     0.18,
-                                                                fontSize: 14,
+                                                                fontSize: 14.sp,
                                                                 height: 0.8,
                                                               ),
                                                         ),
                                                       ),
-                                                      const SizedBox(height: 5),
+                                                      SizedBox(height: 5.h),
                                                       Container(
                                                         alignment:
                                                             Alignment.topCenter,
-                                                        height: 260,
+                                                        height: 260.h,
                                                         margin:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 15,
+                                                            EdgeInsets.symmetric(
+                                                              horizontal: 15.w,
                                                             ),
                                                         child: ListView.separated(
                                                           controller: sc,
@@ -3569,9 +3571,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               },
                                                               child: Container(
                                                                 padding:
-                                                                    const EdgeInsets.symmetric(
+                                                                    EdgeInsets.symmetric(
                                                                       horizontal:
-                                                                          35,
+                                                                          35.w,
                                                                     ),
                                                                 alignment:
                                                                     LanguageService
@@ -3594,7 +3596,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           letterSpacing:
                                                                               0.18,
                                                                           fontSize:
-                                                                              14,
+                                                                              14.sp,
                                                                           height:
                                                                               1.2,
                                                                         ),
@@ -3615,7 +3617,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           letterSpacing:
                                                                               0.18,
                                                                           fontSize:
-                                                                              14,
+                                                                              14.sp,
                                                                           height:
                                                                               1.2,
                                                                         ),
@@ -3639,7 +3641,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                         12.r,
                                                                       ),
                                                                 ),
-                                                                height: 50,
+                                                                height: 50.h,
                                                               ),
                                                             );
                                                           },

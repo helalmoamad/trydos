@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -59,7 +60,7 @@ class _CountDownTimerState extends State<CountDownTimer> {
           return Text(
             '$minets : $seconds ',
             style: context.textTheme.bodyMedium?.bq.copyWith(
-              fontSize: 12,
+              fontSize: 12.sp,
               color: const Color(0xffA28E5B),
             ),
           );

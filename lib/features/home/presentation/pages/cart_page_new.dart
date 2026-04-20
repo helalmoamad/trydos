@@ -465,7 +465,7 @@ class _CartPageState extends State<CartPage> {
               child: Column(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(top: 60.h),
+                    margin: EdgeInsets.only(top: 50.h),
                     padding: EdgeInsets.symmetric(horizontal: 10.h),
                     width: 1.sw,
                     height: 50.h,
@@ -564,8 +564,8 @@ class _CartPageState extends State<CartPage> {
                               const Spacer(),
                               SvgPicture.asset(
                                 AppAssets.shareSvg,
-                                height: 20,
-                                width: 20,
+                                height: 20.h,
+                                width: 20.w,
                                 // ignore: deprecated_member_use
                                 color: const Color(0xff3C3C3C),
                               ),
@@ -660,16 +660,16 @@ class _CartPageState extends State<CartPage> {
                                                 : 200.h),
                                       ),
                                       Container(
-                                        height: 20,
+                                        height: 20.h,
                                         child: SvgPicture.asset(
                                           AppAssets.cartSvg,
                                           // ignore: deprecated_member_use
                                           color: const Color(0xff8E8E8E),
 
-                                          height: 20,
+                                          height: 20.h,
                                         ),
                                       ),
-                                      const SizedBox(height: 10),
+                                      SizedBox(height: 10.h),
                                       Text(
                                         "${LocaleKeys.your_cart_empty.tr()}",
                                         style: context.textTheme.bodyMedium?.mq
@@ -680,7 +680,7 @@ class _CartPageState extends State<CartPage> {
                                               height: 1.33,
                                             ),
                                       ),
-                                      const SizedBox(height: 15),
+                                      SizedBox(height: 15.h),
                                       Container(
                                         alignment: Alignment.center,
                                         child: Text(
@@ -729,19 +729,19 @@ class _CartPageState extends State<CartPage> {
                                                 ? Center(
                                                     child: MyTextWidget(
                                                       "${LocaleKeys.old_cart.tr()}",
-                                                      style: const TextStyle(
+                                                      style: TextStyle(
                                                         color: Colors.black,
-                                                        fontSize: 24,
+                                                        fontSize: 24.sp,
                                                       ),
                                                     ),
                                                   )
                                                 : const SizedBox.shrink()
                                           : const SizedBox.shrink(),
-                                      const SizedBox(height: 10),
+                                      SizedBox(height: 10.h),
                                       state.oldcartCollection != null
                                           ? !state.oldcartCollection!.isEmpty
                                                 ? Container(
-                                                    height: 70,
+                                                    height: 70.h,
                                                     padding: EdgeInsets.all(
                                                       20.w,
                                                     ),
@@ -827,7 +827,7 @@ class _CartPageState extends State<CartPage> {
                                     valueListenable: isExpanded,
                                     builder: (context, expanded, _) {
                                       return Positioned(
-                                        bottom: -15,
+                                        bottom: -15.h,
                                         child: Container(
                                           decoration: BoxDecoration(
                                             borderRadius:
@@ -837,12 +837,12 @@ class _CartPageState extends State<CartPage> {
                                                         .cartCollection!
                                                         .isEmpty))
                                                 ? null
-                                                : const BorderRadius.only(
+                                                : BorderRadius.only(
                                                     topLeft: Radius.circular(
-                                                      30,
+                                                      30.r,
                                                     ),
                                                     topRight: Radius.circular(
-                                                      30,
+                                                      30.r,
                                                     ),
                                                   ),
                                           ),
@@ -859,12 +859,12 @@ class _CartPageState extends State<CartPage> {
                                                         .cartCollection!
                                                         .isEmpty))
                                                 ? null
-                                                : const BorderRadius.only(
+                                                : BorderRadius.only(
                                                     topLeft: Radius.circular(
-                                                      30,
+                                                      30.r,
                                                     ),
                                                     topRight: Radius.circular(
-                                                      30,
+                                                      30.r,
                                                     ),
                                                   ),
                                             onPanelClosed: () {
@@ -887,10 +887,10 @@ class _CartPageState extends State<CartPage> {
                                                     state
                                                         .cartCollection!
                                                         .isEmpty))
-                                                ? 100
+                                                ? 100.h
                                                 : !isverified
-                                                ? 600
-                                                : 258,
+                                                ? 600.h
+                                                : 275.h,
                                             maxHeight: isMoreInfo
                                                 ? 1.sh - 250.h
                                                 : ((state.cartCollection ==
@@ -898,10 +898,10 @@ class _CartPageState extends State<CartPage> {
                                                       state
                                                           .cartCollection!
                                                           .isEmpty))
-                                                ? 120
+                                                ? 120.h
                                                 : !isverified
-                                                ? 720
-                                                : 447,
+                                                ? 720.h
+                                                : 480.h,
                                             panelBuilder: (sc) => Container(
                                               alignment: Alignment.topLeft,
                                               decoration: BoxDecoration(
@@ -918,15 +918,14 @@ class _CartPageState extends State<CartPage> {
                                                   ),
                                                 ),
                                                 color: const Color(0xffFFFFFF),
-                                                borderRadius:
-                                                    const BorderRadius.only(
-                                                      topLeft: Radius.circular(
-                                                        30,
-                                                      ),
-                                                      topRight: Radius.circular(
-                                                        30,
-                                                      ),
-                                                    ),
+                                                borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(
+                                                    30.r,
+                                                  ),
+                                                  topRight: Radius.circular(
+                                                    30.r,
+                                                  ),
+                                                ),
                                               ),
                                               height:
                                                   ((state.cartCollection ==
@@ -961,14 +960,14 @@ class _CartPageState extends State<CartPage> {
                                                           0xffFFFFFF,
                                                         ),
                                                         borderRadius:
-                                                            const BorderRadius.only(
+                                                            BorderRadius.only(
                                                               topLeft:
                                                                   Radius.circular(
-                                                                    30,
+                                                                    30.r,
                                                                   ),
                                                               topRight:
                                                                   Radius.circular(
-                                                                    30,
+                                                                    30.r,
                                                                   ),
                                                             ),
                                                       ),
@@ -982,8 +981,8 @@ class _CartPageState extends State<CartPage> {
                                                                 .cartCollection!
                                                                 .isEmpty))
                                                         ? const SizedBox.shrink()
-                                                        : const SizedBox(
-                                                            height: 10,
+                                                        : SizedBox(
+                                                            height: 10.h,
                                                           ),
                                                     ((state.cartCollection ==
                                                                 null ||
@@ -1012,7 +1011,7 @@ class _CartPageState extends State<CartPage> {
                                                               child: SvgPicture.asset(
                                                                 AppAssets
                                                                     .chatWithQuestionSvg,
-                                                                height: 14,
+                                                                height: 13.sp,
                                                               ),
                                                             ),
                                                           ),
@@ -1022,9 +1021,7 @@ class _CartPageState extends State<CartPage> {
                                                                 .cartCollection!
                                                                 .isEmpty))
                                                         ? const SizedBox.shrink()
-                                                        : const SizedBox(
-                                                            height: 5,
-                                                          ),
+                                                        : SizedBox(height: 5.h),
                                                     ((state.cartCollection ==
                                                                 null ||
                                                             state
@@ -1032,7 +1029,7 @@ class _CartPageState extends State<CartPage> {
                                                                 .isEmpty))
                                                         ? const SizedBox.shrink()
                                                         : Container(
-                                                            height: 27,
+                                                            height: 27.h,
                                                             child: CartDetailsSheetHeader(
                                                               shippingCost:
                                                                   (state
@@ -1058,15 +1055,15 @@ class _CartPageState extends State<CartPage> {
                                                           0xffF8F8F8,
                                                         ),
                                                         borderRadius:
-                                                            const BorderRadius.all(
+                                                            BorderRadius.all(
                                                               Radius.circular(
-                                                                30,
+                                                                30.r,
                                                               ),
                                                             ),
                                                       ),
                                                       margin:
-                                                          const EdgeInsets.symmetric(
-                                                            horizontal: 10,
+                                                          EdgeInsets.symmetric(
+                                                            horizontal: 10.w,
                                                           ),
                                                       child: Column(
                                                         crossAxisAlignment:
@@ -1077,11 +1074,11 @@ class _CartPageState extends State<CartPage> {
                                                               ? const SizedBox.shrink()
                                                               : Container(
                                                                   margin:
-                                                                      const EdgeInsets.all(
-                                                                        18,
+                                                                      EdgeInsets.all(
+                                                                        18.h,
                                                                       ),
-                                                                  width: 65,
-                                                                  height: 18,
+                                                                  width: 65.w,
+                                                                  height: 18.h,
                                                                   child: Row(
                                                                     crossAxisAlignment:
                                                                         CrossAxisAlignment
@@ -1095,7 +1092,7 @@ class _CartPageState extends State<CartPage> {
                                                                           0xff1D1D1D,
                                                                         ),
                                                                         height:
-                                                                            12,
+                                                                            12.h,
                                                                       ),
                                                                       Text(
                                                                         " ${LocaleKeys.item.tr()} ",
@@ -1164,11 +1161,11 @@ class _CartPageState extends State<CartPage> {
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
                                                                                   ? 10.w
-                                                                                  : 25,
+                                                                                  : 25.w,
                                                                               left:
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
-                                                                                  ? 25
+                                                                                  ? 25.w
                                                                                   : 10.w,
                                                                             ),
                                                                             child: Text(
@@ -1232,11 +1229,11 @@ class _CartPageState extends State<CartPage> {
                                                                               LanguageService.languageCode !=
                                                                                   "ar"
                                                                               ? 10.w
-                                                                              : 25,
+                                                                              : 25.w,
                                                                           left:
                                                                               LanguageService.languageCode !=
                                                                                   "ar"
-                                                                              ? 25
+                                                                              ? 25.w
                                                                               : 10.w,
                                                                         ),
                                                                         child: Text(
@@ -1296,11 +1293,11 @@ class _CartPageState extends State<CartPage> {
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
                                                                                   ? 10.w
-                                                                                  : 4,
+                                                                                  : 4.w,
                                                                               left:
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
-                                                                                  ? 2
+                                                                                  ? 2.w
                                                                                   : 8.w,
                                                                             ),
                                                                             child: SvgPicture.asset(
@@ -1309,7 +1306,7 @@ class _CartPageState extends State<CartPage> {
                                                                               color: const Color(
                                                                                 0xffFE0364,
                                                                               ),
-                                                                              height: 12,
+                                                                              height: 12.h,
                                                                             ),
                                                                           ),
                                                                           Container(
@@ -1320,11 +1317,11 @@ class _CartPageState extends State<CartPage> {
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
                                                                                   ? 10.w
-                                                                                  : 2,
+                                                                                  : 2.w,
                                                                               left:
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
-                                                                                  ? 2
+                                                                                  ? 2.w
                                                                                   : 10.w,
                                                                             ),
                                                                             child: Text(
@@ -1363,9 +1360,9 @@ class _CartPageState extends State<CartPage> {
                                                                               height: 1.33,
                                                                             ),
                                                                           ),
-                                                                          const SizedBox(
+                                                                          SizedBox(
                                                                             width:
-                                                                                2,
+                                                                                2.w,
                                                                           ),
                                                                           Text(
                                                                             "${priceSymbol ?? "\$"}",
@@ -1388,11 +1385,11 @@ class _CartPageState extends State<CartPage> {
                                                                               LanguageService.languageCode !=
                                                                                   "ar"
                                                                               ? 10.w
-                                                                              : 25,
+                                                                              : 25.w,
                                                                           left:
                                                                               LanguageService.languageCode !=
                                                                                   "ar"
-                                                                              ? 25
+                                                                              ? 25.w
                                                                               : 10.w,
                                                                         ),
                                                                         child: Text(
@@ -1426,11 +1423,11 @@ class _CartPageState extends State<CartPage> {
                                                                         LanguageService.languageCode !=
                                                                             "ar"
                                                                         ? 10.w
-                                                                        : 2,
+                                                                        : 2.w,
                                                                     left:
                                                                         LanguageService.languageCode !=
                                                                             "ar"
-                                                                        ? 2
+                                                                        ? 2.w
                                                                         : 10.w,
                                                                   ),
                                                                   width: 400.w,
@@ -1452,11 +1449,11 @@ class _CartPageState extends State<CartPage> {
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
                                                                                   ? 10.w
-                                                                                  : 2,
+                                                                                  : 2.w,
                                                                               left:
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
-                                                                                  ? 2
+                                                                                  ? 2.w
                                                                                   : 10.w,
                                                                             ),
                                                                             child: SvgPicture.asset(
@@ -1465,7 +1462,7 @@ class _CartPageState extends State<CartPage> {
                                                                               color: const Color(
                                                                                 0xff5BA260,
                                                                               ),
-                                                                              height: 12,
+                                                                              height: 12.h,
                                                                             ),
                                                                           ),
                                                                           Container(
@@ -1476,11 +1473,11 @@ class _CartPageState extends State<CartPage> {
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
                                                                                   ? 10.w
-                                                                                  : 2,
+                                                                                  : 2.w,
                                                                               left:
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
-                                                                                  ? 2
+                                                                                  ? 2.w
                                                                                   : 10.w,
                                                                             ),
                                                                             child: Text(
@@ -1532,11 +1529,11 @@ class _CartPageState extends State<CartPage> {
                                                                               LanguageService.languageCode !=
                                                                                   "ar"
                                                                               ? 10.w
-                                                                              : 25,
+                                                                              : 25.w,
                                                                           left:
                                                                               LanguageService.languageCode !=
                                                                                   "ar"
-                                                                              ? 25
+                                                                              ? 25.w
                                                                               : 10.w,
                                                                         ),
                                                                         child: Text(
@@ -1566,11 +1563,11 @@ class _CartPageState extends State<CartPage> {
                                                                         LanguageService.languageCode !=
                                                                             "ar"
                                                                         ? 10.w
-                                                                        : 2,
+                                                                        : 2.w,
                                                                     left:
                                                                         LanguageService.languageCode !=
                                                                             "ar"
-                                                                        ? 2
+                                                                        ? 2.w
                                                                         : 10.w,
                                                                   ),
                                                                   width: 400.w,
@@ -1591,13 +1588,13 @@ class _CartPageState extends State<CartPage> {
                                                                               right:
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
-                                                                                  ? 10
-                                                                                  : 2,
+                                                                                  ? 10.w
+                                                                                  : 2.w,
                                                                               left:
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
-                                                                                  ? 2
-                                                                                  : 10,
+                                                                                  ? 2.w
+                                                                                  : 10.w,
                                                                             ),
                                                                             child: SvgPicture.asset(
                                                                               AppAssets.shappingCartSvg,
@@ -1605,7 +1602,7 @@ class _CartPageState extends State<CartPage> {
                                                                               color: const Color(
                                                                                 0xffBEF4CD,
                                                                               ),
-                                                                              height: 12,
+                                                                              height: 12.h,
                                                                             ),
                                                                           ),
                                                                           Container(
@@ -1616,11 +1613,11 @@ class _CartPageState extends State<CartPage> {
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
                                                                                   ? 10.w
-                                                                                  : 2,
+                                                                                  : 2.w,
                                                                               left:
                                                                                   LanguageService.languageCode !=
                                                                                       "ar"
-                                                                                  ? 2
+                                                                                  ? 2.w
                                                                                   : 10.w,
                                                                             ),
                                                                             child: Text(
@@ -1688,11 +1685,11 @@ class _CartPageState extends State<CartPage> {
                                                                               LanguageService.languageCode !=
                                                                                   "ar"
                                                                               ? 10.w
-                                                                              : 25,
+                                                                              : 25.w,
                                                                           left:
                                                                               LanguageService.languageCode !=
                                                                                   "ar"
-                                                                              ? 25
+                                                                              ? 25.w
                                                                               : 10.w,
                                                                         ),
                                                                         child: Text(
@@ -1756,27 +1753,26 @@ class _CartPageState extends State<CartPage> {
                                                                         400.w,
                                                                     height:
                                                                         50.h,
-                                                                    decoration: const BoxDecoration(
-                                                                      color: Color(
+                                                                    decoration: BoxDecoration(
+                                                                      color: const Color(
                                                                         0xffF8F8F8,
                                                                       ),
-                                                                      borderRadius:
-                                                                          BorderRadius.all(
-                                                                            Radius.circular(
-                                                                              12,
-                                                                            ),
-                                                                          ),
+                                                                      borderRadius: BorderRadius.all(
+                                                                        Radius.circular(
+                                                                          12.r,
+                                                                        ),
+                                                                      ),
                                                                     ),
                                                                     padding: EdgeInsets.only(
                                                                       right:
                                                                           LanguageService.languageCode !=
                                                                               "ar"
                                                                           ? 10.w
-                                                                          : 2,
+                                                                          : 2.w,
                                                                       left:
                                                                           LanguageService.languageCode !=
                                                                               "ar"
-                                                                          ? 2
+                                                                          ? 2.w
                                                                           : 10.w,
                                                                     ),
                                                                     margin: EdgeInsets.symmetric(
@@ -1797,11 +1793,11 @@ class _CartPageState extends State<CartPage> {
                                                                                     LanguageService.languageCode !=
                                                                                         "ar"
                                                                                     ? 10.w
-                                                                                    : 25,
+                                                                                    : 25.w,
                                                                                 left:
                                                                                     LanguageService.languageCode !=
                                                                                         "ar"
-                                                                                    ? 25
+                                                                                    ? 25.w
                                                                                     : 10.w,
                                                                               ),
                                                                               child: Text(
@@ -1824,7 +1820,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     "${HelperFunctions.formatNumber(numberToFormate: totlalPriceWithDiscount, isNeedRounding: false)}  ",
                                                                                     style: context.textTheme.bodyMedium?.rq.copyWith(
                                                                                       decoration: TextDecoration.lineThrough,
-                                                                                      fontSize: 16,
+                                                                                      fontSize: 16.sp,
                                                                                       color: const Color(
                                                                                         0xff1D1D1D,
                                                                                       ),
@@ -1843,8 +1839,8 @@ class _CartPageState extends State<CartPage> {
                                                                                 height: 1.33,
                                                                               ),
                                                                             ),
-                                                                            const SizedBox(
-                                                                              width: 2,
+                                                                            SizedBox(
+                                                                              width: 2.w,
                                                                             ),
                                                                             Text(
                                                                               "${priceSymbol ?? "\$"}",
@@ -1898,22 +1894,22 @@ class _CartPageState extends State<CartPage> {
                                                                                                 ? RotatedBox(
                                                                                                     quarterTurns: 2,
                                                                                                     child: Container(
-                                                                                                      width: 20,
-                                                                                                      height: 8,
+                                                                                                      width: 20.w,
+                                                                                                      height: 8.h,
                                                                                                       alignment: Alignment.bottomCenter,
                                                                                                       child: SvgPicture.asset(
                                                                                                         AppAssets.expandDetaileSvg,
-                                                                                                        height: 8,
+                                                                                                        height: 8.h,
                                                                                                       ),
                                                                                                     ),
                                                                                                   )
                                                                                                 : Container(
-                                                                                                    width: 20,
-                                                                                                    height: 12,
+                                                                                                    width: 20.w,
+                                                                                                    height: 12.h,
                                                                                                     alignment: Alignment.bottomCenter,
                                                                                                     child: SvgPicture.asset(
                                                                                                       AppAssets.expandDetaileSvg,
-                                                                                                      height: 8,
+                                                                                                      height: 8.h,
                                                                                                     ),
                                                                                                   );
                                                                                           },
@@ -1930,11 +1926,11 @@ class _CartPageState extends State<CartPage> {
                                                                                 LanguageService.languageCode !=
                                                                                     "ar"
                                                                                 ? 10.w
-                                                                                : 25,
+                                                                                : 25.w,
                                                                             left:
                                                                                 LanguageService.languageCode !=
                                                                                     "ar"
-                                                                                ? 25
+                                                                                ? 25.w
                                                                                 : 10.w,
                                                                           ),
                                                                           child: Text(
@@ -1969,8 +1965,8 @@ class _CartPageState extends State<CartPage> {
                                                                     .isEmpty))
                                                           ? 0
                                                           : isMoreInfo
-                                                          ? 10
-                                                          : 60,
+                                                          ? 10.h
+                                                          : 60.h,
                                                     ),
                                                     !isverified
                                                         ? AnimatedPadding(
