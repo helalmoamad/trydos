@@ -83,13 +83,13 @@ class BuyersCommentsPanel extends StatelessWidget {
     };
     List<String> filter = [];
     return SlidingUpPanel(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(20.0),
-        topRight: Radius.circular(20.0),
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20.r),
+        topRight: Radius.circular(20.r),
       ),
       minHeight: 0,
       controller: panelController,
-      maxHeight: 1.sh - 70,
+      maxHeight: 1.sh - 70.h,
       onPanelClosed: () {
         currentFilterForCommend.value = "all";
       },
@@ -142,10 +142,10 @@ class BuyersCommentsPanel extends StatelessWidget {
                               ?.filtersKey ??
                           [];
                 return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  height: 1.sh - 70,
+                  margin: EdgeInsets.symmetric(horizontal: 10.w),
+                  height: 1.sh - 70.h,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(30.r),
                     color: const Color(0xffFEFEFE),
                   ),
                   child: Column(
@@ -153,94 +153,86 @@ class BuyersCommentsPanel extends StatelessWidget {
                     children: [
                       Container(
                         margin: EdgeInsets.symmetric(
-                          horizontal: (1.sw / 2) - 40,
-                          vertical: 10,
+                          horizontal: (1.sw / 2) - 40.w,
+                          vertical: 10.h,
                         ),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(2.r),
                           color: const Color(0xffC4C2C2),
                         ),
-                        height: 2,
-                        width: 40,
+                        height: 2.h,
+                        width: 40.w,
                       ),
                       const SizedBox(height: 5),
                       Padding(
-                        padding: const EdgeInsetsGeometry.symmetric(
-                          horizontal: 10,
-                        ),
+                        padding: EdgeInsetsGeometry.symmetric(horizontal: 10.h),
                         child: SvgPicture.asset(
                           AppAssets.buyersCommentSvg,
-                          height: 30,
+                          height: 30.h,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       Padding(
-                        padding: const EdgeInsetsGeometry.symmetric(
-                          horizontal: 10,
-                        ),
+                        padding: EdgeInsetsGeometry.symmetric(horizontal: 10.w),
                         child: MyTextWidget(
                           '${LocaleKeys.buyers_comment.tr()}',
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
-                            fontSize: 13,
+                            fontSize: 13.sp,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       Padding(
-                        padding: const EdgeInsetsGeometry.symmetric(
-                          horizontal: 10,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 10.w),
                         child: MyTextWidget(
                           LocaleKeys
                               .all_comments_are_genuine_from_customers_who_purchased_and_actually
                               .tr(),
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsetsGeometry.symmetric(
-                          horizontal: 10,
-                        ),
+                        padding: EdgeInsetsGeometry.symmetric(horizontal: 10.w),
                         child: Row(
                           children: [
                             MyTextWidget(
                               '${LocaleKeys.received_the_product_through.tr()} ',
                               style: context.textTheme.titleLarge?.rq.copyWith(
                                 color: const Color(0xff1D1D1D),
-                                fontSize: 11,
+                                fontSize: 11.sp,
                               ),
                             ),
                             MyTextWidget(
                               'trydos  ',
                               style: context.textTheme.titleLarge?.bq.copyWith(
                                 color: const Color(0xff1D1D1D),
-                                fontSize: 11,
+                                fontSize: 11.sp,
                               ),
                             ),
                           ],
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 10,
+                        margin: EdgeInsets.symmetric(
+                          vertical: 10.h,
+                          horizontal: 10.w,
                         ),
                         decoration: BoxDecoration(
                           color: const Color(0xffD3D3D3),
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(2.r),
                         ),
-                        height: 0.5,
+                        height: 0.5.h,
                         width: 1.sw,
                       ),
                       SizedBox(
-                        height: 32,
+                        height: 32.h,
                         width: 1.sw,
                         child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          padding: EdgeInsets.symmetric(horizontal: 10.w),
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) => GestureDetector(
                             onTap: () {
@@ -259,17 +251,15 @@ class BuyersCommentsPanel extends StatelessWidget {
                             child: Container(
                               margin: EdgeInsets.only(
                                 left: LanguageService.languageCode == "ar"
-                                    ? 5
+                                    ? 5.w
                                     : 0,
                                 right: LanguageService.languageCode != "ar"
-                                    ? 5
+                                    ? 5.w
                                     : 0,
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
-                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 7.w),
                               alignment: Alignment.center,
-                              height: 32,
+                              height: 32.h,
                               decoration: BoxDecoration(
                                 color: const Color(0xffF8F8F8),
                                 border: Border.all(
@@ -278,14 +268,14 @@ class BuyersCommentsPanel extends StatelessWidget {
                                       ? Colors.blueAccent
                                       : const Color(0xffF8F8F8),
                                 ),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(8.r),
                               ),
                               child: MyTextWidget(
                                 filter[index],
                                 style: context.textTheme.titleLarge?.rq
                                     .copyWith(
                                       color: const Color(0xff505050),
-                                      fontSize: 11,
+                                      fontSize: 11.sp,
                                     ),
                               ),
                             ),
@@ -296,12 +286,12 @@ class BuyersCommentsPanel extends StatelessWidget {
                       Expanded(
                         child: ListView.builder(
                           controller: scrollController,
-                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          padding: EdgeInsets.symmetric(vertical: 9.h),
                           itemBuilder: (context, index) {
                             if (state
                                     .getBuyersCommentsPaginationModel?[_currentFilterForCommend] ==
                                 null) {
-                              return TrydosLoader(size: 16);
+                              return TrydosLoader(size: 16.h);
                             }
                             if (state
                                     .getBuyersCommentsPaginationModel![_currentFilterForCommend]!
@@ -317,7 +307,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                                   style: context.textTheme.titleLarge?.rq
                                       .copyWith(
                                         color: const Color(0xff1D1D1D),
-                                        fontSize: 11,
+                                        fontSize: 11.sp,
                                       ),
                                 ),
                               );
@@ -329,14 +319,14 @@ class BuyersCommentsPanel extends StatelessWidget {
                                             .length ??
                                         0))
                                 ? SizedBox(
-                                    width: 30,
-                                    height: 50,
+                                    width: 30.w,
+                                    height: 50.h,
                                     child:
                                         state
                                                 .getBuyersCommentsPaginationModel?[_currentFilterForCommend]
                                                 ?.paginationStatus ==
                                             PaginationStatus.loading
-                                        ? TrydosLoader(size: 20)
+                                        ? TrydosLoader(size: 20.h)
                                         : const SizedBox.shrink(),
                                   )
                                 : _commentWidget(
@@ -389,17 +379,17 @@ class BuyersCommentsPanel extends StatelessWidget {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
         ),
         backgroundColor: Colors.white,
         builder: (context) {
           return Padding(
             padding: EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 24,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              left: 20.w,
+              right: 20.w,
+              top: 24.h,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24.h,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -407,26 +397,26 @@ class BuyersCommentsPanel extends StatelessWidget {
               children: [
                 Center(
                   child: Container(
-                    width: 48,
-                    height: 5,
-                    margin: const EdgeInsets.only(bottom: 18),
+                    width: 48.w,
+                    height: 5.h,
+                    margin: EdgeInsets.only(bottom: 18.h),
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                   ),
                 ),
                 Center(
                   child: Text(
                     LocaleKeys.edit_comment_title.tr(),
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
                   ),
                 ),
-                const SizedBox(height: 22),
+                SizedBox(height: 22.h),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
@@ -437,16 +427,16 @@ class BuyersCommentsPanel extends StatelessWidget {
                         offset: Offset(0, 4),
                       ),
                     ],
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(14.r),
                   ),
                   child: TextField(
                     controller: _controller,
                     decoration: InputDecoration(
                       hintText: LocaleKeys.edit_comment_hint.tr(),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 14,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 14.w,
+                        vertical: 14.h,
                       ),
                     ),
                     maxLines: 3,
@@ -454,7 +444,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                     minLines: 3,
                   ),
                 ),
-                const SizedBox(height: 18),
+                SizedBox(height: 18.h),
                 Row(
                   children: [
                     const Spacer(),
@@ -463,7 +453,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                       builder: (context, isNotEmpty, _) {
                         if (!isNotEmpty) return const SizedBox.shrink();
                         return CircleAvatar(
-                          radius: 24,
+                          radius: 24.r,
                           backgroundColor: Colors.green,
                           child: IconButton(
                             icon: const Icon(Icons.send, color: Colors.white),
@@ -527,19 +517,19 @@ class BuyersCommentsPanel extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      width: 388.w,
-      height: 120,
-      padding: const EdgeInsets.all(10),
+      margin: EdgeInsets.symmetric(vertical: 4.h),
+
+      height: 125.h,
+      padding: EdgeInsets.all(10.h),
       decoration: BoxDecoration(
         color: const Color(0xffF8F8F8),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 20,
+            height: 20.h,
             width: 1.sw,
             child: Row(
               children: [
@@ -550,18 +540,18 @@ class BuyersCommentsPanel extends StatelessWidget {
                       )
                       ? buyersComment.customer?.image ?? ""
                       : '${dotenv.env['Images_Url']}${buyersComment.customer?.image}',
-                  width: 20,
+                  width: 20.w,
                   imageFit: BoxFit.cover,
-                  height: 20,
+                  height: 20.h,
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10.w),
                 MyTextWidget(
                   extractInitialsAndAppendXXX(
                     buyersComment.customer?.name ?? "",
                   ),
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
                 const Spacer(),
@@ -572,21 +562,21 @@ class BuyersCommentsPanel extends StatelessWidget {
                   ),
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff8D8D8D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           MyTextWidget(
             buyersComment.variant ?? "",
             style: context.textTheme.titleLarge?.mq.copyWith(
               color: const Color(0xff1D1D1D),
-              fontSize: 9,
+              fontSize: 9.sp,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           MyTextWidget(
             (buyersComment.isTran ?? false)
                 ? (buyersComment.commentTran ?? "")
@@ -594,18 +584,18 @@ class BuyersCommentsPanel extends StatelessWidget {
             maxLines: 10,
             style: context.textTheme.titleLarge?.rq.copyWith(
               color: const Color(0xff1D1D1D),
-              fontSize: 11,
+              fontSize: 11.sp,
             ),
           ),
           const Spacer(),
           Padding(
-            padding: const EdgeInsets.only(left: 5, right: 5),
+            padding: EdgeInsets.only(left: 5.w, right: 5.w),
             child: Row(
               children: [
                 state.updateLikeCommentRatingStatus ==
                             UpdateLikeCommentRatingStatus.loading &&
                         state.tapCommentIndex == index
-                    ? TrydosLoader(size: 16)
+                    ? TrydosLoader(size: 16.h)
                     : GestureDetector(
                         onTap: () {
                           if (!(GetIt.I<PrefsRepository>().isVerifiedPhone ??
@@ -640,13 +630,13 @@ class BuyersCommentsPanel extends StatelessWidget {
                           );
                         },
                         child: SizedBox(
-                          width: 25,
-                          height: 18,
+                          width: 25.w,
+                          height: 18.h,
                           child: SvgPicture.asset(
                             (buyersComment.isLiked ?? false)
                                 ? AppAssets.favoriteActiveSvg
                                 : AppAssets.favoriteSvg,
-                            height: 16,
+                            height: 16.h,
                           ),
                         ),
                       ),
@@ -656,12 +646,12 @@ class BuyersCommentsPanel extends StatelessWidget {
                         '  ${buyersComment.totalLikes ?? 0}',
                         style: context.textTheme.titleLarge?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
-                          fontSize: 9,
+                          fontSize: 9.sp,
                         ),
                       ),
                 SizedBox(
                   width: 40.w,
-                  height: 30,
+                  height: 30.h,
                   child:
                       ((state.deleteOrderCommentRatingStatus ==
                                   DeleteOrderCommentRatingStatus.loading ||
@@ -670,10 +660,10 @@ class BuyersCommentsPanel extends StatelessWidget {
                               state.translateCommentStatus ==
                                   TranslateCommentStatus.loading) &&
                           state.tapCommentIndex == index)
-                      ? TrydosLoader(size: 15)
+                      ? TrydosLoader(size: 15.h)
                       : SizedBox(
-                          width: 40,
-                          height: 30,
+                          width: 40.w,
+                          height: 30.h,
                           child: PopupMenuButton<String>(
                             icon: const Icon(
                               Icons.more_vert,
@@ -686,8 +676,8 @@ class BuyersCommentsPanel extends StatelessWidget {
                                   barrierColor: Colors.transparent,
                                   builder: (ctx) => Center(
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 16.w,
                                       ),
                                       child: Material(
                                         color: Colors.transparent,
@@ -757,12 +747,12 @@ class BuyersCommentsPanel extends StatelessWidget {
                                                         style: TextStyle(
                                                           color:
                                                               Colors.grey[600],
-                                                          fontSize: 14,
+                                                          fontSize: 14.sp,
                                                         ),
                                                       ),
                                                     ),
                                                   ),
-                                                  const SizedBox(width: 8),
+                                                  SizedBox(width: 8.w),
                                                   Expanded(
                                                     child: ElevatedButton(
                                                       onPressed: () =>
@@ -779,21 +769,21 @@ class BuyersCommentsPanel extends StatelessWidget {
                                                         shape: RoundedRectangleBorder(
                                                           borderRadius:
                                                               BorderRadius.circular(
-                                                                12,
+                                                                12.r,
                                                               ),
                                                         ),
                                                         padding:
-                                                            const EdgeInsets.symmetric(
-                                                              vertical: 10,
+                                                            EdgeInsets.symmetric(
+                                                              vertical: 10.h,
                                                             ),
                                                       ),
                                                       child: Text(
                                                         LocaleKeys
                                                             .confirm_delete
                                                             .tr(),
-                                                        style: const TextStyle(
+                                                        style: TextStyle(
                                                           color: Colors.white,
-                                                          fontSize: 14,
+                                                          fontSize: 14.sp,
                                                         ),
                                                       ),
                                                     ),
@@ -908,9 +898,9 @@ class BuyersCommentsPanel extends StatelessWidget {
                                       SvgPicture.asset(
                                         AppAssets.languageSvg,
 
-                                        height: 20,
+                                        height: 20.h,
                                       ),
-                                      const SizedBox(width: 6),
+                                      SizedBox(width: 6.w),
                                       Text(
                                         (buyersComment.isTran ?? false)
                                             ? LocaleKeys.show_original_version
@@ -932,9 +922,9 @@ class BuyersCommentsPanel extends StatelessWidget {
                                           AppAssets.editSvg,
                                           // ignore: deprecated_member_use
                                           color: Colors.green,
-                                          height: 20,
+                                          height: 20.h,
                                         ),
-                                        const SizedBox(width: 6),
+                                        SizedBox(width: 6.w),
                                         Text(LocaleKeys.edit.tr()),
                                       ],
                                     ),
@@ -947,9 +937,9 @@ class BuyersCommentsPanel extends StatelessWidget {
                                       children: [
                                         SvgPicture.asset(
                                           AppAssets.deletecartSvg,
-                                          height: 20,
+                                          height: 20.h,
                                         ),
-                                        const SizedBox(width: 6),
+                                        SizedBox(width: 6.w),
                                         Text(LocaleKeys.delete.tr()),
                                       ],
                                     ),
@@ -966,7 +956,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                   '${buyersComment.trueSize ?? false ? "${LocaleKeys.true_size.tr()} | " : ""}',
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
                 !(buyersComment.recommendation ?? false)
@@ -975,7 +965,7 @@ class BuyersCommentsPanel extends StatelessWidget {
                         AppAssets.recommendSvg,
                         // ignore: deprecated_member_use
                         color: const Color(0xff068D06),
-                        width: 12,
+                        width: 12.w,
                       ),
                 !(buyersComment.recommendation ?? false)
                     ? const SizedBox.shrink()
@@ -983,23 +973,23 @@ class BuyersCommentsPanel extends StatelessWidget {
                         ' ${LocaleKeys.recommend_it.tr()} | ',
                         style: context.textTheme.titleLarge?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
-                          fontSize: 9,
+                          fontSize: 9.sp,
                         ),
                       ),
                 MyTextWidget(
                   ' ${(buyersComment.goodQualitycomment ?? false) ? LocaleKeys.good_quality.tr() : ""} ',
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
                 StarRatingProductWidget(
-                  itemHeight: 13,
-                  itemSize: 14,
-                  itemWidth: 14,
-                  widgetHeight: 14,
-                  widgetWidth: 71,
-                  svgWidth: 12,
+                  itemHeight: 13.h,
+                  itemSize: 14.h,
+                  itemWidth: 14.h,
+                  widgetHeight: 14.h,
+                  widgetWidth: 71.w,
+                  svgWidth: 12.w,
                   onRatingChanged: (p0) {},
                   starColor: const Color(0xff1D1D1D),
                   initialRating: (buyersComment.starRating ?? 0).toDouble(),

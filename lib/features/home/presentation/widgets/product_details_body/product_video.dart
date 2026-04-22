@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -79,7 +80,7 @@ class _ProductVedioState extends State<ProductVedio> {
 
   Widget _buildVideoBox(String imageUrl) {
     return Container(
-      height: 200,
+      height: 200.h,
       child: FutureBuilder<void>(
         future: _initializeVideoFuture,
         builder: (context, snapshot) {
@@ -94,10 +95,10 @@ class _ProductVedioState extends State<ProductVedio> {
             videoChild = FittedBox(
               fit: BoxFit.cover,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(15.r),
                 child: SizedBox(
-                  width: 138,
-                  height: 200,
+                  width: 138.w,
+                  height: 200.h,
                   child: VideoPlayer(videoProductInListingController),
                 ),
               ),
@@ -112,30 +113,30 @@ class _ProductVedioState extends State<ProductVedio> {
               videoChild,
               if (showLoading)
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(15.r),
                   child: ProductListingImageWidget(
-                    orginalHeight: 200,
-                    orginalWidth: 200,
-                    width: 138,
+                    orginalHeight: 200.h,
+                    orginalWidth: 200.w,
+                    width: 138.w,
                     imageUrl: imageUrl,
-                    height: 200,
+                    height: 200.h,
                     circleShape: false,
                     innerShadowYOffset: 3,
                   ),
                 ),
               SizedBox(
-                width: 76,
-                height: 20,
+                width: 76.w,
+                height: 20.h,
                 child: Text(
                   "${LocaleKeys.quick_video.tr()}",
                   textAlign: TextAlign.center,
                   style: context.textTheme.bodyMedium?.bq.copyWith(
-                    fontSize: 13,
+                    fontSize: 13.sp,
                     color: const Color(0xffFFFFFF),
                   ),
                 ),
               ),
-              buffering ? TrydosLoader(size: 20) : const SizedBox.shrink(),
+              buffering ? TrydosLoader(size: 20.h) : const SizedBox.shrink(),
             ],
           );
         },

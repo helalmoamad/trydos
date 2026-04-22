@@ -4,11 +4,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
-import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:trydos/config/theme/typography.dart';
 import '../../../app/my_text_widget.dart';
 
 // ignore: must_be_immutable
@@ -138,26 +139,26 @@ class _NameFormFieldState extends State<NameFormField> {
       alignment: Alignment.center,
       children: [
         Container(
-          height: 60,
+          height: 60.h,
           decoration: BoxDecoration(
             color: context.colorScheme.white,
-            borderRadius: BorderRadius.circular(20.0),
+            borderRadius: BorderRadius.circular(20.r),
           ),
         ),
         SizedBox(
-          height: 60,
+          height: 60.h,
           child: DottedBorder(
             padding: EdgeInsets.zero,
             borderType: BorderType.RRect,
             strokeCap: StrokeCap.round,
             strokeWidth: 0.5,
             dashPattern: const [3, 3],
-            radius: const Radius.circular(20.0),
+            radius: Radius.circular(20.r),
             color: widget.ready
                 ? const Color(0xff388CFF)
                 : const Color(0xff5D5C5D),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.r),
               child: Directionality(
                 textDirection: ui.TextDirection.ltr,
                 child: TextFormField(
@@ -204,17 +205,17 @@ class _NameFormFieldState extends State<NameFormField> {
                   ),
                   decoration: InputDecoration(
                     errorMaxLines: 1,
-                    errorStyle: const TextStyle(fontSize: 11, height: 1),
+                    errorStyle: TextStyle(fontSize: 11.sp, height: 1),
                     errorBorder: OutlineInputBorder(
                       gapPadding: 2,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    contentPadding: HWEdgeInsets.only(left: 30, right: 30),
+                    contentPadding: HWEdgeInsets.only(left: 30.w, right: 30.w),
                     prefixIcon: widget.prefixIcon,
                     suffixIcon: Padding(
-                      padding: HWEdgeInsets.only(bottom: 10),
+                      padding: HWEdgeInsets.only(bottom: 10.h),
                       child: widget.suffixIcon,
                     ),
                     counterText: '',

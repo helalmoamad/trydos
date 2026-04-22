@@ -298,13 +298,13 @@ class _ProductDetailsSheetBottomBarNewState
                                         selectedSizeByUser != null ||
                                         selectedcolorByUser != null ||
                                         _productNotAvailableNotifier != null)
-                                    ? 130
+                                    ? 130.h
                                     : allCart.length == 1
-                                    ? 160
+                                    ? 160.h
                                     : allCart.length >= 1
-                                    ? 170
-                                    : 130
-                              : 68,
+                                    ? 170.h
+                                    : 130.h
+                              : 68.h,
                           decoration: const BoxDecoration(
                             boxShadow: [
                               BoxShadow(
@@ -315,7 +315,7 @@ class _ProductDetailsSheetBottomBarNewState
                             color: Colors.white,
                           ),
                           child: Padding(
-                            padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+                            padding: HWEdgeInsets.symmetric(horizontal: 20.h),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -341,7 +341,7 @@ class _ProductDetailsSheetBottomBarNewState
                                         children: [
                                           Container(
                                             alignment: Alignment.center,
-                                            width: 1.sw - 40,
+                                            width: 1.sw - 40.w,
                                             height:
                                                 (widget.isRedeem ||
                                                     _productNotAvailableNotifier !=
@@ -349,18 +349,18 @@ class _ProductDetailsSheetBottomBarNewState
                                                     selectedcolorByUser !=
                                                         null ||
                                                     selectedSizeByUser != null)
-                                                ? 25
+                                                ? 25.h
                                                 : (allCart.length == 1)
-                                                ? 60
+                                                ? 62.h
                                                 : (allCart.length > 1)
-                                                ? 72
-                                                : 25,
-                                            margin: const EdgeInsets.only(
-                                              bottom: 8,
+                                                ? 74.h
+                                                : 25.h,
+                                            margin: EdgeInsets.only(
+                                              bottom: 8.h,
                                             ),
                                             decoration: BoxDecoration(
                                               borderRadius:
-                                                  BorderRadius.circular(10),
+                                                  BorderRadius.circular(10.r),
                                               border: Border.all(
                                                 color:
                                                     (_productNotAvailableNotifier !=
@@ -392,7 +392,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                         .titleMedium
                                                         ?.mq
                                                         .copyWith(
-                                                          fontSize: 11,
+                                                          fontSize: 11.sp,
                                                           height: 15 / 12,
                                                           color: const Color(
                                                             0xff1D1D1D,
@@ -405,12 +405,12 @@ class _ProductDetailsSheetBottomBarNewState
                                                         MainAxisAlignment
                                                             .center,
                                                     children: [
-                                                      const SizedBox(width: 8),
+                                                      SizedBox(width: 8.w),
                                                       SvgPicture.asset(
                                                         AppAssets
                                                             .redeemClockSvg,
                                                       ),
-                                                      const SizedBox(width: 3),
+                                                      SizedBox(width: 3.w),
                                                       Text(
                                                         LocaleKeys.luck.tr(),
                                                         style: context
@@ -418,7 +418,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                             .bodyMedium
                                                             ?.bq
                                                             .copyWith(
-                                                              fontSize: 9,
+                                                              fontSize: 9.sp,
                                                               color:
                                                                   const Color(
                                                                     0xffFF6200,
@@ -433,7 +433,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                             .bodyMedium
                                                             ?.mq
                                                             .copyWith(
-                                                              fontSize: 9,
+                                                              fontSize: 9.sp,
                                                               color:
                                                                   const Color(
                                                                     0xffFF6200,
@@ -465,7 +465,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                             .bodyMedium
                                                             ?.bq
                                                             .copyWith(
-                                                              fontSize: 9,
+                                                              fontSize: 9.sp,
                                                               color:
                                                                   const Color(
                                                                     0xffFF6200,
@@ -479,7 +479,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                             .bodyMedium
                                                             ?.rq
                                                             .copyWith(
-                                                              fontSize: 9,
+                                                              fontSize: 9.sp,
                                                               height: 1.1,
                                                               color:
                                                                   const Color(
@@ -494,7 +494,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                             .bodyMedium
                                                             ?.bq
                                                             .copyWith(
-                                                              fontSize: 9,
+                                                              fontSize: 9.sp,
                                                               height: 1.4,
                                                               color:
                                                                   const Color(
@@ -514,7 +514,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                             .bodyMedium
                                                             ?.rq
                                                             .copyWith(
-                                                              fontSize: 9,
+                                                              fontSize: 9.sp,
                                                               height: 1.1,
                                                               color:
                                                                   const Color(
@@ -528,15 +528,15 @@ class _ProductDetailsSheetBottomBarNewState
                                                 ? Column(
                                                     children: [
                                                       Container(
-                                                        height: 25,
-                                                        width: 1.sw - 40,
+                                                        height: 25.h,
+                                                        width: 1.sw - 40.w,
                                                         decoration: BoxDecoration(
                                                           color: const Color(
                                                             0xff513AAF,
                                                           ),
                                                           borderRadius:
                                                               BorderRadius.circular(
-                                                                10,
+                                                                10.r,
                                                               ),
                                                         ),
                                                         child: Row(
@@ -633,22 +633,22 @@ class _ProductDetailsSheetBottomBarNewState
                                                           ],
                                                         ),
                                                       ),
-                                                      const SizedBox(height: 5),
+                                                      SizedBox(height: 5.h),
                                                       SizedBox(
                                                         height:
                                                             allCart.length > 1
-                                                            ? 40
-                                                            : 28,
+                                                            ? 40.h
+                                                            : 28.h,
                                                         width:
                                                             1.sw -
-                                                            40, // أو 10.h إذا كنت تستخدم screenutil
+                                                            40.w, // أو 10.h إذا كنت تستخدم screenutil
                                                         child: ListView.builder(
                                                           padding: EdgeInsets.only(
                                                             top:
                                                                 (allCart.length >
                                                                     1)
                                                                 ? 0
-                                                                : 5,
+                                                                : 5.h,
                                                           ),
                                                           itemBuilder: (context, index) {
                                                             String
@@ -661,8 +661,9 @@ class _ProductDetailsSheetBottomBarNewState
                                                               height: 10.h,
                                                             );
                                                             return SizedBox(
-                                                              width: 1.sw - 40,
-                                                              height: 15,
+                                                              width:
+                                                                  1.sw - 40.w,
+                                                              height: 15.h,
                                                               child: Row(
                                                                 mainAxisAlignment:
                                                                     MainAxisAlignment
@@ -671,9 +672,11 @@ class _ProductDetailsSheetBottomBarNewState
                                                                   SizedBox(
                                                                     width:
                                                                         (allCart[index].values.first.length *
-                                                                            5.0) +
-                                                                        5.0, // (عدد الصور * مقدار التراكب) + نصف صورة أخيرة
-                                                                    height: 12,
+                                                                                5.0)
+                                                                            .w +
+                                                                        5.0.w, // (عدد الصور * مقدار التراكب) + نصف صورة أخيرة
+                                                                    height:
+                                                                        12.h,
                                                                     child: Stack(
                                                                       children: List.generate(
                                                                         allCart[index]
@@ -688,11 +691,11 @@ class _ProductDetailsSheetBottomBarNewState
                                                                               5.0, // كل صورة تتحرك 5 بكسل فقط (نصف حجمها)
                                                                           child: CircleAvatar(
                                                                             radius:
-                                                                                5, // نصف القطر = 5 (لأن القطر 10)
+                                                                                5.r, // نصف القطر = 5 (لأن القطر 10)
                                                                             backgroundColor:
                                                                                 Colors.deepPurple, // لون الإطار الخارجي
                                                                             child: CircleAvatar(
-                                                                              radius: 4.5, // أصغر قليلاً ليظهر الإطار
+                                                                              radius: 4.5.r, // أصغر قليلاً ليظهر الإطار
                                                                               backgroundImage: NetworkImage(
                                                                                 imagePath,
                                                                               ),
@@ -862,7 +865,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                           decoration: BoxDecoration(
                                                             borderRadius:
                                                                 BorderRadius.circular(
-                                                                  10,
+                                                                  10.r,
                                                                 ),
                                                             border: Border.all(
                                                               color:
@@ -946,7 +949,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                   const Color(
                                                                     0xff388CFF,
                                                                   ),
-                                                              height: 12,
+                                                              height: 12.h,
                                                             ),
                                                             Text(
                                                               " ${LocaleKeys.fast_packing.tr()} ",
@@ -1053,7 +1056,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                   ?.rq
                                                                   .copyWith(
                                                                     fontSize:
-                                                                        10,
+                                                                        10.sp,
                                                                     height:
                                                                         15 / 12,
                                                                     color: const Color(
@@ -1070,7 +1073,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                   ?.bq
                                                                   .copyWith(
                                                                     fontSize:
-                                                                        10,
+                                                                        10.sp,
                                                                     height:
                                                                         15 / 12,
                                                                     color: const Color(
@@ -1089,7 +1092,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                   ?.rq
                                                                   .copyWith(
                                                                     fontSize:
-                                                                        10,
+                                                                        10.sp,
                                                                     height:
                                                                         15 / 12,
                                                                     color: const Color(
@@ -1106,7 +1109,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                   ?.rq
                                                                   .copyWith(
                                                                     fontSize:
-                                                                        10,
+                                                                        10.sp,
                                                                     height:
                                                                         15 / 12,
                                                                     color: const Color(
@@ -1123,7 +1126,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                   ?.bq
                                                                   .copyWith(
                                                                     fontSize:
-                                                                        10,
+                                                                        10.sp,
                                                                     height:
                                                                         15 / 12,
                                                                     color: const Color(
@@ -1175,15 +1178,14 @@ class _ProductDetailsSheetBottomBarNewState
                                                                     AuthProductDetailsStatus
                                                                         .failure)
                                                             ? Container(
-                                                                width: 120,
-                                                                height: 60,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                            15,
-                                                                          ),
-                                                                    ),
+                                                                width: 120.w,
+                                                                height: 60.h,
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                        15.r,
+                                                                      ),
+                                                                ),
                                                                 child: TryAgainWidget(
                                                                   tryAgain: () {
                                                                     if (!(widget
@@ -1238,11 +1240,11 @@ class _ProductDetailsSheetBottomBarNewState
                                                                       width:
                                                                           97.w,
                                                                       height:
-                                                                          60,
+                                                                          60.h,
                                                                       decoration: BoxDecoration(
                                                                         borderRadius:
                                                                             BorderRadius.circular(
-                                                                              20,
+                                                                              20.r,
                                                                             ),
                                                                         color: Colors
                                                                             .grey
@@ -1490,9 +1492,9 @@ class _ProductDetailsSheetBottomBarNewState
                                                                           child: SizedBox(
                                                                             width:
                                                                                 1.sw -
-                                                                                60,
+                                                                                60.w,
                                                                             height:
-                                                                                68,
+                                                                                68.h,
                                                                             child: Stack(
                                                                               alignment: Alignment.topRight,
                                                                               children: [
@@ -1508,7 +1510,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                       ),
                                                                                     ),
                                                                                     borderRadius: BorderRadius.circular(
-                                                                                      20,
+                                                                                      20.r,
                                                                                     ),
                                                                                     color: const Color(
                                                                                       0xff513AAF,
@@ -1516,8 +1518,8 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                   ),
                                                                                   child: Center(
                                                                                     child: Padding(
-                                                                                      padding: const EdgeInsets.symmetric(
-                                                                                        vertical: 5,
+                                                                                      padding: EdgeInsets.symmetric(
+                                                                                        vertical: 5.h,
                                                                                       ),
                                                                                       child: Column(
                                                                                         children: [
@@ -1528,7 +1530,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                                   state.deleteItemInCartStatus ==
                                                                                                       DeleteItemInCartStatus.loading
                                                                                               ? TrydosLoader(
-                                                                                                  size: 20,
+                                                                                                  size: 20.r,
                                                                                                   color: Colors.white,
                                                                                                 )
                                                                                               : allCart.length ==
@@ -1573,8 +1575,8 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                                     ),
                                                                                                   ],
                                                                                                 ),
-                                                                                          const SizedBox(
-                                                                                            height: 5,
+                                                                                          SizedBox(
+                                                                                            height: 5.h,
                                                                                           ),
                                                                                           Row(
                                                                                             mainAxisAlignment: MainAxisAlignment.center,
@@ -1587,7 +1589,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                                         height:
                                                                                                             15 /
                                                                                                             12,
-                                                                                                        fontSize: 15,
+                                                                                                        fontSize: 15.sp,
                                                                                                         color: const Color(
                                                                                                           0xffFFFFFF,
                                                                                                         ),
@@ -1599,7 +1601,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                                         height:
                                                                                                             15 /
                                                                                                             12,
-                                                                                                        fontSize: 15,
+                                                                                                        fontSize: 15.sp,
                                                                                                         color: const Color(
                                                                                                           0xffFFFFFF,
                                                                                                         ),
@@ -1615,11 +1617,11 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                 if (allCart.length >
                                                                                     0) ...{
                                                                                   Positioned(
-                                                                                    top: -35,
-                                                                                    left: -35,
+                                                                                    top: -35.h,
+                                                                                    left: -35.w,
                                                                                     child: Container(
-                                                                                      width: 55,
-                                                                                      height: 55,
+                                                                                      width: 55.w,
+                                                                                      height: 55.h,
                                                                                       decoration: BoxDecoration(
                                                                                         border: Border.all(
                                                                                           color: widget.isRedeem
@@ -1627,7 +1629,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                               : Colors.blue,
                                                                                         ),
                                                                                         borderRadius: BorderRadius.circular(
-                                                                                          20,
+                                                                                          20.r,
                                                                                         ),
                                                                                         color: colorScheme.white,
                                                                                       ),
@@ -1642,8 +1644,8 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                                     1 &&
                                                                                                 allCart[0].values.first.length ==
                                                                                                     1)
-                                                                                            ? 0
-                                                                                            : 7,
+                                                                                            ? 0.h
+                                                                                            : 7.h,
                                                                                       ),
                                                                                       child: Center(
                                                                                         child: SvgPicture.asset(
@@ -1659,8 +1661,8 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                                       1 &&
                                                                                                   allCart[0].values.first.length ==
                                                                                                       1)
-                                                                                              ? 15
-                                                                                              : 3,
+                                                                                              ? 15.h
+                                                                                              : 3.h,
                                                                                           // ignore: deprecated_member_use
                                                                                           color:
                                                                                               (allCart.length ==
@@ -1679,14 +1681,14 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                   ),
                                                                                 },
                                                                                 Positioned(
-                                                                                  top: -35,
-                                                                                  right: -35,
+                                                                                  top: -35.h,
+                                                                                  right: -35.w,
                                                                                   child: Container(
-                                                                                    width: 55,
-                                                                                    height: 55,
+                                                                                    width: 55.w,
+                                                                                    height: 55.h,
                                                                                     decoration: BoxDecoration(
                                                                                       borderRadius: BorderRadius.circular(
-                                                                                        20,
+                                                                                        20.r,
                                                                                       ),
                                                                                       border: Border.all(
                                                                                         color: widget.isRedeem
@@ -1703,7 +1705,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                                   color: const Color(
                                                                                     0xff513AAF,
                                                                                   ),
-                                                                                  height: 15,
+                                                                                  height: 15.h,
                                                                                 ),
                                                                               ],
                                                                             ),
@@ -1940,29 +1942,28 @@ class _ProductDetailsSheetBottomBarNewState
                                     },
                                     child: Container(
                                       alignment: Alignment.topCenter,
-                                      width: 80,
-                                      height: 68,
-                                      padding: const EdgeInsets.only(
-                                        top: 10,
-                                        left: 15,
-                                        right: 15,
+
+                                      height: 68.h,
+                                      padding: EdgeInsets.only(
+                                        top: 10.h,
+                                        left: 15.w,
+                                        right: 15.w,
                                       ),
-                                      decoration: const BoxDecoration(
-                                        color: Color(0xff513AAF),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xff513AAF),
                                         borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(15),
-                                          topRight: Radius.circular(15),
+                                          topLeft: Radius.circular(15.r),
+                                          topRight: Radius.circular(15.r),
                                         ),
                                       ),
                                       child: SizedBox(
-                                        width: 50,
-                                        height: 20,
+                                        height: 20.h,
                                         child: Row(
                                           children: [
                                             SvgPicture.asset(
                                               AppAssets.buyNewSvg,
                                             ),
-                                            const SizedBox(width: 5),
+                                            SizedBox(width: 2.w),
                                             MyTextWidget(
                                               LocaleKeys.buy.tr(),
                                               style: context
@@ -1970,7 +1971,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                   .titleMedium
                                                   ?.mq
                                                   .copyWith(
-                                                    fontSize: 13,
+                                                    fontSize: 13.sp,
                                                     color: Colors.white,
                                                   ),
                                             ),
@@ -2055,7 +2056,7 @@ class BarWidget extends StatelessWidget {
         onTap: onTap,
         child: Container(
           color: Colors.white,
-          height: 30,
+          height: 30.h,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -2063,7 +2064,7 @@ class BarWidget extends StatelessWidget {
                 svgPath,
                 // ignore: deprecated_member_use
                 color: color,
-                height: 25,
+                height: 25.h,
               ),
               if (text != null && text != "0") ...{
                 5.horizontalSpace,

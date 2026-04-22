@@ -83,25 +83,25 @@ class ProductDetailsImageWidget extends StatelessWidget {
       child: Stack(
         children: [
           Container(
-            height: (height ?? 464),
-            width: (width ?? 320),
+            height: (height ?? 464.h),
+            width: (width ?? 320.w),
             decoration: BoxDecoration(
               borderRadius: index == 0
                   ? BorderRadius.only(
                       bottomRight: LanguageService.languageCode != "ar"
-                          ? const Radius.circular(0)
-                          : const Radius.circular(15),
+                          ? Radius.circular(0.r)
+                          : Radius.circular(15.r),
                       topRight: LanguageService.languageCode != "ar"
-                          ? const Radius.circular(0)
-                          : const Radius.circular(15),
+                          ? Radius.circular(0.r)
+                          : Radius.circular(15.r),
                       topLeft: LanguageService.languageCode == "ar"
-                          ? const Radius.circular(0)
-                          : const Radius.circular(15),
+                          ? Radius.circular(0.r)
+                          : Radius.circular(15.r),
                       bottomLeft: LanguageService.languageCode == "ar"
-                          ? const Radius.circular(0)
-                          : const Radius.circular(15),
+                          ? Radius.circular(0.r)
+                          : Radius.circular(15.r),
                     )
-                  : borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
+                  : borderRadius ?? BorderRadius.circular((radius ?? 30.r)),
               border: Border.all(
                 width: 0.5,
                 color: borderColor ?? context.colorScheme.white,
@@ -120,19 +120,19 @@ class ProductDetailsImageWidget extends StatelessWidget {
               borderRadius: index == 0
                   ? BorderRadius.only(
                       bottomRight: LanguageService.languageCode != "ar"
-                          ? const Radius.circular(0)
-                          : const Radius.circular(15),
+                          ? Radius.circular(0.r)
+                          : Radius.circular(15.r),
                       topRight: LanguageService.languageCode != "ar"
-                          ? const Radius.circular(0)
-                          : const Radius.circular(15),
+                          ? Radius.circular(0.r)
+                          : Radius.circular(15.r),
                       topLeft: LanguageService.languageCode == "ar"
-                          ? const Radius.circular(0)
-                          : const Radius.circular(15),
+                          ? Radius.circular(0.r)
+                          : Radius.circular(15.r),
                       bottomLeft: LanguageService.languageCode == "ar"
-                          ? const Radius.circular(0)
-                          : const Radius.circular(15),
+                          ? Radius.circular(0.r)
+                          : Radius.circular(15.r),
                     )
-                  : borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
+                  : borderRadius ?? BorderRadius.circular((radius ?? 30.r)),
               child: (imageUrl?.contains('assets') ?? true)
                   ? Image.asset(
                       'assets/images/address2.png',
@@ -142,21 +142,21 @@ class ProductDetailsImageWidget extends StatelessWidget {
                       ordinalHeight: orginalHeight,
                       ordinalwidth: orginalWidth,
                       imageUrl: imageUrl!,
-                      radius: index != -1 ? 0 : 12,
+                      radius: index != -1 ? 0 : 12.r,
                       imageWidth: imageWidth,
                       imageHeight: imageHeight,
-                      height: height ?? 464,
-                      width: width ?? 320,
+                      height: height ?? 464.h,
+                      width: width ?? 320.w,
                       imageFit: BoxFit.fitWidth,
                     ),
             ),
           ),
           Container(
-            height: (height ?? 464),
-            width: (width ?? 320),
+            height: (height ?? 464.h),
+            width: (width ?? 320.w),
             decoration: BoxDecoration(
               borderRadius:
-                  borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
+                  borderRadius ?? BorderRadius.circular((radius ?? 30.r)),
               boxShadow: withInnerShadow
                   ? [
                       BoxShadow(
@@ -179,19 +179,19 @@ class ProductDetailsImageWidget extends StatelessWidget {
                     alignment: Alignment.center,
                     children: [
                       Container(
-                        width: 25,
-                        height: 25,
+                        width: 25.w,
+                        height: 25.h,
                         decoration: BoxDecoration(
                           color: const Color(0xff513AAF),
                           borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(6),
+                            topLeft: Radius.circular(6.r),
                             bottomRight: Radius.circular(
-                              LanguageService.languageCode == "ar" ? 15 : 6,
+                              LanguageService.languageCode == "ar" ? 15.r : 6.r,
                             ),
                             bottomLeft: Radius.circular(
-                              LanguageService.languageCode != "ar" ? 15 : 6,
+                              LanguageService.languageCode != "ar" ? 15.r : 6.r,
                             ),
-                            topRight: const Radius.circular(6),
+                            topRight: Radius.circular(6.r),
                           ),
                         ),
                       ),
@@ -216,9 +216,9 @@ class ProductDetailsImageWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         border: Border.all(color: const Color(0xffFF6200)),
                         color: const Color(0xffFFF3E8),
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(15.r),
                       ),
-                      height: 20,
+                      height: 20.h,
                       child: Transform(
                         transform: Matrix4.skewX(0.4), // انحراف بسيط للشكل
                         child: Row(
@@ -226,7 +226,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                             const SizedBox(width: 5),
                             SvgPicture.asset(
                               AppAssets.flashDealSvg,
-                              height: 12,
+                              height: 12.h,
                               // ignore: deprecated_member_use
                               color: const Color(0xffFF6200),
                             ),
@@ -238,7 +238,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                               style: context.textTheme.bodyMedium?.br.copyWith(
                                 color: const Color(0xffFF6200),
                                 letterSpacing: 0.18,
-                                fontSize: 9,
+                                fontSize: 9.sp,
                                 height: 1.3,
                               ),
                             ),
@@ -256,13 +256,13 @@ class ProductDetailsImageWidget extends StatelessWidget {
               : const SizedBox.shrink(),
           visibleRedeem == true && index == 0
               ? Positioned(
-                  left: 4,
-                  right: 4,
+                  left: 4.w,
+                  right: 4.w,
                   top: 0,
                   child: Transform(
                     transform: Matrix4.skewX(-0.4), // انحراف بسيط للشكل
                     child: Container(
-                      width: 150,
+                      width: 150.w,
                       margin: EdgeInsets.only(
                         left: LanguageService.languageCode != "ar" ? 1 : 130.w,
                         right: LanguageService.languageCode == "ar" ? 1 : 130.w,
@@ -270,20 +270,20 @@ class ProductDetailsImageWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         border: Border.all(color: const Color(0xffFF6200)),
                         color: const Color(0xffFFF3E8),
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(15.r),
                       ),
-                      height: 20,
+                      height: 20.h,
                       child: Transform(
                         transform: Matrix4.skewX(0.4), // انحراف بسيط للشكل
                         child: Row(
                           children: [
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8.w),
                             SvgPicture.asset(AppAssets.redeemClockSvg),
-                            const SizedBox(width: 3),
+                            SizedBox(width: 3.w),
                             Text(
                               LocaleKeys.luck.tr(),
                               style: context.textTheme.bodyMedium?.br.copyWith(
-                                fontSize: 9,
+                                fontSize: 9.sp,
                                 color: const Color(0xffFF6200),
                               ),
                             ),
@@ -291,7 +291,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                             Text(
                               " ${LocaleKeys.add_to_bag_within.tr()} ",
                               style: context.textTheme.bodyMedium?.mq.copyWith(
-                                fontSize: 9,
+                                fontSize: 9.sp,
                                 color: const Color(0xffFF6200),
                               ),
                             ),
@@ -310,7 +310,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                             Text(
                               " ${LocaleKeys.seconds.tr()} ",
                               style: context.textTheme.bodyMedium?.br.copyWith(
-                                fontSize: 9,
+                                fontSize: 9.sp,
                                 color: const Color(0xffFF6200),
                               ),
                             ),
@@ -327,35 +327,37 @@ class ProductDetailsImageWidget extends StatelessWidget {
                   right: LanguageService.languageCode != "ar" ? null : 35.w,
                   top: 80.h,
                   child: Container(
-                    width: 97,
-                    height: 20,
+                    width: 97.w,
+                    height: 20.h,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
                           alignment: Alignment.center,
-                          width: 76,
-                          height: 20,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                            color: Color(0xff1D1D1D),
+                          width: 76.w,
+                          height: 20.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8.r),
+                            ),
+                            color: const Color(0xff1D1D1D),
                           ),
                           child: Text(
                             "${LocaleKeys.only_this_piece.tr()}",
                             textAlign: TextAlign.center,
                             style: context.textTheme.bodyMedium?.mq.copyWith(
-                              fontSize: 9,
+                              fontSize: 9.sp,
                               color: const Color(0xffFFFFFF),
                             ),
                           ),
                         ),
                         Container(
-                          width: 15,
-                          height: 15,
+                          width: 15.w,
+                          height: 15.h,
                           decoration: BoxDecoration(
                             border: Border.all(color: const Color(0xffFFFFFF)),
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(15),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15.r),
                             ),
                             color: const Color(0xff1D1D1D),
                           ),

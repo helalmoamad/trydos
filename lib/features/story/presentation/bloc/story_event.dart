@@ -24,14 +24,18 @@ class StorySelectedEvent extends StoryEvent {
   final int collectionIndex;
   final int selectedStoryIndexInCollection;
   final int currentPage;
-  const StorySelectedEvent(
-      {required this.collectionIndex,
-      required this.selectedStoryIndexInCollection,
-      required this.currentPage});
+  const StorySelectedEvent({
+    required this.collectionIndex,
+    required this.selectedStoryIndexInCollection,
+    required this.currentPage,
+  });
 
   @override
-  List<Object?> get props =>
-      [collectionIndex, selectedStoryIndexInCollection, currentPage];
+  List<Object?> get props => [
+    collectionIndex,
+    selectedStoryIndexInCollection,
+    currentPage,
+  ];
 }
 
 class LoadingVideoEvent extends StoryEvent {
@@ -54,16 +58,19 @@ class AddStoryToOurServerEvent extends StoryEvent {
   final int? width;
   final int? height;
   final String path;
+  final double? durationSeconds;
 
-  const AddStoryToOurServerEvent(
-      { //required this.file,
-      required this.path,
-      required this.isVideo,
-      this.width,
-      this.height});
+  const AddStoryToOurServerEvent({
+    //required this.file,
+    required this.path,
+    required this.isVideo,
+    this.width,
+    this.durationSeconds,
+    this.height,
+  });
 
   @override
-  List<Object?> get props => [isVideo, width, height];
+  List<Object?> get props => [isVideo, width, height, durationSeconds];
 }
 
 class UploadStoryCloudinaryEvent extends StoryEvent {
@@ -98,8 +105,10 @@ class FailureVideoEvent extends StoryEvent {
 }
 
 class IncreaseViewersEvent extends StoryEvent {
-  const IncreaseViewersEvent(
-      {required this.collectionId, required this.storyId});
+  const IncreaseViewersEvent({
+    required this.collectionId,
+    required this.storyId,
+  });
 
   final String storyId;
   final String collectionId;

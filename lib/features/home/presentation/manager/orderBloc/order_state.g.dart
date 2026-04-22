@@ -373,6 +373,7 @@ const _$WalletCheckoutStatusEnumMap = {
   WalletCheckoutStatus.loading: 'loading',
   WalletCheckoutStatus.success: 'success',
   WalletCheckoutStatus.failure: 'failure',
+  WalletCheckoutStatus.unAuth: 'unAuth',
 };
 
 const _$PlaceOrderStatusEnumMap = {

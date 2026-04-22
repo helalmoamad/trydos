@@ -58,7 +58,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          Positioned(top: 50, left: 40, right: 40, child: logo),
+          Positioned(top: 50.h, left: 40.w, right: 40.w, child: logo),
           Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -66,12 +66,12 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
               const Spacer(),
               SizedBox(height: 1.sh / 8),
               Padding(
-                padding: HWEdgeInsets.only(left: 30.0),
+                padding: HWEdgeInsets.only(left: 30.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: HWEdgeInsets.only(left: 4.0),
+                      padding: HWEdgeInsets.only(left: 4.w),
                       child: MyTextWidget(
                         LocaleKeys.hello.tr(),
                         textAlign: TextAlign.start,
@@ -81,7 +81,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 17),
+                    SizedBox(height: 17.h),
                     Column(
                       children: [
                         MyTextWidget(
@@ -93,7 +93,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                             height: 0.67,
                           ),
                         ),
-                        const SizedBox(height: 18),
+                        SizedBox(height: 18.h),
                         MyTextWidget(
                           LocaleKeys.enjoy_with_our_services.tr(),
                           textAlign: TextAlign.center,
@@ -117,7 +117,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                   height: 1.43,
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               InkWell(
                 onTap: () {
                   context.go(GRouter.config.applicationRoutes.kBasePage);
@@ -128,11 +128,11 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                 },
                 child: Container(
                   width: 1.sw,
-                  height: 60,
-                  margin: HWEdgeInsets.symmetric(horizontal: 20),
+                  height: 60.h,
+                  margin: HWEdgeInsets.symmetric(horizontal: 20.w),
                   decoration: BoxDecoration(
                     color: const Color(0xffF4FFF4),
-                    borderRadius: BorderRadius.circular(20.0),
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -149,7 +149,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               InkWell(
                 key: TestVariables.kTestMode
                     ? const Key(WidgetsKeys.skipForNowKey)
@@ -160,7 +160,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                   context.go(GRouter.config.applicationRoutes.kBasePage);
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
                   child: MyTextWidget(
                     LocaleKeys.skip_for_now.tr(),
                     style: textTheme.titleLarge?.rq.copyWith(
@@ -172,7 +172,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                   ),
                 ),
               ),
-              const SizedBox(height: 44),
+              SizedBox(height: 44.h),
             ],
           ),
         ],

@@ -125,7 +125,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
         ),
         SizedBox(height: 60.h),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: InkWell(
             key: TestVariables.kTestMode
                 ? const Key(WidgetsKeys.agreeContinueButtonKey)
@@ -158,7 +158,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
                   strokeCap: StrokeCap.round,
                   strokeWidth: 0.5,
                   dashPattern: const [3, 3],
-                  radius: const Radius.circular(20.0),
+                  radius: Radius.circular(20.r),
                   color: index == 0
                       ? const Color(0xff388cff)
                       : const Color(0xfffafafa),
@@ -169,7 +169,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
                       color: index == 0
                           ? Colors.white
                           : const Color(0xfffafafa),
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: Center(
                       child: MyTextWidget(
@@ -187,7 +187,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
             ),
           ),
         ),
-        const SizedBox(height: 19),
+        SizedBox(height: 20.h),
         InkWell(
           highlightColor: Colors.transparent,
           splashColor: Colors.transparent,
@@ -225,7 +225,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
             );
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            padding: EdgeInsets.symmetric(vertical: 10.h),
             child: MyTextWidget(
               LocaleKeys.later_take_look.tr(),
               style: context.textTheme.titleLarge?.rq.copyWith(
@@ -236,7 +236,7 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
             ),
           ),
         ),
-        const SizedBox(height: 45),
+        SizedBox(height: 45.h),
       ],
     );
   }

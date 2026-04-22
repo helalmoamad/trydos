@@ -150,14 +150,12 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                       strokeCap: StrokeCap.round,
                       strokeWidth: 1 - fadingController.value,
                       dashPattern: const [3, 3],
-                      radius: const Radius.circular(15.0),
+                      radius: Radius.circular(15.r),
                       color: withBorder
                           ? widget.borderColor
                           : const Color(0xffF5F5F5),
                       child: ClipRRect(
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(15),
-                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(15.r)),
                         child: TextFormField(
                           controller: widget.controller,
                           enabled:

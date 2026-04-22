@@ -1352,7 +1352,7 @@ class _HomePageState extends State<HomePage> {
                               valueListenable: loadingForRquestProductDetails,
                               builder: (context, _loadingForRquestProductDetails, _) {
                                 return Positioned(
-                                  bottom: -20.h,
+                                  bottom: -10.h,
                                   child: _loadingForRquestProductDetails
                                       ? SizedBox(
                                           width: 20,

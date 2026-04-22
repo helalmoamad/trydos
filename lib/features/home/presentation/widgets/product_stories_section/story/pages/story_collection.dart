@@ -365,9 +365,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           SelectedStoriesStatus.loading) {
                         widget.animatedController.stop();
                         return TrydosShimmerLoading(
-                          width: 60,
-                          height: 60,
-                          logoTextHeight: 14,
+                          width: 60.w,
+                          height: 60.h,
+                          logoTextHeight: 14.h,
                           logoTextWidth: 20.w,
                         );
                       }
@@ -613,8 +613,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             );
                           return Container(
                             color: Colors.amberAccent,
-                            width: 200,
-                            height: 200,
+                            width: 200.w,
+                            height: 200.h,
                           );
                         },
                       );
@@ -627,9 +627,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                 ),
               ),
               positioned.Positioned(
-                top: 40.0,
-                left: 10.0,
-                right: 10.0,
+                top: 40.h,
+                left: 10.w,
+                right: 10.w,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -657,19 +657,19 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: const Icon(
+                                icon: Icon(
                                   Icons.arrow_back,
-                                  size: 30.0,
+                                  size: 30.h,
                                   color: Colors.white,
                                 ),
                                 onPressed: () => Navigator.of(context).pop(),
                               ),
                               Container(
-                                width: 40,
-                                height: 40,
+                                width: 40.w,
+                                height: 40.h,
                                 clipBehavior: Clip.hardEdge,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(20.r),
                                 ),
                                 child:
                                     state
@@ -678,8 +678,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                             .photoPath ==
                                         null
                                     ? NoImageWidget(
-                                        height: 40,
-                                        width: 40,
+                                        height: 40.h,
+                                        width: 40.w,
                                         textStyle: context
                                             .textTheme
                                             .bodyMedium
@@ -704,8 +704,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                               ),
                                       )
                                     : MyCachedNetworkImage(
-                                        width: 40,
-                                        height: 40,
+                                        width: 40.w,
+                                        height: 40.h,
                                         imageFit: BoxFit.cover,
                                         imageUrl:
                                             ((state
@@ -723,8 +723,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                       ),
                               ),
                               Padding(
-                                padding: const EdgeInsetsDirectional.only(
-                                  start: 10,
+                                padding: EdgeInsetsDirectional.only(
+                                  start: 10.w,
                                 ),
                                 child: MyTextWidget(
                                   style: textTheme.bodyLarge?.rq.copyWith(
@@ -793,14 +793,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             ],
                           ),
                           Container(
-                            width: 200,
-                            height: 20,
+                            width: 200.w,
+                            height: 20.h,
                             child: Text(
                               "${(HelperFunctions.getZonedDateWithoutUtcForm(state.storiesCollections[widget.collectionIndex].stories![state.currentStoryInEachCollection[widget.collectionIndex]!].createdAt ?? "")).toString().split(".").first}",
                               textAlign: TextAlign.center,
                               maxLines: 1,
                               style: context.textTheme.bodyMedium?.bq.copyWith(
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 color: Colors.blue,
                                 letterSpacing: 0.18,
                               ),
@@ -1131,8 +1131,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                     .getFiltersForNavigatorFromLinkToListingPageStatus ==
                 GetFiltersForNavigatorFromLinkToListingPageStatus.loading) {}
             return Container(
-              width: 300,
-              height: 100,
+              width: 300.w,
+              height: 100.h,
               child: InkWell(
                 onTap: () {
                   _videoController?.pause();
@@ -1146,14 +1146,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           GetFiltersForNavigatorFromLinkToListingPageStatus
                               .loading
                       ? Container(
-                          height: 30,
-                          width: 30,
+                          height: 30.h,
+                          width: 30.w,
                           color: Colors.white,
                           child: TrydosLoader(size: 28, color: Colors.black),
                         )
                       : Container(
-                          width: 300,
-                          height: 100,
+                          width: 300.w,
+                          height: 100.h,
                           child: Center(
                             child: Text(
                               url,
@@ -1162,7 +1162,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               style: context.textTheme.bodyMedium?.bq.copyWith(
                                 decorationColor: Colors.blue,
                                 decoration: TextDecoration.underline,
-                                fontSize: 16,
+                                fontSize: 16.sp,
                                 color: Colors.blue,
                                 letterSpacing: 0.18,
                               ),

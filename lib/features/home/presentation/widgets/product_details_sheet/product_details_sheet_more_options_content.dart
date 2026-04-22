@@ -83,28 +83,28 @@ class _ProductDetailsSheetMoreOptionsContentState
                       0
                   ? const SizedBox.shrink()
                   : Container(
-                      padding: const EdgeInsets.only(top: 20),
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      height: 106,
+                      padding: EdgeInsets.only(top: 20.h),
+                      margin: EdgeInsets.symmetric(horizontal: 20.w),
+                      height: 106.h,
                       width: 1.sw,
                       decoration: BoxDecoration(
                         color: const Color(0xffF8F8F8),
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(30.r),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             width: 1.sw,
-                            height: 25,
+                            height: 25.h,
                             child: Row(
                               children: [
-                                const SizedBox(width: 20),
+                                SizedBox(width: 20.w),
                                 SvgPicture.asset(
                                   AppAssets.notificationOutlinedIconSvg,
-                                  height: 25,
+                                  height: 25.h,
                                 ),
-                                const SizedBox(width: 20),
+                                SizedBox(width: 20.w),
                                 Text(
                                   LocaleKeys.notify_me_about_the_product_when
                                       .tr(),
@@ -112,7 +112,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                       .copyWith(
                                         color: const Color(0xff505050),
                                         letterSpacing: 0.18,
-                                        fontSize: 16,
+                                        fontSize: 16.sp,
                                         height: 0.8,
                                       ),
                                 ),
@@ -139,10 +139,10 @@ class _ProductDetailsSheetMoreOptionsContentState
                               return Container(
                                 width: 1.sw,
                                 height: 50.h,
-                                margin: const EdgeInsets.only(
-                                  top: 15,
-                                  left: 20,
-                                  right: 20,
+                                margin: EdgeInsets.only(
+                                  top: 15.h,
+                                  left: 20.w,
+                                  right: 20.w,
                                 ),
                                 child: ListView.separated(
                                   scrollDirection: Axis.horizontal,
@@ -191,11 +191,11 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                   : const Color(0xffEFEFEF),
                                             ),
                                             borderRadius: BorderRadius.circular(
-                                              30,
+                                              30.r,
                                             ),
                                           ),
                                           child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
+                                            padding: EdgeInsets.all(8.h),
                                             child: Text(
                                               (state
                                                       .notificationTypeForProductModel
@@ -212,7 +212,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                       0xff505050,
                                                     ),
                                                     letterSpacing: 0.18,
-                                                    fontSize: 14,
+                                                    fontSize: 14.sp,
                                                     height: 0.8,
                                                   ),
                                             ),
@@ -249,14 +249,13 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                     ),
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                          30,
+                                                          30.r,
                                                         ),
                                                   ),
                                                   child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                          8.0,
-                                                        ),
+                                                    padding: EdgeInsets.all(
+                                                      8.h,
+                                                    ),
                                                     child: Text(
                                                       (state
                                                               .notificationTypeForProductModel
@@ -273,7 +272,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                               0xff505050,
                                                             ),
                                                             letterSpacing: 0.18,
-                                                            fontSize: 14,
+                                                            fontSize: 14.sp,
                                                             height: 0.8,
                                                           ),
                                                     ),
@@ -302,23 +301,23 @@ class _ProductDetailsSheetMoreOptionsContentState
                     ),
               10.verticalSpace,
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                height: 65,
+                margin: EdgeInsets.symmetric(horizontal: 20.w),
+                height: 65.h,
                 decoration: BoxDecoration(
                   color: const Color(0xffF8F8F8),
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(30.r),
                 ),
                 child: Row(
                   children: [
-                    const SizedBox(width: 20),
-                    SvgPicture.asset(AppAssets.checklistSvg, height: 25),
-                    const SizedBox(width: 20),
+                    SizedBox(width: 20.w),
+                    SvgPicture.asset(AppAssets.checklistSvg, height: 25.h),
+                    SizedBox(width: 20.w),
                     Text(
                       LocaleKeys.add_to_my_checklist.tr(),
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff505050),
                         letterSpacing: 0.18,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         height: 0.8,
                       ),
                     ),
@@ -327,23 +326,23 @@ class _ProductDetailsSheetMoreOptionsContentState
               ),
               10.verticalSpace,
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                height: 65,
+                margin: EdgeInsets.symmetric(horizontal: 20.w),
+                height: 65.h,
                 decoration: BoxDecoration(
                   color: const Color(0xffF8F8F8),
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(30.r),
                 ),
                 child: Row(
                   children: [
-                    const SizedBox(width: 20),
-                    SvgPicture.asset(AppAssets.compareSvg, height: 25),
-                    const SizedBox(width: 20),
+                    SizedBox(width: 20.w),
+                    SvgPicture.asset(AppAssets.compareSvg, height: 25.h),
+                    SizedBox(width: 20.w),
                     Text(
                       LocaleKeys.add_to_compare.tr(),
                       style: context.textTheme.bodyMedium?.rq.copyWith(
                         color: const Color(0xff505050),
                         letterSpacing: 0.18,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         height: 0.8,
                       ),
                     ),

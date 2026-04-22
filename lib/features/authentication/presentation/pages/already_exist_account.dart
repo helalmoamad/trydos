@@ -86,14 +86,14 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          Positioned(top: 50, left: 40, right: 40, child: logo),
+          Positioned(top: 50.h, left: 40.w, right: 40.w, child: logo),
           Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Spacer(),
               Padding(
-                padding: HWEdgeInsets.symmetric(horizontal: 40.0),
+                padding: HWEdgeInsets.symmetric(horizontal: 40.w),
                 child: Column(
                   children: [
                     Row(
@@ -101,8 +101,8 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                       children: [
                         SvgPicture.asset(
                           AppAssets.registerInfoSvg,
-                          width: 15,
-                          height: 15,
+                          width: 15.w,
+                          height: 15.h,
                           // ignore: deprecated_member_use
                           color: const Color(0xff388CFF),
                         ),
@@ -123,8 +123,8 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                                   padding: HWEdgeInsets.only(top: 3.0),
                                   child: SvgPicture.asset(
                                     AppAssets.phoneCallSvg,
-                                    width: 10,
-                                    height: 10,
+                                    width: 10.w,
+                                    height: 10.h,
                                   ),
                                 ),
                                 5.horizontalSpace,
@@ -185,13 +185,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                         ? const Key(WidgetsKeys.loginContinueButtonKey)
                         : null,
                     onTap: () {
-                      BlocProvider.of<AuthBloc>(context).add(
-                        VerifyOtpSignInEvent(
-                          otp: prefsRepository.otpCode!,
-                          verificationId: prefsRepository.verificationId!,
-                          phone: widget.phoneNumber,
-                        ),
-                      );
+                      context.go(GRouter.config.applicationRoutes.kBasePage);
                       verifiedBySignIn = true;
                       ////////////////////
                       FirebaseAnalyticsService.logEventForSession(
@@ -216,21 +210,21 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                             highlightColor: Colors.grey[100]!,
                             child: Container(
                               width: 1.sw,
-                              height: 60,
-                              margin: HWEdgeInsets.symmetric(horizontal: 20),
+                              height: 60.h,
+                              margin: HWEdgeInsets.symmetric(horizontal: 20.w),
                               decoration: BoxDecoration(
                                 color: const Color(0xffFAFAFA),
-                                borderRadius: BorderRadius.circular(20.0),
+                                borderRadius: BorderRadius.circular(20.r),
                               ),
                             ),
                           )
                         : Container(
                             width: 1.sw,
-                            height: 60,
-                            margin: HWEdgeInsets.symmetric(horizontal: 20),
+                            height: 60.h,
+                            margin: HWEdgeInsets.symmetric(horizontal: 20.w),
                             decoration: BoxDecoration(
                               color: const Color(0xffFAFAFA),
-                              borderRadius: BorderRadius.circular(20.0),
+                              borderRadius: BorderRadius.circular(20.w),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -286,7 +280,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                   );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
                   child: MyTextWidget(
                     LocaleKeys.cancel.tr() + " , " + LocaleKeys.take_look.tr(),
                     style: textTheme.titleLarge?.rq.copyWith(

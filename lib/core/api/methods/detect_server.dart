@@ -4,6 +4,7 @@ import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/cloudinary_url_routes.dart';
 import 'package:trydos/common/constant/configuration/dashBoard_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
+import 'package:trydos/common/constant/configuration/media_server_url_routes.dart';
 import 'package:trydos/common/constant/configuration/wallet_url_routes.dart';
 import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -24,6 +25,7 @@ enum ServerName {
   comment,
   get_comment_token,
   wallet,
+  mediaServer,
 }
 
 //todo make the return value dynamic to return the cloudinary as String
@@ -53,6 +55,8 @@ Uri getBaseUriForSpecificServer(ServerName serverName) {
       return Uri.parse("https://api.gemini.com");
     case ServerName.get_comment_token:
       return Uri.parse(dotenv.env['COMMENT_TOKEN_URL']!);
+    case ServerName.mediaServer:
+      return MediaServerUrls.baseUri;
   }
 }
 
@@ -82,6 +86,8 @@ String? getServerToken(ServerName serverName) {
     case ServerName.webApp:
       return null;
     case ServerName.gemini:
+      return null;
+    case ServerName.mediaServer:
       return null;
   }
 }

@@ -100,7 +100,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+            padding: HWEdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
               children: [
                 Row(
@@ -110,8 +110,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                       widget.fromLogin
                           ? AppAssets.enterSvg
                           : AppAssets.phoneCallOutlinedSvg,
-                      width: 15,
-                      height: 15,
+                      width: 15.w,
+                      height: 15.h,
                     ),
                     10.horizontalSpace,
                     Column(
@@ -135,8 +135,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                               padding: HWEdgeInsets.only(top: 3.0),
                               child: SvgPicture.asset(
                                 AppAssets.registerInfoSvg,
-                                width: 10,
-                                height: 10,
+                                width: 10.w,
+                                height: 10.h,
                               ),
                             ),
                             5.horizontalSpace,
@@ -158,12 +158,12 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                             children: [
                               SvgPicture.asset(
                                 AppAssets.phoneOtpSvg,
-                                width: 10,
-                                height: 10,
+                                width: 10.w,
+                                height: 10.h,
                               ),
                               5.horizontalSpace,
                               SizedBox(
-                                width: 1.sw - 120,
+                                width: 1.sw - 120.w,
                                 child: MyTextWidget(
                                   LocaleKeys.we_will_send_code.tr(),
                                   style: context.textTheme.titleMedium?.rq
@@ -183,13 +183,13 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                 padding: HWEdgeInsets.only(top: 3.0),
                                 child: SvgPicture.asset(
                                   AppAssets.privacySvg,
-                                  width: 10,
-                                  height: 10,
+                                  width: 10.w,
+                                  height: 10.h,
                                 ),
                               ),
                               5.horizontalSpace,
                               SizedBox(
-                                width: 1.sw - 120,
+                                width: 1.sw - 120.w,
                                 child: MyTextWidget(
                                   LocaleKeys.your_Privacy.tr(),
                                   textAlign: TextAlign.start,
@@ -214,7 +214,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
           ),
           SizedBox(height: 29.h),
           Padding(
-            padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+            padding: HWEdgeInsets.symmetric(horizontal: 20.w),
             child: ValueListenableBuilder<bool>(
               valueListenable: displaySubmit,
               builder: (context, display, _) {
@@ -300,10 +300,10 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                   },
                   maxLength: maxLength - 1,
                   prefixIcon: Padding(
-                    padding: HWEdgeInsets.only(left: 20.0, top: 25),
+                    padding: HWEdgeInsets.only(left: 20.w, top: 5.h),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+
                       children: [
                         SvgPicture.asset(AppAssets.phoneCallSvg),
                         10.horizontalSpace,
@@ -344,7 +344,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                   ),
                   ready: display,
                   suffixIcon: Padding(
-                    padding: HWEdgeInsets.only(right: 20.0, top: 22),
+                    padding: HWEdgeInsets.only(right: 20.w, top: 5.h),
                     child: !display
                         ? SizedBox(width: 22.w, height: 15.h)
                         : InkWell(
@@ -396,7 +396,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
               },
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
         ],
       ),
     );

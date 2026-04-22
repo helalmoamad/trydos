@@ -126,7 +126,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
           return const SizedBox.shrink();
         }
         return Padding(
-          padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+          padding: EdgeInsets.only(left: 10.w, right: 10.w, bottom: 10.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -148,7 +148,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10.w),
                       child: SvgPicture.asset(
                         AppAssets.faqSvg,
                         // ignore: deprecated_member_use
@@ -156,10 +156,10 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                        bottom: 10,
+                      padding: EdgeInsets.only(
+                        left: 10.w,
+                        right: 10.w,
+                        bottom: 10.h,
                       ),
                       child: Row(
                         children: [
@@ -167,14 +167,14 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                             '${LocaleKeys.faq_buyer_seller.tr()}',
                             style: context.textTheme.titleLarge?.rq.copyWith(
                               color: const Color(0xff1D1D1D),
-                              fontSize: 11,
+                              fontSize: 11.sp,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12.w),
                           SvgPicture.asset(
                             AppAssets.registerInfoSvg,
-                            height: 10,
-                            width: 10,
+                            height: 10.h,
+                            width: 10.w,
                             // ignore: deprecated_member_use
                             color: const Color(0xffC4C2C2),
                           ),
@@ -187,12 +187,12 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
               state.getFqaCommentsPaginationModel!['all']!.items.isEmpty
                   ? const SizedBox.shrink()
                   : SizedBox(
-                      height: 250,
+                      height: 250.h,
                       width: 1.sw,
                       child: ListView.separated(
                         controller: scrollController,
                         separatorBuilder: (context, index) =>
-                            const SizedBox(width: 5),
+                            SizedBox(width: 5.w),
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
                           return (index ==
@@ -202,8 +202,8 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                           .length ??
                                       0))
                               ? SizedBox(
-                                  width: 30,
-                                  height: 50,
+                                  width: 30.w,
+                                  height: 50.h,
                                   child:
                                       state
                                               .getFqaCommentsPaginationModel?['all']
@@ -260,14 +260,14 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                             },
                             child: SizedBox(
                               width: 1.sw,
-                              height: 30,
+                              height: 30.h,
                               child: Center(
                                 child: MyTextWidget(
                                   LocaleKeys.please_login_to_add_comment.tr(),
                                   style: context.textTheme.bodyMedium?.rq
                                       .copyWith(
                                         color: Colors.red,
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                       ),
                                 ),
                               ),
@@ -275,11 +275,12 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                           ),
                         )
                       : Container(
-                          height: 40,
+                          height: 40.h,
                           width: 1.sw,
-                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          alignment: Alignment.center,
+                          margin: EdgeInsets.symmetric(vertical: 10.h),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15.r),
                             border: Border.all(color: const Color(0xff513AAF)),
                           ),
                           child: TextFormField(
@@ -290,25 +291,24 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                               hintStyle: context.textTheme.titleLarge?.rq
                                   .copyWith(
                                     color: const Color(0xffC4C2C2),
-                                    fontSize: 11,
+                                    fontSize: 11.sp,
                                   ),
                               border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 15,
-                                vertical: 10,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 15.w,
                               ),
                               prefixIcon: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: EdgeInsets.all(8.w),
                                 child: SvgPicture.asset(
                                   AppAssets.faqSvg,
-                                  width: 16,
-                                  height: 16,
+                                  width: 16.w,
+                                  height: 16.h,
                                 ),
                               ),
                               suffixIcon:
                                   state.createCommentRatingStatus ==
                                       CreateCommentRatingStatus.loading
-                                  ? TrydosLoader(size: 16)
+                                  ? TrydosLoader(size: 16.w)
                                   : _messageController.text.length > 0
                                   ? GestureDetector(
                                       onTap: () {
@@ -321,18 +321,18 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                         }
                                       },
                                       child: Container(
-                                        margin: const EdgeInsets.all(8),
-                                        padding: const EdgeInsets.all(4),
+                                        margin: EdgeInsets.all(8.w),
+                                        padding: EdgeInsets.all(4.w),
                                         decoration: BoxDecoration(
                                           color: const Color(0xff513AAF),
                                           borderRadius: BorderRadius.circular(
-                                            8,
+                                            8.r,
                                           ),
                                         ),
-                                        child: const Icon(
+                                        child: Icon(
                                           Icons.arrow_forward,
                                           color: Colors.white,
-                                          size: 16,
+                                          size: 16.w,
                                         ),
                                       ),
                                     )
@@ -340,7 +340,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                             ),
                             style: context.textTheme.titleLarge?.rq.copyWith(
                               color: const Color(0xff1D1D1D),
-                              fontSize: 11,
+                              fontSize: 11.sp,
                             ),
                             textAlign: TextAlign.center,
                             textInputAction: TextInputAction.send,
@@ -367,10 +367,10 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
   Widget _commentWidget(FqaComment fqaComment, int index, HomeState state) {
     return Container(
       width: 388.w,
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.all(10.w),
       decoration: BoxDecoration(
         color: const Color(0xffF8F8F8),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,8 +383,8 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
             isVerified: widget.isVerified,
           ),
           Container(
-            height: 0.5,
-            margin: const EdgeInsets.only(bottom: 10, top: 10),
+            height: 0.5.h,
+            margin: EdgeInsets.only(bottom: 10.h, top: 10.h),
             color: const Color(0xffD3D3D3),
           ),
           ..._SingelComments(
@@ -419,17 +419,17 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
         ),
         backgroundColor: Colors.white,
         builder: (context) {
           return Padding(
             padding: EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 24,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              left: 20.w,
+              right: 20.w,
+              top: 24.h,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24.h,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -437,26 +437,26 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
               children: [
                 Center(
                   child: Container(
-                    width: 48,
-                    height: 5,
-                    margin: const EdgeInsets.only(bottom: 18),
+                    width: 48.w,
+                    height: 5.h,
+                    margin: EdgeInsets.only(bottom: 18.h),
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                   ),
                 ),
                 Center(
                   child: Text(
                     LocaleKeys.edit_comment_title.tr(),
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
                   ),
                 ),
-                const SizedBox(height: 22),
+                SizedBox(height: 22.h),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
@@ -467,16 +467,16 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                         offset: Offset(0, 4),
                       ),
                     ],
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(14.r),
                   ),
                   child: TextField(
                     controller: _controller,
                     decoration: InputDecoration(
                       hintText: LocaleKeys.edit_comment_hint.tr(),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 14,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 14.w,
+                        vertical: 14.h,
                       ),
                     ),
                     maxLines: 3,
@@ -484,7 +484,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                     minLines: 3,
                   ),
                 ),
-                const SizedBox(height: 18),
+                SizedBox(height: 18.h),
                 Row(
                   children: [
                     const Spacer(),
@@ -493,7 +493,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                       builder: (context, isNotEmpty, _) {
                         if (!isNotEmpty) return const SizedBox.shrink();
                         return CircleAvatar(
-                          radius: 24,
+                          radius: 24.r,
                           backgroundColor: Colors.green,
                           child: IconButton(
                             icon: const Icon(Icons.send, color: Colors.white),
@@ -533,7 +533,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
           maxLines: 10,
           style: context.textTheme.titleLarge?.rq.copyWith(
             color: const Color(0xff1D1D1D),
-            fontSize: 11,
+            fontSize: 11.sp,
           ),
         ),
         const Spacer(),
@@ -579,7 +579,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
 
     return [
       SizedBox(
-        height: 20,
+        height: 20.h,
         width: 1.sw,
         child: Row(
           children: [
@@ -592,18 +592,18 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                         )
                         ? fqaComment.customer?.image ?? ""
                         : '${dotenv.env['Images_Url']}${fqaComment.customer?.image}',
-                    width: 20,
+                    width: 20.w,
                     imageFit: BoxFit.cover,
-                    height: 20,
+                    height: 20.h,
                   ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10.w),
             Row(
               children: [
                 MyTextWidget(
                   answard ? "A " : "Q ",
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
                 MyTextWidget(
@@ -612,7 +612,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                       : "${extractInitialsAndAppendXXX(fqaComment.customer?.name ?? "")}",
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
               ],
@@ -630,29 +630,29 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                     ),
               style: context.textTheme.titleLarge?.rq.copyWith(
                 color: const Color(0xff8D8D8D),
-                fontSize: 9,
+                fontSize: 9.sp,
               ),
             ),
           ],
         ),
       ),
-      const SizedBox(height: 10),
+      SizedBox(height: 10.h),
       answard
           ? MyTextWidget(
               "${LocaleKeys.dear.tr()} ${extractInitialsAndAppendXXX(fqaComment.customer?.name ?? "")}",
               style: context.textTheme.titleLarge?.mq.copyWith(
                 color: const Color(0xff1D1D1D),
-                fontSize: 9,
+                fontSize: 9.sp,
               ),
             )
           : MyTextWidget(
               fqaComment.variant ?? "",
               style: context.textTheme.titleLarge?.mq.copyWith(
                 color: const Color(0xff1D1D1D),
-                fontSize: 9,
+                fontSize: 9.sp,
               ),
             ),
-      const SizedBox(height: 10),
+      SizedBox(height: 10.h),
       MyTextWidget(
         answard
             ? ((fqaComment.isTran ?? false)
@@ -664,12 +664,12 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
         maxLines: 10,
         style: context.textTheme.titleLarge?.rq.copyWith(
           color: const Color(0xff1D1D1D),
-          fontSize: 11,
+          fontSize: 11.sp,
         ),
       ),
       const Spacer(),
       Padding(
-        padding: const EdgeInsets.only(left: 10, right: 10),
+        padding: EdgeInsets.only(left: 10.w, right: 10.w),
         child: Row(
           children: [
             answard
@@ -712,14 +712,14 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                             );
                           },
                           child: SizedBox(
-                            width: 30,
-                            height: 18,
+                            width: 30.w,
+                            height: 18.h,
                             child: SvgPicture.asset(
                               (fqaComment.replyIsLiked ?? false)
                                   ? AppAssets.favoriteActiveSvg
                                   : AppAssets.favoriteSvg,
-                              height: 16,
-                              width: 12,
+                              height: 16.h,
+                              width: 12.w,
                             ),
                           ),
                         )
@@ -727,7 +727,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                           UpdateLikeCommentRatingStatus.loading &&
                       state.tapCommentIndex == index &&
                       (!(state.likeForReplayComment ?? false)))
-                ? TrydosLoader(size: 16)
+                ? TrydosLoader(size: 16.h)
                 : GestureDetector(
                     onTap: () {
                       if (!(GetIt.I<PrefsRepository>().isVerifiedPhone ??
@@ -759,14 +759,14 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                       );
                     },
                     child: SizedBox(
-                      width: 30,
-                      height: 18,
+                      width: 30.w,
+                      height: 18.h,
                       child: SvgPicture.asset(
                         (fqaComment.isLiked ?? false)
                             ? AppAssets.favoriteActiveSvg
                             : AppAssets.favoriteSvg,
-                        height: 16,
-                        width: 12,
+                        height: 16.h,
+                        width: 12.w,
                       ),
                     ),
                   ),
@@ -779,7 +779,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                     '${answard ? (fqaComment.replyTotalLikes ?? 0) : (fqaComment.totalLikes ?? 0)}',
                     style: context.textTheme.titleLarge?.rq.copyWith(
                       color: const Color(0xff1D1D1D),
-                      fontSize: 9,
+                      fontSize: 9.sp,
                     ),
                   ),
 
@@ -787,7 +787,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                 ? const SizedBox.shrink()
                 : SizedBox(
                     width: 60.w,
-                    height: 32,
+                    height: 32.h,
                     child:
                         ((state.deleteOrderCommentRatingStatus ==
                                     DeleteOrderCommentRatingStatus.loading ||
@@ -796,10 +796,10 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                 state.translateCommentStatus ==
                                     TranslateCommentStatus.loading) &&
                             state.tapCommentIndex == index)
-                        ? TrydosLoader(size: 15)
+                        ? TrydosLoader(size: 15.h)
                         : SizedBox(
-                            width: 60,
-                            height: 32,
+                            width: 60.w,
+                            height: 32.h,
                             child: PopupMenuButton<String>(
                               icon: const Icon(
                                 Icons.more_vert,
@@ -812,8 +812,8 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                     barrierColor: Colors.transparent,
                                     builder: (ctx) => Center(
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w,
                                         ),
                                         child: Material(
                                           color: Colors.transparent,
@@ -883,12 +883,12 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                                           style: TextStyle(
                                                             color: Colors
                                                                 .grey[600],
-                                                            fontSize: 14,
+                                                            fontSize: 14.sp,
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                    const SizedBox(width: 8),
+                                                    SizedBox(width: 8.w),
                                                     Expanded(
                                                       child: ElevatedButton(
                                                         onPressed: () =>
@@ -905,24 +905,22 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                                           shape: RoundedRectangleBorder(
                                                             borderRadius:
                                                                 BorderRadius.circular(
-                                                                  12,
+                                                                  12.r,
                                                                 ),
                                                           ),
                                                           padding:
-                                                              const EdgeInsets.symmetric(
-                                                                vertical: 10,
+                                                              EdgeInsets.symmetric(
+                                                                vertical: 10.h,
                                                               ),
                                                         ),
                                                         child: Text(
                                                           LocaleKeys
                                                               .confirm_delete
                                                               .tr(),
-                                                          style:
-                                                              const TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 14,
-                                                              ),
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14.sp,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
@@ -1039,9 +1037,9 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                         SvgPicture.asset(
                                           AppAssets.languageSvg,
 
-                                          height: 20,
+                                          height: 20.h,
                                         ),
-                                        const SizedBox(width: 6),
+                                        SizedBox(width: 6.w),
                                         Text(
                                           (fqaComment.isTran ?? false)
                                               ? LocaleKeys.show_original_version
@@ -1064,9 +1062,9 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                             AppAssets.editSvg,
                                             // ignore: deprecated_member_use
                                             color: Colors.green,
-                                            height: 20,
+                                            height: 20.h,
                                           ),
-                                          const SizedBox(width: 6),
+                                          SizedBox(width: 6.w),
                                           Text(LocaleKeys.edit.tr()),
                                         ],
                                       ),
@@ -1079,9 +1077,9 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                         children: [
                                           SvgPicture.asset(
                                             AppAssets.deletecartSvg,
-                                            height: 20,
+                                            height: 20.h,
                                           ),
-                                          const SizedBox(width: 6),
+                                          SizedBox(width: 6.w),
                                           Text(LocaleKeys.delete.tr()),
                                         ],
                                       ),
@@ -1101,7 +1099,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                     '${getTimeAgo(fqaComment.replyCreatedAt!, GetIt.I<PrefsRepository>().language ?? "en")} ${LocaleKeys.answered.tr()}',
                     style: context.textTheme.titleLarge?.rq.copyWith(
                       color: const Color(0xff8D8D8D),
-                      fontSize: 9,
+                      fontSize: 9.sp,
                     ),
                   ),
           ],

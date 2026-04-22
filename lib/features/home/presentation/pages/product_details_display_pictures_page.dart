@@ -20,12 +20,13 @@ class ProductDetailsDisplayPicturesPage extends StatefulWidget {
   final int currentIndex;
   final String brand;
   final String category;
-  const ProductDetailsDisplayPicturesPage(
-      {super.key,
-      required this.images,
-      required this.currentIndex,
-      required this.brand,
-      required this.category});
+  const ProductDetailsDisplayPicturesPage({
+    super.key,
+    required this.images,
+    required this.currentIndex,
+    required this.brand,
+    required this.category,
+  });
 
   @override
   State<ProductDetailsDisplayPicturesPage> createState() =>
@@ -44,8 +45,9 @@ class _ProductDetailsDisplayPicturesPageState
 
   @override
   Widget build(BuildContext context) {
-    final ValueNotifier<int> selectedPicture =
-        ValueNotifier(widget.currentIndex);
+    final ValueNotifier<int> selectedPicture = ValueNotifier(
+      widget.currentIndex,
+    );
     FlutterError.onError = (FlutterErrorDetails error) {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
@@ -53,100 +55,108 @@ class _ProductDetailsDisplayPicturesPageState
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
-          appBar: TrydosAppBar(
-            appBarParams: AppBarParams(
-                scrolledUnderElevation: 0,
-                backIconColor: Colors.black,
-                withShadow: false),
+        appBar: TrydosAppBar(
+          appBarParams: AppBarParams(
+            scrolledUnderElevation: 0,
+            backIconColor: Colors.black,
+            withShadow: false,
           ),
-          backgroundColor: const Color(0xffF4F4F4),
-          body: SingleChildScrollView(
-            child: ValueListenableBuilder<int>(
-              valueListenable: selectedPicture,
-              builder: (context, selectedIndex, _) {
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: ProductDetailsImageWidget(
-                        orginalHeight: double.tryParse(
-                            widget.images[selectedIndex].originalHeight!),
-                        orginalWidth: double.tryParse(
-                            widget.images[selectedIndex].originalWidth!),
-                        height: 0.6.sh,
-                        width: 1.sw,
-                        imageUrl: widget.images[selectedIndex].filePath,
+        ),
+        backgroundColor: const Color(0xffF4F4F4),
+        body: SingleChildScrollView(
+          child: ValueListenableBuilder<int>(
+            valueListenable: selectedPicture,
+            builder: (context, selectedIndex, _) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(10.w),
+                    child: ProductDetailsImageWidget(
+                      orginalHeight: double.tryParse(
+                        widget.images[selectedIndex].originalHeight!,
                       ),
+                      orginalWidth: double.tryParse(
+                        widget.images[selectedIndex].originalWidth!,
+                      ),
+                      height: 0.6.sh,
+                      width: 1.sw,
+                      imageUrl: widget.images[selectedIndex].filePath,
                     ),
-                    Stack(
-                      alignment: LanguageService.rtl
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      children: [
-                        SizedBox(
-                            height: 160,
-                            child: ScrollConfiguration(
-                              behavior: const CupertinoScrollBehavior(),
-                              child: ListView.separated(
-                                  itemCount: widget.images.length,
-                                  shrinkWrap: true,
-                                  physics: const ClampingScrollPhysics(),
-                                  scrollDirection: Axis.horizontal,
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 10, top: 10, bottom: 10),
-                                  itemBuilder: (context, index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        selectedPicture.value = index;
-                                        FirebaseAnalyticsService
-                                            .logEventForSession(
-                                          eventName:
-                                              AnalyticsEventsConst.VIEW_IMAGE,
-                                          extraParams: {
-                                            'image_index': index.toString(),
-                                            'screen_name': GlobalScreenConst
-                                                .PRODUCT_SCREEN,
-                                            'brand': widget.brand,
-                                            'category': widget.category
-                                          },
-                                          executedEventName:
-                                              AnalyticsButtonsEventNameConst
-                                                  .SHOW_PRODUCT_PHOTOS_BUTTON,
-                                        );
-                                      },
-                                      child: ProductDetailsImageWidget(
-                                        orginalHeight: double.tryParse(widget
-                                            .images[index].originalHeight!),
-                                        orginalWidth: double.tryParse(widget
-                                            .images[index].originalWidth!),
-                                        height: 140,
-                                        radius: 15,
-                                        width: 100,
-                                        borderColor: index == selectedIndex
-                                            ? const Color(0xff388CFF)
-                                            : null,
-                                        imageUrl: widget.images[index].filePath,
-                                      ),
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    return const SizedBox(
-                                      width: 5,
-                                    );
-                                  }),
-                            )),
-                        Container(
-                          color: Colors.transparent,
-                          width: 20,
-                          height: 160,
-                        )
-                      ],
-                    ),
-                  ],
-                );
-              },
-            ),
-          )),
+                  ),
+                  Stack(
+                    alignment: LanguageService.rtl
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    children: [
+                      SizedBox(
+                        height: 160.h,
+                        child: ScrollConfiguration(
+                          behavior: const CupertinoScrollBehavior(),
+                          child: ListView.separated(
+                            itemCount: widget.images.length,
+                            shrinkWrap: true,
+                            physics: const ClampingScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            padding: EdgeInsets.only(
+                              left: 10.w,
+                              right: 10.w,
+                              top: 10.h,
+                              bottom: 10.h,
+                            ),
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  selectedPicture.value = index;
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    eventName: AnalyticsEventsConst.VIEW_IMAGE,
+                                    extraParams: {
+                                      'image_index': index.toString(),
+                                      'screen_name':
+                                          GlobalScreenConst.PRODUCT_SCREEN,
+                                      'brand': widget.brand,
+                                      'category': widget.category,
+                                    },
+                                    executedEventName:
+                                        AnalyticsButtonsEventNameConst
+                                            .SHOW_PRODUCT_PHOTOS_BUTTON,
+                                  );
+                                },
+                                child: ProductDetailsImageWidget(
+                                  orginalHeight: double.tryParse(
+                                    widget.images[index].originalHeight!,
+                                  ),
+                                  orginalWidth: double.tryParse(
+                                    widget.images[index].originalWidth!,
+                                  ),
+                                  height: 140.h,
+                                  radius: 15.r,
+                                  width: 100.w,
+                                  borderColor: index == selectedIndex
+                                      ? const Color(0xff388CFF)
+                                      : null,
+                                  imageUrl: widget.images[index].filePath,
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return SizedBox(width: 5.w);
+                            },
+                          ),
+                        ),
+                      ),
+                      Container(
+                        color: Colors.transparent,
+                        width: 20.w,
+                        height: 160.h,
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }

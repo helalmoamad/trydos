@@ -26,77 +26,81 @@ class ReelWidget extends StatelessWidget {
         Stack(
           children: [
             ProductDetailsImageWidget(
-              height: 595,
-              borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(30), topLeft: Radius.circular(30)),
+              height: 595.h,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(30.r),
+                topLeft: Radius.circular(30.r),
+              ),
               width: 1.sw,
               withBackGroundShadow: false,
               withInnerShadow: false,
               imageFit: BoxFit.fill,
             ),
             Positioned(
-              bottom: 20,
-              right: 20,
+              bottom: 20.h,
+              right: 20.w,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const TrydosFavoriteButton(),
-                  const SizedBox(height: 25),
+                  SizedBox(height: 25.h),
                   SvgPicture.asset(
                     AppAssets.shareSvg,
                     // ignore: deprecated_member_use
                     color: const Color(0xff505050),
                   ),
-                  const SizedBox(height: 25),
+                  SizedBox(height: 25.h),
                   SvgPicture.asset(AppAssets.moreOptionSvg),
                 ],
               ),
-            )
+            ),
           ],
         ),
         Container(
           width: 1.sw,
-          padding: const EdgeInsets.only(left: 10, top: 20, right: 10),
-          decoration: const BoxDecoration(
-            color: Color(0xfff8f8f8),
+          padding: EdgeInsets.only(left: 10.w, top: 20.h, right: 10.w),
+          decoration: BoxDecoration(
+            color: const Color(0xfff8f8f8),
             borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(30),
-                bottomLeft: Radius.circular(30)),
+              bottomRight: Radius.circular(30.r),
+              bottomLeft: Radius.circular(30.r),
+            ),
           ),
-          height: 110,
+          height: 110.h,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
-                      bottomRight: Radius.circular(30),
-                      bottomLeft: Radius.circular(30)),
+                    bottomRight: Radius.circular(30.r),
+                    bottomLeft: Radius.circular(30.r),
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0x29000000),
-                      offset: Offset(0, 3),
-                      blurRadius: 6,
+                      color: const Color(0x29000000),
+                      offset: Offset(0, 3.h),
+                      blurRadius: 6.h,
                     ),
                   ],
                 ),
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.all(Radius.circular(20.r)),
                   child: Stack(
                     children: [
                       SizedBox(
-                        width: 20,
-                        height: 20,
+                        width: 20.w,
+                        height: 20.h,
                         child: Image.asset(
                           AppAssets.profileJpg,
                           fit: BoxFit.cover,
                         ),
                       ),
                       Container(
-                        width: 20,
-                        height: 20,
+                        width: 20.w,
+                        height: 20.h,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
+                          borderRadius: BorderRadius.circular(20.r),
                           boxShadow: [
                             BoxShadow(
                               offset: const Offset(0, 3),
@@ -112,9 +116,7 @@ class ReelWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(
-                width: 10,
-              ),
+              SizedBox(width: 10.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,50 +126,47 @@ class ReelWidget extends StatelessWidget {
                       children: [
                         MyTextWidget(
                           'Yxxx Oxxx',
-                          style: context.textTheme.bodySmall?.rq
-                              .copyWith(color: const Color(0xff969696)),
+                          style: context.textTheme.bodySmall?.rq.copyWith(
+                            color: const Color(0xff969696),
+                          ),
                         ),
                         MyTextWidget(
                           '18 feb',
-                          style: context.textTheme.titleSmall?.rq
-                              .copyWith(color: const Color(0xff8D8D8D)),
+                          style: context.textTheme.titleSmall?.rq.copyWith(
+                            color: const Color(0xff8D8D8D),
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 5,
-                    ),
+                    SizedBox(height: 5.h),
                     Flexible(
                       child: MyTextWidget(
                         '${LocaleKeys.amazing_product_buy_it_and_saw.tr()}',
-                        style: context.textTheme.bodySmall?.rq
-                            .copyWith(color: const Color(0xff5D5C5D)),
+                        style: context.textTheme.bodySmall?.rq.copyWith(
+                          color: const Color(0xff5D5C5D),
+                        ),
                         maxLines: 5,
                       ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        SvgPicture.asset(
-                          AppAssets.favoriteSvg,
-                          height: 15,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
+                        SvgPicture.asset(AppAssets.favoriteSvg, height: 15.h),
+                        SizedBox(width: 5.w),
                         MyTextWidget(
                           '110k',
-                          style: context.textTheme.titleMedium?.rq
-                              .copyWith(color: const Color(0xff8D8D8D)),
+                          style: context.textTheme.titleMedium?.rq.copyWith(
+                            color: const Color(0xff8D8D8D),
+                          ),
                         ),
                       ],
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
-        )
+        ),
       ],
     );
   }

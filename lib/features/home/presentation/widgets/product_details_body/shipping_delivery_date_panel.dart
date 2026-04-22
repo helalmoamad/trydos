@@ -32,20 +32,20 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
       FlutterError.dumpErrorToConsole(error);
     };
     return SlidingUpPanel(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(20.0),
-        topRight: Radius.circular(20.0),
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20.w),
+        topRight: Radius.circular(20.w),
       ),
       minHeight: 0,
       controller: panelController,
-      maxHeight: 1.sh - 65,
+      maxHeight: 1.sh - 65.h,
       backdropEnabled: true,
       panelBuilder: (scrollController) {
         return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          height: 1.sh - 65,
+          margin: EdgeInsets.symmetric(horizontal: 20.w),
+          height: 1.sh - 65.h,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(30.r),
             color: const Color(0xffFEFEFE),
           ),
           child: SingleChildScrollView(
@@ -54,24 +54,24 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
               children: [
                 Container(
                   margin: EdgeInsets.symmetric(
-                    horizontal: (1.sw / 2) - 40,
-                    vertical: 5,
+                    horizontal: (1.sw / 2) - 40.w,
+                    vertical: 5.h,
                   ),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.r),
                     color: const Color(0xffC4C2C2),
                   ),
-                  height: 2,
-                  width: 40,
+                  height: 2.h,
+                  width: 40.w,
                 ),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 SvgPicture.asset(
                   AppAssets.deliveryPathSvg,
                   // ignore: deprecated_member_use
                   color: const Color(0xff1D1D1D),
-                  height: 30,
+                  height: 30.h,
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 MyTextWidget(
                   LocaleKeys.expected_shipping_delivery_date.tr(),
                   style: context.textTheme.titleLarge?.rq.copyWith(
@@ -79,7 +79,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                     fontSize: 13,
                   ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Builder(
                   builder: (context) {
                     // Parse shippingDay to int
@@ -110,7 +110,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                           '$dayName ',
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             height: 16 / 13,
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             color: const Color(0xff1D1D1D),
                           ),
                         ),
@@ -118,7 +118,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                           '$formattedDate | ',
                           style: context.textTheme.titleLarge?.bq.copyWith(
                             height: 16 / 13,
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             color: const Color(0xff1D1D1D),
                           ),
                         ),
@@ -126,7 +126,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                           '${shippingDay} ${LocaleKeys.work_days_at_your_address_in.tr()} ${countryName}',
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             height: 16 / 13,
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             color: const Color(0xff1D1D1D),
                           ),
                         ),
@@ -135,12 +135,12 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                   },
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  margin: EdgeInsets.symmetric(vertical: 10.h),
                   decoration: BoxDecoration(
                     color: const Color(0xffD3D3D3),
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.r),
                   ),
-                  height: 0.5,
+                  height: 0.5.h,
                   width: 1.sw,
                 ),
                 Row(
@@ -149,25 +149,25 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                       LocaleKeys.shipping_company.tr(),
                       style: context.textTheme.titleLarge?.rq.copyWith(
                         color: const Color(0xff1D1D1D),
-                        fontSize: 11,
+                        fontSize: 11.sp,
                       ),
                     ),
                     MyTextWidget(
                       ' Trydos',
                       style: context.textTheme.titleLarge?.bq.copyWith(
                         color: const Color(0xff1D1D1D),
-                        fontSize: 11,
+                        fontSize: 11.sp,
                       ),
                     ),
                   ],
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  margin: EdgeInsets.symmetric(vertical: 10.h),
                   decoration: BoxDecoration(
                     color: const Color(0xffD3D3D3),
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.r),
                   ),
-                  height: 0.5,
+                  height: 0.5.h,
                   width: 1.sw,
                 ),
                 MyTextWidget(
@@ -176,7 +176,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                       .tr(),
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
-                    fontSize: 11,
+                    fontSize: 11.sp,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -188,51 +188,51 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                           .tr(),
                       style: context.textTheme.titleLarge?.rq.copyWith(
                         color: const Color(0xff1D1D1D),
-                        fontSize: 11,
+                        fontSize: 11.sp,
                       ),
                     ),
                     MyTextWidget(
                       ' 3 ${LocaleKeys.day.tr()}',
                       style: context.textTheme.titleLarge?.bq.copyWith(
                         color: const Color(0xff1D1D1D),
-                        fontSize: 11,
+                        fontSize: 11.sp,
                       ),
                     ),
                   ],
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  margin: EdgeInsets.symmetric(vertical: 10.h),
                   decoration: BoxDecoration(
                     color: const Color(0xffD3D3D3),
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.r),
                   ),
-                  height: 0.5,
+                  height: 0.5.h,
                   width: 1.sw,
                 ),
                 _buyerReviewSingle("1", 1, context),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 _buyerReviewSingle("2", 3, context),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 _buyerReviewSingle("3", 70, context),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 _buyerReviewSingle("4", 18, context),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 _buyerReviewSingle("5", 1, context),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 _buyerReviewSingle("6", 1, context),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 _buyerReviewSingle("7", 1, context),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 _buyerReviewSingle("8", 1, context),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 _buyerReviewSingle("9", 1, context),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 _buyerReviewSingle("10", 1, context),
                 Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  margin: EdgeInsets.symmetric(vertical: 10.h),
                   decoration: BoxDecoration(
                     color: const Color(0xffD3D3D3),
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.r),
                   ),
                   height: 0.5,
                   width: 1.sw,
@@ -240,12 +240,15 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SvgPicture.asset(AppAssets.deliveryGuranteeSvg, width: 20),
+                    SvgPicture.asset(
+                      AppAssets.deliveryGuranteeSvg,
+                      width: 20.w,
+                    ),
                     const SizedBox(height: 5),
                     MyTextWidget(
                       '${LocaleKeys.delivery_guarantee.tr()}',
                       style: context.textTheme.titleLarge?.mq.copyWith(
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         height: 16 / 13,
                         color: const Color(0xff1D1D1D),
                       ),
@@ -254,11 +257,11 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                     Row(
                       children: [
                         SvgPicture.asset(AppAssets.dolarSvg),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         MyTextWidget(
                           '${LocaleKeys.get_a.tr()}',
                           style: context.textTheme.titleLarge?.rq.copyWith(
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             height: 16 / 13,
                             color: const Color(0xff1D1D1D),
                           ),
@@ -274,45 +277,45 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                         MyTextWidget(
                           '${LocaleKeys.of_the_product_price_if_shipping.tr()}',
                           style: context.textTheme.titleLarge?.rq.copyWith(
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             height: 16 / 13,
                             color: const Color(0xff1D1D1D),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    SvgPicture.asset(AppAssets.freeShippingSvg, width: 20),
-                    const SizedBox(height: 5),
+                    SizedBox(height: 8.h),
+                    SvgPicture.asset(AppAssets.freeShippingSvg, width: 20.w),
+                    SizedBox(height: 5.h),
                     MyTextWidget(
                       '${LocaleKeys.free_shipping.tr()}',
                       style: context.textTheme.titleLarge?.mq.copyWith(
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         height: 16 / 13,
                         color: const Color(0xff1D1D1D),
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    SizedBox(height: 3.h),
                     MyTextWidget(
                       '${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()}',
                       style: context.textTheme.titleLarge?.rq.copyWith(
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         height: 16 / 13,
                         color: const Color(0xff1D1D1D),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    SvgPicture.asset(AppAssets.returnGuranteeSvg, width: 20),
-                    const SizedBox(height: 5),
+                    SizedBox(height: 8.h),
+                    SvgPicture.asset(AppAssets.returnGuranteeSvg, width: 20.w),
+                    SizedBox(height: 5.h),
                     MyTextWidget(
                       '${LocaleKeys.return_guarantee.tr()}',
                       style: context.textTheme.titleLarge?.mq.copyWith(
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         height: 16 / 13,
                         color: const Color(0xff1D1D1D),
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    SizedBox(height: 3.h),
                     Row(
                       children: [
                         MyTextWidget(
@@ -343,15 +346,15 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 5),
+                    SizedBox(height: 5.h),
                     Row(
                       children: [
                         SvgPicture.asset(AppAssets.dolarSvg),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         MyTextWidget(
                           '${LocaleKeys.get_a.tr()} ',
                           style: context.textTheme.titleLarge?.rq.copyWith(
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             height: 16 / 13,
                             color: const Color(0xff1D1D1D),
                           ),
@@ -359,7 +362,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                         /*  MyTextWidget(
                         '${LocaleKeys.full.tr()} ',
                         style: context.textTheme.titleLarge?.mr.copyWith(
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             height: 16 / 13,
                             color: const Color(0xff388CFF)),
                       ),*/
@@ -368,20 +371,20 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: context.textTheme.titleLarge?.rq.copyWith(
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             height: 16 / 13,
                             color: const Color(0xff1D1D1D),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 3),
+                    SizedBox(height: 3.h),
                     Row(
                       children: [
                         MyTextWidget(
                           '${LocaleKeys.or_reasons_with_complete_ease_and.tr()} ',
                           style: context.textTheme.titleLarge?.rq.copyWith(
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             height: 16 / 13,
                             color: const Color(0xff1D1D1D),
                           ),
@@ -391,29 +394,29 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: context.textTheme.titleLarge?.mq.copyWith(
-                            fontSize: 11,
+                            fontSize: 11.sp,
                             height: 16 / 13,
                             color: const Color(0xff388CFF),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    SvgPicture.asset(AppAssets.freeReturnSvg, width: 20),
-                    const SizedBox(height: 5),
+                    SizedBox(height: 8.h),
+                    SvgPicture.asset(AppAssets.freeReturnSvg, width: 20.w),
+                    SizedBox(height: 5.h),
                     MyTextWidget(
                       '${LocaleKeys.free_return.tr()}',
                       style: context.textTheme.titleLarge?.mq.copyWith(
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         height: 16 / 13,
                         color: const Color(0xff1D1D1D),
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    SizedBox(height: 3.h),
                     MyTextWidget(
                       '${LocaleKeys.return_is_completely_free_without_any_extras.tr()}',
                       style: context.textTheme.titleLarge?.rq.copyWith(
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         height: 16 / 13,
                         color: const Color(0xff1D1D1D),
                       ),
@@ -435,26 +438,26 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
   ) {
     return SizedBox(
       width: 1.sw,
-      height: 20,
+      height: 20.h,
       child: Row(
         children: [
           Stack(
             children: [
               Container(
-                height: 15,
+                height: 15.h,
                 width: 284.w,
                 decoration: BoxDecoration(
                   color: const Color(0xffFCFCFC),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(5.r),
                   border: Border.all(color: const Color(0xffD3D3D3)),
                 ),
               ),
               Container(
-                height: 15,
+                height: 15.h,
                 width: (numOfPercent / 100) * 284.w,
                 decoration: BoxDecoration(
                   color: const Color(0xff1D1D1D),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(5.r),
                   border: Border.all(color: const Color(0xff1D1D1D)),
                 ),
               ),
@@ -465,7 +468,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
             "${numOfPercent}%",
             style: context.textTheme.titleLarge?.rq.copyWith(
               color: const Color(0xff1D1D1D),
-              fontSize: 11,
+              fontSize: 11.sp,
             ),
           ),
           const Spacer(),
@@ -473,14 +476,14 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
             day,
             style: context.textTheme.titleLarge?.bq.copyWith(
               color: const Color(0xff1D1D1D),
-              fontSize: 11,
+              fontSize: 11.sp,
             ),
           ),
           MyTextWidget(
             " ${LocaleKeys.day.tr()}",
             style: context.textTheme.titleLarge?.rq.copyWith(
               color: const Color(0xff1D1D1D),
-              fontSize: 11,
+              fontSize: 11.sp,
             ),
           ),
           SizedBox(width: day == "10" ? 5.w : 10.w),

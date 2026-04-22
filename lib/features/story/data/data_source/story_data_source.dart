@@ -18,35 +18,33 @@ import '../../data/models/get_stories_model.dart';
 @injectable
 class StoriesDataSource {
   Completer<ImageDetail> completer = Completer<ImageDetail>();
-  Future<ImageDetail> loadWidthAndHeightForImage(
-      {required String url,
-      required int collectionId,
-      Function? onError}) async {
+  Future<ImageDetail> loadWidthAndHeightForImage({
+    required String url,
+    required int collectionId,
+    Function? onError,
+  }) async {
     completer = Completer<ImageDetail>();
     Image image;
-    image = Image(
-      image: CachedNetworkImageProvider(url),
-    );
+    image = Image(image: CachedNetworkImageProvider(url));
     try {
       image.image
           .resolve(const ImageConfiguration())
-          .addListener(ImageStreamListener(
-            (
-              ImageInfo imageInfo,
-              bool _,
-            ) {
-              final dimensions = ImageDetail(
-                width: imageInfo.image.width,
-                height: imageInfo.image.height,
-              );
-              if (completer.isCompleted == false) {
-                completer.complete(dimensions);
-              }
-            },
-            onError: (exception, stackTrace) {
-              if (onError != null) onError();
-            },
-          ));
+          .addListener(
+            ImageStreamListener(
+              (ImageInfo imageInfo, bool _) {
+                final dimensions = ImageDetail(
+                  width: imageInfo.image.width,
+                  height: imageInfo.image.height,
+                );
+                if (completer.isCompleted == false) {
+                  completer.complete(dimensions);
+                }
+              },
+              onError: (exception, stackTrace) {
+                if (onError != null) onError();
+              },
+            ),
+          );
     } catch (e) {
       GetIt.I<StoryBloc>().add(LoadFailureEvent(collectionId: collectionId));
     }
@@ -64,7 +62,8 @@ class StoriesDataSource {
         endpoint: StoriesEndPoints.getStoriesEP,
         queryParameters: params,
         response: ResponseValue<GetStoriesModel>(
-            fromJson: (response) => GetStoriesModel.fromJson(response)),
+          fromJson: (response) => GetStoriesModel.fromJson(response),
+        ),
       ),
     );
 
@@ -72,42 +71,48 @@ class StoriesDataSource {
   }
 
   Future<Either<int, CollectionStoryModel>> uploadStory(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<Either<int, CollectionStoryModel>> uploadStory =
         PostClient<Either<int, CollectionStoryModel>>(
-      onSendProgress: (count, total) {},
-      requestPrams: RequestConfig<Either<int, CollectionStoryModel>>(
-        // sendTimeout: Duration(seconds: 10),
-        endpoint: StoriesEndPoints.uploadStoriesEP,
-        data: params['data'],
-        response: ResponseValue<Either<int, CollectionStoryModel>>(
-            fromJson: (response) {
-          if (response['data']['id'] != null)
-            return Left(response['data']['id']);
-          return Right(CollectionStoryModel.fromJson(response['data']));
-        }),
-      ),
-      serverName: ServerName.stories,
-    );
+          onSendProgress: (count, total) {},
+          requestPrams: RequestConfig<Either<int, CollectionStoryModel>>(
+            // sendTimeout: Duration(seconds: 10),
+            endpoint: StoriesEndPoints.uploadStoriesEP,
+            data: params['data'],
+            response: ResponseValue<Either<int, CollectionStoryModel>>(
+              fromJson: (response) {
+                if (response['data']['id'] != null)
+                  return Left(response['data']['id']);
+                return Right(CollectionStoryModel.fromJson(response['data']));
+              },
+            ),
+          ),
+          serverName: ServerName.stories,
+        );
     // uploadStory.call();
     return uploadStory();
   }
 
   Future<Either<int, CollectionStoryModel>> addStoryToOurServer(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     PostClient<Either<int, CollectionStoryModel>> addStoryToOurServer =
         PostClient<Either<int, CollectionStoryModel>>(
-      requestPrams: RequestConfig<Either<int, CollectionStoryModel>>(
-          endpoint: StoriesEndPoints.addStoryToOurServerEP,
-          data: params,
-          response: ResponseValue<Either<int, CollectionStoryModel>>(
+          requestPrams: RequestConfig<Either<int, CollectionStoryModel>>(
+            endpoint: StoriesEndPoints.addStoryToOurServerEP,
+            data: params,
+            queryParameters: {"story": "true"},
+            response: ResponseValue<Either<int, CollectionStoryModel>>(
               fromJson: (response) {
-            if (response['data']['id'] != null)
-              return Left(response['data']['id']);
-            return Right(CollectionStoryModel.fromJson(response['data']));
-          })),
-      serverName: ServerName.stories,
-    );
+                if (response['data']['id'] != null)
+                  return Left(response['data']['id']);
+                return Right(CollectionStoryModel.fromJson(response['data']));
+              },
+            ),
+          ),
+          serverName: ServerName.stories,
+        );
     // uploadStory.call();
     return addStoryToOurServer();
   }
@@ -130,7 +135,8 @@ class StoriesDataSource {
         endpoint: StoriesEndPoints.deleteStoryEP,
         data: params,
         response: ResponseValue<DeleteStoryModel>(
-            fromJson: (response) => DeleteStoryModel.fromJson(response)),
+          fromJson: (response) => DeleteStoryModel.fromJson(response),
+        ),
       ),
       serverName: ServerName.stories,
     );

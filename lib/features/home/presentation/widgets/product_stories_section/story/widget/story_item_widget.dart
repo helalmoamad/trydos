@@ -87,7 +87,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                 );
               },
               child: Container(
-                margin: const EdgeInsets.only(top: 20, bottom: 10),
+                margin: EdgeInsets.only(top: 20.h, bottom: 10.h),
                 child: Hero(
                   tag: widget.index,
                   flightShuttleBuilder:
@@ -125,9 +125,9 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                           //   ),
                           // )
                           MyCachedNetworkImage(
-                            width: 100,
-                            height: 150,
-                            logoTextHeight: 14,
+                            width: 100.w,
+                            height: 150.h,
+                            logoTextHeight: 14.h,
                             imageFit: BoxFit.cover,
                             logoTextWidth: 48.w,
                             imageBuilder: (ctx, image) {
@@ -136,10 +136,10 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                 children: [
                                   Container(
                                     clipBehavior: Clip.hardEdge,
-                                    height: 150,
-                                    width: 100,
+                                    height: 150.h,
+                                    width: 100.w,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20.0),
+                                      borderRadius: BorderRadius.circular(20.r),
                                       boxShadow: [
                                         BoxShadow(
                                           color: const Color(0xff000000)
@@ -156,8 +156,8 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                     ),
                                   ),
                                   Container(
-                                    height: 150,
-                                    width: 100,
+                                    height: 150.h,
+                                    width: 100.w,
                                     decoration: BoxDecoration(
                                       gradient: const LinearGradient(
                                         begin: Alignment(0.0, -1.0),
@@ -168,11 +168,11 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                         ],
                                         stops: [0.0, 1.0],
                                       ),
-                                      borderRadius: BorderRadius.circular(20.0),
+                                      borderRadius: BorderRadius.circular(20.r),
                                     ),
                                   ),
                                   SizedBox(
-                                    width: 80,
+                                    width: 80.w,
                                     child: MyTextWidget(
                                       state
                                               .storiesCollections[widget.index]
@@ -186,13 +186,13 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                       style: !widget.resize
                                           ? textTheme.titleMedium?.rq.copyWith(
                                               letterSpacing: 0.036,
-                                              height: 3,
+                                              height: 3.h,
                                               color: Colors.white,
                                             )
                                           : textTheme.displayMedium?.rq
                                                 .copyWith(
                                                   letterSpacing: 0.048,
-                                                  height: 2.25,
+                                                  height: 2.25.h,
                                                   color: Colors.white,
                                                 ),
                                     ),
@@ -207,7 +207,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                         highlightColor: Colors.transparent,
                                         splashColor: Colors.transparent,
                                         child: Transform.translate(
-                                          offset: const Offset(-10, -10),
+                                          offset: Offset(-10.w, -10.h),
                                           child: Stack(
                                             alignment: Alignment.center,
                                             children: [
@@ -231,7 +231,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                                             ),
                                                       width:
                                                           widget.resizeUserImage
-                                                          ? 0.4
+                                                          ? 0.4.h
                                                           : widget.resize
                                                           ? 0.6
                                                           : 1,
@@ -245,9 +245,9 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                                               .photoPath ==
                                                           null
                                                       ? NoImageWidget(
-                                                          height: 28,
-                                                          width: 28,
-                                                          radius: 180,
+                                                          height: 28.h,
+                                                          width: 28.w,
+                                                          radius: 180.r,
                                                           textStyle: context
                                                               .textTheme
                                                               .bodyMedium
@@ -277,8 +277,8 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                                                 ),
                                                         )
                                                       : MyCachedNetworkImage(
-                                                          height: 28,
-                                                          width: 28,
+                                                          height: 28.h,
+                                                          width: 28.w,
                                                           imageUrl:
                                                               (state
                                                                       .storiesCollections[widget

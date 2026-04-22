@@ -133,7 +133,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
         return Container(
           decoration: BoxDecoration(
             color: colorScheme.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
           ),
           child: BlocBuilder<HomeBloc, HomeState>(
             buildWhen: (previous, current) =>
@@ -161,7 +161,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                   0;
 
               return Padding(
-                padding: const EdgeInsets.only(top: 10),
+                padding: EdgeInsets.only(top: 10.h),
                 child: Container(
                   width: 1.sw,
                   height: 40.h,
@@ -208,7 +208,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                 height: 0,
                               ),
                             ),
-                      const SizedBox(width: 5),
+                      SizedBox(width: 5.w),
                       MyTextWidget(
                         HelperFunctions.formatNumber(
                           numberToFormate: double.parse(
@@ -242,7 +242,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                           height: 0,
                         ),
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4.w),
                       widget.isRedeem
                           ? const SizedBox.shrink()
                           : MyTextWidget(
@@ -253,7 +253,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                 height: 0,
                               ),
                             ),
-                      const SizedBox(width: 5),
+                      SizedBox(width: 5.w),
                       widget.isRedeem
                           ? MyTextWidget(
                               HelperFunctions.formatNumber(
@@ -281,19 +281,19 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                           : const SizedBox.shrink(),
                       Column(
                         children: [
-                          const SizedBox(height: 5),
+                          SizedBox(height: 5.h),
                           SvgPicture.asset(
                             AppAssets.chatWithQuestionSvg,
-                            height: 11,
+                            height: 11.h,
                             // ignore: deprecated_member_use
                             color: const Color(0xff5D5C5D),
                           ),
                         ],
                       ),
-                      const SizedBox(width: 5),
+                      SizedBox(width: 5.w),
                       Flexible(
                         child: SizedBox(
-                          height: 30,
+                          height: 30.h,
                           child: ListView.builder(
                             controller: _scrollController,
                             itemBuilder: (BuildContext context, int index) {
@@ -303,9 +303,9 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                       ? const SizedBox.shrink()
                                       : SvgPicture.asset(
                                           svg[index - 1],
-                                          height: 15,
+                                          height: 15.h,
                                         ),
-                                  const SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   MyTextWidget(
                                     texts[index],
                                     style: textTheme.titleMedium?.rq.copyWith(
@@ -313,7 +313,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                       height: 0,
                                     ),
                                   ),
-                                  const SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                 ],
                               );
                             },

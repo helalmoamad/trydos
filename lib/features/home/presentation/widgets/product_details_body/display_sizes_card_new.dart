@@ -142,17 +142,17 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
           sizesQuantities = state.sizesQuantitiesForEachColor ?? [];
 
           return Container(
-            height: 137,
-            padding: const EdgeInsets.all(8),
+            height: 140.h,
+            padding: EdgeInsets.all(8.w),
             width: 1.sw,
             margin: EdgeInsets.only(
-              top: 10,
-              bottom: 15,
-              left: LanguageService.languageCode == "ar" ? 0 : 15,
-              right: LanguageService.languageCode != "ar" ? 0 : 15,
+              top: 10.h,
+              bottom: 15.h,
+              left: LanguageService.languageCode == "ar" ? 0 : 15.w,
+              right: LanguageService.languageCode != "ar" ? 0 : 15.w,
             ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(15.r),
               color: const Color(0xffFCFCFC),
             ),
             child: Column(
@@ -160,67 +160,67 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
               children: [
                 SizedBox(
                   width: 1.sw,
-                  height: 20,
+                  height: 20.h,
                   child: Row(
                     children: [
                       SvgPicture.asset(
                         AppAssets.sizeIconSvg,
                         // ignore: deprecated_member_use
                         color: const Color(0xff1D1D1D),
-                        height: 20,
+                        height: 20.h,
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       _sizesType(" CM ", const Color(0xffF4F4F4)),
-                      const SizedBox(width: 2),
+                      SizedBox(width: 2.w),
                       _sizesType(" INC ", null),
                       const Spacer(),
                       _sizesType(" Standart ", const Color(0xffF4F4F4)),
-                      const SizedBox(width: 2),
+                      SizedBox(width: 2.w),
                       _sizesType(" EU ", null),
-                      const SizedBox(width: 2),
+                      SizedBox(width: 2.w),
                       _sizesType(" IN ", null),
-                      const SizedBox(width: 2),
+                      SizedBox(width: 2.w),
                       _sizesType(" US ", null),
-                      const SizedBox(width: 2),
+                      SizedBox(width: 2.w),
                       _sizesType(" Uk ", null),
-                      const SizedBox(width: 2),
+                      SizedBox(width: 2.w),
                     ],
                   ),
                 ),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
                 MyTextWidget(
                   LocaleKeys.n_sizes.tr(),
                   style: textTheme.titleLarge?.rq.copyWith(
-                    fontSize: 9,
+                    fontSize: 9.sp,
                     color: const Color(0xff1D1D1D),
                   ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Row(
                   children: [
                     MyTextWidget(
                       "${sizes?.length.toString() ?? ""} ",
                       style: textTheme.titleLarge?.bq.copyWith(
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         color: const Color(0xff1D1D1D),
                       ),
                     ),
                     MyTextWidget(
                       LocaleKeys.size_available.tr(),
                       style: textTheme.titleLarge?.rq.copyWith(
-                        fontSize: 9,
+                        fontSize: 9.sp,
                         color: const Color(0xff1D1D1D),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 ValueListenableBuilder<int>(
                   valueListenable: currentSelectedSizeIndex,
                   builder: (context, _visibleSizeAndColorCard, _) {
                     return SizedBox(
                       width: 1.sw,
-                      height: 46,
+                      height: 46.h,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) => _sizesWidget(
@@ -247,17 +247,17 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
   Widget _sizesType(String text, Color? color) {
     return Container(
       alignment: Alignment.center,
-      height: 20,
-      padding: const EdgeInsets.symmetric(horizontal: 5),
+      height: 20.h,
+      padding: EdgeInsets.symmetric(horizontal: 5.w),
       decoration: BoxDecoration(
         color: color ?? const Color(0xffFCFCFC),
         border: Border.all(color: const Color(0xffD3D3D3)),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(6.r),
       ),
       child: MyTextWidget(
         text,
         style: textTheme.titleLarge?.rq.copyWith(
-          fontSize: 11,
+          fontSize: 11.sp,
           color: const Color(0xff1D1D1D),
         ),
       ),
@@ -305,12 +305,12 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
           right: LanguageService.languageCode == "ar" ? 0 : 3,
         ),
         alignment: Alignment.center,
-        height: 44,
-        width: 60,
+        height: 44.h,
+        width: 60.w,
         decoration: BoxDecoration(
           color: color ?? const Color(0xffFCFCFC),
           border: Border.all(color: const Color(0xffD3D3D3)),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(6.r),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -318,7 +318,7 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
             MyTextWidget(
               text,
               style: textTheme.titleLarge?.rq.copyWith(
-                fontSize: 11,
+                fontSize: 11.sp,
                 color: const Color(0xff1D1D1D),
               ),
             ),
@@ -327,7 +327,7 @@ class _DisplaySizesCardNewState extends ThemeState<DisplaySizesCardNew> {
                 : MyTextWidget(
                     num,
                     style: textTheme.titleLarge?.rq.copyWith(
-                      fontSize: 11,
+                      fontSize: 11.sp,
                       color: const Color(0xff1D1D1D),
                     ),
                   ),

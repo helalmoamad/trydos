@@ -138,14 +138,14 @@ class _ProductDetailsSheetCommentsContentState
                             },
                             child: SizedBox(
                               width: 1.sw,
-                              height: 30,
+                              height: 30.h,
                               child: Center(
                                 child: MyTextWidget(
                                   LocaleKeys.please_login_to_add_comment.tr(),
                                   style: context.textTheme.bodyMedium?.rq
                                       .copyWith(
                                         color: Colors.red,
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                       ),
                                 ),
                               ),
@@ -153,19 +153,21 @@ class _ProductDetailsSheetCommentsContentState
                           ),
                         )
                       : Container(
-                          height: 65,
+                          height: 65.h,
                           decoration: BoxDecoration(
                             color: const Color(0xffF8F8F8),
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(30.r),
                           ),
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          margin: EdgeInsets.symmetric(horizontal: 20.w),
                           alignment: Alignment.center,
                           child: cupertino.Directionality(
                             textDirection: cupertino.TextDirection.ltr,
                             child: Material(
                               color: Colors.transparent,
                               child: Padding(
-                                padding: HWEdgeInsets.symmetric(horizontal: 20),
+                                padding: HWEdgeInsets.symmetric(
+                                  horizontal: 20.w,
+                                ),
                                 child: AppTextField(
                                   textInputAction:
                                       cupertino.TextInputAction.done,
@@ -203,9 +205,9 @@ class _ProductDetailsSheetCommentsContentState
                                   controller: addCommentController,
                                   suffixIcon: Padding(
                                     padding: HWEdgeInsets.only(
-                                      right: 20.0,
-                                      top: 15,
-                                      bottom: 15,
+                                      right: 20.w,
+                                      top: 15.h,
+                                      bottom: 15.h,
                                     ),
                                     child: IconButton(
                                       icon:
@@ -287,8 +289,11 @@ class _ProductDetailsSheetCommentsContentState
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SvgPicture.asset(AppAssets.chatMarkActiveSvg, height: 20),
-                      const SizedBox(width: 10),
+                      SvgPicture.asset(
+                        AppAssets.chatMarkActiveSvg,
+                        height: 20.w,
+                      ),
+                      SizedBox(width: 10.w),
                       MyTextWidget(
                         '${LocaleKeys.comment_about_this_product.tr()}',
                         style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -297,9 +302,9 @@ class _ProductDetailsSheetCommentsContentState
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   SizedBox(
-                    height: 300,
+                    height: 300.h,
                     child: ListView.builder(
                       controller: widget.scrollController,
                       itemBuilder: (context, index) {
@@ -310,14 +315,14 @@ class _ProductDetailsSheetCommentsContentState
                                     .length ??
                                 0)) {
                           return SizedBox(
-                            height: 120,
+                            height: 120.h,
                             width: 1.sw,
                             child:
                                 state
                                         .getFqaCommentsPaginationModel?['all']
                                         ?.paginationStatus ==
                                     PaginationStatus.loading
-                                ? TrydosLoader(size: 24)
+                                ? TrydosLoader(size: 24.h)
                                 : const SizedBox.shrink(),
                           );
                         }
@@ -485,10 +490,10 @@ class CommentCard extends StatelessWidget {
         builder: (context) {
           return Padding(
             padding: EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 24,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              left: 20.w,
+              right: 20.w,
+              top: 24.h,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24.h,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -496,26 +501,26 @@ class CommentCard extends StatelessWidget {
               children: [
                 Center(
                   child: Container(
-                    width: 48,
-                    height: 5,
-                    margin: const EdgeInsets.only(bottom: 18),
+                    width: 48.w,
+                    height: 5.h,
+                    margin: EdgeInsets.only(bottom: 18.h),
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                   ),
                 ),
                 Center(
                   child: Text(
                     LocaleKeys.edit_comment_title.tr(),
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
                   ),
                 ),
-                const SizedBox(height: 22),
+                SizedBox(height: 22.h),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
@@ -526,16 +531,16 @@ class CommentCard extends StatelessWidget {
                         offset: Offset(0, 4),
                       ),
                     ],
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(14.r),
                   ),
                   child: TextField(
                     controller: _controller,
                     decoration: InputDecoration(
                       hintText: LocaleKeys.edit_comment_hint.tr(),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 14,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 14.w,
+                        vertical: 14.h,
                       ),
                     ),
                     maxLines: 3,
@@ -543,7 +548,7 @@ class CommentCard extends StatelessWidget {
                     minLines: 3,
                   ),
                 ),
-                const SizedBox(height: 18),
+                SizedBox(height: 18.h),
                 Row(
                   children: [
                     const Spacer(),
@@ -552,7 +557,7 @@ class CommentCard extends StatelessWidget {
                       builder: (context, isNotEmpty, _) {
                         if (!isNotEmpty) return const SizedBox.shrink();
                         return CircleAvatar(
-                          radius: 24,
+                          radius: 24.r,
                           backgroundColor: Colors.green,
                           child: IconButton(
                             icon: const Icon(Icons.send, color: Colors.white),
@@ -598,19 +603,19 @@ class CommentCard extends StatelessWidget {
       FlutterError.dumpErrorToConsole(error);
     };
     return Container(
-      margin: HWEdgeInsets.symmetric(horizontal: 20),
-      padding: HWEdgeInsets.only(left: 10, top: 20, right: 10),
+      margin: HWEdgeInsets.symmetric(horizontal: 20.w),
+      padding: HWEdgeInsets.only(left: 10.w, top: 20.h, right: 10.w),
       decoration: BoxDecoration(
         color: const Color(0xfff8f8f8),
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(20.r),
       ),
-      height: 90,
+      height: 90.h,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(20.r),
               boxShadow: const [
                 BoxShadow(
                   color: Color(0x29000000),
@@ -620,26 +625,26 @@ class CommentCard extends StatelessWidget {
               ],
             ),
             child: ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(20)),
+              borderRadius: BorderRadius.all(Radius.circular(20.r)),
               child: Stack(
                 children: [
                   Container(
-                    width: 20,
-                    height: 20,
+                    width: 20.w,
+                    height: 20.h,
                     child: MyCachedNetworkImage(
                       imageUrl: imageUrl.contains("cloudinary")
                           ? imageUrl
                           : '${dotenv.env['Images_Url']}$imageUrl',
-                      width: 20,
+                      width: 20.w,
                       imageFit: cupertino.BoxFit.cover,
-                      height: 20,
+                      height: 20.h,
                     ),
                   ),
                   Container(
-                    width: 20,
-                    height: 20,
+                    width: 20.w,
+                    height: 20.h,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(20.r),
                       boxShadow: [
                         BoxShadow(
                           offset: const Offset(0, 3),
@@ -655,7 +660,7 @@ class CommentCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: 10.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -678,7 +683,7 @@ class CommentCard extends StatelessWidget {
 
                     SizedBox(
                       width: 40.w,
-                      height: 35,
+                      height: 35.h,
                       child:
                           ((state.deleteOrderCommentRatingStatus ==
                                       DeleteOrderCommentRatingStatus.loading ||
@@ -689,8 +694,8 @@ class CommentCard extends StatelessWidget {
                               state.tapCommentIndex == index)
                           ? TrydosLoader(size: 15)
                           : SizedBox(
-                              width: 40,
-                              height: 35,
+                              width: 40.w,
+                              height: 35.h,
                               child: PopupMenuButton<String>(
                                 icon: const Icon(
                                   Icons.more_vert,
@@ -726,8 +731,8 @@ class CommentCard extends StatelessWidget {
                                                     color: Colors.black
                                                         // ignore: deprecated_member_use
                                                         .withOpacity(0.1),
-                                                    blurRadius: 8,
-                                                    offset: const Offset(0, 2),
+                                                    blurRadius: 8.r,
+                                                    offset: Offset(0, 2.h),
                                                   ),
                                                 ],
                                               ),
@@ -778,12 +783,12 @@ class CommentCard extends StatelessWidget {
                                                             style: TextStyle(
                                                               color: Colors
                                                                   .grey[600],
-                                                              fontSize: 14,
+                                                              fontSize: 14.sp,
                                                             ),
                                                           ),
                                                         ),
                                                       ),
-                                                      const SizedBox(width: 8),
+                                                      SizedBox(width: 8.w),
                                                       Expanded(
                                                         child: ElevatedButton(
                                                           onPressed: () =>
@@ -800,7 +805,7 @@ class CommentCard extends StatelessWidget {
                                                             shape: RoundedRectangleBorder(
                                                               borderRadius:
                                                                   BorderRadius.circular(
-                                                                    12,
+                                                                    12.r,
                                                                   ),
                                                             ),
                                                             padding:
@@ -812,12 +817,11 @@ class CommentCard extends StatelessWidget {
                                                             LocaleKeys
                                                                 .confirm_delete
                                                                 .tr(),
-                                                            style:
-                                                                const TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 14,
-                                                                ),
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 14.sp,
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
@@ -930,9 +934,9 @@ class CommentCard extends StatelessWidget {
                                           SvgPicture.asset(
                                             AppAssets.languageSvg,
 
-                                            height: 20,
+                                            height: 20.h,
                                           ),
-                                          const SizedBox(width: 6),
+                                          SizedBox(width: 6.w),
                                           Text(
                                             (isTran ?? false)
                                                 ? LocaleKeys
@@ -972,9 +976,9 @@ class CommentCard extends StatelessWidget {
                                           children: [
                                             SvgPicture.asset(
                                               AppAssets.deletecartSvg,
-                                              height: 20,
+                                              height: 20.h,
                                             ),
-                                            const SizedBox(width: 6),
+                                            SizedBox(width: 6.w),
                                             Text(LocaleKeys.delete.tr()),
                                           ],
                                         ),

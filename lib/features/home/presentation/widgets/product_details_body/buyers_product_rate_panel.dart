@@ -48,13 +48,13 @@ class BuyersProductRatePanel extends StatelessWidget {
 
     String productId = productFirstId;
     return SlidingUpPanel(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(20.0),
-        topRight: Radius.circular(20.0),
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20.r),
+        topRight: Radius.circular(20.r),
       ),
       minHeight: 0,
       controller: panelController,
-      maxHeight: 1.sh - 70,
+      maxHeight: 1.sh - 70.h,
       backdropEnabled: true,
       panelBuilder: (scrollController) {
         return BlocBuilder<HomeBloc, HomeState>(
@@ -88,10 +88,10 @@ class BuyersProductRatePanel extends StatelessWidget {
                       countOfPersonRating + (element.count ?? 0);
                 }));
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              height: 1.sh - 70,
+              margin: EdgeInsets.symmetric(horizontal: 20.w),
+              height: 1.sh - 70.h,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(30.r),
                 color: const Color(0xffFEFEFE),
               ),
               child: Column(
@@ -99,32 +99,32 @@ class BuyersProductRatePanel extends StatelessWidget {
                 children: [
                   Container(
                     margin: EdgeInsets.symmetric(
-                      horizontal: (1.sw / 2) - 40,
-                      vertical: 10,
+                      horizontal: (1.sw / 2) - 40.w,
+                      vertical: 10.h,
                     ),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(2.r),
                       color: const Color(0xffC4C2C2),
                     ),
-                    height: 2,
-                    width: 40,
+                    height: 2.h,
+                    width: 40.w,
                   ),
-                  const SizedBox(height: 10),
-                  SvgPicture.asset(AppAssets.rateBlueSvg, height: 30),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
+                  SvgPicture.asset(AppAssets.rateBlueSvg, height: 30.h),
+                  SizedBox(height: 10.h),
                   MyTextWidget(
                     '${LocaleKeys.buyers_product_rate.tr()}',
                     style: context.textTheme.titleLarge?.rq.copyWith(
                       color: const Color(0xff1D1D1D),
-                      fontSize: 13,
+                      fontSize: 13.sp,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   MyTextWidget(
                     '${LocaleKeys.all_reviews_are_genuine_from_customers_who_purchased_and_actually.tr()}',
                     style: context.textTheme.titleLarge?.rq.copyWith(
                       color: const Color(0xff1D1D1D),
-                      fontSize: 11,
+                      fontSize: 11.sp,
                     ),
                   ),
                   Row(
@@ -133,35 +133,35 @@ class BuyersProductRatePanel extends StatelessWidget {
                         '${LocaleKeys.received_the_product_through.tr()} ',
                         style: context.textTheme.titleLarge?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
-                          fontSize: 11,
+                          fontSize: 11.sp,
                         ),
                       ),
                       MyTextWidget(
                         'trydos  ',
                         style: context.textTheme.titleLarge?.bq.copyWith(
                           color: const Color(0xff1D1D1D),
-                          fontSize: 11,
+                          fontSize: 11.sp,
                         ),
                       ),
                     ],
                   ),
                   Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    margin: EdgeInsets.symmetric(vertical: 10.h),
                     decoration: BoxDecoration(
                       color: const Color(0xffD3D3D3),
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(2.r),
                     ),
-                    height: 0.5,
+                    height: 0.5.h,
                     width: 1.sw,
                   ),
                   StarRatingProductWidget(
-                    itemHeight: 20,
-                    itemSize: 20,
-                    itemWidth: 26,
-                    widgetHeight: 20,
-                    widgetWidth: 130,
+                    itemHeight: 20.h,
+                    itemSize: 20.h,
+                    itemWidth: 26.w,
+                    widgetHeight: 20.h,
+                    widgetWidth: 130.w,
                     isInteractive: false,
-                    svgWidth: 20,
+                    svgWidth: 20.w,
                     onRatingChanged: (p0) {},
                     starColor: const Color(0xff1D1D1D),
                     initialRating:
@@ -171,7 +171,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                             ?.totalRating ??
                         0),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   Row(
                     children: [
                       countOfPersonRating == 0
@@ -180,7 +180,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                               countOfPersonRating.toString(),
                               style: context.textTheme.titleLarge?.bq.copyWith(
                                 color: const Color(0xff1D1D1D),
-                                fontSize: 11,
+                                fontSize: 11.sp,
                               ),
                             ),
                       countOfPersonRating == 0
@@ -189,7 +189,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                               ' ${LocaleKeys.buyer_rate.tr()}  |  ',
                               style: context.textTheme.titleLarge?.rq.copyWith(
                                 color: const Color(0xff1D1D1D),
-                                fontSize: 11,
+                                fontSize: 11.sp,
                               ),
                             ),
                       state.cachedProductWithoutRelatedProductsModel[productId] !=
@@ -201,7 +201,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                                     false
                                 ? SvgPicture.asset(
                                     AppAssets.goodQualitySvg,
-                                    width: 14,
+                                    width: 14.w,
                                   )
                                 : const SizedBox.shrink()
                           : const SizedBox.shrink(),
@@ -217,14 +217,14 @@ class BuyersProductRatePanel extends StatelessWidget {
                                     style: context.textTheme.titleLarge?.rq
                                         .copyWith(
                                           color: const Color(0xff1D1D1D),
-                                          fontSize: 11,
+                                          fontSize: 11.sp,
                                         ),
                                   )
                                 : const SizedBox.shrink()
                           : const SizedBox.shrink(),
                       SvgPicture.asset(
                         AppAssets.eyeSvg,
-                        width: 14,
+                        width: 14.w,
                         // ignore: deprecated_member_use
                         color: const Color(0xff1D1D1D),
                       ),
@@ -232,32 +232,32 @@ class BuyersProductRatePanel extends StatelessWidget {
                         ' ${LocaleKeys.views_product_with_count.tr(namedArgs: {'count': _formatViewCount(state.cachedProductWithoutRelatedProductsModel[productId]?.product?.totalViews ?? 1)})}',
                         style: context.textTheme.titleLarge?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
-                          fontSize: 11,
+                          fontSize: 11.sp,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   Container(
-                    height: 15,
+                    height: 15.h,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Center(
                           child: StarRatingProductWidget(
-                            itemHeight: 16,
-                            itemSize: 19,
-                            itemWidth: 18,
-                            widgetHeight: 18,
-                            widgetWidth: 95,
+                            itemHeight: 16.h,
+                            itemSize: 19.h,
+                            itemWidth: 18.h,
+                            widgetHeight: 18.h,
+                            widgetWidth: 95.w,
                             isInteractive: false,
-                            svgWidth: 14,
+                            svgWidth: 14.w,
                             onRatingChanged: (p0) {},
                             starColor: const Color(0xff1D1D1D),
                             initialRating: 1,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         MyTextWidget(
                           (state
                                       .cachedProductWithoutRelatedProductsModel[productId]
@@ -276,7 +276,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                           style: context.textTheme.titleLarge?.bq.copyWith(
                             height: 1.45,
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                         MyTextWidget(
@@ -284,33 +284,33 @@ class BuyersProductRatePanel extends StatelessWidget {
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             height: 1.45,
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   Container(
-                    height: 15,
+                    height: 15.h,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Center(
                           child: StarRatingProductWidget(
-                            itemHeight: 16,
-                            itemSize: 19,
-                            itemWidth: 18,
-                            widgetHeight: 18,
-                            widgetWidth: 95,
-                            svgWidth: 14,
+                            itemHeight: 16.h,
+                            itemSize: 19.h,
+                            itemWidth: 18.h,
+                            widgetHeight: 18.h,
+                            widgetWidth: 95.w,
+                            svgWidth: 14.w,
                             isInteractive: false,
                             onRatingChanged: (p0) {},
                             starColor: const Color(0xff1D1D1D),
                             initialRating: 2,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         MyTextWidget(
                           (state
                                       .cachedProductWithoutRelatedProductsModel[productId]
@@ -329,7 +329,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                           style: context.textTheme.titleLarge?.bq.copyWith(
                             height: 1.45,
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                         MyTextWidget(
@@ -337,33 +337,33 @@ class BuyersProductRatePanel extends StatelessWidget {
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             height: 1.45,
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   Container(
-                    height: 15,
+                    height: 15.h,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Center(
                           child: StarRatingProductWidget(
-                            itemHeight: 16,
-                            itemSize: 19,
-                            itemWidth: 18,
-                            widgetHeight: 18,
-                            widgetWidth: 95,
+                            itemHeight: 16.h,
+                            itemSize: 19.h,
+                            itemWidth: 18.h,
+                            widgetHeight: 18.h,
+                            widgetWidth: 95.w,
                             isInteractive: false,
-                            svgWidth: 14,
+                            svgWidth: 14.w,
                             onRatingChanged: (p0) {},
                             starColor: const Color(0xff1D1D1D),
                             initialRating: 3,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         MyTextWidget(
                           (state
                                       .cachedProductWithoutRelatedProductsModel[productId]
@@ -382,7 +382,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                           style: context.textTheme.titleLarge?.bq.copyWith(
                             height: 1.45,
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                         MyTextWidget(
@@ -390,33 +390,33 @@ class BuyersProductRatePanel extends StatelessWidget {
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             height: 1.45,
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   Container(
-                    height: 15,
+                    height: 15.h,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Center(
                           child: StarRatingProductWidget(
-                            itemHeight: 16,
-                            itemSize: 19,
-                            itemWidth: 18,
-                            widgetHeight: 18,
-                            widgetWidth: 95,
+                            itemHeight: 16.h,
+                            itemSize: 19.h,
+                            itemWidth: 18.h,
+                            widgetHeight: 18.h,
+                            widgetWidth: 95.w,
                             isInteractive: false,
-                            svgWidth: 14,
+                            svgWidth: 14.w,
                             onRatingChanged: (p0) {},
                             starColor: const Color(0xff1D1D1D),
                             initialRating: 4,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         MyTextWidget(
                           (state
                                       .cachedProductWithoutRelatedProductsModel[productId]
@@ -435,7 +435,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                           style: context.textTheme.titleLarge?.bq.copyWith(
                             height: 1.45,
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                         MyTextWidget(
@@ -443,33 +443,33 @@ class BuyersProductRatePanel extends StatelessWidget {
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             height: 1.45,
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   Container(
-                    height: 15,
+                    height: 15.h,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Center(
                           child: StarRatingProductWidget(
-                            itemHeight: 16,
-                            itemSize: 19,
-                            itemWidth: 18,
-                            widgetHeight: 18,
-                            widgetWidth: 95,
-                            svgWidth: 14,
+                            itemHeight: 16.h,
+                            itemSize: 19.h,
+                            itemWidth: 18.h,
+                            widgetHeight: 18.h,
+                            widgetWidth: 95.w,
+                            svgWidth: 14.w,
                             isInteractive: false,
                             onRatingChanged: (p0) {},
                             starColor: const Color(0xff1D1D1D),
                             initialRating: 5,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         MyTextWidget(
                           (state
                                       .cachedProductWithoutRelatedProductsModel[productId]
@@ -488,28 +488,28 @@ class BuyersProductRatePanel extends StatelessWidget {
                           style: context.textTheme.titleLarge?.bq.copyWith(
                             height: 1.45,
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10.h),
                         MyTextWidget(
                           '${LocaleKeys.very_good.tr()}',
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             height: 1.45,
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    margin: EdgeInsets.symmetric(vertical: 12.h),
                     decoration: BoxDecoration(
                       color: const Color(0xffD3D3D3),
                       borderRadius: BorderRadius.circular(2),
                     ),
-                    height: 0.5,
+                    height: 0.5.h,
                     width: 1.sw,
                   ),
                   MyTextWidget(
@@ -517,10 +517,10 @@ class BuyersProductRatePanel extends StatelessWidget {
                     style: context.textTheme.titleLarge?.rq.copyWith(
                       height: 1.45,
                       color: const Color(0xff1D1D1D),
-                      fontSize: 13,
+                      fontSize: 13.sp,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   _buyerReviewSingle(
                     "${LocaleKeys.true_label.tr()} ",
                     state.cachedProductWithoutRelatedProductsModel[productId] ==
@@ -534,7 +534,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                               0,
                     context,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   _buyerReviewSingle(
                     LocaleKeys.small.tr(),
                     state.cachedProductWithoutRelatedProductsModel[productId] ==
@@ -548,7 +548,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                               0,
                     context,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   _buyerReviewSingle(
                     LocaleKeys.large.tr(),
                     state.cachedProductWithoutRelatedProductsModel[productId] ==
@@ -563,36 +563,36 @@ class BuyersProductRatePanel extends StatelessWidget {
                     context,
                   ),
                   Container(
-                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    margin: EdgeInsets.symmetric(vertical: 12.h),
                     decoration: BoxDecoration(
                       color: const Color(0xffD3D3D3),
                       borderRadius: BorderRadius.circular(2),
                     ),
-                    height: 0.5,
+                    height: 0.5.h,
                     width: 1.sw,
                   ),
                   SvgPicture.asset(
                     AppAssets.recommendSvg,
                     // ignore: deprecated_member_use
                     color: const Color(0xff1D1D1D),
-                    height: 30,
+                    height: 30.h,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   MyTextWidget(
                     '${LocaleKeys.buyers_product_recommend_to_buy.tr()}',
                     style: context.textTheme.titleLarge?.rq.copyWith(
                       height: 1.45,
                       color: const Color(0xff1D1D1D),
-                      fontSize: 13,
+                      fontSize: 13.sp,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   MyTextWidget(
                     '${LocaleKeys.all_recommendations_are_genuine_from_customers_who_purchased_and.tr()}',
                     style: context.textTheme.titleLarge?.rq.copyWith(
                       height: 1.45,
                       color: const Color(0xff1D1D1D),
-                      fontSize: 11,
+                      fontSize: 11.sp,
                     ),
                   ),
                   Row(
@@ -602,7 +602,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                         style: context.textTheme.titleLarge?.rq.copyWith(
                           height: 1.45,
                           color: const Color(0xff1D1D1D),
-                          fontSize: 11,
+                          fontSize: 11.sp,
                         ),
                       ),
                       MyTextWidget(
@@ -610,7 +610,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                         style: context.textTheme.titleLarge?.bq.copyWith(
                           height: 1.45,
                           color: const Color(0xff1D1D1D),
-                          fontSize: 11,
+                          fontSize: 11.sp,
                         ),
                       ),
                     ],
@@ -623,21 +623,21 @@ class BuyersProductRatePanel extends StatelessWidget {
                           0
                       ? const SizedBox.shrink()
                       : Padding(
-                          padding: const EdgeInsets.only(top: 10),
+                          padding: EdgeInsets.only(top: 10.h),
                           child: Row(
                             children: [
                               SvgPicture.asset(
                                 AppAssets.recommendSvg,
                                 // ignore: deprecated_member_use
                                 color: const Color(0xff068D06),
-                                width: 12,
+                                width: 12.w,
                               ),
                               MyTextWidget(
                                 ' ${state.cachedProductWithoutRelatedProductsModel[productId]?.product?.recommendationStats?[0].count} ',
                                 style: context.textTheme.titleLarge?.bq
                                     .copyWith(
                                       color: const Color(0xff1D1D1D),
-                                      fontSize: 9,
+                                      fontSize: 9.sp,
                                     ),
                               ),
                               MyTextWidget(
@@ -645,7 +645,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                                 style: context.textTheme.titleLarge?.rq
                                     .copyWith(
                                       color: const Color(0xff1D1D1D),
-                                      fontSize: 9,
+                                      fontSize: 9.sp,
                                     ),
                               ),
                               const Spacer(),
@@ -653,14 +653,14 @@ class BuyersProductRatePanel extends StatelessWidget {
                                 AppAssets.recommendSvg,
                                 // ignore: deprecated_member_use
                                 color: const Color(0xffFF6200),
-                                width: 12,
+                                width: 12.w,
                               ),
                               MyTextWidget(
                                 ' ${state.cachedProductWithoutRelatedProductsModel[productId]?.product?.recommendationStats?[1].count} ',
                                 style: context.textTheme.titleLarge?.bq
                                     .copyWith(
                                       color: const Color(0xff1D1D1D),
-                                      fontSize: 9,
+                                      fontSize: 9.sp,
                                     ),
                               ),
                               MyTextWidget(
@@ -668,10 +668,10 @@ class BuyersProductRatePanel extends StatelessWidget {
                                 style: context.textTheme.titleLarge?.rq
                                     .copyWith(
                                       color: const Color(0xff1D1D1D),
-                                      fontSize: 9,
+                                      fontSize: 9.sp,
                                     ),
                               ),
-                              const SizedBox(width: 38),
+                              SizedBox(width: 38.w),
                             ],
                           ),
                         ),
@@ -684,12 +684,12 @@ class BuyersProductRatePanel extends StatelessWidget {
                       ? const SizedBox.shrink()
                       : Row(
                           children: [
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12.w),
                             MyTextWidget(
                               ' ${LocaleKeys.recommend_it.tr()}',
                               style: context.textTheme.titleLarge?.bq.copyWith(
                                 color: const Color(0xff1D1D1D),
-                                fontSize: 9,
+                                fontSize: 9.sp,
                               ),
                             ),
                             const Spacer(),
@@ -697,7 +697,7 @@ class BuyersProductRatePanel extends StatelessWidget {
                               ' ${LocaleKeys.dont_recommend_it.tr()}',
                               style: context.textTheme.titleLarge?.bq.copyWith(
                                 color: const Color(0xff1D1D1D),
-                                fontSize: 9,
+                                fontSize: 9.sp,
                               ),
                             ),
                           ],
@@ -712,19 +712,16 @@ class BuyersProductRatePanel extends StatelessWidget {
                       : Stack(
                           children: [
                             Container(
-                              margin: const EdgeInsets.only(
-                                top: 10,
-                                bottom: 10,
-                              ),
-                              height: 4,
+                              margin: EdgeInsets.only(top: 10.h, bottom: 10.h),
+                              height: 4.h,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
+                                borderRadius: BorderRadius.circular(5.r),
                                 color: const Color(0xffFF6200),
                               ),
                             ),
                             Container(
                               width:
-                                  (1.sw - 36) *
+                                  (1.sw - 36.w) *
                                   ((double.tryParse(
                                             state
                                                     .cachedProductWithoutRelatedProductsModel[productId]
@@ -735,13 +732,10 @@ class BuyersProductRatePanel extends StatelessWidget {
                                           ) ??
                                           0) /
                                       100),
-                              margin: const EdgeInsets.only(
-                                top: 10,
-                                bottom: 10,
-                              ),
-                              height: 4,
+                              margin: EdgeInsets.only(top: 10.h, bottom: 10.h),
+                              height: 4.h,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
+                                borderRadius: BorderRadius.circular(5.r),
                                 color: const Color(0xff068D06),
                               ),
                             ),
@@ -763,28 +757,28 @@ class BuyersProductRatePanel extends StatelessWidget {
   ) {
     return SizedBox(
       width: 1.sw,
-      height: 20,
+      height: 20.h,
       child: Row(
         children: [
           Stack(
             children: [
               Container(
-                height: 15,
+                height: 15.h,
                 width: 284.w,
                 decoration: BoxDecoration(
                   color: const Color(0xffFCFCFC),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(5.r),
                   border: Border.all(color: const Color(0xffD3D3D3)),
                 ),
               ),
               numOfPercent == 0
                   ? const SizedBox.shrink()
                   : Container(
-                      height: 15,
+                      height: 15.h,
                       width: (numOfPercent / 100) * 284.w,
                       decoration: BoxDecoration(
                         color: const Color(0xff1D1D1D),
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(5.r),
                         border: Border.all(color: const Color(0xff1D1D1D)),
                       ),
                     ),
@@ -795,7 +789,7 @@ class BuyersProductRatePanel extends StatelessWidget {
             "${numOfPercent}%",
             style: context.textTheme.titleLarge?.rq.copyWith(
               color: const Color(0xff1D1D1D),
-              fontSize: 11,
+              fontSize: 11.sp,
             ),
           ),
           SizedBox(width: 18.w),
@@ -803,7 +797,7 @@ class BuyersProductRatePanel extends StatelessWidget {
             text,
             style: context.textTheme.titleLarge?.rq.copyWith(
               color: const Color(0xff1D1D1D),
-              fontSize: 11,
+              fontSize: 11.sp,
             ),
           ),
           SizedBox(width: 20.w),

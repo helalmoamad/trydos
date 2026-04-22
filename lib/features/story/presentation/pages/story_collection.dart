@@ -1,11 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:trydos/common/constant/configuration/media_server_url_routes.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
@@ -21,6 +25,7 @@ import 'package:trydos/features/home/presentation/pages/product_details_page_new
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -500,13 +505,12 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               imageFit: BoxFit.contain,
                             ),
                             state
-                                        .storiesCollections[widget
-                                            .collectionIndex]
-                                        .stories![state
-                                            .currentStoryInEachCollection[widget
-                                            .collectionIndex]!]
-                                        .oneLink ==
-                                    null
+                                    .storiesCollections[widget.collectionIndex]
+                                    .stories![state
+                                        .currentStoryInEachCollection[widget
+                                        .collectionIndex]!]
+                                    .oneLink
+                                    .isNullOrEmpty
                                 ? const SizedBox.shrink()
                                 : positioned.Positioned(
                                     bottom: 25,
@@ -529,16 +533,52 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       }
                     } else {
                       if (_videoController == null) {
-                        _videoController = VideoPlayerController.networkUrl(
-                          Uri.parse(
-                            state
-                                .storiesCollections[widget.collectionIndex]
-                                .stories![state
-                                    .currentStoryInEachCollection[widget
-                                    .collectionIndex]!]
-                                .fullVideoPath!,
-                          ),
-                        );
+                        if (!mediaServerIsS3) {
+                          _videoController = VideoPlayerController.networkUrl(
+                            Uri.parse(
+                              state
+                                  .storiesCollections[widget.collectionIndex]
+                                  .stories![state
+                                      .currentStoryInEachCollection[widget
+                                      .collectionIndex]!]
+                                  .fullVideoPath!,
+                            ),
+                          );
+                        } else {
+                          final String rawVideoUrl =
+                              state
+                                  .storiesCollections[widget.collectionIndex]
+                                  .stories![state
+                                      .currentStoryInEachCollection[widget
+                                      .collectionIndex]!]
+                                  .fullVideoPath ??
+                              '';
+
+                          Uri videoUri = Uri.parse(rawVideoUrl);
+
+                          if (!videoUri.queryParameters.containsKey('target')) {
+                            videoUri = videoUri.replace(
+                              queryParameters: {
+                                ...videoUri.queryParameters,
+                                'target': 'preview',
+                              },
+                            );
+                          }
+
+                          // Android TLS rejects underscore hostnames with HTTPS (media_server...).
+                          if (!kIsWeb &&
+                              Platform.isAndroid &&
+                              videoUri.scheme == 'https' &&
+                              videoUri.host == 'media_server.ramaaz.dev') {
+                            videoUri = videoUri.replace(scheme: 'http');
+                          }
+
+                          _videoController = VideoPlayerController.networkUrl(
+                            httpHeaders: {'x-api-key': MediaServerUrls.apiKey},
+                            videoUri,
+                          );
+                        }
+
                         init = _videoController!.initialize().then(
                           (_) {
                             widget.animatedController.duration =
@@ -559,6 +599,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             });
                           },
                           onError: (e) {
+                            print(
+                              "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG$e",
+                            );
                             GetIt.I<StoryBloc>().add(
                               LoadFailureEvent(
                                 collectionId: widget.collectionIndex,
@@ -616,13 +659,13 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   ),
                                 ),
                                 state
-                                            .storiesCollections[widget
-                                                .collectionIndex]
-                                            .stories![state
-                                                .currentStoryInEachCollection[widget
-                                                .collectionIndex]!]
-                                            .oneLink ==
-                                        null
+                                        .storiesCollections[widget
+                                            .collectionIndex]
+                                        .stories![state
+                                            .currentStoryInEachCollection[widget
+                                            .collectionIndex]!]
+                                        .oneLink
+                                        .isNullOrEmpty
                                     ? const SizedBox.shrink()
                                     : positioned.Positioned(
                                         bottom: 25,
@@ -1313,6 +1356,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
               height: 35.h,
               child: InkWell(
                 onTap: () {
+                  print("FFFFFFFFFFFFFFFFFFF$url");
                   _videoController?.pause();
                   widget.animatedController.stop();
                   tapOnUrl(url);

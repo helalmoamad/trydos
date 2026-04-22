@@ -82,13 +82,13 @@ class BuyerSellerPanel extends StatelessWidget {
     }
 
     return SlidingUpPanel(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(20.0),
-        topRight: Radius.circular(20.0),
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20.r),
+        topRight: Radius.circular(20.r),
       ),
       minHeight: 0,
       controller: panelController,
-      maxHeight: 1.sh - 70,
+      maxHeight: 1.sh - 70.h,
       backdropEnabled: true,
       onPanelClosed: () {
         currentFilterForCommend.value = "all";
@@ -143,10 +143,10 @@ class BuyerSellerPanel extends StatelessWidget {
                               ?.filtersKey ??
                           [];
                 return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  height: 1.sh - 70,
+                  margin: EdgeInsets.symmetric(horizontal: 10.w),
+                  height: 1.sh - 70.h,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(30.r),
                     color: const Color(0xffFEFEFE),
                   ),
                   child: Column(
@@ -154,104 +154,96 @@ class BuyerSellerPanel extends StatelessWidget {
                     children: [
                       Container(
                         margin: EdgeInsets.symmetric(
-                          horizontal: (1.sw / 2) - 40,
-                          vertical: 10,
+                          horizontal: (1.sw / 2) - 40.w,
+                          vertical: 10.h,
                         ),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(2.r),
                           color: const Color(0xffC4C2C2),
                         ),
-                        height: 2,
-                        width: 40,
+                        height: 2.h,
+                        width: 40.w,
                       ),
-                      const SizedBox(height: 5),
+                      SizedBox(height: 5.h),
                       Padding(
-                        padding: const EdgeInsetsGeometry.symmetric(
-                          horizontal: 10,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 10.w),
                         child: SvgPicture.asset(
                           AppAssets.faqSvg,
                           // ignore: deprecated_member_use
                           color: const Color(0xff1D1D1D),
-                          height: 30,
+                          height: 30.h,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       Padding(
-                        padding: const EdgeInsetsGeometry.symmetric(
-                          horizontal: 10,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 10.w),
                         child: MyTextWidget(
                           '${LocaleKeys.faq_buyer_seller.tr()}',
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
-                            fontSize: 13,
+                            fontSize: 13.sp,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       Padding(
-                        padding: const EdgeInsetsGeometry.symmetric(
-                          horizontal: 10,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 10.w),
                         child: Row(
                           children: [
                             MyTextWidget(
                               LocaleKeys.all_questions_below_from.tr(),
                               style: context.textTheme.titleLarge?.rq.copyWith(
                                 color: const Color(0xff1D1D1D),
-                                fontSize: 11,
+                                fontSize: 11.sp,
                               ),
                             ),
                             MyTextWidget(
                               ' trydos ',
                               style: context.textTheme.titleLarge?.bq.copyWith(
                                 color: const Color(0xff1D1D1D),
-                                fontSize: 11,
+                                fontSize: 11.sp,
                               ),
                             ),
                             MyTextWidget(
                               LocaleKeys.visitors_not_necessarily_from.tr(),
                               style: context.textTheme.titleLarge?.rq.copyWith(
                                 color: const Color(0xff1D1D1D),
-                                fontSize: 11,
+                                fontSize: 11.sp,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      SizedBox(height: 2.h),
                       Padding(
-                        padding: const EdgeInsetsGeometry.symmetric(
-                          horizontal: 10,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 10.w),
                         child: MyTextWidget(
                           LocaleKeys
                               .customers_purchased_before_pre_purchase_questions
                               .tr(),
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 10,
+                        margin: EdgeInsets.symmetric(
+                          vertical: 10.h,
+                          horizontal: 10.w,
                         ),
                         decoration: BoxDecoration(
                           color: const Color(0xffD3D3D3),
                           borderRadius: BorderRadius.circular(2),
                         ),
-                        height: 0.5,
+                        height: 0.5.h,
                         width: 1.sw,
                       ),
                       SizedBox(
-                        height: 32,
+                        height: 32.h,
                         width: 1.sw,
                         child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          padding: EdgeInsets.symmetric(horizontal: 10.w),
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) => GestureDetector(
                             onTap: () {
@@ -270,17 +262,15 @@ class BuyerSellerPanel extends StatelessWidget {
                             child: Container(
                               margin: EdgeInsets.only(
                                 left: LanguageService.languageCode == "ar"
-                                    ? 5
+                                    ? 5.w
                                     : 0,
                                 right: LanguageService.languageCode != "ar"
-                                    ? 5
+                                    ? 5.w
                                     : 0,
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
-                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 7.w),
                               alignment: Alignment.center,
-                              height: 32,
+                              height: 32.h,
                               decoration: BoxDecoration(
                                 border: Border.all(
                                   color:
@@ -289,14 +279,14 @@ class BuyerSellerPanel extends StatelessWidget {
                                       : const Color(0xffF8F8F8),
                                 ),
                                 color: const Color(0xffF8F8F8),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(8.r),
                               ),
                               child: MyTextWidget(
                                 filter[index],
                                 style: context.textTheme.titleLarge?.rq
                                     .copyWith(
                                       color: const Color(0xff505050),
-                                      fontSize: 11,
+                                      fontSize: 11.sp,
                                     ),
                               ),
                             ),
@@ -307,12 +297,12 @@ class BuyerSellerPanel extends StatelessWidget {
                       Expanded(
                         child: ListView.builder(
                           controller: scrollController,
-                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          padding: EdgeInsets.symmetric(vertical: 10.h),
                           itemBuilder: (context, index) {
                             if (state
                                     .getFqaCommentsPaginationModel?[_currentFilterForCommend] ==
                                 null) {
-                              return TrydosLoader(size: 16);
+                              return TrydosLoader(size: 16.h);
                             }
                             if (state
                                     .getFqaCommentsPaginationModel![_currentFilterForCommend]!
@@ -328,7 +318,7 @@ class BuyerSellerPanel extends StatelessWidget {
                                   style: context.textTheme.titleLarge?.rq
                                       .copyWith(
                                         color: const Color(0xff1D1D1D),
-                                        fontSize: 11,
+                                        fontSize: 11.sp,
                                       ),
                                 ),
                               );
@@ -340,14 +330,14 @@ class BuyerSellerPanel extends StatelessWidget {
                                             .length ??
                                         0))
                                 ? SizedBox(
-                                    width: 30,
-                                    height: 50,
+                                    width: 30.w,
+                                    height: 50.h,
                                     child:
                                         state
                                                 .getFqaCommentsPaginationModel?[_currentFilterForCommend]
                                                 ?.paginationStatus ==
                                             PaginationStatus.loading
-                                        ? TrydosLoader(size: 20)
+                                        ? TrydosLoader(size: 20.h)
                                         : const SizedBox.shrink(),
                                   )
                                 : _commentWidget(
@@ -389,12 +379,12 @@ class BuyerSellerPanel extends StatelessWidget {
   ) {
     return Container(
       width: 388.w,
-      height: 220,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      padding: const EdgeInsets.all(10),
+      height: 220.h,
+      margin: EdgeInsets.symmetric(vertical: 4.h),
+      padding: EdgeInsets.all(10.h),
       decoration: BoxDecoration(
         color: const Color(0xffF8F8F8),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,8 +398,8 @@ class BuyerSellerPanel extends StatelessWidget {
             productSlug: productSlug,
           ),
           Container(
-            height: 0.5,
-            margin: const EdgeInsets.only(bottom: 10, top: 10),
+            height: 0.5.h,
+            margin: EdgeInsets.only(bottom: 10.h, top: 10.h),
             color: const Color(0xffD3D3D3),
           ),
           ..._SingelComments(
@@ -446,17 +436,17 @@ class BuyerSellerPanel extends StatelessWidget {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
         ),
         backgroundColor: Colors.white,
         builder: (context) {
           return Padding(
             padding: EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 24,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              left: 20.w,
+              right: 20.w,
+              top: 24.h,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24.h,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -464,26 +454,26 @@ class BuyerSellerPanel extends StatelessWidget {
               children: [
                 Center(
                   child: Container(
-                    width: 48,
-                    height: 5,
-                    margin: const EdgeInsets.only(bottom: 18),
+                    width: 48.w,
+                    height: 5.h,
+                    margin: EdgeInsets.only(bottom: 18.h),
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                   ),
                 ),
                 Center(
                   child: Text(
                     LocaleKeys.edit_comment_title.tr(),
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
                   ),
                 ),
-                const SizedBox(height: 22),
+                SizedBox(height: 22.h),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
@@ -494,16 +484,16 @@ class BuyerSellerPanel extends StatelessWidget {
                         offset: Offset(0, 4),
                       ),
                     ],
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(14.r),
                   ),
                   child: TextField(
                     controller: _controller,
                     decoration: InputDecoration(
                       hintText: LocaleKeys.edit_comment_hint.tr(),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 14,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 14.w,
+                        vertical: 14.h,
                       ),
                     ),
                     maxLines: 3,
@@ -511,7 +501,7 @@ class BuyerSellerPanel extends StatelessWidget {
                     minLines: 3,
                   ),
                 ),
-                const SizedBox(height: 18),
+                SizedBox(height: 18.h),
                 Row(
                   children: [
                     const Spacer(),
@@ -520,7 +510,7 @@ class BuyerSellerPanel extends StatelessWidget {
                       builder: (context, isNotEmpty, _) {
                         if (!isNotEmpty) return const SizedBox.shrink();
                         return CircleAvatar(
-                          radius: 24,
+                          radius: 24.r,
                           backgroundColor: Colors.green,
                           child: IconButton(
                             icon: const Icon(Icons.send, color: Colors.white),
@@ -571,7 +561,7 @@ class BuyerSellerPanel extends StatelessWidget {
           maxLines: 10,
           style: context.textTheme.titleLarge?.rq.copyWith(
             color: const Color(0xff1D1D1D),
-            fontSize: 11,
+            fontSize: 11.sp,
           ),
         ),
         const Spacer(),
@@ -617,7 +607,7 @@ class BuyerSellerPanel extends StatelessWidget {
 
     return [
       SizedBox(
-        height: 20,
+        height: 20.h,
         width: 1.sw,
         child: Row(
           children: [
@@ -630,18 +620,18 @@ class BuyerSellerPanel extends StatelessWidget {
                         )
                         ? fqaComment.customer?.image ?? ""
                         : '${dotenv.env['Images_Url']}${fqaComment.customer?.image}',
-                    width: 20,
+                    width: 20.w,
                     imageFit: BoxFit.cover,
-                    height: 20,
+                    height: 20.h,
                   ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10.w),
             Row(
               children: [
                 MyTextWidget(
                   answard ? "A " : "Q ",
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
                 MyTextWidget(
@@ -650,7 +640,7 @@ class BuyerSellerPanel extends StatelessWidget {
                       : "${extractInitialsAndAppendXXX(fqaComment.customer?.name ?? "")}",
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
               ],
@@ -668,7 +658,7 @@ class BuyerSellerPanel extends StatelessWidget {
                     ),
               style: context.textTheme.titleLarge?.rq.copyWith(
                 color: const Color(0xff8D8D8D),
-                fontSize: 9,
+                fontSize: 9.sp,
               ),
             ),
           ],
@@ -679,17 +669,17 @@ class BuyerSellerPanel extends StatelessWidget {
               "${LocaleKeys.dear.tr()} ${extractInitialsAndAppendXXX(fqaComment.customer?.name ?? "")}",
               style: context.textTheme.titleLarge?.mq.copyWith(
                 color: const Color(0xff1D1D1D),
-                fontSize: 9,
+                fontSize: 9.sp,
               ),
             )
           : MyTextWidget(
               fqaComment.variant ?? "",
               style: context.textTheme.titleLarge?.mq.copyWith(
                 color: const Color(0xff1D1D1D),
-                fontSize: 9,
+                fontSize: 9.sp,
               ),
             ),
-      const SizedBox(height: 10),
+      SizedBox(height: 10.h),
       MyTextWidget(
         answard
             ? ((fqaComment.isTran ?? false)
@@ -701,12 +691,12 @@ class BuyerSellerPanel extends StatelessWidget {
         maxLines: 10,
         style: context.textTheme.titleLarge?.rq.copyWith(
           color: const Color(0xff1D1D1D),
-          fontSize: 11,
+          fontSize: 11.sp,
         ),
       ),
       const Spacer(),
       Padding(
-        padding: const EdgeInsets.only(left: 10, right: 10),
+        padding: EdgeInsets.only(left: 10.w, right: 10.w),
         child: Row(
           children: [
             answard
@@ -714,7 +704,7 @@ class BuyerSellerPanel extends StatelessWidget {
                               UpdateLikeCommentRatingStatus.loading &&
                           state.tapCommentIndex == index &&
                           (state.likeForReplayComment ?? false))
-                      ? TrydosLoader(size: 15)
+                      ? TrydosLoader(size: 15.h)
                       : GestureDetector(
                           onTap: () {
                             if (!(GetIt.I<PrefsRepository>().isVerifiedPhone ??
@@ -749,14 +739,14 @@ class BuyerSellerPanel extends StatelessWidget {
                             );
                           },
                           child: SizedBox(
-                            width: 30,
-                            height: 18,
+                            width: 30.w,
+                            height: 18.h,
                             child: SvgPicture.asset(
                               (fqaComment.replyIsLiked ?? false)
                                   ? AppAssets.favoriteActiveSvg
                                   : AppAssets.favoriteSvg,
-                              height: 16,
-                              width: 12,
+                              height: 16.h,
+                              width: 12.w,
                             ),
                           ),
                         )
@@ -764,7 +754,7 @@ class BuyerSellerPanel extends StatelessWidget {
                           UpdateLikeCommentRatingStatus.loading &&
                       state.tapCommentIndex == index &&
                       (!(state.likeForReplayComment ?? false)))
-                ? TrydosLoader(size: 16)
+                ? TrydosLoader(size: 16.h)
                 : GestureDetector(
                     onTap: () {
                       if (!(GetIt.I<PrefsRepository>().isVerifiedPhone ??
@@ -796,14 +786,14 @@ class BuyerSellerPanel extends StatelessWidget {
                       );
                     },
                     child: SizedBox(
-                      width: 30,
-                      height: 18,
+                      width: 30.w,
+                      height: 18.h,
                       child: SvgPicture.asset(
                         (fqaComment.isLiked ?? false)
                             ? AppAssets.favoriteActiveSvg
                             : AppAssets.favoriteSvg,
-                        height: 16,
-                        width: 12,
+                        height: 16.h,
+                        width: 12.w,
                       ),
                     ),
                   ),
@@ -816,7 +806,7 @@ class BuyerSellerPanel extends StatelessWidget {
                     '  ${answard ? (fqaComment.replyTotalLikes ?? 0) : (fqaComment.totalLikes ?? 0)}',
                     style: context.textTheme.titleLarge?.rq.copyWith(
                       color: const Color(0xff1D1D1D),
-                      fontSize: 9,
+                      fontSize: 9.sp,
                     ),
                   ),
 
@@ -824,7 +814,7 @@ class BuyerSellerPanel extends StatelessWidget {
                 ? const SizedBox.shrink()
                 : SizedBox(
                     width: 80.w,
-                    height: 25,
+                    height: 25.h,
                     child:
                         ((state.deleteOrderCommentRatingStatus ==
                                     DeleteOrderCommentRatingStatus.loading ||
@@ -833,10 +823,10 @@ class BuyerSellerPanel extends StatelessWidget {
                                 state.translateCommentStatus ==
                                     TranslateCommentStatus.loading) &&
                             state.tapCommentIndex == index)
-                        ? TrydosLoader(size: 15)
+                        ? TrydosLoader(size: 15.h)
                         : SizedBox(
-                            width: 32,
-                            height: 35,
+                            width: 32.w,
+                            height: 35.h,
                             child: PopupMenuButton<String>(
                               icon: const Icon(
                                 Icons.more_vert,
@@ -849,8 +839,8 @@ class BuyerSellerPanel extends StatelessWidget {
                                     barrierColor: Colors.transparent,
                                     builder: (ctx) => Center(
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w,
                                         ),
                                         child: Material(
                                           color: Colors.transparent,
@@ -942,24 +932,22 @@ class BuyerSellerPanel extends StatelessWidget {
                                                           shape: RoundedRectangleBorder(
                                                             borderRadius:
                                                                 BorderRadius.circular(
-                                                                  12,
+                                                                  12.r,
                                                                 ),
                                                           ),
                                                           padding:
-                                                              const EdgeInsets.symmetric(
-                                                                vertical: 10,
+                                                              EdgeInsets.symmetric(
+                                                                vertical: 10.h,
                                                               ),
                                                         ),
                                                         child: Text(
                                                           LocaleKeys
                                                               .confirm_delete
                                                               .tr(),
-                                                          style:
-                                                              const TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 14,
-                                                              ),
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14.sp,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
@@ -1077,9 +1065,9 @@ class BuyerSellerPanel extends StatelessWidget {
                                         SvgPicture.asset(
                                           AppAssets.languageSvg,
 
-                                          height: 20,
+                                          height: 20.h,
                                         ),
-                                        const SizedBox(width: 6),
+                                        SizedBox(width: 6.w),
                                         Text(
                                           (fqaComment.isTran ?? false)
                                               ? LocaleKeys.show_original_version
@@ -1102,9 +1090,9 @@ class BuyerSellerPanel extends StatelessWidget {
                                             AppAssets.editSvg,
                                             // ignore: deprecated_member_use
                                             color: Colors.green,
-                                            height: 20,
+                                            height: 20.h,
                                           ),
-                                          const SizedBox(width: 6),
+                                          SizedBox(width: 6.w),
                                           Text(LocaleKeys.edit.tr()),
                                         ],
                                       ),
@@ -1117,9 +1105,9 @@ class BuyerSellerPanel extends StatelessWidget {
                                         children: [
                                           SvgPicture.asset(
                                             AppAssets.deletecartSvg,
-                                            height: 20,
+                                            height: 20.h,
                                           ),
-                                          const SizedBox(width: 6),
+                                          SizedBox(width: 6.w),
                                           Text(LocaleKeys.delete.tr()),
                                         ],
                                       ),
@@ -1139,7 +1127,7 @@ class BuyerSellerPanel extends StatelessWidget {
                     '${getTimeAgo(fqaComment.replyCreatedAt!, GetIt.I<PrefsRepository>().language ?? "en")} ${LocaleKeys.answered.tr()}',
                     style: context.textTheme.titleLarge?.rq.copyWith(
                       color: const Color(0xff8D8D8D),
-                      fontSize: 9,
+                      fontSize: 9.sp,
                     ),
                   ),
           ],

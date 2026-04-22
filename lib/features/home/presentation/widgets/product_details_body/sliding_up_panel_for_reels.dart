@@ -24,87 +24,83 @@ class SlidingUpPanelForReels extends StatelessWidget {
       FlutterError.dumpErrorToConsole(error);
     };
     return SlidingUpPanel(
-        borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
-        minHeight: 0,
-        controller: panelController,
-        maxHeight: 1.sh - 100,
-        backdropEnabled: true,
-        panelBuilder: (scrollController) {
-          return Container(
-            height: 1.sh - 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              color: const Color(0xffFEFEFE),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SvgPicture.asset(
-                        AppAssets.chromeIconSvg,
-                        height: 20,
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20.r),
+        topRight: Radius.circular(20.r),
+      ),
+      minHeight: 0,
+      controller: panelController,
+      maxHeight: 1.sh - 100.h,
+      backdropEnabled: true,
+      panelBuilder: (scrollController) {
+        return Container(
+          height: 1.sh - 100.h,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30.r),
+            color: const Color(0xffFEFEFE),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 20.h),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset(AppAssets.chromeIconSvg, height: 20.h),
+                    SizedBox(width: 5.w),
+                    MyTextWidget(
+                      '${LocaleKeys.buyers_camera.tr()} 12 ${LocaleKeys.shot.tr()}',
+                      style: context.textTheme.titleLarge?.rq.copyWith(
+                        color: const Color(0xff8D8D8D),
                       ),
-                      const SizedBox(
-                        width: 5,
+                    ),
+                    SizedBox(width: 5.w),
+                    SvgPicture.asset(AppAssets.registerInfoSvg, height: 12.h),
+                  ],
+                ),
+              ),
+              SizedBox(height: 3.h),
+              Padding(
+                padding: EdgeInsets.only(left: 45.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MyTextWidget(
+                      '${LocaleKeys.these_shots_are_made_by_users.tr()}',
+                      style: context.textTheme.titleMedium?.rq.copyWith(
+                        height: 1.23,
+                        color: const Color(0xffC4C2C2),
+                        fontSize: 11.sp,
                       ),
-                      MyTextWidget(
-                        '${LocaleKeys.buyers_camera.tr()} 12 ${LocaleKeys.shot.tr()}',
-                        style: context.textTheme.titleLarge?.rq
-                            .copyWith(color: const Color(0xff8D8D8D)),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      SvgPicture.asset(
-                        AppAssets.registerInfoSvg,
-                        height: 12,
-                      ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ScrollConfiguration(
+                  behavior: const CupertinoScrollBehavior(),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    controller: scrollController,
+                    physics: const ClampingScrollPhysics(),
+                    padding: EdgeInsets.only(
+                      left: 10.w,
+                      right: 10.w,
+                      top: 15.h,
+                    ),
+                    itemBuilder: (ctx, index) {
+                      return const ReelWidget();
+                    },
+                    separatorBuilder: (ctx, index) => SizedBox(height: 15.h),
+                    itemCount: 10,
                   ),
                 ),
-                const SizedBox(
-                  height: 3,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 45.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MyTextWidget(
-                        '${LocaleKeys.these_shots_are_made_by_users.tr()}',
-                        style: context.textTheme.titleMedium?.rq.copyWith(
-                            height: 1.23,
-                            color: const Color(0xffC4C2C2),
-                            fontSize: 11.sp),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ScrollConfiguration(
-                    behavior: const CupertinoScrollBehavior(),
-                    child: ListView.separated(
-                        shrinkWrap: true,
-                        controller: scrollController,
-                        physics: const ClampingScrollPhysics(),
-                        padding:
-                            const EdgeInsets.only(left: 10, right: 10, top: 15),
-                        itemBuilder: (ctx, index) {
-                          return const ReelWidget();
-                        },
-                        separatorBuilder: (ctx, index) =>
-                            const SizedBox(height: 15),
-                        itemCount: 10),
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

@@ -319,8 +319,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                               children: [
                                 SvgPicture.asset(
                                   AppAssets.phoneOtpSvg,
-                                  width: 15,
-                                  height: 15,
+                                  width: 15.w,
+                                  height: 15.h,
                                 ),
                                 10.horizontalSpace,
                                 Column(
@@ -342,8 +342,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                           padding: HWEdgeInsets.only(top: 3.0),
                                           child: SvgPicture.asset(
                                             AppAssets.phoneCallSvg,
-                                            width: 10,
-                                            height: 10,
+                                            width: 10.w,
+                                            height: 10.h,
                                           ),
                                         ),
                                         5.horizontalSpace,
@@ -371,8 +371,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                       children: [
                                         SvgPicture.asset(
                                           widget.methodIcon,
-                                          width: 10,
-                                          height: 10,
+                                          width: 10.w,
+                                          height: 10.h,
                                         ),
                                         5.horizontalSpace,
                                         MyTextWidget(
@@ -403,8 +403,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                               children: [
                                                 SvgPicture.asset(
                                                   AppAssets.registerInfoSvg,
-                                                  width: 10,
-                                                  height: 10,
+                                                  width: 10.w,
+                                                  height: 10.h,
                                                 ),
                                                 5.horizontalSpace,
                                                 MyTextWidget(
@@ -547,7 +547,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                             resend
                                                 ? Padding(
                                                     padding: HWEdgeInsets.only(
-                                                      left: 15.0,
+                                                      left: 15.w,
                                                     ),
                                                     child: InkWell(
                                                       onTap: widget.goBack,
@@ -584,7 +584,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                       ),
                       25.verticalSpace,
                       Padding(
-                        padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+                        padding: HWEdgeInsets.symmetric(horizontal: 20.w),
                         child: ValueListenableBuilder<bool>(
                           valueListenable: enabledResendNotifier,
                           builder: (context, isExpired, _) {
@@ -597,12 +597,12 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                   builder: (context, state) {
                                     if (state.sendOtpStatus ==
                                         SendOtpStatus.loading) {
-                                      return const Center(
+                                      return Center(
                                         child: SizedBox(
-                                          width: 16,
-                                          height: 16,
+                                          width: 16.w,
+                                          height: 16.h,
                                           child: CircularProgressIndicator(
-                                            strokeWidth: 2,
+                                            strokeWidth: 2.w,
                                           ),
                                         ),
                                       );
@@ -1042,7 +1042,7 @@ class _FailureWithTimerAndTryAgain extends StatelessWidget {
       child: MyTextWidget(
         LocaleKeys.otp_error_try_again_later.tr(),
         style: Theme.of(context).textTheme.bodySmall?.rq.copyWith(
-          fontSize: 12,
+          fontSize: 12.sp,
           color: const Color(0xFF1D1D1D),
         ),
         textAlign: TextAlign.center,

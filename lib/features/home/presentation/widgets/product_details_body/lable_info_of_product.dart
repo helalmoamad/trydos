@@ -22,9 +22,9 @@ class lableInfoProduct extends StatelessWidget {
       FlutterError.dumpErrorToConsole(error);
     };
     return Padding(
-      padding: const EdgeInsetsGeometry.only(bottom: 10, left: 20, right: 20),
+      padding: EdgeInsetsGeometry.only(bottom: 10.h, left: 20.w, right: 20.w),
       child: SizedBox(
-        height: 14,
+        height: 14.h,
         width: 1.sw,
         child: ListView(
           scrollDirection: Axis.horizontal,
@@ -35,7 +35,7 @@ class lableInfoProduct extends StatelessWidget {
               style: context.textTheme.titleMedium?.bq.copyWith(
                 height: 1.3,
                 color: const Color(0xff388CFF),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
             MyTextWidget(
@@ -43,7 +43,7 @@ class lableInfoProduct extends StatelessWidget {
               style: context.textTheme.titleMedium?.rq.copyWith(
                 height: 1.3,
                 color: const Color(0xff388CFF),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
             MyTextWidget(
@@ -51,17 +51,17 @@ class lableInfoProduct extends StatelessWidget {
               style: context.textTheme.titleMedium?.bq.copyWith(
                 height: 1.3,
                 color: const Color(0xff388CFF),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
             const SizedBox(width: 12),
-            SvgPicture.asset(AppAssets.trendingSvg, height: 14, width: 14),
+            SvgPicture.asset(AppAssets.trendingSvg, height: 14.h, width: 14.w),
             MyTextWidget(
               "Trend ",
               style: context.textTheme.titleMedium?.bq.copyWith(
                 height: 1.3,
                 color: const Color(0xffFF641A),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
             MyTextWidget(
@@ -69,7 +69,7 @@ class lableInfoProduct extends StatelessWidget {
               style: context.textTheme.titleMedium?.rq.copyWith(
                 height: 1.3,
                 color: const Color(0xffFF641A),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
             MyTextWidget(
@@ -77,17 +77,17 @@ class lableInfoProduct extends StatelessWidget {
               style: context.textTheme.titleMedium?.bq.copyWith(
                 height: 1.3,
                 color: const Color(0xffFF641A),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12.w),
             SvgPicture.asset(AppAssets.bestSellSvg),
             MyTextWidget(
               " ${LocaleKeys.best_sell.tr()} ",
               style: context.textTheme.titleMedium?.bq.copyWith(
                 height: 1.3,
                 color: const Color(0xff513AAF),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
             MyTextWidget(
@@ -95,7 +95,7 @@ class lableInfoProduct extends StatelessWidget {
               style: context.textTheme.titleMedium?.rq.copyWith(
                 height: 1.3,
                 color: const Color(0xff513AAF),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
             MyTextWidget(
@@ -103,23 +103,23 @@ class lableInfoProduct extends StatelessWidget {
               style: context.textTheme.titleMedium?.bq.copyWith(
                 height: 1.3,
                 color: const Color(0xff513AAF),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12.w),
             SvgPicture.asset(
               AppAssets.fastPackingManIconSvg,
               // ignore: deprecated_member_use
               color: const Color(0xff388CFF),
-              width: 14,
-              height: 14,
+              width: 14.w,
+              height: 14.h,
             ),
             MyTextWidget(
               " ${LocaleKeys.fast_packing.tr()} ",
               style: context.textTheme.titleMedium?.bq.copyWith(
                 height: 1.3,
                 color: const Color(0xff388CFF),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
             MyTextWidget(
@@ -127,7 +127,7 @@ class lableInfoProduct extends StatelessWidget {
               style: context.textTheme.titleMedium?.rq.copyWith(
                 height: 1.3,
                 color: const Color(0xff388CFF),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
             MyTextWidget(
@@ -135,7 +135,7 @@ class lableInfoProduct extends StatelessWidget {
               style: context.textTheme.titleMedium?.bq.copyWith(
                 height: 1.3,
                 color: const Color(0xff388CFF),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
             MyTextWidget(
@@ -143,7 +143,7 @@ class lableInfoProduct extends StatelessWidget {
               style: context.textTheme.titleMedium?.rq.copyWith(
                 height: 1.3,
                 color: const Color(0xff388CFF),
-                fontSize: 11,
+                fontSize: 11.sp,
               ),
             ),
           ],

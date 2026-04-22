@@ -384,6 +384,7 @@ import '../data/repository/common_use_repository_impl.dart' as _i77;
 import '../domin/repositories/common_use_repository.dart' as _i702;
 import '../domin/repositories/prefs_repository.dart' as _i658;
 import '../domin/usecases/upload_file_cloudinary_usecase.dart' as _i1043;
+import '../domin/usecases/upload_file_media_server_usecase.dart' as _i318;
 import 'di_container.dart' as _i198;
 
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -802,6 +803,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i1043.UploadFileCloudinaryUseCase>(
     () => _i1043.UploadFileCloudinaryUseCase(gh<_i702.CommonUseRepository>()),
   );
+  gh.factory<_i318.UploadFileMediaServerUseCase>(
+    () => _i318.UploadFileMediaServerUseCase(gh<_i702.CommonUseRepository>()),
+  );
   gh.lazySingleton<_i944.CategoryBloc>(
     () => _i944.CategoryBloc(
       gh<_i889.SearchByImageFromGeminiUseCase>(),
@@ -1021,6 +1025,18 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i95.DeleteMessageUseCase>(),
     ),
   );
+  gh.lazySingleton<_i536.StoryBloc>(
+    () => _i536.StoryBloc(
+      gh<_i1043.UploadFileCloudinaryUseCase>(),
+      gh<_i804.GetStoryUseCase>(),
+      gh<_i912.GetWidthAndHeightUseCase>(),
+      gh<_i290.UploadStoryUseCase>(),
+      gh<_i4.IncreaseViewersUseCase>(),
+      gh<_i737.AddStoryToOurServerUseCase>(),
+      gh<_i318.UploadFileMediaServerUseCase>(),
+      gh<_i176.DeleteStoryUseCase>(),
+    ),
+  );
   gh.lazySingleton<_i511.BoutiqueBloc>(
     () => _i511.BoutiqueBloc(
       gh<_i146.GetFeaturedProductsUseCase>(),
@@ -1081,17 +1097,6 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i976.SubmitVendorRequestUseCase>(),
       gh<_i135.GetVendorRequestUseCase>(),
       gh<_i388.UpdateVendorRequestUseCase>(),
-    ),
-  );
-  gh.lazySingleton<_i536.StoryBloc>(
-    () => _i536.StoryBloc(
-      gh<_i1043.UploadFileCloudinaryUseCase>(),
-      gh<_i804.GetStoryUseCase>(),
-      gh<_i912.GetWidthAndHeightUseCase>(),
-      gh<_i290.UploadStoryUseCase>(),
-      gh<_i4.IncreaseViewersUseCase>(),
-      gh<_i737.AddStoryToOurServerUseCase>(),
-      gh<_i176.DeleteStoryUseCase>(),
     ),
   );
   gh.lazySingleton<_i561.AuthBloc>(

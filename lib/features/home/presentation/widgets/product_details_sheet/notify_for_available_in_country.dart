@@ -98,8 +98,8 @@ class _NotifyWhenAvailableInCountryButtonState
               return Transform.translate(
                 offset: Offset(sineValue * 3, 0),
                 child: SizedBox(
-                  width: widget.currentTap == 3 ? 1.sw - 50 : 150,
-                  height: 70,
+                  width: widget.currentTap == 3 ? 1.sw - 50.w : 150.w,
+                  height: 70.h,
                   child: Stack(
                     alignment: Alignment.topRight,
                     children: [
@@ -124,7 +124,8 @@ class _NotifyWhenAvailableInCountryButtonState
                           FirebaseAnalyticsService.logEventForSession(
                             executedEventName: AnalyticsButtonsEventNameConst
                                 .ENABLE_PRODUCT_NOTIFICATIONS_BUTTON,
-                            eventName: AnalyticsEventsConst.ENABLE_PRODUCT_NOTIFICATION,
+                            eventName: AnalyticsEventsConst
+                                .ENABLE_PRODUCT_NOTIFICATION,
                             extraParams: {
                               'item_id': widget.productItem.productId
                                   .toString(),
@@ -160,7 +161,7 @@ class _NotifyWhenAvailableInCountryButtonState
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.fastLinearToSlowEaseIn,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(20.r),
                             border: Border.all(
                               color: isVariantRequestNotification
                                   ? const Color(0xff513AAF)
@@ -172,7 +173,7 @@ class _NotifyWhenAvailableInCountryButtonState
                           ),
                           child: Center(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              padding: EdgeInsets.symmetric(vertical: 10.h),
                               child: Column(
                                 children: [
                                   Row(
@@ -196,7 +197,7 @@ class _NotifyWhenAvailableInCountryButtonState
                                                         .notificationIconSvg
                                                   : AppAssets
                                                         .notificationOutlinedIconSvg,
-                                              height: 20,
+                                              height: 20.h,
                                               // ignore: deprecated_member_use
                                               color:
                                                   !isVariantRequestNotification
@@ -206,13 +207,13 @@ class _NotifyWhenAvailableInCountryButtonState
                                       const Spacer(),
                                     ],
                                   ),
-                                  const SizedBox(height: 5),
+                                  SizedBox(height: 5.h),
                                   if (!isVariantRequestNotification) ...{
                                     MyTextWidget(
                                       '${widget.unAvailableType} ${LocaleKeys.notify_me_when_available.tr()}',
                                       style: textTheme.titleMedium?.rq.copyWith(
                                         height: 15 / 12,
-                                        fontSize: 15,
+                                        fontSize: 15.sp,
                                         color: const Color(0xffFCFCFC),
                                       ),
                                       textAlign: TextAlign.center,
@@ -226,7 +227,7 @@ class _NotifyWhenAvailableInCountryButtonState
                                           '${LocaleKeys.we_will_inform_you_when_a.tr()} ${LocaleKeys.product_is_available.tr()}',
                                           style: textTheme.titleMedium?.rq
                                               .copyWith(
-                                                fontSize: 15,
+                                                fontSize: 15.sp,
                                                 height: 15 / 12,
                                                 color: const Color(0xff513AAF),
                                               ),
@@ -241,14 +242,14 @@ class _NotifyWhenAvailableInCountryButtonState
                         ),
                       ),
                       Positioned(
-                        top: -35,
-                        right: -35,
+                        top: -35.h,
+                        right: -35.w,
                         child: Container(
-                          width: 55,
-                          height: 55,
+                          width: 55.w,
+                          height: 55.h,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(20.r),
                             border: Border.all(
                               color: isVariantRequestNotification
                                   ? const Color(0xff513AAF)
@@ -261,7 +262,7 @@ class _NotifyWhenAvailableInCountryButtonState
                         isVariantRequestNotification
                             ? AppAssets.notificationOutlinedIconSvg
                             : AppAssets.notificationIconSvg,
-                        height: 15,
+                        height: 15.h,
                         // ignore: deprecated_member_use
                         color: !isVariantRequestNotification
                             ? const Color(0xff513AAF)

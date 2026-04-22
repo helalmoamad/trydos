@@ -298,14 +298,11 @@ class _ProductDetailsBottomSheetNewState
                       width: 1.sw,
                       height: currentTab == 3
                           ? 1.sh -
-                                ((widget.fromListingPage ?? false)
-                                    ? ((state.currentHeightWhenAddToBag ?? 0) +
-                                          10)
-                                    : ((state.currentHeightWhenAddToBag ?? 0) -
-                                          2))
+                                (((state.currentHeightWhenAddToBag ?? 0) -
+                                    10.h))
                           : currentTab == -1
-                          ? 75
-                          : 450,
+                          ? 100.h
+                          : 450.h,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -313,27 +310,27 @@ class _ProductDetailsBottomSheetNewState
                               ? const SizedBox.shrink()
                               : Container(
                                   alignment: Alignment.topCenter,
-                                  width: 80,
+                                  width: 90.w,
                                   height: 60.h,
                                   padding: EdgeInsets.only(
                                     top: 10.h,
-                                    left: 15,
-                                    right: 15,
+                                    left: 15.w,
+                                    right: 15.w,
                                   ),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xff513AAF),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xff513AAF),
                                     borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(15),
-                                      topRight: Radius.circular(15),
+                                      topLeft: Radius.circular(15.r),
+                                      topRight: Radius.circular(15.r),
                                     ),
                                   ),
                                   child: SizedBox(
-                                    width: 50,
-                                    height: 20,
+                                    width: 58.w,
+                                    height: 20.h,
                                     child: Row(
                                       children: [
                                         SvgPicture.asset(AppAssets.buyNewSvg),
-                                        const SizedBox(width: 5),
+                                        SizedBox(width: 2.w),
                                         MyTextWidget(
                                           LocaleKeys.buy.tr(),
                                           style: context
@@ -341,7 +338,7 @@ class _ProductDetailsBottomSheetNewState
                                               .titleMedium
                                               ?.mq
                                               .copyWith(
-                                                fontSize: 13,
+                                                fontSize: 13.sp,
                                                 color: Colors.white,
                                               ),
                                         ),
@@ -352,14 +349,15 @@ class _ProductDetailsBottomSheetNewState
                           SlidingUpPanel(
                             controller: widget.panelController,
                             maxHeight: currentTab == -1
-                                ? 45
+                                ? 50.h
                                 : currentTab == 3
-                                ? 621
-                                      .h //330.h + 70.w + 305
-                                : 433,
+                                ? 660.h
+                                //330.h + 70.w + 305
+                                //330.h + 70.w + 305
+                                : 450.h,
                             minHeight: (widget.fromListingPage ?? false)
                                 ? 0
-                                : 45,
+                                : 50.h,
                             onPanelClosed: () {
                               isFirstOpenPanel = true;
                               Future.delayed(
@@ -461,16 +459,16 @@ class _ProductDetailsBottomSheetNewState
                                       SizedBox(height: 5.h),
                                       Divider(
                                         thickness: 2,
-                                        radius: BorderRadius.circular(5),
-                                        endIndent: (1.sw - 40) / 2,
-                                        indent: (1.sw - 40) / 2,
+                                        radius: BorderRadius.circular(5.r),
+                                        endIndent: (1.sw - 40.w) / 2,
+                                        indent: (1.sw - 40.w) / 2,
                                         color: const Color(0xffC4C2C2),
                                       ),
                                       productInfoWidget(),
                                       (sizesForEachProduct.length != 0) ||
                                               (colorsForEachProduct.length != 0)
                                           ? const SizedBox.shrink()
-                                          : const SizedBox(height: 10),
+                                          : SizedBox(height: 10.h),
                                       (sizesForEachProduct.length != 0) ||
                                               (colorsForEachProduct.length != 0)
                                           ? const SizedBox.shrink()
@@ -487,7 +485,7 @@ class _ProductDetailsBottomSheetNewState
                                                   ?.rq
                                                   .copyWith(
                                                     height: 1.1,
-                                                    fontSize: 11,
+                                                    fontSize: 11.sp,
                                                     color: const Color(
                                                       0xffFF6200,
                                                     ),
@@ -528,9 +526,9 @@ class _ProductDetailsBottomSheetNewState
                                                   : Colors.white,
                                             ),
                                           ),
-                                          borderRadius: const BorderRadius.only(
-                                            topLeft: Radius.circular(30),
-                                            topRight: Radius.circular(30),
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(30.r),
+                                            topRight: Radius.circular(30.r),
                                           ),
                                         ),
                                         child: _headerWidget(),
@@ -550,7 +548,7 @@ class _ProductDetailsBottomSheetNewState
                                                     top: 7,
                                                     child: SvgPicture.asset(
                                                       AppAssets.minusMarkSvg,
-                                                      width: 25,
+                                                      width: 25.w,
                                                       // ignore: deprecated_member_use
                                                       color:
                                                           Colors.grey.shade200,
@@ -653,9 +651,9 @@ class _ProductDetailsBottomSheetNewState
                                     : Colors.white,
                               ),
                             ),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(30.0),
-                              topRight: Radius.circular(30.0),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30.r),
+                              topRight: Radius.circular(30.r),
                             ),
                           ),
                         ],
@@ -865,7 +863,7 @@ class _ProductDetailsBottomSheetNewState
                         borderRadius: BorderRadius.circular(15),
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15.r),
                             border: Border.all(
                               color: widget.isRedeem
                                   ? const Color(0xffFF6200)
@@ -901,7 +899,7 @@ class _ProductDetailsBottomSheetNewState
                     },
                   ),
                   ///////////////////
-                  const SizedBox(width: 10),
+                  SizedBox(width: 5.w),
                   ///////////////////
                   Expanded(
                     child: Column(
@@ -948,7 +946,7 @@ class _ProductDetailsBottomSheetNewState
                               AppAssets.orderAddressSvg,
                               // ignore: deprecated_member_use
                               color: const Color(0xff1D1D1D),
-                              height: 13,
+                              height: 13.h,
                             ),
                             const SizedBox(width: 5),
                             Text(
@@ -999,7 +997,7 @@ class _ProductDetailsBottomSheetNewState
                               AppAssets.shappingCartNew,
                               // ignore: deprecated_member_use
                               color: const Color(0xff388CFF),
-                              height: 13,
+                              height: 13.h,
                             ),
                             const SizedBox(width: 5),
                             Text(
@@ -1060,9 +1058,9 @@ class _ProductDetailsBottomSheetNewState
                               AppAssets.deliveredBlackSvg,
                               // ignore: deprecated_member_use
                               color: const Color(0xff388CFF),
-                              height: 13,
+                              height: 13.h,
                             ),
-                            const SizedBox(width: 5),
+                            SizedBox(width: 5.w),
                             Text(
                               '${LocaleKeys.at_your_address_in.tr()} Lebanon Monday ',
                               overflow: TextOverflow.ellipsis,
@@ -1088,7 +1086,7 @@ class _ProductDetailsBottomSheetNewState
                             SizedBox(width: 10.w),
                             SvgPicture.asset(
                               AppAssets.deliveryGuranteeSvg,
-                              height: 13,
+                              height: 13.h,
                             ),
 
                             ///////////////////
@@ -1271,7 +1269,7 @@ class _ProductDetailsBottomSheetNewState
                                   );
                                 },
                               ),
-                              const SizedBox(width: 5),
+                              SizedBox(width: 5.w),
                               widget.isRedeem
                                   ? const SizedBox.shrink()
                                   : MyTextWidget(
@@ -1289,7 +1287,7 @@ class _ProductDetailsBottomSheetNewState
                                             height: 0,
                                           ),
                                     ),
-                              const SizedBox(width: 5),
+                              SizedBox(width: 5.w),
                               widget.isRedeem
                                   ? MyTextWidget(
                                       HelperFunctions.formatNumber(
@@ -1404,13 +1402,13 @@ class _ProductDetailsBottomSheetNewState
               height: 28.h,
               decoration: BoxDecoration(
                 color: const Color(0xffF8F8F8),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.r),
               ),
               child: Row(
                 children: [
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10.w),
                   SvgPicture.asset(AppAssets.colorPickerSvg, height: 14.h),
-                  const SizedBox(width: 5),
+                  SizedBox(width: 5.w),
                   MyTextWidget(
                     '${LocaleKeys.selected_color.tr()}',
                     style: context.textTheme.titleLarge?.rq.copyWith(
@@ -1427,11 +1425,11 @@ class _ProductDetailsBottomSheetNewState
               height: 90.h,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
                 itemCount: widget.productItem.syncColorImages?.length ?? 0,
                 itemBuilder: (context, index) {
                   return SizedBox(
-                    width: 54,
+                    width: 54.w,
                     height: 90.h,
                     child: GestureDetector(
                       onTap: () {
@@ -1481,12 +1479,12 @@ class _ProductDetailsBottomSheetNewState
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(6.r),
                             child: Container(
-                              width: 50,
+                              width: 50.w,
                               height: 74.h,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
+                                borderRadius: BorderRadius.circular(6.r),
                                 border: Border.all(
                                   color:
                                       index ==
@@ -1517,8 +1515,8 @@ class _ProductDetailsBottomSheetNewState
                                               .filePath ??
                                           ''
                                     : '',
-                                radius: 6,
-                                width: 50,
+                                radius: 6.r,
+                                width: 50.w,
                                 height: 73.h,
                               ),
                             ),
@@ -1704,14 +1702,14 @@ class _ProductDetailsBottomSheetNewState
                   height: 28.h,
                   decoration: BoxDecoration(
                     color: const Color(0xffF8F8F8),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Row(
                     children: [
                       const SizedBox(width: 10),
                       SvgPicture.asset(
                         AppAssets.sizeIconSvg,
-                        height: 14,
+                        height: 14.h,
                         // ignore: deprecated_member_use
                         color: const Color(0xff1D1D1D),
                       ),
@@ -1720,7 +1718,7 @@ class _ProductDetailsBottomSheetNewState
                         '${LocaleKeys.select_your_required_size.tr()}',
                         style: context.textTheme.titleLarge?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
-                          fontSize: 11,
+                          fontSize: 11.sp,
                         ),
                       ),
                     ],
@@ -1731,33 +1729,33 @@ class _ProductDetailsBottomSheetNewState
                   width: 1.sw,
                   height: 21.h,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
                     child: Row(
                       children: [
                         _sizesType(" CM ", const Color(0xffF4F4F4)),
-                        const SizedBox(width: 2),
+                        SizedBox(width: 2.w),
                         _sizesType(" INC ", null),
                         const Spacer(),
                         _sizesType(" Standart ", const Color(0xffF4F4F4)),
-                        const SizedBox(width: 2),
+                        SizedBox(width: 2.w),
                         _sizesType(" EU ", null),
-                        const SizedBox(width: 2),
+                        SizedBox(width: 2.w),
                         _sizesType(" IN ", null),
-                        const SizedBox(width: 2),
+                        SizedBox(width: 2.w),
                         _sizesType(" US ", null),
-                        const SizedBox(width: 2),
+                        SizedBox(width: 2.w),
                         _sizesType(" Uk ", null),
-                        const SizedBox(width: 2),
+                        SizedBox(width: 2.w),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12.h),
                 SizedBox(
                   width: 1.sw,
                   height: 52.h,
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) => GestureDetector(
                       onTap: () {
@@ -1827,11 +1825,11 @@ class _ProductDetailsBottomSheetNewState
                                   ),
                                   isVariantRequestNotification
                                       ? Positioned(
-                                          left: 8,
+                                          left: 8.w,
                                           top: 0,
                                           child: SvgPicture.asset(
                                             AppAssets.notificationIconSvg,
-                                            height: 12,
+                                            height: 12.h,
                                             // ignore: deprecated_member_use
                                             color: const Color(0xff513AAF),
                                           ),
@@ -1863,7 +1861,7 @@ class _ProductDetailsBottomSheetNewState
                                   style: context.textTheme.titleLarge?.bq
                                       .copyWith(
                                         height: 1.1,
-                                        fontSize: 11,
+                                        fontSize: 11.sp,
                                         color: const Color(0xffFF5F61),
                                       ),
                                 ),
@@ -1872,7 +1870,7 @@ class _ProductDetailsBottomSheetNewState
                                   style: context.textTheme.titleLarge?.rq
                                       .copyWith(
                                         height: 1.0,
-                                        fontSize: 11,
+                                        fontSize: 11.sp,
                                         color: const Color(0xffFF5F61),
                                       ),
                                 ),
@@ -1883,16 +1881,16 @@ class _ProductDetailsBottomSheetNewState
                               children: [
                                 Image.asset(
                                   AppAssets.recommendPng,
-                                  width: 14,
-                                  height: 14,
+                                  width: 14.w,
+                                  height: 14.h,
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                                 MyTextWidget(
                                   '${widget.productItem.sizes?.firstWhere((element) => element == state.currentColorSizeForCart?["choiceOption"], orElse: () => "") ?? ""} ',
                                   style: context.textTheme.titleLarge?.bq
                                       .copyWith(
                                         height: 1.3,
-                                        fontSize: 11,
+                                        fontSize: 11.sp,
                                         color: const Color(0xff404040),
                                       ),
                                 ),
@@ -1901,7 +1899,7 @@ class _ProductDetailsBottomSheetNewState
                                   style: context.textTheme.titleLarge?.rq
                                       .copyWith(
                                         height: 1.1,
-                                        fontSize: 11,
+                                        fontSize: 11.sp,
                                         color: const Color(0xff404040),
                                       ),
                                 ),
@@ -1910,7 +1908,7 @@ class _ProductDetailsBottomSheetNewState
                                   style: context.textTheme.titleLarge?.bq
                                       .copyWith(
                                         height: 1.1,
-                                        fontSize: 11,
+                                        fontSize: 11.sp,
                                         color: const Color(0xff404040),
                                       ),
                                 ),
@@ -1919,7 +1917,7 @@ class _ProductDetailsBottomSheetNewState
                                   style: context.textTheme.titleLarge?.rq
                                       .copyWith(
                                         height: 1.1,
-                                        fontSize: 11,
+                                        fontSize: 11.sp,
                                         color: const Color(0xff404040),
                                       ),
                                 ),
@@ -1930,7 +1928,7 @@ class _ProductDetailsBottomSheetNewState
                                         style: context.textTheme.titleLarge?.rq
                                             .copyWith(
                                               height: 1.1,
-                                              fontSize: 11,
+                                              fontSize: 11.sp,
                                               color: const Color(0xffFF6200),
                                             ),
                                       )
@@ -1952,16 +1950,16 @@ class _ProductDetailsBottomSheetNewState
     return Container(
       alignment: Alignment.center,
       height: 22.h,
-      padding: const EdgeInsets.symmetric(horizontal: 5),
+      padding: EdgeInsets.symmetric(horizontal: 5.w),
       decoration: BoxDecoration(
         color: color ?? const Color(0xffFCFCFC),
         border: Border.all(color: const Color(0xffD3D3D3)),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(6.r),
       ),
       child: MyTextWidget(
         text,
         style: context.textTheme.titleLarge?.rq.copyWith(
-          fontSize: 11,
+          fontSize: 11.sp,
           color: const Color(0xff1D1D1D),
         ),
       ),
@@ -1976,16 +1974,16 @@ class _ProductDetailsBottomSheetNewState
   ) {
     return Container(
       margin: EdgeInsets.only(
-        left: LanguageService.languageCode != "ar" ? 0 : 3,
-        right: LanguageService.languageCode == "ar" ? 0 : 3,
+        left: LanguageService.languageCode != "ar" ? 0 : 3.w,
+        right: LanguageService.languageCode == "ar" ? 0 : 3.w,
       ),
       alignment: Alignment.center,
       height: 46.h,
-      width: 70,
+      width: 70.w,
       decoration: BoxDecoration(
         color: color ?? const Color(0xffFCFCFC),
         border: Border.all(color: borderColor ?? const Color(0xffD3D3D3)),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(6.r),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -2002,7 +2000,7 @@ class _ProductDetailsBottomSheetNewState
               : MyTextWidget(
                   num,
                   style: context.textTheme.titleLarge?.rq.copyWith(
-                    fontSize: 11,
+                    fontSize: 11.sp,
                     color: const Color(0xff1D1D1D),
                   ),
                 ),
@@ -2138,8 +2136,8 @@ class ShareButton extends StatelessWidget {
             splashColor: Colors.transparent,
             onTap: onTap,
             child: Container(
-              padding: HWEdgeInsets.symmetric(vertical: 20),
-              margin: HWEdgeInsets.symmetric(horizontal: 20),
+              padding: HWEdgeInsets.symmetric(vertical: 20.h),
+              margin: HWEdgeInsets.symmetric(horizontal: 20.w),
               decoration: BoxDecoration(
                 color: const Color(0xff3c3c3c),
                 borderRadius: BorderRadius.circular(20.0),
@@ -2159,13 +2157,14 @@ class ShareButton extends StatelessWidget {
                       AppAssets.shareSvg,
                       // ignore: deprecated_member_use
                       color: Colors.white,
-                      height: 20,
+                      height: 20.h,
                     ),
                     10.horizontalSpace,
                     MyTextWidget(
                       '${LocaleKeys.send.tr()}',
                       style: context.textTheme.bodyLarge?.rq.copyWith(
                         color: Colors.white,
+                        fontSize: 11.sp,
                       ),
                     ),
                   ],

@@ -57,7 +57,7 @@ class ProductDetailsTitle extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: EdgeInsets.symmetric(horizontal: 20.r),
               child: brand != null
                   ? brand!.icon != null
                         ? brand!.icon!.filePath != null
@@ -66,15 +66,15 @@ class ProductDetailsTitle extends StatelessWidget {
                                     mediaServerIsS3
                                         ? MyCachedNetworkImage(
                                             imageUrl: brand!.icon!.filePath!,
-                                            height: 18,
+                                            height: 18.h,
                                             imageFit: BoxFit.contain,
-                                            width: 19,
+                                            width: 19.w,
                                           )
                                         : SvgNetworkWidget(
                                             svgUrl: brand!.icon!.filePath!,
-                                            height: 18,
+                                            height: 18.h,
                                           ),
-                                    const SizedBox(width: 10),
+                                    SizedBox(width: 10.w),
                                     (brand!.isVerified ?? 0) == 1
                                         ? SvgPicture.asset(
                                             AppAssets.productVerifySvg,
@@ -86,11 +86,11 @@ class ProductDetailsTitle extends StatelessWidget {
                         : const SizedBox.shrink()
                   : const SizedBox.shrink(),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: EdgeInsets.symmetric(horizontal: 20.r),
               child: SizedBox(
-                width: 1.sw - 20,
+                width: 1.sw - 20.w,
 
                 child: MyTextWidget(
                   "${productName} ${colorName == "" ? '' : '| ${colorName}'}",

@@ -1092,7 +1092,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 const SizedBox.shrink(),
                               } else ...{
                                 SizedBox(
-                                  height: 52,
+                                  height: 52.h,
                                   child: ScrollConfiguration(
                                     behavior: const CupertinoScrollBehavior(),
                                     child: ListView.separated(
@@ -1106,9 +1106,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                       physics: const ClampingScrollPhysics(),
                                       shrinkWrap: true,
                                       scrollDirection: Axis.horizontal,
-                                      padding: const EdgeInsets.only(
-                                        left: 10,
-                                        right: 10,
+                                      padding: EdgeInsets.only(
+                                        left: 10.w,
+                                        right: 10.w,
                                       ),
                                       itemBuilder: (context, index) {
                                         return ProductDetailsChipWidget(
@@ -1131,12 +1131,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                         );
                                       },
                                       separatorBuilder: (context, index) {
-                                        return const SizedBox(width: 5);
+                                        return SizedBox(width: 5.w);
                                       },
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 10),
+                                SizedBox(height: 10.h),
                               },
 
                               if ((productItem!.syncColorImages?.length ?? 0) >
@@ -1890,7 +1890,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 }
 
                                 return Container(
-                                  height: 80, // ارتفاع الـ panel المغلقة
+                                  height: 80.h, // ارتفاع الـ panel المغلقة
                                   child: ProductDetailsSheetHeader(
                                     redeemVariantPrice:
                                         HelperFunctions.truncateToDecimalPlaces(
@@ -2810,7 +2810,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
     return [
       LanguageService.rtl ? const Spacer() : const SizedBox.shrink(),
       Padding(
-        padding: const EdgeInsetsDirectional.only(end: 10.0),
+        padding: EdgeInsetsDirectional.only(end: 10..w),
         child: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
@@ -2896,7 +2896,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           width: 75,
                           decoration: BoxDecoration(
                             color: Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10.r),
                           ),
                         ),
                       ),
@@ -2911,7 +2911,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                   )
                 : Container(
                     alignment: Alignment.center,
-                    height: 35,
+                    height: 35.h,
                     child: InkWell(
                       onTap: () {
                         Navigator.of(context).push(
@@ -3006,14 +3006,14 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   Padding(
-                    padding: const EdgeInsetsGeometry.symmetric(horizontal: 20),
+                    padding: EdgeInsetsGeometry.symmetric(horizontal: 20.w),
                     child: SvgPicture.asset(AppAssets.productStorySvg),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   Padding(
-                    padding: const EdgeInsetsGeometry.symmetric(horizontal: 20),
+                    padding: EdgeInsetsGeometry.symmetric(horizontal: 20.w),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3022,14 +3022,14 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           '${LocaleKeys.product_story.tr()}',
                           style: context.textTheme.titleLarge?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         SvgPicture.asset(
                           AppAssets.registerInfoSvg,
-                          height: 10,
-                          width: 10,
+                          height: 10.h,
+                          width: 10.w,
                           // ignore: deprecated_member_use
                           color: const Color(0xffC4C2C2),
                         ),
@@ -3049,7 +3049,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
       children: [
         SizedBox(
           width: 1.sw,
-          height: 500,
+          height: 500.h,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -3305,9 +3305,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   ) {
     return Container(
       width: 1.sw,
-      height: 50,
+      height: 50.h,
       color: const Color(0xffFCFCFC),
-      margin: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 20),
+      margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 5.h, bottom: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -3315,12 +3315,12 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
             '${LocaleKeys.buyers_reviews_on_product_sizing.tr()}',
             style: context.textTheme.titleLarge?.rq.copyWith(
               color: const Color(0xff1D1D1D),
-              fontSize: 11,
+              fontSize: 11.sp,
             ),
           ),
           const Spacer(),
           SizedBox(
-            height: 25,
+            height: 25.h,
             width: 1.sw,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -3339,7 +3339,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   Widget _buyerReviewSingle(String text, double numOfPercent) {
     return SizedBox(
       width: 120.w,
-      height: 25,
+      height: 25.h,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -3349,7 +3349,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                 text,
                 style: context.textTheme.titleLarge?.rq.copyWith(
                   color: const Color(0xff1D1D1D),
-                  fontSize: 11,
+                  fontSize: 11.sp,
                 ),
               ),
               const SizedBox(width: 5),
@@ -3357,7 +3357,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                 "${numOfPercent}%",
                 style: context.textTheme.titleLarge?.bq.copyWith(
                   color: const Color(0xff1D1D1D),
-                  fontSize: 11,
+                  fontSize: 11.sp,
                 ),
               ),
             ],
@@ -3398,7 +3398,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
     required int currentSelectedColor,
   }) {
     return SizedBox(
-      height: 464,
+      height: 464.h,
       child: Stack(
         children: [
           ScrollConfiguration(
@@ -3419,11 +3419,11 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
               shrinkWrap: true,
               physics: const ClampingScrollPhysics(),
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(
-                left: 10,
-                right: 10,
-                top: 10,
-                bottom: 15,
+              padding: EdgeInsets.only(
+                left: 10.w,
+                right: 10.w,
+                top: 10.h,
+                bottom: 15.h,
               ),
               itemBuilder: (context, index) {
                 return GestureDetector(
@@ -3540,8 +3540,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                   ? []
                                                   : productItem!.labelNames ??
                                                       [],*/
-                            height: 464,
-                            width: 320,
+                            height: 464.h,
+                            width: 320.w,
                             orginalHeight: widget.productItem == null
                                 ? 0
                                 : widget
@@ -3598,24 +3598,24 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     return !_visibleVedio
                         ? const SizedBox.shrink()
                         : Positioned(
-                            bottom: 20,
+                            bottom: 20.h,
                             right: LanguageService.languageCode != "ar"
-                                ? 10
+                                ? 10.w
                                 : null,
                             left: LanguageService.languageCode != "ar"
                                 ? null
-                                : 10,
+                                : 10.w,
                             child: Container(
-                              width: 140,
-                              height: 200,
+                              width: 140.w,
+                              height: 200.h,
                               child: Stack(
                                 children: [
                                   Container(
-                                    width: 140,
-                                    height: 200,
+                                    width: 140.w,
+                                    height: 200.h,
                                     decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(15),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(15.r),
                                       ),
                                       border: Border.all(
                                         color: const Color(0xff513AAF),
@@ -3662,23 +3662,23 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     return !_visibleVedio
                         ? const SizedBox.shrink()
                         : Positioned(
-                            bottom: 207,
+                            bottom: 207.h,
                             right: LanguageService.languageCode != "ar"
-                                ? 132
+                                ? 132.w
                                 : null,
                             left: LanguageService.languageCode != "ar"
                                 ? null
-                                : 132,
+                                : 132.w,
                             child: InkWell(
                               onTap: () => visibleVedio.value = false,
                               child: Container(
                                 alignment: Alignment.center,
-                                width: 20,
-                                height: 20,
+                                width: 20.w,
+                                height: 20.h,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(15),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.r),
                                   ),
                                   border: Border.all(
                                     color: const Color(0xffFF5F61),
@@ -3686,7 +3686,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 ),
                                 child: SvgPicture.asset(
                                   AppAssets.cancelSvg,
-                                  width: 10,
+                                  width: 10.w,
                                   // ignore: deprecated_member_use
                                   color: const Color(0xffFF5F61),
                                 ),

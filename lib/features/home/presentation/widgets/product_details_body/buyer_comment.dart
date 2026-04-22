@@ -110,7 +110,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
           return const SizedBox.shrink();
         }
         return Padding(
-          padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+          padding: EdgeInsets.only(left: 10.w, right: 10.w, bottom: 10.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -129,7 +129,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                   widget.panelBuyersComments.open();
                 },
                 child: Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.all(10.w),
                   child: SvgPicture.asset(AppAssets.buyersCommentSvg),
                 ),
               ),
@@ -148,10 +148,10 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                   widget.panelBuyersComments.open();
                 },
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 10,
-                    right: 10,
-                    bottom: 10,
+                  padding: EdgeInsets.only(
+                    left: 10.w,
+                    right: 10.w,
+                    bottom: 10.h,
                   ),
                   child: Row(
                     children: [
@@ -159,14 +159,14 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                         '${LocaleKeys.buyers_comment.tr()}',
                         style: context.textTheme.titleLarge?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
-                          fontSize: 11,
+                          fontSize: 11.sp,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       SvgPicture.asset(
                         AppAssets.registerInfoSvg,
-                        height: 10,
-                        width: 10,
+                        height: 10.h,
+                        width: 10.w,
                         // ignore: deprecated_member_use
                         color: const Color(0xffC4C2C2),
                       ),
@@ -175,12 +175,11 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                 ),
               ),
               SizedBox(
-                height: 125,
+                height: 130.h,
                 width: 1.sw,
                 child: ListView.separated(
                   controller: scrollController,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(width: 5),
+                  separatorBuilder: (context, index) => SizedBox(width: 5.w),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
                     return (index ==
@@ -190,8 +189,8 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                     .length ??
                                 0))
                         ? SizedBox(
-                            width: 30,
-                            height: 50,
+                            width: 30.w,
+                            height: 50.h,
                             child:
                                 state
                                         .getBuyersCommentsPaginationModel?['all']
@@ -228,10 +227,10 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                       0
                   ? const SizedBox.shrink()
                   : Padding(
-                      padding: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                        top: 10,
+                      padding: EdgeInsets.only(
+                        left: 10.w,
+                        right: 10.w,
+                        top: 10.h,
                       ),
                       child: Row(
                         children: [
@@ -239,27 +238,27 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                             AppAssets.recommendSvg,
                             // ignore: deprecated_member_use
                             color: const Color(0xff068D06),
-                            width: 12,
+                            width: 12.w,
                           ),
                           MyTextWidget(
                             ' ${state.cachedProductWithoutRelatedProductsModel[widget.productId]?.product?.recommendationStats?[0].count} ',
                             style: context.textTheme.titleLarge?.bq.copyWith(
                               color: const Color(0xff1D1D1D),
-                              fontSize: 9,
+                              fontSize: 9.sp,
                             ),
                           ),
                           MyTextWidget(
                             '${LocaleKeys.buyer.tr()}',
                             style: context.textTheme.titleLarge?.rq.copyWith(
                               color: const Color(0xff1D1D1D),
-                              fontSize: 9,
+                              fontSize: 9.sp,
                             ),
                           ),
                           MyTextWidget(
                             ' ${LocaleKeys.recommend_it.tr()}',
                             style: context.textTheme.titleLarge?.bq.copyWith(
                               color: const Color(0xff1D1D1D),
-                              fontSize: 9,
+                              fontSize: 9.sp,
                             ),
                           ),
                           const Spacer(),
@@ -267,27 +266,27 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                             AppAssets.recommendSvg,
                             // ignore: deprecated_member_use
                             color: const Color(0xffFF6200),
-                            width: 12,
+                            width: 12.w,
                           ),
                           MyTextWidget(
                             ' ${state.cachedProductWithoutRelatedProductsModel[widget.productId]?.product?.recommendationStats?[1].count} ',
                             style: context.textTheme.titleLarge?.bq.copyWith(
                               color: const Color(0xff1D1D1D),
-                              fontSize: 9,
+                              fontSize: 9.sp,
                             ),
                           ),
                           MyTextWidget(
                             '${LocaleKeys.buyer.tr()}',
                             style: context.textTheme.titleLarge?.rq.copyWith(
                               color: const Color(0xff1D1D1D),
-                              fontSize: 9,
+                              fontSize: 9.sp,
                             ),
                           ),
                           MyTextWidget(
                             ' ${LocaleKeys.dont_recommend_it.tr()}',
                             style: context.textTheme.titleLarge?.bq.copyWith(
                               color: const Color(0xff1D1D1D),
-                              fontSize: 9,
+                              fontSize: 9.sp,
                             ),
                           ),
                         ],
@@ -304,13 +303,13 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                   : Stack(
                       children: [
                         Container(
-                          margin: const EdgeInsets.only(
-                            left: 8,
-                            right: 8,
-                            top: 10,
-                            bottom: 10,
+                          margin: EdgeInsets.only(
+                            left: 8.w,
+                            right: 8.w,
+                            top: 10.h,
+                            bottom: 10.h,
                           ),
-                          height: 4,
+                          height: 4.h,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
                             color: const Color(0xffFF6200),
@@ -318,7 +317,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                         ),
                         Container(
                           width:
-                              (1.sw - 36) *
+                              (1.sw - 36.w) *
                               ((double.tryParse(
                                         state
                                                 .cachedProductWithoutRelatedProductsModel[widget
@@ -330,15 +329,15 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                       ) ??
                                       0) /
                                   100),
-                          margin: const EdgeInsets.only(
-                            left: 8,
-                            right: 8,
-                            top: 10,
-                            bottom: 10,
+                          margin: EdgeInsets.only(
+                            left: 8.w,
+                            right: 8.w,
+                            top: 10.h,
+                            bottom: 10.h,
                           ),
-                          height: 4,
+                          height: 4.h,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(5.r),
                             color: const Color(0xff068D06),
                           ),
                         ),
@@ -378,10 +377,10 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
         builder: (context) {
           return Padding(
             padding: EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 24,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              left: 20.w,
+              right: 20.w,
+              top: 24.h,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24.h,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -389,9 +388,9 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
               children: [
                 Center(
                   child: Container(
-                    width: 48,
-                    height: 5,
-                    margin: const EdgeInsets.only(bottom: 18),
+                    width: 48.w,
+                    height: 5.h,
+                    margin: EdgeInsets.only(bottom: 18.h),
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(20),
@@ -401,14 +400,14 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                 Center(
                   child: Text(
                     LocaleKeys.edit_comment_title.tr(),
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
                   ),
                 ),
-                const SizedBox(height: 22),
+                SizedBox(height: 22.h),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
@@ -428,16 +427,16 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                     decoration: InputDecoration(
                       hintText: LocaleKeys.edit_comment_hint.tr(),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 14,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 14.w,
+                        vertical: 14.h,
                       ),
                     ),
 
                     minLines: 3,
                   ),
                 ),
-                const SizedBox(height: 18),
+                SizedBox(height: 18.h),
                 Row(
                   children: [
                     const Spacer(),
@@ -500,7 +499,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
 
     return Container(
       width: 388.w,
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.all(10.w),
       decoration: BoxDecoration(
         color: const Color(0xffF8F8F8),
         borderRadius: BorderRadius.circular(15),
@@ -509,7 +508,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 20,
+            height: 20.h,
             width: 1.sw,
             child: Row(
               children: [
@@ -520,18 +519,18 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                       )
                       ? buyersComment.customer?.image ?? ""
                       : '${dotenv.env['Images_Url']}${buyersComment.customer?.image}',
-                  width: 20,
+                  width: 20.w,
                   imageFit: BoxFit.cover,
-                  height: 20,
+                  height: 20.h,
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10.w),
                 MyTextWidget(
                   extractInitialsAndAppendXXX(
                     buyersComment.customer?.name ?? "",
                   ),
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
                 const Spacer(),
@@ -542,21 +541,21 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                   ),
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff8D8D8D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           MyTextWidget(
             buyersComment.variant ?? "",
             style: context.textTheme.titleLarge?.mq.copyWith(
               color: const Color(0xff1D1D1D),
-              fontSize: 9,
+              fontSize: 9.sp,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           MyTextWidget(
             (buyersComment.isTran ?? false)
                 ? (buyersComment.commentTran ?? "")
@@ -564,12 +563,12 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
             maxLines: 10,
             style: context.textTheme.titleLarge?.rq.copyWith(
               color: const Color(0xff1D1D1D),
-              fontSize: 11,
+              fontSize: 11.sp,
             ),
           ),
           const Spacer(),
           Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10),
+            padding: EdgeInsets.only(left: 10.w, right: 10.w),
             child: Row(
               children: [
                 state.updateLikeCommentRatingStatus ==
@@ -610,13 +609,13 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                           );
                         },
                         child: SizedBox(
-                          width: 25,
-                          height: 18,
+                          width: 25.w,
+                          height: 18.h,
                           child: SvgPicture.asset(
                             (buyersComment.isLiked ?? false)
                                 ? AppAssets.favoriteActiveSvg
                                 : AppAssets.favoriteSvg,
-                            height: 16,
+                            height: 16.h,
                           ),
                         ),
                       ),
@@ -626,7 +625,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                         '  ${buyersComment.totalLikes ?? 0}',
                         style: context.textTheme.titleLarge?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
-                          fontSize: 9,
+                          fontSize: 9.sp,
                         ),
                       ),
                 ((state.deleteOrderCommentRatingStatus ==
@@ -638,8 +637,8 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                         state.tapCommentIndex == index)
                     ? TrydosLoader(size: 15)
                     : SizedBox(
-                        width: 30,
-                        height: 35,
+                        width: 30.w,
+                        height: 35.h,
                         child: PopupMenuButton<String>(
                           icon: const Icon(
                             Icons.more_vert,
@@ -652,8 +651,8 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                 barrierColor: Colors.transparent,
                                 builder: (ctx) => Center(
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16.w,
                                     ),
                                     child: Material(
                                       color: Colors.transparent,
@@ -719,12 +718,12 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                                       LocaleKeys.cancel.tr(),
                                                       style: TextStyle(
                                                         color: Colors.grey[600],
-                                                        fontSize: 14,
+                                                        fontSize: 14.sp,
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                                const SizedBox(width: 8),
+                                                SizedBox(width: 8.w),
                                                 Expanded(
                                                   child: ElevatedButton(
                                                     onPressed: () =>
@@ -741,20 +740,20 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                                       shape: RoundedRectangleBorder(
                                                         borderRadius:
                                                             BorderRadius.circular(
-                                                              12,
+                                                              12.r,
                                                             ),
                                                       ),
                                                       padding:
-                                                          const EdgeInsets.symmetric(
-                                                            vertical: 10,
+                                                          EdgeInsets.symmetric(
+                                                            vertical: 10.h,
                                                           ),
                                                     ),
                                                     child: Text(
                                                       LocaleKeys.confirm_delete
                                                           .tr(),
-                                                      style: const TextStyle(
+                                                      style: TextStyle(
                                                         color: Colors.white,
-                                                        fontSize: 14,
+                                                        fontSize: 14.sp,
                                                       ),
                                                     ),
                                                   ),
@@ -861,9 +860,9 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                     SvgPicture.asset(
                                       AppAssets.languageSvg,
 
-                                      height: 20,
+                                      height: 20.h,
                                     ),
-                                    const SizedBox(width: 6),
+                                    SizedBox(width: 6.w),
                                     Text(
                                       (buyersComment.isTran ?? false)
                                           ? LocaleKeys.show_original_version
@@ -885,9 +884,9 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                         AppAssets.editSvg,
                                         // ignore: deprecated_member_use
                                         color: Colors.green,
-                                        height: 20,
+                                        height: 20.sp,
                                       ),
-                                      const SizedBox(width: 6),
+                                      SizedBox(width: 6.w),
                                       Text(LocaleKeys.edit.tr()),
                                     ],
                                   ),
@@ -900,7 +899,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                     children: [
                                       SvgPicture.asset(
                                         AppAssets.deletecartSvg,
-                                        height: 20,
+                                        height: 20.h,
                                       ),
                                       const SizedBox(width: 6),
                                       Text(LocaleKeys.delete.tr()),
@@ -917,13 +916,13 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                 // إذا كان هناك عمليات جارية (لودر الحذف أو التعديل)
                 const Spacer(),
                 StarRatingProductWidget(
-                  itemHeight: 13,
-                  itemSize: 14,
-                  itemWidth: 14,
+                  itemHeight: 13.h,
+                  itemSize: 14.h,
+                  itemWidth: 14.w,
                   isInteractive: false,
-                  widgetHeight: 14,
-                  widgetWidth: 71,
-                  svgWidth: 12,
+                  widgetHeight: 14.h,
+                  widgetWidth: 71.w,
+                  svgWidth: 12.w,
                   onRatingChanged: (p0) {},
                   starColor: const Color(0xff1D1D1D),
                   initialRating: (buyersComment.starRating ?? 0).toDouble(),
@@ -932,7 +931,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                   ' | ${(buyersComment.goodQualitycomment ?? false) ? LocaleKeys.good_quality.tr() : ""} ${(buyersComment.trueSize ?? false) ? "| ${LocaleKeys.true_size.tr()}" : ""} ',
                   style: context.textTheme.titleLarge?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
                 !(buyersComment.recommendation ?? false)
@@ -941,7 +940,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                         AppAssets.recommendSvg,
                         // ignore: deprecated_member_use
                         color: const Color(0xff068D06),
-                        width: 12,
+                        width: 12.w,
                       ),
                 !(buyersComment.recommendation ?? false)
                     ? const SizedBox.shrink()
@@ -949,7 +948,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                         ' ${LocaleKeys.recommend_it.tr()}',
                         style: context.textTheme.titleLarge?.rq.copyWith(
                           color: const Color(0xff1D1D1D),
-                          fontSize: 9,
+                          fontSize: 9.sp,
                         ),
                       ),
               ],

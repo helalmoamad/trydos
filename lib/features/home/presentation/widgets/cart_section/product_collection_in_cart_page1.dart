@@ -1248,7 +1248,7 @@ class _ProductCollectionInCartPage1State
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Container(
-                                            height: 17.h,
+                                            height: 16.h,
                                             child: Row(
                                               children: [
                                                 Text(

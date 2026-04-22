@@ -7,26 +7,37 @@ import '../../data/models/get_stories_model.dart';
 import '../repository/story_repository.dart';
 
 @injectable
-class AddStoryToOurServerUseCase extends UseCase<
-    Either<int, CollectionStoryModel>, AddStoryToOurServerParams> {
+class AddStoryToOurServerUseCase
+    extends
+        UseCase<Either<int, CollectionStoryModel>, AddStoryToOurServerParams> {
   final StoryRepository repository;
 
   AddStoryToOurServerUseCase(this.repository);
 
   @override
   Future<Either<Failure, Either<int, CollectionStoryModel>>> call(
-      AddStoryToOurServerParams params) {
+    AddStoryToOurServerParams params,
+  ) {
     return repository.addStoryToOurServer(params.map);
   }
 }
 
 class AddStoryToOurServerParams {
-  const AddStoryToOurServerParams(
-      {required this.filePath, required this.isVideo, required this.link});
+  const AddStoryToOurServerParams({
+    required this.filePath,
+    required this.isVideo,
+    required this.link,
+    this.durationSeconds,
+  });
 
   final String filePath;
   final int isVideo;
+  final double? durationSeconds;
   final String? link;
-  Map<String, dynamic> get map =>
-      {'file_path': filePath, 'is_video': isVideo, "link": link};
+  Map<String, dynamic> get map => {
+    'file_path': filePath,
+    'is_video': isVideo,
+    "link": link,
+    "video_duration_in_second": durationSeconds,
+  };
 }

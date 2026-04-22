@@ -127,7 +127,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Padding(
-              padding: HWEdgeInsets.symmetric(horizontal: 40.0),
+              padding: HWEdgeInsets.symmetric(horizontal: 40.w),
               child: Column(
                 children: [
                   Row(
@@ -135,8 +135,8 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                     children: [
                       SvgPicture.asset(
                         AppAssets.verifiedNumberSvg,
-                        width: 15,
-                        height: 15,
+                        width: 15.w,
+                        height: 15.h,
                       ),
                       10.horizontalSpace,
                       Column(
@@ -155,8 +155,8 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                 padding: HWEdgeInsets.only(top: 3.0),
                                 child: SvgPicture.asset(
                                   AppAssets.registerInfoSvg,
-                                  width: 10,
-                                  height: 10,
+                                  width: 10.w,
+                                  height: 10.h,
                                 ),
                               ),
                               5.horizontalSpace,
@@ -176,8 +176,8 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                             children: [
                               SvgPicture.asset(
                                 AppAssets.privacySvg,
-                                width: 10,
-                                height: 10,
+                                width: 10.w,
+                                height: 10.h,
                               ),
                               5.horizontalSpace,
                               MyTextWidget(
@@ -202,7 +202,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
             Form(
               key: _formkey,
               child: Padding(
-                padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+                padding: HWEdgeInsets.symmetric(horizontal: 20.h),
                 child: ValueListenableBuilder<bool>(
                   valueListenable: displaySubmit,
                   builder: (context, display, _) {
@@ -251,9 +251,9 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                       },
                       controller: form.controllers[0],
                       suffixIcon: Padding(
-                        padding: HWEdgeInsets.only(right: 20.0, top: 22),
+                        padding: HWEdgeInsets.only(right: 20.w, top: 22.h),
                         child: !display
-                            ? const SizedBox(width: 22, height: 15)
+                            ? SizedBox(width: 22.w, height: 15.h)
                             : InkWell(
                                 key: TestVariables.kTestMode
                                     ? const Key(
@@ -295,11 +295,11 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     updateNameLoading
-                                        ? TrydosLoader(size: 12)
+                                        ? TrydosLoader(size: 12.h)
                                         : SvgPicture.asset(
                                             AppAssets.submitArrowSvg,
-                                            width: 10,
-                                            height: 20,
+                                            width: 10.w,
+                                            height: 20.h,
                                           ),
                                   ],
                                 ),

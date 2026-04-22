@@ -35,9 +35,9 @@ class ProductDetailsChipWidget extends StatelessWidget {
         HelperFunctions.showDescriptionForProductDetails(context: context);
       },
       child: Container(
-        padding: const EdgeInsets.all(10.0),
+        padding: EdgeInsets.all(10.w),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(15.r),
           color: const Color(0xffFCFCFC),
         ),
         child: Column(
@@ -48,29 +48,29 @@ class ProductDetailsChipWidget extends StatelessWidget {
                 mediaServerIsS3
                     ? MyCachedNetworkImage(
                         imageUrl: descriptor!.descriptorGroup!.icon!,
-                        height: 11,
+                        height: 11.h,
                         imageFit: BoxFit.contain,
-                        width: 11,
+                        width: 11.w,
                       )
                     : SvgNetworkWidget(
                         svgUrl: descriptor!.descriptorGroup!.icon!,
                         color: const Color(0xff1D1D1D),
-                        width: 11,
-                        height: 11,
+                        width: 11.w,
+                        height: 11.h,
                       ),
                 const SizedBox(width: 5),
                 MyTextWidget(
                   descriptor!.descriptorGroup!.name!,
                   style: context.textTheme.titleSmall?.rq.copyWith(
                     color: const Color(0xff1D1D1D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                     height: 1.3,
                   ),
                 ),
               ],
             ),
             SizedBox(
-              height: 16,
+              height: 16.h,
               child: ListView.separated(
                 itemCount: descriptor!.descriptors!.length,
                 shrinkWrap: true,
@@ -98,9 +98,9 @@ class ProductDetailsChipWidget extends StatelessWidget {
                                         .descriptors![index]
                                         .descriptor!
                                         .icon!,
-                                    height: 11,
+                                    height: 11.h,
                                     imageFit: BoxFit.contain,
-                                    width: 11,
+                                    width: 11.w,
                                   )
                                 : SvgNetworkWidget(
                                     svgUrl: descriptor!
@@ -108,8 +108,8 @@ class ProductDetailsChipWidget extends StatelessWidget {
                                         .descriptor!
                                         .icon!,
                                     color: const Color(0xff1D1D1D),
-                                    width: 11,
-                                    height: 11,
+                                    width: 11.w,
+                                    height: 11.h,
                                   ),
                           ),
                         },

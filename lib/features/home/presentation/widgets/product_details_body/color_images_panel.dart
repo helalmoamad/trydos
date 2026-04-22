@@ -11,13 +11,14 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ColorImagesPanel extends StatelessWidget {
-  const ColorImagesPanel(
-      {super.key,
-      required this.panelController,
-      required this.productItem,
-      required this.currentActiveTab,
-      required this.panelControllerForCart,
-      required this.visibleRedeem});
+  const ColorImagesPanel({
+    super.key,
+    required this.panelController,
+    required this.productItem,
+    required this.currentActiveTab,
+    required this.panelControllerForCart,
+    required this.visibleRedeem,
+  });
   final ValueNotifier<bool> visibleRedeem;
   final PanelController panelController;
   final PanelController panelControllerForCart;
@@ -30,15 +31,18 @@ class ColorImagesPanel extends StatelessWidget {
       FlutterError.dumpErrorToConsole(error);
     };
     return SlidingUpPanel(
-        borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
-        minHeight: 0,
-        controller: panelController,
-        maxHeight: 1.sh - 70,
-        backdropEnabled: true,
-        panelBuilder: (scrollController) {
-          return panelBuilderContent(scrollController);
-        });
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20.r),
+        topRight: Radius.circular(20.r),
+      ),
+      minHeight: 0,
+      controller: panelController,
+      maxHeight: 1.sh - 70.h,
+      backdropEnabled: true,
+      panelBuilder: (scrollController) {
+        return panelBuilderContent(scrollController);
+      },
+    );
   }
 
   Widget panelBuilderContent(ScrollController sc) {
@@ -49,20 +53,18 @@ class ColorImagesPanel extends StatelessWidget {
         color: Colors.white,
       ),
       child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.w),
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.all(10),
-                height: 2,
-                width: 40,
-                decoration: const BoxDecoration(color: Color(0xffC4C2C2)),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Expanded(
-                  child: GridView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.all(10.w),
+              height: 2.h,
+              width: 40.w,
+              decoration: const BoxDecoration(color: const Color(0xffC4C2C2)),
+            ),
+            SizedBox(height: 5.h),
+            Expanded(
+              child: GridView.builder(
                 addAutomaticKeepAlives: false,
                 addRepaintBoundaries: false,
                 addSemanticIndexes: false,
@@ -70,17 +72,19 @@ class ColorImagesPanel extends StatelessWidget {
                 controller: sc,
                 itemCount: productItem.syncColorImages?.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisSpacing: 5,
-                    crossAxisSpacing: 5,
-                    childAspectRatio: 1.sw / (397 * 2),
-                    crossAxisCount: 2),
+                  mainAxisSpacing: 5.h,
+                  crossAxisSpacing: 5.w,
+                  childAspectRatio: 1.sw / (397.w * 2),
+                  crossAxisCount: 2,
+                ),
                 itemBuilder: (context, index) => Material(
                   color: Colors.transparent,
                   child: ProductColorPanal(
                     panelController: panelController,
                     panelControllerForCart: panelControllerForCart,
                     currentActiveTab: currentActiveTab,
-                    colorImages: productItem.syncColorImages?[index].images
+                    colorImages:
+                        productItem.syncColorImages?[index].images
                             ?.map((e) => e.filePath ?? "")
                             .toList() ??
                         [],
@@ -89,9 +93,11 @@ class ColorImagesPanel extends StatelessWidget {
                     fromDetailsPage: true,
                   ),
                 ),
-              ))
-            ],
-          )),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

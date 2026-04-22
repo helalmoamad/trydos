@@ -60,14 +60,14 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          Positioned(top: 50, left: 40, right: 40, child: logo),
+          Positioned(top: 50.h, left: 40.w, right: 40.w, child: logo),
           Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Spacer(),
               Padding(
-                padding: HWEdgeInsets.symmetric(horizontal: 40.0),
+                padding: HWEdgeInsets.symmetric(horizontal: 40.w),
                 child: Column(
                   children: [
                     Row(
@@ -75,8 +75,8 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                       children: [
                         SvgPicture.asset(
                           AppAssets.enterSvg,
-                          width: 15,
-                          height: 15,
+                          width: 15.w,
+                          height: 15.h,
                           // ignore: deprecated_member_use
                           color: const Color(0xff388CFF),
                         ),
@@ -97,8 +97,8 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                   padding: HWEdgeInsets.only(top: 3.0),
                                   child: SvgPicture.asset(
                                     AppAssets.phoneCallSvg,
-                                    width: 10,
-                                    height: 10,
+                                    width: 10.w,
+                                    height: 10.h,
                                   ),
                                 ),
                                 5.horizontalSpace,
@@ -115,12 +115,12 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                             ),
                             10.verticalSpace,
                             Padding(
-                              padding: HWEdgeInsets.only(left: 30.0),
+                              padding: HWEdgeInsets.only(left: 30.w),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding: HWEdgeInsets.only(left: 4.0),
+                                    padding: HWEdgeInsets.only(left: 4.w),
                                     child: MyTextWidget(
                                       LocaleKeys.hello.tr(),
                                       textAlign: TextAlign.start,

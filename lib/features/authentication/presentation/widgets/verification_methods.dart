@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
@@ -138,17 +139,13 @@ class _VerificationMethodsState extends State<VerificationMethods> {
   Widget buildLoadingOrTimer(SendOtpStatus status) {
     if (status == SendOtpStatus.loading) {
       return Container(
-        height: 40,
-        child: const Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xff388cff)),
-          ),
-        ),
+        height: 25.h,
+        child: Center(child: TrydosLoader(size: 16.h)),
       );
     } else if (status == SendOtpStatus.failure) {
       if (remainingSeconds > 0) {
         return Container(
-          height: 40,
+          height: 40.h,
           child: Center(
             child: MyTextWidget(
               '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()} ${remainingSeconds}s',
@@ -160,7 +157,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
         );
       } else {
         return Container(
-          height: 40,
+          height: 40.h,
           child: Center(
             child: InkWell(
               onTap: () {
@@ -169,13 +166,10 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                 }
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 8,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 3.h),
                 decoration: BoxDecoration(
                   color: const Color(0xff388cff),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: MyTextWidget(
                   LocaleKeys.resend_code.tr(),
@@ -232,7 +226,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                padding: HWEdgeInsets.symmetric(horizontal: 40.0),
+                padding: HWEdgeInsets.symmetric(horizontal: 40.w),
                 child: Column(
                   children: [
                     Row(
@@ -240,8 +234,8 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                       children: [
                         SvgPicture.asset(
                           AppAssets.phoneOtpSvg,
-                          width: 15,
-                          height: 15,
+                          width: 15.w,
+                          height: 15.h,
                         ),
                         10.horizontalSpace,
                         Column(
@@ -260,8 +254,8 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                   padding: HWEdgeInsets.only(top: 3.0),
                                   child: SvgPicture.asset(
                                     AppAssets.phoneCallSvg,
-                                    width: 10,
-                                    height: 10,
+                                    width: 10.w,
+                                    height: 10.h,
                                   ),
                                 ),
                                 5.horizontalSpace,
@@ -278,13 +272,13 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                   onTap: widget.goBackToPhone,
                                   child: Row(
                                     children: [
-                                      const SizedBox(width: 4),
+                                      SizedBox(width: 4.w),
                                       SvgPicture.asset(
                                         AppAssets.editPenSvg,
-                                        width: 10,
-                                        height: 10,
+                                        width: 10.w,
+                                        height: 10.h,
                                       ),
-                                      const SizedBox(width: 10),
+                                      SizedBox(width: 10.w),
                                     ],
                                   ),
                                 ),
@@ -295,8 +289,8 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                               children: [
                                 SvgPicture.asset(
                                   AppAssets.registerInfoSvg,
-                                  width: 10,
-                                  height: 10,
+                                  width: 10.w,
+                                  height: 10.h,
                                 ),
                                 5.horizontalSpace,
                                 MyTextWidget(
@@ -317,11 +311,11 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: 30.h),
               buildLoadingOrTimer(state.sendOtpStatus),
-              const SizedBox(height: 15),
+              SizedBox(height: 15.h),
               Padding(
-                padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+                padding: HWEdgeInsets.symmetric(horizontal: 20.w),
                 child: Row(
                   children: [
                     Expanded(
@@ -377,25 +371,25 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                 strokeCap: StrokeCap.round,
                                 strokeWidth: 0.5,
                                 dashPattern: const [3, 3],
-                                radius: const Radius.circular(20.0),
+                                radius: Radius.circular(20.r),
                                 color: index == 0
                                     ? const Color(0xff388cff)
                                     : const Color(0xffF5F5F5),
                                 child: Container(
-                                  height: 60,
+                                  height: 60.h,
                                   decoration: BoxDecoration(
                                     color: index == 0
                                         ? const Color(0xffffffff)
                                         : const Color(0xffF5F5F5),
-                                    borderRadius: BorderRadius.circular(20.0),
+                                    borderRadius: BorderRadius.circular(20.r),
                                   ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       SvgPicture.asset(
                                         AppAssets.whatsappSvg,
-                                        width: 20,
-                                        height: 20,
+                                        width: 20.w,
+                                        height: 20.h,
                                       ),
                                       10.horizontalSpace,
                                       MyTextWidget(
@@ -466,25 +460,25 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                 strokeCap: StrokeCap.round,
                                 strokeWidth: 0.5,
                                 dashPattern: const [3, 3],
-                                radius: const Radius.circular(20.0),
+                                radius: Radius.circular(20.r),
                                 color: index == 1
                                     ? const Color(0xff388cff)
                                     : const Color(0xffF5F5F5),
                                 child: Container(
-                                  height: 60,
+                                  height: 60.h,
                                   decoration: BoxDecoration(
                                     color: index == 1
                                         ? const Color(0xffffffff)
                                         : const Color(0xffF5F5F5),
-                                    borderRadius: BorderRadius.circular(20.0),
+                                    borderRadius: BorderRadius.circular(20.r),
                                   ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       SvgPicture.asset(
                                         AppAssets.smsSvg,
-                                        width: 20,
-                                        height: 20,
+                                        width: 20.w,
+                                        height: 20.h,
                                       ),
                                       10.horizontalSpace,
                                       MyTextWidget(

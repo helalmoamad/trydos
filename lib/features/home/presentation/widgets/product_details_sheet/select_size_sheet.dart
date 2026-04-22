@@ -131,19 +131,19 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                 // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.1),
                 offset: const Offset(0, -3),
-                blurRadius: 10,
+                blurRadius: 10.r,
               ),
             ],
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 5),
+              SizedBox(height: 5.h),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SvgPicture.asset(AppAssets.sizeIconSvg),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10.w),
                   MyTextWidget(
                     '${LocaleKeys.please_select_the_appropriate.tr()} ',
                     style: textTheme.titleLarge?.rq.copyWith(
@@ -162,28 +162,28 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                         ),
                 ],
               ),
-              const SizedBox(height: 5),
+              SizedBox(height: 5.h),
               SizedBox(
-                height: 8,
+                height: 8.h,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  padding: EdgeInsets.symmetric(horizontal: 40.w),
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: 100,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    separatorBuilder: (ctx, index) => const SizedBox(width: 6),
+                    separatorBuilder: (ctx, index) => SizedBox(width: 6.w),
                     itemBuilder: (ctx, index) {
                       if (index > 0 && index % 10 == 9) {
-                        return const SizedBox(width: 4);
+                        return SizedBox(width: 4.w);
                       }
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
                             color: const Color(0xff505050),
-                            width: 0.3,
-                            height: index > 0 && index % 10 == 4 ? 8 : 4.57,
+                            width: 0.3.w,
+                            height: index > 0 && index % 10 == 4 ? 8.h : 4.57.h,
                           ),
                         ],
                       );
@@ -192,7 +192,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
+                padding: EdgeInsets.symmetric(horizontal: 40.w),
                 child: ValueListenableBuilder<int>(
                   valueListenable: currentIndexInSizes,
                   builder: (context, currentIndex, _) {
@@ -202,8 +202,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                         Stack(
                           children: [
                             Container(
-                              height: 70,
-                              width: 70,
+                              height: 70.h,
+                              width: 70.w,
                               decoration: BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
@@ -222,10 +222,10 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                               ),
                             ),
                             Container(
-                              height: 70,
-                              width: 70,
+                              height: 70.h,
+                              width: 70.w,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(180),
+                                borderRadius: BorderRadius.circular(180.r),
                                 border: widget.selectedColor != null
                                     ? Border.all(
                                         color: widget.selectedColor!,
@@ -272,9 +272,9 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                             }
 
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              padding: EdgeInsets.symmetric(vertical: 5.h),
                               child: Container(
-                                width: 65,
+                                width: 65.w,
                                 child: GestureDetector(
                                   onTap: () =>
                                       carouselController.animateToPage(index),
@@ -318,7 +318,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                           },
                           options: CarouselOptions(
                             initialPage: currentIndexInSizes.value,
-                            height: 80,
+                            height: 80.h,
                             enableInfiniteScroll: false,
                             onPageChanged: (index, reason) {
                               currentIndexInSizes.value = index;
@@ -354,18 +354,18 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                 ),
               ),
               SizedBox(
-                height: 8,
+                height: 8.h,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  padding: EdgeInsets.symmetric(horizontal: 40.w),
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: 100,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    separatorBuilder: (ctx, index) => const SizedBox(width: 6),
+                    separatorBuilder: (ctx, index) => SizedBox(width: 6.w),
                     itemBuilder: (ctx, index) {
                       if (index > 0 && index % 10 == 9) {
-                        return const SizedBox(width: 4);
+                        return SizedBox(width: 4.w);
                       }
                       return Column(
                         mainAxisSize: MainAxisSize.min,
@@ -446,25 +446,25 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                   );
                 },
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      width: 1.sw - 120,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      width: 1.sw - 120.w,
+                      padding: EdgeInsets.symmetric(vertical: 15.h),
                       decoration: BoxDecoration(
                         color: const Color(0xffF8F8F8),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(20.r),
                       ),
                       child: Center(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             SvgPicture.asset(AppAssets.coloredSizeIconSvg),
-                            const SizedBox(width: 10),
+                            SizedBox(width: 10.w),
                             MyTextWidget(
                               '${LocaleKeys.need_help_finding_your_size.tr()}',
                               style: textTheme.titleLarge?.rq.copyWith(
@@ -475,13 +475,13 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10.w),
                     Container(
-                      width: 70,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      width: 70.w,
+                      padding: EdgeInsets.symmetric(vertical: 15.h),
                       decoration: BoxDecoration(
                         color: const Color(0xffF8F8F8),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(20.r),
                       ),
                       child: Center(
                         child: SvgPicture.asset(AppAssets.recyclingSvg),
@@ -490,7 +490,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                   ],
                 ),
               ),
-              const SizedBox(height: 18),
+              SizedBox(height: 18.h),
             ],
           ),
         );

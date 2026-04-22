@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:device_preview_plus/device_preview_plus.dart';
 import 'package:dio/dio.dart';
-
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -390,7 +389,7 @@ Map<String, VideoPlayerController> videoProductInListingController = {};
   }*/
 }*/
 
-int applicationVersion = 121;
+int applicationVersion = 125;
 request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();

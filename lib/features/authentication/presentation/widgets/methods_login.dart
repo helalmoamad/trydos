@@ -72,7 +72,7 @@ class _MethodsLoginState extends State<MethodsLogin> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Padding(
-            padding: HWEdgeInsets.symmetric(horizontal: 30.0),
+            padding: HWEdgeInsets.symmetric(horizontal: 30.w),
             child: MyTextWidget(
               LocaleKeys.welcome_page_description.tr(),
               textAlign: TextAlign.center,
@@ -130,14 +130,14 @@ class _MethodsLoginState extends State<MethodsLogin> {
               valueListenable: clickButton,
               builder: (context, index, _) {
                 return Padding(
-                  padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                  padding: HWEdgeInsets.fromLTRB(20.w, 0.0, 20.w, 0.0),
                   child: DottedBorder(
                     padding: EdgeInsets.zero,
                     strokeCap: StrokeCap.round,
                     strokeWidth: 0.5,
                     borderType: BorderType.RRect,
                     dashPattern: const [3, 3],
-                    radius: const Radius.circular(20.0),
+                    radius: Radius.circular(20.r),
                     color: index == 0
                         ? const Color(0xff707070)
                         : const Color(0xfffafafa),
@@ -148,7 +148,7 @@ class _MethodsLoginState extends State<MethodsLogin> {
                         color: index == 0
                             ? Colors.white
                             : const Color(0xfffafafa),
-                        borderRadius: BorderRadius.circular(20.0),
+                        borderRadius: BorderRadius.circular(20.r),
                       ),
                       child: Center(
                         child: MyTextWidget(
@@ -185,14 +185,14 @@ class _MethodsLoginState extends State<MethodsLogin> {
               valueListenable: clickButton,
               builder: (context, index, _) {
                 return Padding(
-                  padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                  padding: EdgeInsets.fromLTRB(20.w, 0.0, 20.w, 0.0),
                   child: DottedBorder(
                     padding: EdgeInsets.zero,
                     strokeCap: StrokeCap.round,
                     strokeWidth: 0.5,
                     borderType: BorderType.RRect,
                     dashPattern: const [3, 3],
-                    radius: const Radius.circular(20.0),
+                    radius: Radius.circular(20.r),
                     color: index == 1
                         ? const Color(0xff707070)
                         : const Color(0xfffafafa),
@@ -203,7 +203,7 @@ class _MethodsLoginState extends State<MethodsLogin> {
                         color: index == 1
                             ? Colors.white
                             : const Color(0xfffafafa),
-                        borderRadius: BorderRadius.circular(20.0),
+                        borderRadius: BorderRadius.circular(20.w),
                       ),
                       child: Center(
                         child: MyTextWidget(
@@ -265,7 +265,7 @@ class _MethodsLoginState extends State<MethodsLogin> {
               //////////////////////////
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              padding: EdgeInsets.symmetric(vertical: 10.h),
               child: MyTextWidget(
                 LocaleKeys.later_take_look.tr(),
                 textAlign: TextAlign.center,

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+
 import '../../../enums/status_code_type.dart';
 import '../api.dart';
 import '../client_config.dart';
@@ -50,7 +51,8 @@ class PostClient<T> extends BaseApi<T> {
     try {
       final baseUri = getBaseUriForSpecificServer(serverName);
       //todo just in case the server is Cloudinary i want to clear the header
-      if (serverName == ServerName.cloudinary) {
+      if (serverName == ServerName.cloudinary ||
+          serverName == ServerName.mediaServer) {
         options = Options();
         client.options.headers = {};
         // Fluttertoast.showToast(msg: client.options.headers.toString());
@@ -68,7 +70,7 @@ class PostClient<T> extends BaseApi<T> {
               receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
               sendTimeout: _sendTimeout ?? options.sendTimeout,
               headers: _extraHeaders != null
-                  ? (options.headers?..addAll(_extraHeaders))
+                  ? {...?options.headers, ..._extraHeaders}
                   : options.headers,
             ),
             data: _data,

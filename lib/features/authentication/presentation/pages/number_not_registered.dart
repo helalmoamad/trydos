@@ -51,7 +51,8 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
     );
     if (!_eventLogged) {
       FirebaseAnalyticsService.logEventForSession(
-        executedEventName: AnalyticsButtonsEventNameConst.LATER_TAKE_LOOK_BUTTON,
+        executedEventName:
+            AnalyticsButtonsEventNameConst.LATER_TAKE_LOOK_BUTTON,
         eventName: AnalyticsEventsConst.SCREEN_VIEW,
         extraParams: {
           'screen_name': AuthScreenConst.USER_NOT_FOUND_SCREEN,
@@ -109,7 +110,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                 child: Stack(
                   alignment: Alignment.bottomCenter,
                   children: [
-                    Positioned(top: 50, left: 40, right: 40, child: logo),
+                    Positioned(top: 50.h, left: 40.w, right: 40.w, child: logo),
                     PageView(
                       physics: const NeverScrollableScrollPhysics(),
                       controller: pageController,
@@ -120,7 +121,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                           children: [
                             const Spacer(),
                             Padding(
-                              padding: HWEdgeInsets.symmetric(horizontal: 40.0),
+                              padding: HWEdgeInsets.symmetric(horizontal: 40.h),
                               child: Column(
                                 children: [
                                   Row(
@@ -129,8 +130,8 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                     children: [
                                       SvgPicture.asset(
                                         AppAssets.registerInfoSvg,
-                                        width: 15,
-                                        height: 15,
+                                        width: 15.w,
+                                        height: 15.h,
                                         // ignore: deprecated_member_use
                                         color: const Color(0xffFCAC2D),
                                       ),
@@ -162,8 +163,8 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                                 ),
                                                 child: SvgPicture.asset(
                                                   AppAssets.phoneCallSvg,
-                                                  width: 10,
-                                                  height: 10,
+                                                  width: 10.w,
+                                                  height: 10.h,
                                                 ),
                                               ),
                                               5.horizontalSpace,
@@ -240,11 +241,13 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                               },
                               child: Container(
                                 width: 1.sw,
-                                height: 60,
-                                margin: HWEdgeInsets.symmetric(horizontal: 20),
+                                height: 60.h,
+                                margin: HWEdgeInsets.symmetric(
+                                  horizontal: 20.w,
+                                ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xffFAFAFA),
-                                  borderRadius: BorderRadius.circular(20.0),
+                                  borderRadius: BorderRadius.circular(20.r),
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -307,8 +310,9 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 ///////////////////
 
                                 FirebaseAnalyticsService.logEventForSession(
-                                  executedEventName: AnalyticsButtonsEventNameConst
-                                      .LATER_TAKE_LOOK_BUTTON,
+                                  executedEventName:
+                                      AnalyticsButtonsEventNameConst
+                                          .LATER_TAKE_LOOK_BUTTON,
                                   eventName: AnalyticsEventsConst
                                       .LATER_TAKE_LOOK_CLICKED,
                                   extraParams: {
@@ -321,9 +325,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 );
                               },
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10.0,
-                                ),
+                                padding: EdgeInsets.symmetric(vertical: 10.h),
                                 child: MyTextWidget(
                                   LocaleKeys.cancel.tr() +
                                       "&" +
@@ -337,7 +339,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 44),
+                            SizedBox(height: 44.h),
                           ],
                         ),
                         const AddingName(fromLogin: true),

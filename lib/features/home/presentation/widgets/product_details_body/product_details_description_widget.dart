@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
@@ -43,7 +44,7 @@ class _ProductDetailsDescriptionWidgetState
       text: TextSpan(
         text: plainText,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontSize: 11,
+          fontSize: 11.sp,
           height: 1.5,
           color: const Color(0xff1D1D1D),
         ),
@@ -63,7 +64,7 @@ class _ProductDetailsDescriptionWidgetState
       FlutterError.dumpErrorToConsole(error);
     };
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: LayoutBuilder(
         builder: (context, constraints) {
           needsExpansion = _checkTextOverflow(constraints.maxWidth);
@@ -78,7 +79,7 @@ class _ProductDetailsDescriptionWidgetState
                   "*": Style(
                     margin: Margins.zero,
                     padding: HtmlPaddings.zero,
-                    fontSize: FontSize(11),
+                    fontSize: FontSize(11.sp),
                     color: const Color(0xff1D1D1D),
                     lineHeight: const LineHeight(1.5),
                     maxLines: isExpandedNotifier.value ? null : 2,
@@ -120,9 +121,9 @@ class _ProductDetailsDescriptionWidgetState
                     isExpandedNotifier.value
                         ? "${LocaleKeys.read_less.tr()}"
                         : "${LocaleKeys.read_more.tr()}",
-                    style: const TextStyle(
-                      color: Color(0xff388CFF),
-                      fontSize: 11,
+                    style: TextStyle(
+                      color: const Color(0xff388CFF),
+                      fontSize: 11.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

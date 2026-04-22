@@ -79,9 +79,9 @@ class _ProductDetailsSheetShareContentState
                 AppAssets.shareSvg,
                 // ignore: deprecated_member_use
                 color: const Color(0xff505050),
-                height: 20,
+                height: 20.h,
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 10.w),
               MyTextWidget(
                 '${LocaleKeys.share_this_product_with.tr()}',
                 style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -112,8 +112,8 @@ class _ProductDetailsSheetShareContentState
               color: Colors.transparent,
               child: Padding(
                 padding: HWEdgeInsets.symmetric(
-                  horizontal: 20.0,
-                ).copyWith(bottom: 10),
+                  horizontal: 20.w,
+                ).copyWith(bottom: 10.h),
                 child: AppTextField(
                   filledColor: const Color(0xffF8F8F8),
                   bordersColor: const Color(0xffF8F8F8),
@@ -149,7 +149,10 @@ class _ProductDetailsSheetShareContentState
                     color: const Color(0xff8D8D8D),
                   ),
                   prefixIcon: Padding(
-                    padding: HWEdgeInsetsDirectional.only(top: 15, bottom: 15),
+                    padding: HWEdgeInsetsDirectional.only(
+                      top: 15.h,
+                      bottom: 15.h,
+                    ),
                     child: SvgPicture.asset(AppAssets.searchOutlinedSvg),
                   ),
                 ),
@@ -290,8 +293,8 @@ class ChatCardForShare extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: HWEdgeInsets.only(
-            right: (index != 4 && index != 9) ? 10 : 0,
-            top: index > 4 ? 20 : 0,
+            right: (index != 4 && index != 9) ? 10.h : 0,
+            top: index > 4 ? 20.h : 0,
           ),
           child: Stack(
             children: [
@@ -299,7 +302,7 @@ class ChatCardForShare extends StatelessWidget {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(20.r),
                       boxShadow: selected
                           ? null
                           : [
@@ -314,14 +317,14 @@ class ChatCardForShare extends StatelessWidget {
                           : null,
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(20.r),
                       child: Stack(
                         children: [
                           Opacity(
                             opacity: selected ? 0.5 : 1,
                             child: Container(
                               width: 70.w - (selected ? 2 : 0),
-                              height: 80 - (selected ? 2 : 0),
+                              height: 80.h - (selected ? 2 : 0),
                               decoration: const BoxDecoration(),
                               child: channelMember.user?.photoPath == null
                                   ? NoImageWidget(
@@ -342,17 +345,17 @@ class ChatCardForShare extends StatelessWidget {
                                       imageUrl: channelMember.user?.photoPath,
                                       imageFit: BoxFit.cover,
                                       width: 70.w - (selected ? 2 : 0),
-                                      height: 80 - (selected ? 2 : 0),
+                                      height: 80.h - (selected ? 2 : 0),
                                       imageWidth: 70.w - (selected ? 2 : 0),
-                                      imageHeight: 80 - (selected ? 2 : 0),
+                                      imageHeight: 80.h - (selected ? 2 : 0),
                                     ),
                             ),
                           ),
                           Container(
                             width: 70.w - (selected ? 2 : 0),
-                            height: 80 - (selected ? 2 : 0),
+                            height: 80.h - (selected ? 2 : 0),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20.0),
+                              borderRadius: BorderRadius.circular(20.r),
                               boxShadow: [
                                 BoxShadow(
                                   offset: const Offset(0, 3),
@@ -388,7 +391,7 @@ class ChatCardForShare extends StatelessWidget {
                       right: 0,
                       child: SvgPicture.asset(
                         AppAssets.shareSvg,
-                        height: 20,
+                        height: 20.h,
                         // ignore: deprecated_member_use
                         color: const Color(0xff0859D9),
                       ),

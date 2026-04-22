@@ -86,29 +86,29 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
           "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS4/////////////${state.currentSelectedColorForEveryProduct[widget.productItem.slug.toString()]} ${widget.productItem.slug.toString()} ${currentIndexInSlider}",
         );
         return Container(
-          margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-          height: 75,
+          margin: EdgeInsets.only(left: 10.w, right: 10.w, bottom: 10.h),
+          height: 76.h,
           width: 1.sw,
           decoration: BoxDecoration(
             color: const Color(0xffFCFCFC),
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(15.r),
           ),
           child: Row(
             children: [
               Container(
-                width: 120,
-                padding: const EdgeInsets.all(10),
-                height: 75,
+                width: 120.w,
+                padding: EdgeInsets.all(10.w),
+                height: 76.h,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SvgPicture.asset(AppAssets.colorPickerSvg, height: 20),
+                    SvgPicture.asset(AppAssets.colorPickerSvg, height: 20.h),
                     MyTextWidget(
                       '${LocaleKeys.available.tr()} ${syncColorImageList!.length} ${LocaleKeys.n_color.tr()}',
                       style: textTheme.titleLarge?.rq.copyWith(
                         color: const Color(0xff1D1D1D),
-                        fontSize: 9,
+                        fontSize: 9.sp,
                       ),
                     ),
                     Row(
@@ -117,14 +117,14 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
                           '${syncColorImageList!.length} ',
                           style: textTheme.titleLarge?.bq.copyWith(
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                         MyTextWidget(
                           '${LocaleKeys.color_available.tr()}',
                           style: textTheme.titleLarge?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
-                            fontSize: 11,
+                            fontSize: 11.sp,
                           ),
                         ),
                       ],
@@ -133,8 +133,8 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
                 ),
               ),
               Container(
-                width: 1.sw - 160,
-                height: 75,
+                width: 1.sw - 160.w,
+                height: 75.h,
                 child: Directionality(
                   textDirection: LanguageService.languageCode == "ar"
                       ? ui.TextDirection.ltr
@@ -194,9 +194,9 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
                         child: Stack(
                           children: [
                             ProductListingImageWidget(
-                              width: 55,
-                              height: 75,
-                              radius: 6,
+                              width: 55.w,
+                              height: 75.h,
+                              radius: 6.r,
                               withBackGroundShadow: true,
                               imageUrl: images[index],
                               innerShadowYOffset: 4,

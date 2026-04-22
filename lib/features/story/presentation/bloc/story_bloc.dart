@@ -9,6 +9,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -16,6 +17,7 @@ import 'package:mime_type/mime_type.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/domin/usecases/upload_file_media_server_usecase.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/features/story/domain/useCases/get_stories_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
@@ -25,6 +27,7 @@ import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart'
 import 'package:trydos/features/story/domain/useCases/delete_story_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/main.dart';
 import '../../data/models/get_stories_model.dart';
 import '../../domain/useCases/add_story_to_our_server_usecase.dart';
 
@@ -42,6 +45,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
   final GetStoryUseCase getStoryUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
+  final UploadFileMediaServerUseCase uploadFileMediaServerUseCase;
   final UploadStoryUseCase uploadStoryUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final AddStoryToOurServerUseCase addStoryToOurServerUseCase;
@@ -55,6 +59,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     this.uploadStoryUseCase,
     this.increaseViewersUseCase,
     this.addStoryToOurServerUseCase,
+    this.uploadFileMediaServerUseCase,
     this.deleteStoryUseCase,
   ) : super(StoryState()) {
     on<UploadStoryEvent>(_uploadStoryEvent);
@@ -114,72 +119,105 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.loading,
       ),
     );
-    final response = await uploadFileCloudinaryUseCase(
-      UploadFileCloudinaryParams(
-        file: event.file,
-        usingOnUploadingFinishedFunction: false,
-        usingSendProgressFunction: false,
-      ),
-    );
-    // Fluttertoast.showToast(msg: 'tosss');
-    response.fold(
-      (l) {
-        if (ErrorManager.shouldRetry(
-          'UploadStoryCloudinaryEvent',
-          l.statusCode,
-        )) {
-          ErrorManager.incrementRetry('UploadStoryCloudinaryEvent');
+    if (mediaServerIsS3) {
+      final response = await uploadFileMediaServerUseCase(
+        UploadFileMediaServerParams(
+          file: event.file,
+          usingOnUploadingFinishedFunction: false,
+          usingSendProgressFunction: false,
+        ),
+      );
 
-          GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
-          return;
-        }
-        emit(
-          state.copyWith(
-            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure,
-          ),
-        );
+      response.fold(
+        (l) {
+          if (ErrorManager.shouldRetry(
+            'UploadStoryCloudinaryEvent',
+            l.statusCode,
+          )) {
+            ErrorManager.incrementRetry('UploadStoryCloudinaryEvent');
 
-        ///////////////////////////
-        // FirebaseAnalyticsService.logEventForSession(
-        //   eventName: AnalyticsEventsConst.programmingEvent,
-        //   executedEventName: AnalyticsButtonsEventNameConst.uploadStoryFailed,
-        // );
-        // Fluttertoast.showToast(
-        //     msg: l.message,
-        //     textColor: Colors.white,
-        //     toastLength: Toast.LENGTH_LONG);
-      },
-      (r) async {
-        ErrorManager.resetRetry('UploadStoryCloudinaryEvent');
-        String fileName = event.file.path.split('/').last;
-        String mimeType = mime(fileName) ?? '';
-        String mimee = mimeType.split('/')[0];
-        bool isVideoFile;
+            GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
+            return;
+          }
+          emit(
+            state.copyWith(
+              uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure,
+            ),
+          );
+        },
+        (r) async {
+          ErrorManager.resetRetry('UploadStoryCloudinaryEvent');
+          String fileName = event.file.path.split('/').last;
+          String mimeType = mime(fileName) ?? '';
+          String mimee = mimeType.split('/')[0];
+          bool isVideoFile;
 
-        if (mimee == 'image') {
-          isVideoFile = false;
-        } else {
-          isVideoFile = true;
-        }
-        //   HelperFunctions.urlToFile(r.secureUrl!).then((value) {
-        add(
-          AddStoryToOurServerEvent(
-            path: r.secureUrl!,
-            //   file: value,
-            isVideo: isVideoFile ? 1 : 0,
-            width: r.width,
-            height: r.height,
-          ),
-        );
-        // });
+          if (mimee == 'image') {
+            isVideoFile = false;
+          } else {
+            isVideoFile = true;
+          }
 
-        ///////////////////////////
-        // FirebaseAnalyticsService.logEventForSession(
-        //   eventName: AnalyticsEventsConst.programmingEvent,
-        //   executedEventName: AnalyticsButtonsEventNameConst.uploadStorySuccess,
-        // );
-      },
-    );
+          add(
+            AddStoryToOurServerEvent(
+              path: r.url!,
+              durationSeconds: r.durationSeconds,
+              isVideo: isVideoFile ? 1 : 0,
+            ),
+          );
+        },
+      );
+    } else {
+      final response = await uploadFileCloudinaryUseCase(
+        UploadFileCloudinaryParams(
+          file: event.file,
+          usingOnUploadingFinishedFunction: false,
+          usingSendProgressFunction: false,
+        ),
+      );
+
+      response.fold(
+        (l) {
+          if (ErrorManager.shouldRetry(
+            'UploadStoryCloudinaryEvent',
+            l.statusCode,
+          )) {
+            ErrorManager.incrementRetry('UploadStoryCloudinaryEvent');
+
+            GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
+            return;
+          }
+          emit(
+            state.copyWith(
+              uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure,
+            ),
+          );
+        },
+        (r) async {
+          ErrorManager.resetRetry('UploadStoryCloudinaryEvent');
+          String fileName = event.file.path.split('/').last;
+          String mimeType = mime(fileName) ?? '';
+          String mimee = mimeType.split('/')[0];
+          bool isVideoFile;
+
+          if (mimee == 'image') {
+            isVideoFile = false;
+          } else {
+            isVideoFile = true;
+          }
+
+          add(
+            AddStoryToOurServerEvent(
+              path: r.secureUrl!,
+
+              isVideo: isVideoFile ? 1 : 0,
+              width: r.width,
+              height: r.height,
+            ),
+          );
+        },
+      );
+    }
   }
 
   _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async {
@@ -422,9 +460,13 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
   ) async {
     final response = await addStoryToOurServerUseCase.call(
       (AddStoryToOurServerParams(
-        filePath: event.path,
+        filePath: mediaServerIsS3
+            ? "${dotenv.env['MEDIA_SERVER_URL']}${event.path}"
+            : event.path,
+
         isVideo: event.isVideo,
         link: state.storyLink,
+        durationSeconds: event.durationSeconds,
       )),
     );
     response.fold(
@@ -451,6 +493,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
               path: event.path,
               isVideo: event.isVideo,
               width: event.width,
+              durationSeconds: event.durationSeconds,
               height: event.height,
             ),
           );
@@ -491,8 +534,16 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           oneLink: state.storyLink,
           isVideo: isVideoFile ? 1 : 0,
           isPhoto: !isVideoFile ? 1 : 0,
-          photoPath: !isVideoFile ? event.path : null,
-          fullVideoPath: isVideoFile ? event.path : null,
+          photoPath: !isVideoFile
+              ? mediaServerIsS3
+                    ? "${dotenv.env['MEDIA_SERVER_URL']}${event.path}"
+                    : event.path
+              : null,
+          fullVideoPath: isVideoFile
+              ? mediaServerIsS3
+                    ? "${dotenv.env['MEDIA_SERVER_URL']}${event.path}"
+                    : event.path
+              : null,
         );
         r.fold(
           (id) {

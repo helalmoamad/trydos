@@ -24,6 +24,7 @@ import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection_page_view.dart';
 import 'package:trydos/features/story/presentation/widget/story_item_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/main.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -405,14 +406,24 @@ class _StoriesListState extends State<StoriesList> {
 
                                 String? imageOfVideoUrl;
                                 if (initialStory.isPhoto != 1) {
-                                  int index = initialStory.fullVideoPath!
-                                      .lastIndexOf('.');
-                                  imageOfVideoUrl =
-                                      initialStory.fullVideoPath!.substring(
-                                        0,
-                                        index,
-                                      ) +
-                                      '.png';
+                                  if (mediaServerIsS3 &&
+                                      !(initialStory.fullVideoPath?.contains(
+                                            "res.cloudinary.com",
+                                          ) ??
+                                          true)) {
+                                    imageOfVideoUrl =
+                                        initialStory.fullVideoPath! +
+                                        "?target=snapshot";
+                                  } else {
+                                    int index = initialStory.fullVideoPath!
+                                        .lastIndexOf('.');
+                                    imageOfVideoUrl =
+                                        initialStory.fullVideoPath!.substring(
+                                          0,
+                                          index,
+                                        ) +
+                                        '.png';
+                                  }
                                 }
                                 return AnimatedPadding(
                                   duration: const Duration(milliseconds: 200),

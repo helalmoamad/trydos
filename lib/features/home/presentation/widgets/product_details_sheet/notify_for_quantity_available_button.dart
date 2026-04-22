@@ -116,8 +116,8 @@ class _NotifyWhenQuantityAvailableButtonState
               return Transform.translate(
                 offset: Offset(sineValue * 3, 0),
                 child: SizedBox(
-                  width: 1.sw - 40,
-                  height: 70,
+                  width: 1.sw - 40.w,
+                  height: 70.h,
                   child: Stack(
                     alignment: Alignment.topRight,
                     children: [
@@ -181,7 +181,7 @@ class _NotifyWhenQuantityAvailableButtonState
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.fastLinearToSlowEaseIn,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(20.r),
                             border: Border.all(
                               color: isVariantRequestNotification
                                   ? const Color(0xff513AAF)
@@ -193,7 +193,7 @@ class _NotifyWhenQuantityAvailableButtonState
                           ),
                           child: Center(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              padding: EdgeInsets.symmetric(vertical: 10.h),
                               child: Column(
                                 children: [
                                   Row(
@@ -217,7 +217,7 @@ class _NotifyWhenQuantityAvailableButtonState
                                                         .notificationIconSvg
                                                   : AppAssets
                                                         .notificationOutlinedIconSvg,
-                                              height: 20,
+                                              height: 20.h,
                                               // ignore: deprecated_member_use
                                               color:
                                                   !isVariantRequestNotification
@@ -227,13 +227,13 @@ class _NotifyWhenQuantityAvailableButtonState
                                       const Spacer(),
                                     ],
                                   ),
-                                  const SizedBox(height: 5),
+                                  SizedBox(height: 5.h),
                                   if (!isVariantRequestNotification) ...{
                                     MyTextWidget(
                                       '${LocaleKeys.notify_me_when_quantity_is_available.tr()}',
                                       style: textTheme.titleMedium?.rq.copyWith(
                                         height: 15 / 12,
-                                        fontSize: 15,
+                                        fontSize: 15.sp,
                                         color: const Color(0xffFCFCFC),
                                       ),
                                       textAlign: TextAlign.center,
@@ -247,7 +247,7 @@ class _NotifyWhenQuantityAvailableButtonState
                                           '${LocaleKeys.we_will_inform_you_when_a.tr()} ',
                                           style: textTheme.titleMedium?.rq
                                               .copyWith(
-                                                fontSize: 15,
+                                                fontSize: 15.sp,
                                                 height: 15 / 12,
                                                 color: const Color(0xff513AAF),
                                               ),
@@ -256,7 +256,7 @@ class _NotifyWhenQuantityAvailableButtonState
                                           '${LocaleKeys.quantity_is_available.tr()}',
                                           style: textTheme.titleMedium?.rq
                                               .copyWith(
-                                                fontSize: 15,
+                                                fontSize: 15.sp,
                                                 height: 15 / 12,
                                                 color: const Color(0xff513AAF),
                                               ),
@@ -271,14 +271,14 @@ class _NotifyWhenQuantityAvailableButtonState
                         ),
                       ),
                       Positioned(
-                        top: -35,
-                        right: -35,
+                        top: -35.h,
+                        right: -35.w,
                         child: Container(
-                          width: 55,
-                          height: 55,
+                          width: 55.w,
+                          height: 55.h,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(20.r),
                             border: Border.all(
                               color: isVariantRequestNotification
                                   ? const Color(0xff513AAF)
@@ -291,7 +291,7 @@ class _NotifyWhenQuantityAvailableButtonState
                         isVariantRequestNotification
                             ? AppAssets.notificationOutlinedIconSvg
                             : AppAssets.notificationIconSvg,
-                        height: 15,
+                        height: 15.h,
                         // ignore: deprecated_member_use
                         color: !isVariantRequestNotification
                             ? const Color(0xff513AAF)

@@ -55,12 +55,12 @@ class GlobaleInfoProduct extends StatelessWidget {
               countOfPersonRating = countOfPersonRating + (element.count ?? 0);
             }));
         return Padding(
-          padding: const EdgeInsetsGeometry.symmetric(
-            horizontal: 20,
-            vertical: 10,
+          padding: EdgeInsetsGeometry.symmetric(
+            horizontal: 20.w,
+            vertical: 10.h,
           ),
           child: SizedBox(
-            height: 14,
+            height: 14.h,
             width: 1.sw,
             child: ListView(
               scrollDirection: Axis.horizontal,
@@ -68,12 +68,12 @@ class GlobaleInfoProduct extends StatelessWidget {
                 InkWell(
                   onTap: () => panelController.open(),
                   child: StarRatingProductWidget(
-                    itemHeight: 13,
-                    itemSize: 14,
-                    itemWidth: 14,
-                    widgetHeight: 14,
-                    widgetWidth: 71,
-                    svgWidth: 12,
+                    itemHeight: 13.h,
+                    itemSize: 14.sp,
+                    itemWidth: 14.w,
+                    widgetHeight: 14.h,
+                    widgetWidth: 71.w,
+                    svgWidth: 12.w,
                     isInteractive: false,
                     onRatingChanged: (p0) {},
                     initialRating:
@@ -96,7 +96,7 @@ class GlobaleInfoProduct extends StatelessWidget {
                         style: context.textTheme.titleMedium?.bq.copyWith(
                           height: 1.45,
                           color: const Color(0xff1D1D1D),
-                          fontSize: 9,
+                          fontSize: 9.sp,
                         ),
                       ),
                 countOfPersonRating == 0
@@ -106,7 +106,7 @@ class GlobaleInfoProduct extends StatelessWidget {
                         style: context.textTheme.titleMedium?.rq.copyWith(
                           height: 1.45,
                           color: const Color(0xff1D1D1D),
-                          fontSize: 9,
+                          fontSize: 9.sp,
                         ),
                       ),
                 /*state.getAndAddCountViewOfProductStatus[productId] == null ||
@@ -136,8 +136,8 @@ class GlobaleInfoProduct extends StatelessWidget {
                               null
                         : true)
                     ? Container(
-                        width: 18,
-                        height: 18,
+                        width: 18.w,
+                        height: 18.h,
                         child: Shimmer.fromColors(
                           baseColor: Colors.grey.shade400,
                           highlightColor: Colors.grey.shade100,
@@ -148,10 +148,10 @@ class GlobaleInfoProduct extends StatelessWidget {
                         children: [
                           SvgPicture.asset(
                             AppAssets.eyeSvg,
-                            height: 11,
+                            height: 11.h,
                             // ignore: deprecated_member_use
                             color: const Color(0xff1D1D1D),
-                            width: 11,
+                            width: 11.w,
                           ),
                           const SizedBox(width: 2),
                           MyTextWidget(
@@ -172,7 +172,7 @@ class GlobaleInfoProduct extends StatelessWidget {
                             style: context.textTheme.titleMedium?.rq.copyWith(
                               height: 1.4,
                               color: const Color(0xff1D1D1D),
-                              fontSize: 9,
+                              fontSize: 9.sp,
                             ),
                           ),
                         ],
@@ -200,7 +200,7 @@ class GlobaleInfoProduct extends StatelessWidget {
                               style: context.textTheme.titleMedium?.rq.copyWith(
                                 height: 1.4,
                                 color: const Color(0xff1D1D1D),
-                                fontSize: 9,
+                                fontSize: 9.sp,
                               ),
                             )
                           : const SizedBox.shrink()
@@ -226,7 +226,7 @@ class GlobaleInfoProduct extends StatelessWidget {
                         style: context.textTheme.titleMedium?.rq.copyWith(
                           height: 1.4,
                           color: const Color(0xff1D1D1D),
-                          fontSize: 9,
+                          fontSize: 9.sp,
                         ),
                       ),
                 state
@@ -241,13 +241,13 @@ class GlobaleInfoProduct extends StatelessWidget {
                         style: context.textTheme.titleMedium?.rq.copyWith(
                           height: 1.4,
                           color: const Color(0xff1D1D1D),
-                          fontSize: 9,
+                          fontSize: 9.sp,
                         ),
                       ),
                 CountryFlag.fromCountryCode(
                   "TR",
-                  height: 10,
-                  width: 15,
+                  height: 10.h,
+                  width: 15.w,
                   borderRadius: 4.r,
                 ),
                 const SizedBox(width: 2),
@@ -256,7 +256,7 @@ class GlobaleInfoProduct extends StatelessWidget {
                   style: context.textTheme.titleMedium?.rq.copyWith(
                     height: 1.4,
                     color: const Color(0xff1D1D1D),
-                    fontSize: 9,
+                    fontSize: 9.sp,
                   ),
                 ),
               ],

@@ -51,58 +51,61 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
       FlutterError.dumpErrorToConsole(error);
     };
     return FutureBuilder(
-        future: initializeVideo,
-        builder: (context, snapShot) {
-          if (snapShot.connectionState == ConnectionState.done) {
-            return GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => {},
-              child: Stack(
-                children: [
-                  Container(
-                    width: 135.w,
-                    height: 194,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: colorScheme.white),
-                      borderRadius: BorderRadius.circular(30.0.r),
-                      boxShadow: [
-                        BoxShadow(
-                          // ignore: deprecated_member_use
-                          color: colorScheme.black.withOpacity(0.1),
-                          offset: const Offset(0, 3),
-                          blurRadius: 6,
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(30.0.r),
-                        child: VideoPlayer(_controller!)),
+      future: initializeVideo,
+      builder: (context, snapShot) {
+        if (snapShot.connectionState == ConnectionState.done) {
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => {},
+            child: Stack(
+              children: [
+                Container(
+                  width: 135.w,
+                  height: 194.h,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: colorScheme.white),
+                    borderRadius: BorderRadius.circular(30.0.r),
+                    boxShadow: [
+                      BoxShadow(
+                        // ignore: deprecated_member_use
+                        color: colorScheme.black.withOpacity(0.1),
+                        offset: const Offset(0, 3),
+                        blurRadius: 6,
+                      ),
+                    ],
                   ),
-                  Container(
-                    height: 194,
-                    width: 135.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30.0.r),
-                      boxShadow: [
-                        BoxShadow(
-                            color: colorScheme.white,
-                            offset: const Offset(0, 3),
-                            blurRadius: 3,
-                            inset: true),
-                      ],
-                    ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(30.0.r),
+                    child: VideoPlayer(_controller!),
                   ),
-                ],
-              ),
-            );
-          }
-          return TrydosShimmerLoading(
-            width: 135.w,
-            height: 194,
-            radius: 30.r,
-            logoTextHeight: 14,
-            logoTextWidth: 48.w,
+                ),
+                Container(
+                  height: 194,
+                  width: 135.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30.0.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.white,
+                        offset: const Offset(0, 3),
+                        blurRadius: 3,
+                        inset: true,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           );
-        });
+        }
+        return TrydosShimmerLoading(
+          width: 135.w,
+          height: 194.h,
+          radius: 30.r,
+          logoTextHeight: 14.h,
+          logoTextWidth: 48.w,
+        );
+      },
+    );
   }
 }

@@ -953,7 +953,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   Widget buildBagItemsWidget(BuildContext context) {
     return Container(
-      height: 200.h,
+      height: 210.h,
       width: 1.sw,
       child: Column(
         children: [
@@ -987,10 +987,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
           ),
           Container(
             margin: EdgeInsets.only(
-              left: (LanguageService.languageCode == "ar") ? 0 : 10,
-              right: (LanguageService.languageCode == "ar") ? 10 : 0,
+              left: (LanguageService.languageCode == "ar") ? 0 : 10.w,
+              right: (LanguageService.languageCode == "ar") ? 10 : 0.w,
             ),
-            height: 160.h,
+            height: 165.h,
             child: ListView.separated(
               separatorBuilder: (context, index) => const SizedBox(width: 5),
               scrollDirection: Axis.horizontal,
