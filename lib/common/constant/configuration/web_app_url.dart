@@ -13,6 +13,7 @@ abstract class WebAppEndPoints {
   static String translateCommentsToAppLanEP(String commentId) =>
       "public_comment/comments/${commentId}/translate";
   static const mainCategoriesEP = "api/home/mainCategories";
+  static const getPopularSearchTermsEP = "api/products/popular-search";
   static const editSocialProductEP = "api/editSocialProduct";
   static const homeBoutiquesEP = "api/home/boutiques";
   static const searchProductEP = "api/products/searchInCatalog";

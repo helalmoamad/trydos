@@ -917,9 +917,9 @@ class HomeRemoteDatasource {
   Future<PopularSearchTermsModel> getPopularSearchTerms() {
     GetClient<PopularSearchTermsModel> getPopularSearchTerms =
         GetClient<PopularSearchTermsModel>(
-          serverName: ServerName.elastic,
+          serverName: ServerName.webApp,
           requestPrams: RequestConfig<PopularSearchTermsModel>(
-            endpoint: ElasticEndPoints.getPopularSearchTermsEP,
+            endpoint: WebAppEndPoints.getPopularSearchTermsEP,
             response: ResponseValue<PopularSearchTermsModel>(
               fromJson: (response) =>
                   PopularSearchTermsModel.fromJson(response),
