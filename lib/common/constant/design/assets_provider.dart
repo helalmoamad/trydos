@@ -338,6 +338,16 @@ abstract class AppAssets {
   static String get rateGoldSvg => 'rate_gold'.order_svg;
   static String get rateBlueSvg => 'rate_blue'.order_svg;
   static String get whiteBagSvg => 'white_bag'.order_svg;
+  static String get cartCart => 'CCaer'.svg;
+  static String get certificataBlack => 'certificataBlack'.svg;
+  static String get certificataGrey => 'certificataGrey'.svg;
+  static String get manpackBlack => 'manpackBlack'.svg;
+  static String get manpackGray => 'manpackGray'.svg;
+  static String get trueBlack => 'trueBlack'.svg;
+  static String get womanpackBlack => 'womanpackBlack'.svg;
+  static String get womanpackGrey => 'womanpackGrey'.svg;
+  static String get BlackAlarm => 'BlackAlarm'.svg;
+  static String get BagwhiteSvg => 'whiteBBag'.svg;
 
   ///endregion
 

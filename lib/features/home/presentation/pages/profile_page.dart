@@ -34,6 +34,7 @@ import 'package:trydos/features/authentication/presentation/widgets/verification
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 import 'package:trydos/features/dashBoard/presentation/bloc/dashBoard_bloc.dart'
     as dashboard;
+import 'package:trydos/features/dashBoard/presentation/pages/SelectShopForOrderPage.dart';
 import 'package:trydos/features/dashBoard/presentation/pages/select_shop_page.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/presentation/pages/become_seller/become_seller_page.dart';
@@ -172,6 +173,55 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                   children: [
                     SizedBox(height: 18.h, width: 1.sw),
                     _personInfoWidget(),
+                    SizedBox(height: 18.h, width: 1.sw),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const SelectShopForOrderPage(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10.r),
+
+                        height: 94.h,
+                        width: 1.sw,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1D1D1D),
+                          borderRadius: BorderRadius.circular(15.r),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SvgPicture.asset(
+                              AppAssets.BagwhiteSvg,
+                              width: 25.w,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              "Sales",
+                              style: TextStyle(
+                                color: const Color(0xFFFCFCFC),
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: 10.h),
+                            Text(
+                              "1 Action",
+                              style: TextStyle(
+                                color: const Color(0xFFFCFCFC),
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     SizedBox(height: 18.h, width: 1.sw),
                     Container(
                       width: 1.sw,

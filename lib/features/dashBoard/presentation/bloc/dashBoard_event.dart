@@ -23,6 +23,15 @@ class AddUserEvent extends DashBoardEvent {
   });
 }
 
+class ChangeOrderDetailStatusEvent extends DashBoardEvent {
+  final int order_detail_id;
+  final String status;
+  ChangeOrderDetailStatusEvent({
+    required this.order_detail_id,
+    required this.status,
+  });
+}
+
 class GetBoutiquesEvent extends DashBoardEvent {
   final int page;
   GetBoutiquesEvent({this.page = 1});
@@ -31,6 +40,11 @@ class GetBoutiquesEvent extends DashBoardEvent {
 class GetOrdersEvent extends DashBoardEvent {
   final int page;
   GetOrdersEvent({this.page = 1});
+}
+
+class NewGetOrdersEvent extends DashBoardEvent {
+  final int page;
+  NewGetOrdersEvent({this.page = 1});
 }
 
 class GetProductsEvent extends DashBoardEvent {

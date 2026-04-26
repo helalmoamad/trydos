@@ -8,6 +8,10 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/change_orderDetail_to_packed_useCase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/change_order_detail_status.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/newGetUserOrders_useCase.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:trydos/features/dashBoard/data/models/get_user_permission_model.dart';
@@ -49,6 +53,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   final GetUsersUseCase getUsersUseCase;
   final AddUserUseCase addUserUseCase;
   final GetOrdersUseCase getOrdersUseCase;
+  final NewGetOrdersUseCase newGetOrdersUseCase;
   final GetProductsUseCase getProductsUseCase;
   final GetBoutiquesUseCase getBoutiquesUseCase;
   final ChangeOrderStatusUseCase changeOrderStatusUseCase;
@@ -60,6 +65,10 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   final SubmitVendorRequestUseCase submitVendorRequestUseCase;
   final GetVendorRequestUseCase getVendorRequestUseCase;
   final UpdateVendorRequestUseCase updateVendorRequestUseCase;
+  final ChangeOrderDetailStatusToConfirmedUseCase
+  changeOrderDetailStatusToConfirmedUseCase;
+  final ChangeOrderDetailStatusToPackedUseCase
+  changeOrderDetailStatusToPackedUseCase;
 
   DashboardBloc(
     this.getUserPermissionUseCase,
@@ -78,12 +87,17 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     this.submitVendorRequestUseCase,
     this.getVendorRequestUseCase,
     this.updateVendorRequestUseCase,
+    this.newGetOrdersUseCase,
+    this.changeOrderDetailStatusToConfirmedUseCase,
+    this.changeOrderDetailStatusToPackedUseCase,
   ) : super(DashBoardState()) {
     on<GetOrdersEvent>(_onGetOrdersEvent);
+    on<NewGetOrdersEvent>(_onNewGetOrdersEvent);
     on<GetProductsEvent>(_onGetProductsEvent);
     on<GetBoutiquesEvent>(_onGetBoutiquesEvent);
     on<ChangeOrderStatusEvent>(_onChangeOrderStatusEvent);
     on<GetUserPermissionEvent>(_onGetUserPermissionEvent);
+    on<ChangeOrderDetailStatusEvent>(_onChangeOrderDetailStatus);
     on<GetUserRolesEvent>(_onGetUserRolesEvent);
     on<GetUsersEvent>(_onGetUsersEvent);
     on<AddUserEvent>(_onAddUserEvent);
@@ -96,6 +110,8 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     on<UpdateVendorRequestEvent>(_onUpdateVendorRequestEvent);
     on<ResetVendorRequestStatesEvent>(_onResetVendorRequestStatesEvent);
   }
+
+  String? ordersStatus;
 
   FutureOr<void> _onGetUserPermissionEvent(
     GetUserPermissionEvent event,
@@ -314,6 +330,155 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
         );
       },
     );
+  }
+
+  FutureOr<void> _onNewGetOrdersEvent(
+    NewGetOrdersEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(state.copyWith(newGetOrdersStatus: NewGetOrdersStatus.loading));
+
+    final response = await newGetOrdersUseCase(
+      NewGetOrdersParams(page: event.page, status: ordersStatus),
+    );
+    response.fold(
+      (l) {
+        emit((state.copyWith(newGetOrdersStatus: NewGetOrdersStatus.failure)));
+      },
+      (r) {
+        emit(
+          (state.copyWith(
+            new_orders: r.data.orders,
+            newOrdersMeta: r.data.meta,
+            newOrdersUserAbilities: r.data.userAbilities,
+            newGetOrdersStatus: NewGetOrdersStatus.success,
+          )),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onChangeOrderDetailStatus(
+    ChangeOrderDetailStatusEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        changeOrderDetailStatusStatus: ChangeOrderDetailStatusStatus.loading,
+      ),
+    );
+
+    final normalizedStatus = event.status.toLowerCase();
+    final response = normalizedStatus == 'packed'
+        ? await changeOrderDetailStatusToPackedUseCase(
+            ChangeOrderDetailStatusToPackedParams(
+              orderDetailId: event.order_detail_id,
+            ),
+          )
+        : await changeOrderDetailStatusToConfirmedUseCase(
+            ChangeOrderDetailStatusParams(orderDetailId: event.order_detail_id),
+          );
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            changeOrderDetailStatusStatus:
+                ChangeOrderDetailStatusStatus.failure,
+          ),
+        );
+        showMessage(l.message, hasError: true);
+      },
+      (r) {
+        final updatedOrders = r.hasContent
+            ? r.data.orders
+            : _applyOrderDetailStatusToExistingOrders(
+                state.new_orders,
+                event.order_detail_id,
+                normalizedStatus,
+              );
+
+        emit(
+          state.copyWith(
+            new_orders: updatedOrders,
+            newOrdersMeta: r.hasContent ? r.data.meta : state.newOrdersMeta,
+            newOrdersUserAbilities: r.hasContent
+                ? r.data.userAbilities
+                : state.newOrdersUserAbilities,
+            changeOrderDetailStatusStatus:
+                ChangeOrderDetailStatusStatus.success,
+          ),
+        );
+        showMessage(r.message);
+      },
+    );
+  }
+
+  List<UserOrderNew>? _applyOrderDetailStatusToExistingOrders(
+    List<UserOrderNew>? orders,
+    int orderDetailId,
+    String status,
+  ) {
+    if (orders == null) {
+      return null;
+    }
+
+    return orders.map((order) {
+      final updatedDetails = order.details.map((detail) {
+        if (detail.id != orderDetailId) {
+          return detail;
+        }
+
+        return OrderDetail(
+          id: detail.id,
+          orderId: detail.orderId,
+          cartImage: detail.cartImage,
+          brandIcon: detail.brandIcon,
+          qty: detail.qty,
+          unitPrice: detail.unitPrice,
+          isConfirm: status == 'confirmed' ? true : detail.isConfirm,
+          isPacked: status == 'packed' ? true : detail.isPacked,
+          productName: detail.productName,
+          color: detail.color,
+          size: detail.size,
+        );
+      }).toList();
+
+      final updatedOrderStatus = _deriveOrderStatusFromDetails(
+        order.orderStatus,
+        updatedDetails,
+      );
+
+      return UserOrderNew(
+        id: order.id,
+        orderStatus: updatedOrderStatus,
+        details: updatedDetails,
+        orderAmount: order.orderAmount,
+        createdAt: order.createdAt,
+        items: order.items,
+        remainingInMinutes: order.remainingInMinutes,
+        availableOrderStatusChange: order.availableOrderStatusChange,
+      );
+    }).toList();
+  }
+
+  String _deriveOrderStatusFromDetails(
+    String currentStatus,
+    List<OrderDetail> details,
+  ) {
+    if (details.isEmpty) {
+      return currentStatus;
+    }
+
+    final hasPendingConfirmation = details.any(
+      (detail) => !detail.isConfirm && !detail.isPacked,
+    );
+
+    if (hasPendingConfirmation) {
+      return 'pending';
+    }
+
+    return 'packaged';
   }
 
   FutureOr<void> _onGetProductsEvent(

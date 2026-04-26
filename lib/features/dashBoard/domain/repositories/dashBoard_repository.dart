@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
+import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.dart';
@@ -24,6 +25,9 @@ abstract class DashBoardRepository {
   Future<Either<Failure, GetSellerProductsModel>> getProducts({int page = 1});
   Future<Either<Failure, GetSellerBoutiquesModel>> getBoutiques({int page = 1});
   Future<Either<Failure, GetSellerOrdersModel>> getOrders({int page = 1});
+  Future<Either<Failure, NewOrdersResponse>> ChangeOrderDetailStatusToConfirmed(Map<String, dynamic> params); 
+  Future<Either<Failure, NewOrdersResponse>> ChangeOrderDetailStatusToPacked(Map<String, dynamic> params);
+  Future<Either<Failure, NewOrdersResponse>> newGetOrders({int page = 1, String? status});
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> changeOrderStatus(
     Map<String, dynamic> params,
   );

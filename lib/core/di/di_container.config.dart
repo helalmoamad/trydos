@@ -142,8 +142,12 @@ import '../../features/dashBoard/data/repositories/dashBoard_repository_impl.dar
 import '../../features/dashBoard/domain/repositories/dashBoard_repository.dart'
     as _i70;
 import '../../features/dashBoard/domain/useCase/add_user_usecase.dart' as _i602;
+import '../../features/dashBoard/domain/useCase/change_order_detail_status.dart'
+    as _i553;
 import '../../features/dashBoard/domain/useCase/change_order_status_usecase.dart'
     as _i645;
+import '../../features/dashBoard/domain/useCase/change_orderDetail_to_packed_useCase.dart'
+    as _i288;
 import '../../features/dashBoard/domain/useCase/delete_user_usecase.dart'
     as _i441;
 import '../../features/dashBoard/domain/useCase/get_boutiques_usecase.dart'
@@ -164,6 +168,8 @@ import '../../features/dashBoard/domain/useCase/get_vendor_request_usecase.dart'
     as _i135;
 import '../../features/dashBoard/domain/useCase/leave_shop_usecase.dart'
     as _i858;
+import '../../features/dashBoard/domain/useCase/newGetUserOrders_useCase.dart'
+    as _i129;
 import '../../features/dashBoard/domain/useCase/submit_vendor_request_usecase.dart'
     as _i916;
 import '../../features/dashBoard/domain/useCase/update_user_role_usecase.dart'
@@ -816,6 +822,16 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i602.AddUserUseCase>(
     () => _i602.AddUserUseCase(gh<_i70.DashBoardRepository>()),
   );
+  gh.factory<_i288.ChangeOrderDetailStatusToPackedUseCase>(
+    () => _i288.ChangeOrderDetailStatusToPackedUseCase(
+      gh<_i70.DashBoardRepository>(),
+    ),
+  );
+  gh.factory<_i553.ChangeOrderDetailStatusToConfirmedUseCase>(
+    () => _i553.ChangeOrderDetailStatusToConfirmedUseCase(
+      gh<_i70.DashBoardRepository>(),
+    ),
+  );
   gh.factory<_i645.ChangeOrderStatusUseCase>(
     () => _i645.ChangeOrderStatusUseCase(gh<_i70.DashBoardRepository>()),
   );
@@ -848,6 +864,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i858.LeaveShopUseCase>(
     () => _i858.LeaveShopUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i129.NewGetOrdersUseCase>(
+    () => _i129.NewGetOrdersUseCase(gh<_i70.DashBoardRepository>()),
   );
   gh.factory<_i916.SubmitVendorRequestUseCase>(
     () => _i916.SubmitVendorRequestUseCase(gh<_i70.DashBoardRepository>()),
@@ -985,6 +1004,29 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i1021.GetUserNotificationUseCase>(),
     ),
   );
+  gh.lazySingleton<_i976.DashboardBloc>(
+    () => _i976.DashboardBloc(
+      gh<_i652.GetUserPermissionUseCase>(),
+      gh<_i246.GetUserRolesUseCase>(),
+      gh<_i900.GetUsersUseCase>(),
+      gh<_i602.AddUserUseCase>(),
+      gh<_i919.GetOrdersUseCase>(),
+      gh<_i51.GetProductsUseCase>(),
+      gh<_i412.GetBoutiquesUseCase>(),
+      gh<_i645.ChangeOrderStatusUseCase>(),
+      gh<_i441.DeleteUserUseCase>(),
+      gh<_i1023.UpdateUserRoleUseCase>(),
+      gh<_i858.LeaveShopUseCase>(),
+      gh<_i781.GetPresignedUrlUseCase>(),
+      gh<_i282.UploadFileToS3UseCase>(),
+      gh<_i976.SubmitVendorRequestUseCase>(),
+      gh<_i135.GetVendorRequestUseCase>(),
+      gh<_i388.UpdateVendorRequestUseCase>(),
+      gh<_i129.NewGetOrdersUseCase>(),
+      gh<_i553.ChangeOrderDetailStatusToConfirmedUseCase>(),
+      gh<_i288.ChangeOrderDetailStatusToPackedUseCase>(),
+    ),
+  );
   gh.factory<_i661.AnswerCallUseCase>(
     () => _i661.AnswerCallUseCase(gh<_i1032.CallsRepository>()),
   );
@@ -1077,26 +1119,6 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i217.CancelReturnRequestProductUseCase>(),
       gh<_i799.UpdateReturnRequestProductUseCase>(),
       gh<_i182.OrderReturnDetailsUseCase>(),
-    ),
-  );
-  gh.lazySingleton<_i976.DashboardBloc>(
-    () => _i976.DashboardBloc(
-      gh<_i652.GetUserPermissionUseCase>(),
-      gh<_i246.GetUserRolesUseCase>(),
-      gh<_i900.GetUsersUseCase>(),
-      gh<_i602.AddUserUseCase>(),
-      gh<_i919.GetOrdersUseCase>(),
-      gh<_i51.GetProductsUseCase>(),
-      gh<_i412.GetBoutiquesUseCase>(),
-      gh<_i645.ChangeOrderStatusUseCase>(),
-      gh<_i441.DeleteUserUseCase>(),
-      gh<_i1023.UpdateUserRoleUseCase>(),
-      gh<_i858.LeaveShopUseCase>(),
-      gh<_i781.GetPresignedUrlUseCase>(),
-      gh<_i282.UploadFileToS3UseCase>(),
-      gh<_i976.SubmitVendorRequestUseCase>(),
-      gh<_i135.GetVendorRequestUseCase>(),
-      gh<_i388.UpdateVendorRequestUseCase>(),
     ),
   );
   gh.lazySingleton<_i561.AuthBloc>(
