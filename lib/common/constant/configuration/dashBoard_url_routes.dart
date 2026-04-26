@@ -17,6 +17,10 @@ abstract class DashBoardEndPoints {
   static final getProducts = 'products'.shopScope();
   static final getBoutiques = 'boutiques'.shopScope();
   static final getOrders = 'orders'.shopScope();
+  static final changeOrderDetailStatusToConfirm =
+      'orders/details/status/confirmed'.shopScope();
+  static final changeOrderDetailStatusToPacked = 'orders/details/status/packed'
+      .shopScope();
   static final changeOrderStatus = 'orders/status'.shopScope();
   static final getUserRolesEP = 'roles'.usersScope();
   static String deleteUserEP(String userId) => '$userId/delete'.usersScope();

@@ -9,6 +9,7 @@ import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/core/api/methods/post.dart';
 import 'package:trydos/core/api/methods/put.dart';
 import 'package:trydos/core/api/methods/delete.dart';
+import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.dart';
@@ -153,6 +154,55 @@ class DashBoardRemoteDataSource {
         queryParameters: {'page': page.toString()},
         response: ResponseValue<GetSellerOrdersModel>(
           fromJson: (response) => GetSellerOrdersModel.fromJson(response),
+        ),
+      ),
+    );
+    return getOrders();
+  }
+
+  Future<NewOrdersResponse> newGetOrders({int page = 1, String? status}) {
+    GetClient<NewOrdersResponse> getOrders = GetClient<NewOrdersResponse>(
+      serverName: ServerName.dashBoard,
+      requestPrams: RequestConfig<NewOrdersResponse>(
+        endpoint: DashBoardEndPoints.getOrders,
+        queryParameters: {
+          'page': page.toString(),
+          if (status != null) 'status': status,
+        },
+        response: ResponseValue<NewOrdersResponse>(
+          fromJson: (response) => NewOrdersResponse.fromJson(response),
+        ),
+      ),
+    );
+    return getOrders();
+  }
+
+  Future<NewOrdersResponse> ChangeOrderDetailStatusToConfirmed(
+    Map<String, dynamic> params,
+  ) {
+    PutClient<NewOrdersResponse> getOrders = PutClient<NewOrdersResponse>(
+      serverName: ServerName.dashBoard,
+      requestPrams: RequestConfig<NewOrdersResponse>(
+        endpoint: DashBoardEndPoints.changeOrderDetailStatusToConfirm,
+        data: params,
+        response: ResponseValue<NewOrdersResponse>(
+          fromJson: (response) => NewOrdersResponse.fromJson(response),
+        ),
+      ),
+    );
+    return getOrders();
+  }
+
+  Future<NewOrdersResponse> ChangeOrderDetailStatusToPacked(
+    Map<String, dynamic> params,
+  ) {
+    PutClient<NewOrdersResponse> getOrders = PutClient<NewOrdersResponse>(
+      serverName: ServerName.dashBoard,
+      requestPrams: RequestConfig<NewOrdersResponse>(
+        endpoint: DashBoardEndPoints.changeOrderDetailStatusToPacked,
+        data: params,
+        response: ResponseValue<NewOrdersResponse>(
+          fromJson: (response) => NewOrdersResponse.fromJson(response),
         ),
       ),
     );

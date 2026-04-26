@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/api.dart';
 import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/features/dashBoard/data/data_source/dashBoard_remote_data_source_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.dart';
@@ -71,6 +72,35 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   Future<Either<Failure, GetSellerOrdersModel>> getOrders({int page = 1}) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getOrders(page: page),
+    );
+  }
+
+  @override
+  Future<Either<Failure, NewOrdersResponse>> newGetOrders({
+    int page = 1,
+    String? status,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.newGetOrders(page: page, status: status),
+    );
+  }
+
+  @override
+  Future<Either<Failure, NewOrdersResponse>> ChangeOrderDetailStatusToConfirmed(
+    Map<String, dynamic> params 
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () =>
+          dataSource.ChangeOrderDetailStatusToConfirmed(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, NewOrdersResponse>> ChangeOrderDetailStatusToPacked(
+    Map<String, dynamic> params
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.ChangeOrderDetailStatusToPacked(params),
     );
   }
 

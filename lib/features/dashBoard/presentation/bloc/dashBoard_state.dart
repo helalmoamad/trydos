@@ -10,6 +10,10 @@ enum GetBoutiquesStatus { init, loading, success, failure }
 
 enum GetOrdersStatus { init, loading, success, failure }
 
+enum NewGetOrdersStatus { init, loading, success, failure }
+
+enum ChangeOrderDetailStatusStatus { init, loading, success, failure }
+
 enum GetProductsStatus { init, loading, success, failure }
 
 enum GetUsersStatus { init, loading, success, failure }
@@ -25,7 +29,9 @@ enum LeaveShopStatus { init, loading, success, failure }
 enum UploadDocumentStatus { init, loading, success, failure }
 
 enum SubmitVendorRequestStatus { init, loading, success, failure }
+
 enum GetVendorRequestStatus { init, loading, success, failure }
+
 enum UpdateVendorRequestStatus { init, loading, success, failure }
 
 @immutable
@@ -34,6 +40,8 @@ class DashBoardState extends Equatable {
   final GetUserRolesStatus getUserRolesStatus;
   final GetBoutiquesStatus getBoutiquesStatus;
   final GetOrdersStatus getOrdersStatus;
+  final NewGetOrdersStatus newGetOrdersStatus;
+  final ChangeOrderDetailStatusStatus changeOrderDetailStatusStatus;
   final GetProductsStatus getProductsStatus;
   final GetUsersStatus getUsersStatus;
   final ChangeOrderStatusStatus changeOrderStatusStatus;
@@ -53,14 +61,20 @@ class DashBoardState extends Equatable {
   final List<boutiques_model.Boutique>? boutiques;
   final boutiques_model.Meta? boutiquesMeta;
   final List<orders_model.UserOrder>? orders;
+  final List<UserOrderNew>? new_orders;
   final orders_model.Meta? ordersMeta;
+  final newMeta? newOrdersMeta;
   final orders_model.UserAbilities? ordersUserAbilities;
+  final newUserAbilities? newOrdersUserAbilities;
   final List<products_model.Product>? products;
   final products_model.Meta? productsMeta;
   final List<users_model.User>? users;
   final users_model.Meta? usersMeta;
   DashBoardState({
+    this.changeOrderDetailStatusStatus = ChangeOrderDetailStatusStatus.init,
+    this.new_orders,
     this.getUserPermissionStatus = GetUserPermissionStatus.init,
+    this.newGetOrdersStatus = NewGetOrdersStatus.init,
     this.getUserRolesStatus = GetUserRolesStatus.init,
     this.addUserStatus = AddUserStatus.init,
     this.getBoutiquesStatus = GetBoutiquesStatus.init,
@@ -84,6 +98,8 @@ class DashBoardState extends Equatable {
     this.orders,
     this.ordersMeta,
     this.ordersUserAbilities,
+    this.newOrdersMeta,
+    this.newOrdersUserAbilities,
     this.products,
     this.productsMeta,
     this.users,
@@ -91,8 +107,14 @@ class DashBoardState extends Equatable {
     this.rolesMeta,
   });
   DashBoardState copyWith({
+    ChangeOrderDetailStatusStatus? changeOrderDetailStatusStatus,
+    newMeta? newOrdersMeta,
+    orders_model.Meta? ordersMeta,
+    orders_model.UserAbilities? ordersUserAbilities,
+    newUserAbilities? newOrdersUserAbilities,
     GetUserPermissionStatus? getUserPermissionStatus,
     GetUserRolesStatus? getUserRolesStatus,
+    NewGetOrdersStatus? newGetOrdersStatus,
     GetBoutiquesStatus? getBoutiquesStatus,
     GetOrdersStatus? getOrdersStatus,
     GetProductsStatus? getProductsStatus,
@@ -114,16 +136,19 @@ class DashBoardState extends Equatable {
     List<boutiques_model.Boutique>? boutiques,
     boutiques_model.Meta? boutiquesMeta,
     List<orders_model.UserOrder>? orders,
-    orders_model.Meta? ordersMeta,
-    orders_model.UserAbilities? ordersUserAbilities,
+    List<UserOrderNew>? new_orders,
     List<products_model.Product>? products,
     products_model.Meta? productsMeta,
     List<users_model.User>? users,
     users_model.Meta? usersMeta,
   }) {
     return DashBoardState(
+      newOrdersMeta: newOrdersMeta ?? this.newOrdersMeta,
+      newOrdersUserAbilities:
+          newOrdersUserAbilities ?? this.newOrdersUserAbilities,
       getUserPermissionStatus:
           getUserPermissionStatus ?? this.getUserPermissionStatus,
+      newGetOrdersStatus: newGetOrdersStatus ?? this.newGetOrdersStatus,
       getUserRolesStatus: getUserRolesStatus ?? this.getUserRolesStatus,
       getBoutiquesStatus: getBoutiquesStatus ?? this.getBoutiquesStatus,
       getOrdersStatus: getOrdersStatus ?? this.getOrdersStatus,
@@ -150,6 +175,7 @@ class DashBoardState extends Equatable {
       boutiques: boutiques ?? this.boutiques,
       boutiquesMeta: boutiquesMeta ?? this.boutiquesMeta,
       orders: orders ?? this.orders,
+      new_orders: new_orders ?? this.new_orders,
       ordersMeta: ordersMeta ?? this.ordersMeta,
       ordersUserAbilities: ordersUserAbilities ?? this.ordersUserAbilities,
       products: products ?? this.products,
@@ -163,6 +189,8 @@ class DashBoardState extends Equatable {
   List<Object?> get props => [
     getUserPermissionStatus,
     getUserRolesStatus,
+    newGetOrdersStatus,
+    changeOrderDetailStatusStatus,
     getBoutiquesStatus,
     getOrdersStatus,
     getProductsStatus,
@@ -184,8 +212,11 @@ class DashBoardState extends Equatable {
     boutiques,
     boutiquesMeta,
     orders,
+    new_orders,
     ordersMeta,
     ordersUserAbilities,
+    newOrdersMeta,
+    newOrdersUserAbilities,
     products,
     productsMeta,
     users,
