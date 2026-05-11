@@ -116,7 +116,7 @@ class Data {
               (x) => ProductSyncColorImage.fromJson(x),
             ),
           ),
-    collectedAfterOrdering: json["collected_after_ordering"],
+    collectedAfterOrdering: json["packed_after_ordering"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -132,7 +132,7 @@ class Data {
     "sync_color_images": syncColorImages == null
         ? []
         : List<dynamic>.from(syncColorImages!.map((x) => x.toJson())),
-    "collected_after_ordering": collectedAfterOrdering,
+    "packed_after_ordering": collectedAfterOrdering,
   };
 }
 

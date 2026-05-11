@@ -316,7 +316,7 @@ class Product {
     boutique: json["boutique"] == null
         ? null
         : BoutiqueForCart.fromJson(json["boutique"]),
-    collectedAfterOrdering: json["collected_after_ordering"],
+    collectedAfterOrdering: json["packed_after_ordering"],
     price: (json["price"] ?? 0).toDouble(),
     /*  comments: json["comments"] == null
           ? []
@@ -432,7 +432,7 @@ class Product {
         : List<dynamic>.from(labelNames!.map((x) => x)),
 
     "flash_deal_end_date": flashDealEndDate,
-    "collected_after_ordering": collectedAfterOrdering,
+    "packed_after_ordering": collectedAfterOrdering,
     "comment_offset": commentOffset,
     "size_analysis": sizeAnalysis?.toJson(),
     "owner_type": ownerType,
