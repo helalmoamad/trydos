@@ -457,7 +457,7 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                                             index: entry.key + 1,
                                             context: context,
                                             imageUrl:
-                                                dotenv.env['Images_Url']! +
+                                                // dotenv.env['Images_Url']! +
                                                 entry.value.cartImage,
                                             brand: entry.value.brandIcon,
                                             title: entry.value.productName,

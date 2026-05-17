@@ -52,7 +52,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import 'package:trydos/service/language_service.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import 'package:trydos_wallet/trydos_wallet.dart';
+// import 'package:trydos_wallet/trydos_wallet.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../manager/orderBloc/order_bloc.dart';
 import 'Order/orders_page.dart';
@@ -66,6 +66,7 @@ class ProfileHomePage extends StatefulWidget {
 
 class _ProfileHomePageState extends State<ProfileHomePage> {
   late HomeBloc homeBloc;
+  late dashboard.DashboardBloc dashboardBloc;
   late AuthBloc authBloc;
   late OrderBloc orderBloc;
   final PanelController panelController = PanelController();
@@ -75,7 +76,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   int isVisWhatsApp = 0;
   final ValueNotifier<bool> isVerified = ValueNotifier(true);
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
-  late StreamSubscription walletEvents;
+  // late StreamSubscription walletEvents;
 
   // لإدارة الموارد بشكل آمن
   bool _isWalletInitialized = false;
@@ -84,6 +85,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     LastPagesTracker.push("ProfileHome Page");
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    dashboardBloc = BlocProvider.of<dashboard.DashboardBloc>(context);
     //authBloc.add(CreateWalletEvent());
     orderBloc = BlocProvider.of<OrderBloc>(context);
     homeBloc.add(
@@ -97,30 +99,30 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     authBloc.add(GetCustomerInfoEvent());
     orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
-    walletEvents = authEvents.listen((evt) async {
-      if (evt.toString() == 'AuthEvent.unauthenticated' &&
-          (prefsRepository.isVerifiedPhone ?? false)) {
-        prefsRepository.setVerifiedPhone(false);
-        prefsRepository.setVerifiedPhonePeforeExpiredToken(true);
-        await Future.delayed(const Duration(seconds: 1));
+    // walletEvents = authEvents.listen((evt) async {
+    //   if (evt.toString() == 'AuthEvent.unauthenticated' &&
+    //       (prefsRepository.isVerifiedPhone ?? false)) {
+    //     prefsRepository.setVerifiedPhone(false);
+    //     prefsRepository.setVerifiedPhonePeforeExpiredToken(true);
+    //     await Future.delayed(const Duration(seconds: 1));
 
-        // استخدم SchedulerBinding لتأخير العملية بعد انتهاء البناء
-        if (mounted) {
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            if (mounted && Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            }
-          });
-        }
+    //     // استخدم SchedulerBinding لتأخير العملية بعد انتهاء البناء
+    //     if (mounted) {
+    //       SchedulerBinding.instance.addPostFrameCallback((_) {
+    //         if (mounted && Navigator.of(context).canPop()) {
+    //           Navigator.of(context).pop();
+    //         }
+    //       });
+    //     }
 
-        await Future.delayed(const Duration(seconds: 1));
-        isVerified.value = false;
+    //     await Future.delayed(const Duration(seconds: 1));
+    //     isVerified.value = false;
 
-        authBloc.add(
-          SendOtpEvent(phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1),
-        );
-      }
-    });
+    //     authBloc.add(
+    //       SendOtpEvent(phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1),
+    //     );
+    //   }
+    // });
 
     // لاحقًا إذا لم تعد بحاجة:
 
@@ -130,7 +132,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
 
   @override
   void dispose() {
-    walletEvents.cancel();
+    // walletEvents.cancel();
 
     // تنظيف موارد المحفظة
     _cleanupWallet();
@@ -174,54 +176,96 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     SizedBox(height: 18.h, width: 1.sw),
                     _personInfoWidget(),
                     SizedBox(height: 18.h, width: 1.sw),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const SelectShopForOrderPage(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(10.r),
 
-                        height: 94.h,
-                        width: 1.sw,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1D1D1D),
-                          borderRadius: BorderRadius.circular(15.r),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SvgPicture.asset(
-                              AppAssets.BagwhiteSvg,
-                              width: 25.w,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              "Sales",
-                              style: TextStyle(
-                                color: const Color(0xFFFCFCFC),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w500,
+                    BlocBuilder<
+                      dashboard.DashboardBloc,
+                      dashboard.DashBoardState
+                    >(
+                      buildWhen: (previous, current) =>
+                          previous.getUserPermissionStatus !=
+                          current.getUserPermissionStatus,
+                      builder: (context, state) {
+                        if (state.getUserPermissionStatus ==
+                            dashboard.GetUserPermissionStatus.loading) {
+                          return Shimmer.fromColors(
+                            baseColor: Colors.grey[200]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(
+                              width: 1.sw,
+                              height: 54.h,
+                              decoration: BoxDecoration(
+                                color: const Color(0xffFAFAFA),
+                                borderRadius: BorderRadius.circular(15.r),
                               ),
                             ),
-                            SizedBox(height: 10.h),
-                            Text(
-                              "1 Action",
-                              style: TextStyle(
-                                color: const Color(0xFFFCFCFC),
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w500,
+                          );
+                        }
+                        if (state.getUserPermissionStatus ==
+                                dashboard.GetUserPermissionStatus.success &&
+                            (!(state.shops?.isNullOrEmpty ?? true))) {
+                          return InkWell(
+                            onTap: () {
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) =>
+                              //         const SelectShopForOrderPage(),
+                              //   ),
+                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SelectShopPage(),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(10.h),
+                              height: 130.h,
+                              width: 1.sw,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1D1D1D),
+                                borderRadius: BorderRadius.circular(15.r),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SvgPicture.asset(
+                                    AppAssets.BagwhiteSvg,
+                                    width: 25.w,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    LocaleKeys.Sellers.tr(),
+                                    style: TextStyle(
+                                      color: const Color(0xFFFCFCFC),
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10.h),
+                                  BlocBuilder<OrderBloc, OrderState>(
+                                    builder: (context, state) {
+                                      return Text(
+                                        "${state.orderTotalSize} ${LocaleKeys.action.tr()}",
+                                        style: TextStyle(
+                                          color: const Color(0xFFFCFCFC),
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
+                          );
+                        }
+
+                        return const SizedBox.shrink();
+                      },
                     ),
+
                     SizedBox(height: 18.h, width: 1.sw),
                     Container(
                       width: 1.sw,
@@ -232,51 +276,51 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       ),
                     ),
                     SizedBox(height: 10.h, width: 1.sw),
-                    BlocBuilder<
-                      dashboard.DashboardBloc,
-                      dashboard.DashBoardState
-                    >(
-                      buildWhen: (previous, current) =>
-                          previous.getUserPermissionStatus !=
-                          current.getUserPermissionStatus,
-                      builder: (context, state) {
-                        return state.getUserPermissionStatus ==
-                                dashboard.GetUserPermissionStatus.loading
-                            ? Shimmer.fromColors(
-                                baseColor: Colors.grey[200]!,
-                                highlightColor: Colors.grey[100]!,
-                                child: Container(
-                                  width: 1.sw,
-                                  height: 54.h,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xffFAFAFA),
-                                    borderRadius: BorderRadius.circular(15.r),
-                                  ),
-                                ),
-                              )
-                            : (state.getUserPermissionStatus ==
-                                      dashboard
-                                          .GetUserPermissionStatus
-                                          .success &&
-                                  (!(state.shops?.isNullOrEmpty ?? true)))
-                            ? InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const SelectShopPage(),
-                                    ),
-                                  );
-                                },
-                                child: _actionWidget(
-                                  AppAssets.marketSvg,
-                                  LocaleKeys.go_to_seller_dashboard.tr(),
-                                ),
-                              )
-                            : const SizedBox.shrink();
-                      },
-                    ),
+                    // BlocBuilder<
+                    //   dashboard.DashboardBloc,
+                    //   dashboard.DashBoardState
+                    // >(
+                    //   buildWhen: (previous, current) =>
+                    //       previous.getUserPermissionStatus !=
+                    //       current.getUserPermissionStatus,
+                    //   builder: (context, state) {
+                    //     return state.getUserPermissionStatus ==
+                    //             dashboard.GetUserPermissionStatus.loading
+                    //         ? Shimmer.fromColors(
+                    //             baseColor: Colors.grey[200]!,
+                    //             highlightColor: Colors.grey[100]!,
+                    //             child: Container(
+                    //               width: 1.sw,
+                    //               height: 54.h,
+                    //               decoration: BoxDecoration(
+                    //                 color: const Color(0xffFAFAFA),
+                    //                 borderRadius: BorderRadius.circular(15.r),
+                    //               ),
+                    //             ),
+                    //           )
+                    //         : (state.getUserPermissionStatus ==
+                    //                   dashboard
+                    //                       .GetUserPermissionStatus
+                    //                       .success &&
+                    //               (!(state.shops?.isNullOrEmpty ?? true)))
+                    //         ? InkWell(
+                    //             onTap: () {
+                    //               Navigator.push(
+                    //                 context,
+                    //                 MaterialPageRoute(
+                    //                   builder: (context) =>
+                    //                       const SelectShopPage(),
+                    //                 ),
+                    //               );
+                    //             },
+                    //             child: _actionWidget(
+                    //               AppAssets.marketSvg,
+                    //               LocaleKeys.go_to_seller_dashboard.tr(),
+                    //             ),
+                    //           )
+                    //         : const SizedBox.shrink();
+                    //   },
+                    // ),
                     SizedBox(height: 10.h, width: 1.sw),
                     BlocBuilder<
                       dashboard.DashboardBloc,
@@ -874,7 +918,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           ),
           child: InkWell(
             onTap: () {
-              _initializeAndOpenWallet();
+              // _initializeAndOpenWallet();
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1264,45 +1308,46 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   }*/
 
   /// فتح المحفظة بشكل آمن مع ضمان الإغلاق
-  Future<void> _initializeAndOpenWallet() async {
-    if (!mounted) return;
+  //   Future<void> _initializeAndOpenWallet() async {
+  //     if (!mounted) return;
 
-    try {
-      // تهيئة المحفظة
-      TrydosWallet.init(
-        TrydosWalletConfig(
-          baseUrl: dotenv.env['WALLET_URL'] ?? '', // رابط الـ API
-          token: prefsRepository.walletToken, // استخدم القيمة الفعلية
-          languageCode: LanguageService.languageCode, // استخدم اللغة الحالية
-          allowBadCertificate: true, // true للتطوير فقط عند خطأ SSL
-        ),
-      );
+  //     try {
+  //       // تهيئة المحفظة
+  //       TrydosWallet.init(
+  //         TrydosWalletConfig(
+  //           baseUrl: dotenv.env['WALLET_URL'] ?? '', // رابط الـ API
+  //           token: prefsRepository.walletToken, // استخدم القيمة الفعلية
+  //           languageCode: LanguageService.languageCode, // استخدم اللغة الحالية
+  //           allowBadCertificate: true, // true للتطوير فقط عند خطأ SSL
+  //         ),
+  //       );
 
-      _isWalletInitialized = true;
+  //       _isWalletInitialized = true;
 
-      // فتح المحفظة
-      if (mounted) {
-        await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => BlocProvider(
-              create: (context) => WalletBloc(),
-              child: const TrydosWalletWelcomeScreen(),
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      print('Error initializing wallet: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('خطأ في فتح المحفظة: $e')));
-      }
-    } finally {
-      // التأكد من تنظيف الموارد حتى عند حدوث خطأ
-      if (_isWalletInitialized && !mounted) {
-        await _cleanupWallet();
-      }
-    }
-  }
+  //       // فتح المحفظة
+  //       if (mounted) {
+  //         await Navigator.of(context).push(
+  //           MaterialPageRoute(
+  //             builder: (context) => BlocProvider(
+  //               create: (context) => WalletBloc(),
+  //               child: const TrydosWalletWelcomeScreen(),
+  //             ),
+  //           ),
+  //         );
+  //       }
+  //     } catch (e) {
+  //       print('Error initializing wallet: $e');
+  //       if (mounted) {
+  //         ScaffoldMessenger.of(
+  //           context,
+  //         ).showSnackBar(SnackBar(content: Text('خطأ في فتح المحفظة: $e')));
+  //       }
+  //     } finally {
+  //       // التأكد من تنظيف الموارد حتى عند حدوث خطأ
+  //       if (_isWalletInitialized && !mounted) {
+  //         await _cleanupWallet();
+  //       }
+  //     }
+  //   }
+  // }
 }

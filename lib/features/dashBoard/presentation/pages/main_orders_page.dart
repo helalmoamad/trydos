@@ -217,7 +217,7 @@ class _MainOrdersPageState extends State<MainOrdersPage> {
                     borderRadius: BorderRadius.circular(15),
                     child: MyCachedNetworkImage(
                       imageUrl:
-                          dotenv.env['Images_Url']! + details[index].cartImage,
+                           details[index].cartImage,
                       width: 91,
                       height: 125,
                       imageFit: BoxFit.cover,

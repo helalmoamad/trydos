@@ -11,6 +11,7 @@
   "the_product_price_when_returned": "İade Edildiğinde Ürün Fiyatı",
   "alert": "Uyarı",
   "waiting_for_supplier_response": "Tedarikçi yanıtı bekleniyor",
+  "press_here_for_more": "Daha Fazla Görmek İçin Buraya Basın",
   "typing": "Yazıyor...",
   "recording": "Kaydediyor...",
   "sending_file": "dosya gönderiliyor...",
@@ -774,5 +775,6 @@
   "document_type_authorization_letter": "Yetki Mektubu",
   "phone_cannot_be_same_as_registered": "Telefon numarası kayıtlı telefon numaranızla aynı olamaz",
   "field_must_not_exceed_10_characters": "Alan 10 karakteri geçmemelidir",
-  "update": "İsteği Güncelle"
+  "update": "İsteği Güncelle",
+  "Sellers": "Satıcılar"
 }

@@ -734,6 +734,7 @@
   "shop_name": "اسم المتجر",
   "enter_button": "دخول",
   "leave_button": "مغادرة",
+  "Sellers": "البائعين",
   "confirm_leave_shop_title": "تأكيد مغادرة المتجر",
   "confirm_leave_shop_message": "هل أنت متأكد أنك تريد مغادرة هذا المتجر؟",
   "go_to_seller_dashboard": "الذهاب إلى لوحة تحكم البائع",
@@ -793,5 +794,6 @@
   "document_type_authorization_letter": "تفويض رسمي",
   "phone_cannot_be_same_as_registered": "رقم الهاتف لا يمكن أن يكون نفس الرقم المسجل به",
   "field_must_not_exceed_10_characters": "يجب ألا يتجاوز الحقل 10 محارف",
-  "update": "تعديل الطلب"
+  "update": "تعديل الطلب",
+  "press_here_for_more": "مشاهدة المنتج"
 }

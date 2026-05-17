@@ -36,14 +36,16 @@ class OrdersListWidget extends StatelessWidget {
               padding: EdgeInsets.all(16.w),
               itemCount: orders.length,
               itemBuilder: (context, index) {
-                // Calculate intersection between order's availableOrderStatusChange 
+                // Calculate intersection between order's availableOrderStatusChange
                 // and user's abilities
-                final orderAvailableStatuses = orders[index].availableOrderStatusChange ?? [];
-                final userAllowedStatuses = userAbilities?.changeOrderStatus ?? [];
+                final orderAvailableStatuses =
+                    orders[index].availableOrderStatusChange ?? [];
+                final userAllowedStatuses =
+                    userAbilities?.changeOrderStatus ?? [];
                 final availableStatuses = orderAvailableStatuses
                     .where((status) => userAllowedStatuses.contains(status))
                     .toList();
-                
+
                 return OrderCard(
                   order: orders[index],
                   availableStatuses: availableStatuses,
@@ -194,8 +196,7 @@ class _OrderCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    final allDetails =
-        widget.order.details?.expand((list) => list).toList() ?? [];
+    final allDetails = widget.order.details ?? [];
 
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),

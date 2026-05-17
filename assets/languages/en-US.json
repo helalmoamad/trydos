@@ -792,5 +792,7 @@
   "document_type_authorization_letter": "Authorization Letter",
   "phone_cannot_be_same_as_registered": "Phone number cannot be the same as your registered phone number",
   "field_must_not_exceed_10_characters": "Field must not exceed 10 characters",
-  "update": "Update Request"
+  "update": "Update Request",
+  "press_here_for_more": "View product",
+  "Sellers": "Sellers"
 }

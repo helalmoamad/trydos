@@ -482,9 +482,9 @@ class OrderListDetailModel {
       discount: json["discount"] == null
           ? 0
           : double.parse(json["discount"].toString()),
-      priceAfterDiscount: json["price_after_discount"] == null
+      priceAfterDiscount: json["offer_price"] == null
           ? 0
-          : double.parse(json["price_after_discount"].toString()),
+          : double.parse(json["offer_price"].toString()),
       tax: json["tax"] == null ? 0 : double.parse(json["tax"].toString()),
       deliveryStatus: json["delivery_status"],
       paymentStatus: json["payment_status"],

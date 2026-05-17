@@ -1995,8 +1995,8 @@ class _CartPageState extends State<CartPage> {
                                                                     controller:
                                                                         pageController,
                                                                     children:
-                                                                        (prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                                                                            false)
+                                                                        ((prefsRepository.isVerifiedPhonePeforeExpiredToken ??
+                                                                            false) && (prefsRepository.myPhoneNumber?.length ?? 0) > 1)
                                                                         ? [
                                                                             VerifyOtp(
                                                                               fromProfile: false,
@@ -2405,7 +2405,7 @@ class _CartPageState extends State<CartPage> {
                                                                                 if (prefsRepository.isVerifiedPhone !=
                                                                                     true) {
                                                                                   if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                                                                                      false)) {
+                                                                                      false) && (prefsRepository.myPhoneNumber?.length ?? 0) > 1) {
                                                                                     authBloc.add(
                                                                                       SendOtpEvent(
                                                                                         phone: prefsRepository.myPhoneNumber!,
