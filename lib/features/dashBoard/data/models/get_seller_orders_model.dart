@@ -321,6 +321,7 @@ class UserOrder {
   };
 }
 
+
 enum Type { EXTERNAL_SHIPPING_COMPANY, PRODUCT_WISE }
 
 final typeValues = EnumValues({
