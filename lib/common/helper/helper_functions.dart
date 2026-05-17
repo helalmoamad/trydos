@@ -34,6 +34,7 @@ import '../constant/design/assets_provider.dart';
 final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
 class HelperFunctions {
+  static bool _versionDialogShown = false;
   static changeAppStatus(ThemeMode theme) {
     final color = theme == ThemeMode.dark
         ? const Color(0xFF191C1D)
@@ -436,6 +437,8 @@ class HelperFunctions {
   }
 
   static showVersionDialog(context) async {
+    if (_versionDialogShown) return;
+    _versionDialogShown = true;
     await showDialog<String>(
       context: context,
       barrierDismissible: false,
@@ -500,7 +503,7 @@ class HelperFunctions {
                           child: CupertinoButton.filled(
                             onPressed: () {
                               Navigator.pop(context); // إغلاق الحوار
-                              _openWhatsAppGroup(); // فتح الواتساب
+                              _openWhatsAppGroup();
                             },
                             child: Text(
                               btnLabel1,
@@ -586,7 +589,7 @@ class HelperFunctions {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context); // إغلاق الحوار
-                              _openWhatsAppGroup(); // فتح الواتساب
+                              _getFileFromGoogleDrive();
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -614,10 +617,21 @@ class HelperFunctions {
       },
     );
   }
-  /*static _getFileFromGoogleDrive() {
-    urlLauncherBrowser(
-        'https://drive.google.com/file/d/1im1-7Bmx5Qi9cTsVIvGnZIvNY7vSKQLj/view?usp=drivesdk');
-  }*/
+
+  static Future<void> _getFileFromGoogleDrive() async {
+    const String androidPackageId = 'com.trydos.www';
+    const String playStoreUrl =
+        'https://play.google.com/store/apps/details?id=$androidPackageId';
+
+    try {
+      final bool launched = await urlLauncherApplication(playStoreUrl);
+      if (!launched) {
+        await urlLauncherBrowser(playStoreUrl);
+      }
+    } catch (e) {
+      await urlLauncherBrowser(playStoreUrl);
+    }
+  }
 
   static _openWhatsAppGroup() async {
     try {

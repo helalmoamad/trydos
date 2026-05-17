@@ -123,6 +123,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
       final response = await uploadFileMediaServerUseCase(
         UploadFileMediaServerParams(
           file: event.file,
+          isStory: true,
           usingOnUploadingFinishedFunction: false,
           usingSendProgressFunction: false,
         ),

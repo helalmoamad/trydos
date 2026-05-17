@@ -78,6 +78,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setWalletToken(String token) async {
+    print("Saving wallet token: $token");
     await _secureStorage.write(key: PrefsKey.walletToken, value: token);
     _cachedWalletToken = token;
     return true;
@@ -373,9 +374,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
     if (photo == "" || photo == null) {
       return null;
     }
-    return photo.contains("cloudinary")
+    return photo.contains("cloudinary") || photo.contains("media_server")
         ? photo
-        : ("${dotenv.env['Images_Url']}" + photo);
+        : ("${dotenv.env['Media_S3_Server']}" + photo);
   }
 
   @override
@@ -988,9 +989,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
     }
     String photo = "";
     photo = _preferences.getString(PrefsKey.profilePhoto) ?? "";
-    photo = (photo.contains("cloudinary")
+    photo = (photo.contains("cloudinary") || photo.contains("media_server")
         ? photo
-        : ("${dotenv.env['Images_Url']}" + photo));
+        : ("${dotenv.env['Media_S3_Server']}" + photo));
     print(photo);
     return photo;
   }

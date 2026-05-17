@@ -81,6 +81,7 @@ class CommonUseRemoteDataSource {
             receiveTimeout: const Duration(hours: 1),
             sendTimeout: const Duration(hours: 1),
             endpoint: MediaServerEndPoints.uploadEP,
+            queryParameters: params['isStory'] ? {"story": "true"} : null,
             data: params['data'],
             extraHeaders: {'x-api-key': MediaServerUrls.apiKey},
             response: ResponseValue<UploadFileMediaServerResponseModel>(
