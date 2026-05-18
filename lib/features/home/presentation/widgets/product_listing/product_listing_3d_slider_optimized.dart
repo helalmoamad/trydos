@@ -447,8 +447,8 @@ class _ProductListing3DSliderOptimizedState
                         ),
                       ),
                       SizedBox(height: 5.h),
+                      const Spacer(),
                       SizedBox(
-                        height: 20.h,
                         child: ValueListenableBuilder<bool>(
                           valueListenable: widget.visibleRedeem,
                           builder: (context, _visibleRedeem, _) {

@@ -32,12 +32,14 @@ class UploadFileMediaServerParams {
   UploadFileMediaServerParams({
     required this.file,
     this.folder,
+    this.isStory = false,
     required this.usingOnUploadingFinishedFunction,
     required this.usingSendProgressFunction,
   });
 
   File file;
   String? folder;
+  bool isStory = false;
   bool usingOnUploadingFinishedFunction;
   bool usingSendProgressFunction;
 
@@ -51,6 +53,7 @@ class UploadFileMediaServerParams {
     var data = FormData.fromMap(formFields);
     return {
       'data': data,
+      'isStory': isStory,
       'usingOnUploadingFinishedFunction': usingOnUploadingFinishedFunction,
       'usingSendProgressFunction': usingSendProgressFunction,
     };

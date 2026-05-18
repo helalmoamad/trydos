@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import '../../../../common/constant/configuration/prefs_key.dart';
@@ -8,16 +9,47 @@ import '../../domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
 
 class PrefsRepositoryImpl extends PrefsRepository {
-  PrefsRepositoryImpl(this._preferences);
+  PrefsRepositoryImpl(
+    this._preferences,
+    this._secureStorage, {
+    String? initialChatToken,
+    String? initialWalletToken,
+    String? initialMarketToken,
+    String? initialStoriesToken,
+    String? initialTokenForComment,
+  }) : _cachedChatToken = initialChatToken,
+       _cachedWalletToken = initialWalletToken,
+       _cachedMarketToken = initialMarketToken,
+       _cachedStoriesToken = initialStoriesToken,
+       _cachedTokenForComment = initialTokenForComment;
 
   final SharedPreferences _preferences;
+  final FlutterSecureStorage _secureStorage;
+
+  /// In-memory cache for the chat token loaded from secure storage at startup.
+  String? _cachedChatToken;
+
+  /// In-memory cache for the wallet token loaded from secure storage at startup.
+  String? _cachedWalletToken;
+
+  /// In-memory cache for the market token loaded from secure storage at startup.
+  String? _cachedMarketToken;
+
+  /// In-memory cache for the stories token loaded from secure storage at startup.
+  String? _cachedStoriesToken;
+
+  /// In-memory cache for token-for-comment loaded from secure storage at startup.
+  String? _cachedTokenForComment;
 
   @override
-  Future<bool> setChatToken(String token) =>
-      _preferences.setString(PrefsKey.chatToken, token);
+  Future<bool> setChatToken(String token) async {
+    await _secureStorage.write(key: PrefsKey.chatToken, value: token);
+    _cachedChatToken = token;
+    return true;
+  }
 
   @override
-  String? get chatToken => _preferences.getString(PrefsKey.chatToken);
+  String? get chatToken => _cachedChatToken;
 
   @override
   Future<bool> setUserChoosedCountryIso(String? countryIso) =>
@@ -28,25 +60,35 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.getString(PrefsKey.currentCountry);
 
   @override
-  String? get marketToken => _preferences.getString(PrefsKey.marketToken);
+  String? get marketToken => _cachedMarketToken;
 
   @override
-  Future<bool> setMarketToken(String? token) =>
-      _preferences.setString(PrefsKey.marketToken, token ?? "");
+  Future<bool> setMarketToken(String? token) async {
+    await _secureStorage.write(key: PrefsKey.marketToken, value: token ?? "");
+    _cachedMarketToken = token ?? "";
+    return true;
+  }
 
   @override
-  Future<bool> setStoriesToken(String token) =>
-      _preferences.setString(PrefsKey.storiesToken, token);
+  Future<bool> setStoriesToken(String token) async {
+    await _secureStorage.write(key: PrefsKey.storiesToken, value: token);
+    _cachedStoriesToken = token;
+    return true;
+  }
 
   @override
-  Future<bool> setWalletToken(String token) =>
-      _preferences.setString(PrefsKey.walletToken, token);
+  Future<bool> setWalletToken(String token) async {
+    print("Saving wallet token: $token");
+    await _secureStorage.write(key: PrefsKey.walletToken, value: token);
+    _cachedWalletToken = token;
+    return true;
+  }
 
   @override
-  String? get walletToken => _preferences.getString(PrefsKey.walletToken);
+  String? get walletToken => _cachedWalletToken;
 
   @override
-  String? get storiesToken => _preferences.getString(PrefsKey.storiesToken);
+  String? get storiesToken => _cachedStoriesToken;
 
   @override
   ThemeMode get getTheme {
@@ -65,9 +107,16 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> clearUser() async {
-    await _preferences.remove(PrefsKey.chatToken);
-    await _preferences.remove(PrefsKey.marketToken);
-    await _preferences.remove(PrefsKey.storiesToken);
+    await _secureStorage.delete(key: PrefsKey.chatToken);
+    await _secureStorage.delete(key: PrefsKey.walletToken);
+    await _secureStorage.delete(key: PrefsKey.marketToken);
+    await _secureStorage.delete(key: PrefsKey.storiesToken);
+    await _secureStorage.delete(key: PrefsKey.tokenForComment);
+    _cachedChatToken = null;
+    _cachedWalletToken = null;
+    _cachedMarketToken = null;
+    _cachedStoriesToken = null;
+    _cachedTokenForComment = null;
     return _preferences.remove(PrefsKey.user);
   }
 
@@ -325,9 +374,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
     if (photo == "" || photo == null) {
       return null;
     }
-    return photo.contains("cloudinary")
+    return photo.contains("cloudinary") || photo.contains("media_server")
         ? photo
-        : ("${dotenv.env['Images_Url']}" + photo);
+        : ("${dotenv.env['Media_S3_Server']}" + photo);
   }
 
   @override
@@ -510,14 +559,19 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  Future<bool> clearTokenForMarket() {
-    return _preferences.remove(PrefsKey.marketToken);
+  Future<bool> clearTokenForMarket() async {
+    _cachedMarketToken = null;
+    await _secureStorage.delete(key: PrefsKey.marketToken);
+    return true;
   }
 
   @override
-  Future<bool> clearTokensForChatAndStory() {
-    _preferences.remove(PrefsKey.chatToken);
-    return _preferences.remove(PrefsKey.storiesToken);
+  Future<bool> clearTokensForChatAndStory() async {
+    await _secureStorage.delete(key: PrefsKey.chatToken);
+    await _secureStorage.delete(key: PrefsKey.storiesToken);
+    _cachedChatToken = null;
+    _cachedStoriesToken = null;
+    return true;
   }
 
   @override
@@ -844,7 +898,17 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  Future<bool> clear() {
+  Future<bool> clear() async {
+    _cachedChatToken = null;
+    _cachedWalletToken = null;
+    _cachedMarketToken = null;
+    _cachedStoriesToken = null;
+    _cachedTokenForComment = null;
+    await _secureStorage.delete(key: PrefsKey.chatToken);
+    await _secureStorage.delete(key: PrefsKey.walletToken);
+    await _secureStorage.delete(key: PrefsKey.marketToken);
+    await _secureStorage.delete(key: PrefsKey.storiesToken);
+    await _secureStorage.delete(key: PrefsKey.tokenForComment);
     return _preferences.clear();
   }
 
@@ -925,9 +989,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
     }
     String photo = "";
     photo = _preferences.getString(PrefsKey.profilePhoto) ?? "";
-    photo = (photo.contains("cloudinary")
+    photo = (photo.contains("cloudinary") || photo.contains("media_server")
         ? photo
-        : ("${dotenv.env['Images_Url']}" + photo));
+        : ("${dotenv.env['Media_S3_Server']}" + photo));
     print(photo);
     return photo;
   }
@@ -1089,11 +1153,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  String? get tokenForComment =>
-      _preferences.getString(PrefsKey.tokenForComment);
+  String? get tokenForComment => _cachedTokenForComment;
   @override
-  Future<bool> setTokenForComment(String token) {
-    return _preferences.setString(PrefsKey.tokenForComment, token);
+  Future<bool> setTokenForComment(String token) async {
+    await _secureStorage.write(key: PrefsKey.tokenForComment, value: token);
+    _cachedTokenForComment = token;
+    return true;
   }
 
   @override

@@ -11,6 +11,9 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
   BaseApi(this.serverName) {
     Map<String, dynamic> headers = client.options.headers;
     final String? token = getServerToken(serverName);
+    if (serverName == ServerName.wallet) {
+      print("DDDDDDDDDDDDDDDDDDDDDDDD*/*//*${token}");
+    }
 
     if (token != null) {
       headers = client.options.headers

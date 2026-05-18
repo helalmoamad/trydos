@@ -102,7 +102,6 @@ class StoriesDataSource {
           requestPrams: RequestConfig<Either<int, CollectionStoryModel>>(
             endpoint: StoriesEndPoints.addStoryToOurServerEP,
             data: params,
-            queryParameters: {"story": "true"},
             response: ResponseValue<Either<int, CollectionStoryModel>>(
               fromJson: (response) {
                 if (response['data']['id'] != null)
