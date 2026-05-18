@@ -329,6 +329,8 @@ final typeValues = EnumValues({
   "product_wise": Type.PRODUCT_WISE,
 });
 
+
+
 class Detail {
   final int? id;
   final int? orderId;
