@@ -4,6 +4,7 @@ import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCa
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/currencies_response_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
+import 'package:trydos/features/home/data/models/getRelatedProducts.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
@@ -312,4 +313,9 @@ abstract class HomeRepository {
     String timestamp,
     String idempotencyKey,
   );
+
+  Future<Either<Failure, RelatedProductsResponse>> getRelatedProducts({
+    required int productSlug,
+    required String color,
+  });
 }

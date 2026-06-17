@@ -23,6 +23,22 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setUserChoosedCountryIso(String? countryIso) =>
       _preferences.setString(PrefsKey.currentCountry, countryIso!);
 
+
+
+  @override
+  Future<bool> setAllowedToUploadStories(bool allowedToUploadStories) {
+    return _preferences.setBool(
+      PrefsKey.allowedToUploadStories,
+      allowedToUploadStories,
+    );
+  }
+
+  @override
+  bool getAllowedToUploadStories() {
+    return 
+      _preferences.getBool(PrefsKey.allowedToUploadStories) ?? false;
+  }
+
   @override
   String? get userChoosedCountryIso =>
       _preferences.getString(PrefsKey.currentCountry);
@@ -527,6 +543,16 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setTimerForOtpRunning(bool isRunning) =>
       _preferences.setBool(PrefsKey.isTimerRunningId, isRunning);
+  @override
+  int? get otpTimerEndTime => _preferences.getInt(PrefsKey.otpTimerEndTime);
+
+  @override
+  Future<bool> setOtpTimerEndTime(int endTime) =>
+      _preferences.setInt(PrefsKey.otpTimerEndTime, endTime);
+
+  @override
+  Future<bool> removeOtpTimerEndTime() =>
+      _preferences.remove(PrefsKey.otpTimerEndTime);
 
   @override
   Future<bool> removeStoriesName() => _preferences.remove(PrefsKey.storiesName);

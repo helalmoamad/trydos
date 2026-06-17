@@ -35,6 +35,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
+import 'package:trydos/features/home/domain/use_cases/GetRelatedProductsUseCase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_like_to_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_country_language_for_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/convert_item_from_Cart_to_oldCart_usecase.dart';
@@ -143,6 +144,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getNotificationTypeProductUseCase,
     this.getWidthAndHeightUseCase,
     this.getMyFirebaseSettingsUseCase,
+    this.getRelatedProductsUseCase,
     this.getCurrenciesForWalletUseCase,
     this.getAuthProductDetailsUseCase,
     this.updateEmailNotificationUseCase,
@@ -252,7 +254,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<UpdateNotificationFrequencyEvent>(_onUpdateNotificationFrequencyEvent);
     on<UpdateWhatsappNotificationEvent>(_onUpdateWhatsappNotificationEvent);
     on<AddQuantityForCartEvent>(_onAddCurrentQuantityForCartEvent);
-
+    on<GetRelatedProductsEvent>(_onGetRelatedProductsEvent);
     on<CheckWithGetCartEvent>(_onCheckWithGetCartEvent);
 
     on<AddOrRemoveLikeForProductEvent>(
@@ -361,6 +363,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final GetStartingSettingsUseCase getStartingSettingsUseCase;
   final UpdateOrderCommentRatingUseCase updateOrderCommentRatingUseCase;
+  final GetRelatedProductsUseCase getRelatedProductsUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final UpdateUserPhotoUseCase uploadFileCloudinaryUseCase;
   final SendAcceptOfNotificationsUseCase sendAcceptOfNotificationsUseCase;
@@ -479,6 +482,44 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           state.copyWith(
             getCurrenciesForWalletStatus: GetCurrenciesForWalletStatus.success,
             walletCurrencies: r,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onGetRelatedProductsEvent(
+    GetRelatedProductsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        getRelatedProductsStatus: GetRelatedProductsStatus.loading,
+      ),
+    );
+    print("_onGetRelatedProductsEvent in bloc ");
+    final response = await getRelatedProductsUseCase(
+      GetRelatedProductsParams(
+        productSlug: event.productSlug ?? 0,
+        color: event.color ?? "",
+      ),
+    );
+    print("response in bloc");
+    response.fold(
+      (failure) {
+        print("response in failure ${failure.message}");
+        emit(
+          state.copyWith(
+            getRelatedProductsStatus: GetRelatedProductsStatus.failure,
+          ),
+        );
+      },
+      (relatedProducts) {
+        print("relatedProducts in ${relatedProducts.data.products}");
+        emit(
+          state.copyWith(
+            getRelatedProductsStatus: GetRelatedProductsStatus.success,
+            relatedProducts: relatedProducts.data.products,
           ),
         );
       },
@@ -1988,6 +2029,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       },
       (r) {
+        add(
+          GetRelatedProductsEvent(
+                productSlug: r.product?.id,
+                color: event.currentColorOption ?? "",
+              )
+              as HomeEvent,
+        );
         GetIt.I<ChatBloc>().add(const ChangeStatusShareProructToInitialEvent());
         if (r.product?.isRedeem == true) {
           GetIt.I<PrefsRepository>().setRedeemDateForProduct(

@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,6 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -42,6 +43,62 @@ class _SearchResultState extends ThemeState<SearchResult> {
       }
     });
     super.initState();
+  }
+
+  /// يعرض اسم المنتج (الاقتراح) مع إبراز الجزء المطابق للنص الذي كتبه المستخدم:
+  /// النص المكتوب يظهر بخط غامق وأوضح، وبقيّة الاقتراح بالرمادي الخفيف.
+  /// يضبط اتجاه النص تلقائياً ليظهر بشكل صحيح للعربي (RTL) والإنكليزي (LTR).
+  Widget _buildSuggestionText(BuildContext context, String name) {
+    final String query = widget.controller.text.trim();
+
+    // نمط بقيّة الاقتراح (خفيف ورمادي) — كما كان سابقاً.
+    final TextStyle? baseStyle = context.textTheme.titleLarge?.lq.copyWith(
+      height: 15 / 12,
+      fontSize: 13.sp,
+      color: const Color(0xffC4C2C2),
+    );
+
+    // نمط الجزء المطابق للنص المكتوب (غامق وأوضح).
+    final TextStyle? matchStyle = context.textTheme.titleLarge?.bq.copyWith(
+      height: 15 / 12,
+      fontSize: 13.sp,
+      color: const Color(0xff505050),
+    );
+
+    // اتجاه النص حسب لغة اسم المنتج: عربي → RTL، غير ذلك → LTR.
+    final bool isArabic = RegExp(r'[؀-ۿ]').hasMatch(name);
+    final ui.TextDirection direction =
+        isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr;
+
+    // موضع النص المكتوب داخل اسم المنتج (غير حسّاس لحالة الأحرف).
+    final int matchIndex =
+        query.isEmpty ? -1 : name.toLowerCase().indexOf(query.toLowerCase());
+
+    final InlineSpan span;
+    if (matchIndex < 0) {
+      // لا يوجد تطابق: اعرض الاسم كما هو.
+      span = TextSpan(text: name, style: baseStyle);
+    } else {
+      final String before = name.substring(0, matchIndex);
+      final String matched =
+          name.substring(matchIndex, matchIndex + query.length);
+      final String after = name.substring(matchIndex + query.length);
+      span = TextSpan(
+        children: [
+          if (before.isNotEmpty) TextSpan(text: before, style: baseStyle),
+          TextSpan(text: matched, style: matchStyle),
+          if (after.isNotEmpty) TextSpan(text: after, style: baseStyle),
+        ],
+      );
+    }
+
+    return Text.rich(
+      span,
+      textDirection: direction,
+      textAlign: TextAlign.start,
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+    );
   }
 
   @override
@@ -323,20 +380,12 @@ class _SearchResultState extends ThemeState<SearchResult> {
                               children: [
                                 SizedBox(width: 35.w),
                                 Flexible(
-                                  child: MyTextWidget(
+                                  child: _buildSuggestionText(
+                                    context,
                                     state
                                         .getProductListingWithFiltersPaginationModels[key]!
                                         .items[index]
                                         .name!,
-                                    textAlign: TextAlign.start,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    style: context.textTheme.titleLarge?.lq
-                                        .copyWith(
-                                          height: 15 / 12,
-                                          fontSize: 13.sp,
-                                          color: const Color(0xffC4C2C2),
-                                        ),
                                   ),
                                 ),
                                 const SizedBox(width: 8),

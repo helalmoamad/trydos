@@ -15,11 +15,13 @@ import 'package:geodesy/geodesy.dart' as geod;
 import 'package:trydos/features/home/data/models/get_order_rating_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
     hide BuyersCommentModel;
+import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
 import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../../core/data/model/pagination_model.dart';
 
 import '../../../data/models/check_availability_product_cart_model.dart';
@@ -40,6 +42,13 @@ enum GetStartingSettingsStatus { init, loading, success, failure }
 enum GetCountryBoundaryByIsoStatus { init, loading, success, failure }
 
 enum GetProductDetailWithoutSimilarRelatedProductsStatus {
+  init,
+  loading,
+  success,
+  failure,
+}
+
+enum GetRelatedProductsStatus {
   init,
   loading,
   success,
@@ -165,11 +174,13 @@ class HomeState extends Equatable {
     this.getProductDetailWithoutSimilarRelatedProductsStatus =
         GetProductDetailWithoutSimilarRelatedProductsStatus.init,
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
+    this.relatedProducts,
     // this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.currentSelectedColorForEveryProductStatus,
     this.isChangedvariationWhenQtyZero = false,
     this.getOrderRatingStatus = GetOrderRatingStatus.init,
     this.getFullProductDetailsStatus = GetFullProductDetailsStatus.init,
+    this.getRelatedProductsStatus = GetRelatedProductsStatus.init,
     //this.addCommentStatus = AddCommentStatus.init,
     this.startingSetting,
     this.sizesForEachColor = const [],
@@ -273,6 +284,7 @@ class HomeState extends Equatable {
   final Map<String, PaginationModel<BuyersComment>>?
   getBuyersCommentsPaginationModel;
   final GetStartingSettingsStatus getStartingSettingsStatus;
+  final List<Products>? relatedProducts;
   final Map<String, int> currentSelectedColorForEveryProduct;
   // final GetCommentForProductStatus getCommentForProductStatus;
   final String? currentSlugToRefreshFromNotification;
@@ -361,6 +373,7 @@ class HomeState extends Equatable {
   getProductDetailWithoutSimilarRelatedProductsStatus;
 
   final GetFullProductDetailsStatus getFullProductDetailsStatus;
+  final GetRelatedProductsStatus getRelatedProductsStatus;
 
   final GetCartItemsStatus getCartItemsStatus;
   final CheckWithGetCartStatus checkWithGetCartStatus;
@@ -399,6 +412,7 @@ class HomeState extends Equatable {
   @override
   List<Object?> get props => [
     getStartingSettingsStatus,
+    relatedProducts,
     storyLink,
     currentSelectedColorForEveryProduct,
     // getListOfProductsFoundedInCartStatus,
@@ -473,6 +487,7 @@ class HomeState extends Equatable {
     // storiesForProduct,
     sizesForEachColor,
     getFullProductDetailsStatus,
+    getRelatedProductsStatus,
 
     getProductListingPaginationWithoutFiltersModel,
     getCartShippingItemsModel,
@@ -517,6 +532,7 @@ class HomeState extends Equatable {
   ];
 
   HomeState copyWith({
+    final List<Products>? relatedProducts,
     final GetStartingSettingsStatus? getStartingSettingsStatus,
     final GetFirebaseSettingForNotificationStatus?
     getFirebaseSettingForNotificationStatus,
@@ -634,6 +650,7 @@ class HomeState extends Equatable {
     getProductDetailWithoutSimilarRelatedProductsStatus,
     final DeleteItemInCartStatus? deleteItemInCartStatus,
     final Map<String, int>? currentSelectedColorForEveryProduct,
+    final GetRelatedProductsStatus? getRelatedProductsStatus,
 
     //List<Story>? storiesForProduct,
     final Map<String, PaginationModel<product.Products>>?
@@ -777,6 +794,9 @@ class HomeState extends Equatable {
       sizesForEachColor: sizesForEachColor ?? this.sizesForEachColor,
       getFullProductDetailsStatus:
           getFullProductDetailsStatus ?? this.getFullProductDetailsStatus,
+
+          getRelatedProductsStatus:
+          getRelatedProductsStatus ?? this.getRelatedProductsStatus,
       sizesQuantitiesForEachColor:
           sizesQuantitiesForEachColor ?? this.sizesQuantitiesForEachColor,
 
@@ -847,6 +867,9 @@ class HomeState extends Equatable {
           this.getProductDetailWithoutSimilarRelatedProductsStatus,
       getStartingSettingsStatus:
           getStartingSettingsStatus ?? this.getStartingSettingsStatus,
+
+
+    relatedProducts: relatedProducts ?? this.relatedProducts,
 
       startingSetting: startingSetting ?? this.startingSetting,
 

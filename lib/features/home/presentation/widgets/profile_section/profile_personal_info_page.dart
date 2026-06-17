@@ -1023,10 +1023,10 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                               '',
                                             );
                                           } else {
-                                            controller.text = val.replaceFirst(
-                                              RegExp(r'0'),
-                                              '',
-                                            );
+                                            // controller.text = val.replaceFirst(
+                                            //   RegExp(r'0'),
+                                            //   '',
+                                            // );
                                           }
                                         }
                                         widget.visibleSave.value = true;

@@ -96,6 +96,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       ),
     );
 
+    prefsRepository.setAllowedToUploadStories(false);
+
     authBloc.add(GetCustomerInfoEvent());
     orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));

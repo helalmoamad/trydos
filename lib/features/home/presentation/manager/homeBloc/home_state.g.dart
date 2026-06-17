@@ -113,6 +113,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
         json['getStartingSettingsStatus'],
       ) ??
       GetStartingSettingsStatus.init,
+  relatedProducts: (json['relatedProducts'] as List<dynamic>?)
+      ?.map((e) => Products.fromJson(e as Map<String, dynamic>))
+      .toList(),
   currentSelectedColorForEveryProductStatus: $enumDecodeNullable(
     _$CurrentSelectedColorForEveryProductStatusEnumMap,
     json['currentSelectedColorForEveryProductStatus'],
@@ -131,6 +134,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
         json['getFullProductDetailsStatus'],
       ) ??
       GetFullProductDetailsStatus.init,
+  getRelatedProductsStatus:
+      $enumDecodeNullable(
+        _$GetRelatedProductsStatusEnumMap,
+        json['getRelatedProductsStatus'],
+      ) ??
+      GetRelatedProductsStatus.init,
   startingSetting: json['startingSetting'] == null
       ? null
       : StartingSetting.fromJson(
@@ -518,6 +527,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       ?.map((k, e) => MapEntry(k, e.toJson((value) => value.toJson()))),
   'getStartingSettingsStatus':
       _$GetStartingSettingsStatusEnumMap[instance.getStartingSettingsStatus]!,
+  'relatedProducts': instance.relatedProducts?.map((e) => e.toJson()).toList(),
   'currentSelectedColorForEveryProduct':
       instance.currentSelectedColorForEveryProduct,
   'currentSlugToRefreshFromNotification':
@@ -642,6 +652,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
   'getFullProductDetailsStatus':
       _$GetFullProductDetailsStatusEnumMap[instance
           .getFullProductDetailsStatus]!,
+  'getRelatedProductsStatus':
+      _$GetRelatedProductsStatusEnumMap[instance.getRelatedProductsStatus]!,
   'getCartItemsStatus':
       _$GetCartItemsStatusEnumMap[instance.getCartItemsStatus]!,
   'checkWithGetCartStatus':
@@ -805,6 +817,13 @@ const _$GetFullProductDetailsStatusEnumMap = {
   GetFullProductDetailsStatus.loading: 'loading',
   GetFullProductDetailsStatus.success: 'success',
   GetFullProductDetailsStatus.failure: 'failure',
+};
+
+const _$GetRelatedProductsStatusEnumMap = {
+  GetRelatedProductsStatus.init: 'init',
+  GetRelatedProductsStatus.loading: 'loading',
+  GetRelatedProductsStatus.success: 'success',
+  GetRelatedProductsStatus.failure: 'failure',
 };
 
 const _$DeleteItemInCartStatusEnumMap = {

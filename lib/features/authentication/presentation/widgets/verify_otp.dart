@@ -73,6 +73,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
 
   void onEnd() {
     prefsRepository.setTimerForOtpRunning(false);
+    prefsRepository.removeOtpTimerEndTime();
     checkOtp.value = 0;
     enabledResendNotifier.value = true;
     ///////////////////////////
@@ -110,12 +111,26 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
   @override
   void initState() {
     enabledResendNotifier = ValueNotifier<bool>(false);
+    // Try to resume existing timer if running
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final savedEnd = prefsRepository.otpTimerEndTime;
+    if (prefsRepository.isTimerForOtpRunning ?? false &&
+        savedEnd != null &&
+        savedEnd > now) {
+      endTime = savedEnd!;
+      enabledResendNotifier.value = false;
+    } else {
+      endTime = now + 1000 * 120;
+      prefsRepository.setOtpTimerEndTime(endTime);
+      prefsRepository.setTimerForOtpRunning(true);
+      enabledResendNotifier.value = false;
+    }
+
     if (countdownTimerController == null) {
       countdownTimerController = CountdownTimerController(
         endTime: endTime,
         onEnd: onEnd,
       );
-      prefsRepository.setTimerForOtpRunning(true);
     }
     checkOtp = ValueNotifier<int>(0);
     authBloc = BlocProvider.of<AuthBloc>(context);
@@ -1000,8 +1015,9 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
 
   void _onResendSucceed() {
     attempt = attempt + 1;
-
     endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 120;
+    prefsRepository.setOtpTimerEndTime(endTime);
+    prefsRepository.setTimerForOtpRunning(true);
     countdownTimerController = CountdownTimerController(
       endTime: endTime,
       onEnd: onEnd,

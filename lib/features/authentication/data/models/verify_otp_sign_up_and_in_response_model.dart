@@ -132,6 +132,7 @@ class User {
   final String? image;
   final int? isPhoneVerified;
   final String? lastOtpIdToken;
+  final bool? isAllowedToUploadStories;
 
   User({
     this.id,
@@ -145,6 +146,7 @@ class User {
     this.image,
     this.isPhoneVerified,
     this.lastOtpIdToken,
+    this.isAllowedToUploadStories,
   });
 
   User copyWith({
@@ -159,6 +161,7 @@ class User {
     String? image,
     int? isPhoneVerified,
     String? lastOtpIdToken,
+    bool? isAllowedToUploadStories,
   }) =>
       User(
         id: id ?? this.id,
@@ -172,6 +175,8 @@ class User {
         image: image ?? this.image,
         isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
         lastOtpIdToken: lastOtpIdToken ?? this.lastOtpIdToken,
+        isAllowedToUploadStories:
+            isAllowedToUploadStories ?? this.isAllowedToUploadStories,
       );
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -186,6 +191,7 @@ class User {
         image: json["image"],
         isPhoneVerified: json["is_phone_verified"],
         lastOtpIdToken: json["last_otp_id_token"],
+        isAllowedToUploadStories: json["is_allowed_to_upload_stories"] == 1 ? true : false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -200,6 +206,7 @@ class User {
         "image": image,
         "is_phone_verified": isPhoneVerified,
         "last_otp_id_token": lastOtpIdToken,
+        "is_allowed_to_upload_stories": isAllowedToUploadStories,
       };
 }
 

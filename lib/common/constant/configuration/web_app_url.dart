@@ -34,6 +34,9 @@ abstract class WebAppEndPoints {
   static String getAuthProductDetailsEP(String slug) =>
       "api/mobile/product/qty/${slug}";
   //  static final imageSearchEP = "api/image-search";
+static String getRelatedProducts(int Product_ID) =>
+      "api/related-products/${Product_ID}";
+
 }
 
 abstract class WebUrls {

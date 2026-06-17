@@ -15,15 +15,18 @@ String getProductListingWithFiltersModelToJson(
 
 class GetProductListingWithFiltersModel {
   final String? message;
+  final String? suggestion;
   final DataGetProductListingWithFiltersModel? data;
 
-  GetProductListingWithFiltersModel({this.message, this.data});
+  GetProductListingWithFiltersModel({this.message, this.suggestion, this.data});
 
   GetProductListingWithFiltersModel copyWith({
     String? message,
+    String? suggestion,
     DataGetProductListingWithFiltersModel? data,
   }) => GetProductListingWithFiltersModel(
     message: message ?? this.message,
+    suggestion: suggestion ?? this.suggestion,
     data: data ?? this.data,
   );
 
@@ -31,12 +34,13 @@ class GetProductListingWithFiltersModel {
     Map<String, dynamic> json,
   ) => GetProductListingWithFiltersModel(
     message: json["message"],
+    suggestion: json["suggestion"],
     data: json["data"] == null
         ? null
         : DataGetProductListingWithFiltersModel.fromJson(json["data"]),
   );
 
-  Map<String, dynamic> toJson() => {"message": message, "data": data?.toJson()};
+  Map<String, dynamic> toJson() => {"message": message, "suggestion": suggestion, "data": data?.toJson()};
 }
 
 class DataGetProductListingWithFiltersModel {

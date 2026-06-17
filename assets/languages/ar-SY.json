@@ -795,5 +795,6 @@
   "phone_cannot_be_same_as_registered": "رقم الهاتف لا يمكن أن يكون نفس الرقم المسجل به",
   "field_must_not_exceed_10_characters": "يجب ألا يتجاوز الحقل 10 محارف",
   "update": "تعديل الطلب",
-  "press_here_for_more": "مشاهدة المنتج"
+  "press_here_for_more": "مشاهدة المنتج",
+  "similar_products": "قد يعجبك أيضاً"
 }

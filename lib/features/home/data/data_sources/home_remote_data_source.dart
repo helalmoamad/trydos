@@ -15,6 +15,7 @@ import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/create_return_request_model.dart';
 import 'package:trydos/features/home/data/models/currencies_response_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
+import 'package:trydos/features/home/data/models/getRelatedProducts.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
@@ -41,6 +42,7 @@ import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart'
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/data/models/update_return_request_model.dart';
 import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
@@ -1760,5 +1762,23 @@ class HomeRemoteDatasource {
       ),
     );
     return walletCheckoutClient();
+  }
+
+  Future<RelatedProductsResponse> getRelatedProducts({
+    required int productSlug,
+    required String color,
+  }) {
+    GetClient<RelatedProductsResponse> client = GetClient<RelatedProductsResponse>(
+      serverName: ServerName.webApp,
+      requestPrams: RequestConfig<RelatedProductsResponse>(
+        endpoint: WebAppEndPoints.getRelatedProducts(productSlug),
+        //queryParameters: {"color": color},
+        response: ResponseValue<RelatedProductsResponse>(
+          fromJson: (json) => RelatedProductsResponse.fromJson(json),
+        ),
+      ),
+    );
+
+    return client();
   }
 }

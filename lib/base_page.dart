@@ -257,7 +257,7 @@ extension _CountryRestrictionUI on _BasePageState {
       height: 1.3,
     );
     final saveStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-      color: const Color(0xff402CDD),
+      color: const Color.fromARGB(255, 34, 30, 68),
       letterSpacing: 0.18,
       fontSize: 14,
       height: 1.3,

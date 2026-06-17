@@ -36,12 +36,20 @@ import '../bloc/story_state.dart';
 class StoriesList extends StatefulWidget {
   final ValueNotifier<bool> isShowPanelForVerified;
   const StoriesList({super.key, required this.isShowPanelForVerified});
-
   @override
   State<StoriesList> createState() => _StoriesListState();
 }
 
 class _StoriesListState extends State<StoriesList> {
+  bool allowedToUploadStories = false;
+  Future<void> _loadAllowedToUploadStories() async {
+    allowedToUploadStories = await prefsRepository.getAllowedToUploadStories();
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   final ScrollController listViewController = ScrollController();
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<dartz.Tuple2<int, int>> resizeStories = ValueNotifier(
@@ -52,6 +60,7 @@ class _StoriesListState extends State<StoriesList> {
   Timer? debounce;
   @override
   void initState() {
+    _loadAllowedToUploadStories();
     listViewController.addListener(() {
       if (debounce?.isActive ?? false) {
         debounce!.cancel();
@@ -160,6 +169,9 @@ class _StoriesListState extends State<StoriesList> {
                               }
                               //todo FIRST ELEMENT IN THE LISTvIEW IT WILL BE THE UPLOAD BUTTON
                               if (index == 0) {
+                                if (!allowedToUploadStories) {
+                                  return const SizedBox.shrink();
+                                }
                                 return state.uploadStoryCloudinaryStatus ==
                                         UploadStoryCloudinaryStatus.loading
                                     ? TrydosLoader()
@@ -193,6 +205,23 @@ class _StoriesListState extends State<StoriesList> {
                                                       width: 100.w,
                                                       imageFit: BoxFit.cover,
                                                       height: 150.h,
+                                                    ),
+                                                  ),
+
+                                                  Container(
+                                                    width: 100.w,
+                                                    height: 150.h,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            20.r,
+                                                          ),
+                                                      color: Colors.grey,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.person,
+                                                      size: 40.w,
+                                                      color: Colors.white,
                                                     ),
                                                   ),
                                                   InkWell(

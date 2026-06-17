@@ -9,6 +9,7 @@ import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/currencies_response_model.dart';
 import 'package:trydos/features/home/data/models/customer_wallet_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
+import 'package:trydos/features/home/data/models/getRelatedProducts.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 
@@ -871,6 +872,16 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getAuthProductDetails(productSlug),
+    );
+  }
+
+  @override
+  Future<Either<Failure, RelatedProductsResponse>> getRelatedProducts({
+    required int productSlug,
+    required String color,
+  }) async {
+   return handlingExceptionRequest(
+      tryCall: () => dataSource.getRelatedProducts(productSlug: productSlug, color: color),
     );
   }
 }
