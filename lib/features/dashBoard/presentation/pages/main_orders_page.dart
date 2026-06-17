@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
@@ -216,8 +215,7 @@ class _MainOrdersPageState extends State<MainOrdersPage> {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: MyCachedNetworkImage(
-                      imageUrl:
-                           details[index].cartImage,
+                      imageUrl: details[index].cartImage,
                       width: 91,
                       height: 125,
                       imageFit: BoxFit.cover,

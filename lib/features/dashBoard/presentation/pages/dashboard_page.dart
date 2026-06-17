@@ -21,7 +21,6 @@ import '../widgets/permission_card.dart';
 import '../widgets/add_user_widget.dart';
 import '../widgets/products_grid_widget.dart';
 import '../widgets/boutiques_grid_widget.dart';
-import '../widgets/orders_list_widget.dart';
 import '../widgets/dashboard_permission_checker.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -282,86 +281,73 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
- Widget _buildOrdersTab() {
-  return Column(
-    children: [
-      buildStatusBar(),
-      SizedBox(height: 25.h),
+  Widget _buildOrdersTab() {
+    return Column(
+      children: [
+        buildStatusBar(),
+        SizedBox(height: 25.h),
 
-      Expanded(
-        child: BlocBuilder<DashboardBloc, DashBoardState>(
-          builder: (context, state) {
+        Expanded(
+          child: BlocBuilder<DashboardBloc, DashBoardState>(
+            builder: (context, state) {
+              if (state.newGetOrdersStatus == NewGetOrdersStatus.loading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            if (state.newGetOrdersStatus ==
-                NewGetOrdersStatus.loading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+              if (state.newGetOrdersStatus == NewGetOrdersStatus.failure) {
+                return const Center(child: Text("Something went wrong"));
+              }
 
-            if (state.newGetOrdersStatus ==
-                NewGetOrdersStatus.failure) {
-              return const Center(
-                child: Text("Something went wrong"),
-              );
-            }
+              if (state.newGetOrdersStatus == NewGetOrdersStatus.success) {
+                final ordersList = state.new_orders ?? [];
 
-            if (state.newGetOrdersStatus ==
-                NewGetOrdersStatus.success) {
+                if (ordersList.isEmpty) {
+                  return const Center(child: Text("No orders found"));
+                }
 
-              final ordersList = state.new_orders ?? [];
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 10.h),
+                  child: ListView.separated(
+                    itemCount: ordersList.length,
+                    separatorBuilder: (_, __) => SizedBox(height: 10.h),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OrderDetailsNew(
+                                orderNumber: '00${ordersList[index].id}',
+                                orders: ordersList[index],
+                                indexGroupe: index,
+                              ),
+                            ),
+                          );
+                        },
 
-              if (ordersList.isEmpty) {
-                return const Center(
-                  child: Text("No orders found"),
+                        child: buildOrderItemWidget(
+                          context: context,
+                          item: ordersList[index],
+                          indexInGroup: index + 1,
+                        ),
+                      );
+                    },
+                  ),
                 );
               }
 
-              return Padding(
-                padding: EdgeInsets.only(bottom: 10.h),
-                child: ListView.separated(
-                  itemCount: ordersList.length,
-                  separatorBuilder: (_, __) =>
-                      SizedBox(height: 10.h),
-                  itemBuilder: (context, index) {
-
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => OrderDetailsNew(
-                              orderNumber:
-                                  '00${ordersList[index].id}',
-                              orders: ordersList[index],
-                              indexGroupe: index,
-                            ),
-                          ),
-                        );
-                      },
-
-                      child: buildOrderItemWidget(
-                        context: context,
-                        item: ordersList[index],
-                        indexInGroup: index + 1,
-                      ),
-                    );
-                  },
-                ),
-              );
-            }
-
-            return const SizedBox();
-          },
+              return const SizedBox();
+            },
+          ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
+
   final ValueNotifier<ConstOrderStatus> currentStatusOfOrder = ValueNotifier(
     ConstOrderStatus.all,
   );
-Widget buildStatusBar() {
+  Widget buildStatusBar() {
     return ValueListenableBuilder<ConstOrderStatus>(
       valueListenable: currentStatusOfOrder,
       builder: (context, _currentStatus, _) {
@@ -426,7 +412,7 @@ Widget buildStatusBar() {
     );
   }
 
-Widget buildOrderItemWidget({
+  Widget buildOrderItemWidget({
     required BuildContext context,
     required UserOrderNew item,
     required int indexInGroup,
@@ -488,8 +474,7 @@ Widget buildOrderItemWidget({
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: MyCachedNetworkImage(
-                      imageUrl:
-                           details[index].cartImage,
+                      imageUrl: details[index].cartImage,
                       width: 91,
                       height: 125,
                       imageFit: BoxFit.cover,
@@ -622,6 +607,7 @@ Widget buildOrderItemWidget({
       ),
     );
   }
+
   //////////////////////////////////////////////////////////////////////////////////////////'
   ///
   ///////////////////////////////////////////////////

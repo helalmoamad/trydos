@@ -219,7 +219,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     on<GetCurrencyForCountryEvent>(
       _onGetCurrencyForCountryEvent,
-      transformer: restartable(),
+      transformer: throttleDroppable(const Duration(seconds: 5)),
     );
     on<AddCurrentColorSizeEvent>(_onAddCurrentSizeColorEvent);
     on<AddCurrentSelectedColorEvent>(_onAddCurrentSelectedColorEvent);

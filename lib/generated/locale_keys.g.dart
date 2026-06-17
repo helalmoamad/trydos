@@ -6,7 +6,7 @@ abstract class LocaleKeys {
   static const information_securely = 'information_securely';
   static const translate = 'translate';
   static const work_days = 'work_days';
-  static const Sellers = 'Sellers';
+  static const sellers = 'Sellers';
   static const all_questions_below_from = 'all_questions_below_from';
   static const visitors_not_necessarily_from = 'visitors_not_necessarily_from';
   static const customers_purchased_before_pre_purchase_questions =

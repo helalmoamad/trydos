@@ -11,7 +11,6 @@ import 'package:injectable/injectable.dart';
 
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_state.dart';
 
-
 import '../../my_cached_network_image.dart';
 
 part 'pre_caching_image_event.dart';
@@ -181,17 +180,19 @@ class PreCachingImageBloc
   }*/
   }
 
-// ============= الدوال المساعدة =============
+  // ============= الدوال المساعدة =============
 
-// أ) تحميل SVG مع عزل محتمل
+  // أ) تحميل SVG مع عزل محتمل
 
-// ب) معاملات العزل
+  // ب) معاملات العزل
 
   FutureOr<void> _onCacheImageEvent(
     CacheImageEvent event,
     Emitter<PreCachingImageState> emit,
   ) async {
-    if (!event.imageUrl.contains("cloudinary")) {
+    print("CCCCCCCCCCCCCCCCCCCCCCC${event.imageUrl}//${event.type}");
+    if (!event.imageUrl.contains("cloudinary") &&
+        !event.imageUrl.contains("media_server")) {
       return;
     }
 
@@ -199,8 +200,9 @@ class PreCachingImageBloc
 
     // التحقق من وجود الصورة في الكاش مسبقاً
     try {
-      final cachedFile =
-          await CustomCacheManagers().getFileFromCache(event.imageUrl);
+      final cachedFile = await CustomCacheManagers().getFileFromCache(
+        event.imageUrl,
+      );
       if (cachedFile != null) {
         return; // الصورة موجودة مسبقاً
       }
@@ -225,19 +227,22 @@ class PreCachingImageBloc
   /// تحميل آمن للصور بدون تأثير على UI thread
   void _precacheImageSafely(CacheImageEvent event) async {
     try {
+      print("CCCCCCCCCCCCCCCCCCCCCCC${event.imageUrl}//${event.type}");
       // ⚡ استخدام Future.microtask لنقل العملية خارج UI thread
       await Future.microtask(() async {
         await precacheImage(
           CachedNetworkImageProvider(
             event.imageUrl,
             headers: {
-              'User-Agent': (kDebugMode ? "developer" : "users") +
+              'User-Agent':
+                  (kDebugMode ? "developer" : "users") +
                   'device OS:' +
                   (Platform.isAndroid ? 'Android' : 'IOS') +
                   ' , application version: 1.0.0',
-              "Referer": (kDebugMode ? "developer" : "users") +
+              "Referer":
+                  (kDebugMode ? "developer" : "users") +
                   'device OS:' +
-                  (Platform.isAndroid ? 'Android' : 'IOS')
+                  (Platform.isAndroid ? 'Android' : 'IOS'),
             },
             cacheManager: CustomCacheManagers(),
           ),
@@ -253,7 +258,7 @@ class PreCachingImageBloc
     }
   }
 
-// دالة اختيار Semaphore حسب نوع الصورة (كما لديك)
+  // دالة اختيار Semaphore حسب نوع الصورة (كما لديك)
   /* Semaphore _getSemaphoreForType(String type) {
     switch (type) {
       case "banner":
@@ -273,20 +278,24 @@ class PreCachingImageBloc
     }
   }
 */
-// ج) معاملات العزل
+  // ج) معاملات العزل
 
-// د) الدالة المعزولة
+  // د) الدالة المعزولة
 
   _onSetImageCacheStatusEvent(
-      SetImageCacheStatusEvent event, Emitter<PreCachingImageState> emit) {
+    SetImageCacheStatusEvent event,
+    Emitter<PreCachingImageState> emit,
+  ) {
     if (state.cachedImages.containsKey(event.imageUrl)) return;
     Map<String, bool> cachedImages = Map.of(state.cachedImages);
     cachedImages[event.imageUrl] = event.isLoaded;
     emit(PreCachingImageState(cachedImages: cachedImages));
   }
 
-  _onRemoveUrlThatNotUsedEvent(RemoveUrlThatNotUsedEvent event,
-      Emitter<PreCachingImageState> emit) async {
+  _onRemoveUrlThatNotUsedEvent(
+    RemoveUrlThatNotUsedEvent event,
+    Emitter<PreCachingImageState> emit,
+  ) async {
     Map<String, bool> cachedImages = Map.of(state.cachedImages);
     Map<String, bool> cachefSvgs = Map.of(state.cachehSvgs);
     List<String> keysImages = cachedImages.keys.toList();
@@ -305,7 +314,8 @@ class PreCachingImageBloc
         }
       }
     } catch (e) {}
-    emit(PreCachingImageState(
-        cachedImages: cachedImages, cachehSvgs: cachefSvgs));
+    emit(
+      PreCachingImageState(cachedImages: cachedImages, cachehSvgs: cachefSvgs),
+    );
   }
 }

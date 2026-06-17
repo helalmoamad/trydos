@@ -1128,6 +1128,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                     ?.length ??
                 0) >
             20)) {
+      print("CCCCCCCCCCCCCCCCCCCCCCC/////");
       return;
     }
     if (event.boutiqueSlug == "*featured*") {
@@ -1290,6 +1291,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           (event.boutiqueSlug != "*featured*" &&
               event.boutiqueSlug != "*flashDeal*" &&
               event.boutiqueSlug != "*recommended*")) {
+        print("CCCCCCCCCCCCCCCCCCCCCCC**---");
         return;
       }
       if (boutiquesThatDidPrefetch[key] == null) {
@@ -1718,6 +1720,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               ),
             );
           });
+        } else {
+          print("CCCCCCCCCCCCCCCCCCCCCCC");
         }
       },
     );
@@ -1730,6 +1734,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     double width,
     double height,
   ) async {
+    print("CCCCCCCCCCCCCCCCCCCCCCC");
     List<String> urlHasPredeched =
         prefsRepository.getImageUrlHasPrefeched ?? [];
     if (urlHasPredeched.contains(url) || url == "") {

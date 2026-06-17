@@ -469,9 +469,9 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                           height: 0,
                         ),
                       ),
+                      const Spacer(),
+
                       SizedBox(
-                        width: 100.w,
-                        height: 14.h,
                         child: ValueListenableBuilder<bool>(
                           valueListenable: widget.visibleRedeem,
                           builder: (context, _visibleRedeem, _) {

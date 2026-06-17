@@ -517,9 +517,9 @@ class Products {
           ? []
           : List<String>.from(json["videos"]!.map((x) => x)),
       offerPrice: double.tryParse(json["offer_price"].toString()),
-      maxAllowedQty: json["max_allowed_qty"],
+      maxAllowedQty: json["max_allowed_qty"].toString(),
       offerPriceFormatted: json["offer_price_formatted"],
-      collectedAfterOrdering: json["collected_after_ordering"],
+      collectedAfterOrdering: json["packed_after_ordering"],
       isFavourite: json["is_favourite"],
       isActive: json["is_active"],
       labelNames: json["label_names"] == null
@@ -662,7 +662,7 @@ class Products {
     "flash_deal_end_date": flashDealEndDate,
     "shipping_cost_multiply_with_quantity": shippingCostMultiplyWithQuantity,
     "shipping_cost": shippingCost?.toDouble(),
-    "collected_after_ordering": collectedAfterOrdering,
+    "packed_after_ordering": collectedAfterOrdering,
     "flash_deal_details": flashDealDetails,
     "flash_deal_max_allowed_quantity": flashDealMaxAllowedQuantity,
     "date_now": dateNow,

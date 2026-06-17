@@ -194,7 +194,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         originalUserId: event.originalUserId,
       ),
     );
-    response.fold(
+    await response.fold(
       (l) {
         if (ErrorManager.shouldRetry('LoginToChatEvent', l.statusCode)) {
           add(
@@ -218,7 +218,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
         _prefsRepository.setLogInToChat(false);
       },
-      (r) {
+      (r) async {
         _prefsRepository.setLogInToChat(true);
         ErrorManager.resetRetry('LoginToChatEvent');
         final id = r.data!.id;
@@ -235,10 +235,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ),
         );
         if (checkToken) {
-          _prefsRepository.setChatToken(token!);
-          _prefsRepository.setMyChatId(id!);
-          _prefsRepository.setMyChatName(name ?? 'No Name');
-          _prefsRepository.setMyChatPhoto(photo);
+          await _prefsRepository.setChatToken(token!);
+          await _prefsRepository.setMyChatId(id!);
+          await _prefsRepository.setMyChatName(name ?? 'No Name');
+          await _prefsRepository.setMyChatPhoto(photo);
         }
         emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
         NotificationProcess().fcmToken(null, null, null, null);
@@ -352,7 +352,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         verificationId: event.verificationId,
       ),
     );
-    response.fold(
+    await response.fold(
       (l) {
         if (ErrorManager.shouldRetry('VerifyOtpFromGuestEvent', l.statusCode)) {
           add(
@@ -373,11 +373,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ErrorManager.resetRetry('VerifyOtpFromGuestEvent');
         try {
           if ((r.data!.user?.name?.replaceAll(' ', '') ?? '') != '') {
-            _prefsRepository.setMyMarketName(r.data!.user!.name!);
+            await _prefsRepository.setMyMarketName(r.data!.user!.name!);
           }
 
-          _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-          _prefsRepository.setMarketToken(r.data?.token.toString());
+          await _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+          await _prefsRepository.setMarketToken(r.data?.token.toString());
 
           Future.delayed(const Duration(seconds: 30), () {
             print("#########33333333332");
@@ -462,7 +462,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         originalUserId: event.originalUserId,
       ),
     );
-    response.fold(
+    await response.fold(
       (l) {
         if (ErrorManager.shouldRetry('LoginToStoriesEvent', l.statusCode)) {
           add(
@@ -479,7 +479,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.failure),
         );
       },
-      (r) {
+      (r) async {
         emit(
           state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.success),
         );
@@ -490,9 +490,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final checkToken = token?.isNotEmpty ?? false;
         final name = r.data!.name;
         if (checkToken) {
-          _prefsRepository.setStoriesToken(token!);
-          _prefsRepository.setMyStoriesId(id!);
-          _prefsRepository.setMyStoriesName(name ?? 'No Name');
+          await _prefsRepository.setStoriesToken(token!);
+          await _prefsRepository.setMyStoriesId(id!);
+          await _prefsRepository.setMyStoriesName(name ?? 'No Name');
         }
         NotificationProcess().fcmToken(null, null, null, null);
         apisMustNotToRequest.remove('GetStoryEvent');
@@ -512,7 +512,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         name: event.name,
       ),
     );
-    response.fold(
+    await response.fold(
       (l) {
         if (ErrorManager.shouldRetry('LoginToWalletEvent', l.statusCode)) {
           add(
@@ -525,8 +525,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ErrorManager.incrementRetry('LoginToWalletEvent');
         }
       },
-      (r) {
-        _prefsRepository.setWalletToken(r.accessToken?.token ?? "");
+      (r) async {
+        await _prefsRepository.setWalletToken(r.accessToken?.token ?? "");
         add(CreateWalletEvent());
 
         ErrorManager.resetRetry('LoginToWalletEvent');
@@ -543,7 +543,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return;
     }
     final response = await createWalletUseCase(NoParams());
-    response.fold(
+    await response.fold(
       (l) {
         if (l.statusCode == 409) {
           _prefsRepository.setIsCearteWallet(true);
@@ -581,7 +581,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         otp: event.otp,
       ),
     );
-    response.fold(
+    await response.fold(
       (l) {
         if (ErrorManager.shouldRetry('VerifyOtpInProfileEvent', l.statusCode)) {
           add(
@@ -623,7 +623,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         otp: event.otp,
       ),
     );
-    response.fold(
+    await response.fold(
       (l) {
         if (ErrorManager.shouldRetry('VerifyOtpSignInEvent', l.statusCode)) {
           add(
@@ -642,17 +642,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ),
         );
       },
-      (r) {
+      (r) async {
         ErrorManager.resetRetry('VerifyOtpSignInEvent');
         try {
-          _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+          await _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
           if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
-            _prefsRepository.setMyMarketName(r.data!.user!.name!);
+            await _prefsRepository.setMyMarketName(r.data!.user!.name!);
           }
 
-          _prefsRepository.setMarketToken(r.data!.token!);
-          _prefsRepository.setTokenExpired(false);
-          _prefsRepository.setIdToken((r.data!.idToken).toString());
+          await _prefsRepository.setMarketToken(r.data!.token!);
+          await _prefsRepository.setTokenExpired(false);
+          await _prefsRepository.setIdToken((r.data!.idToken).toString());
           GetIt.I<HomeBloc>().add(
             SaveUserInfoFromAuthEvent(userInfo: r.data!.user!),
           );
@@ -664,9 +664,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           print(
             "*****************************-----------------------------${r.data!.token!}",
           );
-          _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
-          _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
-          _prefsRepository.setMyProfilePhoto(
+          await _prefsRepository.setVerifiedPhone(
+            r.data!.user?.isPhoneVerified == 1,
+          );
+          await _prefsRepository.setPhoneNumber(
+            (r.data!.user?.phone).toString(),
+          );
+          await _prefsRepository.setMyProfilePhoto(
             (r.data?.user?.image ?? "").toString(),
           );
           NotificationProcess().fcmToken(
@@ -758,7 +762,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         name: event.name,
       ),
     );
-    response.fold(
+    await response.fold(
       (l) {
         if (ErrorManager.shouldRetry('VerifyOtpSignUpEvent', l.statusCode)) {
           add(
@@ -777,17 +781,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ),
         );
       },
-      (r) {
+      (r) async {
         ErrorManager.resetRetry('VerifyOtpSignUpEvent');
         if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
-          _prefsRepository.setMyMarketName(r.data!.user!.name!);
+          await _prefsRepository.setMyMarketName(r.data!.user!.name!);
         }
         GetIt.I<HomeBloc>().add(
           SaveUserInfoFromAuthEvent(userInfo: r.data!.user!),
         );
-        _prefsRepository.setOtpCode(event.otp);
-        _prefsRepository.setMarketToken(r.data!.token!);
-        _prefsRepository.setTokenExpired(false);
+        await _prefsRepository.setOtpCode(event.otp);
+        await _prefsRepository.setMarketToken(r.data!.token!);
+        await _prefsRepository.setTokenExpired(false);
 
         //////////////////////////////////////
         FirebaseAnalytics.instance.setUserId(id: r.data!.user!.id.toString());
@@ -808,14 +812,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
         //  GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
         ;
-        _prefsRepository.setIdToken((r.data!.idToken).toString());
-        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+        await _prefsRepository.setIdToken((r.data!.idToken).toString());
+        await _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
         //    print(
         //    "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd${r.data!.user?.isPhoneVerified}");
 
-        _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
-        _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
-        _prefsRepository.setMyProfilePhoto(
+        await _prefsRepository.setVerifiedPhone(
+          r.data!.user?.isPhoneVerified == 1,
+        );
+        await _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
+        await _prefsRepository.setMyProfilePhoto(
           (r.data?.user?.image ?? "").toString(),
         );
         NotificationProcess().fcmToken(
@@ -890,7 +896,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     _prefsRepository.setVerifiedPhone(false);
-    response.fold(
+    await response.fold(
       (l) {
         _prefsRepository.setVerifiedPhone(previousStatusOfIsVerifiedPhone);
         if (ErrorManager.shouldRetry('RegisterGuestEvent', l.statusCode)) {
@@ -904,7 +910,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
         emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.failure));
       },
-      (r) {
+      (r) async {
         emit(
           state.copyWith(
             registerGuestStatus: RegisterGuestStatus.success,
@@ -915,11 +921,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setTokenExpired(false);
         });
         ErrorManager.resetRetry('RegisterGuestEvent');
-        _prefsRepository.setMarketToken(r.data!.token!);
-        _prefsRepository.setMyProfilePhoto(
+        await _prefsRepository.setMarketToken(r.data!.token!);
+        await _prefsRepository.setMyProfilePhoto(
           (r.data?.user?.image ?? "").toString(),
         );
-        _prefsRepository.setMyMarketName(r.data!.user!.name ?? "guest");
+        await _prefsRepository.setMyMarketName(r.data!.user!.name ?? "guest");
 
         //////////////////////////////////////
         FirebaseAnalytics.instance.setUserId(id: r.data!.user!.id.toString());
@@ -940,7 +946,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         GetIt.I<HomeBloc>().add(
           SaveUserInfoFromAuthEvent(userInfo: r.data!.user!),
         );
-        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+        await _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
         GetIt.I<HomeBloc>().add(const GetCartItemEvent());
 
@@ -959,7 +965,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final response = await updateNameUseCase(
       UpdateNameParams(name: event.name),
     );
-    response.fold(
+    await response.fold(
       (l) {
         if (ErrorManager.shouldRetry('UpdateNameEvent', l.statusCode)) {
           add(UpdateNameEvent(name: event.name));
@@ -984,7 +990,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
     GetIt.I<DashboardBloc>().add(GetUserPermissionEvent());
     final response = await getCustomerInfoUseCase(NoParams());
-    response.fold(
+    await response.fold(
       (l) {
         if (ErrorManager.shouldRetry('GetCustomerInfoEvent', l.statusCode)) {
           add(GetCustomerInfoEvent());
@@ -994,7 +1000,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.failure),
         );
       },
-      (userInfo) {
+      (userInfo) async {
         ErrorManager.resetRetry('GetCustomerInfoEvent');
         print(
           "userInfo.user?.isPhoneVerified ${userInfo.toJson()}------------------",
@@ -1011,30 +1017,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
 
 
-        _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
+        await _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
         if ((userInfo.name?.replaceAll(' ', '') ?? '') != '') {
-          _prefsRepository.setMyMarketName(userInfo.name!);
-          _prefsRepository.setMyChatName(userInfo.name!);
+          await _prefsRepository.setMyMarketName(userInfo.name!);
+          await _prefsRepository.setMyChatName(userInfo.name!);
 
-          _prefsRepository.setMyStoriesName(userInfo.name!);
+          await _prefsRepository.setMyStoriesName(userInfo.name!);
         }
         if (userInfo.image != null && userInfo.image != "") {
-          _prefsRepository.setMyProfilePhoto(
-            userInfo.image!.contains("cloudinary")
+          await _prefsRepository.setMyProfilePhoto(
+            userInfo.image!.contains("cloudinary") ||
+                    userInfo.image!.contains("media_server")
                 ? userInfo.image
-                : ("${dotenv.env['Images_Url']}" + userInfo.image!),
+                : ("${dotenv.env['Media_S3_Server']}" + userInfo.image!),
           );
-          _prefsRepository.setMyChatPhoto(
-            userInfo.image!.contains("cloudinary")
+          await _prefsRepository.setMyChatPhoto(
+            userInfo.image!.contains("cloudinary") || userInfo.image!.contains("media_server")
                 ? userInfo.image
-                : ("${dotenv.env['Images_Url']}" + userInfo.image!),
+                : ("${dotenv.env['Media_S3_Server']}" + userInfo.image!),
           );
         }
 
-        _prefsRepository.setMyMarketId(userInfo.id.toString());
-
-
-        _prefsRepository.setPhoneNumber((userInfo.phone).toString());
+        await _prefsRepository.setMyMarketId(userInfo.id.toString());
+        await _prefsRepository.setPhoneNumber((userInfo.phone).toString());
         GetIt.I<HomeBloc>().add(SaveUserInfoFromAuthEvent(userInfo: userInfo));
         emit(
           state.copyWith(
@@ -1080,9 +1085,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ErrorManager.incrementRetry('GetUserCountryEvent');
         }
       },
-      (r) {
+      (r) async {
         ErrorManager.resetRetry('GetUserCountryEvent');
-        _prefsRepository.setCountryIso(r.countryCode);
+        await _prefsRepository.setCountryIso(r.countryCode);
 
         emit(
           state.copyWith(
@@ -1282,7 +1287,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         generateTokenForCommentStatus: GenerateTokenForCommentStatus.loading,
       ),
     );
-    _prefsRepository.setTokenForComment("");
+    await _prefsRepository.setTokenForComment("");
     final response = await generateTokenForCommentUseCase(
       GeneratingTokenForCommentParams(
         userId: event.userId,
@@ -1290,7 +1295,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         otpIdToken: event.otpIdToken,
       ),
     );
-    response.fold(
+    await response.fold(
       (l) {
         if (ErrorManager.shouldRetry(
           'GenerateTokenForCommentEvent',
@@ -1313,8 +1318,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ),
         );
       },
-      (r) {
-        _prefsRepository.setTokenForComment(r);
+      (r) async {
+        await _prefsRepository.setTokenForComment(r);
         ErrorManager.resetRetry('GenerateTokenForCommentEvent');
         emit(
           state.copyWith(
