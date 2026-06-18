@@ -34,7 +34,6 @@ import 'package:trydos/features/authentication/presentation/widgets/verification
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 import 'package:trydos/features/dashBoard/presentation/bloc/dashBoard_bloc.dart'
     as dashboard;
-import 'package:trydos/features/dashBoard/presentation/pages/SelectShopForOrderPage.dart';
 import 'package:trydos/features/dashBoard/presentation/pages/select_shop_page.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/presentation/pages/become_seller/become_seller_page.dart';
@@ -66,6 +65,7 @@ class ProfileHomePage extends StatefulWidget {
 
 class _ProfileHomePageState extends State<ProfileHomePage> {
   late HomeBloc homeBloc;
+  late dashboard.DashboardBloc dashboardBloc;
   late AuthBloc authBloc;
   late OrderBloc orderBloc;
   final PanelController panelController = PanelController();
@@ -84,6 +84,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     LastPagesTracker.push("ProfileHome Page");
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    dashboardBloc = BlocProvider.of<dashboard.DashboardBloc>(context);
     //authBloc.add(CreateWalletEvent());
     orderBloc = BlocProvider.of<OrderBloc>(context);
     homeBloc.add(
@@ -174,54 +175,96 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     SizedBox(height: 18.h, width: 1.sw),
                     _personInfoWidget(),
                     SizedBox(height: 18.h, width: 1.sw),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const SelectShopForOrderPage(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(10.r),
 
-                        height: 94.h,
-                        width: 1.sw,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1D1D1D),
-                          borderRadius: BorderRadius.circular(15.r),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SvgPicture.asset(
-                              AppAssets.BagwhiteSvg,
-                              width: 25.w,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              "Sales",
-                              style: TextStyle(
-                                color: const Color(0xFFFCFCFC),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w500,
+                    BlocBuilder<
+                      dashboard.DashboardBloc,
+                      dashboard.DashBoardState
+                    >(
+                      buildWhen: (previous, current) =>
+                          previous.getUserPermissionStatus !=
+                          current.getUserPermissionStatus,
+                      builder: (context, state) {
+                        if (state.getUserPermissionStatus ==
+                            dashboard.GetUserPermissionStatus.loading) {
+                          return Shimmer.fromColors(
+                            baseColor: Colors.grey[200]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(
+                              width: 1.sw,
+                              height: 54.h,
+                              decoration: BoxDecoration(
+                                color: const Color(0xffFAFAFA),
+                                borderRadius: BorderRadius.circular(15.r),
                               ),
                             ),
-                            SizedBox(height: 10.h),
-                            Text(
-                              "1 Action",
-                              style: TextStyle(
-                                color: const Color(0xFFFCFCFC),
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w500,
+                          );
+                        }
+                        if (state.getUserPermissionStatus ==
+                                dashboard.GetUserPermissionStatus.success &&
+                            (!(state.shops?.isNullOrEmpty ?? true))) {
+                          return InkWell(
+                            onTap: () {
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) =>
+                              //         const SelectShopForOrderPage(),
+                              //   ),
+                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SelectShopPage(),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(10.h),
+                              height: 130.h,
+                              width: 1.sw,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1D1D1D),
+                                borderRadius: BorderRadius.circular(15.r),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SvgPicture.asset(
+                                    AppAssets.BagwhiteSvg,
+                                    width: 25.w,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    LocaleKeys.sellers.tr(),
+                                    style: TextStyle(
+                                      color: const Color(0xFFFCFCFC),
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10.h),
+                                  BlocBuilder<OrderBloc, OrderState>(
+                                    builder: (context, state) {
+                                      return Text(
+                                        "${state.orderTotalSize} ${LocaleKeys.action.tr()}",
+                                        style: TextStyle(
+                                          color: const Color(0xFFFCFCFC),
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
+                          );
+                        }
+
+                        return const SizedBox.shrink();
+                      },
                     ),
+
                     SizedBox(height: 18.h, width: 1.sw),
                     Container(
                       width: 1.sw,
@@ -232,51 +275,51 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       ),
                     ),
                     SizedBox(height: 10.h, width: 1.sw),
-                    BlocBuilder<
-                      dashboard.DashboardBloc,
-                      dashboard.DashBoardState
-                    >(
-                      buildWhen: (previous, current) =>
-                          previous.getUserPermissionStatus !=
-                          current.getUserPermissionStatus,
-                      builder: (context, state) {
-                        return state.getUserPermissionStatus ==
-                                dashboard.GetUserPermissionStatus.loading
-                            ? Shimmer.fromColors(
-                                baseColor: Colors.grey[200]!,
-                                highlightColor: Colors.grey[100]!,
-                                child: Container(
-                                  width: 1.sw,
-                                  height: 54.h,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xffFAFAFA),
-                                    borderRadius: BorderRadius.circular(15.r),
-                                  ),
-                                ),
-                              )
-                            : (state.getUserPermissionStatus ==
-                                      dashboard
-                                          .GetUserPermissionStatus
-                                          .success &&
-                                  (!(state.shops?.isNullOrEmpty ?? true)))
-                            ? InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const SelectShopPage(),
-                                    ),
-                                  );
-                                },
-                                child: _actionWidget(
-                                  AppAssets.marketSvg,
-                                  LocaleKeys.go_to_seller_dashboard.tr(),
-                                ),
-                              )
-                            : const SizedBox.shrink();
-                      },
-                    ),
+                    // BlocBuilder<
+                    //   dashboard.DashboardBloc,
+                    //   dashboard.DashBoardState
+                    // >(
+                    //   buildWhen: (previous, current) =>
+                    //       previous.getUserPermissionStatus !=
+                    //       current.getUserPermissionStatus,
+                    //   builder: (context, state) {
+                    //     return state.getUserPermissionStatus ==
+                    //             dashboard.GetUserPermissionStatus.loading
+                    //         ? Shimmer.fromColors(
+                    //             baseColor: Colors.grey[200]!,
+                    //             highlightColor: Colors.grey[100]!,
+                    //             child: Container(
+                    //               width: 1.sw,
+                    //               height: 54.h,
+                    //               decoration: BoxDecoration(
+                    //                 color: const Color(0xffFAFAFA),
+                    //                 borderRadius: BorderRadius.circular(15.r),
+                    //               ),
+                    //             ),
+                    //           )
+                    //         : (state.getUserPermissionStatus ==
+                    //                   dashboard
+                    //                       .GetUserPermissionStatus
+                    //                       .success &&
+                    //               (!(state.shops?.isNullOrEmpty ?? true)))
+                    //         ? InkWell(
+                    //             onTap: () {
+                    //               Navigator.push(
+                    //                 context,
+                    //                 MaterialPageRoute(
+                    //                   builder: (context) =>
+                    //                       const SelectShopPage(),
+                    //                 ),
+                    //               );
+                    //             },
+                    //             child: _actionWidget(
+                    //               AppAssets.marketSvg,
+                    //               LocaleKeys.go_to_seller_dashboard.tr(),
+                    //             ),
+                    //           )
+                    //         : const SizedBox.shrink();
+                    //   },
+                    // ),
                     SizedBox(height: 10.h, width: 1.sw),
                     BlocBuilder<
                       dashboard.DashboardBloc,

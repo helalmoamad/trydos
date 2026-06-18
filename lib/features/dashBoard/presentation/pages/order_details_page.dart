@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart' as local;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
@@ -457,7 +456,7 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                                             index: entry.key + 1,
                                             context: context,
                                             imageUrl:
-                                                dotenv.env['Images_Url']! +
+                                                // dotenv.env['Images_Url']! +
                                                 entry.value.cartImage,
                                             brand: entry.value.brandIcon,
                                             title: entry.value.productName,

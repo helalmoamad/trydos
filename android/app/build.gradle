@@ -58,8 +58,8 @@ android {
     }
     buildTypes {
     release {
-        minifyEnabled true  // تفعيل تقليل الكود (R8)
-        shrinkResources true // تقليل حجم الموارد (اختياري لكن مفيد)
+        minifyEnabled false  // تعطيل تقليل الكود مؤقتًا
+        shrinkResources false // تعطيل تقليل الموارد مؤقتًا
         proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         signingConfig keystorePropertiesFile.exists() ? signingConfigs.release : signingConfigs.debug
 }
