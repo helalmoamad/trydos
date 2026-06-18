@@ -23,9 +23,11 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/authentication/presentation/widgets/welcome_section.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
@@ -88,6 +90,11 @@ class _HomePageState extends State<HomePage> {
   final ValueNotifier<bool> loadingForRquestProductDetails = ValueNotifier(
     false,
   );
+    bool fromLogin = false;
+  final ValueNotifier<bool> animate = ValueNotifier(false);
+  Duration animationDuration = const Duration(milliseconds: 500);
+
+  final ValueNotifier<int> pageContent = ValueNotifier(0);
   final ValueNotifier<bool> productIsFlashDeal = ValueNotifier(false);
   final ValueNotifier<bool> productIsRecommend = ValueNotifier(false);
   final ScrollController scrollController = ScrollController();
@@ -1079,6 +1086,48 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                               ]
                                             : [
+                                                WelcomeSection(
+                                                                              goToLoginSection: () {
+                                                                                fromLogin = true;
+                                                                                animationDuration = const Duration(
+                                                                                  seconds: 1,
+                                                                                );
+                                                                                animate.value = true;
+                                                                                pageContent.value = 2;
+                                                                                pageController.animateToPage(
+                                                                                  2,
+                                                                                  duration: const Duration(
+                                                                                    milliseconds: 100,
+                                                                                  ),
+                                                                                  curve: Curves.easeInOut,
+                                                                                );
+                                                                              },
+                                                                              goToCreateAccount: () {
+                                                                                fromLogin = false;
+                                                                                animate.value = true;
+                                                                                pageContent.value = 1;
+                                                                                pageController.animateToPage(
+                                                                                  1,
+                                                                                  duration: const Duration(
+                                                                                    milliseconds: 500,
+                                                                                  ),
+                                                                                  curve: Curves.easeInOut,
+                                                                                );
+                                                                                //_animationController.forward();
+                                                                              },
+                                                                            ),
+                                                                            CreateAccountSection(
+                                                                              moveToNextStep: () {
+                                                                                pageContent.value = 2;
+                                                                                pageController.animateToPage(
+                                                                                  2,
+                                                                                  duration: const Duration(
+                                                                                    milliseconds: 500,
+                                                                                  ),
+                                                                                  curve: Curves.easeInOut,
+                                                                                );
+                                                                              },
+                                                                            ),
                                                 InsertPhoneTab(
                                                   focusNode: focusNode,
                                                   moveToNextStep:

@@ -13,12 +13,17 @@ abstract class PrefsKey {
    static const fcmMarketTokenId= r'__$fcmMarketTokenId$__';
   static const requestNotificationPermission =
       r'__$__requestNotificationPermission__$__';
+
+      static const allowedToUploadStories = 'is_allowed_to_upload_stories';
+
+
   static const tokenExpired = r'__$__tokenexpired__$__';
   static const isLogInToChat = r'__$__isLogInToChat__$__';
   static const userChatId = r'__$__userChatId__$__';
   static const sessionId = r'__$__sessionId__$__';
   static const userStoriesId = r'__$__userStoriesId__$__';
   static const isTimerRunningId = r'__$__isTimerRunning__$__';
+    static const otpTimerEndTime = r'__$__otpTimerEndTime__$__';
   static const userCountryIsAvailable = r'__$__UserCountryIsAvailable__$__';
   static const language = r'__$__language__$__';
 

@@ -111,6 +111,8 @@ abstract class PrefsRepository {
   Future<bool> removeFiveFilterHasPerfechedWhenOpenApp();
 
   Future<bool> setVerifiedPhone(bool verifiedPhone);
+  Future<bool> setAllowedToUploadStories(bool allowedToUploadStories);
+  bool getAllowedToUploadStories();
   Future<bool> setRequestNotificationPermission(
     bool requestNotificationPermission,
   );
@@ -119,6 +121,9 @@ abstract class PrefsRepository {
   );
   Future<bool> setTokenExpired(bool tokenExpired);
   Future<bool> setTimerForOtpRunning(bool isRunning);
+  int? get otpTimerEndTime;
+  Future<bool> setOtpTimerEndTime(int endTime);
+  Future<bool> removeOtpTimerEndTime();
   Future<bool> setDuration(int duration);
   Future<bool> setLanguage(String? language);
   Future<bool> setNotificationTypesFromTerminated(

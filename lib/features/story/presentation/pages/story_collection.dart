@@ -591,11 +591,40 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               widget.animatedController.forward();
                             }
                             _videoController!.addListener(() {
-                              if (!_videoController!.value.isPlaying) {
-                                widget.animatedController.stop();
-                              } else {
+                              final value = _videoController!.value;
+                              // If the video is playing, keep the animation running
+                              if (value.isPlaying) {
                                 widget.animatedController.forward();
+                                return;
                               }
+
+                              // If video is not playing, check whether it reached the end.
+                              // When the video finishes, advance the animated controller to
+                              // completion so the status listener will move to the next story.
+                              final position = value.position;
+                              final duration = value.duration;
+                              if (duration != null && position != null) {
+                                final isEnded = !value.isPlaying &&
+                                    (position >= duration ||
+                                        duration - position <=
+                                            const Duration(milliseconds: 200));
+                                if (isEnded) {
+                                  // animate to completion quickly to trigger status listener
+                                  try {
+                                    widget.animatedController.animateTo(
+                                      1.0,
+                                      duration:
+                                          const Duration(milliseconds: 120),
+                                    );
+                                  } catch (_) {
+                                    // ignore if controller disposed
+                                  }
+                                  return;
+                                }
+                              }
+
+                              // Otherwise, just stop the animation (paused mid-video)
+                              widget.animatedController.stop();
                             });
                           },
                           onError: (e) {

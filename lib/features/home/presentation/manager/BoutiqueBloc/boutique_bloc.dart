@@ -2289,7 +2289,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                           state.appliedFiltersByUser[key]?.filters?.searchText)
                       ?.length ??
                   0) >
-              2) {
+              1) {
             FirebaseAnalyticsService.logEventForSession(
               eventName: AnalyticsEventsConst.SEARCH,
               executedEventName:
@@ -2559,13 +2559,19 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               event.boutiqueSlug: r.data!.totalSize ?? 0,
             }),
             getProductFiltersModel: Map.of(data),
+            suggestion: r.suggestion,
             isGettingProductListingWithPagination: false,
           ),
         );
       },
     );
   }
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+///
+///
+///
+///
   FutureOr<void> _onGetProductsWithFiltersWithPaginationEvent(
     GetProductsWithFiltersWithPaginationEvent event,
     Emitter<BoutiqueState> emit,

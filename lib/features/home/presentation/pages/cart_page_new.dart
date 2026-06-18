@@ -20,9 +20,11 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/authentication/presentation/widgets/welcome_section.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -69,6 +71,11 @@ class _CartPageState extends State<CartPage> {
   final PanelController panelController = PanelController();
   int maxShippingDay = 0;
   bool? fromForGroundNotification;
+  bool fromLogin = false;
+  final ValueNotifier<bool> animate = ValueNotifier(false);
+  Duration animationDuration = const Duration(milliseconds: 500);
+
+  final ValueNotifier<int> pageContent = ValueNotifier(0);
 
   @override
   void initState() {
@@ -1996,7 +2003,10 @@ class _CartPageState extends State<CartPage> {
                                                                         pageController,
                                                                     children:
                                                                         ((prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                                                                            false) && (prefsRepository.myPhoneNumber?.length ?? 0) > 1)
+                                                                                false) &&
+                                                                            (prefsRepository.myPhoneNumber?.length ??
+                                                                                    0) >
+                                                                                1)
                                                                         ? [
                                                                             VerifyOtp(
                                                                               fromProfile: false,
@@ -2029,6 +2039,49 @@ class _CartPageState extends State<CartPage> {
                                                                             ),
                                                                           ]
                                                                         : [
+                                                                            // herr
+                                                                            WelcomeSection(
+                                                                              goToLoginSection: () {
+                                                                                fromLogin = true;
+                                                                                animationDuration = const Duration(
+                                                                                  seconds: 1,
+                                                                                );
+                                                                                animate.value = true;
+                                                                                pageContent.value = 2;
+                                                                                pageController.animateToPage(
+                                                                                  2,
+                                                                                  duration: const Duration(
+                                                                                    milliseconds: 100,
+                                                                                  ),
+                                                                                  curve: Curves.easeInOut,
+                                                                                );
+                                                                              },
+                                                                              goToCreateAccount: () {
+                                                                                fromLogin = false;
+                                                                                animate.value = true;
+                                                                                pageContent.value = 1;
+                                                                                pageController.animateToPage(
+                                                                                  1,
+                                                                                  duration: const Duration(
+                                                                                    milliseconds: 500,
+                                                                                  ),
+                                                                                  curve: Curves.easeInOut,
+                                                                                );
+                                                                                //_animationController.forward();
+                                                                              },
+                                                                            ),
+                                                                            CreateAccountSection(
+                                                                              moveToNextStep: () {
+                                                                                pageContent.value = 2;
+                                                                                pageController.animateToPage(
+                                                                                  2,
+                                                                                  duration: const Duration(
+                                                                                    milliseconds: 500,
+                                                                                  ),
+                                                                                  curve: Curves.easeInOut,
+                                                                                );
+                                                                              },
+                                                                            ),
                                                                             InsertPhoneTab(
                                                                               focusNode: focusNode,
                                                                               moveToNextStep:
@@ -2405,7 +2458,10 @@ class _CartPageState extends State<CartPage> {
                                                                                 if (prefsRepository.isVerifiedPhone !=
                                                                                     true) {
                                                                                   if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                                                                                      false) && (prefsRepository.myPhoneNumber?.length ?? 0) > 1) {
+                                                                                          false) &&
+                                                                                      (prefsRepository.myPhoneNumber?.length ??
+                                                                                              0) >
+                                                                                          1) {
                                                                                     authBloc.add(
                                                                                       SendOtpEvent(
                                                                                         phone: prefsRepository.myPhoneNumber!,

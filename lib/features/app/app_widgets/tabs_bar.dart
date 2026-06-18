@@ -375,10 +375,13 @@ class _TabsBarState extends State<TabsBar> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AnimatedSearchBar(
-                    autoFocus: TestVariables.kTestMode ? false : true,
+                  BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                    builder: (context, bState) {
+                      return AnimatedSearchBar(
+                        autoFocus: TestVariables.kTestMode ? false : true,
+                        suggestion: bState.suggestion ?? homeState.theReplyFromGemini,
                     onFieldSubmitted: (text) {
-                      if (text.replaceAll(" ", "").length > 2) {
+                      if (text.replaceAll(" ", "").length > 1) {
                         widget.buildSearchResult.value = text.length;
                         widget.appearTrendingAndHistory.value = true;
 
@@ -717,6 +720,9 @@ class _TabsBarState extends State<TabsBar> {
                       ),
                     ),
                     onChanged: (String text) {
+                      print(
+                        "**111111111111#########111111111111111-------------------------------${text}",
+                      );
                       if (debounce?.isActive ?? false) {
                         debounce!.cancel();
                       }
@@ -727,7 +733,7 @@ class _TabsBarState extends State<TabsBar> {
                         String searchText = text;
                         //   List<String>? sizesFilter = [];
 
-                        if (text.length > 2) {
+                        if (text.length > 1) {
                           /* List<String> listOfSearchText =
                                         text.split(" ").toList();
                                     for (var i = 0;
@@ -800,7 +806,7 @@ class _TabsBarState extends State<TabsBar> {
 
                           widget.buildSearchResult.value = text.length;
                         }
-                        if (text.length < 3) {
+                        if (text.length < 2) {
                           categoryBloc.add(
                             ReplyFromGeminiEvent(
                               fromSearch: true,
@@ -827,7 +833,7 @@ class _TabsBarState extends State<TabsBar> {
                             ),
                           );
                         }
-                        if (text.length < 3 &&
+                        if (text.length < 2 &&
                             resetSearchAfterSearchingWhileRemoveSearch) {
                           resetSearchAfterSearchingWhileRemoveSearch = false;
                           Filter filters =
@@ -868,7 +874,9 @@ class _TabsBarState extends State<TabsBar> {
                         }
                       });
                     },
-                    hideTrendingAndHistory: widget.appearTrendingAndHistory,
+                        hideTrendingAndHistory: widget.appearTrendingAndHistory,
+                      );
+                    },
                   ),
                   BlocBuilder<AppBloc, AppState>(
                     buildWhen: (p, c) => p.currentIndex != c.currentIndex,

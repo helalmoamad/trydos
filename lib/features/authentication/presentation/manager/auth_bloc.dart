@@ -1002,6 +1002,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (userInfo) async {
         ErrorManager.resetRetry('GetCustomerInfoEvent');
+        print(
+          "userInfo.user?.isPhoneVerified ${userInfo.toJson()}------------------",
+        );
+
+        _prefsRepository.setAllowedToUploadStories(userInfo.isAllowedToUploadStories ?? false);
+        bool x =_prefsRepository.getAllowedToUploadStories();
+
+        print("allowedToUploadStories $x------------------");
+
+
+        
+
+
+
 
         await _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
         if ((userInfo.name?.replaceAll(' ', '') ?? '') != '') {
@@ -1025,7 +1039,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
 
         await _prefsRepository.setMyMarketId(userInfo.id.toString());
-
         await _prefsRepository.setPhoneNumber((userInfo.phone).toString());
         GetIt.I<HomeBloc>().add(SaveUserInfoFromAuthEvent(userInfo: userInfo));
         emit(

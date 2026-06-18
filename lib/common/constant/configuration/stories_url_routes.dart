@@ -5,7 +5,7 @@ extension ScopeApi on String {
 
   String get _currentVersion => 'v1';
 
-  String get _prefix => '/stories/public/$_api/${_currentVersion}';
+  String get _prefix => '/$_api/${_currentVersion}';
 
   String storiesScope() => '$_prefix/stories/$this';
   String usersScope() => '$_prefix/users/$this';

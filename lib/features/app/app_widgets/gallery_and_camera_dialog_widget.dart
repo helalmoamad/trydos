@@ -40,6 +40,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
           children: [
             TextButton(
               onPressed: () async {
+                Navigator.of(context).pop();
                 List<CameraDescription> cameras = [];
                 cameras = await availableCameras();
                 if (fromStory ?? false) {
@@ -69,7 +70,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                 }
 
                 onChooseFileFromCameraAction.call(selectedFile);
-                Navigator.of(context).pop();
+                
                 /////////////////////////////////
                 // FirebaseAnalyticsService.logEventForSession(
                 //   eventName: AnalyticsEventsConst.buttonClicked,
@@ -82,6 +83,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
             Builder(builder: (context) {
               return TextButton(
                 onPressed: () async {
+                  Navigator.of(context).pop();
                   AssetEntity? assetEntity;
                   assetEntity =
                       await HelperFunctions.getAssetFromGallery(context);

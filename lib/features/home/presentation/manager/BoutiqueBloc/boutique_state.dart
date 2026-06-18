@@ -42,6 +42,7 @@ class BoutiqueState extends Equatable {
     this.currentMainCategoryTaped,
     this.boutiquesThatDidPrefetch = const {},
     this.countOfProductExpectedByFiltering,
+        this.suggestion,
   });
   final Map<String, List<String>> sizeAndColorFilterinTextToSearch;
 
@@ -71,6 +72,7 @@ class BoutiqueState extends Equatable {
   final int? filterOffset;
   final Map<String, List<double>>? searchWithFilterOffset;
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
+    final String? suggestion;
 
   @override
   List<Object?> get props => [
@@ -89,6 +91,7 @@ class BoutiqueState extends Equatable {
         getProductFiltersModel,
         isGettingProductListingWithPaginationForAppearProduct,
         getProductListingWithFiltersPaginationModels,
+        suggestion,
         boutiquesThatDidPrefetch,
         isGettingProductListingWithPagination,
         appliedFiltersByUser,
@@ -125,6 +128,7 @@ class BoutiqueState extends Equatable {
     //  final Map<String, get_filters.GetProductFiltersModel?>?
     //  getProductFiltersWithPrefetchModel,
     final Map<String, List<double>>? searchWithFilterOffset,
+        final String? suggestion,
   }) {
     return BoutiqueState(
         sizeAndColorFilterinTextToSearch: sizeAndColorFilterinTextToSearch ??
@@ -170,6 +174,7 @@ class BoutiqueState extends Equatable {
         isGettingProductListingWithPaginationForAppearProduct:
             isGettingProductListingWithPaginationForAppearProduct ??
                 this.isGettingProductListingWithPaginationForAppearProduct,
+        suggestion: suggestion ?? this.suggestion,
         filterOffset: filterOffset ?? this.filterOffset);
   }
 }

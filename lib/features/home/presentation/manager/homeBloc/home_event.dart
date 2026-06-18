@@ -301,6 +301,17 @@ class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
   List<Object?> get props => [productId, productSlug];
 }
 
+class GetRelatedProductsEvent extends HomeEvent {
+  final int? productSlug;
+  final String? color;
+
+  GetRelatedProductsEvent({required this.productSlug, required this.color});
+  
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class GetFullProductDetailsEvent extends HomeEvent {
   final String productSlug;
   final String? currentColorName;

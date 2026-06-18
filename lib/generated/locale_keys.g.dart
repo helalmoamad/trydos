@@ -906,4 +906,5 @@ abstract class LocaleKeys {
   static const field_must_not_exceed_10_characters =
       'field_must_not_exceed_10_characters';
   static const update = 'update';
+  static const similar_products = 'similar_products';
 }

@@ -300,6 +300,8 @@ import '../../features/home/domain/use_cases/get_stories_for_product_usecase.dar
     as _i533;
 import '../../features/home/domain/use_cases/get_user_notification_usecase.dart'
     as _i1021;
+import '../../features/home/domain/use_cases/GetRelatedProductsUseCase.dart'
+    as _i1022;
 import '../../features/home/domain/use_cases/hide_item_from_oldCart_usecase.dart'
     as _i104;
 import '../../features/home/domain/use_cases/order_return_details_usecase.dart'
@@ -548,6 +550,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.lazySingleton<_i70.DashBoardRepository>(
     () => _i161.DashBoardRepositoryImpl(gh<_i57.DashBoardRemoteDataSource>()),
+  );
+  gh.factory<_i1022.GetRelatedProductsUseCase>(
+    () => _i1022.GetRelatedProductsUseCase(gh<_i0.HomeRepository>()),
   );
   gh.factory<_i70.AddCustomerAddressUseCase>(
     () => _i70.AddCustomerAddressUseCase(gh<_i0.HomeRepository>()),
@@ -951,59 +956,6 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i897.UploadFileUseCase>(
     () => _i897.UploadFileUseCase(gh<_i420.ChatRepository>()),
   );
-  gh.lazySingleton<_i903.HomeBloc>(
-    () => _i903.HomeBloc(
-      gh<_i533.GetStoryForProductUseCase>(),
-      gh<_i687.RemoveItemToCartUseCase>(),
-      gh<_i94.ConvertItemFromcartToOldCartUsecase>(),
-      gh<_i307.GetCartItemUseCase>(),
-      gh<_i318.GetOldCartItemUseCase>(),
-      gh<_i366.StoreFcmTokenOfMarketUseCase>(),
-      gh<_i878.DeleteLikeOfProductUsecase>(),
-      gh<_i33.AddLikeToProductUsecase>(),
-      gh<_i802.UpdateItemInCartUseCase>(),
-      gh<_i131.GetFqaCommentsUsecase>(),
-      gh<_i626.GetBuyerCommentsUsecase>(),
-      gh<_i1035.AddItemToCartUseCase>(),
-      gh<_i403.DeleteOrderCommentRatingUseCase>(),
-      gh<_i315.UpdateProfileUseCase>(),
-      gh<_i580.UpdateLikeSocialSharedProductsUsecase>(),
-      gh<_i318.GetAllowedCountryUseCase>(),
-      gh<_i929.GetNotificationTypeProductUseCase>(),
-      gh<_i912.GetWidthAndHeightUseCase>(),
-      gh<_i171.GetMyFirebaseSettingsUseCase>(),
-      gh<_i603.GetCurrenciesForWalletUseCase>(),
-      gh<_i143.GetAuthProductDetailsUseCase>(),
-      gh<_i750.UpdateEmailNotificationUseCase>(),
-      gh<_i741.UpdateFirebaseNotificationUseCase>(),
-      gh<_i432.UpdateNotificationFrequencyUseCase>(),
-      gh<_i744.UpdateWhatsappNotificationUseCase>(),
-      gh<_i814.ChangeCountryLanguageFornotificationUseCase>(),
-      gh<_i863.GetOrderRatingUsecase>(),
-      gh<_i22.UpdateOrderCommentRatingUseCase>(),
-      gh<_i608.SendAcceptOfNotificationsUseCase>(),
-      gh<_i687.SubscribeTopicFornotificationUseCase>(),
-      gh<_i424.UnSubscribeTopicFornotificationUseCase>(),
-      gh<_i347.GetProductDetailWithoutRelatedProductsUseCase>(),
-      gh<_i327.CreateOrderCommentRatingUseCase>(),
-      gh<_i815.GetStartingSettingsUseCase>(),
-      gh<_i963.GetPopularSearchItemUseCase>(),
-      gh<_i651.UpdateUserPhotoUseCase>(),
-      gh<_i762.GetCurrencyForCountryUseCase>(),
-      gh<_i104.HideItemsInOldCartUseCase>(),
-      gh<_i149.GetFullProductDetailsUseCase>(),
-      gh<_i164.CountryBoundaryByIsoUseCase>(),
-      gh<_i922.GetAndAddCountViewOfProductUsecase>(),
-      gh<_i78.SendErrorToMobileErrorLogUseCase>(),
-      gh<_i397.GetProductsWithoutFiltersUseCase>(),
-      gh<_i630.UpdateLikeCommentUseCase>(),
-      gh<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(),
-      gh<_i812.CheckAvailabilityProductCartUsecase>(),
-      gh<_i675.GetCartOverviewUseCase>(),
-      gh<_i358.TranslateCommentUsecase>(),
-      gh<_i1021.GetUserNotificationUseCase>(),
-    ),
-  );
   gh.lazySingleton<_i976.DashboardBloc>(
     () => _i976.DashboardBloc(
       gh<_i652.GetUserPermissionUseCase>(),
@@ -1085,6 +1037,60 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i955.GetProductsWithFiltersUseCase>(),
       gh<_i889.GetRecommendProductsUseCase>(),
       gh<_i290.GetProductFiltersUseCase>(),
+    ),
+  );
+  gh.lazySingleton<_i903.HomeBloc>(
+    () => _i903.HomeBloc(
+      gh<_i533.GetStoryForProductUseCase>(),
+      gh<_i687.RemoveItemToCartUseCase>(),
+      gh<_i94.ConvertItemFromcartToOldCartUsecase>(),
+      gh<_i307.GetCartItemUseCase>(),
+      gh<_i318.GetOldCartItemUseCase>(),
+      gh<_i366.StoreFcmTokenOfMarketUseCase>(),
+      gh<_i878.DeleteLikeOfProductUsecase>(),
+      gh<_i33.AddLikeToProductUsecase>(),
+      gh<_i802.UpdateItemInCartUseCase>(),
+      gh<_i131.GetFqaCommentsUsecase>(),
+      gh<_i626.GetBuyerCommentsUsecase>(),
+      gh<_i1035.AddItemToCartUseCase>(),
+      gh<_i403.DeleteOrderCommentRatingUseCase>(),
+      gh<_i315.UpdateProfileUseCase>(),
+      gh<_i580.UpdateLikeSocialSharedProductsUsecase>(),
+      gh<_i318.GetAllowedCountryUseCase>(),
+      gh<_i929.GetNotificationTypeProductUseCase>(),
+      gh<_i912.GetWidthAndHeightUseCase>(),
+      gh<_i171.GetMyFirebaseSettingsUseCase>(),
+      gh<_i1022.GetRelatedProductsUseCase>(),
+      gh<_i603.GetCurrenciesForWalletUseCase>(),
+      gh<_i143.GetAuthProductDetailsUseCase>(),
+      gh<_i750.UpdateEmailNotificationUseCase>(),
+      gh<_i741.UpdateFirebaseNotificationUseCase>(),
+      gh<_i432.UpdateNotificationFrequencyUseCase>(),
+      gh<_i744.UpdateWhatsappNotificationUseCase>(),
+      gh<_i814.ChangeCountryLanguageFornotificationUseCase>(),
+      gh<_i863.GetOrderRatingUsecase>(),
+      gh<_i22.UpdateOrderCommentRatingUseCase>(),
+      gh<_i608.SendAcceptOfNotificationsUseCase>(),
+      gh<_i687.SubscribeTopicFornotificationUseCase>(),
+      gh<_i424.UnSubscribeTopicFornotificationUseCase>(),
+      gh<_i347.GetProductDetailWithoutRelatedProductsUseCase>(),
+      gh<_i327.CreateOrderCommentRatingUseCase>(),
+      gh<_i815.GetStartingSettingsUseCase>(),
+      gh<_i963.GetPopularSearchItemUseCase>(),
+      gh<_i651.UpdateUserPhotoUseCase>(),
+      gh<_i762.GetCurrencyForCountryUseCase>(),
+      gh<_i104.HideItemsInOldCartUseCase>(),
+      gh<_i149.GetFullProductDetailsUseCase>(),
+      gh<_i164.CountryBoundaryByIsoUseCase>(),
+      gh<_i922.GetAndAddCountViewOfProductUsecase>(),
+      gh<_i78.SendErrorToMobileErrorLogUseCase>(),
+      gh<_i397.GetProductsWithoutFiltersUseCase>(),
+      gh<_i630.UpdateLikeCommentUseCase>(),
+      gh<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(),
+      gh<_i812.CheckAvailabilityProductCartUsecase>(),
+      gh<_i675.GetCartOverviewUseCase>(),
+      gh<_i358.TranslateCommentUsecase>(),
+      gh<_i1021.GetUserNotificationUseCase>(),
     ),
   );
   gh.lazySingleton<_i279.OrderBloc>(
