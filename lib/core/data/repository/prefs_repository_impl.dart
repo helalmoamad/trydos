@@ -710,15 +710,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  // TODO: implement isSmartlookStarted
-  bool? get isSmartlookStarted =>
-      _preferences.getBool(PrefsKey.isSmartlookStarted);
-
-  @override
-  Future<bool> setIsSmartlookStarted(bool isSmartlookStarted) =>
-      _preferences.setBool(PrefsKey.isSmartlookStarted, isSmartlookStarted);
-
-  @override
   // TODO: implement isTokenExpired
   bool? get isTokenExpired => _preferences.getBool(PrefsKey.tokenExpired);
 

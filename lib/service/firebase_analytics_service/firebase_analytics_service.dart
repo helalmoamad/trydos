@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
+import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../core/domin/repositories/prefs_repository.dart';
 
@@ -39,61 +40,74 @@ class FirebaseAnalyticsService {
 
   static Future<void> logEventForSession({
     required String eventName,
-    // required String executedEventName,
     Map<String, String>? extraParams,
     bool isForApi = false,
-    required executedEventName,
+    required String executedEventName,
   }) async {
-    final sessionId = Random()
-        .nextInt(1000000)
-        .toString(); //await FirebaseAnalytics.instance.getSessionId();
+    final sessionId = Random().nextInt(1000000).toString();
+
     try {
-      await FirebaseAnalytics.instance
-          .logEvent(
-            name: eventName,
-            parameters: {
-              'event_id': Random().nextInt(1000000).toString(),
-              'timestamp_now': DateTime.now()
-                  .toUtc()
-                  .add(
-                    Duration(
-                      minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0,
-                    ),
-                  )
-                  .toString(),
-              "user_id_guest":
-                  GetIt.I<PrefsRepository>().isVerifiedPhone ?? false
-                  ? null
-                  : GetIt.I<PrefsRepository>().myMarketId.toString(),
-              "user_id_verified":
-                  !(GetIt.I<PrefsRepository>().isVerifiedPhone ?? false)
-                  ? null
-                  : GetIt.I<PrefsRepository>().myMarketId.toString(),
-              'device_language': LanguageService.isKurdish
-                  ? 'ku'
-                  : LanguageService.languageCode,
-              "operating_system": Platform.isIOS ? "ios" : "Android",
-              "platform_source": "mobile",
-              'session_id': sessionId.toString(),
-              "interaction_type": eventName,
-              'country_name':
-                  ((GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
-                      ? GetIt.I<PrefsRepository>().userChoosedCountryIso
-                      : GetIt.I<PrefsRepository>().countryIso) ??
-                  ""),
-              if (extraParams != null) ...extraParams,
-            }..removeWhere((key, value) => value == null),
-          )
-          .then((value) async {
-            if (!isForApi) {
-              // await GetIt.I<PrefsRepository>().setCurrentEvent(executedEventName);
-            }
-          });
-      ///////////////////////
-    } catch (e, st) {
-      debugPrint(
-        '////log Event For Session Error ////////// ${e.toString()} //////////////////',
+      final prefs = GetIt.I<PrefsRepository>();
+
+      final baseProperties = <String, dynamic>{
+        'event_id': Random().nextInt(1000000).toString(),
+        'timestamp_now': DateTime.now()
+            .toUtc()
+            .add(Duration(minutes: prefs.getdurtion ?? 0))
+            .toString(),
+        "user_id_guest": (prefs.isVerifiedPhone ?? false)
+            ? null
+            : prefs.myMarketId.toString(),
+        "user_id_verified": !(prefs.isVerifiedPhone ?? false)
+            ? null
+            : prefs.myMarketId.toString(),
+        'device_language': LanguageService.isKurdish
+            ? 'ku'
+            : LanguageService.languageCode,
+        "operating_system": Platform.isIOS ? "ios" : "Android",
+        "platform_source": "mobile",
+        'session_id': sessionId,
+        "interaction_type": eventName,
+        'country_name':
+            ((prefs.userCountryIsAvailable == 1
+                ? prefs.userChoosedCountryIso
+                : prefs.countryIso) ??
+            ""),
+      };
+
+      // merge extra params
+      if (extraParams != null) {
+        baseProperties.addAll(extraParams);
+      }
+
+      baseProperties.removeWhere((key, value) => value == null);
+
+      /// 🔵 POSTHOG (full event like Firebase)
+      await sendToPosthog(eventName: eventName, baseParams: baseProperties);
+
+      /// 🟢 FIREBASE
+      await FirebaseAnalytics.instance.logEvent(
+        name: eventName,
+        parameters: baseProperties,
       );
+    } catch (e, st) {
+      debugPrint('//// log Event Error //// ${e.toString()}');
+      debugPrint(st.toString());
+    }
+  }
+
+  static Future<void> sendToPosthog({
+    required String eventName,
+    required Map<String, dynamic> baseParams,
+  }) async {
+    try {
+      final Map<String, Object> properties = baseParams.map(
+        (key, value) => MapEntry(key, value as Object),
+      );
+
+      await Posthog().capture(eventName: eventName, properties: properties);
+    } catch (e, st) {
+      debugPrint('PostHog Error: $e');
       debugPrint(st.toString());
     }
   }

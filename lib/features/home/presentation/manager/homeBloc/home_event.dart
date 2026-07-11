@@ -1012,6 +1012,15 @@ class ChangeCurrentIndexForUpdatCartEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class DeliveredOrdersResponseEvent extends HomeEvent {
+  final int productId;
+
+  DeliveredOrdersResponseEvent(this.productId);
+
+  @override
+  List<Object?> get props => [];
+}
+
 /*class GetBrandEvent extends HomeEvent {
   GetBrandEvent();
 
@@ -1110,4 +1119,21 @@ class FetchAuthProductDetailsEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [productSlug];
+}
+
+class ReportAboutStoryEvent extends HomeEvent {
+  final String userId;
+  final String storyId;
+  final List<String> reasons;
+  final String? notes;
+
+  const ReportAboutStoryEvent({
+    required this.userId,
+    required this.storyId,
+    required this.reasons,
+    this.notes,
+  });
+
+  @override
+  List<Object?> get props => [storyId, reasons, notes];
 }

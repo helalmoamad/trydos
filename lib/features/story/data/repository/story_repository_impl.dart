@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/api.dart';
+import 'package:trydos/features/story/data/models/ReportResponse.dart';
 
 import 'package:trydos/features/story/data/models/delete_story_model.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
@@ -21,48 +22,65 @@ class StoryRepositoryImpl extends StoryRepository
 
   @override
   Future<Either<Failure, GetStoriesModel>> getStories(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => storyDataSource.getStories(params));
+      tryCall: () => storyDataSource.getStories(params),
+    );
   }
 
   @override
-  Future<Either<Failure, ImageDetail>> loadWidthAndHeight(
-      {required String url, required int collectionId}) async {
+  Future<Either<Failure, ImageDetail>> loadWidthAndHeight({
+    required String url,
+    required int collectionId,
+  }) async {
     ImageDetail result = await storyDataSource.loadWidthAndHeightForImage(
-        url: url,
-        collectionId: collectionId,
-        onError: () {
-          GetIt.I<StoryBloc>()
-              .add(LoadFailureEvent(collectionId: collectionId));
-        });
+      url: url,
+      collectionId: collectionId,
+      onError: () {
+        GetIt.I<StoryBloc>().add(LoadFailureEvent(collectionId: collectionId));
+      },
+    );
     return Right(result);
   }
 
   @override
   Future<Either<Failure, Either<int, CollectionStoryModel>>> uploadStory(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => storyDataSource.uploadStory(params));
+      tryCall: () => storyDataSource.uploadStory(params),
+    );
   }
 
   @override
   Future<Either<Failure, Either<int, CollectionStoryModel>>>
-      addStoryToOurServer(Map<String, dynamic> params) {
+  addStoryToOurServer(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => storyDataSource.addStoryToOurServer(params));
+      tryCall: () => storyDataSource.addStoryToOurServer(params),
+    );
   }
 
   @override
   Future<Either<Failure, bool>> increaseViewers(Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => storyDataSource.increaseViewers(params));
+      tryCall: () => storyDataSource.increaseViewers(params),
+    );
   }
 
   @override
   Future<Either<Failure, DeleteStoryModel>> deleteStory(
-      Map<String, dynamic> params) {
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-        tryCall: () => storyDataSource.deleteStory(params));
+      tryCall: () => storyDataSource.deleteStory(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReportResponse>> reportAboutStory(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+      tryCall: () => storyDataSource.reportAboutStory(params),
+    );
   }
 }

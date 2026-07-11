@@ -105,6 +105,12 @@
         <meta-data
             android:name="io.flutter.embedding.android.EnableImpeller"
             android:value="true"/>
+
+        <!-- PostHog is configured from Dart (main.dart) using values from .env,
+             so disable native auto-init. -->
+        <meta-data
+            android:name="com.posthog.posthog.AUTO_INIT"
+            android:value="false" />
 <!--           <service android:name="io.wazo.callkeep.VoiceConnectionService"-->
 <!--               android:label="Wazo"-->
 <!--               android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">-->
@@ -112,6 +118,11 @@
 <!--                   <action android:name="android.telecom.ConnectionService" />-->
 <!--               </intent-filter>-->
 <!--           </service>-->
+
+ <meta-data android:name="com.posthog.posthog.PROJECT_TOKEN" android:value="phc_tt8m69SWUecqZgRabQ7947fzcDJPgmQjjQ23ybskq3uF" />
+  <meta-data android:name="com.posthog.posthog.POSTHOG_HOST" android:value="https://us.i.posthog.com" />
+  <meta-data android:name="com.posthog.posthog.TRACK_APPLICATION_LIFECYCLE_EVENTS" android:value="true" />
+  <meta-data android:name="com.posthog.posthog.DEBUG" android:value="true" />
 
 
        </application>

@@ -9,6 +9,7 @@ import 'package:trydos/core/api/methods/delete.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/core/api/methods/put.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/features/home/data/models/DeliveredOrdersResponse.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
@@ -1775,6 +1776,23 @@ class HomeRemoteDatasource {
         //queryParameters: {"color": color},
         response: ResponseValue<RelatedProductsResponse>(
           fromJson: (json) => RelatedProductsResponse.fromJson(json),
+        ),
+      ),
+    );
+
+    return client();
+  }
+
+
+  Future<DeliveredOrdersResponse> getDeliveredOrdersResponse ({
+    required int productId,
+  }) {
+    GetClient<DeliveredOrdersResponse> client = GetClient<DeliveredOrdersResponse>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<DeliveredOrdersResponse>(
+        endpoint: WebAppEndPoints.getDeliveredOrdersResponse(productId),
+        response: ResponseValue<DeliveredOrdersResponse>(
+          fromJson: (json) => DeliveredOrdersResponse.fromJson(json),
         ),
       ),
     );

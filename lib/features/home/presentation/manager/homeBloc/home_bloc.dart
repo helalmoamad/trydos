@@ -4,8 +4,6 @@ import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -35,6 +33,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
+import 'package:trydos/features/home/domain/use_cases/DeliveredOrdersResponse_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/GetRelatedProductsUseCase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_like_to_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_country_language_for_notification_usecase.dart';
@@ -83,7 +82,9 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
+import 'package:trydos/features/story/data/models/ReportResponse.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
+import 'package:trydos/features/story/domain/useCases/report_about_story_usecase.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -126,6 +127,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.convertItemFromcartToOldCartUsecase,
     this.getCartItemUseCase,
     this.getOldCartItemUseCase,
+    this.reportAboutStoryUseCase,
     this.storeFcmTokenOfMarketUseCase,
     // this.getBrandUseCase,
     //  this.getCategoryUseCase,
@@ -161,6 +163,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.createOrderRatingUseCase,
     this.getStartingSettingsUseCase,
     this.getPopularSearchItemUseCase,
+    this.getDeliveredOrdersResponseUseCase,
     this.uploadFileCloudinaryUseCase,
     this.getCurrencyForCountryUseCase,
     this.hideItemsInOldCartUseCase,
@@ -192,6 +195,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     on<GetCurrenciesForWalletEvent>(_onGetCurrenciesForWalletEvent);
 
+    on<ReportAboutStoryEvent>(_onReportAboutStoryEvent);
+
     on<SaveUserInfoFromAuthEvent>(_onSaveUserInfoEvent);
     on<GetOrderRatingEvent>(_onGetOrderRatingEvent, transformer: restartable());
     on<IncreaseCountShareOfProductEvent>(_onIncreaseCountShareOfProductEvent);
@@ -216,6 +221,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<ClearAllAppCashEvent>(_onClearAllAppCashEvent);
     on<UpdateLikeCommentEvent>(_onUpdateLikeCommentEvent);
     on<FetchAuthProductDetailsEvent>(_onFetchAuthProductDetailsEvent);
+
+
+ 
 
     on<GetCurrencyForCountryEvent>(
       _onGetCurrencyForCountryEvent,
@@ -306,10 +314,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );*/
     on<GetPopularSearchItemEvent>(_onGetPopularSearchItemEvent);
 
+    
+///////////////////////////
     on<GetProductDatailsWithoutRelatedProductsEvent>(
       _onGetProductDatailsWithoutRelatedProductsEvent,
       transformer: restartable(),
     );
+
+
+    //////////////////////////
 
     on<GetFullProductDetailsEvent>(_onGetFullProductDetailsEvent);
     on<SendAcceptOfNotificationMarketEvent>(
@@ -356,6 +369,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onGetBuyersCommentsEvent,
       transformer: restartable(),
     );
+
+    on<DeliveredOrdersResponseEvent>(_onDeliveredOrdersResponseEvent);
+
   }
 
   Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
@@ -375,6 +391,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetFqaCommentsUsecase getFqaCommentsUsecase;
   final GetBuyerCommentsUsecase getBuyerCommentsUsecase;
   final GetCartOverviewUseCase getCartOverviewUseCase;
+  final ReportAboutStoryUseCase reportAboutStoryUseCase;
   //final GetCommentsFromAnalyticsUsecase getCommentsFromAnalyticsUsecase;
   final GetOrderRatingUsecase getOrderRatingUsecase;
   final GetOldCartItemUseCase getOldCartItemUseCase;
@@ -394,6 +411,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   // final GetCustomerInfoUseCase getCustomerInfoUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
   getProductDetailWithoutRelatedProductsUseCase;
+
+  final GetDeliveredOrdersResponseUseCase getDeliveredOrdersResponseUseCase;
 
   final GetPopularSearchItemUseCase getPopularSearchItemUseCase;
   final GetCurrencyForCountryUseCase getCurrencyForCountryUseCase;
@@ -427,7 +446,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   final GetUserNotificationUseCase getUserNotificationUseCase;
   final GetCurrenciesForWalletUseCase getCurrenciesForWalletUseCase;
-  final Smartlook smartLook = Smartlook.instance;
 
   ////////////////////////////////////////////////////////////////
   FutureOr<void> _onGetCurrenciesForWalletEvent(
@@ -1348,20 +1366,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
   }
 
-  initializeSmartLook() async {
-    String deviceId = (await HelperFunctions.getDeviceId()).toString();
-    await smartLook.preferences.setProjectKey(dotenv.env['SMART_LOOK_KEY']!);
-    await smartLook.preferences.setFrameRate(2);
-    await smartLook.user.setIdentifier(deviceId);
-    await smartLook.user.setName(
-      GetIt.I<PrefsRepository>().myChatName ?? 'No_Name',
-    );
-    await smartLook.user.setIdentifier(
-      GetIt.I<PrefsRepository>().myMarketId ?? 'No_Id',
-    );
-    await smartLook.start();
-  }
-
   _onAddCurrentSelectedColorEvent(
     AddCurrentSelectedColorEvent event,
     Emitter<HomeState> emit,
@@ -2036,6 +2040,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               )
               as HomeEvent,
         );
+
+        add(DeliveredOrdersResponseEvent(r.product!.id!));
+
         GetIt.I<ChatBloc>().add(const ChangeStatusShareProructToInitialEvent());
         if (r.product?.isRedeem == true) {
           GetIt.I<PrefsRepository>().setRedeemDateForProduct(
@@ -4961,6 +4968,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
   }
 
+
+
+
+
+
+
+
+
+
+
+
   FutureOr<void> _onGetFullProductDetailsEvent(
     GetFullProductDetailsEvent event,
     Emitter<HomeState> emit,
@@ -5000,6 +5018,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       },
       (r) {
+        add(
+          GetRelatedProductsEvent(
+                productSlug: r.productItem!.productId,
+                color: "",
+              )
+              as HomeEvent,
+        );
+
+        add(DeliveredOrdersResponseEvent(r.productItem!.productId!));
+
         GetIt.I<ChatBloc>().add(const ChangeStatusShareProructToInitialEvent());
         ErrorManager.resetRetry('GetFullProductDetailsEvent');
         if (r.productItem?.productId == null) {
@@ -6607,6 +6635,69 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             ),
           );
         }
+      },
+    );
+  }
+
+  FutureOr<void> _onReportAboutStoryEvent(
+    ReportAboutStoryEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(state.copyWith(reportingAboutStory: ReportingAboutStory.loading));
+
+    final result = await reportAboutStoryUseCase(
+      ReportAboutStoryParams(
+        userId: event.userId,
+        storyId: event.storyId,
+        reasons: event.reasons,
+        notes: event.notes,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            reportingAboutStory: ReportingAboutStory.failure,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        emit(
+          state.copyWith(
+            reportingAboutStory: ReportingAboutStory.success,
+          ),
+        );
+      },
+    );
+  }
+
+
+
+  FutureOr<void> _onDeliveredOrdersResponseEvent(
+    DeliveredOrdersResponseEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(state.copyWith(getDeliveredOrdersResponseStatus: GetDeliveredOrdersResponseStatus.loading));
+
+    final result = await getDeliveredOrdersResponseUseCase(event.productId);
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            getDeliveredOrdersResponseStatus: GetDeliveredOrdersResponseStatus.failure,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        emit(
+          state.copyWith(
+            getDeliveredOrdersResponseStatus: GetDeliveredOrdersResponseStatus.success,
+            deliveredOrdersResponse: response
+          ),
+        );
       },
     );
   }

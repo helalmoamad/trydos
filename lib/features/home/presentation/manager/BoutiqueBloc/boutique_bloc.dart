@@ -64,6 +64,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       _onGetProductsWithFiltersWithPaginationEvent,
     );
 
+
     on<GetFiltersWithPaginatioEvent>(_onGetFiltersWithPaginatioEvent);
     on<AddCurrentMainCategoryTapedEvent>(_onAddCurrentMainCategoryTapedEvent);
     on<ClearAllBoutiquesEvent>(_onClearAllBoutiquesEvent);
@@ -2566,12 +2567,16 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       },
     );
   }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-///
-///
-///
-///
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  ///
+  ///
+  ///
+  ///
+  ///
+  ///
+
   FutureOr<void> _onGetProductsWithFiltersWithPaginationEvent(
     GetProductsWithFiltersWithPaginationEvent event,
     Emitter<BoutiqueState> emit,
@@ -3335,4 +3340,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       },
     );
   }
+
+
 }

@@ -25,6 +25,7 @@ abstract class StoriesEndPoints {
   static String increaseViewersEP(String storyId) =>
       'increase_viewers'.storiesScope() + '/$storyId';
   static final deleteStoryEP = 'delete_story'.storiesScope();
+  static final reportStoryEP = 'report'.storiesScope();
 }
 
 abstract class StoriesUrls {

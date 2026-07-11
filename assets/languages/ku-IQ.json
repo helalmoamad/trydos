@@ -803,6 +803,17 @@
   "field_must_not_exceed_10_characters": "خانەکە نابێت زیاتر لە 10 پیت بێت",
   "update": "گۆڕینی داواکاری",
   "Sellers": "فرۆشکاران",
-  "similar_products": "بەرهەمەکانى وەک خۆت"
+  "similar_products": "بەرهەمەکانى وەک خۆت",
+    "report_reason": "هۆکاری ڕاپۆرتکردن",
+  "details_optional": "وردەکاری (ئارەزوومەند)",
+  "write_details_here": "وردەکاری لێرە بنووسە...",
+  "send_report": "ناردنی ڕاپۆرت",
+  "report_sent_successfully": "ڕاپۆرتەکە بە سەرکەوتوویی نێردرا.",
+  "report_failed": "نەیتوانرا ڕاپۆرتەکە بنێردرێت. تکایە دووبارە هەوڵ بدە.",
+  "inappropriate_content": "ناوەڕۆکی نەگونجاو",
+  "harassment": "ئازاردان یان قسەی ڕق",
+  "spam": "سپام یان فێڵ",
+  "intellectual_property": "پێشێلکردنی مافی خاوەندارێتی فیکری",
+  "violence": "توندوتیژی یان ناوەڕۆکی مەترسیدار"
   
 }

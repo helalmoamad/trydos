@@ -8001,25 +8001,29 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ),
                           SizedBox(width: 5.w),
                           Text(
-                            HelperFunctions.formatNumber(
+                            
+                            "${LanguageService.languageCode == "ar" ? "أ" : "k"}${HelperFunctions.formatNumber(
                               numberToFormate:
-                                  (HelperFunctions.truncateToDecimalPlaces(
-                                    order!.orderAmount!,
-                                    homeBloc
-                                        .state
-                                        .getCurrencyForCountryModel!
-                                        .data!
-                                        .currency!
-                                        .decimalDigits!,
-                                  ) *
-                                  homeBloc
-                                      .state
-                                      .getCurrencyForCountryModel!
-                                      .data!
-                                      .currency!
-                                      .exchangeRate!),
+                                  ((HelperFunctions.truncateToDecimalPlaces(
+                                                order!.orderAmount!,
+                                                homeBloc
+                                                    .state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .decimalDigits!,
+                                              ) *
+                                              homeBloc
+                                                  .state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .exchangeRate!) /
+                                          1000)
+                                      .ceil()
+                                      .toDouble(),
                               isNeedRounding: false,
-                            ),
+                            )}",
                             style: context.textTheme.bodyMedium?.bq.copyWith(
                               color: const Color(0xff1D1D1D),
                               letterSpacing: 0.18,
@@ -8144,14 +8148,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               ),
             ),
             Text(
-              "  ${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces((((allOrder ? order!.orderAmount! : ((order!.details?[indexTap.value].priceAfterDiscount ?? 0))))), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!) * (order!.details?[indexTap.value].qty ?? 0)), isNeedRounding: false)}",
-              maxLines: 1,
-              style: context.textTheme.bodyMedium?.bq.copyWith(
-                color: const Color(0xff8D8D8D),
-                letterSpacing: 0.18,
-                fontSize: 12.sp,
-                height: 1.3,
-              ),
+              "${LanguageService.languageCode == "ar" ? "أ" : "k"}${((HelperFunctions.truncateToDecimalPlaces(((allOrder ? order!.orderAmount! : (order!.details?[indexTap.value].priceAfterDiscount ?? 0))), homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate! * (order!.details?[indexTap.value].qty ?? 0)) / 1000).ceil()}",
             ),
             Text(
               " ${homeBloc.state.getCurrencyForCountryModel!.data!.currency!.symbol} ${LocaleKeys.to_your_account.tr()}",

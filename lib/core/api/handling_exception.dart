@@ -60,6 +60,7 @@ mixin HandlingExceptionRequest {
     } on Unauth {
       // Fluttertoast.showToast(msg: 'sssssss',backgroundColor: Colors.yellow);
       prettyPrinterError("***|| Unauth ||*** ");
+      
       return const Left(ServerFailure("Unauth ", statusCode: 401));
     } on ServerException catch (e) {
       // Fluttertoast.showToast(msg: 'sssssss',backgroundColor: Colors.yellow);

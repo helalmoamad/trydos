@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/error/failures.dart';
+import 'package:trydos/features/home/data/models/DeliveredOrdersResponse.dart';
 
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/apply_coupon_model.dart';
@@ -882,6 +883,15 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }) async {
    return handlingExceptionRequest(
       tryCall: () => dataSource.getRelatedProducts(productSlug: productSlug, color: color),
+    );
+  }
+
+  @override
+  Future<Either<Failure, DeliveredOrdersResponse>> getDeliveredOrdersResponse({
+    required int productId,
+  }) async {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getDeliveredOrdersResponse(productId: productId),
     );
   }
 }

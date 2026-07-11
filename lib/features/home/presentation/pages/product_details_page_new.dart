@@ -180,6 +180,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(AddCurrentColorSizeEvent());
+
     productIdToSaveRedeemTimer.remove(productItem?.productId.toString());
 
     initialColor =

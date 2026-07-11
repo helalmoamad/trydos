@@ -1,6 +1,5 @@
 abstract class PrefsKey {
   static const userMarketId = r'__$__userMarketId__$__';
-  static const isSmartlookStarted = r'__$__IsSmartlookStarted__$__';
   static const currentEvent = r'__$__current event__$__';
   static const notificationTypeFromTerminated =
       r'__$__notificationTypeFromTerminated__$__';

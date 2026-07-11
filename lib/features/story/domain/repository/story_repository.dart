@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:trydos/core/error/failures.dart';
+import 'package:trydos/features/story/data/models/ReportResponse.dart';
 import 'package:trydos/features/story/data/models/delete_story_model.dart';
 
 import '../../data/models/image_detail.dart';
@@ -17,4 +18,5 @@ abstract class StoryRepository {
       Map<String, dynamic> params);
   Future<Either<Failure, DeleteStoryModel>> deleteStory(
       Map<String, dynamic> params);
+  Future<Either<Failure, ReportResponse>> reportAboutStory(Map<String, dynamic> params);
 }

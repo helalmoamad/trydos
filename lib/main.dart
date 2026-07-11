@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:device_preview_plus/device_preview_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_callkit_incoming/entities/notification_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_gemini/flutter_gemini.dart' as gemini;
 import 'package:get_it/get_it.dart';
+import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
@@ -404,6 +406,25 @@ request() async {
   dev.log('request time: ${stopWatch.elapsed.toString()}');
 }
 
+/// Initializes PostHog analytics / session replay from values stored in `.env`.
+/// Native auto-init is disabled (see AndroidManifest.xml / Info.plist) so the
+/// SDK is configured here using [PostHogConfig]. Skipped when no key is set.
+Future<void> _initPostHog() async {
+  final apiKey = dotenv.env['POSTHOG_KEY'];
+  if (apiKey == null || apiKey.isEmpty) {
+    dev.log('PostHog: POSTHOG_KEY is missing, skipping initialization.');
+    return;
+  }
+  dev.log('PostHog: apiKey');
+  final config = PostHogConfig(apiKey)
+    ..host = dotenv.env['POSTHOG_HOST'] ?? 'https://us.i.posthog.com'
+    ..captureApplicationLifecycleEvents = true
+    ..sessionReplay = true
+    ..debug = !kReleaseMode;
+
+  await Posthog().setup(config);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -428,6 +449,8 @@ void main() async {
     dotenv.load(),
     configureDependencies(),
   ]);
+
+  await _initPostHog();
 
   await NotificationProcess().init();
   //GetIt.I<PreCachingImageBloc>().add(RemoveUrlThatNotUsedEvent());

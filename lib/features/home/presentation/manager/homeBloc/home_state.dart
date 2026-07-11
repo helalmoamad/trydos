@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:geodesy/geodesy.dart' as goid;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
+import 'package:trydos/features/home/data/models/DeliveredOrdersResponse.dart';
 import 'package:trydos/features/home/data/models/currencies_response_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
@@ -48,12 +50,7 @@ enum GetProductDetailWithoutSimilarRelatedProductsStatus {
   failure,
 }
 
-enum GetRelatedProductsStatus {
-  init,
-  loading,
-  success,
-  failure,
-}
+enum GetRelatedProductsStatus { init, loading, success, failure }
 
 enum GetFullProductDetailsStatus { init, loading, success, failure }
 
@@ -145,6 +142,12 @@ enum AuthProductDetailsStatus { init, loading, success, failure }
 
 enum GetCurrenciesForWalletStatus { init, loading, success, failure }
 
+enum ReportingAboutStory { init, loading, success, failure }
+
+
+enum GetDeliveredOrdersResponseStatus  { init, loading, success, failure }
+
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class HomeState extends Equatable {
@@ -229,6 +232,7 @@ class HomeState extends Equatable {
     this.storiesCollections = const [],
     this.selectedVideoStatus = SelectedVideoStatus.init,
     this.storyLink,
+    this.errorMessage,
     this.finishGetAllStory = false,
     this.storyOffset = 0,
     this.getStoryWithPagintionStatusLoading = false,
@@ -263,8 +267,13 @@ class HomeState extends Equatable {
     this.firebaseSettingForNotificationModel,
     this.authProductDetailsStatus = AuthProductDetailsStatus.init,
     this.authProductDetailsModel,
+    this.reportingAboutStory = ReportingAboutStory.init,
+    this.getDeliveredOrdersResponseStatus = GetDeliveredOrdersResponseStatus.init,
+    this.deliveredOrdersResponse
   });
-
+  final DeliveredOrdersResponse? deliveredOrdersResponse;
+  final ReportingAboutStory reportingAboutStory;
+  final GetDeliveredOrdersResponseStatus getDeliveredOrdersResponseStatus;
   final GetFirebaseSettingForNotificationStatus?
   getFirebaseSettingForNotificationStatus;
   final GetCountryBoundaryByIsoStatus? getCountryBoundaryByIsoStatus;
@@ -305,7 +314,7 @@ class HomeState extends Equatable {
   final String? statusCodeOfCommentProcess;
   final int? selectedCollection;
   final Map<int, int?> currentStoryInEachCollection;
-
+final String? errorMessage;
   final AddProductIdToSaveRedeemTimerStatus?
   addProductIdToSaveRedeemTimerStatus;
   final CurrentSelectedColorForEveryProductStatus?
@@ -409,11 +418,14 @@ class HomeState extends Equatable {
   final AuthProductDetailsStatus authProductDetailsStatus;
   final GetAuthProductDetailsModel? authProductDetailsModel;
 
+
   @override
   List<Object?> get props => [
+    deliveredOrdersResponse,
     getStartingSettingsStatus,
     relatedProducts,
     storyLink,
+    errorMessage,
     currentSelectedColorForEveryProduct,
     // getListOfProductsFoundedInCartStatus,
     //  getCommentForProductStatus,
@@ -529,9 +541,13 @@ class HomeState extends Equatable {
     storyOffset,
     currentHeightWhenAddToBag,
     getStoryWithPagintionStatusLoading,
+    reportingAboutStory,
+    getDeliveredOrdersResponseStatus
   ];
 
   HomeState copyWith({
+    final DeliveredOrdersResponse? deliveredOrdersResponse,
+    final String? errorMessage,
     final List<Products>? relatedProducts,
     final GetStartingSettingsStatus? getStartingSettingsStatus,
     final GetFirebaseSettingForNotificationStatus?
@@ -546,6 +562,7 @@ class HomeState extends Equatable {
     firebaseSettingForNotificationModel,
     final GetCurrenciesForWalletStatus? getCurrenciesForWalletStatus,
     final CurrenciesForWalletResponseModel? walletCurrencies,
+    final ReportingAboutStory? reportingAboutStory,
     final List<String>? productIdToSaveRedeemTimer,
     final int? currentHeightWhenAddToBag,
     final bool? isChangedVariationWhenQtyZero,
@@ -651,7 +668,7 @@ class HomeState extends Equatable {
     final DeleteItemInCartStatus? deleteItemInCartStatus,
     final Map<String, int>? currentSelectedColorForEveryProduct,
     final GetRelatedProductsStatus? getRelatedProductsStatus,
-
+    final GetDeliveredOrdersResponseStatus? getDeliveredOrdersResponseStatus,
     //List<Story>? storiesForProduct,
     final Map<String, PaginationModel<product.Products>>?
     getProductListingPaginationWithoutFiltersModel,
@@ -660,6 +677,8 @@ class HomeState extends Equatable {
     GetAuthProductDetailsModel? authProductDetailsModel,
   }) {
     return HomeState(
+      deliveredOrdersResponse: deliveredOrdersResponse ?? this.deliveredOrdersResponse,
+      getDeliveredOrdersResponseStatus: getDeliveredOrdersResponseStatus ?? this.getDeliveredOrdersResponseStatus,
       getAndAddCountViewOfProductStatus:
           getAndAddCountViewOfProductStatus ??
           this.getAndAddCountViewOfProductStatus,
@@ -699,6 +718,7 @@ class HomeState extends Equatable {
       getOrderRatingStatus: getOrderRatingStatus ?? this.getOrderRatingStatus,
 
       storyLink: storyLink ?? this.storyLink,
+      errorMessage: errorMessage ?? this.errorMessage,
       storiesCollections: storiesCollections ?? this.storiesCollections,
       currentPage: currentPage ?? this.currentPage,
       storyOffset: storyOffset ?? this.storyOffset,
@@ -795,7 +815,7 @@ class HomeState extends Equatable {
       getFullProductDetailsStatus:
           getFullProductDetailsStatus ?? this.getFullProductDetailsStatus,
 
-          getRelatedProductsStatus:
+      getRelatedProductsStatus:
           getRelatedProductsStatus ?? this.getRelatedProductsStatus,
       sizesQuantitiesForEachColor:
           sizesQuantitiesForEachColor ?? this.sizesQuantitiesForEachColor,
@@ -868,8 +888,7 @@ class HomeState extends Equatable {
       getStartingSettingsStatus:
           getStartingSettingsStatus ?? this.getStartingSettingsStatus,
 
-
-    relatedProducts: relatedProducts ?? this.relatedProducts,
+      relatedProducts: relatedProducts ?? this.relatedProducts,
 
       startingSetting: startingSetting ?? this.startingSetting,
 
@@ -898,6 +917,7 @@ class HomeState extends Equatable {
           authProductDetailsStatus ?? this.authProductDetailsStatus,
       authProductDetailsModel:
           authProductDetailsModel ?? this.authProductDetailsModel,
+      reportingAboutStory: reportingAboutStory ?? this.reportingAboutStory,
     );
   }
 

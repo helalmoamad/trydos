@@ -509,7 +509,7 @@
   "i_fear_delivery_time": "أخاف من وقت التسليم",
   "i_am_afraid_sizes": "أنا خائف من الأحجام",
   "i_saw_better_price": "لقد رأيت سعرا أفضل",
-  "we_have_other_solutions_instead_cancellation": "لدينا حلول أخرى بدلًا من الإلغاء.",
+  "we_have_other_solutions_instead_cancellation": "لدينا حلول أخرى بدلًا من إلغاء الطلب.",
   "cancel_my_order": "إلغاء طلبي",
   "clarification": "إيضاح",
   "about_cancel_order": "حول إلغاء طلبك",
@@ -579,7 +579,7 @@
   "change_from": "من",
   "qty": "الكمية",
   "change_terms": "شروط التغيير",
-  "cancel_this_order": "إلغاء هذا الطلب",
+  "cancel_this_order": "إلغاء المجموعة",
   "about_cancel_product": "حول إلغاء منتجك",
   "action_about_order": "إجراء بشأن طلبك",
   "cancel_request": "إلغاء الطلب",
@@ -796,5 +796,20 @@
   "field_must_not_exceed_10_characters": "يجب ألا يتجاوز الحقل 10 محارف",
   "update": "تعديل الطلب",
   "press_here_for_more": "مشاهدة المنتج",
-  "similar_products": "قد يعجبك أيضاً"
+  "similar_products": "قد يعجبك أيضاً",
+
+
+
+    "inappropriate_content": "محتوى غير لائق",
+  "harassment": "مضايقة أو خطاب كراهية",
+  "spam": "محتوى غير مرغوب فيه أو احتيال",
+  "intellectual_property": "انتهاك الملكية الفكرية",
+  "violence": "عنف أو محتوى خطير",
+
+  "report_story": "الإبلاغ عن القصة",
+  "report_reason": "سبب الإبلاغ",
+  "details_optional": "ملاحظات (اختياري)",
+  "write_details_here": "اكتب الملاحظات هنا...",
+  "send_report": "إرسال البلاغ",
+  "report_sent_successfully": "تم إرسال البلاغ بنجاح."
 }

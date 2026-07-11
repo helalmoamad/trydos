@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
@@ -30,7 +31,8 @@ class GRouter {
     observers: [
       BotToastNavigatorObserver(),
       SentryNavigatorObserver(),
-      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)
+      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+      PosthogObserver(),
     ],
     // initialLocation: _config.applicationRoutes.kWebView,
     navigatorKey: navigatorKey,
