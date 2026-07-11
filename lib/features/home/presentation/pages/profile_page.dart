@@ -1,17 +1,12 @@
 //import 'dart:convert';
 import 'dart:async';
 import 'dart:math';
-
-import 'package:flutter/scheduler.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:easy_localization/easy_localization.dart' as transform;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-
 import 'package:get_it/get_it.dart';
 //import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shimmer/shimmer.dart';
@@ -51,7 +46,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import 'package:trydos/service/language_service.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
-import 'package:trydos_wallet/trydos_wallet.dart';
+// import 'package:trydos_wallet/trydos_wallet.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../manager/orderBloc/order_bloc.dart';
 import 'Order/orders_page.dart';
@@ -100,30 +95,30 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     authBloc.add(GetCustomerInfoEvent());
     orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
-    walletEvents = authEvents.listen((evt) async {
-      if (evt.toString() == 'AuthEvent.unauthenticated' &&
-          (prefsRepository.isVerifiedPhone ?? false)) {
-        prefsRepository.setVerifiedPhone(false);
-        prefsRepository.setVerifiedPhonePeforeExpiredToken(true);
-        await Future.delayed(const Duration(seconds: 1));
+    // walletEvents = authEvents.listen((evt) async {
+    //   if (evt.toString() == 'AuthEvent.unauthenticated' &&
+    //       (prefsRepository.isVerifiedPhone ?? false)) {
+    //     prefsRepository.setVerifiedPhone(false);
+    //     prefsRepository.setVerifiedPhonePeforeExpiredToken(true);
+    //     await Future.delayed(const Duration(seconds: 1));
 
-        // استخدم SchedulerBinding لتأخير العملية بعد انتهاء البناء
-        if (mounted) {
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            if (mounted && Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            }
-          });
-        }
+    //     // استخدم SchedulerBinding لتأخير العملية بعد انتهاء البناء
+    //     if (mounted) {
+    //       SchedulerBinding.instance.addPostFrameCallback((_) {
+    //         if (mounted && Navigator.of(context).canPop()) {
+    //           Navigator.of(context).pop();
+    //         }
+    //       });
+    //     }
 
-        await Future.delayed(const Duration(seconds: 1));
-        isVerified.value = false;
+    //     await Future.delayed(const Duration(seconds: 1));
+    //     isVerified.value = false;
 
-        authBloc.add(
-          SendOtpEvent(phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1),
-        );
-      }
-    });
+    //     authBloc.add(
+    //       SendOtpEvent(phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1),
+    //     );
+    //   }
+    // });
 
     // لاحقًا إذا لم تعد بحاجة:
 
@@ -1312,42 +1307,42 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   Future<void> _initializeAndOpenWallet() async {
     if (!mounted) return;
 
-    try {
-      // تهيئة المحفظة
-      TrydosWallet.init(
-        TrydosWalletConfig(
-          baseUrl: dotenv.env['WALLET_URL'] ?? '', // رابط الـ API
-          token: prefsRepository.walletToken, // استخدم القيمة الفعلية
-          languageCode: LanguageService.languageCode, // استخدم اللغة الحالية
-          allowBadCertificate: true, // true للتطوير فقط عند خطأ SSL
-        ),
-      );
+    // try {
+    //   // تهيئة المحفظة
+    //   TrydosWallet.init(
+    //     TrydosWalletConfig(
+    //       baseUrl: dotenv.env['WALLET_URL'] ?? '', // رابط الـ API
+    //       token: prefsRepository.walletToken, // استخدم القيمة الفعلية
+    //       languageCode: LanguageService.languageCode, // استخدم اللغة الحالية
+    //       allowBadCertificate: true, // true للتطوير فقط عند خطأ SSL
+    //     ),
+    //   );
 
-      _isWalletInitialized = true;
+    //   _isWalletInitialized = true;
 
-      // فتح المحفظة
-      if (mounted) {
-        await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => BlocProvider(
-              create: (context) => WalletBloc(),
-              child: const TrydosWalletWelcomeScreen(),
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      print('Error initializing wallet: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('خطأ في فتح المحفظة: $e')));
-      }
-    } finally {
-      // التأكد من تنظيف الموارد حتى عند حدوث خطأ
-      if (_isWalletInitialized && !mounted) {
-        await _cleanupWallet();
-      }
-    }
+    //   // فتح المحفظة
+    //   if (mounted) {
+    //     await Navigator.of(context).push(
+    //       MaterialPageRoute(
+    //         builder: (context) => BlocProvider(
+    //           create: (context) => WalletBloc(),
+    //           child: const TrydosWalletWelcomeScreen(),
+    //         ),
+    //       ),
+    //     );
+    //   }
+    // } catch (e) {
+    //   print('Error initializing wallet: $e');
+    //   if (mounted) {
+    //     ScaffoldMessenger.of(
+    //       context,
+    //     ).showSnackBar(SnackBar(content: Text('خطأ في فتح المحفظة: $e')));
+    //   }
+    // } finally {
+    //   // التأكد من تنظيف الموارد حتى عند حدوث خطأ
+    //   if (_isWalletInitialized && !mounted) {
+    //     await _cleanupWallet();
+    //   }
+    // }
   }
 }

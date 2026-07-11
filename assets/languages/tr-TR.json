@@ -777,5 +777,16 @@
   "field_must_not_exceed_10_characters": "Alan 10 karakteri geçmemelidir",
   "update": "İsteği Güncelle",
   "Sellers": "Satıcılar",
-  "similar_products": "Benzer Ürünler"
+  "similar_products": "Benzer Ürünler",
+    "report_reason": "Raporlama nedeni",
+  "details_optional": "Detaylar (isteğe bağlı)",
+  "write_details_here": "Detayları buraya yazın...",
+  "send_report": "Raporu gönder",
+  "report_sent_successfully": "Rapor başarıyla gönderildi.",
+  "report_failed": "Rapor gönderilemedi. Lütfen tekrar deneyin.",
+  "inappropriate_content": "Uygunsuz içerik",
+  "harassment": "Taciz veya nefret söylemi",
+  "spam": "Spam veya dolandırıcılık",
+  "intellectual_property": "Fikri mülkiyet ihlali",
+  "violence": "Şiddet veya tehlikeli içerik"
 }

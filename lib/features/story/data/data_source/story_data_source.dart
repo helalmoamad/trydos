@@ -9,6 +9,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/post.dart';
+import 'package:trydos/features/story/data/models/ReportResponse.dart';
 import '../../../../core/api/methods/get.dart';
 import '../../presentation/bloc/story_bloc.dart';
 import '../models/image_detail.dart';
@@ -126,6 +127,20 @@ class StoriesDataSource {
     );
     // uploadStory.call();
     return addStoryToOurServer();
+  }
+
+  Future<ReportResponse> reportAboutStory(Map<String, dynamic> params) {
+    PostClient<ReportResponse> reportStory = PostClient<ReportResponse>(
+      requestPrams: RequestConfig<ReportResponse>(
+        endpoint: StoriesEndPoints.reportStoryEP,
+        data: params,
+        response: ResponseValue<ReportResponse>(
+          fromJson: (response) => ReportResponse.fromJson(response),
+        ),
+      ),
+      serverName: ServerName.stories,
+    );
+    return reportStory();
   }
 
   Future<DeleteStoryModel> deleteStory(Map<String, dynamic> params) {

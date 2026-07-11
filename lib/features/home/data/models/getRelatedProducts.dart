@@ -1,4 +1,3 @@
-import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 class RelatedProductsResponse {
@@ -37,9 +36,7 @@ class RelatedProductsData {
       products: (json['products'] as List)
           .map((e) => Products.fromJson(e))
           .toList(),
-      offset: (json['offset'] as List)
-    .map((e) => (e as num).toInt())
-    .toList(),
+      offset: (json['offset'] as List).map((e) => (e as num).toInt()).toList(),
       totalSize: json['total_size'],
     );
   }

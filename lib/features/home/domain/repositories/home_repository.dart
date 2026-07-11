@@ -57,6 +57,7 @@ import '../../data/models/upload_images_for_return_product_model.dart';
 import '../../data/models/return_request_product_model.dart';
 import 'package:trydos/features/home/data/models/create_return_request_model.dart';
 import 'package:trydos/features/home/data/models/get_auth_product_details_model.dart';
+import 'package:trydos/features/home/data/models/DeliveredOrdersResponse.dart';
 
 abstract class HomeRepository {
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings();
@@ -317,5 +318,9 @@ abstract class HomeRepository {
   Future<Either<Failure, RelatedProductsResponse>> getRelatedProducts({
     required int productSlug,
     required String color,
+  });
+
+    Future<Either<Failure, DeliveredOrdersResponse>> getDeliveredOrdersResponse({
+    required int productId,
   });
 }

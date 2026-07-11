@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert' as convert;
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -745,11 +744,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     }
   }
 
-  final Smartlook smartLook = Smartlook.instance;
-
   @override
   void dispose() {
-    smartLook.stop();
     _logoutTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     FirebasePresence.disconnect();

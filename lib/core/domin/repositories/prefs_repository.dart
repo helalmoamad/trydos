@@ -41,7 +41,6 @@ abstract class PrefsRepository {
   bool? get isVerifiedPhonePeforeExpiredToken;
   bool? get isTokenExpired;
   bool? get isRequestNotificationPermission;
-  bool? get isSmartlookStarted;
   bool? get isCreateWallet;
 
   String? get myStoriesName;
@@ -149,8 +148,6 @@ abstract class PrefsRepository {
   Future<bool> setLogInToChat(bool isLogInToChat);
 
   Future<bool> setOnMessageRun(bool onMessageRun);
-
-  Future<bool> setIsSmartlookStarted(bool isSmartlookStarted);
 
   Future<bool> setServerTime(DateTime serverTime);
 

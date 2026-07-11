@@ -47,6 +47,7 @@ import '../../../app/my_text_widget.dart';
 import '../../../app/trydos_shimmer_loading.dart';
 import '../../../home/presentation/manager/homeBloc/home_event.dart'
     as homeEvent;
+import '../../../home/presentation/manager/homeBloc/home_state.dart';
 import '../../data/models/get_stories_model.dart';
 import '../bloc/story_state.dart';
 import '../widget/animated_builder.dart';
@@ -603,26 +604,26 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               // completion so the status listener will move to the next story.
                               final position = value.position;
                               final duration = value.duration;
-                              if (duration != null && position != null) {
-                                final isEnded = !value.isPlaying &&
-                                    (position >= duration ||
-                                        duration - position <=
-                                            const Duration(milliseconds: 200));
-                                if (isEnded) {
-                                  // animate to completion quickly to trigger status listener
-                                  try {
-                                    widget.animatedController.animateTo(
-                                      1.0,
-                                      duration:
-                                          const Duration(milliseconds: 120),
-                                    );
-                                  } catch (_) {
-                                    // ignore if controller disposed
-                                  }
-                                  return;
+                              final isEnded =
+                                  !value.isPlaying &&
+                                  (position >= duration ||
+                                      duration - position <=
+                                          const Duration(milliseconds: 200));
+                              if (isEnded) {
+                                // animate to completion quickly to trigger status listener
+                                try {
+                                  widget.animatedController.animateTo(
+                                    1.0,
+                                    duration: const Duration(
+                                      milliseconds: 120,
+                                    ),
+                                  );
+                                } catch (_) {
+                                  // ignore if controller disposed
                                 }
+                                return;
                               }
-
+                            
                               // Otherwise, just stop the animation (paused mid-video)
                               widget.animatedController.stop();
                             });
@@ -889,7 +890,18 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                           Future.delayed(
                                             const Duration(milliseconds: 600),
                                             () {
-                                              showReportStoryDialog(context);
+                                              _videoController?.pause();
+                                              showReportStorySheet(
+                                                context,
+                                                state
+                                                    .storiesCollections[widget
+                                                        .collectionIndex]
+                                                    .stories![state
+                                                        .currentStoryInEachCollection[widget
+                                                        .collectionIndex]!]
+                                                    .id
+                                                    .toString(),
+                                              );
                                             },
                                           );
                                         },
@@ -982,101 +994,325 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     );
   }
 
-  void showReportStoryDialog(BuildContext context) {
-    showDialog(
+  void showReportStorySheet(BuildContext context, String storyId) {
+    // `context` here is the story page context; keep a reference to it because
+    // inside the bottom-sheet builder `context` refers to the sheet itself.
+    final BuildContext pageContext = context;
+    final reasons = <ReportReason>[
+      ReportReason(
+        key: "inappropriate_content",
+        title: LocaleKeys.inappropriate_content.tr(),
+      ),
+      ReportReason(key: "harassment", title: LocaleKeys.harassment.tr()),
+      ReportReason(key: "spam", title: LocaleKeys.spam.tr()),
+      ReportReason(
+        key: "intellectual_property",
+        title: LocaleKeys.intellectual_property.tr(),
+      ),
+      ReportReason(key: "violence", title: LocaleKeys.violence.tr()),
+      ReportReason(key: "other", title: LocaleKeys.other.tr()),
+    ];
+
+    final selectedReasons = <String>{};
+    final controller = TextEditingController();
+
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: false, // لا يمكن إغلاق الـ Dialog بالضغط خارج النافذة
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // العنوان
-                Text(
-                  LocaleKeys.report_story.tr(),
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final hasOther = selectedReasons.contains("other");
 
-                SizedBox(height: 16.h),
+            final enableButton =
+                selectedReasons.isNotEmpty &&
+                (!hasOther || controller.text.trim().isNotEmpty);
 
-                // الرسالة
-                Text(
-                  LocaleKeys.confirm_report_story.tr(),
-                  style: TextStyle(fontSize: 14.sp, color: Colors.black87),
-                  textAlign: TextAlign.center,
-                ),
-
-                SizedBox(height: 24.h),
-
-                // الأزرار
-                Row(
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+              ),
+              padding: EdgeInsets.only(
+                left: 24.w,
+                right: 24.w,
+                top: 18.h,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
+              ),
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // زر الإلغاء
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // إغلاق الـ Dialog
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[300],
-                          foregroundColor: Colors.black87,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0.r),
+                    /// Header
+                    Row(
+                      children: [
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _videoController?.play();
+                          },
+                          icon: Icon(
+                            Icons.close,
+                            size: 24.sp,
+                            color: Colors.grey.shade700,
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
                         ),
-                        child: Text(
-                          LocaleKeys.cancel.tr(),
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              LocaleKeys.report_story.tr(),
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
+                        ),
+                        SizedBox(width: 48.w),
+                      ],
+                    ),
+
+                    SizedBox(height: 8.h),
+
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        LocaleKeys.report_reason.tr(),
+                        style: TextStyle(color: Colors.grey, fontSize: 13.sp),
+                      ),
+                    ),
+
+                    SizedBox(height: 14.h),
+
+                    ...reasons.map((reason) {
+                      final selected = selectedReasons.contains(reason.key);
+
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 12.h),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16.r),
+                          onTap: () {
+                            setState(() {
+                              if (selected) {
+                                selectedReasons.remove(reason.key);
+                              } else {
+                                selectedReasons.add(reason.key);
+                              }
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            height: 52.h,
+                            decoration: BoxDecoration(
+                              color: selected
+                                  ? const Color(0xffFFF2F2)
+                                  : const Color(0xffF5F5F5),
+                              borderRadius: BorderRadius.circular(16.r),
+                              border: Border.all(
+                                color: selected
+                                    ? Colors.red
+                                    : Colors.grey.shade300,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                reason.title,
+                                style: TextStyle(
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+
+                    SizedBox(height: 8.h),
+
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        LocaleKeys.details_optional.tr(),
+                        style: TextStyle(color: Colors.grey, fontSize: 13.sp),
+                      ),
+                    ),
+
+                    SizedBox(height: 10.h),
+
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18.r),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: TextField(
+                        controller: controller,
+                        maxLength: 500,
+                        maxLines: 5,
+                        onChanged: (_) => setState(() {}),
+                        decoration: InputDecoration(
+                          hintText: LocaleKeys.write_details_here.tr(),
+                          counterText: "",
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(18.w),
                         ),
                       ),
                     ),
 
-                    SizedBox(width: 12.w),
+                    Text(
+                      "${controller.text.length}/500",
+                      style: TextStyle(color: Colors.grey, fontSize: 12.sp),
+                    ),
 
-                    // زر التأكيد
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // إغلاق الـ Dialog
-                          // هنا يمكنك إضافة الكود الخاص بالإبلاغ عن القصة
-                          //   _reportStory();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0.r),
+                    SizedBox(height: 18.h),
+
+                    const Divider(height: 1),
+
+                    SizedBox(height: 18.h),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: BlocConsumer<HomeBloc, HomeState>(
+                            bloc: homeBloc,
+                            listenWhen: (previous, current) =>
+                                previous.reportingAboutStory !=
+                                current.reportingAboutStory,
+                            listener: (context, homeState) {
+                              if (homeState.reportingAboutStory ==
+                                  ReportingAboutStory.success) {
+                                final storyBloc = GetIt.I<StoryBloc>();
+                                final int ci = widget.collectionIndex;
+                                final stories =
+                                    storyBloc
+                                        .state
+                                        .storiesCollections[ci]
+                                        .stories ??
+                                    const [];
+                                final int currentIndex =
+                                    storyBloc
+                                        .state
+                                        .currentStoryInEachCollection[ci] ??
+                                    0;
+                                // Is there another story after the reported one
+                                // in this same collection?
+                                final bool hasNextInCollection =
+                                    currentIndex < stories.length - 1;
+
+                                // Close the report sheet.
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                                // Drop the reported story from the collection.
+
+                                // The old video belongs to the removed story.
+                                _videoController?.dispose();
+                                _videoController = null;
+                                init = null;
+
+                                if (hasNextInCollection) {
+                                  // After removal the next story now sits at the
+                                  // same index -> (re)select it so its content
+                                  // (image dimensions / video) gets loaded.
+                                  storyBloc.add(
+                                    StorySelectedEvent(
+                                      collectionIndex: ci,
+                                      selectedStoryIndexInCollection:
+                                          currentIndex,
+                                      currentPage: -1,
+                                    ),
+                                  );
+                                  widget.animatedController.reset();
+                                  widget.animatedController.forward();
+                                } else {
+                                  // No next story in this collection -> close the
+                                  // viewer (or advance to the next collection via
+                                  // onReachStoryAtEdge if you prefer).
+                                  Navigator.of(pageContext).pop();
+                                }
+
+                                ScaffoldMessenger.of(pageContext).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      LocaleKeys.report_sent_successfully.tr(),
+                                    ),
+                                  ),
+                                );
+                              } else if (homeState.reportingAboutStory ==
+                                  ReportingAboutStory.failure) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      LocaleKeys.report_failed.tr(),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            buildWhen: (previous, current) =>
+                                previous.reportingAboutStory !=
+                                current.reportingAboutStory,
+                            builder: (context, homeState) {
+                              final loading =
+                                  homeState.reportingAboutStory ==
+                                  ReportingAboutStory.loading;
+
+                              return ElevatedButton(
+                                onPressed: (enableButton && !loading)
+                                    ? () {
+                                        homeBloc.add(
+                                          homeEvent.ReportAboutStoryEvent(
+                                            userId: prefsRepository.myMarketId
+                                                .toString(),
+                                            storyId: storyId,
+                                            reasons: selectedReasons.toList(),
+                                            notes: controller.text.trim(),
+                                          ),
+                                        );
+                                      }
+                                    : null,
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  disabledBackgroundColor: const Color(
+                                    0xffD9D9DF,
+                                  ),
+                                  backgroundColor: Colors.red,
+                                  minimumSize: Size.fromHeight(52.h),
+                                  shape: const StadiumBorder(),
+                                ),
+                                child: loading
+                                    ? TrydosLoader(
+                                        size: 24,
+                                        color: Colors.white,
+                                      )
+                                    : Text(LocaleKeys.send_report.tr()),
+                              );
+                            },
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
                         ),
-                        child: Text(
-                          LocaleKeys.confirm.tr(),
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              _videoController?.play();
+                              Navigator.pop(context);
+                            },
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: Size.fromHeight(52.h),
+                              shape: const StadiumBorder(),
+                            ),
+                            child: Text(LocaleKeys.cancel.tr()),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -1452,4 +1688,11 @@ class CustomRectTween extends RectTween {
       lerpDouble(begin!.bottom, end!.bottom, elasticCurveValue)!,
     );
   }
+}
+
+class ReportReason {
+  final String key;
+  final String title;
+
+  const ReportReason({required this.key, required this.title});
 }

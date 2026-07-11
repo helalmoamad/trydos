@@ -245,7 +245,24 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                       ? const Key(WidgetsKeys.loginPhoneFormFieldKey)
                       : null,
                   autoFocus: true,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChange: (String? text) {
+                    
+                    final cleaned = (text ?? '').replaceAll(
+                      RegExp(r'[^0-9]'),
+                      '',
+                    );
+
+                    if (cleaned == form.controllers[0].text) {
+                      return false; // No change, exit early
+                    }
+
+                    form.controllers[0].value = TextEditingValue(
+                      text: cleaned,
+                      selection: TextSelection.collapsed(
+                        offset: cleaned.length,
+                      ),
+                    );
                     if ((text?.length ?? 0) > 3 &&
                         countryChanged.value.code == "") {
                       if (text!.startsWith("00")) {

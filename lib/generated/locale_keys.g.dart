@@ -907,4 +907,18 @@ abstract class LocaleKeys {
       'field_must_not_exceed_10_characters';
   static const update = 'update';
   static const similar_products = 'similar_products';
+
+static const report_reason = 'report_reason';
+static const details_optional = 'details_optional';
+static const write_details_here = 'write_details_here';
+static const send_report = 'send_report';
+
+static const inappropriate_content = 'inappropriate_content';
+static const harassment = 'harassment';
+static const spam = 'spam';
+static const intellectual_property = 'intellectual_property';
+static const violence = 'violence';
+
+static const report_sent_successfully = 'report_sent_successfully';
+static const report_failed = 'report_failed';
 }

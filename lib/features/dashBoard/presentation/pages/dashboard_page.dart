@@ -85,7 +85,7 @@ class _DashboardPageState extends State<DashboardPage> {
     } else if (_selectedTabIndex == 1 && _permissionChecker.canSeeBoutiques()) {
       _dashboardBloc.add(GetBoutiquesEvent());
     } else if (_selectedTabIndex == 2 && _permissionChecker.canSeeOrders()) {
-      _dashboardBloc.add(GetOrdersEvent());
+      _dashboardBloc.add(NewGetOrdersEvent());
     }
   }
 
@@ -122,7 +122,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       } else if (index == 1 && widget.canGetBoutiques) {
                         _dashboardBloc.add(GetBoutiquesEvent());
                       } else if (index == 2 && widget.canGetOrders) {
-                        _dashboardBloc.add(GetOrdersEvent());
+                        _dashboardBloc.add(NewGetOrdersEvent());
                       } else if (index == 4 && widget.canAddUser) {
                         _dashboardBloc.add(GetUserRolesEvent());
                       }
@@ -130,7 +130,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   },
                   productsCount: state.productsMeta?.total ?? 0,
                   boutiquesCount: state.boutiquesMeta?.total ?? 0,
-                  ordersCount: state.ordersMeta?.total ?? 0,
+                  ordersCount: state.new_orders?.length ?? 0,
                   permissionsCount: widget.permissions.length,
                 );
               },
@@ -347,6 +347,8 @@ class _DashboardPageState extends State<DashboardPage> {
   final ValueNotifier<ConstOrderStatus> currentStatusOfOrder = ValueNotifier(
     ConstOrderStatus.all,
   );
+
+
   Widget buildStatusBar() {
     return ValueListenableBuilder<ConstOrderStatus>(
       valueListenable: currentStatusOfOrder,

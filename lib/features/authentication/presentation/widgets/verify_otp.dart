@@ -114,8 +114,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     // Try to resume existing timer if running
     final now = DateTime.now().millisecondsSinceEpoch;
     final savedEnd = prefsRepository.otpTimerEndTime;
-    if (prefsRepository.isTimerForOtpRunning ??
-        false && savedEnd != null && savedEnd > now) {
+    if (prefsRepository.isTimerForOtpRunning ?? false) {
       endTime = savedEnd!;
       enabledResendNotifier.value = false;
     } else {

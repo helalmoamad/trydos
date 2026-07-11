@@ -795,5 +795,17 @@
   "update": "Update Request",
   "press_here_for_more": "View product",
   "Sellers": "Sellers",
-  "similar_products": "You may also like"
+  "similar_products": "You may also like",
+
+  "report_reason": "Reason for reporting",
+  "details_optional": "Notes (Optional)",
+  "write_details_here": "Write notes here...",
+  "send_report": "Submit Report",
+  "report_sent_successfully": "Report submitted successfully.",
+  "report_failed": "Failed to submit report. Please try again.",
+  "inappropriate_content": "Inappropriate content",
+  "harassment": "Harassment or hate speech",
+  "spam": "Spam or scam",
+  "intellectual_property": "Intellectual property violation",
+  "violence": "Violence or dangerous content"
 }

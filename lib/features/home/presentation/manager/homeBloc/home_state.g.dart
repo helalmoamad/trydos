@@ -341,6 +341,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       ) ??
       SelectedVideoStatus.init,
   storyLink: json['storyLink'] as String?,
+  errorMessage: json['errorMessage'] as String?,
   finishGetAllStory: json['finishGetAllStory'] as bool? ?? false,
   storyOffset: (json['storyOffset'] as num?)?.toInt() ?? 0,
   getStoryWithPagintionStatusLoading:
@@ -489,9 +490,32 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       : GetAuthProductDetailsModel.fromJson(
           json['authProductDetailsModel'] as Map<String, dynamic>,
         ),
+  reportingAboutStory:
+      $enumDecodeNullable(
+        _$ReportingAboutStoryEnumMap,
+        json['reportingAboutStory'],
+      ) ??
+      ReportingAboutStory.init,
+  getDeliveredOrdersResponseStatus:
+      $enumDecodeNullable(
+        _$GetDeliveredOrdersResponseStatusEnumMap,
+        json['getDeliveredOrdersResponseStatus'],
+      ) ??
+      GetDeliveredOrdersResponseStatus.init,
+  deliveredOrdersResponse: json['deliveredOrdersResponse'] == null
+      ? null
+      : DeliveredOrdersResponse.fromJson(
+          json['deliveredOrdersResponse'] as Map<String, dynamic>,
+        ),
 );
 
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
+  'deliveredOrdersResponse': instance.deliveredOrdersResponse?.toJson(),
+  'reportingAboutStory':
+      _$ReportingAboutStoryEnumMap[instance.reportingAboutStory]!,
+  'getDeliveredOrdersResponseStatus':
+      _$GetDeliveredOrdersResponseStatusEnumMap[instance
+          .getDeliveredOrdersResponseStatus]!,
   'getFirebaseSettingForNotificationStatus':
       _$GetFirebaseSettingForNotificationStatusEnumMap[instance
           .getFirebaseSettingForNotificationStatus],
@@ -558,6 +582,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
   'currentStoryInEachCollection': instance.currentStoryInEachCollection.map(
     (k, e) => MapEntry(k.toString(), e),
   ),
+  'errorMessage': instance.errorMessage,
   'addProductIdToSaveRedeemTimerStatus':
       _$AddProductIdToSaveRedeemTimerStatusEnumMap[instance
           .addProductIdToSaveRedeemTimerStatus],
@@ -967,4 +992,18 @@ const _$AuthProductDetailsStatusEnumMap = {
   AuthProductDetailsStatus.loading: 'loading',
   AuthProductDetailsStatus.success: 'success',
   AuthProductDetailsStatus.failure: 'failure',
+};
+
+const _$ReportingAboutStoryEnumMap = {
+  ReportingAboutStory.init: 'init',
+  ReportingAboutStory.loading: 'loading',
+  ReportingAboutStory.success: 'success',
+  ReportingAboutStory.failure: 'failure',
+};
+
+const _$GetDeliveredOrdersResponseStatusEnumMap = {
+  GetDeliveredOrdersResponseStatus.init: 'init',
+  GetDeliveredOrdersResponseStatus.loading: 'loading',
+  GetDeliveredOrdersResponseStatus.success: 'success',
+  GetDeliveredOrdersResponseStatus.failure: 'failure',
 };

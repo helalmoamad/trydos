@@ -7,9 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:logger/logger.dart';
 import 'package:stream_transform/stream_transform.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/data/models/get_user_country_response_model.dart';
@@ -44,7 +42,6 @@ import '../../domain/use_cases/get_customer_info_usecase.dart';
 import '../../domain/use_cases/login_to_chat_usecase.dart';
 import '../../domain/use_cases/login_to_stories_usecase.dart';
 import '../../domain/use_cases/verify_otp_signup_usecase.dart';
-import 'package:flutter_smartlook/flutter_smartlook.dart';
 part 'auth_event.dart';
 
 part 'auth_state.dart';
@@ -1051,28 +1048,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  final Smartlook smartLook = Smartlook.instance;
-  initializeSmartLook() async {
-    String deviceId = (await HelperFunctions.getDeviceId()).toString();
-    await smartLook.preferences.setProjectKey(dotenv.env['SMART_LOOK_KEY']!);
-    await smartLook.preferences.setFrameRate(2);
-    await smartLook.user.setIdentifier(deviceId);
-    await smartLook.user.setName(
-      GetIt.I<PrefsRepository>().myChatName ?? 'No_Name',
-    );
-    await smartLook.user.setIdentifier(
-      GetIt.I<PrefsRepository>().myMarketId ?? 'No_Id',
-    );
-    await smartLook.start();
-  }
-
   FutureOr<void> _onGetUserCountryEvent(
     GetUserCountryEvent event,
     Emitter<AuthState> emit,
   ) async {
     final response = await getUserCountryUseCase(NoParams());
-    // initializeSmartLook();
-    Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
     response.fold(
       (l) {
         emit(

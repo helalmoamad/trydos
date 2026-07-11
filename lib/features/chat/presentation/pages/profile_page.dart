@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -70,6 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int videoss = 0;
   @override
   void initState() {
+    super.initState();
     LastPagesTracker.push('ProfilePage');
     images = _prefsRepository.getTheLocalPathForChannel(widget.chatId) ?? [];
     chatBloc = BlocProvider.of<ChatBloc>(context);
@@ -89,7 +91,11 @@ class _ProfilePageState extends State<ProfilePage> {
     chatBloc.add(
       AddMediaCountEvent(images: imagess, videos: videoss, file: filess),
     );
-    super.initState();
+    
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+    Posthog().capture(eventName: 'app_opened');
+  });
   }
 
   Widget build(BuildContext context) {

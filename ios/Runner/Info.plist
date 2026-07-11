@@ -3,6 +3,9 @@
 <plist version="1.0">
 <dict>
 
+	<!-- PostHog is configured from Dart (main.dart) using values from .env, so disable native auto-init. -->
+	<key>com.posthog.posthog.AUTO_INIT</key>
+	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
