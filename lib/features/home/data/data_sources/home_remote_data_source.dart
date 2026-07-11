@@ -43,7 +43,6 @@ import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart'
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/data/models/update_return_request_model.dart';
 import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
-import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
@@ -1769,33 +1768,34 @@ class HomeRemoteDatasource {
     required int productSlug,
     required String color,
   }) {
-    GetClient<RelatedProductsResponse> client = GetClient<RelatedProductsResponse>(
-      serverName: ServerName.webApp,
-      requestPrams: RequestConfig<RelatedProductsResponse>(
-        endpoint: WebAppEndPoints.getRelatedProducts(productSlug),
-        //queryParameters: {"color": color},
-        response: ResponseValue<RelatedProductsResponse>(
-          fromJson: (json) => RelatedProductsResponse.fromJson(json),
-        ),
-      ),
-    );
+    GetClient<RelatedProductsResponse> client =
+        GetClient<RelatedProductsResponse>(
+          serverName: ServerName.webApp,
+          requestPrams: RequestConfig<RelatedProductsResponse>(
+            endpoint: WebAppEndPoints.getRelatedProducts(productSlug),
+            //queryParameters: {"color": color},
+            response: ResponseValue<RelatedProductsResponse>(
+              fromJson: (json) => RelatedProductsResponse.fromJson(json),
+            ),
+          ),
+        );
 
     return client();
   }
 
-
-  Future<DeliveredOrdersResponse> getDeliveredOrdersResponse ({
+  Future<DeliveredOrdersResponse> getDeliveredOrdersResponse({
     required int productId,
   }) {
-    GetClient<DeliveredOrdersResponse> client = GetClient<DeliveredOrdersResponse>(
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<DeliveredOrdersResponse>(
-        endpoint: WebAppEndPoints.getDeliveredOrdersResponse(productId),
-        response: ResponseValue<DeliveredOrdersResponse>(
-          fromJson: (json) => DeliveredOrdersResponse.fromJson(json),
-        ),
-      ),
-    );
+    GetClient<DeliveredOrdersResponse> client =
+        GetClient<DeliveredOrdersResponse>(
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<DeliveredOrdersResponse>(
+            endpoint: WebAppEndPoints.getDeliveredOrdersResponse(productId),
+            response: ResponseValue<DeliveredOrdersResponse>(
+              fromJson: (json) => DeliveredOrdersResponse.fromJson(json),
+            ),
+          ),
+        );
 
     return client();
   }

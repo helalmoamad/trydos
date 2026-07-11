@@ -1050,8 +1050,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   productItem: productItem!,
                                 ),
 
-                  
-
                                 /*BadgesList(
                                   lable: state.cachedProductWithoutRelatedProductsModel[
                                               productItem!.productId
@@ -1551,95 +1549,91 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                     panelControllerForBuyersCameraShots,
                               ),*/
                               if (state.getRelatedProductsStatus ==
-                                        GetRelatedProductsStatus.success &&
-                                    state.relatedProducts != null &&
-                                    (state.relatedProducts?.isNotEmpty ??
-                                        false)) ...{
-                                  Builder(
-                                    builder: (context) {
-                                      List<productListingModel.Products>
-                                      relatedList = [];
-                                      for (var item in state.relatedProducts!) {
-                                        if (item
-                                            is productListingModel.Products) {
-                                          relatedList.add(item);
-                                        }
-                                      }
-                                      if (relatedList.isEmpty) {
-                                        return const SizedBox.shrink();
-                                      }
-                                      return Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
+                                      GetRelatedProductsStatus.success &&
+                                  state.relatedProducts != null &&
+                                  (state.relatedProducts?.isNotEmpty ??
+                                      false)) ...{
+                                Builder(
+                                  builder: (context) {
+                                    List<productListingModel.Products>
+                                    relatedList = [];
+                                    for (var item in state.relatedProducts!) {
+                                      relatedList.add(item);
+                                    }
+                                    if (relatedList.isEmpty) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 12.w,
+                                            vertical: 8.h,
+                                          ),
+                                          child: Text(
+                                            LocaleKeys.we_recommend.tr(),
+                                            style: context.textTheme.bodyLarge
+                                                ?.copyWith(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                          ),
+                                        ),
+
+                                        Container(
+                                          margin: EdgeInsets.symmetric(
+                                            horizontal: 12.w,
+                                            vertical: 8.h,
+                                          ),
+                                          child: Text(
+                                            LocaleKeys.similar_products.tr(),
+                                            style: context.textTheme.bodyLarge
+                                                ?.copyWith(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                          ),
+                                        ),
+
+                                        SizedBox(
+                                          height: 370.h,
+                                          child: ListView.separated(
                                             padding: EdgeInsets.symmetric(
-                                              horizontal: 12.w,
-                                              vertical: 8.h,
+                                              horizontal: 10.w,
                                             ),
-                                            child: Text(
-                                              LocaleKeys.we_recommend.tr(),
-                                              style: context.textTheme.bodyLarge
-                                                  ?.copyWith(
-                                                    fontSize: 16.sp,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                            ),
-                                          ),
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount: relatedList.length,
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            itemBuilder: (context, i) {
+                                              final prod = relatedList[i];
 
-                                          Container(
-                                            margin: EdgeInsets.symmetric(
-                                              horizontal: 12.w,
-                                              vertical: 8.h,
-                                            ),
-                                            child: Text(
-                                              LocaleKeys.similar_products.tr(),
-                                              style: context.textTheme.bodyLarge
-                                                  ?.copyWith(
-                                                    fontSize: 16.sp,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                            ),
+                                              return SizedBox(
+                                                width: 200.w,
+                                                child: ProductItem(
+                                                  itemIndex: i,
+                                                  finishRedeem: finishRedeem,
+                                                  tapIndexToAddProductToCart:
+                                                      tapIndexToAddProductToCart,
+                                                  productItem: prod,
+                                                  fromRecommend: true,
+                                                  productIsRecommend:
+                                                      productIsRecommend,
+                                                ),
+                                              );
+                                            },
+                                            separatorBuilder: (_, __) =>
+                                                SizedBox(width: 10.w),
                                           ),
-
-                                          SizedBox(
-                                            height: 370.h,
-                                            child: ListView.separated(
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 10.w,
-                                              ),
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount: relatedList.length,
-                                              physics:
-                                                  const BouncingScrollPhysics(),
-                                              itemBuilder: (context, i) {
-                                                final prod = relatedList[i];
-
-                                                return SizedBox(
-                                                  width: 200.w,
-                                                  child: ProductItem(
-                                                    itemIndex: i,
-                                                    finishRedeem: finishRedeem,
-                                                    tapIndexToAddProductToCart:
-                                                        tapIndexToAddProductToCart,
-                                                    productItem: prod,
-                                                    fromRecommend: true,
-                                                    productIsRecommend:
-                                                        productIsRecommend,
-                                                  ),
-                                                );
-                                              },
-                                              separatorBuilder: (_, __) =>
-                                                  SizedBox(width: 10.w),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              },
                               SizedBox(height: (2 * 73.5 / (1.sh - 100.h)).sh),
-
                             ],
                           ),
                         ),

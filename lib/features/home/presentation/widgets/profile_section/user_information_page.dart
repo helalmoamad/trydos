@@ -13,14 +13,12 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
-import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/features/authentication/presentation/widgets/welcome_section.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -452,6 +450,7 @@ WelcomeSection(
                             AppAssets.closeSvg,
                             height: 15,
                             width: 30,
+                            // ignore: deprecated_member_use
                             color: const Color(0xffFF5F61),
                           ),
                         ),

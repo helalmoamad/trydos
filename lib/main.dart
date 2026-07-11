@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:device_preview_plus/device_preview_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/services.dart';
@@ -515,12 +514,9 @@ void main() async {
       };
     },
     appRunner: () => runApp(
-      DevicePreview(
-        enabled: false, // !kReleaseMode,
-        builder: (context) => DefaultAssetBundle(
-          bundle: SentryAssetBundle(),
-          child: TrydosApplication(navKey: navigatorKey),
-        ),
+      DefaultAssetBundle(
+        bundle: SentryAssetBundle(),
+        child: TrydosApplication(navKey: navigatorKey),
       ),
     ),
   );

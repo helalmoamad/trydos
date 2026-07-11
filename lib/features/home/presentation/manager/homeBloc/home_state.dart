@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:geodesy/geodesy.dart' as goid;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 import 'package:trydos/features/home/data/models/DeliveredOrdersResponse.dart';
@@ -17,15 +16,12 @@ import 'package:geodesy/geodesy.dart' as geod;
 import 'package:trydos/features/home/data/models/get_order_rating_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
     hide BuyersCommentModel;
-import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
 import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../../core/data/model/pagination_model.dart';
-
 import '../../../data/models/check_availability_product_cart_model.dart';
 import '../../../data/models/get_fqa_comments_model.dart';
 import '../../../data/models/get_buyers_comments_model.dart';
@@ -144,9 +140,7 @@ enum GetCurrenciesForWalletStatus { init, loading, success, failure }
 
 enum ReportingAboutStory { init, loading, success, failure }
 
-
-enum GetDeliveredOrdersResponseStatus  { init, loading, success, failure }
-
+enum GetDeliveredOrdersResponseStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
 @immutable
@@ -268,8 +262,9 @@ class HomeState extends Equatable {
     this.authProductDetailsStatus = AuthProductDetailsStatus.init,
     this.authProductDetailsModel,
     this.reportingAboutStory = ReportingAboutStory.init,
-    this.getDeliveredOrdersResponseStatus = GetDeliveredOrdersResponseStatus.init,
-    this.deliveredOrdersResponse
+    this.getDeliveredOrdersResponseStatus =
+        GetDeliveredOrdersResponseStatus.init,
+    this.deliveredOrdersResponse,
   });
   final DeliveredOrdersResponse? deliveredOrdersResponse;
   final ReportingAboutStory reportingAboutStory;
@@ -314,7 +309,7 @@ class HomeState extends Equatable {
   final String? statusCodeOfCommentProcess;
   final int? selectedCollection;
   final Map<int, int?> currentStoryInEachCollection;
-final String? errorMessage;
+  final String? errorMessage;
   final AddProductIdToSaveRedeemTimerStatus?
   addProductIdToSaveRedeemTimerStatus;
   final CurrentSelectedColorForEveryProductStatus?
@@ -417,7 +412,6 @@ final String? errorMessage;
   final bool? likeForReplayComment;
   final AuthProductDetailsStatus authProductDetailsStatus;
   final GetAuthProductDetailsModel? authProductDetailsModel;
-
 
   @override
   List<Object?> get props => [
@@ -542,7 +536,7 @@ final String? errorMessage;
     currentHeightWhenAddToBag,
     getStoryWithPagintionStatusLoading,
     reportingAboutStory,
-    getDeliveredOrdersResponseStatus
+    getDeliveredOrdersResponseStatus,
   ];
 
   HomeState copyWith({
@@ -677,8 +671,11 @@ final String? errorMessage;
     GetAuthProductDetailsModel? authProductDetailsModel,
   }) {
     return HomeState(
-      deliveredOrdersResponse: deliveredOrdersResponse ?? this.deliveredOrdersResponse,
-      getDeliveredOrdersResponseStatus: getDeliveredOrdersResponseStatus ?? this.getDeliveredOrdersResponseStatus,
+      deliveredOrdersResponse:
+          deliveredOrdersResponse ?? this.deliveredOrdersResponse,
+      getDeliveredOrdersResponseStatus:
+          getDeliveredOrdersResponseStatus ??
+          this.getDeliveredOrdersResponseStatus,
       getAndAddCountViewOfProductStatus:
           getAndAddCountViewOfProductStatus ??
           this.getAndAddCountViewOfProductStatus,

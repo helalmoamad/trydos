@@ -138,8 +138,8 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
         return AnimatedContainer(
           padding: const EdgeInsets.only(left: 10, right: 10),
           duration: Duration(
-              milliseconds:
-                  (toggle == 1) ? widget.animationDurationInMilli : 0),
+            milliseconds: (toggle == 1) ? widget.animationDurationInMilli : 0,
+          ),
           height: widget.height ?? 48.0,
           width: (toggle == 0) ? 48.0 : widget.width,
           curve: Curves.easeOut,
@@ -147,7 +147,10 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
             children: [
               AnimatedPositioned(
                 duration: Duration(
-                    milliseconds: (toggle == 1) ? widget.animationDurationInMilli : 0),
+                  milliseconds: (toggle == 1)
+                      ? widget.animationDurationInMilli
+                      : 0,
+                ),
                 left: (toggle == 0) ? 20.0 : 0.0,
                 curve: Curves.easeOut,
                 top: 0.0,
@@ -177,7 +180,9 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                                 widget.onChanged?.call(value);
                                 if (mounted) setState(() {});
                               },
-                              style: widget.style ?? const TextStyle(color: Colors.black),
+                              style:
+                                  widget.style ??
+                                  const TextStyle(color: Colors.black),
                               cursorColor: Colors.black,
                               decoration: (widget.searchDecoration != null)
                                   ? widget.searchDecoration!.copyWith(
@@ -189,63 +194,122 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
 
                             // suggestion overlay on top (non-interactive)
                             IgnorePointer(
-                              child: LayoutBuilder(builder: (context, constraints) {
-                                final inputText = widget.textController.text;
-                                String finalSuggestion = widget.suggestion ?? '';
-                                try {
-                                  // intentionally left blank: keep safe access pattern for bloc
-                                } catch (_) {}
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final inputText = widget.textController.text;
+                                  String finalSuggestion =
+                                      widget.suggestion ?? '';
+                                  try {
+                                    // intentionally left blank: keep safe access pattern for bloc
+                                  } catch (_) {}
 
-                                if (inputText.isNotEmpty &&
-                                    finalSuggestion.isNotEmpty &&
-                                    finalSuggestion.toLowerCase().startsWith(inputText.toLowerCase()) &&
-                                    finalSuggestion.length > inputText.length) {
-                                  final suffix = finalSuggestion.substring(inputText.length);
+                                  if (inputText.isNotEmpty &&
+                                      finalSuggestion.isNotEmpty &&
+                                      finalSuggestion.toLowerCase().startsWith(
+                                        inputText.toLowerCase(),
+                                      ) &&
+                                      finalSuggestion.length >
+                                          inputText.length) {
+                                    final suffix = finalSuggestion.substring(
+                                      inputText.length,
+                                    );
 
-                                  EdgeInsets resolvedPadding = const EdgeInsets.all(2);
-                                  if (widget.searchDecoration?.contentPadding != null) {
-                                    try {
-                                      resolvedPadding = widget.searchDecoration!.contentPadding!.resolve(Directionality.of(context));
-                                    } catch (_) {}
-                                  }
+                                    EdgeInsets resolvedPadding =
+                                        const EdgeInsets.all(2);
+                                    if (widget
+                                            .searchDecoration
+                                            ?.contentPadding !=
+                                        null) {
+                                      try {
+                                        resolvedPadding = widget
+                                            .searchDecoration!
+                                            .contentPadding!
+                                            .resolve(
+                                              Directionality.of(context),
+                                            );
+                                      } catch (_) {}
+                                    }
 
-                                  final bool isRtl = widget.rtl || Directionality.of(context) == TextDirection.rtl;
+                                    final bool isRtl =
+                                        widget.rtl ||
+                                        Directionality.of(context) ==
+                                            TextDirection.rtl;
 
-                                  if (isRtl) {
-                                    return Padding(
-                                      padding: EdgeInsets.only(right: resolvedPadding.right),
-                                      child: Align(
-                                        alignment: Alignment.bottomRight,
-                                        child: RichText(
-                                          textDirection: TextDirection.rtl,
-                                          text: TextSpan(
-                                            children: [
-                                              TextSpan(text: finalSuggestion.substring(0, inputText.length), style: const TextStyle(color: Colors.transparent)),
-                                              TextSpan(text: "             "),
-                                              TextSpan(text: suffix, style: const TextStyle(color: Color(0xff8D8D8D))),
-                                            ],
+                                    if (isRtl) {
+                                      return Padding(
+                                        padding: EdgeInsets.only(
+                                          right: resolvedPadding.right,
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.bottomRight,
+                                          child: RichText(
+                                            textDirection: TextDirection.rtl,
+                                            text: TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text: finalSuggestion
+                                                      .substring(
+                                                        0,
+                                                        inputText.length,
+                                                      ),
+                                                  style: const TextStyle(
+                                                    color: Colors.transparent,
+                                                  ),
+                                                ),
+                                                const TextSpan(
+                                                  text: "             ",
+                                                ),
+                                                TextSpan(
+                                                  text: suffix,
+                                                  style: const TextStyle(
+                                                    color: Color(0xff8D8D8D),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
+                                        ),
+                                      );
+                                    }
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                        left: resolvedPadding.left,
+                                      ),
+                                      child: RichText(
+                                        text: TextSpan(
+                                          style:
+                                              widget.style ??
+                                              const TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                          children: [
+                                            TextSpan(
+                                              text: finalSuggestion.substring(
+                                                0,
+                                                inputText.length,
+                                              ),
+                                              style: const TextStyle(
+                                                color: Colors.transparent,
+                                              ),
+                                            ),
+                                            const TextSpan(
+                                              text: "            ",
+                                            ),
+                                            TextSpan(
+                                              text: suffix,
+                                              style: const TextStyle(
+                                                color: Color(0xff8D8D8D),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     );
                                   }
-                                  return Padding(
-                                    padding: EdgeInsets.only(left: resolvedPadding.left),
-                                    child: RichText(
-                                      text: TextSpan(
-                                        style: widget.style ?? const TextStyle(color: Colors.black),
-                                        children: [
-                                          TextSpan(text: finalSuggestion.substring(0, inputText.length), style: const TextStyle(color: Colors.transparent)),
-                                          TextSpan(text: "            "),
-                                          TextSpan(text: suffix, style: const TextStyle(color: Color(0xff8D8D8D))),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }
 
-                                return const SizedBox.shrink();
-                              }),
+                                  return const SizedBox.shrink();
+                                },
+                              ),
                             ),
                           ],
                         ),
@@ -275,6 +339,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                                       AppAssets.closeSvg,
                                       height: 15,
                                       width: 30,
+                                      // ignore: deprecated_member_use
                                       color: const Color(0xffFF5F61),
                                     ),
                                     const SizedBox(width: 25),
@@ -300,7 +365,8 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                           setState(() {
                             if (toggle == 0) {
                               toggle = 1;
-                              if (widget.autoFocus) FocusScope.of(context).requestFocus(focusNode);
+                              if (widget.autoFocus)
+                                FocusScope.of(context).requestFocus(focusNode);
                               _con.forward();
                             } else {
                               toggle = 0;

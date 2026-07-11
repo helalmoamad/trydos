@@ -1,17 +1,12 @@
 //import 'dart:convert';
 import 'dart:async';
 import 'dart:math';
-
-import 'package:flutter/scheduler.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:easy_localization/easy_localization.dart' as transform;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-
 import 'package:get_it/get_it.dart';
 //import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shimmer/shimmer.dart';

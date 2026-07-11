@@ -604,28 +604,26 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               // completion so the status listener will move to the next story.
                               final position = value.position;
                               final duration = value.duration;
-                              if (duration != null && position != null) {
-                                final isEnded =
-                                    !value.isPlaying &&
-                                    (position >= duration ||
-                                        duration - position <=
-                                            const Duration(milliseconds: 200));
-                                if (isEnded) {
-                                  // animate to completion quickly to trigger status listener
-                                  try {
-                                    widget.animatedController.animateTo(
-                                      1.0,
-                                      duration: const Duration(
-                                        milliseconds: 120,
-                                      ),
-                                    );
-                                  } catch (_) {
-                                    // ignore if controller disposed
-                                  }
-                                  return;
+                              final isEnded =
+                                  !value.isPlaying &&
+                                  (position >= duration ||
+                                      duration - position <=
+                                          const Duration(milliseconds: 200));
+                              if (isEnded) {
+                                // animate to completion quickly to trigger status listener
+                                try {
+                                  widget.animatedController.animateTo(
+                                    1.0,
+                                    duration: const Duration(
+                                      milliseconds: 120,
+                                    ),
+                                  );
+                                } catch (_) {
+                                  // ignore if controller disposed
                                 }
+                                return;
                               }
-
+                            
                               // Otherwise, just stop the animation (paused mid-video)
                               widget.animatedController.stop();
                             });

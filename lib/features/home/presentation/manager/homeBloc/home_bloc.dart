@@ -82,7 +82,6 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
-import 'package:trydos/features/story/data/models/ReportResponse.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/report_about_story_usecase.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -222,9 +221,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<UpdateLikeCommentEvent>(_onUpdateLikeCommentEvent);
     on<FetchAuthProductDetailsEvent>(_onFetchAuthProductDetailsEvent);
 
-
- 
-
     on<GetCurrencyForCountryEvent>(
       _onGetCurrencyForCountryEvent,
       transformer: throttleDroppable(const Duration(seconds: 5)),
@@ -314,13 +310,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );*/
     on<GetPopularSearchItemEvent>(_onGetPopularSearchItemEvent);
 
-    
-///////////////////////////
+    ///////////////////////////
     on<GetProductDatailsWithoutRelatedProductsEvent>(
       _onGetProductDatailsWithoutRelatedProductsEvent,
       transformer: restartable(),
     );
-
 
     //////////////////////////
 
@@ -371,7 +365,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
 
     on<DeliveredOrdersResponseEvent>(_onDeliveredOrdersResponseEvent);
-
   }
 
   Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
@@ -4968,17 +4961,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
-
   FutureOr<void> _onGetFullProductDetailsEvent(
     GetFullProductDetailsEvent event,
     Emitter<HomeState> emit,
@@ -6664,29 +6646,29 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       },
       (response) {
-        emit(
-          state.copyWith(
-            reportingAboutStory: ReportingAboutStory.success,
-          ),
-        );
+        emit(state.copyWith(reportingAboutStory: ReportingAboutStory.success));
       },
     );
   }
-
-
 
   FutureOr<void> _onDeliveredOrdersResponseEvent(
     DeliveredOrdersResponseEvent event,
     Emitter<HomeState> emit,
   ) async {
-    emit(state.copyWith(getDeliveredOrdersResponseStatus: GetDeliveredOrdersResponseStatus.loading));
+    emit(
+      state.copyWith(
+        getDeliveredOrdersResponseStatus:
+            GetDeliveredOrdersResponseStatus.loading,
+      ),
+    );
 
     final result = await getDeliveredOrdersResponseUseCase(event.productId);
     result.fold(
       (failure) {
         emit(
           state.copyWith(
-            getDeliveredOrdersResponseStatus: GetDeliveredOrdersResponseStatus.failure,
+            getDeliveredOrdersResponseStatus:
+                GetDeliveredOrdersResponseStatus.failure,
             errorMessage: failure.message,
           ),
         );
@@ -6694,8 +6676,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       (response) {
         emit(
           state.copyWith(
-            getDeliveredOrdersResponseStatus: GetDeliveredOrdersResponseStatus.success,
-            deliveredOrdersResponse: response
+            getDeliveredOrdersResponseStatus:
+                GetDeliveredOrdersResponseStatus.success,
+            deliveredOrdersResponse: response,
           ),
         );
       },
