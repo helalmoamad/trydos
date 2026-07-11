@@ -3,44 +3,65 @@ name: Deploy to Play Store Internal
 on:
   push:
     branches:
-      - dev_new  # سيشتغل هذا الـ Pipeline تلقائياً عندما ترفع كود لفرع main
+      - dev_new
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. سحب الكود من المستودع
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. تثبيت الجافا
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      # 3. تثبيت فلاتر
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
 
-      # 4. تحميل مكاتب فلاتر
       - name: Install Dependencies
         run: flutter pub get
 
-      # 5. تشغيل اختبارات فلاتر (تم تعطيلها مؤقتاً)
-      # - name: Run Flutter Tests
-      #   run: flutter test
+      # 🔥 توليد الملف بالروابط العادية، واستدعاء المفاتيح المالية المشفرة من السيكرتس لحمايتها
+      - name: Create .env file dynamically
+        run: |
+          cat <<'EOF' > .env
+          SENTRY_DNS="https://0640301de79871dbe157593e7ec6a5e0@o4508523067932672.ingest.us.sentry.io/4508523079335936"
+          SMART_LOOK_KEY="bcc47eb08c142a3d766929499a74f11214c38261"
+          MARKET_URL="https://trydos_develop.ramaaz.dev/"
+          STORY_URL="https://trydos_stories_staging.ramaaz.dev"
+          CHAT_URL="https://chating_staging_trydos_new.ramaaz.dev"
+          CHAT_NEST_URL="https://trydoschatnest.ramaaz.dev"
+          ELASTIC_URL="https://recomende_elasticsearch_engin_staging.ramaaz.dev"
+          WEB_CALLS_URL="https://dev.trydos.com"
+          WALLET_URL="https://trydos_wallet_develop.ramaaz.dev"
+          WEB_CALLS_NEST_URL="https://trydos-front-git-new-chat-nestjs-backend-trydos-front-team.vercel.app"
+          WEB_APP="https://dev.trydos.com"
+          CLOUDINARY_URL="https://api.cloudinary.com"
+          CLOUDINARY_NAME="djooohujg"
+          CLOUDINARY_VERSION="v1_1"
+          CLOUDINARY_LOAD_PRESET="v4h8xqns"
+          Images_Url="https://res.cloudinary.com/dtcmozf4d/image/upload/v1"
+          Video_url="https://res.cloudinary.com/dtcmozf4d/video/upload/v1/product/videos/"
+          COMMENT_TOKEN_URL="https://trydos_comments.ramaaz.dev/"
+          MEDIA_SERVER_URL="https://media_server.ramaaz.dev/"
+          MEDIA_API_KEY="pfxqJTg8PgGf9rKEyvred+odXPgGU4wFtOJnJPUlqngdell@DESKTOP-0DHEE8R"
+          Media_S3_Server="https://media_server.ramaaz.dev/image/upload/"
+          Vedio_S3_Server="https://media_server.ramaaz.dev/video/upload/"
+          Gemini="${{ secrets.GEMINI_KEY }}"
+          Public_Api_Key="${{ secrets.STRIPE_PUBLIC_KEY }}"
+          Secret_Key="${{ secrets.STRIPE_SECRET_KEY }}"
+          EOF
 
-      # 6. تحويل النص المشفر إلى ملف مفتاح حقيقي داخل سيرفر GitHub (تم ضبط المسار ليتوافق مع الـ gradle)
       - name: Decode Keystore
         run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > upload-keystore.jks
 
-      # 7. بناء التطبيق وتمرير أرقام الإصدارات تلقائياً
       - name: Build App Bundle
         env:
           ANDROID_KEYSTORE_PATH: "upload-keystore.jks"
@@ -51,7 +72,6 @@ jobs:
           BUILD_NUM=$((${{ github.run_number }} + 7))
           flutter build appbundle --release --build-number=$BUILD_NUM
 
-      # 8. الرفع تلقائياً إلى المسار الداخلي بالمتجر (Internal Testing)
       - name: Upload to Google Play
         uses: r0adkll/upload-google-play@v1
         with:
