@@ -28,7 +28,7 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      # 🔥 توليد الملف بالروابط العادية، واستدعاء المفاتيح المالية المشفرة من السيكرتس لحمايتها
+      # 🔥 توليد ملف الـ .env بالروابط العادية ومفاتيح السيكرتس بأمان
       - name: Create .env file dynamically
         run: |
           cat <<'EOF' > .env
@@ -59,12 +59,16 @@ jobs:
           Secret_Key="${{ secrets.STRIPE_SECRET_KEY }}"
           EOF
 
+      # 🛠️ فك تشفير المفتاح داخل مجلد build مباشرة لحل مشكلة "Keystore not found"
       - name: Decode Keystore
-        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > upload-keystore.jks
+        run: |
+          mkdir -p build
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > build/upload-keystore.jks
 
+      # 7. بناء التطبيق وتمرير أرقام الإصدارات مع المسار الجديد للمفتاح
       - name: Build App Bundle
         env:
-          ANDROID_KEYSTORE_PATH: "upload-keystore.jks"
+          ANDROID_KEYSTORE_PATH: "build/upload-keystore.jks"
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
