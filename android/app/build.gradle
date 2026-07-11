@@ -54,8 +54,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true  // تعطيل تقليل الكود مؤقتًا
-            shrinkResources true // تعطيل تقليل الموارد مؤقتًا
+            minifyEnabled true  
+            shrinkResources true 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             
             // التوقيع التلقائي باستخدام الإعدادات السحابية المحددة بالأعلى
