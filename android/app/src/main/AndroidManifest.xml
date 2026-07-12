@@ -31,11 +31,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
-    
     <uses-feature android:name="android.hardware.camera" />
-
-
     <uses-feature android:name="android.hardware.camera.autofocus" />
        <application
         android:label="Trydos"
@@ -44,8 +40,10 @@
         android:name="${applicationName}"
         android:exported="true"
         android:icon="@mipmap/ic_launcher"
-        
-           tools:targetApi="m">
+        android:allowBackup="false"
+        android:fullBackupOnly="false"
+        android:hasFragileUserData="false"
+        tools:targetApi="m">
            <service
                android:name="io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingService"
                android:directBootAware="true"
@@ -54,9 +52,6 @@
                    <action android:name="com.google.firebase.MESSAGING_EVENT" />
                </intent-filter>
            </service>
-
-
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -96,8 +91,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCq5Gi3oBlQv5qbaX2w_piuYmXpGHVwxnM"/>
@@ -123,7 +116,5 @@
   <meta-data android:name="com.posthog.posthog.POSTHOG_HOST" android:value="https://us.i.posthog.com" />
   <meta-data android:name="com.posthog.posthog.TRACK_APPLICATION_LIFECYCLE_EVENTS" android:value="true" />
   <meta-data android:name="com.posthog.posthog.DEBUG" android:value="true" />
-
-
        </application>
 </manifest>
