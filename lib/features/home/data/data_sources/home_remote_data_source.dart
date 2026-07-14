@@ -972,7 +972,7 @@ class HomeRemoteDatasource {
   Future<ListOfProductsFoundedInCartModel> getProductsListInCart() {
     GetClient<ListOfProductsFoundedInCartModel> getProductsListInCart =
         GetClient<ListOfProductsFoundedInCartModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<ListOfProductsFoundedInCartModel>(
             endpoint: MarketEndPoints.getProductListInCartEP,
             response: ResponseValue<ListOfProductsFoundedInCartModel>(
@@ -987,7 +987,7 @@ class HomeRemoteDatasource {
   Future<AddItemToCartModel> addItemToCart(Map<String, dynamic> params) {
     PostClient<AddItemToCartModel> addItemToCart =
         PostClient<AddItemToCartModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<AddItemToCartModel>(
             endpoint: MarketEndPoints.addItemCartItemEP,
             data: params,
@@ -1016,7 +1016,7 @@ class HomeRemoteDatasource {
   ) {
     PostClient<ConvertItemFromCartToOldCartModel> convertItemInCartToOldCart =
         PostClient<ConvertItemFromCartToOldCartModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<ConvertItemFromCartToOldCartModel>(
             endpoint: MarketEndPoints.convertItemInCartToOldCartEP,
             data: params,
@@ -1031,7 +1031,7 @@ class HomeRemoteDatasource {
 
   Future<bool> removeItemToCart(Map<String, dynamic> params) {
     PostClient<bool> removeItemToCart = PostClient<bool>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<bool>(
         endpoint: MarketEndPoints.removeItemCartItemEP,
         data: params,

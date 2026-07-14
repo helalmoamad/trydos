@@ -188,4 +188,13 @@ abstract class MarketUrls {
   static set setBaseUrl(String url) => _baseUrlDev = url;
 
   static String _baseUrlDev = dotenv.env['MARKET_URL']!;
+  //////////////////////////////////////////////////////////////////////////////////////
+
+  static String get baseUrlGo => _baseUrlDevGo;
+
+  static Uri get baseUrlGo1 => Uri.parse(_baseUrlDevGo);
+
+  static set setBaseUrlGo(String url) => _baseUrlDevGo = url;
+
+  static String _baseUrlDevGo = dotenv.env['MARKETGo_URL']!;
 }

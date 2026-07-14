@@ -15,6 +15,7 @@ import '../../../common/constant/configuration/stories_url_routes.dart';
 enum ServerName {
   chat,
   market,
+  marketGO,
   stories,
   location,
   cloudinary,
@@ -35,6 +36,8 @@ Uri getBaseUriForSpecificServer(ServerName serverName) {
       return ChatUrls.baseUri;
     case ServerName.market:
       return MarketUrls.baseUri;
+    case ServerName.marketGO:
+      return MarketUrls.baseUrlGo1;
     case ServerName.wallet:
       return WalletUrls.baseUri;
     case ServerName.dashBoard:
@@ -67,6 +70,10 @@ String? getServerToken(ServerName serverName) {
       return prefsRepository.chatToken;
     case ServerName.market:
       return prefsRepository.marketToken;
+    ///////////////
+    case ServerName.marketGO:
+      return prefsRepository.marketToken;
+    ///////////////
     case ServerName.dashBoard:
       return prefsRepository.marketToken;
     case ServerName.get_comment_token:
