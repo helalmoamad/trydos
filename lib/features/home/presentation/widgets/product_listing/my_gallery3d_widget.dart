@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
@@ -86,7 +87,7 @@ class _MyGallery3DWidgetState extends State<MyGallery3DWidget> {
                       1)
               ? 0
               : (widget.gallery3dController.currentIndex + 1);
-          print(
+          if (kDebugMode) print(
               'vis ${!((widget.gallery3dControllerForCircles?.currentIndex == 0 && index == leftItemIndex) || (widget.gallery3dControllerForCircles?.currentIndex == ((widget.gallery3dControllerForCircles?.itemCount ?? 0) / 2 - 1) && index == rightItemIndex))}');
           return Visibility(
             visible: widget.gallery3dControllerForCircles?.itemCount == 3

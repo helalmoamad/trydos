@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' hide Category;
 
 import 'package:flutter/material.dart';
 
@@ -90,7 +90,7 @@ class PreCachingImageBloc
     } else if (event.type == "productDetailsImages") {
       await productDetailsImages.acquire();
     }
-    print(
+    if (kDebugMode) print(
         "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqSSSSSSSSSSSSSSSSSSSSSSqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq${event.type}");
     await precacheImage(
             CachedNetworkImageProvider(event.imageUrl,
@@ -98,7 +98,7 @@ class PreCachingImageBloc
             event.context)
         .then(
       (value) {
-        print(
+        if (kDebugMode) print(
             "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqffffffffffffffffffffffffffffffqqqqqqqqqqqqqqqqqqqqqqqqqqqqq${event.type}");
         if (event.type == "banner") {
           imageBanner.release();
@@ -174,7 +174,7 @@ class PreCachingImageBloc
     successCachehSvgs[event.svgUrl] = true;
     emit(PreCachingImageState(cachehSvgs: successCachehSvgs));
   } catch (e) {
-    print("Error caching SVG: $e");
+    if (kDebugMode) print("Error caching SVG: $e");
   } finally {
     semaphore.release();
   }*/
@@ -190,7 +190,7 @@ class PreCachingImageBloc
     CacheImageEvent event,
     Emitter<PreCachingImageState> emit,
   ) async {
-    print("CCCCCCCCCCCCCCCCCCCCCCC${event.imageUrl}//${event.type}");
+    if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC${event.imageUrl}//${event.type}");
     if (!event.imageUrl.contains("cloudinary") &&
         !event.imageUrl.contains("media_server")) {
       return;
@@ -227,7 +227,7 @@ class PreCachingImageBloc
   /// تحميل آمن للصور بدون تأثير على UI thread
   void _precacheImageSafely(CacheImageEvent event) async {
     try {
-      print("CCCCCCCCCCCCCCCCCCCCCCC${event.imageUrl}//${event.type}");
+      if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC${event.imageUrl}//${event.type}");
       // ⚡ استخدام Future.microtask لنقل العملية خارج UI thread
       await Future.microtask(() async {
         await precacheImage(

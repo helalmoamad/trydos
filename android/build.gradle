@@ -2,7 +2,7 @@ buildscript {
     ext.kotlin_version = '2.1.20'
     repositories {
         google()
-        mavenCentral()
+        mavenCentral() // تصحيح الكلمة هنا
         jcenter()
     }
 
@@ -15,23 +15,34 @@ buildscript {
 allprojects {
     repositories {
         google()
-        mavenCentral()
+        mavenCentral() // تصحيح الكلمة هنا أيضاً
         jcenter()
     }
 }
 
 rootProject.buildDir = '../build'
-subprojects {
-    afterEvaluate { project ->
+
+// تجميع كل إعدادات المشاريع الفرعية والمكتبات في مكان واحد منظم
+subprojects { project ->
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    
+    afterEvaluate {
         if (project.plugins.hasPlugin("com.android.application") ||
                 project.plugins.hasPlugin("com.android.library")) {
+            
             project.android {
                 compileSdk 36
                 compileOptions {
                     sourceCompatibility JavaVersion.VERSION_17
                     targetCompatibility JavaVersion.VERSION_17
                 }
+                
+                // 🔥 الحل السحري: إذا كانت المكتبة قديمة ولا تملك namespace، يتم تعيينه لها تلقائيًا هنا لمنع خطأ البناء
+                if (project.android.hasProperty("namespace") && project.android.namespace == null) {
+                    project.android.namespace = project.group
+                }
             }
+            
             project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
                 kotlinOptions {
                     jvmTarget = "17"
@@ -40,13 +51,10 @@ subprojects {
         }
     }
 }
-subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
+
 subprojects {
     project.evaluationDependsOn(':app')
 }
-
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -90,7 +91,7 @@ class _SharedProductMessageState extends State<SharedProductMessage>
 
   @override
   void initState() {
-    print(
+    if (kDebugMode) print(
       "####################################################################3eee3",
     );
     chatBloc = BlocProvider.of<ChatBloc>(context);
@@ -247,7 +248,7 @@ class _SharedProductMessageState extends State<SharedProductMessage>
                                                           '?width=${1.sw - 100}&height=464',
                                                       widget.channelId,
                                                       action: (File? file) {
-                                                print(
+                                                if (kDebugMode) print(
                                                     "fgggggggggggggggggggggggg${widget.imageUrl!}");
                                                 // _loadingImage.value = 2;
                                                 if (file != null) {

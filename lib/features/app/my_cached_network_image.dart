@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
     as inset_shadow;
@@ -140,7 +140,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
         ),
       );
     }
-    print("url is empty or null or undefined${url}");
+    if (kDebugMode) print("url is empty or null or undefined${url}");
     return Container(
       key: ValueKey(url),
       alignment: Alignment.center,
@@ -371,7 +371,7 @@ String addSuitableWidthAndHeightToImage({
   required double width,
   required double height,
 }) {
-  print("original image url: $imageUrl");
+  if (kDebugMode) print("original image url: $imageUrl");
   if (imageUrl.isEmpty || imageUrl == "null" || imageUrl == "undefined") {
     return imageUrl;
   }

@@ -4,7 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:trydos/common/constant/configuration/media_server_url_routes.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -222,9 +222,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   _videoController = null;
                   init = null;
                   if (LanguageService.rtl) {
-                    print("rtlfffffffffffffffffffffffffffff ");
+                    if (kDebugMode) print("rtlfffffffffffffffffffffffffffff ");
                     if (dx < screenWidth * 1 / 2) {
-                      print("rtlfffffffffff54");
+                      if (kDebugMode) print("rtlfffffffffff54");
                       widget.animatedController.stop();
                       widget.animatedController.reset();
                       if ((state.currentStoryInEachCollection[widget
@@ -427,10 +427,10 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               SelectedStoriesStatus.init) {
                         widget.animatedController.forward();
                         if (widget.stopAnimationAndVideo) {
-                          print("111111111111111111111111");
+                          if (kDebugMode) print("111111111111111111111111");
                           widget.animatedController.stop();
                         } else {
-                          print("112222222222222211111111111");
+                          if (kDebugMode) print("112222222222222211111111111");
                           widget.animatedController.forward();
                         }
                         return Stack(
@@ -629,7 +629,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             });
                           },
                           onError: (e) {
-                            print(
+                            if (kDebugMode) print(
                               "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG$e",
                             );
                             GetIt.I<StoryBloc>().add(
@@ -1333,11 +1333,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         if (list is List) {
           return list.map((e) => e.toString()).toList();
         } else {
-          print('المعطى ليس قائمة JSON');
+          if (kDebugMode) print('المعطى ليس قائمة JSON');
           return [];
         }
       } catch (e) {
-        print('خطأ في تحويل JSON: $e');
+        if (kDebugMode) print('خطأ في تحويل JSON: $e');
         return [];
       }
     }
@@ -1368,11 +1368,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     final coupon = _extractSection(uri, 'coupon');
     final tagsNames = _extractSection(uri, 'tags_names');
 
-    print('boutiques: $boutiques');
-    print('sizes: $sizes');
-    print('brands: $brands');
-    print('colors: $colors');
-    print('categories: $categories');
+    if (kDebugMode) print('boutiques: $boutiques');
+    if (kDebugMode) print('sizes: $sizes');
+    if (kDebugMode) print('brands: $brands');
+    if (kDebugMode) print('colors: $colors');
+    if (kDebugMode) print('categories: $categories');
     if (coupon.isNotEmpty) {
       prefsRepository.setOrderCoupon(coupon.first);
     }
@@ -1621,7 +1621,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
               height: 35.h,
               child: InkWell(
                 onTap: () {
-                  print("FFFFFFFFFFFFFFFFFFF$url");
+                  if (kDebugMode) print("FFFFFFFFFFFFFFFFFFF$url");
                   _videoController?.pause();
                   widget.animatedController.stop();
                   tapOnUrl(url);

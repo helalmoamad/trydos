@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -12,7 +13,7 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
     Map<String, dynamic> headers = client.options.headers;
     final String? token = getServerToken(serverName);
     if (serverName == ServerName.wallet) {
-      print("DDDDDDDDDDDDDDDDDDDDDDDD*/*//*${token}");
+      if (kDebugMode) print("DDDDDDDDDDDDDDDDDDDDDDDD*/*//*${token}");
     }
 
     if (token != null) {

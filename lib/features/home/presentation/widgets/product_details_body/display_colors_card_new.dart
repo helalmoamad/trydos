@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 
@@ -82,7 +83,7 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
             (widget.productItem.syncColorImages?.length ?? 0)) {
           currentIndexInSlider = 0;
         }
-        print(
+        if (kDebugMode) print(
           "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS4/////////////${state.currentSelectedColorForEveryProduct[widget.productItem.slug.toString()]} ${widget.productItem.slug.toString()} ${currentIndexInSlider}",
         );
         return Container(

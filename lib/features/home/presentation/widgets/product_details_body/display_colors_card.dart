@@ -155,7 +155,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
 
   @override
   void initState() {
-    print(
+    if (kDebugMode) print(
         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${widget.currentColorForProduct}");
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList?.removeWhere((element) => element.images.isNullOrEmpty);
@@ -641,7 +641,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                   itemBuilder: (ctx, index) {
                                                     return GestureDetector(
                                                       onTap: () {
-                                                        print(
+                                                        if (kDebugMode) print(
                                                             "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
                                                         displayMode.value = 0;
                                                         currentIndexInSlider =

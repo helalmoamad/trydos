@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:developer';
 
 import 'package:get_it/get_it.dart';
@@ -43,7 +44,7 @@ class CallsRemoteDataSource {
   }
 
   Future<bool> makeAnswerCall(String messageId) {
-    print(
+    if (kDebugMode) print(
       "myFcmToken ://///*******${GetIt.I<PrefsRepository>().getFcmTokens[0]}",
     );
     PostClient<bool> AnswerCall = PostClient<bool>(

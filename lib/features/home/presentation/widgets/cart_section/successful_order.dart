@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -62,7 +63,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
   void initState() {
     LastPagesTracker.push("SuccessfullOrder Page");
     appBloc = BlocProvider.of<AppBloc>(context);
-    print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${widget.cartImages}");
+    if (kDebugMode) print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${widget.cartImages}");
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(const RemoveItemsFromCartAfterOrderSuccessEvent());
     homeBloc.add(const GetCartItemEvent());

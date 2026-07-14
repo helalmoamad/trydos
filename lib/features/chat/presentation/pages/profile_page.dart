@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
     LastPagesTracker.push('ProfilePage');
     images = _prefsRepository.getTheLocalPathForChannel(widget.chatId) ?? [];
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    print(images);
+    if (kDebugMode) print(images);
     images!.forEach((element) {
       mimeStr = element.split(" ")[0];
       if (mimeStr.split('/').contains("video") &&
@@ -249,8 +250,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 openAppSettings();
                               }
                             } catch (e, st) {
-                              print(e);
-                              print(st);
+                              if (kDebugMode) print(e);
+                              if (kDebugMode) print(st);
                             }
                           },
                           child: Column(

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:get_it/get_it.dart';
 import 'package:html/parser.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
@@ -25,7 +26,7 @@ Future share(
   text = parseFragment(text).text ?? "";
 
   final urlShares = Uri.encodeComponent(urlShare);
-  print("$urlShares" + "000000000000000000000000000000000000");
+  if (kDebugMode) print("$urlShares" + "000000000000000000000000000000000000");
 
   final urls = {
     SocialMediaType.facebook:
@@ -48,11 +49,11 @@ Future share(
             productId: productId,
             product: product,
             sharedCount: 1));
-        print(
+        if (kDebugMode) print(
             "___________________________________________________________________${value}");
       },
     ).catchError((value) {
-      print(
+      if (kDebugMode) print(
           "___________________________________________________________________${value}");
     });
   }

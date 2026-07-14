@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart' as tran;
@@ -360,17 +361,17 @@ class _HomePageState extends State<HomePage> {
       final String? rawData = await GetIt.I<PrefsRepository>()
           .getNotificationTypeFromTerminated();
       String notificationTypesOfMarketFromTerminated = rawData ?? "";
-      print(
+      if (kDebugMode) print(
         "chatNotification//////////////////////////0***${notificationTypesOfMarketFromTerminated}00000",
       );
       if (notificationTypesOfMarketFromTerminated != "") {
-        print("chatNotification//////////////////////////000000");
+        if (kDebugMode) print("chatNotification//////////////////////////000000");
         GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated("");
         try {
           if (notificationTypesOfMarketFromTerminated.contains(
             "chatNotification",
           )) {
-            print("chatNotification//////////////////////////11111");
+            if (kDebugMode) print("chatNotification//////////////////////////11111");
             Message myMessage = Message.fromJson(
               jsonDecode(
                 notificationTypesOfMarketFromTerminated
@@ -394,7 +395,7 @@ class _HomePageState extends State<HomePage> {
             String parentOrderId = orderGroupIdWithReturnRequestId.split(
               '#parentOrderId#',
             )[1];
-            print("chatNotification//////////////////////////22222");
+            if (kDebugMode) print("chatNotification//////////////////////////22222");
             handleOpenChatPageFromNotificationInBackground(
               prevMessageId,
               orderId,
@@ -1818,7 +1819,7 @@ class _HomePageState extends State<HomePage> {
                                                                 } catch (e) {
                                                                   endDate =
                                                                       DateTime.now();
-                                                                  print(
+                                                                  if (kDebugMode) print(
                                                                     'Error parsing date: $e',
                                                                   );
                                                                 }

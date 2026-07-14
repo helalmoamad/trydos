@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -78,7 +79,7 @@ class BoutiqueCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           // TODO: Navigate to boutique details
-          print('Boutique tapped: ${boutique.name}');
+          if (kDebugMode) print('Boutique tapped: ${boutique.name}');
         },
         borderRadius: BorderRadius.circular(12.r),
         child: Ink(

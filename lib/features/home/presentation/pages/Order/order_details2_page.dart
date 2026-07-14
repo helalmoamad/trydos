@@ -1,5 +1,6 @@
 ﻿import 'dart:io';
 
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 
@@ -7650,7 +7651,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     )
                     .color;
 
-                print(
+                if (kDebugMode) print(
                   "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG_____$firstColorOption}",
                 );
                 firstColorName = state.colorSizeForProductModel?.data?.colors

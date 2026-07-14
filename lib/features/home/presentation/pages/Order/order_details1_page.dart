@@ -1,4 +1,5 @@
 ﻿import 'package:easy_localization/easy_localization.dart' as local;
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -138,7 +139,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
     if (fromNotification &&
         widget.orderIdFormNotification != null &&
         widget.orderIdFormNotification != "") {
-      print(
+      if (kDebugMode) print(
         "FDDDDDDDDDDDDDDDDDDDDDDDddddd${widget.parentOrderIdFormNotification}  //${widget.orderIdFormNotification}",
       );
       requestReturnApiFromNotification = true;
@@ -315,7 +316,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                 ?.id,
                       ) ??
                       -1;
-                  print(
+                  if (kDebugMode) print(
                     "Fffffffffffffffffffffffffffffffffffffffffffffff${indexTapAddress.value}",
                   );
                   firstAddressChoosed = indexTapAddress.value;
@@ -352,7 +353,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                       orders[_indexTapPackage].shippingAddressData?.street,
                       orders[_indexTapPackage].shippingAddressData?.building,
                     ];
-                    print(addressParts);
+                    if (kDebugMode) print(addressParts);
                     final addressString = addressParts
                         .where(
                           (part) =>
@@ -871,7 +872,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                               onTapUp: (details) {
                                                 final double dx =
                                                     details.localPosition.dx;
-                                                print(dx);
+                                                if (kDebugMode) print(dx);
 
                                                 if ((dx > (1.sw - 75) &&
                                                     (orders[_indexTapPackage]
@@ -1079,7 +1080,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             phoneNumber: phoneNumber,
                             onChooseWhatsapp: () {
                               isVisWhatsApp = 1;
-                              print("###################33333# isVisWhatsApp}");
+                              if (kDebugMode) print("###################33333# isVisWhatsApp}");
                               pageController.animateToPage(
                                 2,
                                 duration: const Duration(milliseconds: 500),
@@ -4511,7 +4512,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         c.makeCallStatus ==
                                             MakeCallStatus.loading,
                                     listener: (context, state) {
-                                      print(
+                                      if (kDebugMode) print(
                                         "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ////",
                                       );
                                       callInProgressDialog(context);
@@ -4536,7 +4537,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                             c.makeCallStatus ==
                                                 MakeCallStatus.startCall,
                                         listener: (context, state) {
-                                          print(
+                                          if (kDebugMode) print(
                                             "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ",
                                           );
                                           Navigator.of(context).pushReplacement(
@@ -4608,7 +4609,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                       .tr();
                                               String? recipientUserId =
                                                   state.recipientUserId;
-                                              print(
+                                              if (kDebugMode) print(
                                                 "recipientUserId $recipientUserId",
                                               );
                                               if (recipientUserId == null) {

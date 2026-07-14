@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 
 class ErrorManager {
   static final Map<String, int> _retryCounts = {};
@@ -5,7 +6,7 @@ class ErrorManager {
   /// تحدد هل يجب إعادة المحاولة بناءً على كود الخطأ واسم الحدث
   static bool shouldRetry(String eventName, int statusCode) {
     int maxRetries = 1;
-    print(
+    if (kDebugMode) print(
         'statusCode:-----------------------------------------------------------9999---- $statusCode');
 
     if (statusCode == 0 ||
@@ -13,7 +14,7 @@ class ErrorManager {
         statusCode == 502 ||
         statusCode == 503 ||
         statusCode == 504) {
-      print(
+      if (kDebugMode) print(
           'statusCode:--------------------------------------------------------------- $statusCode');
       maxRetries = 2;
     }

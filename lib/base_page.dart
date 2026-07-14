@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:convert' as convert;
 import 'package:country_flags/country_flags.dart';
@@ -199,7 +200,7 @@ handleOpenChatPageFromNotificationInBackground(
   } else {
     // إضافة الرسالة إلى الـ bloc قبل الانتقال حتى تظهر في الدردشة عند فتحها من الإشعار
 
-    print("chatNotification//////////////////////////333333333");
+    if (kDebugMode) print("chatNotification//////////////////////////333333333");
     Future.delayed(
       const Duration(milliseconds: 600),
       () => navigationToSinglePageChat(message.channel!, message.senderUser!),
@@ -597,7 +598,7 @@ void DealWithMessagesStoredFromBackground() async {
       return idA.compareTo(idB);
     });
     for (int i = 0; i < msgList.length; i++) {
-      print(msgList[i].messageContent?.content);
+      if (kDebugMode) print(msgList[i].messageContent?.content);
       await Future.delayed(const Duration(milliseconds: 50), () {
         GetIt.I<ChatBloc>().add(AddChannelToChannels(message: msgList[i]));
         GetIt.I<ChatBloc>().add(ReceiveMessageEvent(message: msgList[i]));
@@ -922,14 +923,14 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
-      print(
+      if (kDebugMode) print(
         "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ////",
       );
 
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
         event,
       )) {
-        print(
+        if (kDebugMode) print(
           "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQcheckIfTheNotifiatedToCha",
         );
 
@@ -942,7 +943,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       Map<String, dynamic> remoteMessage = convert.jsonDecode(
         event.data['data'],
       );
-      print(
+      if (kDebugMode) print(
         "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ///....../${remoteMessage}",
       );
       dev.log("......${remoteMessage}...........");
@@ -1039,7 +1040,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           ),
         );
       } else if (remoteMessage['type'] == 'VoiceCallEvent') {
-        print(
+        if (kDebugMode) print(
           "VoiceCallEvent ForeGround Message${remoteMessage['is_private']}",
         );
         dev.log("VoiceCallEvent ForeGround Message${remoteMessage}");
@@ -1174,13 +1175,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       } else {
         Message message = Message.fromJson(remoteMessage['message']);
         String prevMessageId = remoteMessage['prev_message_id'].toString();
-        print(
+        if (kDebugMode) print(
           "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(0, 100)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
         );
-        print(
+        if (kDebugMode) print(
           "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(100, 200)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
         );
-        print(
+        if (kDebugMode) print(
           "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(200, 300)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
         );
         chatBloc.add(

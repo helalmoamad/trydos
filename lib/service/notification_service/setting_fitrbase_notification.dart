@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -116,7 +117,7 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
             current.updateWhatsappNotificationStatus !=
                 previous.updateWhatsappNotificationStatus,
         builder: (context, state) {
-          print(
+          if (kDebugMode) print(
               "sxxxxxxxxxxxxxxxxxxxx${state.updateEmailappNotificationStatus}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxssssssssssssssssssssssssssssssssssssssss");
 
           if (state.updateWhatsappNotificationStatus ==
@@ -125,7 +126,7 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
           }
           if (state.updateEmailappNotificationStatus ==
               UpdateEmailappNotificationStatus.failure) {
-            print("sssssssssssssssssssssssssssssssssssssssss");
+            if (kDebugMode) print("sssssssssssssssssssssssssssssssssssssssss");
             switchValues[2] = false;
           }
           return Container(

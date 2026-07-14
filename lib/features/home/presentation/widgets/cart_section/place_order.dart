@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:math';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
@@ -92,7 +93,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   void initState() {
-    print("PlaceOrder PageRRRRRRRRRRRRRRRRRRRRRRRRRRR${widget.cartImages}");
+    if (kDebugMode) print("PlaceOrder PageRRRRRRRRRRRRRRRRRRRRRRRRRRR${widget.cartImages}");
     LastPagesTracker.push("PlaceOrder Page");
     super.initState();
   }
@@ -149,7 +150,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
                 if (widget.paymentMethods.value.length == 1) {
                   paymentMethod = widget.paymentMethods.value[0];
-                  print(
+                  if (kDebugMode) print(
                     "paymentMethod:  -------------------------------------${paymentMethod}",
                   );
                   //////////////
@@ -1161,7 +1162,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         phoneNumber: phoneNumber,
                         onChooseWhatsapp: () {
                           isVisWhatsApp = 1;
-                          print("###################33333# isVisWhatsApp}");
+                          if (kDebugMode) print("###################33333# isVisWhatsApp}");
                           pageController.animateToPage(
                             2,
                             duration: const Duration(milliseconds: 500),

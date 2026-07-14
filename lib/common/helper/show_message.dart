@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -39,7 +39,7 @@ showMessage(
           showSuccessMessage(currentContext, message);
         }
       } catch (e) {
-        print("Error in showMessage: $e");
+        if (kDebugMode) print("Error in showMessage: $e");
         try {
           _showCustomToast(currentContext, message, isSuccess: !hasError);
         } catch (e2) {

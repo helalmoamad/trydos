@@ -43,8 +43,14 @@ class BoutiqueState extends Equatable {
     this.boutiquesThatDidPrefetch = const {},
     this.countOfProductExpectedByFiltering,
         this.suggestion,
+    this.sortKey = "",
   });
   final Map<String, List<String>> sizeAndColorFilterinTextToSearch;
+
+  /// Currently selected sort key for the listing page (e.g. best_selling,
+  /// newest, price_asc, name_desc). Empty = default relevance order.
+  /// Reset to "" when the user leaves the listing page.
+  final String sortKey;
 
   ///final Map<String, PaginationModel<product.Products>?>
 //getProductListingWithFiltersPaginationWithPrefetchModels;
@@ -96,6 +102,7 @@ class BoutiqueState extends Equatable {
         isGettingProductListingWithPagination,
         appliedFiltersByUser,
         choosedFiltersByUser,
+        sortKey,
         //   getProductListingWithFiltersPaginationWithPrefetchModels,
       ];
 
@@ -129,6 +136,7 @@ class BoutiqueState extends Equatable {
     //  getProductFiltersWithPrefetchModel,
     final Map<String, List<double>>? searchWithFilterOffset,
         final String? suggestion,
+    final String? sortKey,
   }) {
     return BoutiqueState(
         sizeAndColorFilterinTextToSearch: sizeAndColorFilterinTextToSearch ??
@@ -175,6 +183,7 @@ class BoutiqueState extends Equatable {
             isGettingProductListingWithPaginationForAppearProduct ??
                 this.isGettingProductListingWithPaginationForAppearProduct,
         suggestion: suggestion ?? this.suggestion,
+        sortKey: sortKey ?? this.sortKey,
         filterOffset: filterOffset ?? this.filterOffset);
   }
 }

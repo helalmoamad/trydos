@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -87,7 +88,7 @@ class _NotifyWhenQuantityAvailableButtonState
               ? ""
               : widget.selectedColorName;
         }
-        print("GGGGGGGGGGGGGGGGGGGGGGGGGGG${variant}");
+        if (kDebugMode) print("GGGGGGGGGGGGGGGGGGGGGGGGGGG${variant}");
 
         state
             .firebaseSettingForNotificationModel

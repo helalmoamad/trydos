@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +83,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
       FlutterError.dumpErrorToConsole(error);
     };
     chatTime = null;
-    print('dwwdw ${widget.chat.messages}');
+    if (kDebugMode) print('dwwdw ${widget.chat.messages}');
     if (!(widget.chat.messages.isNullOrEmpty)) {
       chatTime = widget.chat.messages!
           .firstWhere(
@@ -126,10 +127,10 @@ class _ChatCardState extends ThemeState<ChatCard> {
     String senderName = HelperFunctions.getTheFirstTwoLettersOfName(
       _prefsRepository.myChatName ?? LocaleKeys.no_channal_name.tr(),
     );
-    print('meesges ${widget.chat.messages?.length}');
-    print('meesges ${widget.chat.channelMembers?.length}');
-    print('meesges ${widget.chat.channelName}');
-    print('_prefsRepository.myChatId ${_prefsRepository.myChatId}');
+    if (kDebugMode) print('meesges ${widget.chat.messages?.length}');
+    if (kDebugMode) print('meesges ${widget.chat.channelMembers?.length}');
+    if (kDebugMode) print('meesges ${widget.chat.channelName}');
+    if (kDebugMode) print('_prefsRepository.myChatId ${_prefsRepository.myChatId}');
 
     ChannelMember? me = !widget.chat.channelMembers.isNullOrEmpty
         ? widget.chat.channelMembers?.firstWhere(
@@ -193,7 +194,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
               //     ..pop()
               //     ..pop();
               // }
-              print(
+              if (kDebugMode) print(
                 "object///////////////////////////////////////#${_prefsRepository.myChatPhoto}}",
               );
               chatBloc.add(

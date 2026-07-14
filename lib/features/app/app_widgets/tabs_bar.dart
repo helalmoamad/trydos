@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 
 import 'package:speech_to_text/speech_to_text.dart';
@@ -535,7 +536,7 @@ class _TabsBarState extends State<TabsBar> {
                                                 PermissionStatus.granted) {
                                               return;
                                             }*/
-                                  print(
+                                  if (kDebugMode) print(
                                     "**************************************//////",
                                   );
 
@@ -720,7 +721,7 @@ class _TabsBarState extends State<TabsBar> {
                       ),
                     ),
                     onChanged: (String text) {
-                      print(
+                      if (kDebugMode) print(
                         "**111111111111#########111111111111111-------------------------------${text}",
                       );
                       if (debounce?.isActive ?? false) {
@@ -800,7 +801,7 @@ class _TabsBarState extends State<TabsBar> {
                               searchText: searchText,
                             ),
                           );
-                          print(
+                          if (kDebugMode) print(
                             "**222222222222222-------------------------------${text}",
                           );
 

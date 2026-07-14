@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
@@ -205,7 +206,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
     response.fold(
       (l) {
-        print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${l.statusCode}");
+        if (kDebugMode) print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${l.statusCode}");
         if (l.statusCode == 401) {
           emit(
             state.copyWith(walletCheckoutStatus: WalletCheckoutStatus.unAuth),

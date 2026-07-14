@@ -1,5 +1,4 @@
 
-
 /*class FiltersLoadingListPage extends StatefulWidget {
   const FiltersLoadingListPage({super.key, required this.countOfListInPage,
   required this.currentColor,
@@ -330,7 +329,7 @@ class _FiltersLoadingListPageState extends State<FiltersLoadingListPage> {
                                     current
                                         .getProductDetailWithoutSimilarRelatedProductsStatus,
                             builder: (context, state) {
-                              print(
+                              if (kDebugMode) print(
                                   "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${widget.productItem.price!}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!}");
                               return ProductDetailsSheetHeader(
                                 decimalPoint: state

@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart' as local;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,8 +44,9 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
           value: selectedlang,
           onChanged: (String? newValue) async {
             selectedlang = newValue;
-            BlocProvider.of<HomeBloc>(context)
-                .add(const ClearAllAppCashEvent());
+            BlocProvider.of<HomeBloc>(
+              context,
+            ).add(const ClearAllAppCashEvent());
             _prefsRepository.removeBoutiqueHasPerfechedWhenOpenApp(true);
             _prefsRepository.removeMainCategoryHasPerfechedWhenOpenApp(true);
 
@@ -60,19 +62,20 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
               },
             );*/
             BlocProvider.of<HomeBloc>(context).add(
-                ChangeCountryLanguageForNotificationEvent(
-                    country: _prefsRepository.countryIso!.toLowerCase(),
-                    languageCode: newValue ?? ""));
-            Future.delayed(
-              const Duration(microseconds: 500),
-              () {
-                context.go("/");
-              },
+              ChangeCountryLanguageForNotificationEvent(
+                country: _prefsRepository.countryIso!.toLowerCase(),
+                languageCode: newValue ?? "",
+              ),
             );
+            Future.delayed(const Duration(microseconds: 500), () {
+              context.go("/");
+            });
             _prefsRepository.setLanguage(newValue);
             context.setLocale(HelperFunctions.getInitLocale());
-            print(
-                "############################################################################################################${HelperFunctions.getInitLocale()}");
+            if (kDebugMode)
+              print(
+                "############################################################################################################${HelperFunctions.getInitLocale()}",
+              );
           },
           // buttonHeight: 30,
           // buttonWidth: 95,

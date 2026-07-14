@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart' as translate;
@@ -1367,7 +1368,7 @@ class _ProductDetailsBottomSheetNewState
   }
 
   Widget _availableColorWidget({required HomeState state}) {
-    print(
+    if (kDebugMode) print(
       "___${widget.productItem.syncColorImages?[0].colorOption}${(state.currentColorSizeForCart?["choiceOption"] ?? "") == "" ? "" : "-"}${state.currentColorSizeForCart?["choiceOption"] ?? ""}____",
     );
     int tapIndex =
@@ -1438,7 +1439,7 @@ class _ProductDetailsBottomSheetNewState
                                 .productItem
                                 .slug
                                 .toString()]) {
-                          print(
+                          if (kDebugMode) print(
                             "_/__${(widget.productItem.variation?.length)}____",
                           );
                           return;
@@ -1668,7 +1669,7 @@ class _ProductDetailsBottomSheetNewState
             },
           );
 
-          print("sizesQuantities: ${sizesQuantities[tappedIndex]}");
+          if (kDebugMode) print("sizesQuantities: ${sizesQuantities[tappedIndex]}");
           if (sizesQuantities[tappedIndex] == 0 &&
               !widget.collectedAfterOrdering) {
             Future.delayed(const Duration(milliseconds: 300), () {

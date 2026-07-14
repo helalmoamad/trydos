@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -282,7 +283,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                 state.storiesCollections.length;
                           }
                           if (currentPage != prevPageNumber) {
-                            print("page:************************");
+                            if (kDebugMode) print("page:************************");
                             GetIt.I<HomeBloc>().add(StorySelectedEvent(
                                 collectionIndex: currentPage,
                                 currentPage: currentPage,

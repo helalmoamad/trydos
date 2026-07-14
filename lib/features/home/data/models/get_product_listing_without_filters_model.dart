@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -869,7 +870,7 @@ class ProductColor {
       );
 
   factory ProductColor.fromJson(Map<String, dynamic> json) {
-    print("12-----------------------------${json["option"]}");
+    if (kDebugMode) print("12-----------------------------${json["option"]}");
     return ProductColor(
       name: json["name"],
       color: json["color"] ?? json["code"],

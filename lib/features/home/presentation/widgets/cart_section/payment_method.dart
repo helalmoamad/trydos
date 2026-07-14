@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -118,8 +119,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       SizedBox(width: 10.w),
                       InkWell(
                         onTap: () {
-                          print(widget.availablePaymentMethod);
-                          print(_paymentMethods);
+                          if (kDebugMode) print(widget.availablePaymentMethod);
+                          if (kDebugMode) print(_paymentMethods);
                         },
                         child: Text(
                           "${LocaleKeys.payment_method.tr()} ",

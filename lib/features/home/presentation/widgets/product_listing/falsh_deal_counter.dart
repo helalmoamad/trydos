@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,7 @@ class _FlashDealCountdownTimerWidgetState
       endDate = endDate.add(const Duration(days: 1));
     } catch (e) {
       endDate = DateTime.now();
-      print('Error parsing date: $e');
+      if (kDebugMode) print('Error parsing date: $e');
     }
   }
 

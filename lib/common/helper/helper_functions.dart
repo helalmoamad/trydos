@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 import 'dart:math';
 
@@ -178,24 +179,24 @@ class HelperFunctions {
       contacts = await FastContacts.getAllContacts();
     }
 
-    print("🔍 إجمالي جهات الاتصال: ${contacts.length}");
+    if (kDebugMode) print("🔍 إجمالي جهات الاتصال: ${contacts.length}");
     int i = 0;
     List<Contact> myContacts = [];
     for (Contact contact in contacts) {
       i = i + 1;
 
       if (contact.phones.isNotEmpty) {
-        print("📞 ${contact.displayName}: ${contact.phones.length} رقم");
+        if (kDebugMode) print("📞 ${contact.displayName}: ${contact.phones.length} رقم");
         contact.phones.forEach((element) {
-          print("   - ${element.number}");
+          if (kDebugMode) print("   - ${element.number}");
           myContacts.add(contact);
         });
       } else {
-        print("❌ ${contact.displayName}: بدون أرقام هواتف");
+        if (kDebugMode) print("❌ ${contact.displayName}: بدون أرقام هواتف");
       }
     }
 
-    print(
+    if (kDebugMode) print(
       "📱 جهات الاتصال مع أرقام: ${myContacts.length}   ${contacts.length}",
     );
 
@@ -203,8 +204,8 @@ class HelperFunctions {
     if (!(myPhoneNumber.startsWith("+"))) {
       myPhoneNumber = "+" + myPhoneNumber;
     }
-    print("📞 رقم المستخدم: $myPhoneNumber");
-    print("📏 طول رقم المستخدم: ${myPhoneNumber.length}");
+    if (kDebugMode) print("📞 رقم المستخدم: $myPhoneNumber");
+    if (kDebugMode) print("📏 طول رقم المستخدم: ${myPhoneNumber.length}");
 
     String dialCode = countries
         .firstWhere(
@@ -213,8 +214,8 @@ class HelperFunctions {
         )
         .dialCode;
 
-    print("🏳️ رمز الدولة: $dialCode");
-    print("📏 طول رمز الدولة: ${dialCode.length}");
+    if (kDebugMode) print("🏳️ رمز الدولة: $dialCode");
+    if (kDebugMode) print("📏 طول رمز الدولة: ${dialCode.length}");
 
     String myPhoneNumberWithoutDial;
     if (myPhoneNumber.contains('+') && myPhoneNumber.length > dialCode.length) {
@@ -236,7 +237,7 @@ class HelperFunctions {
         .replaceAll(')', '')
         .replaceAll('.', '');
 
-    print("📱 رقم المستخدم بدون رمز: $myPhoneNumberWithoutDial");
+    if (kDebugMode) print("📱 رقم المستخدم بدون رمز: $myPhoneNumberWithoutDial");
 
     var result = myContacts.map((e) {
       String formattedNumber;
@@ -263,7 +264,7 @@ class HelperFunctions {
         cleanNumber = dialCode + cleanNumber;
       }
 
-      print("🧹 تنظيف الرقم: ${e.phones.first.number} -> $cleanNumber");
+      if (kDebugMode) print("🧹 تنظيف الرقم: ${e.phones.first.number} -> $cleanNumber");
 
       if (!cleanNumber.contains('+')) {
         int countryIndex = countries.indexWhere(
@@ -273,14 +274,14 @@ class HelperFunctions {
         );
         if (countryIndex == -1) {
           formattedNumber = dialCode + cleanNumber;
-          print("➕ إضافة رمز الدولة: $cleanNumber -> $formattedNumber");
+          if (kDebugMode) print("➕ إضافة رمز الدولة: $cleanNumber -> $formattedNumber");
         } else {
           formattedNumber = '+$cleanNumber';
-          print("✅ رقم مع رمز: $cleanNumber -> $formattedNumber");
+          if (kDebugMode) print("✅ رقم مع رمز: $cleanNumber -> $formattedNumber");
         }
       } else {
         formattedNumber = cleanNumber;
-        print("✅ رقم موجود: $formattedNumber");
+        if (kDebugMode) print("✅ رقم موجود: $formattedNumber");
       }
 
       return {
@@ -289,19 +290,19 @@ class HelperFunctions {
       };
     }).toList();
 
-    print("📋 قبل الاستبعاد: ${result.length}");
+    if (kDebugMode) print("📋 قبل الاستبعاد: ${result.length}");
 
     result.removeWhere((element) {
       bool shouldRemove =
           element['mobile_phone']?.endsWith(myPhoneNumberWithoutDial) ?? false;
       if (shouldRemove) {
-        print("🚫 استبعاد: ${element['name']} - ${element['mobile_phone']}");
+        if (kDebugMode) print("🚫 استبعاد: ${element['name']} - ${element['mobile_phone']}");
       }
       return shouldRemove;
     });
     String contactDetails =
         "🔍 إجمالي جهات الاتصال: ${contacts.length}  ✅ النتيجة النهائية: ${result.length} 📱 جهات الاتصال مع أرقام: ${myContacts.length}";
-    print("✅ النتيجة النهائية: ${result.length}");
+    if (kDebugMode) print("✅ النتيجة النهائية: ${result.length}");
     GetIt.I<PrefsRepository>().setContactDetails(contactDetails);
     return result;
   }

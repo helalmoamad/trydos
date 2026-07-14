@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:get_it/get_it.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';

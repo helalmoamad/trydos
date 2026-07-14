@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -51,7 +52,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
     if (!(prefsRepository.myProfilePhoto == null ||
         prefsRepository.myProfilePhoto == "")) {
-      print(
+      if (kDebugMode) print(
         "22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222",
       );
       visiblePersonPhoto.value = File("initImage");

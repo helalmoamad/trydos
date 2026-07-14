@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -383,7 +384,7 @@ class _MainOrdersPageState extends State<MainOrdersPage> {
                     currentStatusOfOrder.value = status;
                     final String statusForApi = status.apiValue;
                     _dashboardBloc.ordersStatus = statusForApi;
-                    print('Selected status: ${_dashboardBloc.ordersStatus}');
+                    if (kDebugMode) print('Selected status: ${_dashboardBloc.ordersStatus}');
                     _dashboardBloc.add(NewGetOrdersEvent());
                   },
                   child: Container(

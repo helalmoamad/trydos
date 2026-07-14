@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionServices {
@@ -5,13 +6,13 @@ class PermissionServices {
     final status = await Permission.notification.status;
     // PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
     if (status.isGranted) {
-      print("Permission already granted");
+      if (kDebugMode) print("Permission already granted");
     } else if (status.isDenied) {
       // إذا كان الإذن مرفوضًا، اطلب الإذن من المستخدم
       final result = await Permission.notification.request();
 
       if (result.isGranted) {
-        print("Permission granted");
+        if (kDebugMode) print("Permission granted");
       } else if (result.isPermanentlyDenied) {
         // إذا تم رفض الإذن بشكل دائم، افتح إعدادات التطبيق
         openAppSettings();

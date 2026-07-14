@@ -119,10 +119,10 @@
 //   }
 // }
 
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
@@ -223,22 +223,23 @@ class FirebasePresence {
     required String channelId,
     String? description,
   }) async {
-    print(
-      [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
-          .firstWhere(
-            (element) =>
-                element.id == channelId || element.localId == channelId,
-          )
-          .channelMembers
-          .toString(),
-    );
+    if (kDebugMode)
+      if (kDebugMode) print(
+        [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
+            .firstWhere(
+              (element) =>
+                  element.id == channelId || element.localId == channelId,
+            )
+            .channelMembers
+            .toString(),
+      );
     [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
         .firstWhere(
           (element) => element.id == channelId || element.localId == channelId,
         )
         .channelMembers
         ?.forEach((element) {
-          print(element.user.toString());
+          if (kDebugMode) print(element.user.toString());
         });
     String friendId = [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
         .firstWhere(

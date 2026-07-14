@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_svg/svg.dart';
@@ -376,7 +377,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     currentStatusOfOrder.value = status;
                     final String statusForApi = status.apiValue;
                     _dashboardBloc.ordersStatus = statusForApi;
-                    print('Selected status: ${_dashboardBloc.ordersStatus}');
+                    if (kDebugMode) print('Selected status: ${_dashboardBloc.ordersStatus}');
                     _dashboardBloc.add(NewGetOrdersEvent());
                   },
                   child: Container(

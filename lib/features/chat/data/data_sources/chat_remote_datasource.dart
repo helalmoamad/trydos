@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:io';
 
@@ -335,7 +336,7 @@ class ChatRemoteDataSource {
   Future<GetSharedProductCountModel> getSharedProductCount(
     Map<String, dynamic> params,
   ) {
-    print("/////////////////////////////////////////////////${params["id"]}");
+    if (kDebugMode) print("/////////////////////////////////////////////////${params["id"]}");
     GetClient<GetSharedProductCountModel> getSharedProductCount =
         GetClient<GetSharedProductCountModel>(
           serverName: ServerName.chat,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -223,7 +224,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                     builder: (context, slidingMode, _) {
                                       return*/ LayoutBuilder(
                                   builder: (context, constraints) {
-                                    print(
+                                    if (kDebugMode) print(
                                       "DDDDDDDDDDDDDD................${products.length}",
                                     );
                                     // حساب عرض العنصر مع مراعاة المسافات (مثلاً 16 بكسل)
@@ -838,7 +839,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                       );
                                                     } catch (e) {
                                                       endDate = DateTime.now();
-                                                      print(
+                                                      if (kDebugMode) print(
                                                         'Error parsing date: $e',
                                                       );
                                                     }

@@ -18,6 +18,7 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart'
@@ -158,6 +159,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       buildWhen: (previous, current) =>
           previous.appliedFiltersByUser[key] !=
               current.appliedFiltersByUser[key] ||
+          previous.sortKey.isEmpty != current.sortKey.isEmpty ||
           previous.choosedFiltersByUser[key] !=
               current.choosedFiltersByUser[key] ||
           previous.isExpandedForListingPage !=
@@ -246,7 +248,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         GetProductsWithFiltersEvent(
                           fromSearch: widget.fromSearch,
                           boutiqueSlug: widget.boutiqueSlug,
-                          cashedOrginalBoutique: true,
+                          cashedOrginalBoutique: state.sortKey.isNullOrEmpty,
                           category: widget.category,
                           offset: 1,
                         ),
@@ -1593,6 +1595,13 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     BoutiqueBloc,
                                     BoutiqueState
                                   >(
+                                    buildWhen: (previous, current) =>
+                                        previous.choosedFiltersByUser[key] !=
+                                            current.choosedFiltersByUser[key] ||
+                                        previous.appliedFiltersByUser[key] !=
+                                            current.appliedFiltersByUser[key] ||
+                                        previous.sortKey.isEmpty !=
+                                            current.sortKey.isEmpty,
                                     builder: (context, state) {
                                       if (state.choosedFiltersByUser[key] ==
                                               null &&
@@ -1646,7 +1655,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                 fromSearch: widget.fromSearch,
                                                 boutiqueSlug:
                                                     widget.boutiqueSlug,
-                                                cashedOrginalBoutique: true,
+                                                cashedOrginalBoutique:
+                                                    state.sortKey.isNullOrEmpty,
                                                 category: widget.category,
                                                 offset: 1,
                                               ),
@@ -1765,7 +1775,8 @@ Widget choosedOrAppliedFiltersWidget({
         p.choosedFiltersByUser[key]?.filters !=
             c.choosedFiltersByUser[key]?.filters ||
         p.appliedFiltersByUser[key]?.filters !=
-            c.appliedFiltersByUser[key]?.filters,
+            c.appliedFiltersByUser[key]?.filters ||
+        p.sortKey.isEmpty != c.sortKey.isEmpty,
     builder: (context, state) {
       filter_model.Filter? filters;
       filter_model.Filter? filtersForSearchText;
@@ -1788,7 +1799,8 @@ Widget choosedOrAppliedFiltersWidget({
           '\$';
       if (filters == null &&
           (!fromSearch && lowerAndUpperPrices == null) &&
-          GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
+          GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty &&
+          state.sortKey.isNullOrEmpty) {
         boutiqueBloc.add(
           const IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true),
         );
@@ -1802,7 +1814,8 @@ Widget choosedOrAppliedFiltersWidget({
           (filters?.boutiques.isNullOrEmpty ?? true) &&
           (filters?.attributes.isNullOrEmpty ?? true) &&
           GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
-        if ((!fromSearch && lowerAndUpperPrices == null && choosedFilter))
+        if ((!fromSearch && lowerAndUpperPrices == null && choosedFilter) &&
+            (state.sortKey.isNullOrEmpty))
           boutiqueBloc.add(
             const IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true),
           );
@@ -1816,7 +1829,8 @@ Widget choosedOrAppliedFiltersWidget({
           (filters?.colors.isNullOrEmpty ?? true) &&
           (filters?.boutiques.isNullOrEmpty ?? true) &&
           (filters?.attributes.isNullOrEmpty ?? true) &&
-          GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
+          GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty &&
+          state.sortKey.isNullOrEmpty) {
         boutiqueBloc.add(
           const IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true),
         );
@@ -1865,7 +1879,7 @@ Widget choosedOrAppliedFiltersWidget({
                     GetProductsWithFiltersEvent(
                       fromSearch: fromSearch,
                       boutiqueSlug: boutiqueSlug,
-                      cashedOrginalBoutique: true,
+                      cashedOrginalBoutique: state.sortKey.isNullOrEmpty,
                       category: category,
                       offset: 1,
                     ),
@@ -1941,7 +1955,7 @@ Widget choosedOrAppliedFiltersWidget({
                     GetProductsWithFiltersEvent(
                       fromSearch: fromSearch,
                       boutiqueSlug: boutiqueSlug,
-                      cashedOrginalBoutique: true,
+                      cashedOrginalBoutique: state.sortKey.isNullOrEmpty,
                       category: category,
                       offset: 1,
                     ),

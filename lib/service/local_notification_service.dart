@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -16,14 +17,21 @@ class NotificationService {
         iOS: initializationSettingIos, android: initializationSettingsAndroid);
 
     notificationsPlugin.initialize(initializeSettings,
-        onDidReceiveBackgroundNotificationResponse: (details) => print(
-            "111111111111111fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${details.payload}"),
-        onDidReceiveNotificationResponse:
+        onDidReceiveBackgroundNotificationResponse: (details) {
+      if (kDebugMode) {
+        if (kDebugMode) print(
+            "111111111111111fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${details.payload}");
+      }
+    }, onDidReceiveNotificationResponse:
             (NotificationResponse notificationResponse) async {});
     notificationsPlugin.getNotificationAppLaunchDetails().then(
-          (value) => print(
-              "fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${value?.notificationResponse?.payload}"),
-        );
+      (value) {
+        if (kDebugMode) {
+          if (kDebugMode) print(
+              "fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${value?.notificationResponse?.payload}");
+        }
+      },
+    );
   }
 
   Future<void> uploadingNotification(maxProgress, progress, isUploading) async {

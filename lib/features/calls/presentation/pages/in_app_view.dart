@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'dart:developer';
@@ -51,7 +52,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   static const platform = MethodChannel('com.trydos.audio/settings');
 
   Future<void> _setCallAudioMode(bool enable) async {
-    print("enable: $enable");
+    if (kDebugMode) print("enable: $enable");
     try {
       await platform.invokeMethod('setCallAudioMode', enable);
     } on PlatformException catch (e) {
@@ -70,7 +71,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         volume: 1,
       );
     } catch (e) {
-      print('Error playing incoming call: $e');
+      if (kDebugMode) print('Error playing incoming call: $e');
     }
   }
 
@@ -86,12 +87,12 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         volume: 1,
       );
       if (!widget.isReceivingCall && widget.type == 'voice') {
-        print("setCallAudioMode: true");
+        if (kDebugMode) print("setCallAudioMode: true");
         await Future.delayed(const Duration(milliseconds: 600));
         await _setCallAudioMode(true);
       }
     } catch (e) {
-      print('Error playing waiting call: $e');
+      if (kDebugMode) print('Error playing waiting call: $e');
     }
   }
 
@@ -116,7 +117,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         _setCallAudioMode(true); // Earpiece for outgoing voice calls
       }
     }
-    print(
+    if (kDebugMode) print(
       "myFcmToken ://///***/*8888****${GetIt.I<PrefsRepository>().getFcmTokens[0]}",
     );
     LastPagesTracker.push('AgoraInAppWebView');
@@ -149,7 +150,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
     //   ..setBackgroundColor(const Color(0x00000000))
     //   ..loadRequest(source);
-    print("source ://///***/*8888****${source.toString()}");
+    if (kDebugMode) print("source ://///***/*8888****${source.toString()}");
     log(source.toString());
     super.initState();
   }
@@ -185,7 +186,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     if (args.isEmpty) return;
 
     final action = args[0];
-    print("action: $action");
+    if (kDebugMode) print("action: $action");
 
     // 1. معالجة إيقاف الرنين
     if (action == 'stop-ring') {
@@ -275,15 +276,19 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       // --- END HANDLER REGISTRATION ---
                     },
                     /*   onLoadStop: (controller, url) {
-                  print(
+                  if (kDebugMode) print(
                       "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${url}^^^^^^^^^^99999999999999999}");
                   controller.dispose();
                 },*/
-                    onReceivedError: (controller, request, error) => print(
-                      "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${error}",
-                    ),
+                    onReceivedError: (controller, request, error) {
+                      if (kDebugMode) {
+                        if (kDebugMode) print(
+                          "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${error}",
+                        );
+                      }
+                    },
                     onReceivedHttpError: (controller, webResources, webErrors) {
-                      print(
+                      if (kDebugMode) print(
                         "*********************/////////////////////////////////////////////////${webErrors}",
                       );
                       // showMessage('Can\'t lunch call , please try again' , showInRelease: true);
@@ -301,7 +306,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       if (!widget.isReceivingCall && widget.type == 'voice') {
                         _setCallAudioMode(true);
                       }
-                      print(
+                      if (kDebugMode) print(
                         "//////////////////////////////////////1111111111111111111111///////////${url?.queryParameters}",
                       );
 
@@ -314,7 +319,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                         _audioPlayer.stop();
                       }
                       if ((url?.path ?? "").toString().contains('callInProg')) {
-                        print(
+                        if (kDebugMode) print(
                           "57............................${url?.path.toString()}",
                         );
                         Timer.periodic(const Duration(seconds: 7), (timer) {
@@ -415,7 +420,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     },
 
                     onProgressChanged: (controller, progress) {
-                      print(
+                      if (kDebugMode) print(
                         "******************---------------------------------------------------------------------------------/////////////////////////////////////////////////${progress}",
                       );
 
@@ -429,7 +434,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                   ValueListenableBuilder<int>(
                     valueListenable: loadingNotifier,
                     builder: (context, progress, child) {
-                      print(
+                      if (kDebugMode) print(
                         "///////*111111111111111111111111111111111111****${timer?.isActive ?? false}*****${progress}**4444444444444444*7777777777777777777777777/////////////////////////////////////////*************",
                       );
 
@@ -449,7 +454,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                             t.cancel();
                             return;
                           }
-                          print("*/*/*222222222222111");
+                          if (kDebugMode) print("*/*/*222222222222111");
                           // Only play if audio player is not already playing
                           if (_audioPlayer.state != PlayerState.playing) {
                             playWaitingCall();
@@ -459,14 +464,14 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       } else if (!(timer?.isActive ?? false) &&
                           widget.isReceivingCall) {
                         startVibration();
-                        print("*/*/*11111111111111111111");
+                        if (kDebugMode) print("*/*/*11111111111111111111");
                         playIncomingCall();
                         timer = Timer.periodic(const Duration(seconds: 4), (t) {
                           if (!mounted) {
                             t.cancel();
                             return;
                           }
-                          print("*/*/*222222222222111");
+                          if (kDebugMode) print("*/*/*222222222222111");
                           // Only play if audio player is not already playing
                           if (_audioPlayer.state != PlayerState.playing) {
                             playIncomingCall();

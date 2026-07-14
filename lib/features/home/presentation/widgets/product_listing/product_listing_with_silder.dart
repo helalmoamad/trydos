@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -818,7 +819,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                         endDate = endDate.add(const Duration(days: 1));
                       } catch (e) {
                         endDate = DateTime.now();
-                        print('Error parsing date: $e');
+                        if (kDebugMode) print('Error parsing date: $e');
                       }
                       _duration = endDate.difference(now);
                       if (_duration.isNegative || _duration.inSeconds < 1) {
