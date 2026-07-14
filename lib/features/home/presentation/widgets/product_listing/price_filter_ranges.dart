@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -130,7 +131,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                           widget.priceRanges[index].maxPrice ||
                       prevChoosedOrAppliedFilterToAddToIt.prices!.maxPrice !=
                           widget.priceRanges[index].minPrice) {
-                    print(
+                    if (kDebugMode) print(
                       "*********************************************************************",
                     );
                     prevChoosedOrAppliedFilterToAddToIt =
@@ -145,7 +146,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                               ),
                             );
                   } else {
-                    print(
+                    if (kDebugMode) print(
                       "*********************************************************************",
                     );
                     prevChoosedOrAppliedFilterToAddToIt =

@@ -50,6 +50,7 @@ import '../../../../common/constant/configuration/stories_url_routes.dart';
 import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/api/methods/post.dart';
+import '../parsers/heavy_response_parsers.dart';
 import '../models/apply_coupon_model.dart';
 import '../models/check_availability_product_cart_model.dart';
 import '../models/customer_wallet_model.dart';
@@ -323,26 +324,21 @@ class HomeRemoteDatasource {
   }
 
   Future<GetProductDetailWithoutRelatedProductsModel>
-  getProductDetailWithoutRelatedProducts(String productSlug) {
-    GetClient<GetProductDetailWithoutRelatedProductsModel>
-    getProductDetailWithoutRelatedProducts =
-        GetClient<GetProductDetailWithoutRelatedProductsModel>(
+  getProductDetailWithoutRelatedProducts(String productSlug) async {
+    // Heavy response: keep the raw json on the main thread, build the model on
+    // a background isolate (see heavy_response_parsers.dart).
+    GetClient<dynamic> getProductDetailWithoutRelatedProducts =
+        GetClient<dynamic>(
           serverName: ServerName.webApp,
 
-          requestPrams: RequestConfig<GetProductDetailWithoutRelatedProductsModel>(
+          requestPrams: RequestConfig<dynamic>(
             endpoint: WebAppEndPoints.productDetailsEP(productSlug),
             queryParameters: {"user_id": GetIt.I<PrefsRepository>().myMarketId},
-            response:
-                ResponseValue<GetProductDetailWithoutRelatedProductsModel>(
-                  fromJson: (response) {
-                    return GetProductDetailWithoutRelatedProductsModel.fromJson(
-                      response,
-                    );
-                  },
-                ),
+            response: ResponseValue<dynamic>(fromJson: (response) => response),
           ),
         );
-    return getProductDetailWithoutRelatedProducts();
+    final raw = await getProductDetailWithoutRelatedProducts();
+    return parseProductDetailInBackground(raw);
   }
 
   Future<ReadOnlyMessageFromApiModel> updateLikeSocialSharedProducts(
@@ -421,7 +417,7 @@ class HomeRemoteDatasource {
         endpoint: MarketEndPoints.getCommentForProductEP(productId),
         response:
             ResponseValue<GetCommentForProductModel>(fromJson: (response) {
-          print('ddddddddddd ${response.toString()}');
+          if (kDebugMode) print('ddddddddddd ${response.toString()}');
           return GetCommentForProductModel.fromJson(response);
         }),
       ),
@@ -685,26 +681,23 @@ class HomeRemoteDatasource {
 */
   Future<MainCategoriesResponseModel> getMainCategories(
     Map<String, dynamic> params,
-  ) {
+  ) async {
     ///// for test /////
     TestVariables.getMainCategoriesFlag = true;
     TestVariables.getMainCategoriesRequestCountFlag++;
     ////////////////////
-    GetClient<MainCategoriesResponseModel> getMainCategories =
-        GetClient<MainCategoriesResponseModel>(
-          serverName: ServerName.webApp,
-          //ServerName.elastic,
-          requestPrams: RequestConfig<MainCategoriesResponseModel>(
-            endpoint: WebAppEndPoints.mainCategoriesEP,
-            //ElasticEndPoints.getMainCategoriesEP,
-            // MarketEndPoints.getMainCategoriesRelatedWithBoutiquesEP,
-            response: ResponseValue<MainCategoriesResponseModel>(
-              fromJson: (response) =>
-                  MainCategoriesResponseModel.fromJson(response),
-            ),
-          ),
-        );
-    return getMainCategories();
+    GetClient<dynamic> getMainCategories = GetClient<dynamic>(
+      serverName: ServerName.webApp,
+      //ServerName.elastic,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: WebAppEndPoints.mainCategoriesEP,
+        //ElasticEndPoints.getMainCategoriesEP,
+        // MarketEndPoints.getMainCategoriesRelatedWithBoutiquesEP,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
+    final raw = await getMainCategories();
+    return parseMainCategoriesInBackground(raw);
   }
 
   Future<GetCurrencyForCountryModel> getCurrencyForCountry() {
@@ -779,85 +772,74 @@ class HomeRemoteDatasource {
 
   Future<GetProductFiltersModel> getProductFilters(
     Map<String, dynamic> params,
-  ) {
-    GetClient<GetProductFiltersModel> getProductFilters =
-        GetClient<GetProductFiltersModel>(
-          /*  serverName: ServerName.market,
+  ) async {
+    GetClient<dynamic> getProductFilters = GetClient<dynamic>(
+      /*  serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductFiltersModel>(
         endpoint: MarketEndPoints.getProductFiltersEP,*/
-          serverName: ServerName.webApp,
-          requestPrams: RequestConfig<GetProductFiltersModel>(
-            endpoint: WebAppEndPoints.searchProductEP,
-            queryParameters: params,
-            response: ResponseValue<GetProductFiltersModel>(
-              fromJson: (response) => GetProductFiltersModel.fromJson(response),
-            ),
-          ),
-        );
-    return getProductFilters();
+      serverName: ServerName.webApp,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: WebAppEndPoints.searchProductEP,
+        queryParameters: params,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
+    final raw = await getProductFilters();
+    return parseProductFiltersInBackground(raw);
   }
 
   Future<GetProductListingWithFiltersModel> getProductsWithFilters(
     Map<String, dynamic> params,
-  ) {
-    GetClient<GetProductListingWithFiltersModel> getProductsWithFilters =
-        GetClient<GetProductListingWithFiltersModel>(
-          serverName: ServerName.webApp,
-          requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
-            endpoint: WebAppEndPoints.searchProductEP,
-            /*serverName: ServerName.market,
+  ) async {
+    GetClient<dynamic> getProductsWithFilters = GetClient<dynamic>(
+      serverName: ServerName.webApp,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: WebAppEndPoints.searchProductEP,
+        /*serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
         endpoint: MarketEndPoints.getProductListingWithFiltersEP,*/
-            queryParameters: params,
-            response: ResponseValue<GetProductListingWithFiltersModel>(
-              fromJson: (response) =>
-                  GetProductListingWithFiltersModel.fromJson(response),
-            ),
-          ),
-        );
+        queryParameters: params,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
 
-    return getProductsWithFilters();
+    final raw = await getProductsWithFilters();
+    return parseListingInBackground(raw);
   }
 
   Future<GetProductListingWithFiltersModel> getFeaturedProducts(
     Map<String, dynamic> params,
-  ) {
-    GetClient<GetProductListingWithFiltersModel> getFeaturedProducts =
-        GetClient<GetProductListingWithFiltersModel>(
-          serverName: ServerName.webApp,
-          requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
-            endpoint: WebAppEndPoints.productFeaturedEP,
-            /*serverName: ServerName.market,
+  ) async {
+    GetClient<dynamic> getFeaturedProducts = GetClient<dynamic>(
+      serverName: ServerName.webApp,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: WebAppEndPoints.productFeaturedEP,
+        /*serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
         endpoint: MarketEndPoints.getProductListingWithFiltersEP,*/
-            queryParameters: params,
-            response: ResponseValue<GetProductListingWithFiltersModel>(
-              fromJson: (response) =>
-                  GetProductListingWithFiltersModel.fromJson(response),
-            ),
-          ),
-        );
+        queryParameters: params,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
 
-    return getFeaturedProducts();
+    final raw = await getFeaturedProducts();
+    return parseListingInBackground(raw);
   }
 
   Future<GetProductListingWithFiltersModel> getRecommendedProducts(
     Map<String, dynamic> params,
-  ) {
-    GetClient<GetProductListingWithFiltersModel> getRecommendedProducts =
-        GetClient<GetProductListingWithFiltersModel>(
-          serverName: ServerName.webApp,
-          requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
-            endpoint: WebAppEndPoints.productRecommendedEP,
-            queryParameters: params,
-            response: ResponseValue<GetProductListingWithFiltersModel>(
-              fromJson: (response) =>
-                  GetProductListingWithFiltersModel.fromJson(response),
-            ),
-          ),
-        );
+  ) async {
+    GetClient<dynamic> getRecommendedProducts = GetClient<dynamic>(
+      serverName: ServerName.webApp,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: WebAppEndPoints.productRecommendedEP,
+        queryParameters: params,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
 
-    return getRecommendedProducts();
+    final raw = await getRecommendedProducts();
+    return parseListingInBackground(raw);
   }
 
   /* Future<Comment> addComment(Map<String, dynamic> params) {
@@ -946,27 +928,27 @@ class HomeRemoteDatasource {
     return getCartShippingItems();
   }
 
-  Future<GetHomeBoutiquesModel> getHomeBoutiques(Map<String, dynamic> params) {
+  Future<GetHomeBoutiquesModel> getHomeBoutiques(
+    Map<String, dynamic> params,
+  ) async {
     ///// for test /////
     TestVariables.getBoutiquesFlag = true;
     TestVariables.getBoutiquesRequestCountFlag++;
     ////////////////////
-    GetClient<GetHomeBoutiquesModel> getHomeBoutiques =
-        GetClient<GetHomeBoutiquesModel>(
-          serverName: ServerName.webApp,
-          //ServerName.elastic,
-          requestPrams: RequestConfig<GetHomeBoutiquesModel>(
-            endpoint: WebAppEndPoints.homeBoutiquesEP,
-            //ElasticEndPoints.getHomeBoutiquesEP,
-            // MarketEndPoints.getHomeBoutiqesEP,
-            queryParameters: params,
-            response: ResponseValue<GetHomeBoutiquesModel>(
-              fromJson: (response) => GetHomeBoutiquesModel.fromJson(response),
-            ),
-          ),
-        );
+    GetClient<dynamic> getHomeBoutiques = GetClient<dynamic>(
+      serverName: ServerName.webApp,
+      //ServerName.elastic,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: WebAppEndPoints.homeBoutiquesEP,
+        //ElasticEndPoints.getHomeBoutiquesEP,
+        // MarketEndPoints.getHomeBoutiqesEP,
+        queryParameters: params,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
 
-    return getHomeBoutiques();
+    final raw = await getHomeBoutiques();
+    return parseHomeBoutiquesInBackground(raw);
   }
 
   Future<ListOfProductsFoundedInCartModel> getProductsListInCart() {
@@ -1767,20 +1749,18 @@ class HomeRemoteDatasource {
   Future<RelatedProductsResponse> getRelatedProducts({
     required int productSlug,
     required String color,
-  }) {
-    GetClient<RelatedProductsResponse> client =
-        GetClient<RelatedProductsResponse>(
-          serverName: ServerName.webApp,
-          requestPrams: RequestConfig<RelatedProductsResponse>(
-            endpoint: WebAppEndPoints.getRelatedProducts(productSlug),
-            //queryParameters: {"color": color},
-            response: ResponseValue<RelatedProductsResponse>(
-              fromJson: (json) => RelatedProductsResponse.fromJson(json),
-            ),
-          ),
-        );
+  }) async {
+    GetClient<dynamic> client = GetClient<dynamic>(
+      serverName: ServerName.webApp,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: WebAppEndPoints.getRelatedProducts(productSlug),
+        //queryParameters: {"color": color},
+        response: ResponseValue<dynamic>(fromJson: (json) => json),
+      ),
+    );
 
-    return client();
+    final raw = await client();
+    return parseRelatedProductsInBackground(raw);
   }
 
   Future<DeliveredOrdersResponse> getDeliveredOrdersResponse({

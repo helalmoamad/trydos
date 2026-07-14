@@ -921,4 +921,23 @@ static const violence = 'violence';
 
 static const report_sent_successfully = 'report_sent_successfully';
 static const report_failed = 'report_failed';
+
+static const sort_products = 'sort_products';
+static const sort_choose_ordering = 'sort_choose_ordering';
+static const sort_default = 'sort_default';
+static const sort_best_match = 'sort_best_match';
+static const sort_best_sellers = 'sort_best_sellers';
+static const sort_most_bought = 'sort_most_bought';
+static const sort_new_arrivals = 'sort_new_arrivals';
+static const sort_by_date_added = 'sort_by_date_added';
+static const sort_newest = 'sort_newest';
+static const sort_oldest = 'sort_oldest';
+static const sort_price = 'sort_price';
+static const sort_by_product_price = 'sort_by_product_price';
+static const sort_low_to_high = 'sort_low_to_high';
+static const sort_high_to_low = 'sort_high_to_low';
+static const sort_name = 'sort_name';
+static const sort_alphabetical = 'sort_alphabetical';
+static const sort_a_to_z = 'sort_a_to_z';
+static const sort_z_to_a = 'sort_z_to_a';
 }

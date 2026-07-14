@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -381,10 +382,10 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               SelectedStoriesStatus.init) {
                         widget.animatedController.forward();
                         if (widget.stopAnimationAndVideo) {
-                          print("111111111111111111111111");
+                          if (kDebugMode) print("111111111111111111111111");
                           widget.animatedController.stop();
                         } else {
-                          print("112222222222222211111111111");
+                          if (kDebugMode) print("112222222222222211111111111");
                           widget.animatedController.forward();
                         }
                         return Stack(
@@ -829,7 +830,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       try {
         return Uri.decodeComponent(Uri.decodeComponent(param));
       } catch (e) {
-        print('خطأ في فك التشفير: $e');
+        if (kDebugMode) print('خطأ في فك التشفير: $e');
         return null;
       }
     }
@@ -843,11 +844,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         if (list is List) {
           return list.map((e) => e.toString()).toList();
         } else {
-          print('المعطى ليس قائمة JSON');
+          if (kDebugMode) print('المعطى ليس قائمة JSON');
           return [];
         }
       } catch (e) {
-        print('خطأ في تحويل JSON: $e');
+        if (kDebugMode) print('خطأ في تحويل JSON: $e');
         return [];
       }
     }
@@ -880,12 +881,12 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         filter.Category(id: 0, name: "null", slug: element),
       ),
     );
-    print('الفئات: $categories');
-    print('العلامات: $brands');
-    print('المقاسات: $sizes');
-    print('تاغات: $tagsNames');
-    print('الألوان: $colors');
-    print('البوتيكات: $boutiques');
+    if (kDebugMode) print('الفئات: $categories');
+    if (kDebugMode) print('العلامات: $brands');
+    if (kDebugMode) print('المقاسات: $sizes');
+    if (kDebugMode) print('تاغات: $tagsNames');
+    if (kDebugMode) print('الألوان: $colors');
+    if (kDebugMode) print('البوتيكات: $boutiques');
     prefsRepository.setTagsInUrlToFilter(tagsNames);
     if (!(url.contains("boutique/listing")) && (url.contains("boutique"))) {
       String boutiueSlug = "";

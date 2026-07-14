@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -13,6 +14,7 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
     as filters_model;
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
+import 'package:trydos/features/home/data/parsers/heavy_response_parsers.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as product;
 import 'package:get_it/get_it.dart';
@@ -64,7 +66,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       _onGetProductsWithFiltersWithPaginationEvent,
     );
 
-
     on<GetFiltersWithPaginatioEvent>(_onGetFiltersWithPaginatioEvent);
     on<AddCurrentMainCategoryTapedEvent>(_onAddCurrentMainCategoryTapedEvent);
     on<ClearAllBoutiquesEvent>(_onClearAllBoutiquesEvent);
@@ -95,6 +96,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     on<AddSizeAndColorFilterinTextToSearchEvent>(
       _onAddSizeAndColorFilterinTextToSearchEvent,
     );
+    on<ChangeSortEvent>(_onChangeSortEvent);
+    on<ResetSortEvent>(_onResetSortEvent);
   }
   final GetProductsWithFiltersUseCase getProductsWithFiltersUseCase;
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
@@ -225,6 +228,35 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             event.sizeAndColorFilterinTextToSearch,
       ),
     );
+  }
+
+  /// Store the chosen sort key and reload the listing from the first page.
+  /// Changing the sort starts a new pagination session (offset/pit reset),
+  /// so we always re-fetch with `getWithPagination: false`.
+  FutureOr<void> _onChangeSortEvent(
+    ChangeSortEvent event,
+    Emitter<BoutiqueState> emit,
+  ) async {
+    if (state.sortKey == event.sortKey) return;
+    emit(state.copyWith(sortKey: event.sortKey));
+    add(
+      GetProductsWithFiltersEvent(
+        offset: 1,
+        boutiqueSlug: event.boutiqueSlug,
+        searchText: event.searchText,
+        category: event.category,
+        fromSearch: event.fromSearch,
+      ),
+    );
+  }
+
+  /// Reset the sort order back to the default relevance (used on page leave).
+  FutureOr<void> _onResetSortEvent(
+    ResetSortEvent event,
+    Emitter<BoutiqueState> emit,
+  ) async {
+    if (state.sortKey.isEmpty) return;
+    emit(state.copyWith(sortKey: ""));
   }
 
   /* FutureOr<void> _onGetProductsWithFiltersWithPrefetchForFiveFiltersEvent(
@@ -393,8 +425,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 Map.of({event.boutiqueSlug: r.data!.totalSize ?? 0}),
             getProductFiltersWithPrefetchModel: data));
       } catch (e, st) {
-        print(e);
-        print(st);
+        if (kDebugMode) print(e);
+        if (kDebugMode) print(st);
       }
     });
   }*/
@@ -514,9 +546,10 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     GetFiltersWithPaginatioEvent event,
     Emitter<BoutiqueState> emit,
   ) async {
-    print(
-      "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF#####wwwwwwwwwwwwwwwwwwwwwwwwwwwwt",
-    );
+    if (kDebugMode)
+      print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF#####wwwwwwwwwwwwwwwwwwwwwwwwwwwwt",
+      );
     String key = event.boutiqueSlug + (event.category ?? '');
     /* if (event.getProductsFilterPreFetch &&
         !event.fromHomePageSearch &&
@@ -601,8 +634,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             : [],
       );
     } catch (e, st) {
-      print(e);
-      print(st);
+      if (kDebugMode) print(e);
+      if (kDebugMode) print(st);
     }
     final response = await getProductFiltersUseCase(
       GetProductsFiltersParams(
@@ -764,8 +797,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               //removeAlreadyChoosedFilters(r, filters),
             ),
           );
-          print(e);
-          print(st);
+          if (kDebugMode) print(e);
+          if (kDebugMode) print(st);
         }
       },
     );
@@ -910,9 +943,10 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     Emitter<BoutiqueState> emit,
   ) async {
     String key = event.boutiqueSlug + (event.category ?? '');
-    print(
-      "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF################################${key}",
-    );
+    if (kDebugMode)
+      print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF################################${key}",
+      );
     /* if (event.getProductsFilterPreFetch &&
         !event.fromHomePageSearch &&
         event.cashedOrginalBoutique &&
@@ -997,8 +1031,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             : [],
       );
     } catch (e, st) {
-      print(e);
-      print(st);
+      if (kDebugMode) print(e);
+      if (kDebugMode) print(st);
     }
     final response = await getProductFiltersUseCase(
       GetProductsFiltersParams(
@@ -1109,27 +1143,31 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             ),
           );
         } catch (e, st) {
-          print(e);
-          print(st);
+          if (kDebugMode) print(e);
+          if (kDebugMode) print(st);
         }
       },
     );
   }
 
+  Map<String, dynamic> responseFromSharedPrefrence = {};
   FutureOr<void> _onGetWithProductFiltersWithoutCancelingPreviousEvents(
     GetProductWithFiltersWithoutCancelingPreviousEvents event,
     Emitter<BoutiqueState> emit,
   ) async {
     String key = event.boutiqueSlug + (event.category ?? '');
+    if (responseFromSharedPrefrence.isEmpty) {
+      responseFromSharedPrefrence = jsonDecode(
+        prefsRepository.getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
+            "{}",
+      );
+    }
+
     if ((event.boutiqueSlug != "*featured*" &&
             event.boutiqueSlug != "*flashDeal*" &&
             event.boutiqueSlug != "*recommended*") &&
-        ((prefsRepository
-                    .getPrefechOfProductsForEachBoutiqueInHomePage(key)
-                    ?.length ??
-                0) >
-            20)) {
-      print("CCCCCCCCCCCCCCCCCCCCCCC/////");
+        ((responseFromSharedPrefrence.length) > 15)) {
+      if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC/////");
       return;
     }
     if (event.boutiqueSlug == "*featured*") {
@@ -1138,10 +1176,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         getProductListingWithFiltersPaginationModels = Map.of(
           state.getProductListingWithFiltersPaginationModels,
         );
-        Map<String, dynamic> responseFromSharedPrefrence = jsonDecode(
-          prefsRepository.getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
-              "{}",
-        );
+
         DataGetProductListingWithFiltersModel
         getProductListingWithFiltersModel = responseFromSharedPrefrence == {}
             ? DataGetProductListingWithFiltersModel()
@@ -1188,10 +1223,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         getProductListingWithFiltersPaginationModels = Map.of(
           state.getProductListingWithFiltersPaginationModels,
         );
-        Map<String, dynamic> responseFromSharedPrefrence = jsonDecode(
-          prefsRepository.getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
-              "{}",
-        );
+
         DataGetProductListingWithFiltersModel
         getProductListingWithFiltersModel = responseFromSharedPrefrence == {}
             ? DataGetProductListingWithFiltersModel()
@@ -1239,10 +1271,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         getProductListingWithFiltersPaginationModels = Map.of(
           state.getProductListingWithFiltersPaginationModels,
         );
-        Map<String, dynamic> responseFromSharedPrefrence = jsonDecode(
-          prefsRepository.getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
-              "{}",
-        );
+
         DataGetProductListingWithFiltersModel
         getProductListingWithFiltersModel = responseFromSharedPrefrence == {}
             ? DataGetProductListingWithFiltersModel()
@@ -1292,7 +1321,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           (event.boutiqueSlug != "*featured*" &&
               event.boutiqueSlug != "*flashDeal*" &&
               event.boutiqueSlug != "*recommended*")) {
-        print("CCCCCCCCCCCCCCCCCCCCCCC**---");
+        if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC**---");
         return;
       }
       if (boutiquesThatDidPrefetch[key] == null) {
@@ -1563,9 +1592,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         }
 
         //    prefechBoutiques.release();
-        prefsRepository.setPrefechOfProductsForEachBoutiqueInHomePage(
-          key,
-          jsonEncode(r.data),
+        encodePrefetchDataInBackground(r.data).then(
+          (encoded) => prefsRepository
+              .setPrefechOfProductsForEachBoutiqueInHomePage(key, encoded),
         );
         List<String> cachedLinksOfImages = [];
         String url;
@@ -1722,7 +1751,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             );
           });
         } else {
-          print("CCCCCCCCCCCCCCCCCCCCCCC");
+          if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC");
         }
       },
     );
@@ -1735,7 +1764,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     double width,
     double height,
   ) async {
-    print("CCCCCCCCCCCCCCCCCCCCCCC");
+    if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC");
     List<String> urlHasPredeched =
         prefsRepository.getImageUrlHasPrefeched ?? [];
     if (urlHasPredeched.contains(url) || url == "") {
@@ -1817,7 +1846,10 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         '${event.boutiqueSlug}' +
         '${(event.getWithPagination) ? ((state.cashedOrginalBoutique) ? 'withoutFilter' : "") : ((event.cashedOrginalBoutique) ? 'withoutFilter' : "")}' +
         '${(event.category ?? '')}';
-
+    if (kDebugMode)
+      print(
+        "///DDDDDDDDDDGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${keyWithoutFilter}",
+      );
     String key = '${event.boutiqueSlug}' + '${(event.category ?? '')}';
     filters_model.Prices? prePrice =
         state.appliedFiltersByUser[key]?.filters?.prices;
@@ -1840,6 +1872,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         (filters.colors.isNullOrEmpty) &&
         (filters.boutiques.isNullOrEmpty) &&
         (filters.attributes.isNullOrEmpty) &&
+        state.sortKey.isEmpty &&
         GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
       keyWithoutFilter =
           '${event.boutiqueSlug}' +
@@ -1849,83 +1882,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     if (event.cashedOrginalBoutique &&
         !(event.fromSearch ?? false) &&
         !(event.getWithPagination)) {
-      //    List<String> keyForFirstFiveFilterList =
-      //      prefsRepository.getFiveFilterForEachBoutiqueHasPrefechInHomePage() ??
-      //         [];
-
-      //  keyForFirstFiveFilterList
-      //      .removeWhere((element) => !element.contains(event.boutiqueSlug));
-
-      /*for (var i = 0; i < keyForFirstFiveFilterList.length; i++) {
-        String keyForFirstFiveFilter = keyForFirstFiveFilterList[i];
-        if (!dataForFirstFiveFilter.containsValue(keyForFirstFiveFilter)) {
-          data.addAll(
-              {keyForFirstFiveFilter: filters_model.GetProductFiltersModel()});
-        }
-        if (!getProductListingWithFiltersForFirstFiveFilter
-            .containsValue(keyForFirstFiveFilter)) {
-          getProductListingWithFiltersForFirstFiveFilter
-              .addAll({keyForFirstFiveFilter: PaginationModel.init()});
-        }
-        final responseFromSharedPrefrence = jsonDecode(
-            prefsRepository.getPrefechForFiveFilterForEachBoutiqueInHomePage(
-                    keyForFirstFiveFilter) ??
-                "{}");
-
-        DataGetProductListingWithFiltersModel
-            getProductListingWithFiltersForFirstFiveFilterModel =
-            responseFromSharedPrefrence == {}
-                ? DataGetProductListingWithFiltersModel()
-                : DataGetProductListingWithFiltersModel.fromJson(
-                    responseFromSharedPrefrence);
-
-        getProductListingWithFiltersForFirstFiveFilter[keyForFirstFiveFilter] =
-            PaginationModel<product.Products>(
-                hasReachedMax:
-                    (getProductListingWithFiltersForFirstFiveFilterModel
-                                .products?.length ??
-                            0) <
-                        20,
-                items: getProductListingWithFiltersForFirstFiveFilterModel
-                        .products ??
-                    [],
-                offset: getProductListingWithFiltersForFirstFiveFilterModel
-                    .offset
-                    .toString(),
-                page: 1,
-                paginationStatus: PaginationStatus.success);
-
-        List<filters_model.PriceRange> ranges =
-            getProductListingWithFiltersForFirstFiveFilterModel
-                    .prices?.priceRanges ??
-                [];
-
-        ranges.removeWhere((element) => element.count == 0);
-        dataForFirstFiveFilter[keyForFirstFiveFilter] =
-            filters_model.GetProductFiltersModel(
-                filters: filters_model.Filter(
-          totalSize:
-              getProductListingWithFiltersForFirstFiveFilterModel.totalSize,
-          brands: getProductListingWithFiltersForFirstFiveFilterModel.brands,
-          attributes:
-              getProductListingWithFiltersForFirstFiveFilterModel.attributes,
-          prices: getProductListingWithFiltersForFirstFiveFilterModel.prices
-              ?.copyWith(priceRanges: ranges),
-          boutiques:
-              getProductListingWithFiltersForFirstFiveFilterModel.boutiques,
-          colors: getProductListingWithFiltersForFirstFiveFilterModel.colors,
-          searchText: null,
-          categories:
-              getProductListingWithFiltersForFirstFiveFilterModel.categories,
-        ));
-      }*/
-
-      /* emit(state.copyWith(
-        getProductFiltersWithPrefetchModel: Map.of(dataForFirstFiveFilter),
-        getProductListingWithFiltersPaginationWithPrefetchModels:
-            Map.of(getProductListingWithFiltersForFirstFiveFilter),
-      ));*/
-
       if (!data.containsValue(key)) {
         data.addAll({key: filters_model.GetProductFiltersModel()});
       }
@@ -2046,46 +2002,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         appliedFilters[key] = filters_model.GetProductFiltersModel(
           filters: filters,
         );
-        ///////////////////////////////
-        // Future.delayed(
-        //   Duration(milliseconds: 100),
-        //   () => FirebaseAnalyticsService.logEventForSession(
-        //     eventName: AnalyticsEventsConst.programmingEvent,
-        //     executedEventName:
-        //         AnalyticsButtonsEventNameConst.appliedFiltersEvent,
-        //     extraParams: {
-        //       'brands': json.encode(brandsForAnalytics ?? []),
-        //       'categories': json.encode(categoriesForAnalytics ?? []),
-        //       'boutiques': json.encode(boutiquesForAnalytics ?? []),
-        //       'colors': json.encode(colorsForAnalytics ?? []),
-        //       'prices': json.encode(pricesForAnalytics ?? []),
-        //       'options': json.encode(optionsForAnalytics ?? []),
-        //       'searchText': json.encode(searchTextForAnalytics ?? ''),
-        //     },
-        //   ),
-        // );
       }
-    } else {
-      // if (!checkForFilter) {
-      //   ///////////////////////////////
-      //   Future.delayed(
-      //     Duration(milliseconds: 100),
-      //     () => FirebaseAnalyticsService.logEventForSession(
-      //       eventName: AnalyticsEventsConst.programmingEvent,
-      //       executedEventName:
-      //           AnalyticsButtonsEventNameConst.appliedFiltersEvent,
-      //       extraParams: {
-      //         'brands': json.encode(brandsForAnalytics ?? []),
-      //         'categories': json.encode(categoriesForAnalytics ?? []),
-      //         'boutiques': json.encode(boutiquesForAnalytics ?? []),
-      //         'colors': json.encode(colorsForAnalytics ?? []),
-      //         'prices': json.encode(pricesForAnalytics ?? []),
-      //         'options': json.encode(optionsForAnalytics ?? []),
-      //         'searchText': json.encode(searchTextForAnalytics ?? ''),
-      //       },
-      //     ),
-      //   );
-      // }
     }
 
     Map<String, GetProductFiltersStatus>? getProductFiltersStatus = Map.of(
@@ -2217,6 +2134,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               searchText:
                   filters.searchText ??
                   state.appliedFiltersByUser[key]?.filters?.searchText,
+              sort: state.sortKey,
             ),
           );
 
@@ -2365,9 +2283,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         if (event.cashedOrginalBoutique &&
             !(event.fromSearch ?? false) &&
             !(event.getWithPagination)) {
-          prefsRepository.setPrefechOfProductsForEachBoutiqueInHomePage(
-            key,
-            jsonEncode(r.data),
+          encodePrefetchDataInBackground(r.data).then(
+            (encoded) => prefsRepository
+                .setPrefechOfProductsForEachBoutiqueInHomePage(key, encoded),
           );
         }
 
@@ -2616,6 +2534,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             filters.prices?.maxPrice == null) &&
         (filters.colors.isNullOrEmpty) &&
         (filters.boutiques.isNullOrEmpty) &&
+        state.sortKey.isEmpty &&
         (filters.attributes.isNullOrEmpty) &&
         GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
       keyWithoutFilter =
@@ -2702,9 +2621,10 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         getProductListingWithFiltersPaginationWithPrefetchModels:
             Map.of(getProductListingWithFiltersForFirstFiveFilter),
       ));*/
-      print(
-        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666699999999999988888888888888888666666666FFFFFFF${event.boutiqueSlug}",
-      );
+      if (kDebugMode)
+        print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666699999999999988888888888888888666666666FFFFFFF${event.boutiqueSlug}",
+        );
 
       if (!data.containsValue(key)) {
         data.addAll({key: filters_model.GetProductFiltersModel()});
@@ -3020,6 +2940,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               searchText:
                   filters.searchText ??
                   state.appliedFiltersByUser[key]?.filters?.searchText,
+              sort: state.sortKey,
             ),
           );
 
@@ -3147,9 +3068,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         if (event.cashedOrginalBoutique &&
             !(event.fromSearch ?? false) &&
             !(event.getWithPagination)) {
-          prefsRepository.setPrefechOfProductsForEachBoutiqueInHomePage(
-            key,
-            jsonEncode(r.data),
+          encodePrefetchDataInBackground(r.data).then(
+            (encoded) => prefsRepository
+                .setPrefechOfProductsForEachBoutiqueInHomePage(key, encoded),
           );
         }
 
@@ -3340,6 +3261,4 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       },
     );
   }
-
-
 }

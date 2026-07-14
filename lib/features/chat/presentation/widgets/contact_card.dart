@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -69,7 +70,7 @@ class ContactCard extends StatelessWidget {
                 ),
               );
               final preferences = GetIt.I<PrefsRepository>();
-              print(
+              if (kDebugMode) print(
                 "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${chat.id}",
               );
               receiver = chat.channelMembers

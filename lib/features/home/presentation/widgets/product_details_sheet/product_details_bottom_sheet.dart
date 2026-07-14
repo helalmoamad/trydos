@@ -291,7 +291,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                     widget.productItem.slug.toString()] ??
                 0;
           }
-          print(
+          if (kDebugMode) print(
               "DDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE${state.isChangedvariationWhenQtyZero}${widget.currentSelectedColorAfterChangeVariant}${!(widget.fromListingPage ?? false)}");
 
           if (state.isChangedvariationWhenQtyZero &&

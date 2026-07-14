@@ -40,7 +40,11 @@ class GetProductListingWithFiltersModel {
         : DataGetProductListingWithFiltersModel.fromJson(json["data"]),
   );
 
-  Map<String, dynamic> toJson() => {"message": message, "suggestion": suggestion, "data": data?.toJson()};
+  Map<String, dynamic> toJson() => {
+    "message": message,
+    "suggestion": suggestion,
+    "data": data?.toJson(),
+  };
 }
 
 class DataGetProductListingWithFiltersModel {
@@ -340,9 +344,9 @@ class Category {
       id: json["id"],
       slug: json["slug"],
       name: json["name"],
-      mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] == null
+      mostViewedProductThumbnail: json["flat_photo_path"] == null
           ? null
-          : CategoryBanner.fromJson(json["most_viewed_product_thumbnail"]),
+          : CategoryBanner.fromJson(json["flat_photo_path"]),
       numAvailableProduct: json["num_available_product"],
       flatPhotoPath: json["flat_photo_path"] == null
           ? null

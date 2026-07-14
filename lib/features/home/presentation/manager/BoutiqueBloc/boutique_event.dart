@@ -1,4 +1,3 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
@@ -8,18 +7,19 @@ abstract class BoutiqueEvent extends Equatable {
 }
 
 class GetFiltersEvent extends BoutiqueEvent {
-  const GetFiltersEvent(
-      {this.category,
-      this.fromHomePageSearch = false,
-      this.getWithoutFilter = false,
-      required this.boutiqueSlug,
-      this.searchText,
-      this.fromExpandPage = false,
-      this.cashedOrginalBoutique = false,
-      this.getProductsFilterPreFetch = false,
-      this.forceUpdate = false,
-      this.resetAppliesFilters = false,
-      this.filtersChoosedByUser});
+  const GetFiltersEvent({
+    this.category,
+    this.fromHomePageSearch = false,
+    this.getWithoutFilter = false,
+    required this.boutiqueSlug,
+    this.searchText,
+    this.fromExpandPage = false,
+    this.cashedOrginalBoutique = false,
+    this.getProductsFilterPreFetch = false,
+    this.forceUpdate = false,
+    this.resetAppliesFilters = false,
+    this.filtersChoosedByUser,
+  });
 
   final String boutiqueSlug;
 
@@ -41,10 +41,11 @@ class GetFiltersEvent extends BoutiqueEvent {
 }
 
 class GetFiltersForNavigatorFromLinkToListingPageEvent extends BoutiqueEvent {
-  const GetFiltersForNavigatorFromLinkToListingPageEvent(
-      {required this.boutiqueSlug,
-      this.fromHomePageSearch = false,
-      this.filtersChoosedByUser});
+  const GetFiltersForNavigatorFromLinkToListingPageEvent({
+    required this.boutiqueSlug,
+    this.fromHomePageSearch = false,
+    this.filtersChoosedByUser,
+  });
 
   final String boutiqueSlug;
   final bool fromHomePageSearch;
@@ -57,18 +58,19 @@ class GetFiltersForNavigatorFromLinkToListingPageEvent extends BoutiqueEvent {
 }
 
 class GetFiltersWithPaginatioEvent extends BoutiqueEvent {
-  const GetFiltersWithPaginatioEvent(
-      {this.category,
-      this.fromHomePageSearch = false,
-      this.getWithoutFilter = false,
-      required this.boutiqueSlug,
-      this.searchText,
-      this.fromListingPage = false,
-      this.cashedOrginalBoutique = false,
-      this.getProductsFilterPreFetch = false,
-      this.forceUpdate = false,
-      this.resetAppliesFilters = false,
-      this.filtersChoosedByUser});
+  const GetFiltersWithPaginatioEvent({
+    this.category,
+    this.fromHomePageSearch = false,
+    this.getWithoutFilter = false,
+    required this.boutiqueSlug,
+    this.searchText,
+    this.fromListingPage = false,
+    this.cashedOrginalBoutique = false,
+    this.getProductsFilterPreFetch = false,
+    this.forceUpdate = false,
+    this.resetAppliesFilters = false,
+    this.filtersChoosedByUser,
+  });
 
   final String boutiqueSlug;
 
@@ -91,20 +93,21 @@ class GetFiltersWithPaginatioEvent extends BoutiqueEvent {
 
 class GetProductWithFiltersWithoutCancelingPreviousEvents
     extends BoutiqueEvent {
-  const GetProductWithFiltersWithoutCancelingPreviousEvents(
-      {this.category,
-      this.fromHomePageSearch = false,
-      required this.boutiqueSlug,
-      this.context,
-      this.getWithoutFilter = false,
-      this.indexOfCategory = 0,
-      this.searchText,
-      required this.categorySlugs,
-      this.fromExpandPage = false,
-      this.cashedOrginalBoutique = false,
-      this.forceUpdate = false,
-      this.resetAppliesFilters = false,
-      this.filtersChoosedByUser});
+  const GetProductWithFiltersWithoutCancelingPreviousEvents({
+    this.category,
+    this.fromHomePageSearch = false,
+    required this.boutiqueSlug,
+    this.context,
+    this.getWithoutFilter = false,
+    this.indexOfCategory = 0,
+    this.searchText,
+    required this.categorySlugs,
+    this.fromExpandPage = false,
+    this.cashedOrginalBoutique = false,
+    this.forceUpdate = false,
+    this.resetAppliesFilters = false,
+    this.filtersChoosedByUser,
+  });
 
   final String boutiqueSlug;
   final bool cashedOrginalBoutique;
@@ -147,12 +150,12 @@ class ChangeSelectedFiltersEvent extends BoutiqueEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [
-        filtersChoosedByUser,
-        boutiqueSlug,
-        resetChoosedFilters,
-        category,
-        isExpandedForListing
-      ];
+    filtersChoosedByUser,
+    boutiqueSlug,
+    resetChoosedFilters,
+    category,
+    isExpandedForListing,
+  ];
 }
 
 class ChangeAppliedFiltersEvent extends BoutiqueEvent {
@@ -172,12 +175,12 @@ class ChangeAppliedFiltersEvent extends BoutiqueEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [
-        filtersAppliedByUser,
-        boutiqueSlug,
-        resetAppliedFilters,
-        category,
-        isExpandedForListing
-      ];
+    filtersAppliedByUser,
+    boutiqueSlug,
+    resetAppliedFilters,
+    category,
+    isExpandedForListing,
+  ];
 }
 
 class GetProductsWithFiltersEvent extends BoutiqueEvent {
@@ -196,25 +199,32 @@ class GetProductsWithFiltersEvent extends BoutiqueEvent {
 
   final bool getWithPagination;
 
-  GetProductsWithFiltersEvent(
-      {required this.boutiqueSlug,
-      this.getWithoutFilter = false,
-      this.context = null,
-      this.resetChoosedFilters = true,
-      this.searchText,
-      this.fromNotification = false,
-      this.cashedOrginalBoutique = false,
-      this.getWithPagination = false,
-      this.fromChoosed = false,
-      this.fromSearch,
-      required this.offset,
-      this.limit,
-      this.category});
+  GetProductsWithFiltersEvent({
+    required this.boutiqueSlug,
+    this.getWithoutFilter = false,
+    this.context = null,
+    this.resetChoosedFilters = true,
+    this.searchText,
+    this.fromNotification = false,
+    this.cashedOrginalBoutique = false,
+    this.getWithPagination = false,
+    this.fromChoosed = false,
+    this.fromSearch,
+    required this.offset,
+    this.limit,
+    this.category,
+  });
 
   @override
   // TODO: implement props
-  List<Object?> get props =>
-      [category, searchText, offset, limit, getWithPagination, boutiqueSlug];
+  List<Object?> get props => [
+    category,
+    searchText,
+    offset,
+    limit,
+    getWithPagination,
+    boutiqueSlug,
+  ];
 }
 
 class GetProductsWithFiltersWithPaginationEvent extends BoutiqueEvent {
@@ -233,25 +243,32 @@ class GetProductsWithFiltersWithPaginationEvent extends BoutiqueEvent {
 
   final bool getWithPagination;
 
-  GetProductsWithFiltersWithPaginationEvent(
-      {required this.boutiqueSlug,
-      this.getWithoutFilter = false,
-      this.context = null,
-      this.resetChoosedFilters = true,
-      this.searchText,
-      this.fromNotification = false,
-      this.cashedOrginalBoutique = false,
-      this.getWithPagination = false,
-      this.fromChoosed = false,
-      this.fromSearch,
-      required this.offset,
-      this.limit,
-      this.category});
+  GetProductsWithFiltersWithPaginationEvent({
+    required this.boutiqueSlug,
+    this.getWithoutFilter = false,
+    this.context = null,
+    this.resetChoosedFilters = true,
+    this.searchText,
+    this.fromNotification = false,
+    this.cashedOrginalBoutique = false,
+    this.getWithPagination = false,
+    this.fromChoosed = false,
+    this.fromSearch,
+    required this.offset,
+    this.limit,
+    this.category,
+  });
 
   @override
   // TODO: implement props
-  List<Object?> get props =>
-      [category, searchText, offset, limit, getWithPagination, boutiqueSlug];
+  List<Object?> get props => [
+    category,
+    searchText,
+    offset,
+    limit,
+    getWithPagination,
+    boutiqueSlug,
+  ];
 }
 
 class GetProductsWithFiltersUsingPaginationEvent extends BoutiqueEvent {
@@ -266,28 +283,71 @@ class GetProductsWithFiltersUsingPaginationEvent extends BoutiqueEvent {
   final bool? fromChoosed;
   final bool resetChoosedFilters;
 
-  GetProductsWithFiltersUsingPaginationEvent(
-      {required this.boutiqueSlug,
-      this.getWithoutFilter = false,
-      this.resetChoosedFilters = true,
-      this.searchText,
-      this.cashedOrginalBoutique = false,
-      this.fromChoosed = false,
-      this.fromSearch,
-      required this.offset,
-      this.limit,
-      this.category});
+  GetProductsWithFiltersUsingPaginationEvent({
+    required this.boutiqueSlug,
+    this.getWithoutFilter = false,
+    this.resetChoosedFilters = true,
+    this.searchText,
+    this.cashedOrginalBoutique = false,
+    this.fromChoosed = false,
+    this.fromSearch,
+    required this.offset,
+    this.limit,
+    this.category,
+  });
 
   @override
   // TODO: implement props
-  List<Object?> get props =>
-      [category, searchText, offset, limit, boutiqueSlug];
+  List<Object?> get props => [
+    category,
+    searchText,
+    offset,
+    limit,
+    boutiqueSlug,
+  ];
+}
+
+/// Change the current sort order of the listing and reload the first page.
+/// Passing an empty [sortKey] restores the default relevance order.
+class ChangeSortEvent extends BoutiqueEvent {
+  final String sortKey;
+  final String boutiqueSlug;
+  final String? searchText;
+  final String? category;
+  final bool? fromSearch;
+
+  ChangeSortEvent({
+    required this.sortKey,
+
+    required this.boutiqueSlug,
+    this.searchText,
+    this.category,
+    this.fromSearch,
+  });
+
+  @override
+  List<Object?> get props => [
+    sortKey,
+    searchText,
+    boutiqueSlug,
+    category,
+    fromSearch,
+  ];
+}
+
+/// Reset the stored sort order back to the default (used when leaving the page).
+class ResetSortEvent extends BoutiqueEvent {
+  ResetSortEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 class AddSizeAndColorFilterinTextToSearchEvent extends BoutiqueEvent {
   final Map<String, List<String>> sizeAndColorFilterinTextToSearch;
-  AddSizeAndColorFilterinTextToSearchEvent(
-      {required this.sizeAndColorFilterinTextToSearch});
+  AddSizeAndColorFilterinTextToSearchEvent({
+    required this.sizeAndColorFilterinTextToSearch,
+  });
 
   @override
   // TODO: implement props
@@ -315,9 +375,7 @@ class IscashedOreiginBotiqueEvent extends BoutiqueEvent {
 class AddPrefAppliedFilterForExtendFilterEvent extends BoutiqueEvent {
   final Filter? prefAppliedFilter;
 
-  AddPrefAppliedFilterForExtendFilterEvent({
-    this.prefAppliedFilter,
-  });
+  AddPrefAppliedFilterForExtendFilterEvent({this.prefAppliedFilter});
 
   @override
   List<Object?> get props => [prefAppliedFilter];
@@ -326,9 +384,7 @@ class AddPrefAppliedFilterForExtendFilterEvent extends BoutiqueEvent {
 class AddCurrentMainCategoryTapedEvent extends BoutiqueEvent {
   final String? currentMainCategoryTaped;
 
-  AddCurrentMainCategoryTapedEvent({
-    this.currentMainCategoryTaped,
-  });
+  AddCurrentMainCategoryTapedEvent({this.currentMainCategoryTaped});
 
   @override
   List<Object?> get props => [currentMainCategoryTaped];

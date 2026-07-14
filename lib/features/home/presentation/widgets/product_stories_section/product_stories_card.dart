@@ -112,7 +112,7 @@ class ProductStoriesCard extends StatelessWidget {
                                 scrollDirection: Axis.horizontal,
                                 itemBuilder: (context, index) {
                                   final story = state.storiesForProduct![index];
-                                  print(
+                                  if (kDebugMode) print(
                                       "${index} ${story.isPhoto} ${story.photoPath}++++++++++++++");
                                   if (story.isPhoto == 1 &&
                                       (story.photoPath?.isNotEmpty ?? false)) {

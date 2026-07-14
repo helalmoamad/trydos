@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
@@ -76,7 +77,7 @@ class NotificationProcess {
         ),
       );
     }
-    print("myFcmToken : ${myFcmToken}");
+    if (kDebugMode) print("myFcmToken : ${myFcmToken}");
     if (myFcmToken != null) {
       /*  GetIt.I<AuthBloc>().add(
         StoreFcmTokenEvent(
@@ -92,7 +93,7 @@ class NotificationProcess {
           serverName: ServerName.chat,
         ),
       );
-      print("myFcmToken :///////////////// ${myFcmToken}");
+      if (kDebugMode) print("myFcmToken :///////////////// ${myFcmToken}");
       GetIt.I<PrefsRepository>().addFcmToken(myFcmToken!);
       if (GetIt.I<PrefsRepository>().myMarketId != null) {
         GetIt.I<HomeBloc>().add(
@@ -161,7 +162,7 @@ class NotificationProcess {
             details.notificationResponse!.payload!.split('##')[0],
           ),
         );
-        print(myMessage.messageContent?.content);
+        if (kDebugMode) print(myMessage.messageContent?.content);
         GetIt.I<ChatBloc>().add(
           GetChatsEvent(
             chatToNavigateFromTerminated: myMessage.channel,

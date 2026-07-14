@@ -1,4 +1,5 @@
 //import 'dart:convert';
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:math';
 import 'package:country_flags/country_flags.dart';
@@ -149,7 +150,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
         // await TrydosWallet.dispose();
         _isWalletInitialized = false;
       } catch (e) {
-        print('Error cleaning up wallet: $e');
+        if (kDebugMode) print('Error cleaning up wallet: $e');
       }
     }
   }
@@ -531,7 +532,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         phoneNumber: phoneNumber,
                         onChooseWhatsapp: () {
                           isVisWhatsApp = 1;
-                          print("###################33333# isVisWhatsApp}");
+                          if (kDebugMode) print("###################33333# isVisWhatsApp}");
                           pageController.animateToPage(
                             2,
                             duration: const Duration(milliseconds: 500),

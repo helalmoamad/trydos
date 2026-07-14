@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -90,7 +91,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
     callsBloc.add(GetMissedCallCountEvent());
     callsBloc.add(GetMyCallsEvent());
-    print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!2");
+    if (kDebugMode) print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!2");
     chatBloc.add(const GetChatsEvent(limit: 10));
     chatBloc.add(const SaveContactsEvent());
     chatPages.insert(
@@ -177,7 +178,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
             p.makeCallStatus == MakeCallStatus.init &&
             c.makeCallStatus == MakeCallStatus.loading,
         listener: (context, state) {
-          print(
+          if (kDebugMode) print(
             "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ////",
           );
           callInProgressDialog(context);
@@ -198,7 +199,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                 p.makeCallStatus != c.makeCallStatus &&
                 c.makeCallStatus == MakeCallStatus.startCall,
             listener: (context, state) {
-              print(
+              if (kDebugMode) print(
                 "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ",
               );
               Navigator.of(context).pushReplacement(

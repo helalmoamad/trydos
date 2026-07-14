@@ -15,6 +15,7 @@ import '../../presentation/bloc/story_bloc.dart';
 import '../models/image_detail.dart';
 import '../models/delete_story_model.dart';
 import '../../data/models/get_stories_model.dart';
+import '../parsers/story_parsers.dart';
 
 @injectable
 class StoriesDataSource {
@@ -52,23 +53,24 @@ class StoriesDataSource {
     return completer.future;
   }
 
-  Future<GetStoriesModel> getStories(Map<String, dynamic> params) {
+  Future<GetStoriesModel> getStories(Map<String, dynamic> params) async {
     ///// for test /////
     TestVariables.getStoriesFlag = true;
     TestVariables.getStoriesRequestCountFlag++;
     ////////////////////
-    GetClient<GetStoriesModel> getStories = GetClient<GetStoriesModel>(
+    // Heavy response: return the raw json here and build the model on a
+    // background isolate (see story_parsers.dart).
+    GetClient<dynamic> getStories = GetClient<dynamic>(
       serverName: ServerName.stories,
-      requestPrams: RequestConfig<GetStoriesModel>(
+      requestPrams: RequestConfig<dynamic>(
         endpoint: StoriesEndPoints.getStoriesEP,
         queryParameters: params,
-        response: ResponseValue<GetStoriesModel>(
-          fromJson: (response) => GetStoriesModel.fromJson(response),
-        ),
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
       ),
     );
 
-    return getStories();
+    final raw = await getStories();
+    return parseStoriesInBackground(raw);
   }
 
   Future<Either<int, CollectionStoryModel>> uploadStory(

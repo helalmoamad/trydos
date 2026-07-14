@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -101,7 +102,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () async {
-              print(
+              if (kDebugMode) print(
                 "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%lattttttter",
               );
               clickButton.value = 0;
@@ -252,7 +253,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                 ).add(RegisterGuestEvent(deviceId: deviceId!));
                 //   }
                 if (Navigator.of(context).canPop()) {
-                  print(
+                  if (kDebugMode) print(
                     "############################################################3",
                   );
                   Navigator.of(context).pop();

@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/services.dart';
 
@@ -289,9 +290,10 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                 itemBuilder: (context, index, _) {
                                   // 🔧 إضافة lazy loading للصور
 
-                                  print(
-                                    "🖼️ Banner $index URL: ${boutique.banners?[index].filePath ?? 'null'}",
-                                  );
+                                  if (kDebugMode)
+                                    print(
+                                      "🖼️ Banner $index URL: ${boutique.banners?[index].filePath ?? 'null'}",
+                                    );
                                   return Padding(
                                     padding: EdgeInsetsDirectional.only(
                                       start: index == 0 ? 0 : 10,

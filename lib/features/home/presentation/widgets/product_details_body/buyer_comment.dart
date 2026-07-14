@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -100,7 +101,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
               current.updateLikeCommentRatingStatus ||
           previous.translateCommentStatus != current.translateCommentStatus,
       builder: (context, state) {
-        print(
+        if (kDebugMode) print(
           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD*******////${state.updateLikeCommentRatingStatus}",
         );
         if (state.getBuyersCommentsPaginationModel == null) {

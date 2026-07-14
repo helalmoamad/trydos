@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -377,7 +378,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await _prefsRepository.setMarketToken(r.data?.token.toString());
 
           Future.delayed(const Duration(seconds: 30), () {
-            print("#########33333333332");
+            if (kDebugMode) print("#########33333333332");
             _prefsRepository.setTokenExpired(false);
           });
           GetIt.I<HomeBloc>().add(
@@ -658,7 +659,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
           // GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
           _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-          print(
+          if (kDebugMode) print(
             "*****************************-----------------------------${r.data!.token!}",
           );
           await _prefsRepository.setVerifiedPhone(
@@ -999,20 +1000,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (userInfo) async {
         ErrorManager.resetRetry('GetCustomerInfoEvent');
-        print(
+        if (kDebugMode) print(
           "userInfo.user?.isPhoneVerified ${userInfo.toJson()}------------------",
         );
 
-        _prefsRepository.setAllowedToUploadStories(userInfo.isAllowedToUploadStories ?? false);
-        bool x =_prefsRepository.getAllowedToUploadStories();
+        _prefsRepository.setAllowedToUploadStories(
+          userInfo.isAllowedToUploadStories ?? false,
+        );
+        bool x = _prefsRepository.getAllowedToUploadStories();
 
-        print("allowedToUploadStories $x------------------");
-
-
-        
-
-
-
+        if (kDebugMode) print("allowedToUploadStories $x------------------");
 
         await _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
         if ((userInfo.name?.replaceAll(' ', '') ?? '') != '') {
@@ -1029,7 +1026,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
                 : ("${dotenv.env['Media_S3_Server']}" + userInfo.image!),
           );
           await _prefsRepository.setMyChatPhoto(
-            userInfo.image!.contains("cloudinary") || userInfo.image!.contains("media_server")
+            userInfo.image!.contains("cloudinary") ||
+                    userInfo.image!.contains("media_server")
                 ? userInfo.image
                 : ("${dotenv.env['Media_S3_Server']}" + userInfo.image!),
           );
@@ -1053,7 +1051,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     final response = await getUserCountryUseCase(NoParams());
-    response.fold(
+    await response.fold(
       (l) {
         emit(
           state.copyWith(

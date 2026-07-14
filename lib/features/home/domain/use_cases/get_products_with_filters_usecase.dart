@@ -44,6 +44,10 @@ class GetProductsWithFiltersParams {
 
   final List<String>? categorySlugs;
   final List<String>? brandSlugs;
+
+  /// Sort key sent to `searchInCatalog` (e.g. best_selling, newest, oldest,
+  /// price_asc, price_desc, name_asc, name_desc). Null/empty = default relevance.
+  final String? sort;
   GetProductsWithFiltersParams(
       {this.prices,
       this.brands,
@@ -61,6 +65,7 @@ class GetProductsWithFiltersParams {
       this.limit,
       this.brandSlugs,
       this.categorySlugs,
+      this.sort,
       this.category});
 
   Map<String, dynamic> get map => {
@@ -83,6 +88,7 @@ class GetProductsWithFiltersParams {
         //    "fromMarket": "$fromMarket",
         "search_text":
             searchText == "" || searchText == null ? null : '"${searchText}"',
+        "sort": sort == "" || sort == null ? null : sort,
         "offset": offset.toString(),
         "limit": "20",
         // "scroll_id": scroll_id,

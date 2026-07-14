@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
@@ -193,15 +194,15 @@ class _SinglePageChatState extends State<SinglePageChat> {
         volume: 1,
       );
     } catch (e) {
-      print('Error playing sound: $e');
+      if (kDebugMode) print('Error playing sound: $e');
     }
   }
 
   @override
   void initState() {
     LastPagesTracker.push('SinglePageChat');
-    print("%%%%%%%%%${GetIt.I<PrefsRepository>().chatToken}*");
-    print(
+    if (kDebugMode) print("%%%%%%%%%${GetIt.I<PrefsRepository>().chatToken}*");
+    if (kDebugMode) print(
       "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE*/****#${widget.chatId}",
     );
     rebuildMessage.value = -2;
@@ -320,7 +321,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         ),
       );
 
-      print("asfsd${details.toString()}");
+      if (kDebugMode) print("asfsd${details.toString()}");
       GetIt.I<PrefsRepository>().saveRequestsData(
         null,
         null,
@@ -432,7 +433,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           ? const SizedBox.shrink()
                           : BlocListener<ChatBloc, ChatState>(
                               listenWhen: (p, c) {
-                                print(
+                                if (kDebugMode) print(
                                   "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${p.currentOpenedChatIdStatus}//${c.currentOpenedChatIdStatus}",
                                 );
 
@@ -456,13 +457,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                               widget.chatId,
                                     ),
                                   );
-                                  print(
+                                  if (kDebugMode) print(
                                     "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR///${state.currentOpenedChatIdStatus}",
                                   );
-                                  print(
+                                  if (kDebugMode) print(
                                     "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR***${chat.id}",
                                   );
-                                  print(
+                                  if (kDebugMode) print(
                                     "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR/*/${chat.localId}",
                                   );
 
@@ -852,8 +853,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               openAppSettings();
                             }
                           } catch (e, st) {
-                            print(e);
-                            print(st);
+                            if (kDebugMode) print(e);
+                            if (kDebugMode) print(st);
                           }
                         },
                         child: SvgPicture.asset(
@@ -1077,8 +1078,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         _scrollToBottom();
                       });
                     }
-                    print(widget.chatId);
-                    print(state.currentChannelReceivedMessage);
+                    if (kDebugMode) print(widget.chatId);
+                    if (kDebugMode) print(state.currentChannelReceivedMessage);
                     if (state.receiveMessageStatus ==
                             ReceiveMessageStatus.success &&
                         (widget.chatId == state.currentChannelReceivedMessage ||
@@ -1088,7 +1089,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     }
                   },
                   builder: (context, chatState) {
-                    print(
+                    if (kDebugMode) print(
                       "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE#///${chatState.sendMessageStatus}/${chatState.receiveMessageStatus}/${chatState.resendMessageStatus}/${chatState.getMessagesBetweenStatus}",
                     );
                     chat = chatState.chats.firstWhere(
@@ -1146,7 +1147,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                     .reversed
                                                     .toList(),
                                               );
-                                          print(
+                                          if (kDebugMode) print(
                                             "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE${currentIndex}111222${messages[1].id}#${messages[0].id}",
                                           );
 

@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
@@ -267,8 +267,12 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     List<Chat> pinnedChats = List.of(state.pinnedChats);
     List<Chat> chats = List.of(state.chats);
     String? parentMessageId;
-    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD******///${chats[0].id}");
-    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD****////${event.channelId}");
+    if (kDebugMode)
+      if (kDebugMode) print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD******///${chats[0].id}");
+    if (kDebugMode)
+      if (kDebugMode) print(
+        "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD****////${event.channelId}",
+      );
 
     //todo ---if-----
     //todo check if the channel exist and get the messages of this channel
@@ -498,9 +502,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             currentMessage: ids,
           ),
         );
-        print(
-          "222222222222222222222222ddddddddddddddddddddddddddddddddd${state.currentMessage}",
-        );
+        if (kDebugMode)
+          if (kDebugMode) print(
+            "222222222222222222222222ddddddddddddddddddddddddddddddddd${state.currentMessage}",
+          );
 
         //  add(IncreaseFileImageVideoCounterEvent(r.messageType!.name!));
       },
@@ -752,15 +757,17 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     GetChatsEvent event,
     Emitter<ChatState> emit,
   ) async {
-    print(
-      "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH8${state.getChatsStatus}${(_prefsRepository.chatToken?.length ?? 0) < 10}${event.getWithPagination ?? false}888",
-    );
+    if (kDebugMode)
+      if (kDebugMode) print(
+        "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH8${state.getChatsStatus}${(_prefsRepository.chatToken?.length ?? 0) < 10}${event.getWithPagination ?? false}888",
+      );
     if (state.getChatsStatus == GetChatsStatus.loading ||
         (_prefsRepository.chatToken?.length ?? 0) < 10 ||
         ((event.getWithPagination ?? false) && (state.getAllChat ?? false))) {
       return;
     }
-    print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH822");
+    if (kDebugMode)
+      if (kDebugMode) print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH822");
     emit(
       state.copyWith(
         getChatsStatus: GetChatsStatus.loading,
@@ -791,17 +798,19 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       },
       (r) {
         try {
-          print(
-            "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH866622${state.sendMessageStatus}${state.receiveMessageStatus}",
-          );
+          if (kDebugMode)
+            if (kDebugMode) print(
+              "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH866622${state.sendMessageStatus}${state.receiveMessageStatus}",
+            );
           if (state.sendMessageStatus == SendMessageStatus.loading ||
               state.receiveMessageStatus == ReceiveMessageStatus.loading) {
             emit(state.copyWith(getChatsStatus: GetChatsStatus.success));
             return;
           }
-          print(
-            "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH82772",
-          );
+          if (kDebugMode)
+            if (kDebugMode) print(
+              "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH82772",
+            );
           enableRequestGetChats = false;
           /* if (r.data!.missedFcmToken) {
             GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
@@ -868,12 +877,13 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               unReadMessagesFromAllChats: unReadMessagesFromAllChats,
             ),
           );
-          print(
-            "FFFFFFFFFFFFFFFFFFFFFFFFFFFFF/////////****${state.getAllChat}",
-          );
+          if (kDebugMode)
+            if (kDebugMode) print(
+              "FFFFFFFFFFFFFFFFFFFFFFFFFFFFF/////////****${state.getAllChat}",
+            );
         } catch (e, st) {
-          print(e);
-          print(st);
+          if (kDebugMode) print(e);
+          if (kDebugMode) print(st);
         }
         getContactsAfterSavingItAndGettingChannels();
       },
@@ -1290,9 +1300,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     ReceiveMessageEvent event,
     Emitter<ChatState> emit,
   ) async {
-    print(
-      '_onReceiveMessageEvent_onReceiveMessageEvent${event.prevMessageId}  ${event.message.id}',
-    );
+    if (kDebugMode)
+      if (kDebugMode) print(
+        '_onReceiveMessageEvent_onReceiveMessageEvent${event.prevMessageId}  ${event.message.id}',
+      );
 
     emit(state.copyWith(receiveMessageStatus: ReceiveMessageStatus.loading));
     try {
@@ -1356,9 +1367,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       // add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
 
       if (index == -1 && event.prevMessageId != null) {
-        print(
-          'get all messages between ${event.prevMessageId} and ${event.message.id}',
-        );
+        if (kDebugMode)
+          if (kDebugMode) print(
+            'get all messages between ${event.prevMessageId} and ${event.message.id}',
+          );
         add(
           GetAllMessagesBetweenEvent(
             firstMessageId: event.prevMessageId!,
@@ -2702,17 +2714,22 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       SendErrorParams(error: event.error, pageName: event.lastPage),
     );
     response.fold(
-      (l) => print(
-        "${event.error.toString().substring(1, 40)}" +
-            "failed to send error to back end" +
-            "544444444444444444444444444444444444444",
-      ),
+      (l) {
+        if (kDebugMode) {
+          if (kDebugMode) print(
+            "${event.error.toString().substring(1, 40)}" +
+                "failed to send error to back end" +
+                "544444444444444444444444444444444444444",
+          );
+        }
+      },
       (r) {
-        print(
-          "${event.error.toString().substring(1, 40)}" +
-              "success to send error to back end" +
-              "2222222222222222222222222222222222222222222222222222222222222222",
-        );
+        if (kDebugMode)
+          if (kDebugMode) print(
+            "${event.error.toString().substring(1, 40)}" +
+                "success to send error to back end" +
+                "2222222222222222222222222222222222222222222222222222222222222222",
+          );
       },
     );
   }
@@ -2786,7 +2803,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       return;
     }
 
-    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${resultOfSearch.items}");
+    if (kDebugMode)
+      if (kDebugMode) print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${resultOfSearch.items}");
     if (event.getWithPagination &&
         (resultOfSearch.hasReachedMax || resultOfSearch.offset == null)) {
       return;
@@ -2807,9 +2825,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         }
       });
     }
-    print(
-      "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%111111111111111111111111111111${resultOfSearch.items}",
-    );
+    if (kDebugMode)
+      if (kDebugMode) print(
+        "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%111111111111111111111111111111${resultOfSearch.items}",
+      );
 
     emit(
       state.copyWith(
@@ -2820,9 +2839,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         ),
       ),
     );
-    print(
-      "%1112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}",
-    );
+    if (kDebugMode)
+      if (kDebugMode) print(
+        "%1112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}",
+      );
     final response = await searchForMessageTextInChatUseCase(
       SearchForMessageTextInChatParams(
         offset: (event.getWithPagination) ? resultOfSearch.offset ?? "0" : "0",
@@ -2879,9 +2899,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             ),
           ),
         );
-        print(
-          "%3333333333333333333333333333333331112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}",
-        );
+        if (kDebugMode)
+          if (kDebugMode) print(
+            "%3333333333333333333333333333333331112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}",
+          );
       },
     );
   }

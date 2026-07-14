@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -53,7 +54,7 @@ class CategoriesFilterList extends StatelessWidget {
     BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
     String key = boutiqueSlug + (category ?? '');
-    print(
+    if (kDebugMode) print(
       "##############################################################${key}",
     );
     if (fromSearch) {
@@ -77,7 +78,7 @@ class CategoriesFilterList extends StatelessWidget {
             (appliedFilters?.categories?.length ?? 0) == 0) {
           expandingFiltersStack.value = -1;
         }
-        print(filters.categories?.length ?? 0);
+        if (kDebugMode) print("eeee<${filters.categories?.length ?? 0}");
 
         return ListView.builder(
           scrollDirection: Axis.horizontal,
@@ -159,9 +160,9 @@ class CategoriesFilterList extends StatelessWidget {
               return ValueListenableBuilder<int>(
                 valueListenable: expandingFiltersStack,
                 builder: (context, currentExpandedIndex, child) {
-                  print("${(currentExpandedIndex == index)}");
-                  print("///////////////");
-                  print("${isChildCategorySlug}");
+                  if (kDebugMode) print("${(currentExpandedIndex == index)}");
+                  if (kDebugMode) print("///////////////");
+                  if (kDebugMode) print("${isChildCategorySlug}");
                   return AnimatedContainer(
                     curve: Curves.fastEaseInToSlowEaseOut,
                     duration: const Duration(milliseconds: 300),
@@ -510,7 +511,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                           .slug,
                                                 )))),
                                     addOrRemoveSpecificFilter: (bool add) {
-                                      print("addOrRemoveSpecificFilter${add}");
+                                      if (kDebugMode) print("addOrRemoveSpecificFilter${add}");
                                       if (appliedFilters?.categories == null &&
                                           choosedFilters?.categories == null) {
                                         expandingFiltersStack.value = -1;
@@ -539,7 +540,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                             .categories![index]
                                                             .id,
                                                   ))) {
-                                        print(
+                                        if (kDebugMode) print(
                                           "111111111111111111111111111111qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
                                         );
                                         expandingFiltersStack.value = index;
@@ -651,7 +652,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                 );
                                       }
                                       if (!workWithChoosedFilter) {
-                                        print(
+                                        if (kDebugMode) print(
                                           "dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                                         );
 
@@ -701,8 +702,8 @@ class CategoriesFilterList extends StatelessWidget {
                 },
               );
             } else {
-              print(
-                "^^^^^*******************************************${(appliedFilters?.categories?.isNullOrEmpty ?? true)}}****************************************${isChildCategorySlug || !workWithChoosedFilter}",
+              if (kDebugMode) print(
+                "^^^^^*******************************************${filters.categories![index].mostViewedProductThumbnail}//****************************************${isChildCategorySlug || !workWithChoosedFilter}",
               );
               return filters.categories![index].mostViewedProductThumbnail !=
                       null

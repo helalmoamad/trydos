@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
@@ -163,7 +164,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
         }
       },
       builder: (context, state) {
-        print(
+        if (kDebugMode) print(
           "FFFFFFFFFFFFFFFFFF${widget.createAt}FFDD${widget.createAt!.isUtc}",
         );
         return Padding(

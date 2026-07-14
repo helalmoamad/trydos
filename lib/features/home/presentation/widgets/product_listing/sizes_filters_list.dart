@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 
 import 'package:dotted_border/dotted_border.dart';
@@ -276,7 +277,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                               ],
                                       );
                             } else {
-                              print('reset size');
+                              if (kDebugMode) print('reset size');
                               // FirebaseAnalyticsService.logEventForSession(
                               //   eventName: AnalyticsEventsConst.buttonClicked,
                               //   executedEventName:

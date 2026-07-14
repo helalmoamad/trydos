@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:convert' show jsonEncode;
 import 'dart:math';
@@ -508,17 +509,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         getRelatedProductsStatus: GetRelatedProductsStatus.loading,
       ),
     );
-    print("_onGetRelatedProductsEvent in bloc ");
+    if (kDebugMode) print("_onGetRelatedProductsEvent in bloc ");
     final response = await getRelatedProductsUseCase(
       GetRelatedProductsParams(
         productSlug: event.productSlug ?? 0,
         color: event.color ?? "",
       ),
     );
-    print("response in bloc");
+    if (kDebugMode) print("response in bloc");
     response.fold(
       (failure) {
-        print("response in failure ${failure.message}");
+        if (kDebugMode) print("response in failure ${failure.message}");
         emit(
           state.copyWith(
             getRelatedProductsStatus: GetRelatedProductsStatus.failure,
@@ -526,7 +527,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       },
       (relatedProducts) {
-        print("relatedProducts in ${relatedProducts.data.products}");
+        if (kDebugMode) print("relatedProducts in ${relatedProducts.data.products}");
         emit(
           state.copyWith(
             getRelatedProductsStatus: GetRelatedProductsStatus.success,
@@ -1363,7 +1364,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     AddCurrentSelectedColorEvent event,
     Emitter<HomeState> emit,
   ) {
-    print(
+    if (kDebugMode) print(
       "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${event.currentSelectedColor}  ${event.productSlug}",
     );
     emit(
@@ -1383,7 +1384,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       currentSelectedColorForEveryProduct[event.productSlug] =
           event.currentSelectedColor;
     }
-    print(
+    if (kDebugMode) print(
       "888888888888888888888///////////////////////////////////****${currentSelectedColorForEveryProduct}",
     );
 
@@ -1624,7 +1625,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             filters_model.GetProductFiltersModel(filters: filters);
       }
     }
-    print('9999999999999 ${state.hashCode}');
+    if (kDebugMode) print('9999999999999 ${state.hashCode}');
     emit(state.copyWith(
       cashedOrginalBoutique: event.cashedOrginalBoutique,
       isGettingProductListingWithPagination: true,
@@ -1635,7 +1636,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       choosedFiltersByUser: Map.of(choosedFilters),
       appliedFiltersByUser: Map.of(appliedFilters),
     ));
-    print('66666666666666666666 ${state.hashCode}');
+    if (kDebugMode) print('66666666666666666666 ${state.hashCode}');
 
     if (state.appliedFiltersByUser[key] == null) {}
 
@@ -1750,9 +1751,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       /* getProductListingWithFiltersPaginationModels.removeWhere((key,
                   value) =>
               !(key.contains(idForRequest) || key.contains('withoutFilter')));*/
-      print(
+      if (kDebugMode) print(
           'kkkkkkkkkkk ${getProductListingWithFiltersPaginationModels['women-section-67withoutFilter']?.paginationStatus}');
-      print('sssssssssss ${state.hashCode}');
+      if (kDebugMode) print('sssssssssss ${state.hashCode}');
       emit(state.copyWith(
         getProductListingWithFiltersPaginationModels:
             getProductListingWithFiltersPaginationModels,
@@ -1927,7 +1928,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 event.index!;
           }
         }
-        print(
+        if (kDebugMode) print(
           "888888888888888888888///////////////////////////////////${currentSelectedColorForEveryProduct}",
         );
         emit(
@@ -2179,6 +2180,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   Map<String, dynamic>? toJson(HomeState state) {
     return state
         .copyWith(
+          // Heavy, re-fetchable caches are excluded from persistence: they
+          // bloat every hydrated write (toJson runs on the main thread on each
+          // emit) and are cheaply rebuilt from the network after a restart.
+          cachedProductWithoutRelatedProductsModel: {},
+          getProductListingPaginationWithoutFiltersModel: {},
+          getFqaCommentsPaginationModel: {},
+          getBuyersCommentsPaginationModel: {},
+          relatedProducts: [],
           currentSelectedColorForEveryProduct: {},
           reRequestTheseProductListingInBoutiques: {},
           reRequestProductWithFilters: {},
@@ -3754,7 +3763,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
         ;
       }
-      print(
+      if (kDebugMode) print(
           "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO${addImagesToProductIdForCart[oldCartt.productId.toString()]?.values.toList()}");
       add(AddQuantityForCartEvent(
           currentSize: oldCartt.variations![0].size ?? "",
@@ -3891,7 +3900,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               "${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}",
         );
 
-        print(
+        if (kDebugMode) print(
           "SSSSSSSSSSSSSSSSAAAAAAAAAAAAAAAAAA${index} ${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}",
         );
         if ((r.data == null || r.data == "") || (r.data?.status ?? 0) != 1) {
@@ -5242,6 +5251,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
       },
       (firebaseTokenId) {
+        if (kDebugMode) print("StoreFcmTokenOfMarketEvent success${firebaseTokenId}");
         ErrorManager.resetRetry('StoreFcmTokenOfMarketEvent');
         prefsRepository.setFcmMarketTokenId(firebaseTokenId);
       },
@@ -6538,7 +6548,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       },
       (r) {
         ErrorManager.resetRetry('TranslateCommentEvent');
-        print(
+        if (kDebugMode) print(
           "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${event.fromSellerComments}           ${r.translatedText}",
         );
         Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =

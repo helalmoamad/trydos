@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -93,7 +94,7 @@ class _ProductItemState extends State<ProductItem> {
 
   /*  @override
   void dispose() {
-    print(
+    if (kDebugMode) print(
         "WSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSsssssssssww${widget.productItem.slug}");
 //    productIdToSaveRedeemTimer.remove(widget.productItem.productId.toString());
     super.dispose();
@@ -402,7 +403,7 @@ class _ProductItemState extends State<ProductItem> {
                       endDate = endDate.add(const Duration(days: 1));
                     } catch (e) {
                       endDate = DateTime.now();
-                      print('Error parsing date: $e');
+                      if (kDebugMode) print('Error parsing date: $e');
                     }
                     _duration = endDate.difference(now);
                     if (_duration.isNegative || _duration.inSeconds < 1) {

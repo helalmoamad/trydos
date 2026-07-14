@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -196,7 +197,7 @@ class _ImageInProfileState extends ThemeState<ImageInProfile> {
   @override
   Widget build(BuildContext context) {
     List<String> images = [];
-    print(widget.files);
+    if (kDebugMode) print(widget.files);
     widget.files!.forEach((element) {
       String mimeStr = element.split(" ")[0];
 

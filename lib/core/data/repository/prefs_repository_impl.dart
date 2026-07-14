@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -55,8 +57,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setUserChoosedCountryIso(String? countryIso) =>
       _preferences.setString(PrefsKey.currentCountry, countryIso!);
 
-
-
   @override
   Future<bool> setAllowedToUploadStories(bool allowedToUploadStories) {
     return _preferences.setBool(
@@ -67,8 +67,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   bool getAllowedToUploadStories() {
-    return 
-      _preferences.getBool(PrefsKey.allowedToUploadStories) ?? false;
+    return _preferences.getBool(PrefsKey.allowedToUploadStories) ?? false;
   }
 
   @override
@@ -94,7 +93,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setWalletToken(String token) async {
-    print("Saving wallet token: $token");
+    if (kDebugMode) print("Saving wallet token: $token");
     await _secureStorage.write(key: PrefsKey.walletToken, value: token);
     _cachedWalletToken = token;
     return true;
@@ -139,6 +138,80 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   bool get registeredToChat => chatToken != null;
 
+  /// Max number of diagnostic request entries kept in storage.
+  static const int _maxStoredRequests = 20;
+
+  /// Per-field size cap (in encoded chars). Larger response/body payloads are
+  /// replaced by a small placeholder so the on-disk blob stays tiny — the whole
+  /// history is decoded + re-encoded on every request, so its size directly
+  /// drives main-thread cost.
+  static const int _maxFieldChars = 8000;
+
+  /// Returns [value] as-is when its JSON is small, otherwise a lightweight
+  /// placeholder. Keeps the diagnostics readable while preventing huge
+  /// responses (product listings/details) from bloating the store.
+  dynamic _capFieldForStorage(dynamic value) {
+    if (value == null) return null;
+    try {
+      final encoded = convert.jsonEncode(value);
+      if (encoded.length > _maxFieldChars) {
+        return {'_truncated': true, 'size': encoded.length};
+      }
+      return value;
+    } catch (_) {
+      // Not JSON-encodable (e.g. FormData) — store a marker instead of failing.
+      return {'_truncated': true};
+    }
+  }
+
+  /// In-memory copy of the diagnostic request log. Mutated on every request
+  /// (O(1)); the expensive encode + disk write is debounced (see below), so the
+  /// per-request main-thread cost drops to a list append.
+  List<Map<String, dynamic>>? _requestsCache;
+
+  /// Pending debounced flush of [_requestsCache] to storage.
+  Timer? _requestsFlushTimer;
+
+  /// How long to batch request-log writes before persisting.
+  static const Duration _requestsFlushDelay = Duration(seconds: 3);
+
+  /// Loads the request log from storage into memory once, then reuses it.
+  List<Map<String, dynamic>> _ensureRequestsLoaded() {
+    if (_requestsCache != null) return _requestsCache!;
+    final requestsJson = _preferences.getString('requests_json');
+    if (requestsJson == null) {
+      return _requestsCache = [];
+    }
+    try {
+      final data = convert.jsonDecode(requestsJson);
+      _requestsCache = List<Map<String, dynamic>>.from(
+        (data['requests_data'] as List).map((x) => x),
+      );
+    } catch (_) {
+      _requestsCache = [];
+    }
+    return _requestsCache!;
+  }
+
+  /// (Re)schedule persisting the request log after [_requestsFlushDelay].
+  void _scheduleRequestsFlush() {
+    _requestsFlushTimer?.cancel();
+    _requestsFlushTimer = Timer(_requestsFlushDelay, _flushRequests);
+  }
+
+  /// Encode + write the in-memory request log to storage (the heavy step,
+  /// now run at most once per [_requestsFlushDelay] instead of every request).
+  void _flushRequests() {
+    _requestsFlushTimer?.cancel();
+    _requestsFlushTimer = null;
+    try {
+      _preferences.setString(
+        'requests_json',
+        convert.jsonEncode({'requests_data': _requestsCache ?? []}),
+      );
+    } catch (_) {}
+  }
+
   @override
   void saveRequestsData(
     String? url,
@@ -152,68 +225,55 @@ class PrefsRepositoryImpl extends PrefsRepository {
     String? responseTime,
   }) {
     Map<String, dynamic> requestAndResponse;
-    if (error == null || error == 'null' || error == '') {
+    final bool isError = !(error == null || error == 'null' || error == '');
+    if (!isError) {
       requestAndResponse = {
         'url': url,
         'request': request,
-        'response': response,
+        'response': _capFieldForStorage(response),
         'headers': headers,
         'query': query,
-        'body': body,
+        'body': _capFieldForStorage(body),
         'statusCode': statusCode,
         'response_time': responseTime,
       };
     } else {
       requestAndResponse = {'flutter_error': error};
     }
-    List<Map<String, dynamic>> previousRequests = getRequestsData();
-    if (previousRequests.length == 80) {
-      previousRequests.removeAt(0);
+    final requests = _ensureRequestsLoaded();
+    // Keep the newest [_maxStoredRequests] entries (>= guards against an
+    // already-oversized list from older builds).
+    while (requests.length >= _maxStoredRequests) {
+      requests.removeAt(0);
     }
-    try {
-      previousRequests.add(requestAndResponse);
-      _preferences.setString(
-        'requests_json',
-        convert.jsonEncode({'requests_data': previousRequests}),
-      );
-    } catch (e) {}
+    requests.add(requestAndResponse);
+    // Errors are persisted immediately (they must survive a crash/kill);
+    // normal request logs are batched to keep the hot path cheap.
+    if (isError) {
+      _flushRequests();
+    } else {
+      _scheduleRequestsFlush();
+    }
   }
 
   @override
   clearAllRequests() {
-    _preferences.setString(
-      'requests_json',
-      convert.jsonEncode({'requests_data': []}),
-    );
+    _requestsCache = [];
+    _flushRequests();
   }
 
   @override
   removeRequestFromCache(Map<String, dynamic> request) {
-    String? requestsJson = _preferences.getString('requests_json');
-    if (requestsJson == null) {
-      return;
-    }
-    Map<String, dynamic> data = convert.jsonDecode(requestsJson);
-    var list = List<Map<String, dynamic>>.from(
-      data['requests_data']!.map((x) => x),
-    );
-    list.remove(request);
-    _preferences.setString(
-      'requests_json',
-      convert.jsonEncode({'requests_data': list}),
-    );
+    final requests = _ensureRequestsLoaded();
+    requests.remove(request);
+    _scheduleRequestsFlush();
   }
 
   @override
   List<Map<String, dynamic>> getRequestsData() {
-    String? requestsJson = _preferences.getString('requests_json');
-    if (requestsJson == null) {
-      return [];
-    }
-    Map<String, dynamic> data = convert.jsonDecode(requestsJson);
-    return List<Map<String, dynamic>>.from(
-      data['requests_data']!.map((x) => x),
-    );
+    // Return a fresh copy so callers can mutate their view without corrupting
+    // the in-memory cache (e.g. HomeBloc's error reporting removes entries).
+    return List<Map<String, dynamic>>.from(_ensureRequestsLoaded());
   }
 
   @override
@@ -789,7 +849,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   String? getPrefechOfBoutiquesForEachMainCategoryInHomePage(String key) {
-    _preferences.reload();
     return _preferences.getString(key);
   }
 
@@ -864,7 +923,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   String? getPrefechOfProductsForEachBoutiqueInHomePage(String key) {
-    _preferences.reload();
     return _preferences.getString(key);
   }
 
@@ -931,7 +989,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   String? getPrefechForFiveFilterForEachBoutiqueInHomePage(String key) {
-    _preferences.reload();
     return _preferences.getString(key);
   }
 
@@ -966,7 +1023,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   List<String>? getFiveFilterForEachBoutiqueHasPrefechInHomePage() {
-    _preferences.reload();
     List<String> list =
         _preferences.getStringList(PrefsKey.fiveFilterPrefech) ?? [];
     return list;
@@ -974,7 +1030,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   String? getPrefechOfMainCategoryInHomePage() {
-    _preferences.reload();
     return _preferences.getString(PrefsKey.mainCatogryPrefech);
   }
 
@@ -1009,7 +1064,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
     photo = (photo.contains("cloudinary") || photo.contains("media_server")
         ? photo
         : ("${dotenv.env['Media_S3_Server']}" + photo));
-    print(photo);
+    if (kDebugMode) print(photo);
     return photo;
   }
 
@@ -1041,7 +1096,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   String getOrderCoupon() {
-    _preferences.reload();
     return _preferences.getString(PrefsKey.coupon) ?? '';
   }
 
@@ -1110,7 +1164,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
         )).toString(),
       });
     }
-    print(map);
+    if (kDebugMode) print(map);
 
     return _preferences.setString(
       PrefsKey.redeemDateForProducts,

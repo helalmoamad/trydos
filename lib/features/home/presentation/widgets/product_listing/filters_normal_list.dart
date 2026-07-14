@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -60,7 +61,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
   @override
   void initState() {
     scrollController.addListener(() {
-      print("FFFFFFFFFFFFF");
+      if (kDebugMode) print("FFFFFFFFFFFFF");
       try {
         if (debounce?.isActive ?? false) {
           debounce!.cancel();
@@ -287,7 +288,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                             ),
                           );
                         } else {
-                          print(
+                          if (kDebugMode) print(
                             'dwwdwdwqe32e23e ${boutiqueBloc.state.prefAppliedFilterForExtendFilter?.brands}',
                           );
                           boutiqueBloc.add(

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
@@ -53,7 +54,7 @@ class GetClient<T> extends BaseApi<T> {
       );
 
       stopWatch.stop();
-      print(
+      if (kDebugMode) print(
         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${requestPrams.queryParameters}",
       );
       // Prepare data for saving - handle String, null, or empty responses

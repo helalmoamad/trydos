@@ -119,6 +119,8 @@ abstract class AppModule {
     // dio.httpClientAdapter = Http2Adapter(
     //   ConnectionManager(idleTimeout: Duration(seconds: 15),proxyConnectedPredicate: (_,__)=> true),
     // );
+    // NOTE: dio 5.x's default FusedTransformer already decodes JSON bodies
+    // >= 50KB on a background isolate, so no custom jsonDecodeCallback is needed.
     dio.interceptors.add(LoggerInterceptor());
     return dio;
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -229,7 +230,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                 endDate = endDate.add(const Duration(days: 1));
                               } catch (e) {
                                 endDate = DateTime.now();
-                                print('Error parsing date: $e');
+                                if (kDebugMode) print('Error parsing date: $e');
                               }
                               _duration = endDate.difference(now);
                               if (!(_duration.isNegative ||
@@ -427,7 +428,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                         endDate = endDate.add(const Duration(days: 1));
                       } catch (e) {
                         endDate = DateTime.now();
-                        print('Error parsing date: $e');
+                        if (kDebugMode) print('Error parsing date: $e');
                       }
                       _duration = endDate.difference(now);
                       if (!(_duration.isNegative || _duration.inSeconds < 1)) {
@@ -891,7 +892,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                       );
                                                     } catch (e) {
                                                       endDate = DateTime.now();
-                                                      print(
+                                                      if (kDebugMode) print(
                                                         'Error parsing date: $e',
                                                       );
                                                     }

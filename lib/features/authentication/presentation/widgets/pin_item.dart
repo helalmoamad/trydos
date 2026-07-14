@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:math';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -183,7 +184,7 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                               widget.pasteOtpCode!.call(text!);
                             }
                             if ((text?.length ?? 0) > 1) {
-                              print('sssssssssssssssss');
+                              if (kDebugMode) print('sssssssssssssssss');
                               widget.controller.text = text![0];
                               text = text[0];
                             }
@@ -195,7 +196,7 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                                 currentToType = min(5, widget.index + 1);
                                 withBorder = widget.index == 5;
                                 if (widget.index == 5) {
-                                  print('dddddd');
+                                  if (kDebugMode) print('dddddd');
                                   checkingOtp = true;
                                   widget.checkOtp!.call();
                                 }

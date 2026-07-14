@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -196,7 +197,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                               );
                               return;
                             }
-                            print(
+                            if (kDebugMode) print(
                               "#######################################!!!!!!!!!!!!!!!!!!!!!!!!!!!${index}",
                             );
                           });

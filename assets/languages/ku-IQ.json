@@ -814,6 +814,23 @@
   "harassment": "ئازاردان یان قسەی ڕق",
   "spam": "سپام یان فێڵ",
   "intellectual_property": "پێشێلکردنی مافی خاوەندارێتی فیکری",
-  "violence": "توندوتیژی یان ناوەڕۆکی مەترسیدار"
-  
+  "violence": "توندوتیژی یان ناوەڕۆکی مەترسیدار",
+  "sort_products": "ڕیزکردنی بەرهەمەکان",
+  "sort_choose_ordering": "شێوازی ڕیزبەندی بەرهەمەکان هەڵبژێرە",
+  "sort_default": "بنەڕەتی",
+  "sort_best_match": "باشترین گونجان بۆ گەڕانەکەت",
+  "sort_best_sellers": "باشترین فرۆشراوەکان",
+  "sort_most_bought": "زۆرترین کڕراو لە ئێستادا",
+  "sort_new_arrivals": "نوێ گەیشتووەکان",
+  "sort_by_date_added": "بەپێی بەرواری زیادکردن",
+  "sort_newest": "نوێترین",
+  "sort_oldest": "کۆنترین",
+  "sort_price": "نرخ",
+  "sort_by_product_price": "بەپێی نرخی بەرهەم",
+  "sort_low_to_high": "لە کەمەوە بۆ زۆر",
+  "sort_high_to_low": "لە زۆرەوە بۆ کەم",
+  "sort_name": "ناو",
+  "sort_alphabetical": "ئەلفوبێیی",
+  "sort_a_to_z": "لە A بۆ Z",
+  "sort_z_to_a": "لە Z بۆ A"
 }

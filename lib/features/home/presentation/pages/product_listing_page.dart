@@ -1,5 +1,6 @@
 ﻿import 'dart:async';
 
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -74,6 +75,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
     as productListingModel;
 import '../widgets/product_listing/product_listing_filter_list.dart';
 import '../widgets/product_listing/product_listing_loading.dart';
+import '../widgets/product_listing/sort_products_sheet.dart';
 
 class ProductListingPage extends StatefulWidget {
   final String boutiqueSlug;
@@ -320,8 +322,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
     LastPagesTracker.push(
       "Product Listing Page , boutique Name:${widget.boutiqueName ?? widget.boutiqueSlug}",
     );
-    print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
-    print("%%%%%%%%%${GetIt.I<PrefsRepository>().storiesToken}*");
+    if (kDebugMode) print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
+    if (kDebugMode) print("%%%%%%%%%${GetIt.I<PrefsRepository>().storiesToken}*");
     // 🔥 FIX: إزالة Timer.periodic الخطير - استخدام WidgetsBinding آمن بدلاً
     /* WidgetsBinding.instance.addPostFrameCallback((_) {
       _setHtmlDescriptionHeight();
@@ -443,6 +445,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
       categoryBloc.add(
         ReplyFromGeminiEvent(fromSearch: false, resetTheReply: true),
       );
+
+      // 🔄 تصفير حالة الترتيب عند الخروج من صفحة القائمة
+      boutiqueBloc.add(ResetSortEvent());
 
       debugPrint('✅ Product listing disposed with performance optimization');
     } catch (e) {
@@ -1598,11 +1603,79 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         ? 10.w
                                                                         : 20.w,
                                                                   ),
-                                                              child: SvgPicture.asset(
-                                                                AppAssets
-                                                                    .sortingSvg,
-                                                                width: 20.w,
-                                                                height: 20.h,
+                                                              child: InkWell(
+                                                                onTap: () {
+                                                                  showSortProductsSheet(
+                                                                    context:
+                                                                        context,
+                                                                    searchText:
+                                                                        controller.text.length >
+                                                                            2
+                                                                        ? controller
+                                                                              .text
+                                                                        : null,
+                                                                    boutiqueBloc:
+                                                                        boutiqueBloc,
+                                                                    boutiqueSlug:
+                                                                        widget
+                                                                            .boutiqueSlug,
+                                                                    category: widget
+                                                                        .category,
+                                                                    fromSearch:
+                                                                        widget
+                                                                            .fromSearch,
+                                                                  );
+                                                                },
+                                                                child:
+                                                                    BlocBuilder<
+                                                                      BoutiqueBloc,
+                                                                      BoutiqueState
+                                                                    >(
+                                                                      buildWhen:
+                                                                          (
+                                                                            p,
+                                                                            c,
+                                                                          ) =>
+                                                                              p.sortKey.isEmpty !=
+                                                                              c.sortKey.isEmpty,
+                                                                      builder:
+                                                                          (
+                                                                            context,
+                                                                            sortState,
+                                                                          ) {
+                                                                            final bool
+                                                                            sortActive =
+                                                                                sortState.sortKey.isNotEmpty;
+                                                                            return Stack(
+                                                                              clipBehavior: Clip.none,
+                                                                              children: [
+                                                                                SvgPicture.asset(
+                                                                                  AppAssets.sortingSvg,
+                                                                                  width: 20.w,
+                                                                                  height: 20.h,
+                                                                                ),
+                                                                                if (sortActive)
+                                                                                  PositionedDirectional(
+                                                                                    top: -2.h,
+                                                                                    start: -2.w,
+                                                                                    child: Container(
+                                                                                      width: 8.w,
+                                                                                      height: 8.w,
+                                                                                      decoration: BoxDecoration(
+                                                                                        color: const Color(
+                                                                                          0xffFF5F61,
+                                                                                        ),
+                                                                                        shape: BoxShape.circle,
+                                                                                        border: Border.all(
+                                                                                          color: colorScheme.white,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                              ],
+                                                                            );
+                                                                          },
+                                                                    ),
                                                               ),
                                                             ),
                                                       BlocBuilder<
@@ -2354,6 +2427,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             ? 35.h
                                             : state.cashedOrginalBoutique
                                             ? 115.h
+                                            : state
+                                                      .appliedFiltersByUser[key]
+                                                      ?.filters ==
+                                                  null
+                                            ? 115.h
                                             : 145.h,
                                         flexibleSpace: StackedFiltersList(
                                           expandingFiltersStack:
@@ -2475,7 +2553,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         isExpanded =
                                             state.isExpandedForListingPage ??
                                             false;
-
+                                        if (kDebugMode) print(
+                                          "///DDDDDDDDDDDDDDDDDDDDDDDDD************//${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                              '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success)) || (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading && !state.cashedOrginalBoutique)}DDD////**/*//${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                  '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter'
+                                                  '${(widget.category ?? '')}']?.paginationStatus}",
+                                        );
                                         // String? currentAppliedFilterSllug =
                                         //     "null";
                                         /* if (!isExpanded &&
@@ -2861,8 +2944,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     PaginationStatus.loading) &&
                                                 !state
                                                     .isGettingProductListingWithPagination) {
-                                          print(
-                                            "DDDDDDDDDDDDDDDDDDDDDDDDD${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                          if (kDebugMode) print(
+                                            "DDDDDDDDDDDDDDDDDDDDDDDDD************//${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                                 '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success)) || (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading && !state.cashedOrginalBoutique)}DDD${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                     '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                     '${(widget.category ?? '')}']?.paginationStatus}",
@@ -3609,7 +3692,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     );
                                                   } catch (e) {
                                                     endDate = DateTime.now();
-                                                    print(
+                                                    if (kDebugMode) print(
                                                       'Error parsing date: $e',
                                                     );
                                                   }
@@ -3960,12 +4043,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
       required List<String> sizesForEachColor,
       required productDetail.Product? product,
       required filter_products.Products products}) async {
-    print(
+    if (kDebugMode) print(
         "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss${currentVariation?.qty}sssssssssssssss4${currentVariation?.type}");
     changeVariationIfQtyZero = false;
 
     if (currentVariation?.qty != null && currentVariation?.qty == 0) {
-      print(
+      if (kDebugMode) print(
           "s223333333333322ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss4${currentVariation?.type}");
 
       currentVariation =
@@ -3999,13 +4082,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 currentSelectedColor: index != -1 ? index : 0,
                 productId: productId)));
       } else {
-        print(
+        if (kDebugMode) print(
             "s222ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss4${currentVariation?.type}");
 
         currentSelectedColorAfterChangeVariant = currentSelectedColor;
         currentVariation =
             product?.variation?.firstWhere((element) => (element.qty ?? 0) > 0);
-        print(
+        if (kDebugMode) print(
             "s222ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss4${currentVariation?.type}");
 
         await Future.delayed(
@@ -4018,7 +4101,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
         homeBloc.add(AddCurrentColorSizeEvent(
             choice_1: (currentVariation.type!.split("-").toList()[1])));
       } else if (((products.syncColorImages?.length ?? 0) == 0)) {
-        print(
+        if (kDebugMode) print(
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaazzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz4${currentVariation.type}");
         await Future.delayed(
             Duration(milliseconds: 600),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -17,6 +18,7 @@ import 'package:trydos/features/authentication/presentation/manager/auth_bloc.da
 
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
+import 'package:trydos/features/home/data/parsers/heavy_response_parsers.dart';
 
 import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
@@ -71,7 +73,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     GetHomeBoutiqesEvent event,
     Emitter<CategoryState> emit,
   ) async {
-    print(event.categorySlug);
+    if (kDebugMode) print(event.categorySlug);
     Map<String, PaginationModel<HomeBoutiques>>
     getHomeBoutiquesPaginationObjectByMainCategory = !event.getWithPagination
         ? {}
@@ -252,9 +254,12 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       },
       (r) {
         if (!event.getWithPagination) {
-          prefsRepository.setPrefechOfBoutiquesForEachMainCategoryInHomePage(
-            event.categorySlug,
-            jsonEncode(r),
+          encodeBoutiquesPrefetchInBackground(r).then(
+            (encoded) => prefsRepository
+                .setPrefechOfBoutiquesForEachMainCategoryInHomePage(
+                  event.categorySlug,
+                  encoded,
+                ),
           );
         }
 
@@ -371,8 +376,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         );
       }
     } catch (e, st) {
-      print(e);
-      print(st);
+      if (kDebugMode) print(e);
+      if (kDebugMode) print(st);
     }
   }
 
@@ -387,9 +392,10 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         fromSearchForSearchWithGemini: event.fromSearch,
       ),
     );
-    print(
-      "###########################################################*****${state.sendRequestToGeminiStatus}",
-    );
+    if (kDebugMode)
+      print(
+        "###########################################################*****${state.sendRequestToGeminiStatus}",
+      );
 
     await Future.delayed(const Duration(milliseconds: 300));
     if (event.resetTheReply) {
@@ -417,9 +423,10 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             sendRequestToGeminiStatus: SendRequestToGeminiStatus.failure,
           ),
         );
-        print(
-          "###########################################################${state.sendRequestToGeminiStatus}",
-        );
+        if (kDebugMode)
+          print(
+            "###########################################################${state.sendRequestToGeminiStatus}",
+          );
       },
       (r) async {
         emit(
@@ -516,8 +523,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         );
       },
       (r) async {
-        prefsRepository.setPrefechOfMainCategoryInHomePage(
-          jsonEncode(r.toJson()),
+        encodeMainCategoriesPrefetchInBackground(r).then(
+          (encoded) =>
+              prefsRepository.setPrefechOfMainCategoryInHomePage(encoded),
         );
 
         requestAPIAfterHome();

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -102,7 +103,7 @@ class HandlingMarketNotifications {
     }
 
     if (message.data["title"] == "market") {
-      print("data?['type']${data?["type"]}");
+      if (kDebugMode) print("data?['type']${data?["type"]}");
       if (data?["type"] ==
               typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                   .product_cart_expiration] ||
@@ -492,7 +493,7 @@ class HandlingMarketNotifications {
             data["banner"]!.map((x) => BunnerBoutique.fromJson(x)),
           );
 
-          print(
+          if (kDebugMode) print(
             "${data["boutique_slug"]}" +
                 "${data['description']}" +
                 "${boutiqueIcon?["file_path"]}" +

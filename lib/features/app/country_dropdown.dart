@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,8 +13,11 @@ import 'package:trydos/service/language_service.dart';
 class CountryDropdown extends StatefulWidget {
   final List<Country> countries;
   final bool fromHomepage;
-  const CountryDropdown(
-      {super.key, required this.countries, required this.fromHomepage});
+  const CountryDropdown({
+    super.key,
+    required this.countries,
+    required this.fromHomepage,
+  });
   @override
   _CountryDropdownState createState() => _CountryDropdownState();
 }
@@ -52,10 +56,13 @@ class _CountryDropdownState extends State<CountryDropdown> {
             _prefsRepository.setUserChoosedCountryIso(newValue);
             if (widget.fromHomepage) {
               _prefsRepository.setUserCountryIsAvailable(1);
-              print(
-                  "@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!${newValue}!!!!!!111111111111111");
-              BlocProvider.of<HomeBloc>(context)
-                  .add(const ClearAllAppCashEvent());
+              if (kDebugMode)
+                print(
+                  "@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!${newValue}!!!!!!111111111111111",
+                );
+              BlocProvider.of<HomeBloc>(
+                context,
+              ).add(const ClearAllAppCashEvent());
               _prefsRepository.removeBoutiqueHasPerfechedWhenOpenApp(true);
               _prefsRepository.removeMainCategoryHasPerfechedWhenOpenApp(true);
 
@@ -72,16 +79,15 @@ class _CountryDropdownState extends State<CountryDropdown> {
                 },
               );*/
               BlocProvider.of<HomeBloc>(context).add(
-                  ChangeCountryLanguageForNotificationEvent(
-                      country: newValue!.toLowerCase(),
-                      languageCode: LanguageService.languageCode));
-
-              Future.delayed(
-                const Duration(microseconds: 500),
-                () {
-                  context.go("/");
-                },
+                ChangeCountryLanguageForNotificationEvent(
+                  country: newValue!.toLowerCase(),
+                  languageCode: LanguageService.languageCode,
+                ),
               );
+
+              Future.delayed(const Duration(microseconds: 500), () {
+                context.go("/");
+              });
             } else {
               setState(() {});
             }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -24,9 +25,9 @@ class SearchWithImageRelatedGemini {
     }
 
     void _showImagePreview(File imageFile) {
-      print('SearchWithImageRelatedGemini: _showImagePreview called');
-      print('SearchWithImageRelatedGemini: imageFile path = ${imageFile.path}');
-      print(
+      if (kDebugMode) print('SearchWithImageRelatedGemini: _showImagePreview called');
+      if (kDebugMode) print('SearchWithImageRelatedGemini: imageFile path = ${imageFile.path}');
+      if (kDebugMode) print(
           'SearchWithImageRelatedGemini: imageFile exists = ${imageFile.existsSync()}');
 
       showDialog(
@@ -48,11 +49,11 @@ class SearchWithImageRelatedGemini {
         return GalleryAndCameraDialogWidget(
           fromChat: true, // إضافة هذا لتفعيل معاينة الصور
           onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
-            print(
+            if (kDebugMode) print(
                 'SearchWithImageRelatedGemini: onChooseFileFromGalleryAction called');
             if (assetEntity != null) {
               File file = (await assetEntity.originFile)!;
-              print(
+              if (kDebugMode) print(
                   'SearchWithImageRelatedGemini: gallery file path = ${file.path}');
               String mimeStr = lookupMimeType(file.absolute.path) ?? '';
               var fileType = mimeStr.split('/');
@@ -71,10 +72,10 @@ class SearchWithImageRelatedGemini {
             }
           },
           onChooseFileFromCameraAction: (File? file) async {
-            print(
+            if (kDebugMode) print(
                 'SearchWithImageRelatedGemini: onChooseFileFromCameraAction called');
             if (file != null) {
-              print(
+              if (kDebugMode) print(
                   'SearchWithImageRelatedGemini: camera file path = ${file.path}');
               String mimeStr = lookupMimeType(file.absolute.path) ?? '';
               var fileType = mimeStr.split('/');
@@ -92,8 +93,8 @@ class SearchWithImageRelatedGemini {
             }
           },
           onImagePreviewAction: (File image) {
-            print('SearchWithImageRelatedGemini: onImagePreviewAction called');
-            print(
+            if (kDebugMode) print('SearchWithImageRelatedGemini: onImagePreviewAction called');
+            if (kDebugMode) print(
                 'SearchWithImageRelatedGemini: preview image path = ${image.path}');
             // هذا سيتم استدعاؤه تلقائياً من GalleryAndCameraDialogWidget
             // عندما fromChat = true

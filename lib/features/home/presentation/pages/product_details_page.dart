@@ -1836,7 +1836,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         return Variation(variantNotifyForUser: false);
                       },
                     );
-                    print(currentVariation?.type);
+                    if (kDebugMode) print(currentVariation?.type);
 
                     if ((state
                                 .cachedProductWithoutRelatedProductsModel[
@@ -2509,7 +2509,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 (element) => element.colorOption == (currentVariation!.type)) ??
             -1;
         currentSelectedColorAfterChangeVariant = index;
-        print(
+        if (kDebugMode) print(
             "DFDFEDFEWFEFEFEWFEWF++++.........******//////${currentSelectedColorAfterChangeVariant}");
 
       /*  await Future.delayed(

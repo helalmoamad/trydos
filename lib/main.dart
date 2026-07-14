@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show kReleaseMode;
+import 'package:flutter/foundation.dart' show kReleaseMode, kDebugMode;
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -146,7 +146,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         remoteMessage['type'] == 'VoiceCallEvent') {
       String currentUuid = const Uuid().v4();
       Map<String, dynamic> data = remoteMessage["message"];
-      print("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDDD${data}");
+      if (kDebugMode) print("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDDD${data}");
       if (DateTime.now()
               .difference(
                 HelperFunctions.getZonedDate(
@@ -157,7 +157,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           1) {
         return;
       }
-      print("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD//////////D${data}");
+      if (kDebugMode) print("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD//////////D${data}");
       GetIt.I<PrefsRepository>().saveRequestsData(
         null,
         null,
@@ -174,21 +174,21 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       );
 
       FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
-        print("CALLKIT EVENT: ${event?.event.toString()}");
-        print("CALLKIT BODY: ${event?.body.toString()}");
+        if (kDebugMode) print("CALLKIT EVENT: ${event?.event.toString()}");
+        if (kDebugMode) print("CALLKIT BODY: ${event?.body.toString()}");
 
         switch (event!.event) {
           case Event.actionCallAccept:
             {
               // ✅ معالج قبول المكالمة - فتح التطبيق والانتقال لشاشة المكالمة
-              print(
+              if (kDebugMode) print(
                 "FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD///*/*** actionCallAccept triggered",
               );
               try {
-                print("Event body: ${event.body}");
-                print("Event body type: ${event.body.runtimeType}");
-                print("Extra data: ${event.body['extra']}");
-                print("Extra type: ${event.body['extra'].runtimeType}");
+                if (kDebugMode) print("Event body: ${event.body}");
+                if (kDebugMode) print("Event body type: ${event.body.runtimeType}");
+                if (kDebugMode) print("Extra data: ${event.body['extra']}");
+                if (kDebugMode) print("Extra type: ${event.body['extra'].runtimeType}");
 
                 // ✅ الحصول على بيانات المكالمة من extra - تحويل صحيح للنوع
                 final extraData = event.body['extra'];
@@ -196,13 +196,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
                 if (extraData != null) {
                   // تحويل من Map<Object?, Object?> إلى Map<String, dynamic>
                   final callData = Map<String, dynamic>.from(extraData as Map);
-                  print("Call data from extra: $callData");
+                  if (kDebugMode) print("Call data from extra: $callData");
 
                   final channelId = callData['channel_id']?.toString() ?? '';
                   final messageId = callData['message_id']?.toString() ?? '';
                   final type = callData['type']?.toString() ?? 'voice';
 
-                  print(
+                  if (kDebugMode) print(
                     "Extracted: channel=$channelId, message=$messageId, type=$type",
                   );
 
@@ -211,17 +211,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
                     UpdateCurrentActiveCallIdEvent(id: messageId),
                   );
 
-                  print(
+                  if (kDebugMode) print(
                     "✅ Call accepted successfully - waiting for app to open",
                   );
                 } else {
-                  print(
+                  if (kDebugMode) print(
                     "❌ extraData is null - cannot extract call information",
                   );
                 }
               } catch (e, stackTrace) {
-                print("❌ Error in actionCallAccept: $e");
-                print("Stack trace: $stackTrace");
+                if (kDebugMode) print("❌ Error in actionCallAccept: $e");
+                if (kDebugMode) print("Stack trace: $stackTrace");
               }
             }
             break;
@@ -492,7 +492,7 @@ void main() async {
   NotificationProcess().fcmToken(null, null, null, null);
   gemini.Gemini.init(apiKey: dotenv.env['Gemini']!);
   gemini.Gemini.enableDebugging = true;
-  print('market token : ${(GetIt.I<PrefsRepository>().marketToken)}');
+  if (kDebugMode) print('market token : ${(GetIt.I<PrefsRepository>().marketToken)}');
   debugPrint(
     'login _prefsRepository.chatToken${GetIt.I<PrefsRepository>().chatToken}',
   );

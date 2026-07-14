@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +87,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
       vsync: this,
     );
     cartImages = widget.cartItems;
-    print(
+    if (kDebugMode) print(
       "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG----------------${cartImages}",
     );
     // homeBloc = BlocProvider.of<HomeBloc>(context);

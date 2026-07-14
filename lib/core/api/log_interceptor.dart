@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
@@ -54,7 +54,6 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
-      log(response.data.toString());
       _StatusType statusType;
       if (response.statusCode == StatusCode.operationSucceeded.code ||
           response.statusCode == StatusCode.createdSucceeded.code ||
@@ -110,7 +109,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       //       timeShowing: Toast.LENGTH_LONG);
       // }
       if (err.response?.statusCode == 400 || err.response?.statusCode == 422) {
-        print(
+        if (kDebugMode) print(
           "error message: ${jsonDecode(err.response.toString())["message"].toString()}",
         );
         showMessage(
@@ -206,7 +205,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
               err.requestOptions.path.contains(dotenv.env['MARKET_URL']!) ||
               err.requestOptions.path.contains(dotenv.env['WALLET_URL']!)) &&
           !(_prefsRepository.isTokenExpired ?? false)) {
-        print("Token is expired, refreshing token...");
+        if (kDebugMode) print("Token is expired, refreshing token...");
         _prefsRepository.setVerifiedPhonePeforeExpiredToken(
           _prefsRepository.isVerifiedPhone ?? false,
         );

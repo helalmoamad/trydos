@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart' as localization;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -1985,7 +1986,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   );
                                 } catch (e) {
                                   endDate = DateTime.now();
-                                  print('Error parsing date: $e');
+                                  if (kDebugMode) print('Error parsing date: $e');
                                 }
 
                                 return Container(
@@ -2396,14 +2397,14 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               endDate = endDate.add(const Duration(days: 1));
                             } catch (e) {
                               endDate = DateTime.now();
-                              print('Error parsing date: $e');
+                              if (kDebugMode) print('Error parsing date: $e');
                             }
                             _duration = endDate.difference(now);
                             if (_duration.isNegative ||
                                 _duration.inSeconds < 1) {
                               isFlashDealEnded = true;
                             }
-                            print(
+                            if (kDebugMode) print(
                               "############${state.authProductDetailsModel?.data?.variation}",
                             );
                             return ProductDetailsBottomSheetNew(
@@ -3566,7 +3567,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                         endDate = endDate.add(const Duration(days: 1));
                       } catch (e) {
                         endDate = DateTime.now();
-                        print('Error parsing date: $e');
+                        if (kDebugMode) print('Error parsing date: $e');
                       }
                       _duration = endDate.difference(now);
                       if (_duration.isNegative || _duration.inSeconds < 1) {
@@ -4005,7 +4006,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             phoneNumber: phoneNumber,
                             onChooseWhatsapp: () {
                               isVisWhatsApp = 1;
-                              print("###################33333# isVisWhatsApp}");
+                              if (kDebugMode) print("###################33333# isVisWhatsApp}");
                               pageController.animateToPage(
                                 2,
                                 duration: const Duration(milliseconds: 500),

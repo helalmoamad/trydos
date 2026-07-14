@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'dart:async';
@@ -37,8 +38,8 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
   @override
   void initState() {
     super.initState();
-    print('SearchImagePreviewWidget: initState called');
-    print(
+    if (kDebugMode) print('SearchImagePreviewWidget: initState called');
+    if (kDebugMode) print(
       'SearchImagePreviewWidget: imageFile path = ${widget.imageFile.path}',
     );
     _image = FileImage(widget.imageFile);
@@ -47,9 +48,9 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
   }
 
   Future<void> _checkFileExists() async {
-    print('SearchImagePreviewWidget: checking if file exists');
+    if (kDebugMode) print('SearchImagePreviewWidget: checking if file exists');
     final exists = await widget.imageFile.exists();
-    print('SearchImagePreviewWidget: file exists = $exists');
+    if (kDebugMode) print('SearchImagePreviewWidget: file exists = $exists');
     if (mounted) {
       setState(() {
         _fileExists = exists;
@@ -74,7 +75,7 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
         });
       }
     } catch (e) {
-      print('SearchImagePreviewWidget: error preloading image: $e');
+      if (kDebugMode) print('SearchImagePreviewWidget: error preloading image: $e');
     }
   }
 

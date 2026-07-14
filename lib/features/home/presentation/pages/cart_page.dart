@@ -70,7 +70,7 @@ class _CartPageState extends State<CartPage> {
     homeBloc.add(GetCartItemEvent());
     fromForGroundNotification =
         appBloc.state.isFromForGroundNotification ?? false;
-    print("${widget.fromeNotification}" + "${fromForGroundNotification}");
+    if (kDebugMode) print("${widget.fromeNotification}" + "${fromForGroundNotification}");
 
     super.initState();
   }
@@ -142,7 +142,7 @@ class _CartPageState extends State<CartPage> {
                         current.oldcartCollection!.values.length;
               },
               builder: (context, state) {
-                print(state.cartCollection?.keys.toList());
+                if (kDebugMode) print(state.cartCollection?.keys.toList());
                 if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
                     (state.getCartShippingItemsModel == null)) {
                   return Padding(
@@ -160,7 +160,7 @@ class _CartPageState extends State<CartPage> {
                     (state.getOldCartModel == null &&
                         state.getOldCartItemsStatus !=
                             GetOLdCartItemsStatus.success)) {
-                  print("${(state.getOldCartModel == null && state.getOldCartItemsStatus != GetOLdCartItemsStatus.success)}" +
+                  if (kDebugMode) print("${(state.getOldCartModel == null && state.getOldCartItemsStatus != GetOLdCartItemsStatus.success)}" +
                       "   ////////////////${state.getCartShippingItemsModel == null && state.getCartItemsStatus != GetCartItemsStatus.success}");
                   return Center(
                     child: TrydosLoader(),

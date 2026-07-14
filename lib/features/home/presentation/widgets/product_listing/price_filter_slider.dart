@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart';
@@ -222,7 +223,7 @@ class _PriceFilterState extends State<PriceFilter> {
                       disableAnimation: true,
                     ),
                     onDragging: (handlerIndex, lowerValue, upperValue) {
-                      print('ssssssss');
+                      if (kDebugMode) print('ssssssss');
                       widget.lowerAndUpperBound.value = Tuple2(
                         lowerValue,
                         upperValue,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:math';
 import 'package:country_flags/country_flags.dart';
@@ -161,7 +162,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
       loadingToGoCurrentLoacation.value = false;
     } catch (e) {
       loadingToGoCurrentLoacation.value = false;
-      print('خطأ في الحصول على الموقع: $e');
+      if (kDebugMode) print('خطأ في الحصول على الموقع: $e');
     }
   }
 
@@ -1719,7 +1720,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                   );
                                                                                 } else {
                                                                                   // إذا تم رفض الإذن، يمكنك إظهار رسالة للمستخدم
-                                                                                  print(
+                                                                                  if (kDebugMode) print(
                                                                                     'إذن الموقع مرفوض.',
                                                                                   );
                                                                                 }
