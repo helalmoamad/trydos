@@ -1150,18 +1150,17 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     );
   }
 
-  Map<String, dynamic> responseFromSharedPrefrence = {};
   FutureOr<void> _onGetWithProductFiltersWithoutCancelingPreviousEvents(
     GetProductWithFiltersWithoutCancelingPreviousEvents event,
     Emitter<BoutiqueState> emit,
   ) async {
     String key = event.boutiqueSlug + (event.category ?? '');
-    if (responseFromSharedPrefrence.isEmpty) {
-      responseFromSharedPrefrence = jsonDecode(
-        prefsRepository.getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
-            "{}",
-      );
-    }
+    Map<String, dynamic> responseFromSharedPrefrence = {};
+
+    responseFromSharedPrefrence = jsonDecode(
+      prefsRepository.getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
+          "{}",
+    );
 
     if ((event.boutiqueSlug != "*featured*" &&
             event.boutiqueSlug != "*flashDeal*" &&

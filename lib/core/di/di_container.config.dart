@@ -286,8 +286,6 @@ import '../../features/home/domain/use_cases/get_product_filters_usecase.dart'
     as _i290;
 import '../../features/home/domain/use_cases/get_product_list_in_cart_usecase.dart'
     as _i749;
-import '../../features/home/domain/use_cases/get_products_usecase.dart'
-    as _i397;
 import '../../features/home/domain/use_cases/get_products_with_filters_usecase.dart'
     as _i955;
 import '../../features/home/domain/use_cases/get_provinces_by_iso_usecase.dart'
@@ -313,8 +311,6 @@ import '../../features/home/domain/use_cases/order_return_requests_view_usecase.
 import '../../features/home/domain/use_cases/place_order_usecase.dart' as _i649;
 import '../../features/home/domain/use_cases/remove_item_from_cart_usecase.dart'
     as _i687;
-import '../../features/home/domain/use_cases/request_for_notification_when_product_became_available_usecase.dart'
-    as _i715;
 import '../../features/home/domain/use_cases/search_by_images_usecase.dart'
     as _i889;
 import '../../features/home/domain/use_cases/send_accept__of_notifications_usecase.dart'
@@ -707,9 +703,6 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i749.GetProductsListInCartUseCase>(
     () => _i749.GetProductsListInCartUseCase(gh<_i0.HomeRepository>()),
   );
-  gh.factory<_i397.GetProductsWithoutFiltersUseCase>(
-    () => _i397.GetProductsWithoutFiltersUseCase(gh<_i0.HomeRepository>()),
-  );
   gh.factory<_i955.GetProductsWithFiltersUseCase>(
     () => _i955.GetProductsWithFiltersUseCase(gh<_i0.HomeRepository>()),
   );
@@ -739,11 +732,6 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i687.RemoveItemToCartUseCase>(
     () => _i687.RemoveItemToCartUseCase(gh<_i0.HomeRepository>()),
-  );
-  gh.factory<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(
-    () => _i715.RequestForNotificationWhenProductBecameAvailableUseCase(
-      gh<_i0.HomeRepository>(),
-    ),
   );
   gh.factory<_i889.SearchByImageFromGeminiUseCase>(
     () => _i889.SearchByImageFromGeminiUseCase(gh<_i0.HomeRepository>()),
@@ -1013,9 +1001,7 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i164.CountryBoundaryByIsoUseCase>(),
       gh<_i922.GetAndAddCountViewOfProductUsecase>(),
       gh<_i78.SendErrorToMobileErrorLogUseCase>(),
-      gh<_i397.GetProductsWithoutFiltersUseCase>(),
       gh<_i630.UpdateLikeCommentUseCase>(),
-      gh<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(),
       gh<_i812.CheckAvailabilityProductCartUsecase>(),
       gh<_i675.GetCartOverviewUseCase>(),
       gh<_i358.TranslateCommentUsecase>(),

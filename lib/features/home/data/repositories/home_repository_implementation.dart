@@ -34,7 +34,6 @@ import 'package:trydos/features/home/data/models/get_order_details_return_model.
 import 'package:trydos/features/home/data/models/get_orders_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
-import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_provinces_by_iso_model.dart';
 import 'package:trydos/features/home/data/models/get_user_notifications_model.dart';
 import 'package:trydos/features/home/data/models/create_return_request_model.dart';
@@ -325,14 +324,6 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, GetProductListingWithoutFiltersModel>>
-  getProductsWithoutFilters(Map<String, dynamic> params) {
-    return handlingExceptionRequest(
-      tryCall: () => dataSource.getProductsWithoutFilters(params),
-    );
-  }
-
-  @override
   Future<Either<Failure, GetCountViewOfProductModel>>
   getAndAddCountViewOfProduct(Map<String, dynamic> params) {
     return handlingExceptionRequest(
@@ -575,17 +566,6 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   Future<Either<Failure, GetAllowedCountriesModel>> getAllowCountries() {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getAllowedCountries(),
-    );
-  }
-
-  @override
-  Future<Either<Failure, ReadOnlyMessageFromApiModel>>
-  requestForNotificationWhenProductBecameAvailable(
-    Map<String, dynamic> params,
-  ) {
-    return handlingExceptionRequest(
-      tryCall: () =>
-          dataSource.requestForNotificationWhenProductBecameAvailable(params),
     );
   }
 
@@ -881,8 +861,9 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     required int productSlug,
     required String color,
   }) async {
-   return handlingExceptionRequest(
-      tryCall: () => dataSource.getRelatedProducts(productSlug: productSlug, color: color),
+    return handlingExceptionRequest(
+      tryCall: () =>
+          dataSource.getRelatedProducts(productSlug: productSlug, color: color),
     );
   }
 
@@ -891,7 +872,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     required int productId,
   }) async {
     return handlingExceptionRequest(
-      tryCall: () => dataSource.getDeliveredOrdersResponse(productId: productId),
+      tryCall: () =>
+          dataSource.getDeliveredOrdersResponse(productId: productId),
     );
   }
 }

@@ -56,12 +56,9 @@ import 'package:trydos/features/home/domain/use_cases/get_old_cart_item_usecase.
 import 'package:trydos/features/home/domain/use_cases/get_order_rating_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_popular_search_terms_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart';
-
-import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/hide_item_from_oldCart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/remove_item_from_cart_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/request_for_notification_when_product_became_available_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/send_accept__of_notifications_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/send_error_to_mobile_error_log.dart';
 import 'package:trydos/features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart';
@@ -122,7 +119,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   HomeBloc(
     //  this.getHomeSectionsUseCase,
-    this.getStoryUseCase,
+    this.getStoryForProductUseCase,
     this.removeItemToCartUseCase,
     this.convertItemFromcartToOldCartUsecase,
     this.getCartItemUseCase,
@@ -173,10 +170,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //this.getCustomerInfoUseCase,
     this.getAndAddCountViewOfProductUsecase,
     this.sendErrorToMobileErrorLogUseCase,
-    this.getProductsWithoutFiltersUseCase,
-    //  this.getColorsAndSizesForSearchUseCase,
     this.updateLikeCommentUseCase,
-    this.requestForNotificationWhenProductBecameAvailableUseCase,
     this.checkAvailabilityProductCartUsecase,
     this.getCartOverviewUseCase,
     this.translateCommentUsecase,
@@ -398,7 +392,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final SendErrorToMobileErrorLogUseCase sendErrorToMobileErrorLogUseCase;
   final StoreFcmTokenOfMarketUseCase storeFcmTokenOfMarketUseCase;
   //final GetCommentForProductUseCase getCommentForProductUseCase;
-  final GetStoryForProductUseCase getStoryUseCase;
+  final GetStoryForProductUseCase getStoryForProductUseCase;
   final UpdateLikeSocialSharedProductsUsecase
   updateLikeSocialSharedProductsUsecase;
   final UpdateProfileUseCase updateProfileUseCase;
@@ -410,14 +404,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   final GetPopularSearchItemUseCase getPopularSearchItemUseCase;
   final GetCurrencyForCountryUseCase getCurrencyForCountryUseCase;
-  final RequestForNotificationWhenProductBecameAvailableUseCase
-  requestForNotificationWhenProductBecameAvailableUseCase;
+
   final AddLikeToProductUsecase addLikeToProductUsecase;
   final DeleteLikeOfProductUsecase deleteLikeOfProductUsecase;
 
   final RemoveItemToCartUseCase removeItemToCartUseCase;
 
-  final GetProductsWithoutFiltersUseCase getProductsWithoutFiltersUseCase;
   final AddItemToCartUseCase addItemToCartUseCase;
   final UpdateEmailNotificationUseCase updateEmailNotificationUseCase;
   final UpdateFirebaseNotificationUseCase updateFirebaseNotificationUseCase;
@@ -527,7 +519,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       },
       (relatedProducts) {
-        if (kDebugMode) print("relatedProducts in ${relatedProducts.data.products}");
+        if (kDebugMode)
+          print("relatedProducts in ${relatedProducts.data.products}");
         emit(
           state.copyWith(
             getRelatedProductsStatus: GetRelatedProductsStatus.success,
@@ -1364,9 +1357,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     AddCurrentSelectedColorEvent event,
     Emitter<HomeState> emit,
   ) {
-    if (kDebugMode) print(
-      "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${event.currentSelectedColor}  ${event.productSlug}",
-    );
+    if (kDebugMode)
+      print(
+        "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${event.currentSelectedColor}  ${event.productSlug}",
+      );
     emit(
       state.copyWith(
         currentSelectedColorForEveryProductStatus:
@@ -1384,9 +1378,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       currentSelectedColorForEveryProduct[event.productSlug] =
           event.currentSelectedColor;
     }
-    if (kDebugMode) print(
-      "888888888888888888888///////////////////////////////////****${currentSelectedColorForEveryProduct}",
-    );
+    if (kDebugMode)
+      print(
+        "888888888888888888888///////////////////////////////////****${currentSelectedColorForEveryProduct}",
+      );
 
     emit(
       state.copyWith(
@@ -1450,7 +1445,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         getStoriesForProductStatus: GetStoriesForProductStatus.loading,
       ),
     );
-    final response = await getStoryUseCase(
+    final response = await getStoryForProductUseCase(
       /*page: state.currentPage.toString()*/ event.productId,
     );
 
@@ -1928,9 +1923,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 event.index!;
           }
         }
-        if (kDebugMode) print(
-          "888888888888888888888///////////////////////////////////${currentSelectedColorForEveryProduct}",
-        );
+        if (kDebugMode)
+          print(
+            "888888888888888888888///////////////////////////////////${currentSelectedColorForEveryProduct}",
+          );
         emit(
           state.copyWith(
             currentSelectedColorForEveryProduct: Map.of(
@@ -3900,9 +3896,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               "${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}",
         );
 
-        if (kDebugMode) print(
-          "SSSSSSSSSSSSSSSSAAAAAAAAAAAAAAAAAA${index} ${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}",
-        );
+        if (kDebugMode)
+          print(
+            "SSSSSSSSSSSSSSSSAAAAAAAAAAAAAAAAAA${index} ${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}",
+          );
         if ((r.data == null || r.data == "") || (r.data?.status ?? 0) != 1) {
           if (index != -1 &&
               event.totalQuantity == 1 &&
@@ -5251,7 +5248,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
       },
       (firebaseTokenId) {
-        if (kDebugMode) print("StoreFcmTokenOfMarketEvent success${firebaseTokenId}");
+        if (kDebugMode)
+          print("StoreFcmTokenOfMarketEvent success${firebaseTokenId}");
         ErrorManager.resetRetry('StoreFcmTokenOfMarketEvent');
         prefsRepository.setFcmMarketTokenId(firebaseTokenId);
       },
@@ -6548,9 +6546,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       },
       (r) {
         ErrorManager.resetRetry('TranslateCommentEvent');
-        if (kDebugMode) print(
-          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${event.fromSellerComments}           ${r.translatedText}",
-        );
+        if (kDebugMode)
+          print(
+            "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${event.fromSellerComments}           ${r.translatedText}",
+          );
         Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
             Map.of(state.getFqaCommentsPaginationModel ?? {});
         Map<String, PaginationModel<BuyersComment>>

@@ -26,8 +26,6 @@ extension ScopeApi on String {
   String cartScope() => '$_api/${_currentVersion}/cart/$this';
   String oldCartScope() => '$_api/${_currentVersion}/old-cart/$this';
   String searchScope() => '$_api/${_currentVersion}/products/$this';
-  String notificationScope() =>
-      '$_api/${_currentVersion}/product_notification/$this';
   String userNotificationScope() =>
       '$_api/${_currentVersion}/user-notifications/$this';
   String couponScope() => '$_api/${_currentVersion}/coupon/$this';
@@ -40,9 +38,6 @@ abstract class MarketEndPoints {
     String productId,
   ) => "details_without_similar_related_products/$productId".productScope();
 
-  ////
-  static String getFullProductDetailsEP(String productId) =>
-      "details/$productId".productScope();
   static final getColorsAndSizesForSearchEP = "get-colors-and-sizes"
       .colorsSizesScope();
   static final deleteCustomerAddressEP = "address/delete".customerScope();
@@ -125,8 +120,6 @@ abstract class MarketEndPoints {
   static final convertItemInCartToOldCartEP = 'convert_to_old'.cartScope();
   static final addItemCartItemEP = 'add'.cartScope();
   static final updateItemCartItemEP = 'update'.cartScope();
-  static final requestForNotificationWhenProductBecameAvailableEP = 'store'
-      .notificationScope();
   static final removeItemCartItemEP = 'remove'.cartScope();
   static final verifyOtpSignInEP = 'verify_otp_singin'.phoneScope();
   static final verifyOtpSignUpEP = 'verify_otp_signup'.phoneScope();
@@ -176,8 +169,6 @@ abstract class MarketEndPoints {
           .customerScope();
   static final orderReturnDetailsEP =
       'order/return_requests/order_details_by_group'.customerScope();
-  static String getAuthProductDetailsEP(String productSlug) =>
-      'authenticated_details/$productSlug'.productScope();
 }
 
 abstract class MarketUrls {

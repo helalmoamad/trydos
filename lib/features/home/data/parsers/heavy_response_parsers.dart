@@ -4,12 +4,17 @@ import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/main.dart';
 
+import '../models/firebase_setting_for_notification_model.dart';
+import '../models/get_cart_item_model.dart';
 import '../models/get_home_boutiqes_model.dart';
+import '../models/get_old_cart_model.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
 import '../models/get_product_filters_model.dart';
 import '../models/get_product_listing_with_filters_model.dart';
 import '../models/getRelatedProducts.dart';
 import '../models/main_categories_response_model.dart';
+import '../models/notificaation_poroduct_types.dart';
+import '../models/popular_search_terms_model.dart';
 
 /// Off-main-isolate parsing for the app's heaviest responses.
 ///
@@ -154,3 +159,57 @@ String _encodeMainCategoriesPrefetch(MainCategoriesResponseModel? data) =>
 Future<String> encodeMainCategoriesPrefetchInBackground(
   MainCategoriesResponseModel? data,
 ) => compute(_encodeMainCategoriesPrefetch, data);
+
+// ---------------------------------------------------------------------------
+// Startup responses fetched on splash (cart / notification-type /
+// firebase-settings / popular-search). Building their models off the UI
+// isolate keeps the splash → first-frame transition smooth.
+//
+// Unlike the listing/detail parsers above, none of these models read the
+// startup globals (`mediaServerIsS3` / `dotenv`) in their `fromJson` — they
+// store server strings verbatim — so no [_seedGlobals] step is needed and the
+// raw map can travel into the worker as-is. If any of these models ever starts
+// building media URLs from those globals, switch it to the `_ParseArgs` path.
+// ---------------------------------------------------------------------------
+
+GetCartShippingItemsModel _parseCartItems(Map<String, dynamic> raw) =>
+    GetCartShippingItemsModel.fromJson(raw);
+
+GetOldCartModel _parseOldCartItems(Map<String, dynamic> raw) =>
+    GetOldCartModel.fromJson(raw);
+
+NotificationTypeForProductModel _parseNotificationType(
+  Map<String, dynamic> raw,
+) => NotificationTypeForProductModel.fromJson(raw);
+
+FirebaseSettingForNotificationModel _parseFirebaseSettings(
+  Map<String, dynamic> raw,
+) => FirebaseSettingForNotificationModel.fromJson(raw);
+
+PopularSearchTermsModel _parsePopularSearchTerms(Map<String, dynamic> raw) =>
+    PopularSearchTermsModel.fromJson(raw);
+
+/// Build the cart model (cart / old-cart lists + variations) off-thread.
+Future<GetCartShippingItemsModel> parseCartItemsInBackground(
+  Map<String, dynamic> raw,
+) => compute(_parseCartItems, raw);
+
+/// Build the old-cart (saved-for-later) model off-thread.
+Future<GetOldCartModel> parseOldCartItemsInBackground(
+  Map<String, dynamic> raw,
+) => compute(_parseOldCartItems, raw);
+
+/// Build the notification-type-for-product model off-thread.
+Future<NotificationTypeForProductModel> parseNotificationTypeInBackground(
+  Map<String, dynamic> raw,
+) => compute(_parseNotificationType, raw);
+
+/// Build the firebase-notification-settings model off-thread.
+Future<FirebaseSettingForNotificationModel> parseFirebaseSettingsInBackground(
+  Map<String, dynamic> raw,
+) => compute(_parseFirebaseSettings, raw);
+
+/// Build the popular-search-terms model off-thread.
+Future<PopularSearchTermsModel> parsePopularSearchTermsInBackground(
+  Map<String, dynamic> raw,
+) => compute(_parsePopularSearchTerms, raw);
