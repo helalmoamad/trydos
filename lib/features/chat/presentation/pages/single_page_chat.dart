@@ -202,9 +202,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
   void initState() {
     LastPagesTracker.push('SinglePageChat');
     if (kDebugMode) print("%%%%%%%%%${GetIt.I<PrefsRepository>().chatToken}*");
-    if (kDebugMode) print(
-      "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE*/****#${widget.chatId}",
-    );
+    if (kDebugMode)
+      print(
+        "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE*/****#${widget.chatId}",
+      );
     rebuildMessage.value = -2;
     if (widget.fromOrder == "true") {
       Eraser.clearAppNotificationsByTag(widget.chatId);
@@ -433,9 +434,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           ? const SizedBox.shrink()
                           : BlocListener<ChatBloc, ChatState>(
                               listenWhen: (p, c) {
-                                if (kDebugMode) print(
-                                  "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${p.currentOpenedChatIdStatus}//${c.currentOpenedChatIdStatus}",
-                                );
+                                if (kDebugMode)
+                                  print(
+                                    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${p.currentOpenedChatIdStatus}//${c.currentOpenedChatIdStatus}",
+                                  );
 
                                 return p.currentOpenedChatIdStatus !=
                                     c.currentOpenedChatIdStatus;
@@ -457,15 +459,18 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                               widget.chatId,
                                     ),
                                   );
-                                  if (kDebugMode) print(
-                                    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR///${state.currentOpenedChatIdStatus}",
-                                  );
-                                  if (kDebugMode) print(
-                                    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR***${chat.id}",
-                                  );
-                                  if (kDebugMode) print(
-                                    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR/*/${chat.localId}",
-                                  );
+                                  if (kDebugMode)
+                                    print(
+                                      "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR///${state.currentOpenedChatIdStatus}",
+                                    );
+                                  if (kDebugMode)
+                                    print(
+                                      "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR***${chat.id}",
+                                    );
+                                  if (kDebugMode)
+                                    print(
+                                      "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR/*/${chat.localId}",
+                                    );
 
                                   member = !chat.channelMembers.isNullOrEmpty
                                       ? chat.channelMembers!.firstWhere(
@@ -1089,9 +1094,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     }
                   },
                   builder: (context, chatState) {
-                    if (kDebugMode) print(
-                      "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE#///${chatState.sendMessageStatus}/${chatState.receiveMessageStatus}/${chatState.resendMessageStatus}/${chatState.getMessagesBetweenStatus}",
-                    );
+                    if (kDebugMode)
+                      print(
+                        "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE#///${chatState.sendMessageStatus}/${chatState.receiveMessageStatus}/${chatState.resendMessageStatus}/${chatState.getMessagesBetweenStatus}",
+                      );
                     chat = chatState.chats.firstWhere(
                       (element) =>
                           element.id.toString() == widget.chatId ||
@@ -1147,9 +1153,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                     .reversed
                                                     .toList(),
                                               );
-                                          if (kDebugMode) print(
-                                            "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE${currentIndex}111222${messages[1].id}#${messages[0].id}",
-                                          );
+                                          if (kDebugMode)
+                                            print(
+                                              "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE${currentIndex}111222${messages[1].id}#${messages[0].id}",
+                                            );
 
                                           if (messages[index].isDateMessage!) {
                                             return AutoScrollTag(
@@ -3024,9 +3031,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     // the width of the image in the ui
                     height: 400.h,
                     // the height of the image in the ui
-                    ordinalWidth: 200
-                        .w, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
-                    ordinalHeight: 400,
+
                     //double.tryParse(image.originalHeight.toString())
                   ),
             userMessageName: message.receiverUserId != _prefsRepository.myChatId
@@ -3053,14 +3058,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   ? message.shareProductContent!.imageHeight
                   : 464.h)!,
               // the height of the image in the ui
-              ordinalWidth: ((message.shareProductContent!.imageWidth ?? 0) > 0)
-                  ? message.shareProductContent!.imageWidth
-                  : 1.sw -
-                        100.w, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
-              ordinalHeight:
-                  ((message.shareProductContent!.imageHeight ?? 0) > 0)
-                  ? message.shareProductContent!.imageHeight
-                  : 464.h,
+
               //double.tryParse(image.originalHeight.toString())
             ),
             productName: message.shareProductContent!.productName ?? "",

@@ -103,8 +103,6 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
   Widget build(BuildContext context) {
     String url = addSuitableWidthAndHeightToImage(
       imageUrl: currentUrl,
-      ordinalWidth: widget.ordinalwidth,
-      ordinalHeight: widget.ordinalHeight,
       height: widget.height,
       width: widget.width,
     );
@@ -365,8 +363,6 @@ void clearCustomCashe() async {
 
 String addSuitableWidthAndHeightToImage({
   required String imageUrl,
-  double? ordinalHeight,
-  double? ordinalWidth,
   bool? fromBoutique,
   required double width,
   required double height,

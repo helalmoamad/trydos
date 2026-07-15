@@ -1986,7 +1986,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   );
                                 } catch (e) {
                                   endDate = DateTime.now();
-                                  if (kDebugMode) print('Error parsing date: $e');
+                                  if (kDebugMode)
+                                    print('Error parsing date: $e');
                                 }
 
                                 return Container(
@@ -2404,9 +2405,10 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 _duration.inSeconds < 1) {
                               isFlashDealEnded = true;
                             }
-                            if (kDebugMode) print(
-                              "############${state.authProductDetailsModel?.data?.variation}",
-                            );
+                            if (kDebugMode)
+                              print(
+                                "############${state.authProductDetailsModel?.data?.variation}",
+                              );
                             return ProductDetailsBottomSheetNew(
                               isVerified: isVerified,
                               variationId: currentVariationId,
@@ -3577,6 +3579,10 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                       return ValueListenableBuilder<bool>(
                         valueListenable: visibleRedeem,
                         builder: (context, _visibleRedeem, _) {
+                          if (kDebugMode)
+                            print(
+                              "GGGGGGGFFFFRRRProductDetailsImageWidget${productItem.productId}////${productItem.syncColorImages.isNullOrEmpty ? productItem.images![index].filePath! : productItem.syncColorImages![currentSelectedColor].images![index].filePath}",
+                            );
                           return ProductDetailsImageWidget(
                             key: ValueKey(
                               "ProductDetailsImageWidget${productItem.productId}",
@@ -3642,36 +3648,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                       [],*/
                             height: 464.h,
                             width: 320.w,
-                            orginalHeight: widget.productItem == null
-                                ? 0
-                                : widget
-                                      .productItem!
-                                      .syncColorImages
-                                      .isNullOrEmpty
-                                ? double.tryParse(
-                                    productItem.images![index].originalHeight!,
-                                  )
-                                : double.tryParse(
-                                    productItem
-                                        .syncColorImages![currentSelectedColor]
-                                        .images![index]
-                                        .originalHeight!,
-                                  ),
-                            orginalWidth: widget.productItem == null
-                                ? 0
-                                : widget
-                                      .productItem!
-                                      .syncColorImages
-                                      .isNullOrEmpty
-                                ? double.tryParse(
-                                    productItem.images![index].originalWidth!,
-                                  )
-                                : double.tryParse(
-                                    productItem
-                                        .syncColorImages![currentSelectedColor]
-                                        .images![index]
-                                        .originalWidth!,
-                                  ),
+
                             imageUrl: productItem.syncColorImages.isNullOrEmpty
                                 ? productItem.images![index].filePath!
                                 : productItem
@@ -4006,7 +3983,10 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             phoneNumber: phoneNumber,
                             onChooseWhatsapp: () {
                               isVisWhatsApp = 1;
-                              if (kDebugMode) print("###################33333# isVisWhatsApp}");
+                              if (kDebugMode)
+                                print(
+                                  "###################33333# isVisWhatsApp}",
+                                );
                               pageController.animateToPage(
                                 2,
                                 duration: const Duration(milliseconds: 500),
