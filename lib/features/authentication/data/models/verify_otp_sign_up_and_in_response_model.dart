@@ -191,7 +191,7 @@ class User {
         image: json["image"],
         isPhoneVerified: json["is_phone_verified"],
         lastOtpIdToken: json["last_otp_id_token"],
-        isAllowedToUploadStories: json["is_allowed_to_upload_stories"] == 1 ? true : false,
+        isAllowedToUploadStories: json["is_allowed_to_upload_stories"],
       );
 
   Map<String, dynamic> toJson() => {

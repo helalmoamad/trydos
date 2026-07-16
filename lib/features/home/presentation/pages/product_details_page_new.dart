@@ -1986,7 +1986,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                   );
                                 } catch (e) {
                                   endDate = DateTime.now();
-                                  if (kDebugMode) print('Error parsing date: $e');
+                                  if (kDebugMode)
+                                    print('Error parsing date: $e');
                                 }
 
                                 return Container(
@@ -2404,9 +2405,10 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 _duration.inSeconds < 1) {
                               isFlashDealEnded = true;
                             }
-                            if (kDebugMode) print(
-                              "############${state.authProductDetailsModel?.data?.variation}",
-                            );
+                            if (kDebugMode)
+                              print(
+                                "############${state.authProductDetailsModel?.data?.variation}",
+                              );
                             return ProductDetailsBottomSheetNew(
                               isVerified: isVerified,
                               variationId: currentVariationId,
@@ -4006,7 +4008,10 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             phoneNumber: phoneNumber,
                             onChooseWhatsapp: () {
                               isVisWhatsApp = 1;
-                              if (kDebugMode) print("###################33333# isVisWhatsApp}");
+                              if (kDebugMode)
+                                print(
+                                  "###################33333# isVisWhatsApp}",
+                                );
                               pageController.animateToPage(
                                 2,
                                 duration: const Duration(milliseconds: 500),

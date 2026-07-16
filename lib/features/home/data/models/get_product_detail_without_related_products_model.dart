@@ -61,6 +61,7 @@ class Product {
   final List<String>? labelNames;
   final String? flashDealEndDate;
   final String? slug;
+  final String? iso;
   final int? availableQuantity;
   final int? leftStock;
   final SizeAnalysis? sizeAnalysis;
@@ -111,6 +112,7 @@ class Product {
     this.buyersComment,
     this.seller,
     this.fqaQuestions,
+    this.iso,
     this.ratingDetails,
     this.recommendationStats,
     this.totalRating,
@@ -168,6 +170,7 @@ class Product {
     //   List<Variation>? variation,
     List<String>? sizes,
     bool? hasDiscount,
+    String? iso,
     bool? goodQualityProduct,
     bool? hasTax,
     String? priceFormatted,
@@ -228,6 +231,7 @@ class Product {
     maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
     buyersComment: buyersComment ?? this.buyersComment,
     fqaQuestions: fqaQuestions ?? this.fqaQuestions,
+    iso: iso ?? this.iso,
     deliveryAt: deliveryAt ?? this.deliveryAt,
     goodQualityProduct: goodQualityProduct ?? this.goodQualityProduct,
     shippingDays: shippingDays ?? this.shippingDays,
@@ -279,6 +283,7 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
     id: int.tryParse(json["id"].toString()),
+    iso: json["origin_country_iso"] ?? null,
     description: json["description"],
     countOfPieces: json["count_of_pieces"],
     sizeAnalysis: json["size_analysis"] == null
@@ -313,6 +318,7 @@ class Product {
                   : Thumbnail.fromJson(x),
             ),
           ),
+    
     boutique: json["boutique"] == null
         ? null
         : BoutiqueForCart.fromJson(json["boutique"]),
@@ -421,6 +427,7 @@ class Product {
     "good_quality_product": goodQualityProduct,
     "seller": seller?.toJson(),
     "luck_price": redeemPrice,
+    "origin_country_iso": iso,
 
     "sizes": sizes == null ? [] : List<dynamic>.from(sizes!.map((x) => x)),
     "has_discount": hasDiscount,

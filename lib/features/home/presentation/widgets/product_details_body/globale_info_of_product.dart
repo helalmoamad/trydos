@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
@@ -54,13 +55,34 @@ class GlobaleInfoProduct extends StatelessWidget {
             ?.forEach((element) {
               countOfPersonRating = countOfPersonRating + (element.count ?? 0);
             }));
+
+        final String? rawIso = state
+            .cachedProductWithoutRelatedProductsModel[productId]
+            ?.product
+            ?.iso;
+        // TEMP DEBUG: remove after confirming the country renders.
+        debugPrint('[made_in] productId=$productId rawIso=$rawIso');
+        final String productIso = (rawIso ?? '').toLowerCase();
+        Country newCountry = countries.firstWhere(
+          (element) => element.code.toLowerCase() == productIso,
+
+          orElse: () => const Country(
+            name: '',
+            flag: '',
+            code: '',
+            dialCode: '',
+            minLength: 0,
+            maxLength: 0,
+          ),
+        );
+
         return Padding(
           padding: EdgeInsetsGeometry.symmetric(
             horizontal: 20.w,
-            vertical: 10.h,
+            vertical: 20.h,
           ),
           child: SizedBox(
-            height: 14.h,
+            height: 18.h,
             width: 1.sw,
             child: ListView(
               scrollDirection: Axis.horizontal,
@@ -245,20 +267,25 @@ class GlobaleInfoProduct extends StatelessWidget {
                         ),
                       ),
                 CountryFlag.fromCountryCode(
-                  "TR",
+                  state
+                          .cachedProductWithoutRelatedProductsModel[productId]
+                          ?.product
+                          ?.iso ??
+                      '',
                   height: 10.h,
                   width: 15.w,
                   borderRadius: 4.r,
                 ),
                 const SizedBox(width: 2),
+                (rawIso?.isNotEmpty ?? false)  ?
                 MyTextWidget(
-                  "${LocaleKeys.made_in.tr()} Turkey ",
+                  "${LocaleKeys.made_in.tr()} ${newCountry.name} ",
                   style: context.textTheme.titleMedium?.rq.copyWith(
                     height: 1.4,
                     color: const Color(0xff1D1D1D),
                     fontSize: 9.sp,
                   ),
-                ),
+                ) : const SizedBox.shrink() ,
               ],
             ),
           ),

@@ -44,10 +44,6 @@ class _StoriesListState extends State<StoriesList> {
   bool allowedToUploadStories = false;
   Future<void> _loadAllowedToUploadStories() async {
     allowedToUploadStories = await prefsRepository.getAllowedToUploadStories();
-
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   final ScrollController listViewController = ScrollController();

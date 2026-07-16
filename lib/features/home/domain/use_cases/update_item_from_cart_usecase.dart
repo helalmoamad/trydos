@@ -23,5 +23,5 @@ class UpdateITemInCartParams {
   String? id;
   int? quantity;
   UpdateITemInCartParams({this.id, this.quantity});
-  Map<String, dynamic> get map => {"key": id, "quantity": quantity};
+  Map<String, dynamic> get map => {"key": int.tryParse(id!), "quantity": quantity};
 }
