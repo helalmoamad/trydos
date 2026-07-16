@@ -29,7 +29,6 @@ import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
-import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_provinces_by_iso_model.dart';
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
@@ -393,20 +392,18 @@ class HomeRemoteDatasource {
     return getFullProductDetails();
   }
 
-  Future<NotificationTypeForProductModel> getNotificationTypeForProduct() {
-    GetClient<NotificationTypeForProductModel> getNotificationTypeForProduct =
-        GetClient<NotificationTypeForProductModel>(
-          serverName: ServerName.market,
-          requestPrams: RequestConfig<NotificationTypeForProductModel>(
-            endpoint: MarketEndPoints.getNotificationTypeForProductEP,
-            response: ResponseValue<NotificationTypeForProductModel>(
-              fromJson: (response) {
-                return NotificationTypeForProductModel.fromJson(response);
-              },
-            ),
-          ),
-        );
-    return getNotificationTypeForProduct();
+  Future<NotificationTypeForProductModel>
+  getNotificationTypeForProduct() async {
+    // Build the model on a background isolate (see heavy_response_parsers.dart).
+    GetClient<dynamic> getNotificationTypeForProduct = GetClient<dynamic>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: MarketEndPoints.getNotificationTypeForProductEP,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
+    final raw = await getNotificationTypeForProduct();
+    return parseNotificationTypeInBackground(raw);
   }
 
   /* Future<GetCommentForProductModel> getCommentForProduct(String productId) {
@@ -424,25 +421,6 @@ class HomeRemoteDatasource {
     );
     return getCommentForProduct();
   }*/
-
-  Future<GetProductListingWithoutFiltersModel> getProductsWithoutFilters(
-    Map<String, dynamic> params,
-  ) {
-    PostClient<GetProductListingWithoutFiltersModel> getProductsWithoutFilters =
-        PostClient<GetProductListingWithoutFiltersModel>(
-          serverName: ServerName.market,
-          requestPrams: RequestConfig<GetProductListingWithoutFiltersModel>(
-            endpoint: MarketEndPoints.getProductListingWithoutFiltersEP,
-            data: params,
-            response: ResponseValue<GetProductListingWithoutFiltersModel>(
-              fromJson: (response) =>
-                  GetProductListingWithoutFiltersModel.fromJson(response),
-            ),
-          ),
-        );
-
-    return getProductsWithoutFilters();
-  }
 
   Future<ResponseOnlyMessageModel> deleteCustomerAddress(
     Map<String, dynamic> params,
@@ -501,20 +479,17 @@ class HomeRemoteDatasource {
     return changeCountryLanguageFornotification();
   }
 
-  Future<FirebaseSettingForNotificationModel> getMyFirebaseSettings() {
-    GetClient<FirebaseSettingForNotificationModel> getMyFirebaseSettings =
-        GetClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
-          requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
-            endpoint: MarketEndPoints.getMyFirebaseSettingsEP,
-            response: ResponseValue<FirebaseSettingForNotificationModel>(
-              fromJson: (response) {
-                return FirebaseSettingForNotificationModel.fromJson(response);
-              },
-            ),
-          ),
-        );
-    return getMyFirebaseSettings();
+  Future<FirebaseSettingForNotificationModel> getMyFirebaseSettings() async {
+    // Build the model on a background isolate (see heavy_response_parsers.dart).
+    GetClient<dynamic> getMyFirebaseSettings = GetClient<dynamic>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: MarketEndPoints.getMyFirebaseSettingsEP,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
+    final raw = await getMyFirebaseSettings();
+    return parseFirebaseSettingsInBackground(raw);
   }
 
   Future<FirebaseSettingForNotificationModel> updateWhatsappNotification(
@@ -884,48 +859,44 @@ class HomeRemoteDatasource {
     return getStories();
   }
 
-  Future<GetOldCartModel> getOldCartItems() {
-    GetClient<GetOldCartModel> getStories = GetClient<GetOldCartModel>(
+  Future<GetOldCartModel> getOldCartItems() async {
+    // Build the model on a background isolate (see heavy_response_parsers.dart).
+    GetClient<dynamic> getOldCart = GetClient<dynamic>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<GetOldCartModel>(
+      requestPrams: RequestConfig<dynamic>(
         endpoint: MarketEndPoints.getOldCartItemsEP,
-        response: ResponseValue<GetOldCartModel>(
-          fromJson: (response) => GetOldCartModel.fromJson(response),
-        ),
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
       ),
     );
 
-    return getStories();
+    final raw = await getOldCart();
+    return parseOldCartItemsInBackground(raw);
   }
 
-  Future<PopularSearchTermsModel> getPopularSearchTerms() {
-    GetClient<PopularSearchTermsModel> getPopularSearchTerms =
-        GetClient<PopularSearchTermsModel>(
-          serverName: ServerName.webApp,
-          requestPrams: RequestConfig<PopularSearchTermsModel>(
-            endpoint: WebAppEndPoints.getPopularSearchTermsEP,
-            response: ResponseValue<PopularSearchTermsModel>(
-              fromJson: (response) =>
-                  PopularSearchTermsModel.fromJson(response),
-            ),
-          ),
-        );
-    return getPopularSearchTerms();
+  Future<PopularSearchTermsModel> getPopularSearchTerms() async {
+    // Build the model on a background isolate (see heavy_response_parsers.dart).
+    GetClient<dynamic> getPopularSearchTerms = GetClient<dynamic>(
+      serverName: ServerName.webApp,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: WebAppEndPoints.getPopularSearchTermsEP,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
+    final raw = await getPopularSearchTerms();
+    return parsePopularSearchTermsInBackground(raw);
   }
 
-  Future<GetCartShippingItemsModel> getCartShippingItems() {
-    GetClient<GetCartShippingItemsModel> getCartShippingItems =
-        GetClient<GetCartShippingItemsModel>(
-          serverName: ServerName.market,
-          requestPrams: RequestConfig<GetCartShippingItemsModel>(
-            endpoint: MarketEndPoints.getCartItemEP,
-            response: ResponseValue<GetCartShippingItemsModel>(
-              fromJson: (response) =>
-                  GetCartShippingItemsModel.fromJson(response),
-            ),
-          ),
-        );
-    return getCartShippingItems();
+  Future<GetCartShippingItemsModel> getCartShippingItems() async {
+    // Build the model on a background isolate (see heavy_response_parsers.dart).
+    GetClient<dynamic> getCartShippingItems = GetClient<dynamic>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: MarketEndPoints.getCartItemEP,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
+    final raw = await getCartShippingItems();
+    return parseCartItemsInBackground(raw);
   }
 
   Future<GetHomeBoutiquesModel> getHomeBoutiques(
@@ -1099,27 +1070,6 @@ class HomeRemoteDatasource {
           ),
         );
     return updateItemInCart();
-  }
-
-  Future<ReadOnlyMessageFromApiModel>
-  requestForNotificationWhenProductBecameAvailable(
-    Map<String, dynamic> params,
-  ) {
-    PostClient<ReadOnlyMessageFromApiModel>
-    requestForNotificationWhenProductBecameAvailable =
-        PostClient<ReadOnlyMessageFromApiModel>(
-          serverName: ServerName.market,
-          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
-            endpoint: MarketEndPoints
-                .requestForNotificationWhenProductBecameAvailableEP,
-            data: params,
-            response: ResponseValue<ReadOnlyMessageFromApiModel>(
-              fromJson: (response) =>
-                  ReadOnlyMessageFromApiModel.fromJson(response),
-            ),
-          ),
-        );
-    return requestForNotificationWhenProductBecameAvailable();
   }
 
   /* Future<SearchResultModel> getSearchResult(Map<String, dynamic> params) {

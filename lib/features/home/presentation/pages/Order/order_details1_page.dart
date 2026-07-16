@@ -139,9 +139,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
     if (fromNotification &&
         widget.orderIdFormNotification != null &&
         widget.orderIdFormNotification != "") {
-      if (kDebugMode) print(
-        "FDDDDDDDDDDDDDDDDDDDDDDDddddd${widget.parentOrderIdFormNotification}  //${widget.orderIdFormNotification}",
-      );
+      if (kDebugMode)
+        print(
+          "FDDDDDDDDDDDDDDDDDDDDDDDddddd${widget.parentOrderIdFormNotification}  //${widget.orderIdFormNotification}",
+        );
       requestReturnApiFromNotification = true;
       indexTapPackage.value = orders.indexWhere(
         (element) =>
@@ -316,9 +317,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                 ?.id,
                       ) ??
                       -1;
-                  if (kDebugMode) print(
-                    "Fffffffffffffffffffffffffffffffffffffffffffffff${indexTapAddress.value}",
-                  );
+                  if (kDebugMode)
+                    print(
+                      "Fffffffffffffffffffffffffffffffffffffffffffffff${indexTapAddress.value}",
+                    );
                   firstAddressChoosed = indexTapAddress.value;
                   orderBloc.add(
                     GetOrdersEvent(
@@ -1080,7 +1082,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                             phoneNumber: phoneNumber,
                             onChooseWhatsapp: () {
                               isVisWhatsApp = 1;
-                              if (kDebugMode) print("###################33333# isVisWhatsApp}");
+                              if (kDebugMode)
+                                print(
+                                  "###################33333# isVisWhatsApp}",
+                                );
                               pageController.animateToPage(
                                 2,
                                 duration: const Duration(milliseconds: 500),
@@ -3985,7 +3990,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: SizedBox(
-        height: orderStatus == 'delivered' ? 190.h : 180.h,
+        height: orderStatus == 'delivered' ? 195.h : 180.h,
         child: ListView.separated(
           itemCount: details?.length ?? 0,
           scrollDirection: Axis.horizontal,
@@ -4394,7 +4399,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   child: Container(
                     alignment: Alignment.center,
                     width: 1.sw,
-                    height: 74.h,
+                    height: 80.h,
                     decoration: BoxDecoration(
                       color: const Color(0xffC4C2C2),
                       border: Border.all(color: const Color(0xffC4C2C2)),
@@ -4403,7 +4408,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   ),
                 )
               : Container(
-                  height: 74.h,
+                  height: 80.h,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 237, 237, 237),
@@ -4512,9 +4517,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                         c.makeCallStatus ==
                                             MakeCallStatus.loading,
                                     listener: (context, state) {
-                                      if (kDebugMode) print(
-                                        "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ////",
-                                      );
+                                      if (kDebugMode)
+                                        print(
+                                          "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ////",
+                                        );
                                       callInProgressDialog(context);
                                     },
                                     child: BlocListener<CallsBloc, CallsState>(
@@ -4537,9 +4543,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                             c.makeCallStatus ==
                                                 MakeCallStatus.startCall,
                                         listener: (context, state) {
-                                          if (kDebugMode) print(
-                                            "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ",
-                                          );
+                                          if (kDebugMode)
+                                            print(
+                                              "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ",
+                                            );
                                           Navigator.of(context).pushReplacement(
                                             MaterialPageRoute(
                                               builder: (_) => AgoraInAppWebView(
@@ -4609,9 +4616,10 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                       .tr();
                                               String? recipientUserId =
                                                   state.recipientUserId;
-                                              if (kDebugMode) print(
-                                                "recipientUserId $recipientUserId",
-                                              );
+                                              if (kDebugMode)
+                                                print(
+                                                  "recipientUserId $recipientUserId",
+                                                );
                                               if (recipientUserId == null) {
                                                 return;
                                               }
@@ -4798,7 +4806,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
     return Container(
       padding: EdgeInsets.only(top: 12.h, left: 12.w, right: 12.w),
       margin: EdgeInsets.symmetric(horizontal: 12.w),
-      height: 158.h,
+
       width: 1.sw,
       decoration: BoxDecoration(
         color: const Color(0xffF4F4F4),
@@ -4809,7 +4817,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SvgPicture.asset(AppAssets.groupStarsRattingSvg),
-          SizedBox(height: 8.h),
+          SizedBox(height: 7.h),
           Text(
             LocaleKeys.rate_and_get_money.tr(),
             style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -4819,7 +4827,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
               height: 1.3,
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 7.h),
           Text(
             LocaleKeys.rating_section_description.tr(),
             style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -4829,7 +4837,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
               height: 1.3,
             ),
           ),
-          SizedBox(height: 10.h),
+          SizedBox(height: 9.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -4876,6 +4884,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
               ),
             ],
           ),
+          SizedBox(height: 9.h),
         ],
       ),
     );

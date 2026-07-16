@@ -1150,18 +1150,17 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     );
   }
 
-  Map<String, dynamic> responseFromSharedPrefrence = {};
   FutureOr<void> _onGetWithProductFiltersWithoutCancelingPreviousEvents(
     GetProductWithFiltersWithoutCancelingPreviousEvents event,
     Emitter<BoutiqueState> emit,
   ) async {
     String key = event.boutiqueSlug + (event.category ?? '');
-    if (responseFromSharedPrefrence.isEmpty) {
-      responseFromSharedPrefrence = jsonDecode(
-        prefsRepository.getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
-            "{}",
-      );
-    }
+    Map<String, dynamic> responseFromSharedPrefrence = {};
+
+    responseFromSharedPrefrence = jsonDecode(
+      prefsRepository.getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
+          "{}",
+    );
 
     if ((event.boutiqueSlug != "*featured*" &&
             event.boutiqueSlug != "*flashDeal*" &&
@@ -1657,15 +1656,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                   width: 200.w,
                   // the width of the image in the ui
                   height: 290.h,
+
                   // the height of the image in the ui
-                  ordinalWidth: double.tryParse(
-                    product.syncColorImages![0].images![0].originalWidth
-                        .toString(),
-                  ),
-                  ordinalHeight: double.tryParse(
-                    product.syncColorImages![0].images![0].originalHeight
-                        .toString(),
-                  ),
                 );
                 if (!cachedLinksOfImages.contains(url)) {
                   prefetchImages(
@@ -2233,12 +2225,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
 
               url = addSuitableWidthAndHeightToImage(
                 imageUrl: product.syncColorImages![0].images![0].filePath ?? "",
-                ordinalHeight: double.tryParse(
-                  product.syncColorImages![0].images![0].originalHeight ?? "0",
-                ),
-                ordinalWidth: double.tryParse(
-                  product.syncColorImages![0].images![0].originalHeight ?? "0",
-                ),
+
                 width: 320.w,
                 // the width of the image in the ui
                 height: 464.h,
@@ -2258,12 +2245,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               // product.images?.forEach((image) {
               url = addSuitableWidthAndHeightToImage(
                 imageUrl: product.images![0].filePath ?? "",
-                ordinalHeight: double.tryParse(
-                  product.images![0].originalHeight ?? "0",
-                ),
-                ordinalWidth: double.tryParse(
-                  product.images![0].originalHeight ?? "0",
-                ),
+
                 width: 320.w,
                 // the width of the image in the ui
                 height: 464.h,
@@ -3018,12 +3000,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
 
               url = addSuitableWidthAndHeightToImage(
                 imageUrl: product.syncColorImages![0].images![0].filePath ?? "",
-                ordinalHeight: double.tryParse(
-                  product.syncColorImages![0].images![0].originalHeight ?? "0",
-                ),
-                ordinalWidth: double.tryParse(
-                  product.syncColorImages![0].images![0].originalHeight ?? "0",
-                ),
+
                 width: 320.w,
                 // the width of the image in the ui
                 height: 464.h,
@@ -3043,12 +3020,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               // product.images?.forEach((image) {
               url = addSuitableWidthAndHeightToImage(
                 imageUrl: product.images![0].filePath ?? "",
-                ordinalHeight: double.tryParse(
-                  product.images![0].originalHeight ?? "0",
-                ),
-                ordinalWidth: double.tryParse(
-                  product.images![0].originalHeight ?? "0",
-                ),
+
                 width: 320.w,
                 // the width of the image in the ui
                 height: 464.h,

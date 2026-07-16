@@ -103,10 +103,13 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
   Widget build(BuildContext context) {
     String url = addSuitableWidthAndHeightToImage(
       imageUrl: currentUrl,
-      ordinalWidth: widget.ordinalwidth,
-      ordinalHeight: widget.ordinalHeight,
       height: widget.height,
       width: widget.width,
+      // Boutique banners render with `height: null` + BoxFit.fitWidth, so the
+      // URL must constrain width only. Without this the height branch below
+      // pads them to `height * 1.5` (600px for a 250.h carousel) — ~2.4x the
+      // pixels actually drawn.
+      fromBoutique: widget.fromBoutique,
     );
 
     // 🔧 إصلاح: استخدام URL الأصلي إذا فشل التحويل
@@ -365,8 +368,6 @@ void clearCustomCashe() async {
 
 String addSuitableWidthAndHeightToImage({
   required String imageUrl,
-  double? ordinalHeight,
-  double? ordinalWidth,
   bool? fromBoutique,
   required double width,
   required double height,

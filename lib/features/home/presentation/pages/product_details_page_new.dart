@@ -3579,6 +3579,10 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                       return ValueListenableBuilder<bool>(
                         valueListenable: visibleRedeem,
                         builder: (context, _visibleRedeem, _) {
+                          if (kDebugMode)
+                            print(
+                              "GGGGGGGFFFFRRRProductDetailsImageWidget${productItem.productId}////${productItem.syncColorImages.isNullOrEmpty ? productItem.images![index].filePath! : productItem.syncColorImages![currentSelectedColor].images![index].filePath}",
+                            );
                           return ProductDetailsImageWidget(
                             key: ValueKey(
                               "ProductDetailsImageWidget${productItem.productId}",
@@ -3644,36 +3648,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                                       [],*/
                             height: 464.h,
                             width: 320.w,
-                            orginalHeight: widget.productItem == null
-                                ? 0
-                                : widget
-                                      .productItem!
-                                      .syncColorImages
-                                      .isNullOrEmpty
-                                ? double.tryParse(
-                                    productItem.images![index].originalHeight!,
-                                  )
-                                : double.tryParse(
-                                    productItem
-                                        .syncColorImages![currentSelectedColor]
-                                        .images![index]
-                                        .originalHeight!,
-                                  ),
-                            orginalWidth: widget.productItem == null
-                                ? 0
-                                : widget
-                                      .productItem!
-                                      .syncColorImages
-                                      .isNullOrEmpty
-                                ? double.tryParse(
-                                    productItem.images![index].originalWidth!,
-                                  )
-                                : double.tryParse(
-                                    productItem
-                                        .syncColorImages![currentSelectedColor]
-                                        .images![index]
-                                        .originalWidth!,
-                                  ),
+
                             imageUrl: productItem.syncColorImages.isNullOrEmpty
                                 ? productItem.images![index].filePath!
                                 : productItem

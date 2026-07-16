@@ -10,6 +10,8 @@ import '../../../config/theme/app_theme.dart';
 import '../../domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
 
+import '../../utils/json_size_cap.dart';
+
 class PrefsRepositoryImpl extends PrefsRepository {
   PrefsRepositoryImpl(
     this._preferences,
@@ -153,11 +155,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
   dynamic _capFieldForStorage(dynamic value) {
     if (value == null) return null;
     try {
-      final encoded = convert.jsonEncode(value);
-      if (encoded.length > _maxFieldChars) {
-        return {'_truncated': true, 'size': encoded.length};
-      }
-      return value;
+      // `exceeds` records the cap, not the real size: knowing the payload went
+      // past the cap is the whole point, and measuring by how much would mean
+      // encoding all of it again.
+      return jsonExceedsCap(value, _maxFieldChars)
+          ? {'_truncated': true, 'exceeds': _maxFieldChars}
+          : value;
     } catch (_) {
       // Not JSON-encodable (e.g. FormData) — store a marker instead of failing.
       return {'_truncated': true};

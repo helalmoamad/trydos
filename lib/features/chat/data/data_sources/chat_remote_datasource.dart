@@ -22,23 +22,22 @@ import '../../../../core/api/methods/post.dart';
 import '../models/ImageDetail.dart';
 import '../models/media_count.dart';
 import '../models/my_chats_response_model.dart';
+import '../parsers/heavy_response_parsers.dart';
 
 @injectable
 class ChatRemoteDataSource {
   //GetClient
-  Future<MyContactsResponseModel> getContacts() {
-    PostClient<MyContactsResponseModel> getContacts =
-        PostClient<MyContactsResponseModel>(
-          serverName: ServerName.chat,
-          requestPrams: RequestConfig<MyContactsResponseModel>(
-            endpoint: ChatEndPoints.getMyContactsEP,
-            response: ResponseValue<MyContactsResponseModel>(
-              fromJson: (response) =>
-                  MyContactsResponseModel.fromJson(response),
-            ),
-          ),
-        );
-    return getContacts();
+  Future<MyContactsResponseModel> getContacts() async {
+    // Build the model on a background isolate (see heavy_response_parsers.dart).
+    PostClient<dynamic> getContacts = PostClient<dynamic>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: ChatEndPoints.getMyContactsEP,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
+    final raw = await getContacts();
+    return parseContactsInBackground(raw);
   }
 
   Future<bool> readAllMessages(Map<String, dynamic> params) {
@@ -91,22 +90,18 @@ class ChatRemoteDataSource {
     return getDateTime();
   }
 
-  Future<MyChatsResponseModel> getChats(Map<String, dynamic> params) {
-    PostClient<MyChatsResponseModel> getChats =
-        PostClient<MyChatsResponseModel>(
-          serverName: ServerName.chat,
-          requestPrams: RequestConfig<MyChatsResponseModel>(
-            endpoint: ChatEndPoints.getMyChatsEP,
-            data: params,
-            response: ResponseValue<MyChatsResponseModel>(
-              fromJson: (response) {
-                return MyChatsResponseModel.fromJson(response);
-                //return MyChatsResponseModel();
-              },
-            ),
-          ),
-        );
-    return getChats();
+  Future<MyChatsResponseModel> getChats(Map<String, dynamic> params) async {
+    // Build the model on a background isolate (see heavy_response_parsers.dart).
+    PostClient<dynamic> getChats = PostClient<dynamic>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<dynamic>(
+        endpoint: ChatEndPoints.getMyChatsEP,
+        data: params,
+        response: ResponseValue<dynamic>(fromJson: (response) => response),
+      ),
+    );
+    final raw = await getChats();
+    return parseChatsInBackground(raw);
   }
 
   Future<GetOrderRecipientIdModel> getOrderRecipientId(

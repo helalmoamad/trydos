@@ -10,6 +10,7 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 
 import 'package:trydos/features/app/my_text_widget.dart';
 
@@ -227,12 +228,19 @@ class GlobaleInfoProduct extends StatelessWidget {
                             )
                           : const SizedBox.shrink()
                     : const SizedBox.shrink(),
-                state
+                (state
                             .cachedProductWithoutRelatedProductsModel[productId]
                             ?.product
-                            ?.recommendationStats?[0]
-                            .count ==
-                        0
+                            ?.recommendationStats
+                            .isNullOrEmpty ??
+                        true)
+                    ? const SizedBox.shrink()
+                    : state
+                              .cachedProductWithoutRelatedProductsModel[productId]
+                              ?.product
+                              ?.recommendationStats?[0]
+                              .count ==
+                          0
                     ? const SizedBox.shrink()
                     : SvgPicture.asset(AppAssets.recommendSvg),
                 const SizedBox(width: 2),

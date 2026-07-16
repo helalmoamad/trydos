@@ -42,10 +42,6 @@ class StoriesList extends StatefulWidget {
 
 class _StoriesListState extends State<StoriesList> {
   bool allowedToUploadStories = false;
-  Future<void> _loadAllowedToUploadStories() async {
-    allowedToUploadStories = await prefsRepository.getAllowedToUploadStories();
-  }
-
   final ScrollController listViewController = ScrollController();
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<dartz.Tuple2<int, int>> resizeStories = ValueNotifier(
@@ -56,7 +52,7 @@ class _StoriesListState extends State<StoriesList> {
   Timer? debounce;
   @override
   void initState() {
-    _loadAllowedToUploadStories();
+    allowedToUploadStories = prefsRepository.getAllowedToUploadStories();
     listViewController.addListener(() {
       if (debounce?.isActive ?? false) {
         debounce!.cancel();

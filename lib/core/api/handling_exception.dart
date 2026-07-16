@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import '../../enums/status_code_type.dart';
 import '../error/exception.dart';
@@ -11,21 +12,21 @@ typedef RequestCall<T> = Future<T> Function();
 
 mixin HandlingExceptionRequest {
   void prettyPrinterError(final String message) {
-    Logger(printer: PrettyPrinter(methodCount: 0)).e(message);
+    if (kDebugMode) Logger(printer: PrettyPrinter(methodCount: 0)).e(message);
   }
 
   void prettyPrinterWtf(final String message) {
     // ignore: deprecated_member_use
-    Logger(printer: PrettyPrinter(methodCount: 0)).wtf(message);
+    if (kDebugMode) Logger(printer: PrettyPrinter(methodCount: 0)).wtf(message);
   }
 
   void prettyPrinterI(final String message) {
-    Logger(printer: PrettyPrinter(methodCount: 0)).i(message);
+    if (kDebugMode) Logger(printer: PrettyPrinter(methodCount: 0)).i(message);
   }
 
   void prettyPrinterV(final String message) {
     // ignore: deprecated_member_use
-    Logger(printer: PrettyPrinter(methodCount: 0)).v(message);
+    if (kDebugMode) Logger(printer: PrettyPrinter(methodCount: 0)).v(message);
   }
 
   Exception getException({required int statusCode, String? message}) {

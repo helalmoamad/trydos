@@ -101,10 +101,11 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
               current.updateLikeCommentRatingStatus ||
           previous.translateCommentStatus != current.translateCommentStatus,
       builder: (context, state) {
-        if (kDebugMode) print(
-          "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD*******////${state.updateLikeCommentRatingStatus}",
-        );
-        if (state.getBuyersCommentsPaginationModel == null) {
+        if (kDebugMode)
+          print(
+            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD*******////${state.updateLikeCommentRatingStatus}",
+          );
+        if (state.getBuyersCommentsPaginationModel?['all'] == null) {
           return const SizedBox.shrink();
         }
         if (state.getBuyersCommentsPaginationModel!['all']!.items.isEmpty) {

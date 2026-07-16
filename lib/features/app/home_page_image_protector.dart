@@ -16,8 +16,10 @@ class HomePageImageProtector {
     _isInitialized = true;
     _startPeriodicCleanup();
 
-    debugPrint('🛡️ Home page image protector initialized');
-    debugPrint('📊 Max protected images: $_maxHomePageImages');
+    if (kDebugMode) {
+      debugPrint('🛡️ Home page image protector initialized');
+      debugPrint('📊 Max protected images: $_maxHomePageImages');
+    }
   }
 
   /// إضافة صورة للحماية (صور الصفحة الرئيسية)
@@ -31,8 +33,16 @@ class HomePageImageProtector {
       _homePageImages.add(imageUrl);
       _protectedImages.add(imageUrl);
 
-      debugPrint(
-          '🛡️ Protected home page image: ${_getShortUrl(imageUrl)} from $imageSource');
+      // Hot path: this runs from MyCachedNetworkImage.build(), i.e. once per
+      // visible image per frame while scrolling. `debugPrint` is NOT stripped
+      // from release builds, so leaving it unguarded means building this string
+      // (plus _getShortUrl) on every image, every frame, in the shipped app.
+      // The kDebugMode guard is const-folded away, taking the interpolation
+      // with it.
+      if (kDebugMode) {
+        debugPrint(
+            '🛡️ Protected home page image: ${_getShortUrl(imageUrl)} from $imageSource');
+      }
 
       // إذا تجاوز العدد المسموح، احذف الأقدم
       _enforceImageLimit();
@@ -90,8 +100,10 @@ class HomePageImageProtector {
       _protectedImages.remove(imageToRemove);
     }
 
-    debugPrint(
-        '🗑️ Removed $imagesToRemove old home page images to maintain limit');
+    if (kDebugMode) {
+      debugPrint(
+          '🗑️ Removed $imagesToRemove old home page images to maintain limit');
+    }
   }
 
   /// فلترة الصور للحذف (استبعاد المحمية)
@@ -101,7 +113,7 @@ class HomePageImageProtector {
 
     final protectedCount = imagesToDelete.length - filteredImages.length;
 
-    if (protectedCount > 0) {
+    if (protectedCount > 0 && kDebugMode) {
       debugPrint(
           '🛡️ Protected $protectedCount home page images from deletion');
     }
@@ -130,8 +142,10 @@ class HomePageImageProtector {
         _protectedImages.remove(imageToRemove);
       }
 
-      debugPrint(
-          '🧹 Maintenance cleanup: removed $imagesToRemove old protected images');
+      if (kDebugMode) {
+        debugPrint(
+            '🧹 Maintenance cleanup: removed $imagesToRemove old protected images');
+      }
     }
   }
 
@@ -158,7 +172,7 @@ class HomePageImageProtector {
   static void updateImageLimit(int newLimit) {
     _maxHomePageImages = newLimit;
     _enforceImageLimit();
-    debugPrint('📊 Updated max protected images to: $newLimit');
+    if (kDebugMode) debugPrint('📊 Updated max protected images to: $newLimit');
   }
 
   /// تنظيف الذاكرة عند إغلاق التطبيق
@@ -167,7 +181,7 @@ class HomePageImageProtector {
     _homePageImages.clear();
     _protectedImages.clear();
     _isInitialized = false;
-    debugPrint('🛡️ Home page image protector disposed');
+    if (kDebugMode) debugPrint('🛡️ Home page image protector disposed');
   }
 
   /// اختصار URL للعرض
@@ -183,8 +197,10 @@ class HomePageImageProtector {
       _homePageImages.add(imageUrl);
     }
 
-    debugPrint(
-        '🚨 Emergency protection applied to ${criticalImages.length} critical images');
+    if (kDebugMode) {
+      debugPrint(
+          '🚨 Emergency protection applied to ${criticalImages.length} critical images');
+    }
   }
 
   /// إزالة الحماية من صورة معينة
@@ -192,7 +208,7 @@ class HomePageImageProtector {
     final wasProtected = _protectedImages.remove(imageUrl);
     _homePageImages.remove(imageUrl);
 
-    if (wasProtected) {
+    if (wasProtected && kDebugMode) {
       debugPrint('🔓 Unprotected image: ${_getShortUrl(imageUrl)}');
     }
   }
@@ -203,7 +219,7 @@ class HomePageImageProtector {
         _protectedImages.length <= _maxHomePageImages &&
         _homePageImages.every((image) => _protectedImages.contains(image));
 
-    if (!isValid) {
+    if (!isValid && kDebugMode) {
       debugPrint('⚠️ Home page image protector system validation failed');
     }
 

@@ -56,6 +56,9 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                 previous.getDeliveredOrdersResponseStatus !=
                 current.getDeliveredOrdersResponseStatus,
             builder: (context, state) {
+              if (state.deliveredOrdersResponse?.data.deliveredOrders == null) {
+                return const SizedBox();
+              }
               final deliveredOrders =
                   state.deliveredOrdersResponse!.data.deliveredOrders;
 
@@ -523,7 +526,11 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
           ? 0
           : ((count / totalOrders) * 100).round();
 
-      return {"day": day.toString() == "10" ?  "+" + day.toString() : day.toString() , "percent": percent, "count": count};
+      return {
+        "day": day.toString() == "10" ? "+" + day.toString() : day.toString(),
+        "percent": percent,
+        "count": count,
+      };
     });
   }
 }

@@ -87,7 +87,7 @@ class PostClient<T> extends BaseApi<T> {
               response.requestOptions.method,
               null,
               requestPrams.data is! FormData
-                  ? response.data
+                  ? requestPrams.data
                   : {'data': 'formData'},
               responseTime: stopWatch.elapsed.toString(),
             );
