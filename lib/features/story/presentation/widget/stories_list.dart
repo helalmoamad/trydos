@@ -42,7 +42,6 @@ class StoriesList extends StatefulWidget {
 
 class _StoriesListState extends State<StoriesList> {
   bool allowedToUploadStories = false;
-
   final ScrollController listViewController = ScrollController();
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<dartz.Tuple2<int, int>> resizeStories = ValueNotifier(

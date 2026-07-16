@@ -26,6 +26,6 @@ class ConvertItemFromcartToOldCartParams {
 
   ConvertItemFromcartToOldCartParams({this.CartId});
   Map<String, dynamic> get map => {
-        "key": "${CartId}",
+        "key": int.tryParse(CartId!),
       }..removeWhere((key, value) => value == null);
 }

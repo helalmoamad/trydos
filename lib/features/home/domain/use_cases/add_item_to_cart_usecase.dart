@@ -34,7 +34,7 @@ class AddITemToCartParams {
     this.isRedeem,
   });
   Map<String, dynamic> get map => {
-    "id": id,
+    "id": int.tryParse(id!),
     "quantity": quantity,
     "is_luck": isRedeem,
     "product_variation_id": variationId,
