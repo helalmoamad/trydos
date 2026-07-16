@@ -105,6 +105,11 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
       imageUrl: currentUrl,
       height: widget.height,
       width: widget.width,
+      // Boutique banners render with `height: null` + BoxFit.fitWidth, so the
+      // URL must constrain width only. Without this the height branch below
+      // pads them to `height * 1.5` (600px for a 250.h carousel) — ~2.4x the
+      // pixels actually drawn.
+      fromBoutique: widget.fromBoutique,
     );
 
     // 🔧 إصلاح: استخدام URL الأصلي إذا فشل التحويل
