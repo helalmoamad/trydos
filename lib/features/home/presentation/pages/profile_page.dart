@@ -40,6 +40,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
+import 'package:trydos/features/home/presentation/widgets/profile_section/checklist_page.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/language_profile.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/profile_country_page.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/user_information_page.dart';
@@ -67,6 +68,10 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   final PanelController panelController = PanelController();
   final PageController pageController = PageController();
   final FocusNode focusNode = FocusNode();
+
+  /// True only between tapping the checklist row and the first page resolving,
+  /// so an unrelated GetChecklistEvent never shimmers the row or navigates.
+  bool _isOpeningChecklist = false;
   String phoneNumber = '';
   int isVisWhatsApp = 0;
   final ValueNotifier<bool> isVerified = ValueNotifier(true);
@@ -407,6 +412,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       LocaleKeys.settings.tr(),
                     ),
 
+                    SizedBox(height: 10.h, width: 1.sw),
+                    _checklistWidget(),
                     SizedBox(height: 10.h, width: 1.sw),
                     _actionWidget(
                       AppAssets.termSvg,
@@ -823,6 +830,56 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           ),
         ],
       ),
+    );
+  }
+
+  /// "My checklist" row. Tapping requests the first page and only navigates
+  /// once it succeeds; the row itself shimmers (same size) while in flight.
+  Widget _checklistWidget() {
+    return BlocConsumer<HomeBloc, HomeState>(
+      listenWhen: (p, c) => p.getChecklistStatus != c.getChecklistStatus,
+      listener: (context, state) {
+        if (!_isOpeningChecklist) return;
+
+        if (state.getChecklistStatus == GetChecklistStatus.success) {
+          _isOpeningChecklist = false;
+          // The profile tab stays mounted inside the base-page stack, so guard
+          // against pushing onto whatever tab the user moved to meanwhile.
+          if (!mounted || !ModalRoute.of(context)!.isCurrent) return;
+          HelperFunctions.slidingNavigation(context, const ChecklistPage());
+        } else if (state.getChecklistStatus == GetChecklistStatus.failure) {
+          _isOpeningChecklist = false;
+          showMessage(
+            LocaleKeys.something_went_wrong.tr(),
+            hasError: true,
+            context: context,
+          );
+        }
+      },
+      buildWhen: (p, c) => p.getChecklistStatus != c.getChecklistStatus,
+      builder: (context, state) {
+        final Widget row = _actionWidget(
+          AppAssets.checklistSvg,
+          LocaleKeys.my_checklist.tr(),
+        );
+
+        if (_isOpeningChecklist &&
+            state.getChecklistStatus == GetChecklistStatus.loading) {
+          return Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: row,
+          );
+        }
+
+        return InkWell(
+          onTap: () {
+            _isOpeningChecklist = true;
+            homeBloc.add(const GetChecklistEvent());
+          },
+          child: row,
+        );
+      },
     );
   }
 

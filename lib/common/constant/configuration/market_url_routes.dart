@@ -29,6 +29,8 @@ extension ScopeApi on String {
   String userNotificationScope() =>
       '$_api/${_currentVersion}/user-notifications/$this';
   String couponScope() => '$_api/${_currentVersion}/coupon/$this';
+  String checklistScope() =>
+      '$_api/${_currentVersion}/checklist${this != '' ? '/$this' : ''}';
   String firebaseTokensScope({bool current = false}) =>
       '$_api/${_currentVersion}/firebase_device_tokens${this != '' ? '/$this' : ''}';
 }
@@ -162,6 +164,14 @@ abstract class MarketEndPoints {
   static final getProductListingWithFiltersEP = 'with_filter'.productsScope();
 
   static final applyCouponEP = 'apply'.couponScope();
+
+  /// Checklist (marketGO server)
+  static final addToChecklistEP = ''.checklistScope();
+  static final getChecklistEP = ''.checklistScope();
+  static String checkChecklistExistEP(String productId) =>
+      'product/$productId/exist'.checklistScope();
+  static String deleteFromChecklistEP(String productId) =>
+      productId.checklistScope();
 
   static final storeFcmEP = ''.firebaseTokensScope();
   static String getOrderReturnDetailsEP(int returnRequestId) =>

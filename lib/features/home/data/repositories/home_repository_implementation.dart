@@ -5,6 +5,9 @@ import 'package:trydos/features/home/data/models/DeliveredOrdersResponse.dart';
 
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/apply_coupon_model.dart';
+import 'package:trydos/features/home/data/models/checklist_action_model.dart';
+import 'package:trydos/features/home/data/models/checklist_exist_model.dart';
+import 'package:trydos/features/home/data/models/get_checklist_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/currencies_response_model.dart';
@@ -874,6 +877,45 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
       tryCall: () =>
           dataSource.getDeliveredOrdersResponse(productId: productId),
+    );
+  }
+
+  //****************************** Checklist ******************************/
+
+  @override
+  Future<Either<Failure, ChecklistActionModel>> addToChecklist({
+    required int productId,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.addToChecklist(productId: productId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ChecklistActionModel>> deleteFromChecklist({
+    required int productId,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.deleteFromChecklist(productId: productId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ChecklistExistModel>> checkChecklistExist({
+    required int productId,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.checkChecklistExist(productId: productId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, GetChecklistModel>> getChecklist({
+    required int page,
+    required int pageSize,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getChecklist(page: page, pageSize: pageSize),
     );
   }
 }

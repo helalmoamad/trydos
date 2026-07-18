@@ -1,5 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/checklist_action_model.dart';
+import 'package:trydos/features/home/data/models/checklist_exist_model.dart';
+import 'package:trydos/features/home/data/models/get_checklist_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/currencies_response_model.dart';
@@ -317,5 +320,24 @@ abstract class HomeRepository {
 
   Future<Either<Failure, DeliveredOrdersResponse>> getDeliveredOrdersResponse({
     required int productId,
+  });
+
+  //****************************** Checklist ******************************/
+
+  Future<Either<Failure, ChecklistActionModel>> addToChecklist({
+    required int productId,
+  });
+
+  Future<Either<Failure, ChecklistActionModel>> deleteFromChecklist({
+    required int productId,
+  });
+
+  Future<Either<Failure, ChecklistExistModel>> checkChecklistExist({
+    required int productId,
+  });
+
+  Future<Either<Failure, GetChecklistModel>> getChecklist({
+    required int page,
+    required int pageSize,
   });
 }

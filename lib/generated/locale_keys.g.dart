@@ -406,6 +406,9 @@ abstract class LocaleKeys {
   static const notify_me_about_the_product_when =
       'notify_me_about_the_product_when';
   static const add_to_my_checklist = 'add_to_my_checklist';
+  static const my_checklist = 'my_checklist';
+  static const checklist_is_empty = 'checklist_is_empty';
+  static const something_went_wrong = 'something_went_wrong';
   static const add_to_compare = 'add_to_compare';
   static const number_of_products = 'number_of_products';
   static const expected_delivery = 'expected_delivery';

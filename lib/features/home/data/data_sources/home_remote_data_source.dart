@@ -11,6 +11,9 @@ import 'package:trydos/core/api/methods/put.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/DeliveredOrdersResponse.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/checklist_action_model.dart';
+import 'package:trydos/features/home/data/models/checklist_exist_model.dart';
+import 'package:trydos/features/home/data/models/get_checklist_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/create_return_request_model.dart';
@@ -1711,6 +1714,79 @@ class HomeRemoteDatasource {
 
     final raw = await client();
     return parseRelatedProductsInBackground(raw);
+  }
+
+  //****************************** Checklist ******************************/
+
+  Future<ChecklistActionModel> addToChecklist({required int productId}) {
+    PostClient<ChecklistActionModel> addToChecklist =
+        PostClient<ChecklistActionModel>(
+          serverName: ServerName.marketGO,
+          requestPrams: RequestConfig<ChecklistActionModel>(
+            endpoint: MarketEndPoints.addToChecklistEP,
+            data: {"product_id": productId},
+            response: ResponseValue<ChecklistActionModel>(
+              fromJson: (response) => ChecklistActionModel.fromJson(response),
+            ),
+          ),
+        );
+
+    return addToChecklist();
+  }
+
+  Future<ChecklistActionModel> deleteFromChecklist({required int productId}) {
+    DeleteClient<ChecklistActionModel> deleteFromChecklist =
+        DeleteClient<ChecklistActionModel>(
+          serverName: ServerName.marketGO,
+          requestPrams: RequestConfig<ChecklistActionModel>(
+            endpoint: MarketEndPoints.deleteFromChecklistEP(
+              productId.toString(),
+            ),
+            response: ResponseValue<ChecklistActionModel>(
+              fromJson: (response) => ChecklistActionModel.fromJson(response),
+            ),
+          ),
+        );
+
+    return deleteFromChecklist();
+  }
+
+  Future<ChecklistExistModel> checkChecklistExist({required int productId}) {
+    GetClient<ChecklistExistModel> checkChecklistExist =
+        GetClient<ChecklistExistModel>(
+          serverName: ServerName.marketGO,
+          requestPrams: RequestConfig<ChecklistExistModel>(
+            endpoint: MarketEndPoints.checkChecklistExistEP(
+              productId.toString(),
+            ),
+            response: ResponseValue<ChecklistExistModel>(
+              fromJson: (response) => ChecklistExistModel.fromJson(response),
+            ),
+          ),
+        );
+
+    return checkChecklistExist();
+  }
+
+  Future<GetChecklistModel> getChecklist({
+    required int page,
+    required int pageSize,
+  }) {
+    GetClient<GetChecklistModel> getChecklist = GetClient<GetChecklistModel>(
+      serverName: ServerName.marketGO,
+      requestPrams: RequestConfig<GetChecklistModel>(
+        endpoint: MarketEndPoints.getChecklistEP,
+        queryParameters: {
+          "page": page.toString(),
+          "page_size": pageSize.toString(),
+        },
+        response: ResponseValue<GetChecklistModel>(
+          fromJson: (response) => GetChecklistModel.fromJson(response),
+        ),
+      ),
+    );
+
+    return getChecklist();
   }
 
   Future<DeliveredOrdersResponse> getDeliveredOrdersResponse({

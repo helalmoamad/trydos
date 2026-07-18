@@ -823,11 +823,19 @@ class _ProductListing3DSliderOptimizedState
                                           numberToFormate:
                                               ((HelperFunctions.truncateToDecimalPlaces(
                                                 price,
-                                                state
-                                                    .getCurrencyForCountryModel!
-                                                    .data!
-                                                    .currency!
-                                                    .decimalDigits!,
+                                                state.getCurrencyForCountryModel ==
+                                                        null
+                                                    ? 1
+                                                    : state
+                                                              .getCurrencyForCountryModel!
+                                                              .data ==
+                                                          null
+                                                    ? 1
+                                                    : state
+                                                          .getCurrencyForCountryModel!
+                                                          .data!
+                                                          .currency!
+                                                          .decimalDigits!,
                                               )) *
                                               exchangeRate),
                                         ),
