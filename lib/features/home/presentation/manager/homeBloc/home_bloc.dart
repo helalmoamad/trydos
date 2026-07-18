@@ -2617,11 +2617,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           );
           return;
         }
-        oldCarts = r.data?.original?.data?.oldCart;
+        oldCarts = r.data?.oldCart;
         oldCarts?.forEach((element) {
           oldCartCollection.add(element);
         });
-
+        print(
+          "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${oldCarts = r.data?.oldCart}",
+        );
         state.cartCollection?.forEach((elements) {
           oldCartCollection.removeWhere(
             (element) =>
@@ -2632,6 +2634,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 elements.productId == element.productId,
           );
         });
+        print(
+          "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS**${oldCartCollection}",
+        );
 
         //Map<String, Products> productITemForCart =
         //    Map.of(state.productITemForCart);

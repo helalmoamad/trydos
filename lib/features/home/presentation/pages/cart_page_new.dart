@@ -82,7 +82,8 @@ class _CartPageState extends State<CartPage> {
   void initState() {
     LastPagesTracker.push("Cart Page");
     isExpanded.value = false;
-    if (kDebugMode) print('Firebase app:Firebase.app//////s${Firebase.apps.length}');
+    if (kDebugMode)
+      print('Firebase app:Firebase.app//////s${Firebase.apps.length}');
 
     appBloc = BlocProvider.of<AppBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
@@ -408,9 +409,10 @@ class _CartPageState extends State<CartPage> {
                       .decimalDigits!,
                 ) *
                 state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
-            if (kDebugMode) print(
-              "totlalPriceWithoutShipping ${state.getCartShippingItemsModel?.data?.productsDiscount}",
-            );
+            if (kDebugMode)
+              print(
+                "totlalPriceWithoutShipping ${state.getCartShippingItemsModel?.data?.productsDiscount}",
+              );
             totlalPriceWithDiscount =
                 (((state.getCartShippingItemsModel?.data?.productsDiscount ?? 0)
                     .abs()) +

@@ -184,7 +184,9 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                   ],
                 ),
               ),
-              state.getFqaCommentsPaginationModel!['all']!.items.isEmpty
+              state.getFqaCommentsPaginationModel?['all'] == null
+                  ? const SizedBox.shrink()
+                  : state.getFqaCommentsPaginationModel!['all']!.items.isEmpty
                   ? const SizedBox.shrink()
                   : SizedBox(
                       height: 250.h,

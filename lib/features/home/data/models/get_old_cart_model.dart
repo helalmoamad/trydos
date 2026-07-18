@@ -14,11 +14,11 @@ String getOldCartModelToJson(GetOldCartModel data) =>
 
 class GetOldCartModel {
   final String? message;
-  final GetOldCartModelData? data;
+  final OriginalData? data;
 
   GetOldCartModel({this.message, this.data});
 
-  GetOldCartModel copyWith({String? message, GetOldCartModelData? data}) =>
+  GetOldCartModel copyWith({String? message, OriginalData? data}) =>
       GetOldCartModel(
         message: message ?? this.message,
         data: data ?? this.data,
@@ -27,85 +27,27 @@ class GetOldCartModel {
   factory GetOldCartModel.fromJson(Map<String, dynamic> json) =>
       GetOldCartModel(
         message: json["message"],
-        data: json["data"] == null
-            ? null
-            : GetOldCartModelData.fromJson(json["data"]),
+        data: json["data"] == null ? null : OriginalData.fromJson(json["data"]),
       );
-
-  Map<String, dynamic> toJson() => {"message": message, "data": data?.toJson()};
-}
-
-class GetOldCartModelData {
-  final Original? original;
-  final dynamic exception;
-
-  GetOldCartModelData({this.original, this.exception});
-
-  GetOldCartModelData copyWith({Original? original, dynamic exception}) =>
-      GetOldCartModelData(
-        original: original ?? this.original,
-        exception: exception ?? this.exception,
-      );
-
-  factory GetOldCartModelData.fromJson(Map<String, dynamic> json) =>
-      GetOldCartModelData(
-        original: json["original"] == null
-            ? null
-            : Original.fromJson(json["original"]),
-        exception: json["exception"],
-      );
-
-  Map<String, dynamic> toJson() => {
-    "original": original?.toJson(),
-    "exception": exception,
-  };
-}
-
-class Original {
-  final String? message;
-  final OriginalData? data;
-
-  Original({this.message, this.data});
-
-  Original copyWith({String? message, OriginalData? data}) =>
-      Original(message: message ?? this.message, data: data ?? this.data);
-
-  factory Original.fromJson(Map<String, dynamic> json) => Original(
-    message: json["message"],
-    data: json["data"] == null ? null : OriginalData.fromJson(json["data"]),
-  );
 
   Map<String, dynamic> toJson() => {"message": message, "data": data?.toJson()};
 }
 
 class OriginalData {
-  final List<String>? availablePaymentMethod;
   final List<OldCart>? oldCart;
 
-  OriginalData({this.availablePaymentMethod, this.oldCart});
+  OriginalData({this.oldCart});
 
-  OriginalData copyWith({
-    List<String>? availablePaymentMethod,
-    List<OldCart>? oldCart,
-  }) => OriginalData(
-    availablePaymentMethod:
-        availablePaymentMethod ?? this.availablePaymentMethod,
-    oldCart: oldCart ?? this.oldCart,
-  );
+  OriginalData copyWith({List<OldCart>? oldCart}) =>
+      OriginalData(oldCart: oldCart ?? this.oldCart);
 
   factory OriginalData.fromJson(Map<String, dynamic> json) => OriginalData(
-    availablePaymentMethod: json["available_payment_method"] == null
-        ? []
-        : List<String>.from(json["available_payment_method"]!.map((x) => x)),
     oldCart: json["oldCart"] == null
         ? []
         : List<OldCart>.from(json["oldCart"]!.map((x) => OldCart.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
-    "available_payment_method": availablePaymentMethod == null
-        ? []
-        : List<dynamic>.from(availablePaymentMethod!.map((x) => x)),
     "oldCart": oldCart == null
         ? []
         : List<dynamic>.from(oldCart!.map((x) => x.toJson())),
