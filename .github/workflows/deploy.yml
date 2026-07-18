@@ -35,6 +35,7 @@ jobs:
           SENTRY_DNS="https://0640301de79871dbe157593e7ec6a5e0@o4508523067932672.ingest.us.sentry.io/4508523079335936"
           SMART_LOOK_KEY="bcc47eb08c142a3d766929499a74f11214c38261"
           MARKET_URL="https://trydos_develop.ramaaz.dev/"
+          MARKETGo_URL="https://trydosv2.ramaaz.dev/"
           STORY_URL="https://trydos_stories_staging.ramaaz.dev"
           CHAT_URL="https://chating_staging_trydos_new.ramaaz.dev"
           CHAT_NEST_URL="https://trydoschatnest.ramaaz.dev"
