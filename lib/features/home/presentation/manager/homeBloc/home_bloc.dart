@@ -5705,9 +5705,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         // Reload the page we are on. `_onGetChecklistEvent` walks back a page
         // if this delete emptied it, so no page math is needed here — which
         // also makes concurrent deletes on the same page safe.
-        add(
-          GetChecklistEvent(page: state.checklistPageData?.currentPage ?? 1),
-        );
+        add(GetChecklistEvent(page: state.checklistPageData?.currentPage ?? 1));
       },
     );
   }
@@ -5815,13 +5813,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               phone: r.data?.phone,
             ),
           );
-          GetIt.I<AuthBloc>().add(
+          /*   GetIt.I<AuthBloc>().add(
             LoginToWalletEvent(
               otpIdToken: prefsRepository.idToken,
               name: r.data?.name,
               phone: r.data?.phone,
             ),
-          );
+          );*/
           await NotificationProcess().fcmToken(
             r.data?.phone,
             r.data?.name,

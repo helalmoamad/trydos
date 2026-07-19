@@ -402,13 +402,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               phone: r.data?.user?.phone,
             ),
           );
-          add(
+          /* add(
             LoginToWalletEvent(
               otpIdToken: r.data?.idToken,
               name: r.data?.user?.name,
               phone: r.data?.user?.phone,
             ),
-          );
+          );*/
           add(
             GenerateTokenForCommentEvent(
               mobilePhone: r.data?.user?.phone,
@@ -659,9 +659,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
           // GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
           _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-          if (kDebugMode) print(
-            "*****************************-----------------------------${r.data!.token!}",
-          );
+          if (kDebugMode)
+            print(
+              "*****************************-----------------------------${r.data!.token!}",
+            );
           await _prefsRepository.setVerifiedPhone(
             r.data!.user?.isPhoneVerified == 1,
           );
@@ -700,13 +701,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               phone: r.data!.user!.phone,
             ),
           );
-          add(
+          /*add(
             LoginToWalletEvent(
               otpIdToken: r.data?.idToken,
               name: r.data?.user?.name,
               phone: r.data?.user?.phone,
             ),
-          );
+          );*/
           add(
             GenerateTokenForCommentEvent(
               mobilePhone: r.data?.user?.phone,
@@ -836,13 +837,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             phone: r.data!.user!.phone,
           ),
         );
-        add(
+        /* add(
           LoginToWalletEvent(
             otpIdToken: r.data?.idToken,
             name: r.data?.user?.name,
             phone: r.data?.user?.phone,
           ),
-        );
+        );*/
         add(
           GenerateTokenForCommentEvent(
             mobilePhone: r.data?.user?.phone,
@@ -1000,9 +1001,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (userInfo) async {
         ErrorManager.resetRetry('GetCustomerInfoEvent');
-        if (kDebugMode) print(
-          "userInfo.user?.isPhoneVerified ${userInfo.toJson()}------------------",
-        );
+        if (kDebugMode)
+          print(
+            "userInfo.user?.isPhoneVerified ${userInfo.toJson()}------------------",
+          );
 
         _prefsRepository.setAllowedToUploadStories(
           userInfo.isAllowedToUploadStories ?? false,

@@ -7,6 +7,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
@@ -130,13 +131,33 @@ class _ChecklistPageState extends State<ChecklistPage> {
       child: Row(
         children: [
           SizedBox(width: 10.w),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12.r),
-            child: MyCachedNetworkImage(
-              imageUrl: item.image ?? '',
-              width: 70.w,
-              height: 70.h,
-              imageFit: BoxFit.cover,
+          InkWell(
+            onTap: () {
+              BlocProvider.of<HomeBloc>(
+                context,
+              ).add(GetFullProductDetailsEvent(productSlug: item.slug ?? ""));
+              Future.delayed(
+                const Duration(milliseconds: 300),
+                () => Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        ProductDetailsPageNew(
+                          productSlugForOpeningChatDirectly: item.slug ?? "",
+                          productIdForOpeningChatDirectly:
+                              item.id?.toString() ?? "",
+                        ),
+                  ),
+                ),
+              );
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
+              child: MyCachedNetworkImage(
+                imageUrl: item.image ?? '',
+                width: 70.w,
+                height: 70.h,
+                imageFit: BoxFit.cover,
+              ),
             ),
           ),
           SizedBox(width: 15.w),
