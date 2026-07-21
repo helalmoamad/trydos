@@ -510,20 +510,49 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                     .stories![state
                                         .currentStoryInEachCollection[widget
                                         .collectionIndex]!]
-                                    .oneLink
+                                    .productSlug
                                     .isNullOrEmpty
-                                ? const SizedBox.shrink()
+                                ? state
+                                          .storiesCollections[widget
+                                              .collectionIndex]
+                                          .stories![state
+                                              .currentStoryInEachCollection[widget
+                                              .collectionIndex]!]
+                                          .oneLink
+                                          .isNullOrEmpty
+                                      ? const SizedBox.shrink()
+                                      : positioned.Positioned(
+                                          bottom: 25,
+                                          child: _handleWithUrlWidget(
+                                            (state
+                                                    .storiesCollections[widget
+                                                        .collectionIndex]
+                                                    .stories![state
+                                                        .currentStoryInEachCollection[widget
+                                                        .collectionIndex]!]
+                                                    .oneLink ??
+                                                ""),
+                                          ),
+                                        )
                                 : positioned.Positioned(
                                     bottom: 25,
-                                    child: _handleWithUrlWidget(
-                                      (state
+                                    child: _handleWithProductWidget(
+                                      state
                                               .storiesCollections[widget
                                                   .collectionIndex]
                                               .stories![state
                                                   .currentStoryInEachCollection[widget
                                                   .collectionIndex]!]
-                                              .oneLink ??
-                                          ""),
+                                              .productId ??
+                                          "",
+                                      state
+                                              .storiesCollections[widget
+                                                  .collectionIndex]
+                                              .stories![state
+                                                  .currentStoryInEachCollection[widget
+                                                  .collectionIndex]!]
+                                              .productSlug ??
+                                          "",
                                     ),
                                   ),
                           ],
@@ -614,24 +643,23 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                 try {
                                   widget.animatedController.animateTo(
                                     1.0,
-                                    duration: const Duration(
-                                      milliseconds: 120,
-                                    ),
+                                    duration: const Duration(milliseconds: 120),
                                   );
                                 } catch (_) {
                                   // ignore if controller disposed
                                 }
                                 return;
                               }
-                            
+
                               // Otherwise, just stop the animation (paused mid-video)
                               widget.animatedController.stop();
                             });
                           },
                           onError: (e) {
-                            if (kDebugMode) print(
-                              "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG$e",
-                            );
+                            if (kDebugMode)
+                              print(
+                                "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG$e",
+                              );
                             GetIt.I<StoryBloc>().add(
                               LoadFailureEvent(
                                 collectionId: widget.collectionIndex,
@@ -694,19 +722,48 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                         .stories![state
                                             .currentStoryInEachCollection[widget
                                             .collectionIndex]!]
-                                        .oneLink
+                                        .productSlug
                                         .isNullOrEmpty
-                                    ? const SizedBox.shrink()
+                                    ? state
+                                              .storiesCollections[widget
+                                                  .collectionIndex]
+                                              .stories![state
+                                                  .currentStoryInEachCollection[widget
+                                                  .collectionIndex]!]
+                                              .oneLink
+                                              .isNullOrEmpty
+                                          ? const SizedBox.shrink()
+                                          : positioned.Positioned(
+                                              bottom: 25,
+                                              child: _handleWithUrlWidget(
+                                                state
+                                                        .storiesCollections[widget
+                                                            .collectionIndex]
+                                                        .stories![state
+                                                            .currentStoryInEachCollection[widget
+                                                            .collectionIndex]!]
+                                                        .oneLink ??
+                                                    "",
+                                              ),
+                                            )
                                     : positioned.Positioned(
                                         bottom: 25,
-                                        child: _handleWithUrlWidget(
+                                        child: _handleWithProductWidget(
                                           state
                                                   .storiesCollections[widget
                                                       .collectionIndex]
                                                   .stories![state
                                                       .currentStoryInEachCollection[widget
                                                       .collectionIndex]!]
-                                                  .oneLink ??
+                                                  .productId ??
+                                              "",
+                                          state
+                                                  .storiesCollections[widget
+                                                      .collectionIndex]
+                                                  .stories![state
+                                                      .currentStoryInEachCollection[widget
+                                                      .collectionIndex]!]
+                                                  .productSlug ??
                                               "",
                                         ),
                                       ),
@@ -1432,6 +1489,30 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     }
   }
 
+  void tapOnProduct(String productId, String productSlug) async {
+    BlocProvider.of<HomeBloc>(context).add(
+      const homeEvent.ChangeStatusOFGetProductsDetailsToSuccessEvent(
+        isStatusInitaial: true,
+      ),
+    );
+    BlocProvider.of<HomeBloc>(
+      context,
+    ).add(homeEvent.GetFullProductDetailsEvent(productSlug: productSlug));
+
+    Future.delayed(
+      const Duration(milliseconds: 300),
+      () => Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              ProductDetailsPageNew(
+                productSlugForOpeningChatDirectly: productSlug,
+                productIdForOpeningChatDirectly: productId,
+              ),
+        ),
+      ),
+    );
+  }
+
   void tapOnUrl(String uri) async {
     try {
       if (uri.contains("trydos")) {
@@ -1505,6 +1586,45 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       }
       // Navigator.of(context).pop();
     } catch (e) {}
+  }
+
+  Widget _handleWithProductWidget(String productId, String productSlug) {
+    return Material(
+      color: const Color.fromRGBO(0, 0, 0, 0),
+      child: Container(
+        width: 150.w,
+        height: 35.h,
+        child: InkWell(
+          onTap: () {
+            _videoController?.pause();
+            widget.animatedController.stop();
+            tapOnProduct(productId, productSlug);
+          },
+          child: Center(
+            child: Container(
+              width: 150.w,
+              height: 35.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15.r),
+              ),
+              child: Center(
+                child: Text(
+                  LocaleKeys.view_product.tr(),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    fontSize: 10.sp,
+                    letterSpacing: 0.18,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _handleWithUrlWidget(String url) {

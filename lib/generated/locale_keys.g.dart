@@ -6,6 +6,7 @@ abstract class LocaleKeys {
   static const information_securely = 'information_securely';
   static const translate = 'translate';
   static const work_days = 'work_days';
+  static const view_product = 'view_product';
   static const sellers = 'Sellers';
   static const all_questions_below_from = 'all_questions_below_from';
   static const visitors_not_necessarily_from = 'visitors_not_necessarily_from';
@@ -911,36 +912,36 @@ abstract class LocaleKeys {
   static const update = 'update';
   static const similar_products = 'similar_products';
 
-static const report_reason = 'report_reason';
-static const details_optional = 'details_optional';
-static const write_details_here = 'write_details_here';
-static const send_report = 'send_report';
+  static const report_reason = 'report_reason';
+  static const details_optional = 'details_optional';
+  static const write_details_here = 'write_details_here';
+  static const send_report = 'send_report';
 
-static const inappropriate_content = 'inappropriate_content';
-static const harassment = 'harassment';
-static const spam = 'spam';
-static const intellectual_property = 'intellectual_property';
-static const violence = 'violence';
+  static const inappropriate_content = 'inappropriate_content';
+  static const harassment = 'harassment';
+  static const spam = 'spam';
+  static const intellectual_property = 'intellectual_property';
+  static const violence = 'violence';
 
-static const report_sent_successfully = 'report_sent_successfully';
-static const report_failed = 'report_failed';
+  static const report_sent_successfully = 'report_sent_successfully';
+  static const report_failed = 'report_failed';
 
-static const sort_products = 'sort_products';
-static const sort_choose_ordering = 'sort_choose_ordering';
-static const sort_default = 'sort_default';
-static const sort_best_match = 'sort_best_match';
-static const sort_best_sellers = 'sort_best_sellers';
-static const sort_most_bought = 'sort_most_bought';
-static const sort_new_arrivals = 'sort_new_arrivals';
-static const sort_by_date_added = 'sort_by_date_added';
-static const sort_newest = 'sort_newest';
-static const sort_oldest = 'sort_oldest';
-static const sort_price = 'sort_price';
-static const sort_by_product_price = 'sort_by_product_price';
-static const sort_low_to_high = 'sort_low_to_high';
-static const sort_high_to_low = 'sort_high_to_low';
-static const sort_name = 'sort_name';
-static const sort_alphabetical = 'sort_alphabetical';
-static const sort_a_to_z = 'sort_a_to_z';
-static const sort_z_to_a = 'sort_z_to_a';
+  static const sort_products = 'sort_products';
+  static const sort_choose_ordering = 'sort_choose_ordering';
+  static const sort_default = 'sort_default';
+  static const sort_best_match = 'sort_best_match';
+  static const sort_best_sellers = 'sort_best_sellers';
+  static const sort_most_bought = 'sort_most_bought';
+  static const sort_new_arrivals = 'sort_new_arrivals';
+  static const sort_by_date_added = 'sort_by_date_added';
+  static const sort_newest = 'sort_newest';
+  static const sort_oldest = 'sort_oldest';
+  static const sort_price = 'sort_price';
+  static const sort_by_product_price = 'sort_by_product_price';
+  static const sort_low_to_high = 'sort_low_to_high';
+  static const sort_high_to_low = 'sort_high_to_low';
+  static const sort_name = 'sort_name';
+  static const sort_alphabetical = 'sort_alphabetical';
+  static const sort_a_to_z = 'sort_a_to_z';
+  static const sort_z_to_a = 'sort_z_to_a';
 }
