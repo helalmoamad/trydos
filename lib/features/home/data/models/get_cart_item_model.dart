@@ -366,7 +366,7 @@ class Cart {
         : VariationCart.fromJson(json["variations"]),
     variant: json["variant"] == null ? null : json["variant"],
     availableQuantity: json["available_quantity"],
-    maxAllowedQty: json["max_allowed_qty"],
+    maxAllowedQty: json["max_allowed_qty"].toString(),
     vendorName: json["vendor_name"],
     quantity: json["quantity"],
     discount: json["discount"]?.toDouble(),

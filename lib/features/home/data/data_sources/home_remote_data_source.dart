@@ -87,7 +87,7 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<StartingSettingsResponseModel> getStartingSettings =
         GetClient<StartingSettingsResponseModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<StartingSettingsResponseModel>(
             endpoint: MarketEndPoints.getStartingSettingsEP,
             response: ResponseValue<StartingSettingsResponseModel>(
@@ -365,7 +365,7 @@ class HomeRemoteDatasource {
   Future<GeColorsAndSizesForSearchModel> getColorsAndSizesForSearch() {
     GetClient<GeColorsAndSizesForSearchModel> getColorsAndSizesForSearch =
         GetClient<GeColorsAndSizesForSearchModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<GeColorsAndSizesForSearchModel>(
             endpoint: MarketEndPoints.getColorsAndSizesForSearchEP,
             response: ResponseValue<GeColorsAndSizesForSearchModel>(
@@ -399,7 +399,7 @@ class HomeRemoteDatasource {
   getNotificationTypeForProduct() async {
     // Build the model on a background isolate (see heavy_response_parsers.dart).
     GetClient<dynamic> getNotificationTypeForProduct = GetClient<dynamic>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<dynamic>(
         endpoint: MarketEndPoints.getNotificationTypeForProductEP,
         response: ResponseValue<dynamic>(fromJson: (response) => response),
@@ -468,7 +468,7 @@ class HomeRemoteDatasource {
     PostClient<FirebaseSettingForNotificationModel>
     changeCountryLanguageFornotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.changeCountryLanguageEP,
             data: params,
@@ -485,7 +485,7 @@ class HomeRemoteDatasource {
   Future<FirebaseSettingForNotificationModel> getMyFirebaseSettings() async {
     // Build the model on a background isolate (see heavy_response_parsers.dart).
     GetClient<dynamic> getMyFirebaseSettings = GetClient<dynamic>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<dynamic>(
         endpoint: MarketEndPoints.getMyFirebaseSettingsEP,
         response: ResponseValue<dynamic>(fromJson: (response) => response),
@@ -500,7 +500,7 @@ class HomeRemoteDatasource {
   ) {
     PostClient<FirebaseSettingForNotificationModel> updateWhatsappNotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.updateWhatsappEP,
             data: params,
@@ -519,7 +519,7 @@ class HomeRemoteDatasource {
   ) {
     PostClient<FirebaseSettingForNotificationModel> updateFirebaseNotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.updateFirebaseEP,
             data: params,
@@ -538,7 +538,7 @@ class HomeRemoteDatasource {
   ) {
     PostClient<FirebaseSettingForNotificationModel> updateEmailNotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.updateEmailEP,
             data: params,
@@ -558,7 +558,7 @@ class HomeRemoteDatasource {
     PostClient<FirebaseSettingForNotificationModel>
     updateNotificationFrequency =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.updateNotificationFrequencyEP,
             data: params,
@@ -578,7 +578,7 @@ class HomeRemoteDatasource {
     PostClient<FirebaseSettingForNotificationModel>
     unSubscribeTopicFornotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.unsubscribeTopicEP,
             data: params,
@@ -598,7 +598,7 @@ class HomeRemoteDatasource {
     PostClient<FirebaseSettingForNotificationModel>
     subscribeTopicFornotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.subscribeTopicEP,
             data: params,
@@ -681,7 +681,7 @@ class HomeRemoteDatasource {
   Future<GetCurrencyForCountryModel> getCurrencyForCountry() {
     GetClient<GetCurrencyForCountryModel> getCurrencyForCountry =
         GetClient<GetCurrencyForCountryModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<GetCurrencyForCountryModel>(
             endpoint: MarketEndPoints.getCurrencyEP,
             queryParameters: {
@@ -706,7 +706,7 @@ class HomeRemoteDatasource {
   Future<UpdateProfileModel> updateProfile(Map<String, dynamic> params) {
     PostClient<UpdateProfileModel> updateProfile =
         PostClient<UpdateProfileModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<UpdateProfileModel>(
             endpoint: MarketEndPoints.updateProfileEP,
             data: params,
@@ -836,7 +836,7 @@ class HomeRemoteDatasource {
 
   Future<bool> sendErrorToMobileErrorLog(Map<String, dynamic> params) {
     PostClient<bool> sendErrorToMobileErrorLog = PostClient<bool>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<bool>(
         endpoint: MarketEndPoints.sendErrorToMobileErrorLogEP,
         data: params,
@@ -865,7 +865,7 @@ class HomeRemoteDatasource {
   Future<GetOldCartModel> getOldCartItems() async {
     // Build the model on a background isolate (see heavy_response_parsers.dart).
     GetClient<dynamic> getOldCart = GetClient<dynamic>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<dynamic>(
         endpoint: MarketEndPoints.getOldCartItemsEP,
         response: ResponseValue<dynamic>(fromJson: (response) => response),
@@ -892,7 +892,7 @@ class HomeRemoteDatasource {
   Future<GetCartShippingItemsModel> getCartShippingItems() async {
     // Build the model on a background isolate (see heavy_response_parsers.dart).
     GetClient<dynamic> getCartShippingItems = GetClient<dynamic>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<dynamic>(
         endpoint: MarketEndPoints.getCartItemEP,
         response: ResponseValue<dynamic>(fromJson: (response) => response),
@@ -957,7 +957,7 @@ class HomeRemoteDatasource {
 
   Future<bool> hideItemsInOldCart(Map<String, dynamic> params) {
     PostClient<bool> hideItemsInOldCart = PostClient<bool>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<bool>(
         endpoint: MarketEndPoints.hideItemsInOldCartEP,
         data: params,
@@ -1063,7 +1063,7 @@ class HomeRemoteDatasource {
   Future<UpdateItemInCartModel> updateItemInCart(Map<String, dynamic> params) {
     PostClient<UpdateItemInCartModel> updateItemInCart =
         PostClient<UpdateItemInCartModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<UpdateItemInCartModel>(
             endpoint: MarketEndPoints.updateItemCartItemEP,
             data: params,
@@ -1096,7 +1096,7 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<GetAllowedCountriesModel> verifyOtpSignIn =
         GetClient<GetAllowedCountriesModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<GetAllowedCountriesModel>(
             endpoint: MarketEndPoints.getAllowesdCountriesEP,
             response: ResponseValue<GetAllowedCountriesModel>(
@@ -1142,7 +1142,7 @@ class HomeRemoteDatasource {
 
   Future<String> storeFcmTokenOfMarket(Map<String, dynamic> params) {
     PostClient<String> storeFcmTokenOfMarket = PostClient<String>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<String>(
         endpoint: MarketEndPoints.storeFcmOfMarketEP,
         data: params,
@@ -1278,7 +1278,7 @@ class HomeRemoteDatasource {
   Future<CheckAvailabilityProductCartModel> checkAvailabilityProductCart() {
     GetClient<CheckAvailabilityProductCartModel> checkAvailabilityProductCart =
         GetClient<CheckAvailabilityProductCartModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<CheckAvailabilityProductCartModel>(
             endpoint: MarketEndPoints.checkAvailabilityProductCartEP,
             response: ResponseValue<CheckAvailabilityProductCartModel>(
@@ -1293,7 +1293,7 @@ class HomeRemoteDatasource {
 
   Future<ApplyCouponModel> applyCoupon({required String code}) {
     GetClient<ApplyCouponModel> applyCoupon = GetClient<ApplyCouponModel>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<ApplyCouponModel>(
         endpoint: MarketEndPoints.applyCouponEP,
         queryParameters: {"code": code},
@@ -1309,7 +1309,7 @@ class HomeRemoteDatasource {
   Future<GetCartShippingItemsModel> getCartOverview() {
     GetClient<GetCartShippingItemsModel> getCartOverview =
         GetClient<GetCartShippingItemsModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<GetCartShippingItemsModel>(
             endpoint: MarketEndPoints.getCartOverviewEP,
             response: ResponseValue<GetCartShippingItemsModel>(
@@ -1325,7 +1325,7 @@ class HomeRemoteDatasource {
   Future<GetUserNotificationsModel> getUserNotifications({required int page}) {
     GetClient<GetUserNotificationsModel> getUserNotifications =
         GetClient<GetUserNotificationsModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<GetUserNotificationsModel>(
             endpoint: MarketEndPoints.getUserNotificationsEP,
             queryParameters: {"page": page.toString()},
@@ -1375,7 +1375,7 @@ class HomeRemoteDatasource {
   ) {
     PostClient<ReadOnlyMessageFromApiModel> sendAcceptOfNotificationMarket =
         PostClient<ReadOnlyMessageFromApiModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
             endpoint: MarketEndPoints.sendAcceptOfNotificationMarketEP,
             data: params,
@@ -1426,7 +1426,7 @@ class HomeRemoteDatasource {
   Future<ColorSizeForProductModel> getProductColorSizeSyncAttribute(String id) {
     GetClient<ColorSizeForProductModel> getProductColorSizeSyncAttribute =
         GetClient<ColorSizeForProductModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<ColorSizeForProductModel>(
             endpoint: MarketEndPoints.getProductColorSizeSyncAttributeEP(id),
             response: ResponseValue<ColorSizeForProductModel>(

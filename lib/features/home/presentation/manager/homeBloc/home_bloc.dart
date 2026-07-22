@@ -678,7 +678,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     currentStoryInEachCollection[event.collectionIndex] =
         event.selectedStoryIndexInCollection == -1
-        ? currentStoryInEachCollection[event.collectionIndex]
+        ? (currentStoryInEachCollection[event.collectionIndex] ?? 0)
         : event.selectedStoryIndexInCollection;
     //todo make  the state loading
 
@@ -695,7 +695,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     var currentStoryInSelectedCollection =
         state.storiesCollections[event.collectionIndex].stories![max(
-          state.currentStoryInEachCollection[event.collectionIndex]!,
+          state.currentStoryInEachCollection[event.collectionIndex] ?? 0,
           event.selectedStoryIndexInCollection,
         )];
     if (currentStoryInSelectedCollection.isPhoto == 1) {

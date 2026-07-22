@@ -271,7 +271,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     );
     currentStoryInEachCollection[event.collectionIndex] =
         event.selectedStoryIndexInCollection == -1
-        ? currentStoryInEachCollection[event.collectionIndex]
+        ? (currentStoryInEachCollection[event.collectionIndex] ?? 0)
         : event.selectedStoryIndexInCollection;
     //todo make  the state loading
     emit(
@@ -287,7 +287,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
 
     var currentStoryInSelectedCollection =
         state.storiesCollections[event.collectionIndex].stories![max(
-          state.currentStoryInEachCollection[event.collectionIndex]!,
+          state.currentStoryInEachCollection[event.collectionIndex] ?? 0,
           event.selectedStoryIndexInCollection,
         )];
     if (currentStoryInSelectedCollection.isPhoto == 1) {
@@ -414,8 +414,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           state.storiesCollections,
         );
         ErrorManager.resetRetry('GetStoryEvent');
-        Map<int, int> currentStoryInEachCollection = {};
-        int i = 0;
         List<CollectionStoryModel>? collections = r.data!.collections;
         /*  if (!(event.withPaginition)) {
         if ((collections?.length ?? 0) > 1) {
@@ -431,15 +429,16 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           }
         }
       }*/
+        // ترقيم موحّد يطابق القائمة المدموجة [...القديمة, ...الجديدة] بلا فجوات.
+        // مع الـ pagination نحتفظ بمفاتيح الصفحات السابقة ونضيف الجديدة انطلاقًا
+        // من نهاية القائمة القائمة؛ بدونه نبدأ خريطة جديدة من الصفر.
+        Map<int, int?> currentStoryInEachCollection = event.withPaginition
+            ? Map.of(state.currentStoryInEachCollection)
+            : {};
+        int i = event.withPaginition ? storiesCollections.length : 0;
         r.data?.collections?.forEach((element) {
           currentStoryInEachCollection[i++] = 0;
         });
-        if (event.withPaginition) {
-          int i = (storiesCollections).length;
-          r.data?.collections?.forEach((element) {
-            currentStoryInEachCollection[i++] = 0;
-          });
-        }
 
         emit(
           state.copyWith(

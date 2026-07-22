@@ -20,8 +20,7 @@ extension ScopeApi on String {
   String productScope() => '$_api/${_currentVersion}/mobile/product/$this';
   String mobileScope() => '$_api/${_currentVersion}/mobile/$this';
   String likeScope() => '$_api/${_currentVersion}/product_likes/$this';
-  String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';
-  String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
+  String mobileHomeScope() => '$_api/${_currentVersion}/mobile/home/$this';
   String colorsSizesScope() => '$_api/${_currentVersion}/mobile/$this';
   String cartScope() => '$_api/${_currentVersion}/cart/$this';
   String oldCartScope() => '$_api/${_currentVersion}/old-cart/$this';
@@ -137,14 +136,14 @@ abstract class MarketEndPoints {
   static final getAllowesdCountriesEP = "countries".countryScope();
   static final updateNameEP = 'update-name'.customerScope();
   static final getCustomerInfoEP = 'info'.customerScope();
-  static final getStartingSettingsEP = 'startingSettings'.homeScope();
-  static final getHomeSectionsEP = 'home_sections'.homeScope();
-  static final getBrandEP = 'brands'.homeScope();
-  static final getCurrencyEP = 'currency'.homeScope();
+  static final getStartingSettingsEP = 'startingSettings'.mobileHomeScope();
+  static final getHomeSectionsEP = 'home_sections'.mobileHomeScope();
+  static final getBrandEP = 'brands'.mobileHomeScope();
+  static final getCurrencyEP = 'currency'.mobileHomeScope();
 
-  static final getCategoryEP = 'categories'.homeScope();
+  static final getCategoryEP = 'categories'.mobileHomeScope();
 
-  static final getHomeBoutiqesEP = 'boutiques'.homeScope();
+  static final getHomeBoutiqesEP = 'boutiques'.mobileHomeScope();
   static final addCommentEP = 'product_comment'.customerScope();
   static final addOrderCommentEP = 'product_comment/order'.customerScope();
   static final updateOrderCommentEP = 'product_comment/order/update'
@@ -153,9 +152,9 @@ abstract class MarketEndPoints {
       'likesCommentsSharesDetails/$productId'.productScope();
   static String getProductColorSizeSyncAttributeEP(String id) =>
       'details_color_sync_attribute/$id'.productScope();
-  static final getMainCategoriesEP = 'mainCategories'.homeScope();
+  static final getMainCategoriesEP = 'mainCategories'.mobileHomeScope();
   static final getMainCategoriesRelatedWithBoutiquesEP =
-      'mainCategoriesRelatedWithBoutique'.homeScope();
+      'mainCategoriesRelatedWithBoutique'.mobileHomeScope();
 
   static final getProductFiltersEP = 'filters'.productsScope();
   static final getSearchResultEP = 'search'.searchScope();
@@ -193,7 +192,7 @@ abstract class MarketUrls {
 
   static String get baseUrlGo => _baseUrlDevGo;
 
-  static Uri get baseUrlGo1 => Uri.parse(_baseUrlDevGo);
+  static Uri get baseUriGo => Uri.parse(_baseUrlDevGo);
 
   static set setBaseUrlGo(String url) => _baseUrlDevGo = url;
 

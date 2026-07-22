@@ -94,6 +94,10 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     debugPrint('initState ${widget.collectionIndex}');
+    // تهيئة مبدئية آمنة حتى لا يُرمى LateInitializationError إذا استُدعي
+    // dispose قبل تنفيذ build (تنقّل سريع ستوري <-> تفاصيل المنتج).
+    // build يعيد ضبط initialPage بالقيمة الصحيحة قبل أول رسم، فلا يتغيّر السلوك.
+    pageController = PageController();
     GetIt.I<StoryBloc>().add(
       StorySelectedEvent(
         collectionIndex: widget.collectionIndex,
@@ -148,14 +152,15 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
           //        var currentStoryInEachCollection = collectionOfSelectedStory[currentInitialIndex];
           pageController = PageController(
             initialPage:
-                state.currentStoryInEachCollection[widget.collectionIndex]!,
+                state.currentStoryInEachCollection[widget.collectionIndex] ?? 0,
           );
           widget.animatedController.addStatusListener((status) {
             if (status == AnimationStatus.completed) {
               widget.animatedController.stop();
               widget.animatedController.reset();
 
-              if ((state.currentStoryInEachCollection[widget.collectionIndex]! +
+              if (((state.currentStoryInEachCollection[widget.collectionIndex] ??
+                          0) +
                       1) >=
                   state
                       .storiesCollections[widget.collectionIndex]

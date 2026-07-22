@@ -141,7 +141,7 @@ class AuthRemoteDatasource {
   Future<User> getCustomerInfo() async {
     // Build the model on a background isolate (see heavy_response_parsers.dart).
     GetClient<dynamic> getCustomerInfo = GetClient<dynamic>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<dynamic>(
         endpoint: MarketEndPoints.getCustomerInfoEP,
         response: ResponseValue<dynamic>(fromJson: (response) => response),
@@ -172,7 +172,7 @@ class AuthRemoteDatasource {
 
   Future<bool> updateName(Map<String, dynamic> params) {
     PostClient<bool> updateName = PostClient<bool>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<bool>(
         endpoint: MarketEndPoints.updateNameEP,
         data: params,

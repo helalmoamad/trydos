@@ -37,7 +37,7 @@ Uri getBaseUriForSpecificServer(ServerName serverName) {
     case ServerName.market:
       return MarketUrls.baseUri;
     case ServerName.marketGO:
-      return MarketUrls.baseUrlGo1;
+      return MarketUrls.baseUriGo;
     case ServerName.wallet:
       return WalletUrls.baseUri;
     case ServerName.dashBoard:

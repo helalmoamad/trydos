@@ -49,6 +49,7 @@ class _SplashPageState extends State<SplashPage> {
     boutiqueBloc.add(
       AddCurrentMainCategoryTapedEvent(currentMainCategoryTaped: "Empty"),
     );
+
     GetIt.I<HomeBloc>().add(GetAllowedCountriesEvent());
     BlocProvider.of<StoryBloc>(
       context,
