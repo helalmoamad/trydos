@@ -80,38 +80,18 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n Data: ${response.data}",
       );
     }
-    //////////////////// For analytics /////////////////////////////
 
-    // FirebaseAnalyticsService.logEventForSession(
-    //   eventName: AnalyticsEventsConst.programmingEvent,
-    //   executedEventName: AnalyticsButtonsEventNameConst.apiResponseEvent,
-    //   isForApi: true,
-    //   extraParams: {
-    //     'api_url':
-    //         apiPath.length > 100 ? '${apiPath.substring(0, 96)}...' : apiPath,
-    //     'api_status': apiStatus,
-    //   },
-    // );
-    /////////////////////////////////////////////////////
     handler.next(response);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     try {
-      // إضافة كود الخطأ للـresponse حتى يصل للـBloc
-
-      // if (err.response?.statusCode == 400) {
-      //   showMessage(jsonDecode(err.response.toString())["message"].toString(),
-      //       foreGroundColor: Colors.white,
-      //       backGroundColor: Colors.black,
-      //       showInRelease: true,
-      //       timeShowing: Toast.LENGTH_LONG);
-      // }
       if (err.response?.statusCode == 400 || err.response?.statusCode == 422) {
-        if (kDebugMode) print(
-          "error message: ${jsonDecode(err.response.toString())["message"].toString()}",
-        );
+        if (kDebugMode)
+          print(
+            "error message: ${jsonDecode(err.response.toString())["message"].toString()}",
+          );
         showMessage(
           jsonDecode(err.response.toString())["message"].toString(),
           foreGroundColor: Colors.white,
@@ -168,58 +148,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         );
       }
 
-      if ((jsonDecode(
-                err.response.toString(),
-              )["message"].toString().contains("Unauth") ||
-              jsonDecode(err.response.toString())["code"].toString() == "401" ||
-              jsonDecode(err.response.toString())["statusCode"].toString() ==
-                  "401") &&
-          (err.requestOptions.path.contains(dotenv.env['STORY_URL']!))) {
-        _prefsRepository.setStoriesToken("");
-      }
-      if ((jsonDecode(
-                err.response.toString(),
-              )["message"].toString().contains("Unauth") ||
-              jsonDecode(err.response.toString())["code"].toString() == "401" ||
-              jsonDecode(err.response.toString())["statusCode"].toString() ==
-                  "401") &&
-          (err.requestOptions.path.contains(dotenv.env['WALLET_URL']!))) {
-        _prefsRepository.setWalletToken("");
-      }
-      if ((jsonDecode(
-                err.response.toString(),
-              )["message"].toString().contains("Unauth") ||
-              jsonDecode(err.response.toString())["code"].toString() == "401" ||
-              jsonDecode(err.response.toString())["statusCode"].toString() ==
-                  "401") &&
-          (err.requestOptions.path.contains(dotenv.env['CHAT_URL']!))) {
-        _prefsRepository.setChatToken("");
-      }
-      if ((jsonDecode(
-                err.response.toString(),
-              )["message"].toString().contains("Unauth") ||
-              jsonDecode(err.response.toString())["code"].toString() == "401" ||
-              jsonDecode(err.response.toString())["statusCode"].toString() ==
-                  "401") &&
-          (err.requestOptions.path.contains(dotenv.env['COMMENT_TOKEN_URL']!) ||
-              err.requestOptions.path.contains(dotenv.env['MARKET_URL']!) ||
-              err.requestOptions.path.contains(dotenv.env['WALLET_URL']!)) &&
-          !(_prefsRepository.isTokenExpired ?? false)) {
-        if (kDebugMode) print("Token is expired, refreshing token...");
-        _prefsRepository.setVerifiedPhonePeforeExpiredToken(
-          _prefsRepository.isVerifiedPhone ?? false,
-        );
-        String? deviceId = await HelperFunctions.getDeviceId();
-        _prefsRepository.setTokenExpired(true);
-        GetIt.I<AuthBloc>().add(
-          RegisterGuestEvent(
-            oldGuestUserId: _prefsRepository.myMarketId.toString(),
-            deviceId: deviceId!,
-          ),
-        );
-
-        _prefsRepository.setVerifiedPhone(false);
-      }
+      await _handleUnauthorizedError(err);
     } catch (e) {}
     try {
       GetIt.I<HomeBloc>().add(
@@ -259,27 +188,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
             : err.requestOptions.data,
       );
     }
-    // GetIt.I<Dio>().post('${ChatUrls.baseUrl}/${ChatEndPoints.createBugEP}', data: {
-    //   "user_id": _prefsRepository.myChatId,
-    //   "title": "request error",
-    //   "description": err.toString()
-    // });
 
-    //String apiPath = err.requestOptions.path;
-    // FirebaseAnalyticsService.logEventForSession(
-    //   eventName: AnalyticsEventsConst.programmingEvent,
-    //   executedEventName: AnalyticsButtonsEventNameConst.apiResponseEvent,
-    //   isForApi: true,
-    //   extraParams: {
-    //     'api_url':
-    //         apiPath.length > 100 ? '${apiPath.substring(0, 96)}...' : apiPath,
-    //     'api_status': 'Failed',
-    //   },
-    // );
-
-    //  handler.next(err);
-
-    // إضافة كود الخطأ للـdata
     Map<String, dynamic> errorData = {
       'error_code': err.response?.statusCode ?? 0,
       'error_message': err.message ?? "",
@@ -300,5 +209,57 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
 
     // إرسال الـresponse بدلاً من الـerror
     handler.resolve(errorResponse);
+  }
+
+  /// Handles backend "unauthorized" (401) errors: clears the token of the
+  /// server the failing request belongs to and, for market-scoped servers,
+  /// silently re-registers the user as a guest to refresh the token.
+  ///
+  /// Any decode/lookup failure is intentionally allowed to throw — the caller
+  /// wraps this in a try/catch, matching the original behaviour.
+  Future<void> _handleUnauthorizedError(DioException err) async {
+    final Map<String, dynamic> body = jsonDecode(err.response.toString());
+
+    final bool isUnauthorized =
+        body["message"].toString().contains("Unauth") ||
+        body["code"].toString() == "401" ||
+        body["statusCode"].toString() == "401";
+    if (!isUnauthorized) return;
+
+    final String path = err.requestOptions.path;
+    bool isFrom(String envKey) => path.contains(dotenv.env[envKey]!);
+
+    // Clear the token of whichever server rejected the request.
+    if (isFrom('STORY_URL')) {
+      _prefsRepository.setStoriesToken("");
+    }
+    if (isFrom('WALLET_URL')) {
+      _prefsRepository.setWalletToken("");
+    }
+    if (isFrom('CHAT_URL')) {
+      _prefsRepository.setChatToken("");
+    }
+
+    if (isFrom('COMMENT_TOKEN_URL')) {
+      _prefsRepository.setTokenForComment("");
+    }
+    if (kDebugMode) {
+      print("Access token rejected — requesting a token refresh...");
+    }
+    // Market 401: the access token expired or was rejected -> exchange the
+    // stored refresh token for a new access + refresh pair (once per expiry —
+    // guarded by isTokenExpired, which the refresh resets on success). If the
+    // refresh itself is rejected, AuthBloc falls back to a brand-new guest
+    // session (register-guest) per the auth contract.
+    if ((isFrom("MARKETGo_URL") || isFrom('MARKET_URL'))) {
+      if (kDebugMode) {
+        print("Access token rejected — requesting a token refresh...");
+      }
+      _prefsRepository.setVerifiedPhonePeforeExpiredToken(
+        _prefsRepository.isVerifiedPhone ?? false,
+      );
+      _prefsRepository.setTokenExpired(true);
+      GetIt.I<AuthBloc>().add(const RefreshTokenEvent());
+    }
   }
 }

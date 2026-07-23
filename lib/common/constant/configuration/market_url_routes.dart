@@ -62,6 +62,11 @@ abstract class MarketEndPoints {
   static final cancelOrderItemEP = "order/cancel-item".customerScope();
   static final cancelOrderEP = "order/cancel".customerScope();
   static final changeOrderAddressEP = "order/change-address".customerScope();
+  static String hideOrderVisibilityEP(String orderId) =>
+      "order/$orderId/visibility".customerScope();
+  static String hideOrderDetailVisibilityEP(String detailId) =>
+      "order/detail/$detailId/visibility".customerScope();
+  static final getHiddenOrdersEP = "order/getHiddenOrders".customerScope();
   static final changeOrderItemVariantEP = "order/change-item-variant"
       .customerScope();
 
@@ -129,6 +134,7 @@ abstract class MarketEndPoints {
   static final verifyGuestPhoneEP = 'verify-guest-phone'.authFirebaseScope();
   static final registerEP = 'register'.authScope();
   static final registerGuestEP = 'register-guest'.authScope();
+  static final refreshTokenEP = 'refresh-token'.authScope();
   /*static final deleteLikeOFProductEP = 'delete'.likeScope();
   static final addLikeOFProductEP = 'store'.likeScope();*/
 

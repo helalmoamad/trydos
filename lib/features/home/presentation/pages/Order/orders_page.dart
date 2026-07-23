@@ -25,6 +25,7 @@ import '../../manager/homeBloc/home_state.dart';
 import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
+import 'hidden_orders_page.dart';
 import 'order_details1_page.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -85,6 +86,17 @@ class _OrdersPageState extends State<OrdersPage> {
     super.initState();
   }
 
+  void _openActionsSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+      ),
+      builder: (_) => _HiddenOrdersSheet(orderBloc: orderBloc),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -126,6 +138,18 @@ class _OrdersPageState extends State<OrdersPage> {
                   ],
                 ),
                 const Spacer(),
+                InkWell(
+                  onTap: _openActionsSheet,
+                  borderRadius: BorderRadius.circular(20.r),
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 8.w, left: 4.w),
+                    child: Icon(
+                      Icons.more_vert,
+                      color: const Color(0xff1D1D1D),
+                      size: 22.w,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -744,6 +768,147 @@ class _OrdersPageState extends State<OrdersPage> {
           },
         );
       },
+    );
+  }
+}
+
+/// Bottom sheet opened from the Orders page three-dots menu. Fetches the hidden
+/// orders (showing shimmer on the tile while loading) and, on success, opens the
+/// Hidden Orders page.
+class _HiddenOrdersSheet extends StatefulWidget {
+  final OrderBloc orderBloc;
+
+  const _HiddenOrdersSheet({required this.orderBloc});
+
+  @override
+  State<_HiddenOrdersSheet> createState() => _HiddenOrdersSheetState();
+}
+
+class _HiddenOrdersSheetState extends State<_HiddenOrdersSheet> {
+  bool _requested = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 12.h, bottom: 20.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40.w,
+            height: 4.h,
+            decoration: BoxDecoration(
+              color: const Color(0xffC4C2C2),
+              borderRadius: BorderRadius.circular(2.r),
+            ),
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            LocaleKeys.action_about_your_orders.tr(),
+            style: context.textTheme.bodyMedium?.rq.copyWith(
+              color: const Color(0xff8D8D8D),
+              letterSpacing: 0.18,
+              fontSize: 12.sp,
+              height: 1.3,
+            ),
+          ),
+          SizedBox(height: 10.h),
+          Container(
+            width: 1.sw,
+            height: 0.5,
+            color: const Color(0xffC4C2C2),
+          ),
+          SizedBox(height: 16.h),
+          BlocConsumer<OrderBloc, OrderState>(
+            bloc: widget.orderBloc,
+            listenWhen: (p, c) =>
+                p.getHiddenOrdersStatus != c.getHiddenOrdersStatus,
+            listener: (context, state) {
+              if (!_requested) return;
+              if (state.getHiddenOrdersStatus ==
+                  GetHiddenOrdersStatus.success) {
+                _requested = false;
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                navigator.push(
+                  MaterialPageRoute(
+                    builder: (_) => const HiddenOrdersPage(),
+                  ),
+                );
+              } else if (state.getHiddenOrdersStatus ==
+                  GetHiddenOrdersStatus.failure) {
+                _requested = false;
+              }
+            },
+            builder: (context, state) {
+              final bool loading = _requested &&
+                  state.getHiddenOrdersStatus == GetHiddenOrdersStatus.loading;
+              final Widget tile = _buildTileContent();
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: InkWell(
+                  onTap: loading
+                      ? null
+                      : () {
+                          setState(() => _requested = true);
+                          widget.orderBloc.add(const GetHiddenOrdersEvent());
+                        },
+                  child: loading
+                      ? Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.grey.shade100,
+                          child: tile,
+                        )
+                      : tile,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTileContent() {
+    return Container(
+      width: 1.sw,
+      height: 60.h,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.r),
+        color: const Color(0xffF8F8F8),
+      ),
+      child: Row(
+        children: [
+          SizedBox(width: 14.w),
+          SvgPicture.asset(AppAssets.eyeSvg, width: 26.w),
+          SizedBox(width: 15.w),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                LocaleKeys.hidden_orders.tr(),
+                style: context.textTheme.bodyMedium?.mq.copyWith(
+                  color: const Color(0xff1D1D1D),
+                  letterSpacing: 0.18,
+                  fontSize: 14.sp,
+                  height: 1.3,
+                ),
+              ),
+              SizedBox(height: 2.h),
+              Text(
+                LocaleKeys.see_orders_and_products_you_hid.tr(),
+                style: context.textTheme.bodyMedium?.rq.copyWith(
+                  color: const Color(0xff8D8D8D),
+                  letterSpacing: 0.18,
+                  fontSize: 12.sp,
+                  height: 1.3,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -7,6 +7,10 @@ abstract class LocaleKeys {
   static const translate = 'translate';
   static const work_days = 'work_days';
   static const view_product = 'view_product';
+
+  static const hide_this_pack = 'hide_this_pack';
+  static const hide_this_pack_from_list = 'hide_this_pack_from_list';
+
   static const sellers = 'Sellers';
   static const all_questions_below_from = 'all_questions_below_from';
   static const visitors_not_necessarily_from = 'visitors_not_necessarily_from';
@@ -605,6 +609,24 @@ abstract class LocaleKeys {
       'delivery_time_delivery_man_delivery_car';
   static const hide_this_product = 'hide_this_product';
   static const hide_this_product_from_list = 'hide_this_product_from_list';
+  static const are_you_sure_hide_this_pack = 'are_you_sure_hide_this_pack';
+  static const are_you_sure_hide_this_product =
+      'are_you_sure_hide_this_product';
+  static const pack_hidden_successfully = 'pack_hidden_successfully';
+  static const product_hidden_successfully = 'product_hidden_successfully';
+  static const hidden_orders = 'hidden_orders';
+  static const see_orders_and_products_you_hid =
+      'see_orders_and_products_you_hid';
+  static const action_about_your_orders = 'action_about_your_orders';
+  static const hidden_orders_hint = 'hidden_orders_hint';
+  static const restore_this_order = 'restore_this_order';
+  static const restore_this_product = 'restore_this_product';
+  static const are_you_sure_restore_this_order =
+      'are_you_sure_restore_this_order';
+  static const are_you_sure_restore_this_product =
+      'are_you_sure_restore_this_product';
+  static const order_restored_successfully = 'order_restored_successfully';
+  static const product_restored_successfully = 'product_restored_successfully';
   static const you_can_return_product_without_conditions =
       'you_can_return_product_without_conditions';
   static const return_policy_get_full_refund = 'return_policy_get_full_refund';

@@ -451,7 +451,11 @@ class BoutiquesCart {
 
   factory BoutiquesCart.fromJson(Map<String, dynamic> json) => BoutiquesCart(
     id: json["id"],
-    icon: json["icon"] == null ? null : IconCart.fromJson(json["icon"]),
+    icon: json["icon"] == null
+        ? null
+        : json["icon"] is Map
+        ? IconCart.fromJson(json["icon"])
+        : IconCart.fromJson({"file_path": json["icon"]}),
   );
 
   Map<String, dynamic> toJson() => {"id": id, "icon": icon?.toJson()};

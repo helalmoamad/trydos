@@ -5,12 +5,12 @@
 import 'dart:convert';
 
 VerifyOtpSignUpAndInResponseModel verifyOtpSignUpAndInResponseModelFromJson(
-        String str) =>
-    VerifyOtpSignUpAndInResponseModel.fromJson(json.decode(str));
+  String str,
+) => VerifyOtpSignUpAndInResponseModel.fromJson(json.decode(str));
 
 String verifyOtpSignUpAndInResponseModelToJson(
-        VerifyOtpSignUpAndInResponseModel data) =>
-    json.encode(data.toJson());
+  VerifyOtpSignUpAndInResponseModel data,
+) => json.encode(data.toJson());
 
 class VerifyOtpSignUpAndInResponseModel {
   final bool? isSuccessful;
@@ -36,35 +36,34 @@ class VerifyOtpSignUpAndInResponseModel {
     dynamic message,
     dynamic detailedError,
     Data? data,
-  }) =>
-      VerifyOtpSignUpAndInResponseModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => VerifyOtpSignUpAndInResponseModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory VerifyOtpSignUpAndInResponseModel.fromJson(
-          Map<String, dynamic> json) =>
-      VerifyOtpSignUpAndInResponseModel(
-        isSuccessful: json["isSuccessful"],
-        hasContent: json["hasContent"],
-        code: json["code"],
-        message: json["message"],
-        detailedError: json["detailed_error"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
-      );
+    Map<String, dynamic> json,
+  ) => VerifyOtpSignUpAndInResponseModel(
+    isSuccessful: json["isSuccessful"],
+    hasContent: json["hasContent"],
+    code: json["code"],
+    message: json["message"],
+    detailedError: json["detailed_error"],
+    data: json["data"] == null ? null : Data.fromJson(json["data"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
@@ -73,6 +72,10 @@ class Data {
   final int? userType;
   final String? token;
   final String? expiresAt;
+
+  /// Single-use refresh token (30d TTL). Returned by register-guest,
+  /// refresh-token and verify-otp; must replace the stored one on every use.
+  final String? refreshToken;
   final User? user;
 
   Data({
@@ -81,6 +84,7 @@ class Data {
     this.userType,
     this.token,
     this.expiresAt,
+    this.refreshToken,
     this.user,
   });
 
@@ -90,34 +94,37 @@ class Data {
     int? userType,
     String? token,
     String? expiresAt,
+    String? refreshToken,
     User? user,
-  }) =>
-      Data(
-        alreadyExist: alreadyExist ?? this.alreadyExist,
-        idToken: idToken ?? this.idToken,
-        userType: userType ?? this.userType,
-        token: token ?? this.token,
-        expiresAt: expiresAt ?? this.expiresAt,
-        user: user ?? this.user,
-      );
+  }) => Data(
+    alreadyExist: alreadyExist ?? this.alreadyExist,
+    idToken: idToken ?? this.idToken,
+    userType: userType ?? this.userType,
+    token: token ?? this.token,
+    expiresAt: expiresAt ?? this.expiresAt,
+    refreshToken: refreshToken ?? this.refreshToken,
+    user: user ?? this.user,
+  );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        alreadyExist: json["already_exists"],
-        idToken: json["id_token"],
-        userType: json["user_type"],
-        token: json["token"],
-        expiresAt: json["expires_at"],
-        user: json["user"] == null ? null : User.fromJson(json["user"]),
-      );
+    alreadyExist: json["already_exists"],
+    idToken: json["id_token"],
+    userType: json["user_type"],
+    token: json["token"],
+    expiresAt: json["expires_at"],
+    refreshToken: json["refresh_token"],
+    user: json["user"] == null ? null : User.fromJson(json["user"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "already_exists": alreadyExist,
-        "id_token": idToken,
-        "user_type": userType,
-        "token": token,
-        "expires_at": expiresAt,
-        "user": user?.toJson(),
-      };
+    "already_exists": alreadyExist,
+    "id_token": idToken,
+    "user_type": userType,
+    "token": token,
+    "expires_at": expiresAt,
+    "refresh_token": refreshToken,
+    "user": user?.toJson(),
+  };
 }
 
 class User {
@@ -162,79 +169,73 @@ class User {
     int? isPhoneVerified,
     String? lastOtpIdToken,
     bool? isAllowedToUploadStories,
-  }) =>
-      User(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        phone: phone ?? this.phone,
-        alternativePhone: alternativePhone ?? this.alternativePhone,
-        email: email ?? this.email,
-        gender: gender ?? this.gender,
-        tall: tall ?? this.tall,
-        weight: weight ?? this.weight,
-        image: image ?? this.image,
-        isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
-        lastOtpIdToken: lastOtpIdToken ?? this.lastOtpIdToken,
-        isAllowedToUploadStories:
-            isAllowedToUploadStories ?? this.isAllowedToUploadStories,
-      );
+  }) => User(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    phone: phone ?? this.phone,
+    alternativePhone: alternativePhone ?? this.alternativePhone,
+    email: email ?? this.email,
+    gender: gender ?? this.gender,
+    tall: tall ?? this.tall,
+    weight: weight ?? this.weight,
+    image: image ?? this.image,
+    isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
+    lastOtpIdToken: lastOtpIdToken ?? this.lastOtpIdToken,
+    isAllowedToUploadStories:
+        isAllowedToUploadStories ?? this.isAllowedToUploadStories,
+  );
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
-        id: json["id"],
-        name: json["name"],
-        phone: json["phone"],
-        alternativePhone: json["alternative_phone"],
-        email: json["email"],
-        gender: json["gender"] == null ? null : Gender.fromJson(json["gender"]),
-        tall: (json["tall"] == null) ? null : json["tall"].round(),
-        weight: (json["weight"] == null) ? null : json["weight"].round(),
-        image: json["image"],
-        isPhoneVerified: json["is_phone_verified"],
-        lastOtpIdToken: json["last_otp_id_token"],
-        isAllowedToUploadStories: json["is_allowed_to_upload_stories"],
-      );
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json["id"],
+      name: json["name"],
+      phone: json["phone"],
+      alternativePhone: json["alternative_phone"],
+      email: json["email"],
+      gender: json["gender"] == null
+          ? null
+          : json["gender"] is Map
+          ? Gender.fromJson(json["gender"])
+          : Gender.fromJson({"value": json["gender"], "name": json["gender"]}),
+      tall: (json["tall"] == null) ? null : json["tall"].round(),
+      weight: (json["weight"] == null) ? null : json["weight"].round(),
+      image: json["image"],
+      isPhoneVerified: json["is_phone_verified"] is int
+          ? json["is_phone_verified"]
+          : json["is_phone_verified"] == true
+          ? 1
+          : 0,
+      lastOtpIdToken: json["last_otp_id_token"],
+      isAllowedToUploadStories: json["is_allowed_to_upload_stories"],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "phone": phone,
-        "alternative_phone": alternativePhone,
-        "email": email,
-        "gender": gender?.toJson(),
-        "tall": (tall ?? 0).round(),
-        "weight": (weight ?? 0).round(),
-        "image": image,
-        "is_phone_verified": isPhoneVerified,
-        "last_otp_id_token": lastOtpIdToken,
-        "is_allowed_to_upload_stories": isAllowedToUploadStories,
-      };
+    "id": id,
+    "name": name,
+    "phone": phone,
+    "alternative_phone": alternativePhone,
+    "email": email,
+    "gender": gender?.toJson(),
+    "tall": (tall ?? 0).round(),
+    "weight": (weight ?? 0).round(),
+    "image": image,
+    "is_phone_verified": isPhoneVerified,
+    "last_otp_id_token": lastOtpIdToken,
+    "is_allowed_to_upload_stories": isAllowedToUploadStories,
+  };
 }
 
 class Gender {
-  final int? value;
   final String? name;
 
-  Gender({
-    this.value,
-    this.name,
-  });
+  Gender({this.name});
 
-  Gender copyWith({
-    int? value,
-    String? name,
-  }) =>
-      Gender(
-        value: value ?? this.value,
-        name: name ?? this.name,
-      );
+  Gender copyWith({int? value, String? name}) =>
+      Gender(name: name ?? this.name);
 
-  factory Gender.fromJson(Map<String, dynamic> json) => Gender(
-        value: json["value"],
-        name: json["name"],
-      );
+  factory Gender.fromJson(Map<String, dynamic> json) =>
+      Gender(name: json["name"]);
 
-  Map<String, dynamic> toJson() => {
-        "value": value,
-        "name": name,
-      };
+  Map<String, dynamic> toJson() => {"name": name};
 }

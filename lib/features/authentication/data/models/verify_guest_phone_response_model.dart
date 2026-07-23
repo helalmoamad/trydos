@@ -75,6 +75,10 @@ class Data {
   final int? userType;
   final String? token;
   final String? expiresAt;
+
+  /// Single-use refresh token (30d TTL) returned alongside the access token;
+  /// must replace the stored one whenever a new pair is issued.
+  final String? refreshToken;
   final User? user;
 
   Data({
@@ -84,6 +88,7 @@ class Data {
     this.userType,
     this.token,
     this.expiresAt,
+    this.refreshToken,
     this.user,
   });
 
@@ -94,6 +99,7 @@ class Data {
     int? userType,
     String? token,
     String? expiresAt,
+    String? refreshToken,
     User? user,
   }) =>
       Data(
@@ -104,6 +110,7 @@ class Data {
         userType: userType ?? this.userType,
         token: token ?? this.token,
         expiresAt: expiresAt ?? this.expiresAt,
+        refreshToken: refreshToken ?? this.refreshToken,
         user: user ?? this.user,
       );
 
@@ -114,6 +121,7 @@ class Data {
         userType: json["user_type"],
         token: json["token"],
         expiresAt: json["expires_at"],
+        refreshToken: json["refresh_token"],
         user: json["user"] == null ? null : User.fromJson(json["user"]),
       );
 
@@ -124,6 +132,7 @@ class Data {
         "user_type": userType,
         "token": token,
         "expires_at": expiresAt,
+        "refresh_token": refreshToken,
         "user": user?.toJson(),
       };
 }

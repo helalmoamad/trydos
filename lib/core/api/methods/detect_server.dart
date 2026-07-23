@@ -31,13 +31,16 @@ enum ServerName {
 
 //todo make the return value dynamic to return the cloudinary as String
 Uri getBaseUriForSpecificServer(ServerName serverName) {
+  final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   switch (serverName) {
     case ServerName.chat:
       return ChatUrls.baseUri;
     case ServerName.market:
       return MarketUrls.baseUri;
     case ServerName.marketGO:
-      return MarketUrls.baseUriGo;
+      return (prefsRepository.myPhoneNumber?.length ?? 0) > 7
+          ? MarketUrls.baseUri
+          : MarketUrls.baseUriGo;
     case ServerName.wallet:
       return WalletUrls.baseUri;
     case ServerName.dashBoard:

@@ -87,6 +87,12 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
   late BoutiqueBloc boutiqueBloc;
   late CategoryBloc categoryBloc;
   bool fromBoutiqueListing = false;
+
+  /// Single status listener registered on the parent-owned animation
+  /// controller. Kept as a field so each rebuild replaces (not duplicates) it
+  /// and dispose can detach it — stale duplicates used to call stop() on an
+  /// already-disposed controller ('_ticker != null' assertion).
+  void Function(AnimationStatus)? _animStatusListener;
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
@@ -110,6 +116,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
   @override
   void dispose() {
+    if (_animStatusListener != null) {
+      try {
+        widget.animatedController.removeStatusListener(_animStatusListener!);
+      } catch (_) {
+        // The controller may already be disposed by its owner.
+      }
+      _animStatusListener = null;
+    }
     pageController.dispose();
     _videoController?.dispose();
     super.dispose();
@@ -154,7 +168,16 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             initialPage:
                 state.currentStoryInEachCollection[widget.collectionIndex] ?? 0,
           );
-          widget.animatedController.addStatusListener((status) {
+          // Replace (never accumulate) the status listener: adding a new one on
+          // every rebuild leaked duplicates, and a stale duplicate could call
+          // stop() on an already-disposed controller.
+          if (_animStatusListener != null) {
+            widget.animatedController.removeStatusListener(
+              _animStatusListener!,
+            );
+          }
+          _animStatusListener = (status) {
+            if (!mounted) return;
             if (status == AnimationStatus.completed) {
               widget.animatedController.stop();
               widget.animatedController.reset();
@@ -182,7 +205,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                 );
               }
             }
-          });
+          };
+          widget.animatedController.addStatusListener(_animStatusListener!);
           return Stack(
             children: [
               //          MyTextWidget('${state.selectedStoriesStatus}'),

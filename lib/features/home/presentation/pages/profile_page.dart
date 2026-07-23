@@ -76,7 +76,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   int isVisWhatsApp = 0;
   final ValueNotifier<bool> isVerified = ValueNotifier(true);
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
-  late StreamSubscription walletEvents;
+  //late StreamSubscription walletEvents;
 
   // لإدارة الموارد بشكل آمن
   bool _isWalletInitialized = false;
@@ -134,7 +134,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
 
   @override
   void dispose() {
-    walletEvents.cancel();
+    //  walletEvents.cancel();
 
     // تنظيف موارد المحفظة
     _cleanupWallet();
@@ -539,7 +539,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         phoneNumber: phoneNumber,
                         onChooseWhatsapp: () {
                           isVisWhatsApp = 1;
-                          if (kDebugMode) print("###################33333# isVisWhatsApp}");
+                          if (kDebugMode)
+                            print("###################33333# isVisWhatsApp}");
                           pageController.animateToPage(
                             2,
                             duration: const Duration(milliseconds: 500),

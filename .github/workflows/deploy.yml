@@ -50,7 +50,7 @@ jobs:
           CLOUDINARY_LOAD_PRESET="v4h8xqns"
           Images_Url="https://res.cloudinary.com/dtcmozf4d/image/upload/v1"
           Video_url="https://res.cloudinary.com/dtcmozf4d/video/upload/v1/product/videos/"
-          COMMENT_TOKEN_URL="https://trydos_comments.ramaaz.dev/"
+          COMMENT_TOKEN_URL="https://trydos_comments_develop.ramaaz.dev/"
           MEDIA_SERVER_URL="https://media_server.ramaaz.dev/"
           MEDIA_API_KEY="pfxqJTg8PgGf9rKEyvred+odXPgGU4wFtOJnJPUlqngdell@DESKTOP-0DHEE8R"
           Media_S3_Server="https://media_server.ramaaz.dev/image/upload/"

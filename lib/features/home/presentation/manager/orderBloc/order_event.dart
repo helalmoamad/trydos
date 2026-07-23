@@ -252,6 +252,71 @@ class ChangeOrderAddressEvent extends OrderEvent {
   List<Object?> get props => [changeOrderAddressParams];
 }
 
+/// Hide (or unhide) a whole order/pack. On success the bloc re-fetches the
+/// order group so the hidden pack no longer comes back from the backend.
+class HideOrderEvent extends OrderEvent {
+  final String orderId;
+  final String orderGroupId;
+  final bool isHidden;
+
+  const HideOrderEvent({
+    required this.orderId,
+    required this.orderGroupId,
+    this.isHidden = true,
+  });
+
+  @override
+  List<Object?> get props => [orderId, orderGroupId, isHidden];
+}
+
+/// Hide (or unhide) a single product (order detail) inside a pack. On success
+/// the bloc re-fetches the order group so the hidden product no longer comes
+/// back from the backend.
+class HideOrderDetailEvent extends OrderEvent {
+  final String detailId;
+  final String orderGroupId;
+  final bool isHidden;
+
+  const HideOrderDetailEvent({
+    required this.detailId,
+    required this.orderGroupId,
+    this.isHidden = true,
+  });
+
+  @override
+  List<Object?> get props => [detailId, orderGroupId, isHidden];
+}
+
+/// Fetch the list of hidden orders/products for the Hidden Orders page.
+class GetHiddenOrdersEvent extends OrderEvent {
+  const GetHiddenOrdersEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+/// Restore (unhide) a whole order from the Hidden Orders page. On success the
+/// bloc re-fetches both the hidden list and the main orders list.
+class RestoreOrderEvent extends OrderEvent {
+  final String orderId;
+
+  const RestoreOrderEvent({required this.orderId});
+
+  @override
+  List<Object?> get props => [orderId];
+}
+
+/// Restore (unhide) a single product from the Hidden Orders page. On success
+/// the bloc re-fetches both the hidden list and the main orders list.
+class RestoreProductEvent extends OrderEvent {
+  final String detailId;
+
+  const RestoreProductEvent({required this.detailId});
+
+  @override
+  List<Object?> get props => [detailId];
+}
+
 class GetProductColorSizeSyncAttributeEvent extends OrderEvent {
   final String id;
 

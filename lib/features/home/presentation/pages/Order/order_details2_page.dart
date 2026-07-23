@@ -129,6 +129,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
   List<ReturnOrderDetail> orderDetails = [];
   List<String> returnRequestIdsToConfirm = [];
   List<String> returnRequestIdsToCancel = [];
+
+  /// Set to true right before hiding a pack/product so the next order-group
+  /// re-fetch knows to run the post-hide navigation.
+  bool _pendingHide = false;
   final ValueNotifier<int> qtyToChangeController = ValueNotifier(0);
   // TextEditingController qtyOfReturnController = TextEditingController();
   @override
@@ -225,22 +229,63 @@ class _OrderDetails2 extends State<OrderDetails2> {
         listener: (context, state) {
           if (state.getOrdersByOrderGroupIDStatus ==
               GetOrdersByOrderGroupIDStatus.success) {
-            if (order?.orderGroupId ==
-                state
-                    .getOrdersByOrderGroupIDModel
-                    ?.orders?[widget.indexPackage]
-                    .orderGroupId) {
+            final List<OrderListModel> groupOrders =
+                state.getOrdersByOrderGroupIDModel?.orders ?? [];
+
+            // Post-hide navigation — only the page that initiated the hide
+            // (its own _pendingHide is set) navigates, so OrderDetails1 and
+            // OrderDetails2 never both pop on the same re-fetch.
+            if (_pendingHide) {
+              _pendingHide = false;
+              if (groupOrders.isEmpty) {
+                // Whole group hidden -> back to the Orders page (2 levels up).
+                // Main list refreshed by the bloc.
+                int popped = 0;
+                Navigator.of(context).popUntil((_) => popped++ >= 2);
+                return;
+              }
+              final bool packStillExists = groupOrders.any(
+                (p) => p.id == order?.id,
+              );
+              if (!packStillExists) {
+                // This pack has no visible products left -> back to details1.
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                }
+                return;
+              }
+              // Pack still there (a product was hidden): refresh this page's
+              // local order only. The main list is refreshed by the bloc.
+              order = groupOrders.firstWhere(
+                (p) => p.id == order?.id,
+                orElse: () => order!,
+              );
+              // The details list may have shrunk — keep the tapped-product
+              // index valid.
+              if (indexTap.value >= (order?.details?.length ?? 0)) {
+                indexTap.value = 0;
+              }
+              indexTapAddress.value =
+                  orderBloc.state.listOfAddressInfoClassToSave?.indexWhere(
+                    (element) => element.id == order!.shippingAddressData?.id,
+                  ) ??
+                  -1;
+              firstAddressChoosed = indexTapAddress.value;
+              return;
+            }
+
+            if (widget.indexPackage < groupOrders.length &&
+                order?.orderGroupId ==
+                    groupOrders[widget.indexPackage].orderGroupId) {
               orderBloc.add(
                 GetOrdersEvent(
                   index: widget.indexGroupe,
-                  orders: state.getOrdersByOrderGroupIDModel?.orders ?? [],
+                  orders: groupOrders,
                   status: widget.currentStatus ?? '',
                   getWithPagination: false,
                 ),
               );
-              order = state
-                  .getOrdersByOrderGroupIDModel
-                  ?.orders?[widget.indexPackage];
+              order = groupOrders[widget.indexPackage];
               indexTapAddress.value =
                   orderBloc.state.listOfAddressInfoClassToSave?.indexWhere(
                     (element) => element.id == order!.shippingAddressData?.id,
@@ -316,14 +361,28 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               child: Container(
                                 width: 40.w,
                                 height: 20.h,
-                                child:
-                                    state.getOrdersByOrderGroupIDStatus ==
-                                        GetOrdersByOrderGroupIDStatus.loading
-                                    ? TrydosLoader(size: 16)
-                                    : SvgPicture.asset(
-                                        AppAssets.orderMenuSvg,
-                                        width: 20.w,
-                                      ),
+                                child: BlocBuilder<OrderBloc, OrderState>(
+                                  buildWhen: (p, c) =>
+                                      p.getOrdersByOrderGroupIDStatus !=
+                                          c.getOrdersByOrderGroupIDStatus ||
+                                      p.hideOrderVisibilityStatus !=
+                                          c.hideOrderVisibilityStatus,
+                                  builder: (context, loaderState) {
+                                    return (loaderState
+                                                    .getOrdersByOrderGroupIDStatus ==
+                                                GetOrdersByOrderGroupIDStatus
+                                                    .loading ||
+                                            loaderState
+                                                    .hideOrderVisibilityStatus ==
+                                                HideOrderVisibilityStatus
+                                                    .loading)
+                                        ? TrydosLoader(size: 16)
+                                        : SvgPicture.asset(
+                                            AppAssets.orderMenuSvg,
+                                            width: 20.w,
+                                          );
+                                  },
+                                ),
                               ),
                             ),
                             ///////////////////////////
@@ -783,7 +842,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     .getOrdersByOrderGroupIDStatus ||
                                             previous.orderReturnDetailsStatus !=
                                                 current
-                                                    .orderReturnDetailsStatus,
+                                                    .orderReturnDetailsStatus ||
+                                            previous.hideOrderVisibilityStatus !=
+                                                current
+                                                    .hideOrderVisibilityStatus,
                                         builder: (context, state) {
                                           returnRequestIdsToCancel = [];
                                           state.getOrdersByOrderGroupIDModel?.orders?.forEach((
@@ -831,6 +893,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             .loading ||
                                                     state.getOrdersByOrderGroupIDStatus ==
                                                         GetOrdersByOrderGroupIDStatus
+                                                            .loading ||
+                                                    state.hideOrderVisibilityStatus ==
+                                                        HideOrderVisibilityStatus
                                                             .loading
                                               ? TrydosLoader(size: 16)
                                               : InkWell(
@@ -874,7 +939,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     .getOrdersByOrderGroupIDStatus ||
                                             previous.orderReturnDetailsStatus !=
                                                 current
-                                                    .orderReturnDetailsStatus,
+                                                    .orderReturnDetailsStatus ||
+                                            previous.hideOrderVisibilityStatus !=
+                                                current
+                                                    .hideOrderVisibilityStatus,
                                         builder: (context, state) {
                                           returnRequestIdsToConfirm = [];
                                           bool appearConfirm = false;
@@ -931,6 +999,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             .loading ||
                                                     state.getOrdersByOrderGroupIDStatus ==
                                                         GetOrdersByOrderGroupIDStatus
+                                                            .loading ||
+                                                    state.hideOrderVisibilityStatus ==
+                                                        HideOrderVisibilityStatus
                                                             .loading
                                               ? TrydosLoader(size: 16)
                                               : InkWell(
@@ -1282,12 +1353,28 @@ class _OrderDetails2 extends State<OrderDetails2> {
           child: optionOfModify(
             onTap: () {
               orderBloc.add(const ResetAllStatusEvent());
-              optionModifyPanel.value = "Hide_This_Product";
+              _showHideConfirmDialog(
+                title: LocaleKeys.hide_this_pack.tr(),
+                body: LocaleKeys.are_you_sure_hide_this_pack.tr(),
+                onConfirm: () {
+                  _pendingHide = true;
+                  panelController.close();
+                  showPanel.value = false;
+                  optionModifyPanel.value = null;
+                  showShadowForPanel.value = false;
+                  orderBloc.add(
+                    HideOrderEvent(
+                      orderId: order?.id?.toString() ?? '',
+                      orderGroupId: order?.orderGroupId ?? '',
+                    ),
+                  );
+                },
+              );
             },
             svg: AppAssets.hideThisProductSvg,
             image2: "",
-            tiltle: "${LocaleKeys.hide_this_product.tr()}",
-            body: "${LocaleKeys.hide_this_product_from_list.tr()}",
+            tiltle: "${LocaleKeys.hide_this_pack.tr()}",
+            body: "${LocaleKeys.hide_this_pack_from_list.tr()}",
           ),
         ),
         SizedBox(height: 8.h),
@@ -1313,6 +1400,100 @@ class _OrderDetails2 extends State<OrderDetails2> {
               )
             : const SizedBox.shrink(),
       ],
+    );
+  }
+
+  void _showHideConfirmDialog({
+    required String title,
+    required String body,
+    required VoidCallback onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          insetPadding: EdgeInsets.symmetric(horizontal: 40.w),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.bodyMedium?.bq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    fontSize: 18.sp,
+                    height: 1.3,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  body,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xff8D8D8D),
+                    fontSize: 14.sp,
+                    height: 1.3,
+                  ),
+                ),
+                SizedBox(height: 24.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () => Navigator.of(dialogContext).pop(),
+                      child: Container(
+                        height: 44.h,
+                        width: 110.w,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: const Color(0xffECECEC),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Text(
+                          LocaleKeys.cansel.tr(),
+                          style: context.textTheme.bodyMedium?.mq.copyWith(
+                            color: const Color(0xff1D1D1D),
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(dialogContext).pop();
+                        onConfirm();
+                      },
+                      child: Container(
+                        height: 44.h,
+                        width: 110.w,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: const Color(0xffE30613),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Text(
+                          LocaleKeys.confirm.tr(),
+                          style: context.textTheme.bodyMedium?.mq.copyWith(
+                            color: Colors.white,
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1796,13 +1977,18 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                     .currentStatus]
                                                 ?.paginationStatus ||
                                         p.getOrdersByOrderGroupIDStatus !=
-                                            c.getOrdersByOrderGroupIDStatus,
+                                            c.getOrdersByOrderGroupIDStatus ||
+                                        p.hideOrderVisibilityStatus !=
+                                            c.hideOrderVisibilityStatus,
                                     builder: (context, state) =>
                                         state.getOrdersByOrderGroupIDStatus ==
                                                 GetOrdersByOrderGroupIDStatus
                                                     .loading ||
                                             state.orderReturnDetailsStatus ==
                                                 OrderReturnRequestsViewStatus
+                                                    .loading ||
+                                            state.hideOrderVisibilityStatus ==
+                                                HideOrderVisibilityStatus
                                                     .loading
                                         ? TrydosLoader(size: 16)
                                         : Row(
@@ -7535,6 +7721,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
     if (_option == "Change_Product_Request") {
       return panelVaraintContent(sc);
     }
+    // Defensive: after hiding a product the refreshed pack has fewer details,
+    // while indexTap may still point at the old product index. The panel can
+    // still (re)build while closed/closing — render nothing instead of
+    // throwing a RangeError.
+    if (indexTap.value >= (order?.details?.length ?? 0)) {
+      return const SizedBox.shrink();
+    }
     ReturnOrderDetail? orderDetail = orderDetails.firstWhere(
       (element) => element.detailId == order!.details?[indexTap.value].id,
       orElse: () => ReturnOrderDetail(),
@@ -7651,9 +7844,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     )
                     .color;
 
-                if (kDebugMode) print(
-                  "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG_____$firstColorOption}",
-                );
+                if (kDebugMode)
+                  print(
+                    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG_____$firstColorOption}",
+                  );
                 firstColorName = state.colorSizeForProductModel?.data?.colors
                     ?.firstWhere(
                       (element) => element.option == firstColorOption,
@@ -7854,7 +8048,25 @@ class _OrderDetails2 extends State<OrderDetails2> {
             child: optionOfModify(
               onTap: () {
                 orderBloc.add(const ResetAllStatusEvent());
-                optionModifyPanel.value = "Hide_This_Product";
+                _showHideConfirmDialog(
+                  title: LocaleKeys.hide_this_product.tr(),
+                  body: LocaleKeys.are_you_sure_hide_this_product.tr(),
+                  onConfirm: () {
+                    _pendingHide = true;
+                    panelController.close();
+                    showPanel.value = false;
+                    optionModifyPanel.value = null;
+                    showShadowForPanel.value = false;
+                    orderBloc.add(
+                      HideOrderDetailEvent(
+                        detailId:
+                            order?.details?[indexTap.value].id?.toString() ??
+                            '',
+                        orderGroupId: order?.orderGroupId ?? '',
+                      ),
+                    );
+                  },
+                );
               },
               svg: AppAssets.hideThisProductSvg,
               image2: "",
@@ -8002,29 +8214,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                           ),
                           SizedBox(width: 5.w),
                           Text(
-                            
-                            "${LanguageService.languageCode == "ar" ? "أ" : "k"}${HelperFunctions.formatNumber(
-                              numberToFormate:
-                                  ((HelperFunctions.truncateToDecimalPlaces(
-                                                order!.orderAmount!,
-                                                homeBloc
-                                                    .state
-                                                    .getCurrencyForCountryModel!
-                                                    .data!
-                                                    .currency!
-                                                    .decimalDigits!,
-                                              ) *
-                                              homeBloc
-                                                  .state
-                                                  .getCurrencyForCountryModel!
-                                                  .data!
-                                                  .currency!
-                                                  .exchangeRate!) /
-                                          1000)
-                                      .ceil()
-                                      .toDouble(),
-                              isNeedRounding: false,
-                            )}",
+                            "${LanguageService.languageCode == "ar" ? "أ" : "k"}${HelperFunctions.formatNumber(numberToFormate: ((HelperFunctions.truncateToDecimalPlaces(order!.orderAmount!, homeBloc.state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * homeBloc.state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!) / 1000).ceil().toDouble(), isNeedRounding: false)}",
                             style: context.textTheme.bodyMedium?.bq.copyWith(
                               color: const Color(0xff1D1D1D),
                               letterSpacing: 0.18,

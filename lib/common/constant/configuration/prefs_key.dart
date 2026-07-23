@@ -40,6 +40,8 @@ abstract class PrefsKey {
 
   static const marketToken = r'__$__marketToken__$__';
 
+  static const marketRefreshToken = r'__$__marketRefreshToken__$__';
+
   static const storiesToken = r'__$__storiesToken__$__';
 
   static const tokenForComment = r'__$__tokenForComment__$__';

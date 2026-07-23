@@ -251,7 +251,11 @@ class Brand {
     id: json["id"],
     slug: json["slug"],
     name: json["name"],
-    icon: json["icon"] == null ? null : Icon.fromJson(json["icon"]),
+    icon: json["icon"] == null
+        ? null
+        : json["icon"] is Map
+        ? Icon.fromJson(json["icon"])
+        : Icon.fromJson({"file_path": json["icon"]}),
   );
 
   Map<String, dynamic> toJson() => {

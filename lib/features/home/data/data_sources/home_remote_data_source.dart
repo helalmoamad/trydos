@@ -7,6 +7,7 @@ import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/delete.dart';
 import 'package:trydos/core/api/methods/get.dart';
+import 'package:trydos/core/api/methods/patch.dart';
 import 'package:trydos/core/api/methods/put.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/DeliveredOrdersResponse.dart';
@@ -28,6 +29,7 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_colors_and_sizes_model.dart';
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
+import 'package:trydos/features/home/data/models/get_hidden_orders_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
@@ -965,6 +967,47 @@ class HomeRemoteDatasource {
       ),
     );
     return hideItemsInOldCart();
+  }
+
+  Future<bool> setOrderVisibility(String orderId, Map<String, dynamic> params) {
+    PatchClient<bool> setOrderVisibility = PatchClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.hideOrderVisibilityEP(orderId),
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return setOrderVisibility();
+  }
+
+  Future<bool> setOrderDetailVisibility(
+    String detailId,
+    Map<String, dynamic> params,
+  ) {
+    PatchClient<bool> setOrderDetailVisibility = PatchClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.hideOrderDetailVisibilityEP(detailId),
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return setOrderDetailVisibility();
+  }
+
+  Future<GetHiddenOrdersModel> getHiddenOrders() {
+    GetClient<GetHiddenOrdersModel> getHiddenOrders =
+        GetClient<GetHiddenOrdersModel>(
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GetHiddenOrdersModel>(
+            endpoint: MarketEndPoints.getHiddenOrdersEP,
+            response: ResponseValue<GetHiddenOrdersModel>(
+              fromJson: (response) => GetHiddenOrdersModel.fromJson(response),
+            ),
+          ),
+        );
+    return getHiddenOrders();
   }
 
   Future<ConvertItemFromCartToOldCartModel> convertItemInCartToOldCart(

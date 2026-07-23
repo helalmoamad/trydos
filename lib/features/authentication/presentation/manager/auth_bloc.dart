@@ -1,22 +1,28 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/core/utils/extensions/string.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/data/models/get_user_country_response_model.dart';
 import 'package:trydos/features/authentication/domain/use_cases/create_wallet_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/delete_fcm_from_chat_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/generating_token_for_comment.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
+import 'package:trydos/features/authentication/domain/use_cases/refresh_token_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/register_guest_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/send_otp_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/store_fcm_usecase.dart';
@@ -26,6 +32,7 @@ import 'package:trydos/features/authentication/domain/use_cases/update_stories_u
 import 'package:trydos/features/authentication/domain/use_cases/verify_guest_phone_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signin_usecase.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/routes/router.dart';
 import 'package:trydos/features/dashBoard/presentation/bloc/dashBoard_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
@@ -78,6 +85,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.getUserCountryUseCase,
     this.deleteFcmFromChatUseCase,
     this.verifyOtpSignUpUseCase,
+    this.refreshTokenUseCase,
   ) : super(const AuthState()) {
     on<AuthEvent>((event, emit) {});
     on<CreateUserEvent>(
@@ -118,6 +126,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _onRegisterGuestEvent,
       transformer: throttleDroppable(const Duration(seconds: 5)),
     );
+    on<RefreshTokenEvent>(
+      _onRefreshTokenEvent,
+      transformer: throttleDroppable(const Duration(seconds: 10)),
+    );
     on<UpdateNameEvent>(
       _onUpdateNameEvent,
       transformer: throttleDroppable(throttleDuration),
@@ -147,6 +159,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   final VerifyOtpFromGuestUseCase verifyOtpFromGuestUseCase;
   final RegisterGuestUseCase registerGuestUseCase;
+  final RefreshTokenUseCase refreshTokenUseCase;
   final UpdateNameUseCase updateNameUseCase;
   final LoginToWalletUseCase loginToWalletUseCase;
   final DeleteFcmFromChatUseCase deleteFcmFromChatUseCase;
@@ -251,6 +264,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     DeleteFcmTokenFromChatEvent event,
     Emitter<AuthState> emit,
   ) async {
+    if (_prefsRepository.chatToken.isNullOrEmpty) {
+      return;
+    }
     await deleteFcmFromChatUseCase(DeleteFcmParams(fcmToken: event.fcmToken));
   }
 
@@ -376,6 +392,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           await _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
           await _prefsRepository.setMarketToken(r.data?.token.toString());
+          await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
 
           Future.delayed(const Duration(seconds: 30), () {
             if (kDebugMode) print("#########33333333332");
@@ -649,6 +666,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
 
           await _prefsRepository.setMarketToken(r.data!.token!);
+          await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
           await _prefsRepository.setTokenExpired(false);
           await _prefsRepository.setIdToken((r.data!.idToken).toString());
           GetIt.I<HomeBloc>().add(
@@ -790,6 +808,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
         await _prefsRepository.setOtpCode(event.otp);
         await _prefsRepository.setMarketToken(r.data!.token!);
+        await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
         await _prefsRepository.setTokenExpired(false);
 
         //////////////////////////////////////
@@ -921,10 +940,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         });
         ErrorManager.resetRetry('RegisterGuestEvent');
         await _prefsRepository.setMarketToken(r.data!.token!);
+        await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
         await _prefsRepository.setMyProfilePhoto(
           (r.data?.user?.image ?? "").toString(),
         );
         await _prefsRepository.setMyMarketName(r.data!.user!.name ?? "guest");
+        // A brand-new guest has phone "0" — reset the stored number so
+        // phone-based routing (market vs marketGO) switches back correctly.
+        await _prefsRepository.setPhoneNumber(
+          (r.data?.user?.phone ?? "0").toString(),
+        );
 
         //////////////////////////////////////
         FirebaseAnalytics.instance.setUserId(id: r.data!.user!.id.toString());
@@ -954,6 +979,111 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         NotificationProcess().fcmToken(null, null, null, null);
       },
     );
+  }
+
+  /// Exchanges the stored (single-use) refresh token for a new token pair.
+  /// On success both stored tokens are replaced (rotation). On any failure —
+  /// no stored refresh token, 401 (invalid/expired/rotated), or server error —
+  /// it falls back to a brand-new guest session via [RegisterGuestEvent]
+  /// (without `old_guest_user_id`, per the new auth contract).
+  FutureOr<void> _onRefreshTokenEvent(
+    RefreshTokenEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    final String? storedRefreshToken = await _prefsRepository
+        .getMarketRefreshToken();
+
+    if (storedRefreshToken == null || storedRefreshToken.isEmpty) {
+      // Nothing to exchange (e.g. first run after the app update) -> new guest.
+      await _fallBackToNewGuestSession();
+      return;
+    }
+
+    final response = await refreshTokenUseCase(
+      RefreshTokenParams(refreshToken: storedRefreshToken),
+    );
+    await response.fold(
+      (l) async {
+        if (kDebugMode) {
+          print(
+            "Refresh token rejected (${l.statusCode}) -> new guest session",
+          );
+        }
+        // The presented refresh token is invalid/expired/rotated -> the only
+        // recovery path is a brand-new guest session.
+        await _fallBackToNewGuestSession();
+      },
+      (r) async {
+        // Replace BOTH stored tokens with the returned pair (single-use
+        // rotation: the presented refresh token is now revoked).
+        await _prefsRepository.setMarketToken(r.data!.token!);
+        await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
+        await _prefsRepository.setTokenExpired(false);
+        if (kDebugMode) print("Token refreshed successfully");
+      },
+    );
+  }
+
+  /// Starts a fresh guest session (the refresh-token recovery fallback).
+  Future<void> _fallBackToNewGuestSession() async {
+    if (_prefsRepository.myPhoneNumber.isNullOrEmpty) {
+      await _prefsRepository.setMarketRefreshToken("");
+      final String? deviceId = await HelperFunctions.getDeviceId();
+      add(RegisterGuestEvent(deviceId: deviceId ?? ""));
+      return;
+    }
+    await logOutUser();
+  }
+
+  Future<void> logOutUser() async {
+    _prefsRepository.getFcmTokens.length > 0
+        ? add(
+            DeleteFcmTokenFromChatEvent(
+              fcmToken: _prefsRepository.getFcmTokens[0],
+            ),
+          )
+        : null;
+    _prefsRepository.addFcmToken("");
+    await Future.delayed(const Duration(milliseconds: 300));
+    GetIt.I<HomeBloc>().add(const ClearAllAppCashEvent());
+    clearCustomCashe();
+    _prefsRepository.setIsFoundDataCashed(false);
+    GetIt.I<AppBloc>().add(ChangeBasePage(0));
+    GetIt.I<HomeBloc>().add(
+      SaveUserInfoFromAuthEvent(
+        userInfo: User(
+          alternativePhone: "",
+          email: "",
+          image: "",
+          isPhoneVerified: 0,
+          lastOtpIdToken: "",
+          name: "",
+          phone: "",
+        ),
+      ),
+    );
+
+    _prefsRepository.setVerifiedPhone(false);
+    _prefsRepository.setPhoneNumber("");
+    _prefsRepository.setChatToken("");
+    _prefsRepository.setMarketToken("");
+    _prefsRepository.setMyMarketName("");
+    _prefsRepository.setWalletToken("");
+    _prefsRepository.setStoriesToken("");
+    _prefsRepository.setMyChatName("");
+    _prefsRepository.setMyStoriesName("");
+    _prefsRepository.setVerifiedPhonePeforeExpiredToken(false);
+
+    _prefsRepository.setMyProfilePhoto("");
+    HydratedBloc.storage.clear();
+    GetIt.I<ChatBloc>().add(const ClearChatEvent());
+
+    Future.delayed(const Duration(microseconds: 500), () {
+      // Navigate via the app-wide router — a bloc has no BuildContext, and the
+      // global GRouter.router works from anywhere (same pattern used for
+      // notification-driven navigation).
+      GRouter.router.go("/");
+    });
   }
 
   FutureOr<void> _onUpdateNameEvent(

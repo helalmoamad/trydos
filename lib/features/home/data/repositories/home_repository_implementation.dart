@@ -28,6 +28,7 @@ import 'package:trydos/features/home/data/models/get_order_rating_model.dart'
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
+import 'package:trydos/features/home/data/models/get_hidden_orders_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 
@@ -341,6 +342,31 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
       tryCall: () => dataSource.hideItemsInOldCart(params),
     );
+  }
+
+  @override
+  Future<Either<Failure, bool>> setOrderVisibility(
+    String orderId,
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.setOrderVisibility(orderId, params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, bool>> setOrderDetailVisibility(
+    String detailId,
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.setOrderDetailVisibility(detailId, params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, GetHiddenOrdersModel>> getHiddenOrders() {
+    return handlingExceptionRequest(tryCall: () => dataSource.getHiddenOrders());
   }
 
   Future<Either<Failure, ConvertItemFromCartToOldCartModel>>

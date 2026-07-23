@@ -87,6 +87,20 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
+  Future<bool> setMarketRefreshToken(String? token) async {
+    await _secureStorage.write(
+      key: PrefsKey.marketRefreshToken,
+      value: token ?? "",
+    );
+    return true;
+  }
+
+  @override
+  Future<String?> getMarketRefreshToken() {
+    return _secureStorage.read(key: PrefsKey.marketRefreshToken);
+  }
+
+  @override
   Future<bool> setStoriesToken(String token) async {
     await _secureStorage.write(key: PrefsKey.storiesToken, value: token);
     _cachedStoriesToken = token;

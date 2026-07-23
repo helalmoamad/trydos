@@ -8,6 +8,7 @@ import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/currencies_response_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/getRelatedProducts.dart';
+import 'package:trydos/features/home/data/models/get_hidden_orders_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
@@ -197,6 +198,15 @@ abstract class HomeRepository {
   getAndAddCountViewOfProduct(Map<String, dynamic> params);
 
   Future<Either<Failure, bool>> hideItemsInOldCart(Map<String, dynamic> params);
+  Future<Either<Failure, bool>> setOrderVisibility(
+    String orderId,
+    Map<String, dynamic> params,
+  );
+  Future<Either<Failure, bool>> setOrderDetailVisibility(
+    String detailId,
+    Map<String, dynamic> params,
+  );
+  Future<Either<Failure, GetHiddenOrdersModel>> getHiddenOrders();
   Future<Either<Failure, bool>> setCustomerAddressDefault(
     Map<String, dynamic> params,
   );

@@ -162,6 +162,16 @@ class RegisterGuestEvent extends AuthEvent {
   List<Object?> get props => [deviceId];
 }
 
+/// Exchanges the stored refresh token for a new access + refresh pair
+/// (dispatched on a market 401). Falls back to [RegisterGuestEvent] when no
+/// refresh token is stored or the refresh itself is rejected.
+class RefreshTokenEvent extends AuthEvent {
+  const RefreshTokenEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class UpdateNameEvent extends AuthEvent {
   final String? name;
 

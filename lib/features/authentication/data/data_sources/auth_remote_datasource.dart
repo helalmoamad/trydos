@@ -243,7 +243,7 @@ class AuthRemoteDatasource {
   ) {
     PostClient<VerifyOtpFromGuestResponseModel> verifyOtpFromGuest =
         PostClient<VerifyOtpFromGuestResponseModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<VerifyOtpFromGuestResponseModel>(
             endpoint: MarketEndPoints.verifyOtpFromGuestEP,
             data: params,
@@ -279,7 +279,7 @@ class AuthRemoteDatasource {
   ) {
     PostClient<VerifyOtpSignUpAndInResponseModel> registerGuest =
         PostClient<VerifyOtpSignUpAndInResponseModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
             endpoint: MarketEndPoints.registerGuestEP,
             data: params,
@@ -290,6 +290,26 @@ class AuthRemoteDatasource {
           ),
         );
     return registerGuest();
+  }
+
+  /// Exchanges the stored (single-use) refresh token for a new
+  /// access + refresh token pair.
+  Future<VerifyOtpSignUpAndInResponseModel> refreshToken(
+    Map<String, dynamic> params,
+  ) {
+    PostClient<VerifyOtpSignUpAndInResponseModel> refreshToken =
+        PostClient<VerifyOtpSignUpAndInResponseModel>(
+          serverName: ServerName.marketGO,
+          requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
+            endpoint: MarketEndPoints.refreshTokenEP,
+            data: params,
+            response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
+              fromJson: (response) =>
+                  VerifyOtpSignUpAndInResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return refreshToken();
   }
 
   Future<LoginToStoriesResponseModel> loginToStories(

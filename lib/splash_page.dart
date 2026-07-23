@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
@@ -128,8 +129,11 @@ class _SplashPageState extends State<SplashPage> {
       context,
       fromTerminated: true,
       whereToNavigationAfterCheck: () {
+        print(
+          "SSSSSSSSSSSSSSSSSSSSSSS*///*/*/S${prefsRepository.marketToken.isNullOrEmpty}",
+        );
         context.go(
-          prefsRepository.marketToken == null
+          prefsRepository.marketToken.isNullOrEmpty
               ? GRouter.config.applicationRoutes.kRegistrationPage
               : GRouter.config.applicationRoutes.kBasePage,
         );

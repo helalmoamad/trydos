@@ -46,6 +46,8 @@ import '../../features/authentication/domain/use_cases/login_to_stories_usecase.
     as _i656;
 import '../../features/authentication/domain/use_cases/login_to_wallet_usecase.dart'
     as _i304;
+import '../../features/authentication/domain/use_cases/refresh_token_usecase.dart'
+    as _i268;
 import '../../features/authentication/domain/use_cases/register_guest_usecase.dart'
     as _i49;
 import '../../features/authentication/domain/use_cases/send_otp_usecase.dart'
@@ -267,6 +269,8 @@ import '../../features/home/domain/use_cases/get_fqa_comments_usecase.dart'
     as _i131;
 import '../../features/home/domain/use_cases/get_full_product_details_usecase.dart'
     as _i149;
+import '../../features/home/domain/use_cases/get_hidden_orders_usecase.dart'
+    as _i415;
 import '../../features/home/domain/use_cases/get_home_boutiqes_usecase.dart'
     as _i518;
 import '../../features/home/domain/use_cases/get_main_categories_usecase.dart'
@@ -327,6 +331,8 @@ import '../../features/home/domain/use_cases/send_error_to_mobile_error_log.dart
     as _i78;
 import '../../features/home/domain/use_cases/set_customer_address_default_usecase.dart'
     as _i1064;
+import '../../features/home/domain/use_cases/set_order_visibility_usecase.dart'
+    as _i600;
 import '../../features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart'
     as _i366;
 import '../../features/home/domain/use_cases/store_return_request_product_usecase.dart'
@@ -529,6 +535,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i304.LoginToWalletUseCase>(
     () => _i304.LoginToWalletUseCase(gh<_i742.AuthRepository>()),
   );
+  gh.factory<_i268.RefreshTokenUseCase>(
+    () => _i268.RefreshTokenUseCase(gh<_i742.AuthRepository>()),
+  );
   gh.factory<_i49.RegisterGuestUseCase>(
     () => _i49.RegisterGuestUseCase(gh<_i742.AuthRepository>()),
   );
@@ -678,6 +687,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i149.GetFullProductDetailsUseCase>(
     () => _i149.GetFullProductDetailsUseCase(gh<_i0.HomeRepository>()),
   );
+  gh.factory<_i415.GetHiddenOrdersUseCase>(
+    () => _i415.GetHiddenOrdersUseCase(gh<_i0.HomeRepository>()),
+  );
   gh.factory<_i518.GetHomeBoutiqesUseCase>(
     () => _i518.GetHomeBoutiqesUseCase(gh<_i0.HomeRepository>()),
   );
@@ -764,6 +776,12 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i1064.SetCustomerAddressDefaultUseCase>(
     () => _i1064.SetCustomerAddressDefaultUseCase(gh<_i0.HomeRepository>()),
+  );
+  gh.factory<_i600.SetOrderVisibilityUseCase>(
+    () => _i600.SetOrderVisibilityUseCase(gh<_i0.HomeRepository>()),
+  );
+  gh.factory<_i600.SetOrderDetailVisibilityUseCase>(
+    () => _i600.SetOrderDetailVisibilityUseCase(gh<_i0.HomeRepository>()),
   );
   gh.factory<_i366.StoreFcmTokenOfMarketUseCase>(
     () => _i366.StoreFcmTokenOfMarketUseCase(gh<_i0.HomeRepository>()),
@@ -961,6 +979,43 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i282.UploadFileToS3UseCase>(
     () => _i282.UploadFileToS3UseCase(gh<_i70.DashBoardRepository>()),
   );
+  gh.lazySingleton<_i279.OrderBloc>(
+    () => _i279.OrderBloc(
+      gh<_i649.PlaceOrderUsecase>(),
+      gh<_i682.WalletCheckoutUseCase>(),
+      gh<_i197.CancelOrderItemUsecase>(),
+      gh<_i811.CancelOrderUsecase>(),
+      gh<_i291.UploadImagesProductReturnUseCase>(),
+      gh<_i636.ChangeOrderAddressUsecase>(),
+      gh<_i1003.GetOrdersByOrderGroupIDUsecase>(),
+      gh<_i59.GetOrdersByCartGroupIDUsecase>(),
+      gh<_i401.GetProvincesByIsoUseCase>(),
+      gh<_i361.GetCustomerWalletUseCase>(),
+      gh<_i241.StoreReturnRequestUseCase>(),
+      gh<_i943.ConfirmReturnRequestUseCase>(),
+      gh<_i926.OrderReturnRequestsViewUseCase>(),
+      gh<_i558.GetOrdersUseCase>(),
+      gh<_i1064.SetCustomerAddressDefaultUseCase>(),
+      gh<_i489.GetCustomerAddressesUseCase>(),
+      gh<_i71.DeleteCustomerAddressUseCase>(),
+      gh<_i70.AddCustomerAddressUseCase>(),
+      gh<_i418.UpdateCustomerAddressUseCase>(),
+      gh<_i970.GetAddressByCoordinatesUsecase>(),
+      gh<_i976.GetAddressByTextUsecase>(),
+      gh<_i493.ApplyCouponUsecase>(),
+      gh<_i716.GetProductColorSizeSyncAttributeUseCase>(),
+      gh<_i607.ChangeOrderItemVariantUsecase>(),
+      gh<_i815.GetReturnReasonsUseCase>(),
+      gh<_i285.StoreReturnRequestProductUseCase>(),
+      gh<_i441.CancelReturnRequestUseCase>(),
+      gh<_i217.CancelReturnRequestProductUseCase>(),
+      gh<_i799.UpdateReturnRequestProductUseCase>(),
+      gh<_i182.OrderReturnDetailsUseCase>(),
+      gh<_i600.SetOrderVisibilityUseCase>(),
+      gh<_i600.SetOrderDetailVisibilityUseCase>(),
+      gh<_i415.GetHiddenOrdersUseCase>(),
+    ),
+  );
   gh.factory<_i589.CreateUserUseCase>(
     () => _i589.CreateUserUseCase(gh<_i420.ChatRepository>()),
   );
@@ -1031,6 +1086,30 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i897.UploadFileUseCase>(
     () => _i897.UploadFileUseCase(gh<_i420.ChatRepository>()),
+  );
+  gh.lazySingleton<_i561.AuthBloc>(
+    () => _i561.AuthBloc(
+      gh<_i434.UpdateStoriesUserUseCase>(),
+      gh<_i730.UpdateChatUserNameUseCase>(),
+      gh<_i589.CreateUserUseCase>(),
+      gh<_i919.LoginToChatUseCase>(),
+      gh<_i656.LoginToStoriesUseCase>(),
+      gh<_i142.StoreFcmUseCase>(),
+      gh<_i995.VerifyOtpInProfileUseCase>(),
+      gh<_i58.UpdateNameUseCase>(),
+      gh<_i49.RegisterGuestUseCase>(),
+      gh<_i650.CreateWalletUseCase>(),
+      gh<_i304.LoginToWalletUseCase>(),
+      gh<_i100.GeneratingTokenForCommentUseCase>(),
+      gh<_i952.SendOtpUseCase>(),
+      gh<_i862.GetCustomerInfoUseCase>(),
+      gh<_i236.VerifyOtpFromGuestUseCase>(),
+      gh<_i574.VerifyOtpSignInUseCase>(),
+      gh<_i644.GetUserCountryUseCase>(),
+      gh<_i231.DeleteFcmFromChatUseCase>(),
+      gh<_i282.VerifyOtpSignUpUseCase>(),
+      gh<_i268.RefreshTokenUseCase>(),
+    ),
   );
   gh.lazySingleton<_i976.DashboardBloc>(
     () => _i976.DashboardBloc(
@@ -1113,63 +1192,6 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i955.GetProductsWithFiltersUseCase>(),
       gh<_i889.GetRecommendProductsUseCase>(),
       gh<_i290.GetProductFiltersUseCase>(),
-    ),
-  );
-  gh.lazySingleton<_i279.OrderBloc>(
-    () => _i279.OrderBloc(
-      gh<_i649.PlaceOrderUsecase>(),
-      gh<_i682.WalletCheckoutUseCase>(),
-      gh<_i197.CancelOrderItemUsecase>(),
-      gh<_i811.CancelOrderUsecase>(),
-      gh<_i291.UploadImagesProductReturnUseCase>(),
-      gh<_i636.ChangeOrderAddressUsecase>(),
-      gh<_i1003.GetOrdersByOrderGroupIDUsecase>(),
-      gh<_i59.GetOrdersByCartGroupIDUsecase>(),
-      gh<_i401.GetProvincesByIsoUseCase>(),
-      gh<_i361.GetCustomerWalletUseCase>(),
-      gh<_i241.StoreReturnRequestUseCase>(),
-      gh<_i943.ConfirmReturnRequestUseCase>(),
-      gh<_i926.OrderReturnRequestsViewUseCase>(),
-      gh<_i558.GetOrdersUseCase>(),
-      gh<_i1064.SetCustomerAddressDefaultUseCase>(),
-      gh<_i489.GetCustomerAddressesUseCase>(),
-      gh<_i71.DeleteCustomerAddressUseCase>(),
-      gh<_i70.AddCustomerAddressUseCase>(),
-      gh<_i418.UpdateCustomerAddressUseCase>(),
-      gh<_i970.GetAddressByCoordinatesUsecase>(),
-      gh<_i976.GetAddressByTextUsecase>(),
-      gh<_i493.ApplyCouponUsecase>(),
-      gh<_i716.GetProductColorSizeSyncAttributeUseCase>(),
-      gh<_i607.ChangeOrderItemVariantUsecase>(),
-      gh<_i815.GetReturnReasonsUseCase>(),
-      gh<_i285.StoreReturnRequestProductUseCase>(),
-      gh<_i441.CancelReturnRequestUseCase>(),
-      gh<_i217.CancelReturnRequestProductUseCase>(),
-      gh<_i799.UpdateReturnRequestProductUseCase>(),
-      gh<_i182.OrderReturnDetailsUseCase>(),
-    ),
-  );
-  gh.lazySingleton<_i561.AuthBloc>(
-    () => _i561.AuthBloc(
-      gh<_i434.UpdateStoriesUserUseCase>(),
-      gh<_i730.UpdateChatUserNameUseCase>(),
-      gh<_i589.CreateUserUseCase>(),
-      gh<_i919.LoginToChatUseCase>(),
-      gh<_i656.LoginToStoriesUseCase>(),
-      gh<_i142.StoreFcmUseCase>(),
-      gh<_i995.VerifyOtpInProfileUseCase>(),
-      gh<_i58.UpdateNameUseCase>(),
-      gh<_i49.RegisterGuestUseCase>(),
-      gh<_i650.CreateWalletUseCase>(),
-      gh<_i304.LoginToWalletUseCase>(),
-      gh<_i100.GeneratingTokenForCommentUseCase>(),
-      gh<_i952.SendOtpUseCase>(),
-      gh<_i862.GetCustomerInfoUseCase>(),
-      gh<_i236.VerifyOtpFromGuestUseCase>(),
-      gh<_i574.VerifyOtpSignInUseCase>(),
-      gh<_i644.GetUserCountryUseCase>(),
-      gh<_i231.DeleteFcmFromChatUseCase>(),
-      gh<_i282.VerifyOtpSignUpUseCase>(),
     ),
   );
   gh.lazySingleton<_i243.ChatBloc>(
