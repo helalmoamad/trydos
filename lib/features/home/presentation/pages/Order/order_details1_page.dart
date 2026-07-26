@@ -287,6 +287,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
         listenWhen: (p, c) =>
             p.getOrdersByOrderGroupIDStatus != c.getOrdersByOrderGroupIDStatus,
         listener: (context, state) {
+          print("GGGGGGGGGGGGGGGGGG/*/*/");
           if (state.getOrdersByOrderGroupIDStatus ==
               GetOrdersByOrderGroupIDStatus.success) {
             final List<OrderListModel> groupOrders =
@@ -295,12 +296,16 @@ class _OrderDetails1State extends State<OrderDetails1> {
             // Post-hide navigation — only the page that initiated the hide
             // (its own _pendingHide is set) navigates, so OrderDetails1 and
             // OrderDetails2 never both pop on the same re-fetch.
+            print("GGGGGGGGGGGGGGGGGG/*/*/${groupOrders}");
             if (_pendingHide) {
+              print("GGGGGGGGGGGGGGGGGG/*/*//////${groupOrders}");
               _pendingHide = false;
               if (groupOrders.isEmpty) {
+                print("GGGGGGGGGGGGGGGGGG/*/*/*****${groupOrders}");
                 // Group fully hidden -> back to the Orders page. The main
                 // list is refreshed by the bloc after the hide.
                 if (Navigator.of(context).canPop()) {
+                  print("GGGGGGGGGGGGGGGGGG/*/*----/${groupOrders}");
                   Navigator.of(context).pop();
                 }
                 return;

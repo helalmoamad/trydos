@@ -54,8 +54,15 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false  
-            shrinkResources false 
+            // R8 مُفعَّل: تصغير وتعتيم كود Java/Kotlin. القواعد في proguard-rules.pro
+            minifyEnabled true
+
+            // يبقى معطّلاً عمداً: تُشار إلى موارد أصلية بالاسم من Dart فيحذفها
+            // تصغير الموارد — أيقونة الإشعار res/drawable/app_icon.png
+            // (AndroidInitializationSettings('app_icon')) ونغمات res/raw/ringtone1.mp3
+            // و res/raw/whats.mp3. تفعيله يتطلّب res/raw/keep.xml يستثنيها أولاً.
+            shrinkResources false
+
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             
             // التوقيع التلقائي باستخدام الإعدادات السحابية المحددة بالأعلى

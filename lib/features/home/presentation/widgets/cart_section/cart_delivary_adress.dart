@@ -564,13 +564,6 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
     double totalCashed,
     List<String> availablePaymentMethods,
   ) {
-    print("SSSSSSSSSSSSSSS//${orderState.setCustomerAddressDefaultStatus}");
-    print("SSSSSSSSSSSSSSS///${orderState.getCustomerAddressStatus}");
-    print("SSSSSSSSSSSSSSS////${orderState.applyCouponStatus}");
-    print("SSSSSSSSSSSSSSS/////${orderState.addAddressToOrderStatus}");
-    print("SSSSSSSSSSSSSSS///////${orderState.editAddressToOrderStatus}");
-    print("SSSSSSSSSSSSSSS/////////${orderState.removeAddressToOrderStatus}");
-    print("SSSSSSSSSSSSSSS/////////////${homeState.getCartOverviewStatus}");
     return Container(
       height: 80.h,
       decoration: BoxDecoration(
