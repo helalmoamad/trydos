@@ -13,9 +13,6 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/string.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/data/models/get_user_country_response_model.dart';
 import 'package:trydos/features/authentication/domain/use_cases/create_wallet_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/delete_fcm_from_chat_usecase.dart';
@@ -32,7 +29,6 @@ import 'package:trydos/features/authentication/domain/use_cases/update_stories_u
 import 'package:trydos/features/authentication/domain/use_cases/verify_guest_phone_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signin_usecase.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-import 'package:trydos/routes/router.dart';
 import 'package:trydos/features/dashBoard/presentation/bloc/dashBoard_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
@@ -112,16 +108,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _onLoginToWalletEvent,
       transformer: throttleDroppable(const Duration(seconds: 10)),
     );
-    on<StoreFcmTokenEvent>(_onStoreFcmTokenEvent);
+    on<StoreFcmTokenInStoryEvent>(
+      _onStoreFcmTokenInStoryEvent,
+      transformer: throttleDroppable(const Duration(seconds: 10)),
+    );
+    on<StoreFcmTokenInChatEvent>(
+      _onStoreFcmTokenInChatEvent,
+      transformer: throttleDroppable(const Duration(seconds: 10)),
+    );
     on<SendOtpEvent>(
       _onSendOtpEvent,
       transformer: throttleDroppable(const Duration(seconds: 10)),
     );
-    on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent);
+    on<VerifyOtpSignInEvent>(
+      _onVerifyOtpSignInEvent,
+      transformer: throttleDroppable(const Duration(seconds: 6)),
+    );
     on<VerifyOtpInProfileEvent>(_onVerifyOtpInProfileEvent);
     on<DeleteFcmTokenFromChatEvent>(_onDeleteFcmTokenFromChatEvent);
-    on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent);
-    on<VerifyOtpFromGuestEvent>(_onVerifyGuestPhoneEvent);
+    on<VerifyOtpSignUpEvent>(
+      _onVerifyOtpSignUpEvent,
+      transformer: throttleDroppable(const Duration(seconds: 6)),
+    );
+    on<VerifyOtpFromGuestEvent>(
+      _onVerifyGuestPhoneEvent,
+      transformer: throttleDroppable(const Duration(seconds: 6)),
+    );
     on<RegisterGuestEvent>(
       _onRegisterGuestEvent,
       transformer: throttleDroppable(const Duration(seconds: 5)),
@@ -130,6 +142,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _onRefreshTokenEvent,
       transformer: throttleDroppable(const Duration(seconds: 10)),
     );
+    on<ShowSessionExpiredEvent>(_onShowSessionExpiredEvent);
     on<UpdateNameEvent>(
       _onUpdateNameEvent,
       transformer: throttleDroppable(throttleDuration),
@@ -270,16 +283,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await deleteFcmFromChatUseCase(DeleteFcmParams(fcmToken: event.fcmToken));
   }
 
-  FutureOr<void> _onStoreFcmTokenEvent(
-    StoreFcmTokenEvent event,
+  FutureOr<void> _onStoreFcmTokenInStoryEvent(
+    StoreFcmTokenInStoryEvent event,
     Emitter<AuthState> emit,
   ) async {
-    if (event.serverName == ServerName.chat &&
-        (_prefsRepository.chatToken?.length ?? 0) < 7) {
+    if (event.serverName == ServerName.chat) {
       return;
     }
-    if (event.serverName == ServerName.stories &&
-        (_prefsRepository.storiesToken?.length ?? 0) < 7) {
+    if ((_prefsRepository.storiesToken?.length ?? 0) < 7) {
       return;
     }
     final response = await storeFcmUseCase(
@@ -293,7 +304,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (l) {
         if (ErrorManager.shouldRetry('StoreFcmTokenEvent', l.statusCode)) {
           add(
-            StoreFcmTokenEvent(
+            StoreFcmTokenInStoryEvent(
               userId: event.userId,
               fcmToken: event.fcmToken,
               serverName: event.serverName,
@@ -301,17 +312,53 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
           ErrorManager.incrementRetry('StoreFcmTokenEvent');
         }
-        if (event.serverName == ServerName.chat) {
-          emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
-        }
       },
       (r) {
         ErrorManager.resetRetry('StoreFcmTokenEvent');
         final id = r.data!.id;
         _prefsRepository.setFcmTokenId(id!);
-        if (event.serverName == ServerName.chat) {
-          emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
+      },
+    );
+  }
+
+  FutureOr<void> _onStoreFcmTokenInChatEvent(
+    StoreFcmTokenInChatEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    if (event.serverName == ServerName.stories) {
+      return;
+    }
+    if ((_prefsRepository.chatToken?.length ?? 0) < 7) {
+      return;
+    }
+    final response = await storeFcmUseCase(
+      StoreFcmParams(
+        userId: event.userId,
+        fcmToken: event.fcmToken,
+        serverName: event.serverName,
+      ),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('StoreFcmTokenEvent', l.statusCode)) {
+          add(
+            StoreFcmTokenInChatEvent(
+              userId: event.userId,
+              fcmToken: event.fcmToken,
+              serverName: event.serverName,
+            ),
+          );
+          ErrorManager.incrementRetry('StoreFcmTokenEvent');
         }
+
+        emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
+      },
+      (r) {
+        ErrorManager.resetRetry('StoreFcmTokenEvent');
+        final id = r.data!.id;
+        _prefsRepository.setFcmTokenId(id!);
+
+        emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
       },
     );
   }
@@ -677,10 +724,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
           // GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
           _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-          if (kDebugMode)
-            print(
-              "*****************************-----------------------------${r.data!.token!}",
-            );
+
           await _prefsRepository.setVerifiedPhone(
             r.data!.user?.isPhoneVerified == 1,
           );
@@ -749,7 +793,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(
             state.copyWith(
               verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
-              marketUser: r.data!.user,
+              marketUser: User(
+                alternativePhone: r.data!.user!.alternativePhone,
+                email: r.data!.user!.email,
+                gender: r.data!.user!.gender,
+                id: r.data!.user!.id,
+                image: r.data!.user!.image,
+                isPhoneVerified: r.data!.user!.isPhoneVerified,
+                name: r.data!.user!.name,
+                phone: r.data!.user!.phone,
+                lastOtpIdToken: r.data!.user!.lastOtpIdToken,
+                tall: r.data!.user!.tall,
+                weight: r.data!.user!.weight,
+
+                isAllowedToUploadStories:
+                    r.data!.user!.isAllowedToUploadStories,
+              ),
               signInErrorMessage: 'auth-001',
             ),
           );
@@ -760,7 +819,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             verifyOtpSignInStatus: VerifyOtpSignInStatus.success,
-            marketUser: r.data!.user,
+            marketUser: User(
+              alternativePhone: r.data!.user!.alternativePhone,
+              email: r.data!.user!.email,
+              gender: r.data!.user!.gender,
+              id: r.data!.user!.id,
+              image: r.data!.user!.image,
+              isPhoneVerified: r.data!.user!.isPhoneVerified,
+              name: r.data!.user!.name,
+              phone: r.data!.user!.phone,
+              lastOtpIdToken: r.data!.user!.lastOtpIdToken,
+              tall: r.data!.user!.tall,
+              weight: r.data!.user!.weight,
+
+              isAllowedToUploadStories: r.data!.user!.isAllowedToUploadStories,
+            ),
           ),
         );
       },
@@ -875,7 +948,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(
             state.copyWith(
               verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
-              marketUser: r.data!.user,
+              marketUser: User(
+                alternativePhone: r.data!.user!.alternativePhone,
+                email: r.data!.user!.email,
+                gender: r.data!.user!.gender,
+                id: r.data!.user!.id,
+                image: r.data!.user!.image,
+                isPhoneVerified: r.data!.user!.isPhoneVerified,
+                name: r.data!.user!.name,
+                phone: r.data!.user!.phone,
+                lastOtpIdToken: r.data!.user!.lastOtpIdToken,
+                tall: r.data!.user!.tall,
+                weight: r.data!.user!.weight,
+
+                isAllowedToUploadStories:
+                    r.data!.user!.isAllowedToUploadStories,
+              ),
               signUpErrorMessage: 'auth-001',
             ),
           );
@@ -886,7 +974,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
-            marketUser: r.data!.user,
+            marketUser: User(
+              alternativePhone: r.data!.user!.alternativePhone,
+              email: r.data!.user!.email,
+              gender: r.data!.user!.gender,
+              id: r.data!.user!.id,
+              image: r.data!.user!.image,
+              isPhoneVerified: r.data!.user!.isPhoneVerified,
+              name: r.data!.user!.name,
+              phone: r.data!.user!.phone,
+              lastOtpIdToken: r.data!.user!.lastOtpIdToken,
+              tall: r.data!.user!.tall,
+              weight: r.data!.user!.weight,
+
+              isAllowedToUploadStories: r.data!.user!.isAllowedToUploadStories,
+            ),
           ),
         );
       },
@@ -1011,7 +1113,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
         // The presented refresh token is invalid/expired/rotated -> the only
         // recovery path is a brand-new guest session.
-        await _fallBackToNewGuestSession();
+        if (l.statusCode == 401) {
+          await _fallBackToNewGuestSession();
+        }
       },
       (r) async {
         // Replace BOTH stored tokens with the returned pair (single-use
@@ -1024,18 +1128,39 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  /// Starts a fresh guest session (the refresh-token recovery fallback).
-  Future<void> _fallBackToNewGuestSession() async {
-    if (_prefsRepository.myPhoneNumber.isNullOrEmpty) {
-      await _prefsRepository.setMarketRefreshToken("");
-      final String? deviceId = await HelperFunctions.getDeviceId();
-      add(RegisterGuestEvent(deviceId: deviceId ?? ""));
-      return;
-    }
-    await logOutUser();
+  void _onShowSessionExpiredEvent(
+    ShowSessionExpiredEvent event,
+    Emitter<AuthState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        sessionExpiredTick: state.sessionExpiredTick + 1,
+        sessionExpiredPhone: event.phone,
+      ),
+    );
   }
 
-  Future<void> logOutUser() async {
+  /// Starts a fresh guest session (the refresh-token recovery fallback).
+  ///
+  /// A guest simply gets a new guest session. A **verified** user (has a phone)
+  /// is NOT logged out — a fresh guest session is started so browsing keeps
+  /// working, and the "session expired" dialog is surfaced so they can log back
+  /// into their own account (prefilled with their phone).
+  Future<void> _fallBackToNewGuestSession() async {
+    // Capture the phone BEFORE register-guest resets it to the guest's "0".
+    final String? expiredPhone = _prefsRepository.myPhoneNumber;
+    final bool wasVerified = (expiredPhone?.length ?? 0) > 7;
+
+    await _prefsRepository.setMarketRefreshToken("");
+    final String? deviceId = await HelperFunctions.getDeviceId();
+    add(RegisterGuestEvent(deviceId: deviceId ?? ""));
+
+    if (wasVerified) {
+      add(ShowSessionExpiredEvent(phone: expiredPhone));
+    }
+  }
+
+  /*Future<void> logOutUser() async {
     _prefsRepository.getFcmTokens.length > 0
         ? add(
             DeleteFcmTokenFromChatEvent(
@@ -1043,6 +1168,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             ),
           )
         : null;
+    await _prefsRepository.setMarketRefreshToken("");
     _prefsRepository.addFcmToken("");
     await Future.delayed(const Duration(milliseconds: 300));
     GetIt.I<HomeBloc>().add(const ClearAllAppCashEvent());
@@ -1084,7 +1210,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // notification-driven navigation).
       GRouter.router.go("/");
     });
-  }
+  }*/
 
   FutureOr<void> _onUpdateNameEvent(
     UpdateNameEvent event,
@@ -1135,14 +1261,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           print(
             "userInfo.user?.isPhoneVerified ${userInfo.toJson()}------------------",
           );
-
-        _prefsRepository.setAllowedToUploadStories(
-          userInfo.isAllowedToUploadStories ?? false,
-        );
-        bool x = _prefsRepository.getAllowedToUploadStories();
-
-        if (kDebugMode) print("allowedToUploadStories $x------------------");
-
         await _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
         if ((userInfo.name?.replaceAll(' ', '') ?? '') != '') {
           await _prefsRepository.setMyMarketName(userInfo.name!);
@@ -1171,7 +1289,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             getCustomerInfoStatus: GetCustomerInfoStatus.success,
-            marketUser: userInfo,
+            marketUser: User(
+              alternativePhone: userInfo.alternativePhone,
+              email: userInfo.email,
+              gender: userInfo.gender,
+              id: userInfo.id,
+              image: userInfo.image,
+              isPhoneVerified: userInfo.isPhoneVerified,
+              name: userInfo.name,
+              phone: userInfo.phone,
+              lastOtpIdToken: userInfo.lastOtpIdToken,
+              tall: userInfo.tall,
+              weight: userInfo.weight,
+
+              isAllowedToUploadStories: userInfo.isAllowedToUploadStories,
+            ),
           ),
         );
       },

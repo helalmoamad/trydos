@@ -206,7 +206,9 @@ class User {
           ? 1
           : 0,
       lastOtpIdToken: json["last_otp_id_token"],
-      isAllowedToUploadStories: json["is_allowed_to_upload_stories"],
+      isAllowedToUploadStories: json["is_allowed_to_upload_story"] is int
+          ? json["is_allowed_to_upload_story"] == 1
+          : json["is_allowed_to_upload_story"] == true,
     );
   }
 
@@ -222,7 +224,7 @@ class User {
     "image": image,
     "is_phone_verified": isPhoneVerified,
     "last_otp_id_token": lastOtpIdToken,
-    "is_allowed_to_upload_stories": isAllowedToUploadStories,
+    "is_allowed_to_upload_story": isAllowedToUploadStories,
   };
 }
 

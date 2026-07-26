@@ -254,7 +254,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     on<StoreFcmTokenOfMarketEvent>(
       _onStoreFcmTokenOfMarketEvent,
-      transformer: restartable(),
+      transformer: throttleDroppable(const Duration(seconds: 10)),
     );
     on<UpdateEmailNotificationEvent>(_onUpdateEmailNotificationEvent);
     on<UpdateFirebaseNotificationEvent>(_onUpdateFirebaseNotificationEvent);
@@ -3089,12 +3089,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           ),
         );
 
-        showMessage(
-          l.message,
-          hasError: true,
-          foreGroundColor: Colors.white,
-          backGroundColor: Colors.black,
-        );
+        if (l.statusCode != 401) {
+          showMessage(
+            l.message,
+            foreGroundColor: Colors.white,
+            hasError: true,
+            backGroundColor: Colors.black,
+          );
+        }
       },
       (r) {
         add(GetCartOverviewEvent());
@@ -3480,12 +3482,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           );
           return;
         }
-        showMessage(
-          "${LocaleKeys.your_request_faild.tr()}",
-          foreGroundColor: Colors.white,
-          hasError: true,
-          backGroundColor: Colors.black,
-        );
+        if (l.statusCode != 401) {
+          showMessage(
+            "${LocaleKeys.your_request_faild.tr()}",
+            foreGroundColor: Colors.white,
+            hasError: true,
+            backGroundColor: Colors.black,
+          );
+        }
       },
       (r) {
         add(GetCartOverviewEvent());
@@ -3893,12 +3897,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           );
           return;
         }
-        showMessage(
-          l.message,
-          foreGroundColor: Colors.white,
-          hasError: true,
-          backGroundColor: Colors.black,
-        );
+        if (l.statusCode != 401) {
+          showMessage(
+            l.message,
+            foreGroundColor: Colors.white,
+            hasError: true,
+            backGroundColor: Colors.black,
+          );
+        }
         emit(
           state.copyWith(
             updateItemInCartStatus: UpdateItemInCartStatus.failure,

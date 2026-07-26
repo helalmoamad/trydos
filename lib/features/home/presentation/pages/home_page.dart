@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' hide Category;
+﻿import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart' as tran;
@@ -12,7 +12,6 @@ import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/base_page.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
@@ -24,11 +23,6 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
-import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
-import 'package:trydos/features/authentication/presentation/widgets/welcome_section.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
@@ -66,15 +60,14 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
     as filter;
 
 class HomePage extends StatefulWidget {
-  final ValueNotifier<bool> isShowPanelForVerified;
-  HomePage({Key? key, required this.isShowPanelForVerified}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  // 🛡️ حماية حالة الصفحة الرئيسية
+  // ðŸ›¡ï¸ Ø­Ù…Ø§ÙŠØ© Ø­Ø§Ù„Ø© Ø§Ù„ØµÙØ­Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©
 
   late AppBloc appBloc;
   late HomeBloc homeBloc;
@@ -91,11 +84,6 @@ class _HomePageState extends State<HomePage> {
   final ValueNotifier<bool> loadingForRquestProductDetails = ValueNotifier(
     false,
   );
-    bool fromLogin = false;
-  final ValueNotifier<bool> animate = ValueNotifier(false);
-  Duration animationDuration = const Duration(milliseconds: 500);
-
-  final ValueNotifier<int> pageContent = ValueNotifier(0);
   final ValueNotifier<bool> productIsFlashDeal = ValueNotifier(false);
   final ValueNotifier<bool> productIsRecommend = ValueNotifier(false);
   final ScrollController scrollController = ScrollController();
@@ -104,14 +92,9 @@ class _HomePageState extends State<HomePage> {
   Map<String, Key> reRenderingListViewKey = {};
   Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques =
       {};
-  final PanelController panelController = PanelController();
   String selectedCategorySlug = "Empty";
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
-  final PageController pageController = PageController();
-  final FocusNode focusNode = FocusNode();
   final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
-  String phoneNumber = '';
-  int isVisWhatsApp = 0;
   late ChatBloc chatBloc;
   late AuthBloc authBloc;
   bool changeAppearSizeForProduct = true;
@@ -122,10 +105,10 @@ class _HomePageState extends State<HomePage> {
   Timer? _fastScrollTimer;
   Timer? _emergencyMemoryTimer;
 
-  /// لتفادي إرسال أحداث Bloc في كل rebuild — نرسل فقط عند تغيّر tapIndex
+  /// Ù„ØªÙØ§Ø¯ÙŠ Ø¥Ø±Ø³Ø§Ù„ Ø£Ø­Ø¯Ø§Ø« Bloc ÙÙŠ ÙƒÙ„ rebuild â€” Ù†Ø±Ø³Ù„ ÙÙ‚Ø· Ø¹Ù†Ø¯ ØªØºÙŠÙ‘Ø± tapIndex
   int _lastDispatchedTapIndex = -2;
 
-  /// كاش وصف البوتيك بدون HTML (مرة واحدة لكل بوتيك — الكارد يبقى StatelessWidget)
+  /// ÙƒØ§Ø´ ÙˆØµÙ Ø§Ù„Ø¨ÙˆØªÙŠÙƒ Ø¨Ø¯ÙˆÙ† HTML (Ù…Ø±Ø© ÙˆØ§Ø­Ø¯Ø© Ù„ÙƒÙ„ Ø¨ÙˆØªÙŠÙƒ â€” Ø§Ù„ÙƒØ§Ø±Ø¯ ÙŠØ¨Ù‚Ù‰ StatelessWidget)
   final Map<String, String> _boutiqueDescriptionCache = {};
 
   static String _stripHtmlTagsForBoutique(String htmlString) {
@@ -135,7 +118,7 @@ class _HomePageState extends State<HomePage> {
     return parsedString.trim();
   }
 
-  /// فلترة عروض الفلاش حسب تاريخ الانتهاء (خارج الـ builder لتحسين الأداء)
+  /// ÙÙ„ØªØ±Ø© Ø¹Ø±ÙˆØ¶ Ø§Ù„ÙÙ„Ø§Ø´ Ø­Ø³Ø¨ ØªØ§Ø±ÙŠØ® Ø§Ù„Ø§Ù†ØªÙ‡Ø§Ø¡ (Ø®Ø§Ø±Ø¬ Ø§Ù„Ù€ builder Ù„ØªØ­Ø³ÙŠÙ† Ø§Ù„Ø£Ø¯Ø§Ø¡)
   static List<filter.Products> _filterFlashDealProductsByEndDate(
     List<filter.Products> raw,
   ) {
@@ -160,7 +143,7 @@ class _HomePageState extends State<HomePage> {
     return result;
   }
 
-  /// ⚡ نظام تحسين التمرير السريع الذكي للصفحة الرئيسية
+  /// âš¡ Ù†Ø¸Ø§Ù… ØªØ­Ø³ÙŠÙ† Ø§Ù„ØªÙ…Ø±ÙŠØ± Ø§Ù„Ø³Ø±ÙŠØ¹ Ø§Ù„Ø°ÙƒÙŠ Ù„Ù„ØµÙØ­Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©
   void listenToScroll() {
     if (debounce?.isActive ?? false) {
       debounce!.cancel();
@@ -257,17 +240,17 @@ class _HomePageState extends State<HomePage> {
     );
     // scrollController.addListener(listenToScroll);
 
-    // معالج الأخطاء مرة واحدة فقط (تحسين أداء - لا داخل build)
+    // Ù…Ø¹Ø§Ù„Ø¬ Ø§Ù„Ø£Ø®Ø·Ø§Ø¡ Ù…Ø±Ø© ÙˆØ§Ø­Ø¯Ø© ÙÙ‚Ø· (ØªØ­Ø³ÙŠÙ† Ø£Ø¯Ø§Ø¡ - Ù„Ø§ Ø¯Ø§Ø®Ù„ build)
     FlutterError.onError = (FlutterErrorDetails error) {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
 
-    // 🚀 تحميل البيانات الأساسية فوراً في الخلفية
+    // ðŸš€ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø£Ø³Ø§Ø³ÙŠØ© ÙÙˆØ±Ø§Ù‹ ÙÙŠ Ø§Ù„Ø®Ù„ÙÙŠØ©
     _initializeBackgroundOperations();
   }
 
-  /// جلب البيانات عند السحب للتحديث (خارج build لتحسين الأداء)
+  /// Ø¬Ù„Ø¨ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø¹Ù†Ø¯ Ø§Ù„Ø³Ø­Ø¨ Ù„Ù„ØªØ­Ø¯ÙŠØ« (Ø®Ø§Ø±Ø¬ build Ù„ØªØ­Ø³ÙŠÙ† Ø§Ù„Ø£Ø¯Ø§Ø¡)
   Future<void> _refreshData() async {
     GetIt.I<BoutiqueBloc>().add(
       const GetProductWithFiltersWithoutCancelingPreviousEvents(
@@ -300,7 +283,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  /// 🚀 تحميل العمليات في الخلفية دون تأثير على العرض
+  /// ðŸš€ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø¹Ù…Ù„ÙŠØ§Øª ÙÙŠ Ø§Ù„Ø®Ù„ÙÙŠØ© Ø¯ÙˆÙ† ØªØ£Ø«ÙŠØ± Ø¹Ù„Ù‰ Ø§Ù„Ø¹Ø±Ø¶
   void _initializeBackgroundOperations() {
     if (!(prefsRepository.isFoundDataCashed ?? false)) {
       Future.delayed(
@@ -347,31 +330,34 @@ class _HomePageState extends State<HomePage> {
         }*/
       });
     }
-    // تحميل بيانات البحث في الخلفية
+    // ØªØ­Ù…ÙŠÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø¨Ø­Ø« ÙÙŠ Ø§Ù„Ø®Ù„ÙÙŠØ©
 
-    // العمليات الثقيلة تتم في الخلفية
+    // Ø§Ù„Ø¹Ù…Ù„ÙŠØ§Øª Ø§Ù„Ø«Ù‚ÙŠÙ„Ø© ØªØªÙ… ÙÙŠ Ø§Ù„Ø®Ù„ÙÙŠØ©
     Future.delayed(const Duration(seconds: 2), () {
       _handleDeferredNotifications();
     });
   }
 
-  /// معالجة الإشعارات المؤجلة
+  /// Ù…Ø¹Ø§Ù„Ø¬Ø© Ø§Ù„Ø¥Ø´Ø¹Ø§Ø±Ø§Øª Ø§Ù„Ù…Ø¤Ø¬Ù„Ø©
   Future<void> _handleDeferredNotifications() async {
     try {
       final String? rawData = await GetIt.I<PrefsRepository>()
           .getNotificationTypeFromTerminated();
       String notificationTypesOfMarketFromTerminated = rawData ?? "";
-      if (kDebugMode) print(
-        "chatNotification//////////////////////////0***${notificationTypesOfMarketFromTerminated}00000",
-      );
+      if (kDebugMode)
+        print(
+          "chatNotification//////////////////////////0***${notificationTypesOfMarketFromTerminated}00000",
+        );
       if (notificationTypesOfMarketFromTerminated != "") {
-        if (kDebugMode) print("chatNotification//////////////////////////000000");
+        if (kDebugMode)
+          print("chatNotification//////////////////////////000000");
         GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated("");
         try {
           if (notificationTypesOfMarketFromTerminated.contains(
             "chatNotification",
           )) {
-            if (kDebugMode) print("chatNotification//////////////////////////11111");
+            if (kDebugMode)
+              print("chatNotification//////////////////////////11111");
             Message myMessage = Message.fromJson(
               jsonDecode(
                 notificationTypesOfMarketFromTerminated
@@ -395,7 +381,8 @@ class _HomePageState extends State<HomePage> {
             String parentOrderId = orderGroupIdWithReturnRequestId.split(
               '#parentOrderId#',
             )[1];
-            if (kDebugMode) print("chatNotification//////////////////////////22222");
+            if (kDebugMode)
+              print("chatNotification//////////////////////////22222");
             handleOpenChatPageFromNotificationInBackground(
               prevMessageId,
               orderId,
@@ -411,27 +398,31 @@ class _HomePageState extends State<HomePage> {
             );
           }
         } catch (e) {
-          debugPrint('❌ Error handling deferred notifications: $e');
+          debugPrint('âŒ Error handling deferred notifications: $e');
         }
       }
     } catch (e) {
-      debugPrint('❌ Error in deferred notifications: $e');
+      debugPrint('âŒ Error in deferred notifications: $e');
     }
   }
 
+  /// عند طلب تأكيد الهاتف (زائر) عبر الإشعار المشترك،
+  /// نعرض حوار التحقق الموحّد بدل اللوحة المضمّنة القديمة.
+
   @override
   void dispose() {
-    // تنظيف آمن للذاكرة عند إغلاق الصفحة
+    // ØªÙ†Ø¸ÙŠÙ Ø¢Ù…Ù† Ù„Ù„Ø°Ø§ÙƒØ±Ø© Ø¹Ù†Ø¯ Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ØµÙØ­Ø©
     try {
       scrollController.removeListener(listenToScroll);
       scrollController.dispose();
+
       debounce?.cancel();
 
-      // 🔥 تنظيف Fast Scroll Protection Timers
+      // ðŸ”¥ ØªÙ†Ø¸ÙŠÙ Fast Scroll Protection Timers
       _fastScrollTimer?.cancel();
       _emergencyMemoryTimer?.cancel();
 
-      // تنظيف ValueNotifiers
+      // ØªÙ†Ø¸ÙŠÙ ValueNotifiers
       tapIndexToAddProductToCart.dispose();
       productNotAvailableNotifier.dispose();
       currentActiveTab.dispose();
@@ -440,9 +431,9 @@ class _HomePageState extends State<HomePage> {
       productIsRecommend.dispose();
       addToBagButtonShapeNotifier.dispose();
 
-      debugPrint('🏠 Home page disposed with instant loading optimization');
+      debugPrint('ðŸ  Home page disposed with instant loading optimization');
     } catch (e) {
-      debugPrint('❌ Error in home page dispose: $e');
+      debugPrint('âŒ Error in home page dispose: $e');
     }
     super.dispose();
   }
@@ -626,7 +617,7 @@ class _HomePageState extends State<HomePage> {
             //                       _isLoading
             //                           ? Center(
             //                               child: CircularProgressIndicator(),
-            //                             ) // إظهار مؤشر التحميل
+            //                             ) // Ø¥Ø¸Ù‡Ø§Ø± Ù…Ø¤Ø´Ø± Ø§Ù„ØªØ­Ù…ÙŠÙ„
             //                           : SizedBox.shrink(),
             //                       /////////////////////////////////
             //                       SizedBox(
@@ -689,16 +680,16 @@ class _HomePageState extends State<HomePage> {
               controller: scrollController,
               physics: const ClampingScrollPhysics(
                 parent: AlwaysScrollableScrollPhysics(),
-              ), // تحسين الفيزيائيات للسلاسة
+              ), // ØªØ­Ø³ÙŠÙ† Ø§Ù„ÙÙŠØ²ÙŠØ§Ø¦ÙŠØ§Øª Ù„Ù„Ø³Ù„Ø§Ø³Ø©
               //  scrollBehavior:
               //     const ScrollBehavior().copyWith(overscroll: false),
               slivers: [
-                // 🚨 عرض مؤشر التحميل فقط في البداية
+                // ðŸš¨ Ø¹Ø±Ø¶ Ù…Ø¤Ø´Ø± Ø§Ù„ØªØ­Ù…ÙŠÙ„ ÙÙ‚Ø· ÙÙŠ Ø§Ù„Ø¨Ø¯Ø§ÙŠØ©
 
-                // 🏗️ بعد التعديل: اجمعهم في SliverList واحدة
+                // ðŸ—ï¸ Ø¨Ø¹Ø¯ Ø§Ù„ØªØ¹Ø¯ÙŠÙ„: Ø§Ø¬Ù…Ø¹Ù‡Ù… ÙÙŠ SliverList ÙˆØ§Ø­Ø¯Ø©
                 SliverList(
                   delegate: SliverChildListDelegate.fixed([
-                    100.verticalSpace, // المسافة في الأعلى
+                    100.verticalSpace, // Ø§Ù„Ù…Ø³Ø§ÙØ© ÙÙŠ Ø§Ù„Ø£Ø¹Ù„Ù‰
                     storySection(currentLocale, context),
                     FeatureProductsWidget(
                       finishRedeem: finishRedeem,
@@ -882,8 +873,6 @@ class _HomePageState extends State<HomePage> {
                                               boutiqueItem.description ?? '',
                                             );
                                     return HomePageBoutiqueCard(
-                                      isShowPanelForVerified:
-                                          widget.isShowPanelForVerified,
                                       key: TestVariables.kTestMode
                                           ? Key(
                                               '${WidgetsKeys.boutiqueCardKey}${index > 2 ? index - 1 : index}',
@@ -990,322 +979,6 @@ class _HomePageState extends State<HomePage> {
                     : const SizedBox.shrink();
               },
             ),
-            //////////////////////////////
-            Positioned(
-              bottom: 0,
-              child: ValueListenableBuilder<bool>(
-                valueListenable: widget.isShowPanelForVerified,
-                builder: (context, _isShowPanelForVerified, _) {
-                  if (_isShowPanelForVerified) {
-                    if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                        false)) {
-                      authBloc.add(
-                        SendOtpEvent(
-                          phone: prefsRepository.myPhoneNumber!,
-                          isViaWhatsApp: 1,
-                        ),
-                      );
-                    }
-
-                    ;
-                    Future.delayed(
-                      const Duration(milliseconds: 500),
-                      () => panelController.open(),
-                    );
-                  }
-                  return !_isShowPanelForVerified
-                      ? const SizedBox.shrink()
-                      : Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          width: 1.sh,
-                          height: 1.sh / 2.7,
-                          child: SlidingUpPanel(
-                            minHeight: 0,
-                            maxHeight: 1.sh / 2.7,
-                            controller: panelController,
-                            onPanelClosed: () {
-                              Future.delayed(
-                                const Duration(milliseconds: 300),
-                                () =>
-                                    widget.isShowPanelForVerified.value = false,
-                              );
-                            },
-                            panelBuilder: (sc) {
-                              return AnimatedPadding(
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeOut,
-                                padding: EdgeInsets.only(
-                                  bottom: MediaQuery.of(
-                                    context,
-                                  ).viewInsets.bottom,
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  margin: const EdgeInsets.only(top: 20),
-                                  height: 200,
-                                  child: Stack(
-                                    children: [
-                                      PageView(
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        controller: pageController,
-                                        children:
-                                            (prefsRepository
-                                                    .isVerifiedPhonePeforeExpiredToken ??
-                                                false)
-                                            ? [
-                                                VerifyOtp(
-                                                  fromProfile: false,
-                                                  navigateToProfile: () {},
-                                                  fromExpired: true,
-                                                  isVisWhatsApp: 1,
-                                                  navigateToAddName: () {},
-                                                  navigateTocartOrProfile: () {
-                                                    Future.delayed(
-                                                      const Duration(
-                                                        seconds: 3,
-                                                      ),
-                                                      () => panelController
-                                                          .close(),
-                                                    );
-                                                  },
-                                                  fromLogin: false,
-                                                  onLoginFailed: () {
-                                                    //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                  },
-                                                  goBack: () {
-                                                    // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                  },
-                                                  methodIcon:
-                                                      AppAssets.whatsappSvg,
-                                                  phoneNumber: prefsRepository
-                                                      .myPhoneNumber!,
-                                                ),
-                                              ]
-                                            : [
-                                                WelcomeSection(
-                                                                              goToLoginSection: () {
-                                                                                fromLogin = true;
-                                                                                animationDuration = const Duration(
-                                                                                  seconds: 1,
-                                                                                );
-                                                                                animate.value = true;
-                                                                                pageContent.value = 2;
-                                                                                pageController.animateToPage(
-                                                                                  2,
-                                                                                  duration: const Duration(
-                                                                                    milliseconds: 100,
-                                                                                  ),
-                                                                                  curve: Curves.easeInOut,
-                                                                                );
-                                                                              },
-                                                                              goToCreateAccount: () {
-                                                                                fromLogin = false;
-                                                                                animate.value = true;
-                                                                                pageContent.value = 1;
-                                                                                pageController.animateToPage(
-                                                                                  1,
-                                                                                  duration: const Duration(
-                                                                                    milliseconds: 500,
-                                                                                  ),
-                                                                                  curve: Curves.easeInOut,
-                                                                                );
-                                                                                //_animationController.forward();
-                                                                              },
-                                                                            ),
-                                                                            CreateAccountSection(
-                                                                              moveToNextStep: () {
-                                                                                pageContent.value = 2;
-                                                                                pageController.animateToPage(
-                                                                                  2,
-                                                                                  duration: const Duration(
-                                                                                    milliseconds: 500,
-                                                                                  ),
-                                                                                  curve: Curves.easeInOut,
-                                                                                );
-                                                                              },
-                                                                            ),
-                                                InsertPhoneTab(
-                                                  focusNode: focusNode,
-                                                  moveToNextStep:
-                                                      (String phoneNumber) {
-                                                        this.phoneNumber =
-                                                            phoneNumber
-                                                                .replaceAll(
-                                                                  ' ',
-                                                                  '',
-                                                                );
-                                                        pageController
-                                                            .animateToPage(
-                                                              1,
-                                                              duration:
-                                                                  const Duration(
-                                                                    milliseconds:
-                                                                        500,
-                                                                  ),
-                                                              curve: Curves
-                                                                  .easeInOut,
-                                                            );
-                                                        setState(() {});
-                                                      },
-                                                ),
-                                                VerificationMethods(
-                                                  phoneNumber: phoneNumber,
-                                                  isFromLogin: true,
-                                                  onChooseWhatsapp: () {
-                                                    isVisWhatsApp = 1;
-                                                    pageController
-                                                        .animateToPage(
-                                                          2,
-                                                          duration:
-                                                              const Duration(
-                                                                milliseconds:
-                                                                    100,
-                                                              ),
-                                                          curve:
-                                                              Curves.easeInOut,
-                                                        );
-
-                                                    if (prefsRepository
-                                                            .isTimerForOtpRunning ??
-                                                        false) {
-                                                      showWarningMessage(
-                                                        context,
-                                                        '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}',
-                                                      );
-                                                      return;
-                                                    }
-                                                    /* authBloc.add(SendOtpEvent(
-                                                        phone: phoneNumber,
-                                                        isViaWhatsApp: 1));*/
-                                                  },
-                                                  goBackToPhone: () {
-                                                    pageController
-                                                        .animateToPage(
-                                                          0,
-                                                          duration:
-                                                              const Duration(
-                                                                milliseconds:
-                                                                    500,
-                                                              ),
-                                                          curve:
-                                                              Curves.easeInOut,
-                                                        );
-                                                  },
-                                                  onChooseSms: () {
-                                                    isVisWhatsApp = 0;
-                                                    pageController
-                                                        .animateToPage(
-                                                          3,
-                                                          duration:
-                                                              const Duration(
-                                                                milliseconds:
-                                                                    500,
-                                                              ),
-                                                          curve:
-                                                              Curves.easeInOut,
-                                                        );
-                                                    /*  authBloc.add(SendOtpEvent(
-                                                        phone: phoneNumber,
-                                                        isViaWhatsApp: 0));*/
-                                                  },
-                                                ),
-                                                VerifyOtp(
-                                                  fromProfile: false,
-                                                  navigateToProfile: () {},
-                                                  fromExpired: true,
-                                                  isVisWhatsApp: isVisWhatsApp,
-                                                  navigateToAddName: () {},
-                                                  navigateTocartOrProfile: () {
-                                                    WidgetsBinding.instance
-                                                        .addPostFrameCallback((
-                                                          _,
-                                                        ) {
-                                                          Future.delayed(
-                                                            const Duration(
-                                                              seconds: 3,
-                                                            ),
-                                                            () =>
-                                                                panelController
-                                                                    .close(),
-                                                          );
-                                                        });
-                                                  },
-                                                  fromLogin: false,
-                                                  onLoginFailed: () {
-                                                    pageController
-                                                        .animateToPage(
-                                                          3,
-                                                          duration:
-                                                              const Duration(
-                                                                milliseconds:
-                                                                    500,
-                                                              ),
-                                                          curve:
-                                                              Curves.easeInOut,
-                                                        );
-                                                  },
-                                                  goBack: () {
-                                                    pageController
-                                                        .animateToPage(
-                                                          1,
-                                                          duration:
-                                                              const Duration(
-                                                                milliseconds:
-                                                                    500,
-                                                              ),
-                                                          curve:
-                                                              Curves.easeInOut,
-                                                        );
-                                                  },
-                                                  methodIcon: isVisWhatsApp == 1
-                                                      ? AppAssets.whatsappSvg
-                                                      : AppAssets.smsSvg,
-                                                  phoneNumber: phoneNumber,
-                                                ),
-                                              ],
-                                      ),
-                                      Positioned(
-                                        top: 0,
-                                        left:
-                                            LanguageService.languageCode != "ar"
-                                            ? null
-                                            : 0,
-                                        right:
-                                            LanguageService.languageCode != "ar"
-                                            ? 0
-                                            : null,
-                                        child: Container(
-                                          margin: const EdgeInsets.all(10),
-                                          height: 20,
-                                          width: 40,
-                                          child: InkWell(
-                                            onTap: () =>
-                                                panelController.close(),
-                                            child: SvgPicture.asset(
-                                              AppAssets.closeSvg,
-                                              height: 15,
-                                              width: 30,
-                                              // ignore: deprecated_member_use
-                                              color: const Color(0xffFF5F61),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                },
-              ),
-            ),
             ValueListenableBuilder<bool>(
               valueListenable: productIsRecommend,
               builder: (context, _productIsRecommend, _) {
@@ -1362,7 +1035,7 @@ class _HomePageState extends State<HomePage> {
                         return ValueListenableBuilder<int>(
                           valueListenable: tapIndexToAddProductToCart,
                           builder: (context, tapIndex, _) {
-                            // إرسال الأحداث مرة واحدة عند تغيّر tapIndex فقط (تحسين أداء)
+                            // Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø£Ø­Ø¯Ø§Ø« Ù…Ø±Ø© ÙˆØ§Ø­Ø¯Ø© Ø¹Ù†Ø¯ ØªØºÙŠÙ‘Ø± tapIndex ÙÙ‚Ø· (ØªØ­Ø³ÙŠÙ† Ø£Ø¯Ø§Ø¡)
                             if (tapIndex != -1) {
                               if (tapIndex != _lastDispatchedTapIndex &&
                                   products.isNotEmpty &&
@@ -1819,9 +1492,10 @@ class _HomePageState extends State<HomePage> {
                                                                 } catch (e) {
                                                                   endDate =
                                                                       DateTime.now();
-                                                                  if (kDebugMode) print(
-                                                                    'Error parsing date: $e',
-                                                                  );
+                                                                  if (kDebugMode)
+                                                                    print(
+                                                                      'Error parsing date: $e',
+                                                                    );
                                                                 }
                                                                 _duration = endDate
                                                                     .difference(
@@ -2110,9 +1784,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         //   Directionality(
         //  textDirection: TextDirection.ltr,
-        StoriesList(
-          isShowPanelForVerified: widget.isShowPanelForVerified,
-        ), // height 220
+        const StoriesList(), // height 220
         Positioned(
           top: 5.h,
           right: LanguageService.languageCode == "ar" ? 10.w : null,
@@ -2141,5 +1813,5 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// ⚡ تحديد cacheExtent الأمثل حسب مواصفات الجهاز - مُحسن خصيصاً للعودة من listing
+  /// âš¡ ØªØ­Ø¯ÙŠØ¯ cacheExtent Ø§Ù„Ø£Ù…Ø«Ù„ Ø­Ø³Ø¨ Ù…ÙˆØ§ØµÙØ§Øª Ø§Ù„Ø¬Ù‡Ø§Ø² - Ù…ÙØ­Ø³Ù† Ø®ØµÙŠØµØ§Ù‹ Ù„Ù„Ø¹ÙˆØ¯Ø© Ù…Ù† listing
 }

@@ -243,7 +243,7 @@ class AuthRemoteDatasource {
   ) {
     PostClient<VerifyOtpFromGuestResponseModel> verifyOtpFromGuest =
         PostClient<VerifyOtpFromGuestResponseModel>(
-          serverName: ServerName.marketGO,
+          serverName: ServerName.market,
           requestPrams: RequestConfig<VerifyOtpFromGuestResponseModel>(
             endpoint: MarketEndPoints.verifyOtpFromGuestEP,
             data: params,

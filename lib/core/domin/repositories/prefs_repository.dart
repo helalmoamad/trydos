@@ -110,8 +110,6 @@ abstract class PrefsRepository {
   Future<bool> removeFiveFilterHasPerfechedWhenOpenApp();
 
   Future<bool> setVerifiedPhone(bool verifiedPhone);
-  Future<bool> setAllowedToUploadStories(bool allowedToUploadStories);
-  bool getAllowedToUploadStories();
   Future<bool> setRequestNotificationPermission(
     bool requestNotificationPermission,
   );

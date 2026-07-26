@@ -91,7 +91,6 @@ class ProductListingPage extends StatefulWidget {
 
   final bool fromBackground;
   final GetProductFiltersModel? getProductFiltersModel;
-  final ValueNotifier<bool>? isShowPanelForVerified;
 
   const ProductListingPage({
     super.key,
@@ -99,7 +98,7 @@ class ProductListingPage extends StatefulWidget {
     this.fromBackground = false,
     this.getProductFiltersModel,
     this.boutiqueName,
-    this.isShowPanelForVerified,
+
     this.controllerFormSearchPage,
     this.fromNotificationCategory,
     this.withSlidingImages = false,
@@ -131,7 +130,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
     false,
   );
   final ValueNotifier<bool> searchVisible = ValueNotifier(true);
-  final ValueNotifier<bool> isShowPanelForVerified = ValueNotifier(false);
   final ValueNotifier<bool> showShadowForPanel = ValueNotifier(false);
   final TextEditingController controller = TextEditingController();
   Timer? timerForDisplayFilterSectionTitle;
@@ -322,8 +320,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
     LastPagesTracker.push(
       "Product Listing Page , boutique Name:${widget.boutiqueName ?? widget.boutiqueSlug}",
     );
-    if (kDebugMode) print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
-    if (kDebugMode) print("%%%%%%%%%${GetIt.I<PrefsRepository>().storiesToken}*");
+    if (kDebugMode)
+      print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
+    if (kDebugMode)
+      print("%%%%%%%%%${GetIt.I<PrefsRepository>().storiesToken}*");
     // 🔥 FIX: إزالة Timer.periodic الخطير - استخدام WidgetsBinding آمن بدلاً
     /* WidgetsBinding.instance.addPostFrameCallback((_) {
       _setHtmlDescriptionHeight();
@@ -612,11 +612,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           return state.hideBottomNavigationBar ||
                                   (widget.fromSearch)
                               ? const SizedBox.shrink()
-                              : AppBottomNavBar(
-                                  isShowPanelForVerified:
-                                      widget.isShowPanelForVerified ??
-                                      isShowPanelForVerified,
-                                );
+                              : const AppBottomNavBar();
                         },
                       );
                     } else {
@@ -2553,12 +2549,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         isExpanded =
                                             state.isExpandedForListingPage ??
                                             false;
-                                        if (kDebugMode) print(
-                                          "///DDDDDDDDDDDDDDDDDDDDDDDDD************//${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
-                                                              '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success)) || (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading && !state.cashedOrginalBoutique)}DDD////**/*//${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
-                                                  '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter'
-                                                  '${(widget.category ?? '')}']?.paginationStatus}",
-                                        );
+                                        if (kDebugMode)
+                                          print(
+                                            "///DDDDDDDDDDDDDDDDDDDDDDDDD************//${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                                '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success)) || (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading && !state.cashedOrginalBoutique)}DDD////**/*//${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                    '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter'
+                                                    '${(widget.category ?? '')}']?.paginationStatus}",
+                                          );
                                         // String? currentAppliedFilterSllug =
                                         //     "null";
                                         /* if (!isExpanded &&
@@ -2944,12 +2941,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     PaginationStatus.loading) &&
                                                 !state
                                                     .isGettingProductListingWithPagination) {
-                                          if (kDebugMode) print(
-                                            "DDDDDDDDDDDDDDDDDDDDDDDDD************//${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
-                                                                '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success)) || (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading && !state.cashedOrginalBoutique)}DDD${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
-                                                    '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
-                                                    '${(widget.category ?? '')}']?.paginationStatus}",
-                                          );
+                                          if (kDebugMode)
+                                            print(
+                                              "DDDDDDDDDDDDDDDDDDDDDDDDD************//${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                                  '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success)) || (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading && !state.cashedOrginalBoutique)}DDD${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                      '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                      '${(widget.category ?? '')}']?.paginationStatus}",
+                                            );
                                           return ProductListingLoading(
                                             key: TestVariables.kTestMode
                                                 ? const Key(
@@ -3692,9 +3690,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     );
                                                   } catch (e) {
                                                     endDate = DateTime.now();
-                                                    if (kDebugMode) print(
-                                                      'Error parsing date: $e',
-                                                    );
+                                                    if (kDebugMode)
+                                                      print(
+                                                        'Error parsing date: $e',
+                                                      );
                                                   }
                                                   _duration = endDate
                                                       .difference(now);

@@ -19,6 +19,7 @@ import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
@@ -121,18 +122,7 @@ class _ProductDetailsSheetCommentsContentState
                                       .isVerifiedPhone ??
                                   false)) {
                                 Future.delayed(const Duration(seconds: 1), () {
-                                  widget.isVerified?.value = false;
-                                  if ((GetIt.I<PrefsRepository>()
-                                          .isVerifiedPhonePeforeExpiredToken ??
-                                      false)) {
-                                    GetIt.I<AuthBloc>().add(
-                                      SendOtpEvent(
-                                        phone: GetIt.I<PrefsRepository>()
-                                            .myPhoneNumber!,
-                                        isViaWhatsApp: 1,
-                                      ),
-                                    );
-                                  }
+                                  GuestPhoneVerificationDialog.show(context);
                                 });
                               }
                             },
@@ -841,19 +831,9 @@ class CommentCard extends StatelessWidget {
                                         Future.delayed(
                                           const Duration(seconds: 1),
                                           () {
-                                            isVerified?.value = false;
-                                            if ((GetIt.I<PrefsRepository>()
-                                                    .isVerifiedPhonePeforeExpiredToken ??
-                                                false)) {
-                                              GetIt.I<AuthBloc>().add(
-                                                SendOtpEvent(
-                                                  phone:
-                                                      GetIt.I<PrefsRepository>()
-                                                          .myPhoneNumber!,
-                                                  isViaWhatsApp: 1,
-                                                ),
-                                              );
-                                            }
+                                            GuestPhoneVerificationDialog.show(
+                                              context,
+                                            );
                                           },
                                         );
                                         return;
@@ -873,19 +853,9 @@ class CommentCard extends StatelessWidget {
                                       Future.delayed(
                                         const Duration(seconds: 1),
                                         () {
-                                          isVerified?.value = false;
-                                          if ((GetIt.I<PrefsRepository>()
-                                                  .isVerifiedPhonePeforeExpiredToken ??
-                                              false)) {
-                                            GetIt.I<AuthBloc>().add(
-                                              SendOtpEvent(
-                                                phone:
-                                                    GetIt.I<PrefsRepository>()
-                                                        .myPhoneNumber!,
-                                                isViaWhatsApp: 1,
-                                              ),
-                                            );
-                                          }
+                                          GuestPhoneVerificationDialog.show(
+                                            context,
+                                          );
                                         },
                                       );
                                       return;
@@ -898,19 +868,9 @@ class CommentCard extends StatelessWidget {
                                       Future.delayed(
                                         const Duration(seconds: 1),
                                         () {
-                                          isVerified?.value = false;
-                                          if ((GetIt.I<PrefsRepository>()
-                                                  .isVerifiedPhonePeforeExpiredToken ??
-                                              false)) {
-                                            GetIt.I<AuthBloc>().add(
-                                              SendOtpEvent(
-                                                phone:
-                                                    GetIt.I<PrefsRepository>()
-                                                        .myPhoneNumber!,
-                                                isViaWhatsApp: 1,
-                                              ),
-                                            );
-                                          }
+                                          GuestPhoneVerificationDialog.show(
+                                            context,
+                                          );
                                         },
                                       );
                                       return;

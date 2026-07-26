@@ -76,6 +76,7 @@ class NotificationProcess {
           otpIdToken: otpIdToken,
         ),
       );
+      return;
     }
     if (kDebugMode) print("myFcmToken : ${myFcmToken}");
     if (myFcmToken != null) {
@@ -87,7 +88,7 @@ class NotificationProcess {
         ),
       );*/
       GetIt.I<AuthBloc>().add(
-        StoreFcmTokenEvent(
+        StoreFcmTokenInChatEvent(
           userId: GetIt.I<PrefsRepository>().myChatId ?? 0,
           fcmToken: myFcmToken!,
           serverName: ServerName.chat,

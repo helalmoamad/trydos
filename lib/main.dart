@@ -157,7 +157,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           1) {
         return;
       }
-      if (kDebugMode) print("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD//////////D${data}");
+      if (kDebugMode)
+        print("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD//////////D${data}");
       GetIt.I<PrefsRepository>().saveRequestsData(
         null,
         null,
@@ -181,14 +182,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           case Event.actionCallAccept:
             {
               // ✅ معالج قبول المكالمة - فتح التطبيق والانتقال لشاشة المكالمة
-              if (kDebugMode) print(
-                "FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD///*/*** actionCallAccept triggered",
-              );
+              if (kDebugMode)
+                print(
+                  "FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD///*/*** actionCallAccept triggered",
+                );
               try {
                 if (kDebugMode) print("Event body: ${event.body}");
-                if (kDebugMode) print("Event body type: ${event.body.runtimeType}");
+                if (kDebugMode)
+                  print("Event body type: ${event.body.runtimeType}");
                 if (kDebugMode) print("Extra data: ${event.body['extra']}");
-                if (kDebugMode) print("Extra type: ${event.body['extra'].runtimeType}");
+                if (kDebugMode)
+                  print("Extra type: ${event.body['extra'].runtimeType}");
 
                 // ✅ الحصول على بيانات المكالمة من extra - تحويل صحيح للنوع
                 final extraData = event.body['extra'];
@@ -202,22 +206,25 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
                   final messageId = callData['message_id']?.toString() ?? '';
                   final type = callData['type']?.toString() ?? 'voice';
 
-                  if (kDebugMode) print(
-                    "Extracted: channel=$channelId, message=$messageId, type=$type",
-                  );
+                  if (kDebugMode)
+                    print(
+                      "Extracted: channel=$channelId, message=$messageId, type=$type",
+                    );
 
                   // تحديث ID المكالمة النشطة
                   GetIt.I<CallsBloc>().add(
                     UpdateCurrentActiveCallIdEvent(id: messageId),
                   );
 
-                  if (kDebugMode) print(
-                    "✅ Call accepted successfully - waiting for app to open",
-                  );
+                  if (kDebugMode)
+                    print(
+                      "✅ Call accepted successfully - waiting for app to open",
+                    );
                 } else {
-                  if (kDebugMode) print(
-                    "❌ extraData is null - cannot extract call information",
-                  );
+                  if (kDebugMode)
+                    print(
+                      "❌ extraData is null - cannot extract call information",
+                    );
                 }
               } catch (e, stackTrace) {
                 if (kDebugMode) print("❌ Error in actionCallAccept: $e");
@@ -492,7 +499,8 @@ void main() async {
   NotificationProcess().fcmToken(null, null, null, null);
   gemini.Gemini.init(apiKey: dotenv.env['Gemini']!);
   gemini.Gemini.enableDebugging = true;
-  if (kDebugMode) print('market token : ${(GetIt.I<PrefsRepository>().marketToken)}');
+  if (kDebugMode)
+    print('market token : ${(GetIt.I<PrefsRepository>().marketToken)}');
   debugPrint(
     'login _prefsRepository.chatToken${GetIt.I<PrefsRepository>().chatToken}',
   );

@@ -20,6 +20,7 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
 import 'package:trydos/features/home/data/models/get_fqa_comments_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -35,12 +36,10 @@ class BuyerSellerChat extends StatefulWidget {
   final String productSlug;
   final String? ownerType;
   final String? ownerId;
-  final ValueNotifier<bool>? isVerified;
   final PanelController panelBuyersSeller;
   const BuyerSellerChat({
     super.key,
     required this.productId,
-    required this.isVerified,
     required this.ownerType,
     required this.productSlug,
     required this.ownerId,
@@ -72,7 +71,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
   }
 
   void _sendMessage(String message) {
-    // إرسال الرسالة للبائع
+    // Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø±Ø³Ø§Ù„Ø© Ù„Ù„Ø¨Ø§Ø¦Ø¹
     if (message.length > 0) {
       GetIt.I<HomeBloc>().add(
         CreateCommentRatingEvent(
@@ -87,7 +86,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
       );
     }
     _messageController.clear();
-    // إخفاء لوحة المفاتيح
+    // Ø¥Ø®ÙØ§Ø¡ Ù„ÙˆØ­Ø© Ø§Ù„Ù…ÙØ§ØªÙŠØ­
     FocusScope.of(context).unfocus();
   }
 
@@ -245,18 +244,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                       .isVerifiedPhone ??
                                   false)) {
                                 Future.delayed(const Duration(seconds: 1), () {
-                                  widget.isVerified?.value = false;
-                                  if ((GetIt.I<PrefsRepository>()
-                                          .isVerifiedPhonePeforeExpiredToken ??
-                                      false)) {
-                                    GetIt.I<AuthBloc>().add(
-                                      SendOtpEvent(
-                                        phone: GetIt.I<PrefsRepository>()
-                                            .myPhoneNumber!,
-                                        isViaWhatsApp: 1,
-                                      ),
-                                    );
-                                  }
+                                  GuestPhoneVerificationDialog.show(context);
                                 });
                               }
                             },
@@ -347,11 +335,13 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                             textAlign: TextAlign.center,
                             textInputAction: TextInputAction.send,
                             onChanged: (value) {
-                              setState(() {}); // لإعادة بناء الـ suffix icon
+                              setState(
+                                () {},
+                              ); // Ù„Ø¥Ø¹Ø§Ø¯Ø© Ø¨Ù†Ø§Ø¡ Ø§Ù„Ù€ suffix icon
                             },
                             onFieldSubmitted: (value) {
                               if (value.trim().isNotEmpty) {
-                                // إرسال الرسالة
+                                // Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø±Ø³Ø§Ù„Ø©
                                 _sendMessage(value.trim());
                               }
                             },
@@ -382,7 +372,6 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
             fqaComment: fqaComment,
             index: index,
             state: state,
-            isVerified: widget.isVerified,
           ),
           Container(
             height: 0.5.h,
@@ -392,7 +381,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
           ..._SingelComments(
             answard: true,
             fqaComment: fqaComment,
-            isVerified: widget.isVerified,
+
             index: index,
             state: state,
           ),
@@ -405,7 +394,6 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
     required bool answard,
     required FqaComment fqaComment,
     required int index,
-    required ValueNotifier<bool>? isVerified,
     required HomeState state,
   }) {
     void _showEditBottomSheet(BuildContext context, String initialText) {
@@ -552,11 +540,11 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
 
     String formatDateByLocale(DateTime isoDate, String locale) {
       final date = isoDate;
-      // صيغة "day short_month" مثل "18 Feb" أو "20 Oct"
+      // ØµÙŠØºØ© "day short_month" Ù…Ø«Ù„ "18 Feb" Ø£Ùˆ "20 Oct"
       final format = tran.DateFormat(
         'd MMM',
         locale,
-      ); // locale مثال "en", "ar", "fr", "tr" ...
+      ); // locale Ù…Ø«Ø§Ù„ "en", "ar", "fr", "tr" ...
       return format.format(date);
     }
 
@@ -566,15 +554,15 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
 
       if (difference.inDays > 0) {
         return locale == 'ar'
-            ? '${difference.inDays} يوم'
+            ? '${difference.inDays} ÙŠÙˆÙ…'
             : '${difference.inDays} day${difference.inDays > 1 ? "s" : ""}';
       } else if (difference.inHours > 0) {
         return locale == 'ar'
-            ? '${difference.inHours} ساعة'
+            ? '${difference.inHours} Ø³Ø§Ø¹Ø©'
             : '${difference.inHours} hour${difference.inHours > 1 ? "s" : ""}';
       } else {
         return locale == 'ar'
-            ? '${difference.inMinutes} دقيقة'
+            ? '${difference.inMinutes} Ø¯Ù‚ÙŠÙ‚Ø©'
             : '${difference.inMinutes} minute${difference.inMinutes > 1 ? "s" : ""}';
       }
     }
@@ -688,18 +676,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                 LocaleKeys.must_login_to_edit_comment.tr(),
                               );
                               Future.delayed(const Duration(seconds: 1), () {
-                                widget.isVerified?.value = false;
-                                if ((GetIt.I<PrefsRepository>()
-                                        .isVerifiedPhonePeforeExpiredToken ??
-                                    false)) {
-                                  GetIt.I<AuthBloc>().add(
-                                    SendOtpEvent(
-                                      phone: GetIt.I<PrefsRepository>()
-                                          .myPhoneNumber!,
-                                      isViaWhatsApp: 1,
-                                    ),
-                                  );
-                                }
+                                GuestPhoneVerificationDialog.show(context);
                               });
                               return;
                             }
@@ -736,18 +713,7 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                           false)) {
                         showMessage(LocaleKeys.must_login_to_edit_comment.tr());
                         Future.delayed(const Duration(seconds: 1), () {
-                          widget.isVerified?.value = false;
-                          if ((GetIt.I<PrefsRepository>()
-                                  .isVerifiedPhonePeforeExpiredToken ??
-                              false)) {
-                            GetIt.I<AuthBloc>().add(
-                              SendOtpEvent(
-                                phone:
-                                    GetIt.I<PrefsRepository>().myPhoneNumber!,
-                                isViaWhatsApp: 1,
-                              ),
-                            );
-                          }
+                          GuestPhoneVerificationDialog.show(context);
                         });
                         return;
                       }
@@ -942,19 +908,9 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                       Future.delayed(
                                         const Duration(seconds: 1),
                                         () {
-                                          isVerified?.value = false;
-                                          if ((GetIt.I<PrefsRepository>()
-                                                  .isVerifiedPhonePeforeExpiredToken ??
-                                              false)) {
-                                            GetIt.I<AuthBloc>().add(
-                                              SendOtpEvent(
-                                                phone:
-                                                    GetIt.I<PrefsRepository>()
-                                                        .myPhoneNumber!,
-                                                isViaWhatsApp: 1,
-                                              ),
-                                            );
-                                          }
+                                          GuestPhoneVerificationDialog.show(
+                                            context,
+                                          );
                                         },
                                       );
                                       return;
@@ -974,18 +930,9 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                     Future.delayed(
                                       const Duration(seconds: 1),
                                       () {
-                                        isVerified?.value = false;
-                                        if ((GetIt.I<PrefsRepository>()
-                                                .isVerifiedPhonePeforeExpiredToken ??
-                                            false)) {
-                                          GetIt.I<AuthBloc>().add(
-                                            SendOtpEvent(
-                                              phone: GetIt.I<PrefsRepository>()
-                                                  .myPhoneNumber!,
-                                              isViaWhatsApp: 1,
-                                            ),
-                                          );
-                                        }
+                                        GuestPhoneVerificationDialog.show(
+                                          context,
+                                        );
                                       },
                                     );
                                     return;
@@ -1001,18 +948,9 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
                                     Future.delayed(
                                       const Duration(seconds: 1),
                                       () {
-                                        isVerified?.value = false;
-                                        if ((GetIt.I<PrefsRepository>()
-                                                .isVerifiedPhonePeforeExpiredToken ??
-                                            false)) {
-                                          GetIt.I<AuthBloc>().add(
-                                            SendOtpEvent(
-                                              phone: GetIt.I<PrefsRepository>()
-                                                  .myPhoneNumber!,
-                                              isViaWhatsApp: 1,
-                                            ),
-                                          );
-                                        }
+                                        GuestPhoneVerificationDialog.show(
+                                          context,
+                                        );
                                       },
                                     );
                                     return;

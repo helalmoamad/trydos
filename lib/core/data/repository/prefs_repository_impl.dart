@@ -60,19 +60,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.setString(PrefsKey.currentCountry, countryIso!);
 
   @override
-  Future<bool> setAllowedToUploadStories(bool allowedToUploadStories) {
-    return _preferences.setBool(
-      PrefsKey.allowedToUploadStories,
-      allowedToUploadStories,
-    );
-  }
-
-  @override
-  bool getAllowedToUploadStories() {
-    return _preferences.getBool(PrefsKey.allowedToUploadStories) ?? false;
-  }
-
-  @override
   String? get userChoosedCountryIso =>
       _preferences.getString(PrefsKey.currentCountry);
 

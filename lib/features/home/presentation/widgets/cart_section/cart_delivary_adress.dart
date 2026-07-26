@@ -87,9 +87,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
       vsync: this,
     );
     cartImages = widget.cartItems;
-    if (kDebugMode) print(
-      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG----------------${cartImages}",
-    );
+    if (kDebugMode)
+      print(
+        "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG----------------${cartImages}",
+      );
     // homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -563,6 +564,13 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
     double totalCashed,
     List<String> availablePaymentMethods,
   ) {
+    print("SSSSSSSSSSSSSSS//${orderState.setCustomerAddressDefaultStatus}");
+    print("SSSSSSSSSSSSSSS///${orderState.getCustomerAddressStatus}");
+    print("SSSSSSSSSSSSSSS////${orderState.applyCouponStatus}");
+    print("SSSSSSSSSSSSSSS/////${orderState.addAddressToOrderStatus}");
+    print("SSSSSSSSSSSSSSS///////${orderState.editAddressToOrderStatus}");
+    print("SSSSSSSSSSSSSSS/////////${orderState.removeAddressToOrderStatus}");
+    print("SSSSSSSSSSSSSSS/////////////${homeState.getCartOverviewStatus}");
     return Container(
       height: 80.h,
       decoration: BoxDecoration(
@@ -599,8 +607,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
             check = false;
           }
           return (orderState.applyCouponStatus == ApplyCouponStatus.loading ||
-                  orderState.setCustomerAddressDefaultStatus !=
-                      SetCustomerAddressDefaultStatus.success ||
+                  (orderState.setCustomerAddressDefaultStatus !=
+                          SetCustomerAddressDefaultStatus.success &&
+                      !(orderState
+                          .listOfAddressInfoClassToSave
+                          .isNullOrEmpty)) ||
                   orderState.getCustomerAddressStatus !=
                       GetCustomerAddressesStatus.success ||
                   orderState.addAddressToOrderStatus ==

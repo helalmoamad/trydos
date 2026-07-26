@@ -11,8 +11,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 //import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
-
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -25,9 +23,7 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
 import 'package:trydos/features/dashBoard/presentation/bloc/dashBoard_bloc.dart'
     as dashboard;
 import 'package:trydos/features/dashBoard/presentation/pages/select_shop_page.dart';
@@ -65,16 +61,10 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   late dashboard.DashboardBloc dashboardBloc;
   late AuthBloc authBloc;
   late OrderBloc orderBloc;
-  final PanelController panelController = PanelController();
-  final PageController pageController = PageController();
-  final FocusNode focusNode = FocusNode();
 
   /// True only between tapping the checklist row and the first page resolving,
   /// so an unrelated GetChecklistEvent never shimmers the row or navigates.
   bool _isOpeningChecklist = false;
-  String phoneNumber = '';
-  int isVisWhatsApp = 0;
-  final ValueNotifier<bool> isVerified = ValueNotifier(true);
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   //late StreamSubscription walletEvents;
 
@@ -95,9 +85,6 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             "",
       ),
     );
-
-    prefsRepository.setAllowedToUploadStories(false);
-
     authBloc.add(GetCustomerInfoEvent());
     orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
@@ -139,11 +126,6 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     // تنظيف موارد المحفظة
     _cleanupWallet();
 
-    // تنظيف باقي الموارد
-    pageController.dispose();
-    focusNode.dispose();
-    isVerified.dispose();
-
     super.dispose();
   }
 
@@ -168,28 +150,165 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     };
     return Scaffold(
       body: SafeArea(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                child: Column(
-                  children: [
-                    SizedBox(height: 18.h, width: 1.sw),
-                    _personInfoWidget(),
-                    SizedBox(height: 18.h, width: 1.sw),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            child: Column(
+              children: [
+                SizedBox(height: 18.h, width: 1.sw),
+                _personInfoWidget(),
+                SizedBox(height: 18.h, width: 1.sw),
 
-                    BlocBuilder<
-                      dashboard.DashboardBloc,
-                      dashboard.DashBoardState
-                    >(
-                      buildWhen: (previous, current) =>
-                          previous.getUserPermissionStatus !=
-                          current.getUserPermissionStatus,
-                      builder: (context, state) {
-                        if (state.getUserPermissionStatus ==
-                            dashboard.GetUserPermissionStatus.loading) {
-                          return Shimmer.fromColors(
+                BlocBuilder<dashboard.DashboardBloc, dashboard.DashBoardState>(
+                  buildWhen: (previous, current) =>
+                      previous.getUserPermissionStatus !=
+                      current.getUserPermissionStatus,
+                  builder: (context, state) {
+                    if (state.getUserPermissionStatus ==
+                        dashboard.GetUserPermissionStatus.loading) {
+                      return Shimmer.fromColors(
+                        baseColor: Colors.grey[200]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          width: 1.sw,
+                          height: 54.h,
+                          decoration: BoxDecoration(
+                            color: const Color(0xffFAFAFA),
+                            borderRadius: BorderRadius.circular(15.r),
+                          ),
+                        ),
+                      );
+                    }
+                    if (state.getUserPermissionStatus ==
+                            dashboard.GetUserPermissionStatus.success &&
+                        (!(state.shops?.isNullOrEmpty ?? true))) {
+                      return InkWell(
+                        onTap: () {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) =>
+                          //         const SelectShopForOrderPage(),
+                          //   ),
+                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SelectShopPage(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(10.h),
+                          height: 130.h,
+                          width: 1.sw,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1D1D1D),
+                            borderRadius: BorderRadius.circular(15.r),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SvgPicture.asset(
+                                AppAssets.BagwhiteSvg,
+                                width: 25.w,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                LocaleKeys.sellers.tr(),
+                                style: TextStyle(
+                                  color: const Color(0xFFFCFCFC),
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(height: 10.h),
+                              BlocBuilder<OrderBloc, OrderState>(
+                                builder: (context, state) {
+                                  return Text(
+                                    "${state.orderTotalSize} ${LocaleKeys.action.tr()}",
+                                    style: TextStyle(
+                                      color: const Color(0xFFFCFCFC),
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                ),
+
+                SizedBox(height: 18.h, width: 1.sw),
+                Container(
+                  width: 1.sw,
+                  height: 94.h,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [_ordersWidget(), _trydosWalletWidget()],
+                  ),
+                ),
+                SizedBox(height: 10.h, width: 1.sw),
+                // BlocBuilder<
+                //   dashboard.DashboardBloc,
+                //   dashboard.DashBoardState
+                // >(
+                //   buildWhen: (previous, current) =>
+                //       previous.getUserPermissionStatus !=
+                //       current.getUserPermissionStatus,
+                //   builder: (context, state) {
+                //     return state.getUserPermissionStatus ==
+                //             dashboard.GetUserPermissionStatus.loading
+                //         ? Shimmer.fromColors(
+                //             baseColor: Colors.grey[200]!,
+                //             highlightColor: Colors.grey[100]!,
+                //             child: Container(
+                //               width: 1.sw,
+                //               height: 54.h,
+                //               decoration: BoxDecoration(
+                //                 color: const Color(0xffFAFAFA),
+                //                 borderRadius: BorderRadius.circular(15.r),
+                //               ),
+                //             ),
+                //           )
+                //         : (state.getUserPermissionStatus ==
+                //                   dashboard
+                //                       .GetUserPermissionStatus
+                //                       .success &&
+                //               (!(state.shops?.isNullOrEmpty ?? true)))
+                //         ? InkWell(
+                //             onTap: () {
+                //               Navigator.push(
+                //                 context,
+                //                 MaterialPageRoute(
+                //                   builder: (context) =>
+                //                       const SelectShopPage(),
+                //                 ),
+                //               );
+                //             },
+                //             child: _actionWidget(
+                //               AppAssets.marketSvg,
+                //               LocaleKeys.go_to_seller_dashboard.tr(),
+                //             ),
+                //           )
+                //         : const SizedBox.shrink();
+                //   },
+                // ),
+                SizedBox(height: 10.h, width: 1.sw),
+                BlocBuilder<dashboard.DashboardBloc, dashboard.DashBoardState>(
+                  buildWhen: (previous, current) =>
+                      previous.getUserPermissionStatus !=
+                      current.getUserPermissionStatus,
+                  builder: (context, state) {
+                    return state.getUserPermissionStatus ==
+                            dashboard.GetUserPermissionStatus.loading
+                        ? Shimmer.fromColors(
                             baseColor: Colors.grey[200]!,
                             highlightColor: Colors.grey[100]!,
                             child: Container(
@@ -200,275 +319,85 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 borderRadius: BorderRadius.circular(15.r),
                               ),
                             ),
-                          );
-                        }
-                        if (state.getUserPermissionStatus ==
-                                dashboard.GetUserPermissionStatus.success &&
-                            (!(state.shops?.isNullOrEmpty ?? true))) {
-                          return InkWell(
-                            onTap: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) =>
-                              //         const SelectShopForOrderPage(),
-                              //   ),
-                              // );
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SelectShopPage(),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(10.h),
-                              height: 130.h,
-                              width: 1.sw,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF1D1D1D),
-                                borderRadius: BorderRadius.circular(15.r),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SvgPicture.asset(
-                                    AppAssets.BagwhiteSvg,
-                                    width: 25.w,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    LocaleKeys.sellers.tr(),
-                                    style: TextStyle(
-                                      color: const Color(0xFFFCFCFC),
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  BlocBuilder<OrderBloc, OrderState>(
-                                    builder: (context, state) {
-                                      return Text(
-                                        "${state.orderTotalSize} ${LocaleKeys.action.tr()}",
-                                        style: TextStyle(
-                                          color: const Color(0xFFFCFCFC),
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                          )
+                        : (state.getUserPermissionStatus ==
+                                  dashboard.GetUserPermissionStatus.success &&
+                              (!(state.shops?.isNullOrEmpty ?? true)))
+                        ? (state.shops?.first.isMaster ?? false)
+                              ? const SizedBox.shrink()
+                              : InkWell(
+                                  onTap: () {
+                                    if (!(prefsRepository.isVerifiedPhone ??
+                                        false)) {
+                                      GuestPhoneVerificationDialog.show(
+                                        context,
+                                        onVerified: _onGuestVerified,
                                       );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }
-
-                        return const SizedBox.shrink();
-                      },
-                    ),
-
-                    SizedBox(height: 18.h, width: 1.sw),
-                    Container(
-                      width: 1.sw,
-                      height: 94.h,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [_ordersWidget(), _trydosWalletWidget()],
-                      ),
-                    ),
-                    SizedBox(height: 10.h, width: 1.sw),
-                    // BlocBuilder<
-                    //   dashboard.DashboardBloc,
-                    //   dashboard.DashBoardState
-                    // >(
-                    //   buildWhen: (previous, current) =>
-                    //       previous.getUserPermissionStatus !=
-                    //       current.getUserPermissionStatus,
-                    //   builder: (context, state) {
-                    //     return state.getUserPermissionStatus ==
-                    //             dashboard.GetUserPermissionStatus.loading
-                    //         ? Shimmer.fromColors(
-                    //             baseColor: Colors.grey[200]!,
-                    //             highlightColor: Colors.grey[100]!,
-                    //             child: Container(
-                    //               width: 1.sw,
-                    //               height: 54.h,
-                    //               decoration: BoxDecoration(
-                    //                 color: const Color(0xffFAFAFA),
-                    //                 borderRadius: BorderRadius.circular(15.r),
-                    //               ),
-                    //             ),
-                    //           )
-                    //         : (state.getUserPermissionStatus ==
-                    //                   dashboard
-                    //                       .GetUserPermissionStatus
-                    //                       .success &&
-                    //               (!(state.shops?.isNullOrEmpty ?? true)))
-                    //         ? InkWell(
-                    //             onTap: () {
-                    //               Navigator.push(
-                    //                 context,
-                    //                 MaterialPageRoute(
-                    //                   builder: (context) =>
-                    //                       const SelectShopPage(),
-                    //                 ),
-                    //               );
-                    //             },
-                    //             child: _actionWidget(
-                    //               AppAssets.marketSvg,
-                    //               LocaleKeys.go_to_seller_dashboard.tr(),
-                    //             ),
-                    //           )
-                    //         : const SizedBox.shrink();
-                    //   },
-                    // ),
-                    SizedBox(height: 10.h, width: 1.sw),
-                    BlocBuilder<
-                      dashboard.DashboardBloc,
-                      dashboard.DashBoardState
-                    >(
-                      buildWhen: (previous, current) =>
-                          previous.getUserPermissionStatus !=
-                          current.getUserPermissionStatus,
-                      builder: (context, state) {
-                        return state.getUserPermissionStatus ==
-                                dashboard.GetUserPermissionStatus.loading
-                            ? Shimmer.fromColors(
-                                baseColor: Colors.grey[200]!,
-                                highlightColor: Colors.grey[100]!,
-                                child: Container(
-                                  width: 1.sw,
-                                  height: 54.h,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xffFAFAFA),
-                                    borderRadius: BorderRadius.circular(15.r),
-                                  ),
-                                ),
-                              )
-                            : (state.getUserPermissionStatus ==
-                                      dashboard
-                                          .GetUserPermissionStatus
-                                          .success &&
-                                  (!(state.shops?.isNullOrEmpty ?? true)))
-                            ? (state.shops?.first.isMaster ?? false)
-                                  ? const SizedBox.shrink()
-                                  : InkWell(
-                                      onTap: () {
-                                        if (!(prefsRepository.isVerifiedPhone ??
-                                            false)) {
-                                          isVerified.value = false;
-                                          if ((prefsRepository
-                                                  .isVerifiedPhonePeforeExpiredToken ??
-                                              false)) {
-                                            authBloc.add(
-                                              SendOtpEvent(
-                                                phone: prefsRepository
-                                                    .myPhoneNumber!,
-                                                isViaWhatsApp: 1,
-                                              ),
-                                            );
-                                          }
-                                          return;
-                                        }
-                                        showModalBottomSheet(
-                                          context: context,
-                                          isScrollControlled: true,
-                                          backgroundColor: Colors.transparent,
-                                          builder: (context) => SizedBox(
-                                            height:
-                                                MediaQuery.of(
-                                                  context,
-                                                ).size.height *
-                                                0.8,
-                                            child: Padding(
-                                              padding: EdgeInsets.only(
-                                                bottom: MediaQuery.of(
-                                                  context,
-                                                ).viewInsets.bottom,
-                                              ),
-                                              child: const BecomeSellerPage(),
-                                            ),
+                                      return;
+                                    }
+                                    showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (context) => SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                            0.8,
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                            bottom: MediaQuery.of(
+                                              context,
+                                            ).viewInsets.bottom,
                                           ),
-                                        );
-                                      },
-                                      child: Padding(
-                                        padding: EdgeInsetsGeometry.only(
-                                          bottom: 10.h,
-                                        ),
-                                        child: _actionWidget(
-                                          AppAssets.sellerSvg,
-                                          LocaleKeys.become_a_seller_at_trydos
-                                              .tr(),
+                                          child: const BecomeSellerPage(),
                                         ),
                                       ),
-                                    )
-                            : const SizedBox.shrink();
-                      },
-                    ),
-
-                    _actionWidget(
-                      AppAssets.settingSvg,
-                      LocaleKeys.settings.tr(),
-                    ),
-
-                    SizedBox(height: 10.h, width: 1.sw),
-                    _checklistWidget(),
-                    SizedBox(height: 10.h, width: 1.sw),
-                    _actionWidget(
-                      AppAssets.termSvg,
-                      LocaleKeys.terms_conditions.tr(),
-                    ),
-                    SizedBox(height: 10.h, width: 1.sw),
-                    _actionWidget(
-                      AppAssets.legalInfoSvg,
-                      LocaleKeys.legal_information.tr(),
-                    ),
-                    SizedBox(height: 10.h, width: 1.sw),
-                    _actionWidget(
-                      AppAssets.aboutUsSvg,
-                      LocaleKeys.about_us.tr(),
-                    ),
-                    SizedBox(height: 10.h, width: 1.sw),
-                    _actionWidget(
-                      AppAssets.shareAppSvg,
-                      LocaleKeys.share_app.tr(),
-                    ),
-                    SizedBox(height: 10.h, width: 1.sw),
-                    Container(
-                      height: 54.h,
-                      width: 1.sw,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [_countryWidget(), _languageWidget()],
-                      ),
-                    ),
-                  ],
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsetsGeometry.only(
+                                      bottom: 10.h,
+                                    ),
+                                    child: _actionWidget(
+                                      AppAssets.sellerSvg,
+                                      LocaleKeys.become_a_seller_at_trydos.tr(),
+                                    ),
+                                  ),
+                                )
+                        : const SizedBox.shrink();
+                  },
                 ),
-              ),
+
+                _actionWidget(AppAssets.settingSvg, LocaleKeys.settings.tr()),
+
+                SizedBox(height: 10.h, width: 1.sw),
+                _checklistWidget(),
+                SizedBox(height: 10.h, width: 1.sw),
+                _actionWidget(
+                  AppAssets.termSvg,
+                  LocaleKeys.terms_conditions.tr(),
+                ),
+                SizedBox(height: 10.h, width: 1.sw),
+                _actionWidget(
+                  AppAssets.legalInfoSvg,
+                  LocaleKeys.legal_information.tr(),
+                ),
+                SizedBox(height: 10.h, width: 1.sw),
+                _actionWidget(AppAssets.aboutUsSvg, LocaleKeys.about_us.tr()),
+                SizedBox(height: 10.h, width: 1.sw),
+                _actionWidget(AppAssets.shareAppSvg, LocaleKeys.share_app.tr()),
+                SizedBox(height: 10.h, width: 1.sw),
+                Container(
+                  height: 54.h,
+                  width: 1.sw,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [_countryWidget(), _languageWidget()],
+                  ),
+                ),
+              ],
             ),
-            ValueListenableBuilder<bool>(
-              valueListenable: isVerified,
-              builder: (context, _isverified, _) {
-                return _isverified
-                    ? const SizedBox.shrink()
-                    : Container(
-                        width: 1.sw,
-                        height: 1.sh,
-                        color: const Color.fromRGBO(0, 0, 0, 0.5),
-                      );
-              },
-            ),
-            Positioned(
-              bottom: 0,
-              child: ValueListenableBuilder<bool>(
-                valueListenable: isVerified,
-                builder: (context, _isverified, _) {
-                  return _isverified ? const SizedBox.shrink() : _veryfiedOtp();
-                },
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -482,173 +411,17 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     return textPainter.size.width;
   }
 
-  Widget _veryfiedOtp() {
-    return AnimatedPadding(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: Container(
-        color: Colors.white,
-        height: 265,
-        width: 1.sw,
-        child: Stack(
-          children: [
-            PageView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: pageController,
-              children:
-                  (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
-                  ? [
-                      VerifyOtp(
-                        fromProfile: false,
-                        navigateToProfile: () {},
-                        fromExpired: true,
-                        isVisWhatsApp: 1,
-                        navigateToAddName: () {},
-                        navigateTocartOrProfile: () {
-                          isVerified.value = true;
-                        },
-                        fromLogin: false,
-                        onLoginFailed: () {
-                          //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                        },
-                        goBack: () {
-                          // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                        },
-                        methodIcon: AppAssets.whatsappSvg,
-                        phoneNumber: prefsRepository.myPhoneNumber!,
-                      ),
-                    ]
-                  : [
-                      InsertPhoneTab(
-                        focusNode: focusNode,
-                        moveToNextStep: (String phoneNumber) {
-                          this.phoneNumber = phoneNumber.replaceAll(' ', '');
-                          pageController.animateToPage(
-                            1,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                          setState(() {});
-                        },
-                      ),
-                      VerificationMethods(
-                        isFromLogin: false,
-                        phoneNumber: phoneNumber,
-                        onChooseWhatsapp: () {
-                          isVisWhatsApp = 1;
-                          if (kDebugMode)
-                            print("###################33333# isVisWhatsApp}");
-                          pageController.animateToPage(
-                            2,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-
-                          if (prefsRepository.isTimerForOtpRunning ?? false) {
-                            showWarningMessage(
-                              context,
-                              ' ${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}',
-                            );
-                            return;
-                          }
-                          /*   authBloc.add(
-                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));*/
-                        },
-                        goBackToPhone: () {
-                          pageController.animateToPage(
-                            0,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        onChooseSms: () {
-                          isVisWhatsApp = 0;
-                          pageController.animateToPage(
-                            3,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                          /* authBloc.add(
-                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));*/
-                        },
-                      ),
-                      VerifyOtp(
-                        fromProfile: false,
-                        navigateToProfile: () {},
-                        fromExpired: true,
-                        isVisWhatsApp: isVisWhatsApp,
-                        navigateToAddName: () {},
-                        navigateTocartOrProfile: () {
-                          isVerified.value = true;
-                          homeBloc.add(
-                            GetCurrenciesForWalletEvent(
-                              currencySymbol:
-                                  homeBloc
-                                      .state
-                                      .getCurrencyForCountryModel
-                                      ?.data
-                                      ?.currency
-                                      ?.code ??
-                                  "",
-                            ),
-                          );
-
-                          orderBloc.add(
-                            GetOrdersEvent(
-                              status: "",
-                              getWithPagination: false,
-                            ),
-                          );
-                        },
-                        fromLogin: false,
-                        onLoginFailed: () {
-                          pageController.animateToPage(
-                            3,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        goBack: () {
-                          pageController.animateToPage(
-                            1,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        methodIcon: isVisWhatsApp == 1
-                            ? AppAssets.whatsappSvg
-                            : AppAssets.smsSvg,
-                        phoneNumber: phoneNumber,
-                      ),
-                    ],
-            ),
-            Positioned(
-              top: 0,
-              left: LanguageService.languageCode != "ar" ? null : 0,
-              right: LanguageService.languageCode != "ar" ? 0 : null,
-              child: Container(
-                margin: const EdgeInsets.all(10),
-                height: 20,
-                width: 40,
-                child: InkWell(
-                  onTap: () => isVerified.value = true,
-                  child: SvgPicture.asset(
-                    AppAssets.closeSvg,
-                    height: 15,
-                    width: 30,
-                    // ignore: deprecated_member_use
-                    color: const Color(0xffFF5F61),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+  /// Refresh after a guest verifies their phone through
+  /// [GuestPhoneVerificationDialog].
+  void _onGuestVerified() {
+    homeBloc.add(
+      GetCurrenciesForWalletEvent(
+        currencySymbol:
+            homeBloc.state.getCurrencyForCountryModel?.data?.currency?.code ??
+            "",
       ),
     );
+    orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
   }
 
   Widget _languageWidget() {
@@ -888,15 +661,10 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     return InkWell(
       onTap: () {
         if (!(prefsRepository.isVerifiedPhone ?? false)) {
-          isVerified.value = false;
-          if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)) {
-            authBloc.add(
-              SendOtpEvent(
-                phone: prefsRepository.myPhoneNumber!,
-                isViaWhatsApp: 1,
-              ),
-            );
-          }
+          GuestPhoneVerificationDialog.show(
+            context,
+            onVerified: _onGuestVerified,
+          );
           return;
         }
 
@@ -1028,11 +796,20 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           previous.getCustomerInfoStatus != current.getCustomerInfoStatus,
       builder: (context, state) {
         return InkWell(
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const UserInformationPage(),
-            ),
-          ),
+          onTap: () {
+            if (!(prefsRepository.isVerifiedPhone ?? false)) {
+              GuestPhoneVerificationDialog.show(
+                context,
+                onVerified: _onGuestVerified,
+              );
+              return;
+            }
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const UserInformationPage(),
+              ),
+            );
+          },
           child: Container(
             padding: EdgeInsets.all(12.r),
             decoration: BoxDecoration(
@@ -1187,75 +964,60 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                 ),
                               ),
                             ),
-                      child: ValueListenableBuilder<bool>(
-                        valueListenable: isVerified,
-                        builder: (context, _isverified, _) {
-                          return InkWell(
-                            onTap: () {
-                              if (!(prefsRepository.isVerifiedPhone ?? false)) {
-                                isVerified.value = false;
-                                if ((prefsRepository
-                                        .isVerifiedPhonePeforeExpiredToken ??
-                                    false)) {
-                                  authBloc.add(
-                                    SendOtpEvent(
-                                      phone: prefsRepository.myPhoneNumber!,
-                                      isViaWhatsApp: 1,
-                                    ),
-                                  );
-                                }
-                              }
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 15,
-                              ),
-                              height: 35.h,
-                              width: 72.w,
-                              child: Column(
+                      child: InkWell(
+                        onTap: () {
+                          if (!(prefsRepository.isVerifiedPhone ?? false)) {
+                            GuestPhoneVerificationDialog.show(
+                              context,
+                              onVerified: _onGuestVerified,
+                            );
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 15),
+                          height: 35.h,
+                          width: 72.w,
+                          child: Column(
+                            children: [
+                              Stack(
+                                alignment: Alignment.center,
                                 children: [
-                                  Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        AppAssets.succuessProfileSvg,
-                                        // ignore: deprecated_member_use
-                                        color: const Color(0xff707070),
-                                        height: 16.h,
-                                        width: 16.w,
-                                      ),
-                                      SvgPicture.asset(
-                                        AppAssets.success2Svg,
-                                        // ignore: deprecated_member_use
-                                        color: const Color(0xff707070),
-                                        height: 5.h,
-                                        width: 5.w,
-                                      ),
-                                    ],
+                                  SvgPicture.asset(
+                                    AppAssets.succuessProfileSvg,
+                                    // ignore: deprecated_member_use
+                                    color: const Color(0xff707070),
+                                    height: 16.h,
+                                    width: 16.w,
                                   ),
-                                  const Spacer(),
-                                  Text(
-                                    (prefsRepository.isVerifiedPhone ?? false)
-                                        ? '${LocaleKeys.verified.tr()}'
-                                        : '${LocaleKeys.verified_now.tr()}',
-                                    style: context.textTheme.bodyMedium?.rq
-                                        .copyWith(
-                                          color:
-                                              (prefsRepository
-                                                      .isVerifiedPhone ??
-                                                  false)
-                                              ? Colors.green
-                                              : const Color(0xffFF5F61),
-                                          letterSpacing: 0.18,
-                                          fontSize: 10.sp,
-                                          height: 1.3,
-                                        ),
+                                  SvgPicture.asset(
+                                    AppAssets.success2Svg,
+                                    // ignore: deprecated_member_use
+                                    color: const Color(0xff707070),
+                                    height: 5.h,
+                                    width: 5.w,
                                   ),
                                 ],
                               ),
-                            ),
-                          );
-                        },
+                              const Spacer(),
+                              Text(
+                                (prefsRepository.isVerifiedPhone ?? false)
+                                    ? '${LocaleKeys.verified.tr()}'
+                                    : '${LocaleKeys.verified_now.tr()}',
+                                style: context.textTheme.bodyMedium?.rq
+                                    .copyWith(
+                                      color:
+                                          (prefsRepository.isVerifiedPhone ??
+                                              false)
+                                          ? Colors.green
+                                          : const Color(0xffFF5F61),
+                                      letterSpacing: 0.18,
+                                      fontSize: 10.sp,
+                                      height: 1.3,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ],

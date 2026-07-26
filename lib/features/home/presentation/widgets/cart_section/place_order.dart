@@ -12,10 +12,7 @@ import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
 import 'package:trydos/features/home/domain/use_cases/wallet_checkout_usecase.dart';
 import 'package:uuid/uuid.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -84,16 +81,12 @@ class PlaceOrder extends StatefulWidget {
 class _PlaceOrderState extends State<PlaceOrder> {
   final ValueNotifier<bool> agreeToPolicies = ValueNotifier(false);
   final PanelController panelController = PanelController();
-  final PageController pageController = PageController();
-  final FocusNode focusNode = FocusNode();
   final OrderBloc orderBloc = GetIt.I<OrderBloc>();
-  String phoneNumber = '';
-  int isVisWhatsApp = 0;
-  final ValueNotifier<bool> isVerified = ValueNotifier(true);
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   void initState() {
-    if (kDebugMode) print("PlaceOrder PageRRRRRRRRRRRRRRRRRRRRRRRRRRR${widget.cartImages}");
+    if (kDebugMode)
+      print("PlaceOrder PageRRRRRRRRRRRRRRRRRRRRRRRRRRR${widget.cartImages}");
     LastPagesTracker.push("PlaceOrder Page");
     super.initState();
   }
@@ -150,9 +143,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
                 if (widget.paymentMethods.value.length == 1) {
                   paymentMethod = widget.paymentMethods.value[0];
-                  if (kDebugMode) print(
-                    "paymentMethod:  -------------------------------------${paymentMethod}",
-                  );
+                  if (kDebugMode)
+                    print(
+                      "paymentMethod:  -------------------------------------${paymentMethod}",
+                    );
                   //////////////
                   payByWallet = 0;
                 } else {
@@ -514,66 +508,47 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         previous.checkWithGetCartStatus !=
                         current.checkWithGetCartStatus,
                     builder: (context, homeState) {
-                      return Stack(
+                      return Column(
                         children: [
-                          Column(
-                            children: [
-                              buildPageHeader(context),
-                              /////////////////////
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  child: Container(
-                                    margin: EdgeInsets.symmetric(
-                                      horizontal: 10.w,
+                          buildPageHeader(context),
+                          /////////////////////
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Container(
+                                margin: EdgeInsets.symmetric(horizontal: 10.w),
+                                alignment: Alignment.topCenter,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    buildBagItemsWidget(context),
+                                    //////////////////////////////////
+                                    SizedBox(height: 12.h),
+                                    //////////////////////////////////
+                                    buildAddress(context),
+                                    //////////////////////////////////
+                                    PaymentMethod(
+                                      fromSuccessOrder: false,
+                                      amount: widget.walletBalance,
+                                      fromPalceOrder: true,
+                                      paymentMethods: widget.paymentMethods,
+                                      availablePaymentMethod:
+                                          widget.availablePaymentMethod,
+                                      totalPrice: widget.totalPrice,
+                                      decimalPointSetting:
+                                          widget.decimalPointSetting,
+                                      currencySymbol: widget.currencySympole,
                                     ),
-                                    alignment: Alignment.topCenter,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        buildBagItemsWidget(context),
-                                        //////////////////////////////////
-                                        SizedBox(height: 12.h),
-                                        //////////////////////////////////
-                                        buildAddress(context),
-                                        //////////////////////////////////
-                                        PaymentMethod(
-                                          fromSuccessOrder: false,
-                                          amount: widget.walletBalance,
-                                          fromPalceOrder: true,
-                                          paymentMethods: widget.paymentMethods,
-                                          availablePaymentMethod:
-                                              widget.availablePaymentMethod,
-                                          totalPrice: widget.totalPrice,
-                                          decimalPointSetting:
-                                              widget.decimalPointSetting,
-                                          currencySymbol:
-                                              widget.currencySympole,
-                                        ),
-                                        /////////////////////////
-                                        SizedBox(height: 40.h),
-                                        //////////////////////////////////
-                                        buildAgreeToPoliciesWidget(),
-                                      ],
-                                    ),
-                                  ),
+                                    /////////////////////////
+                                    SizedBox(height: 40.h),
+                                    //////////////////////////////////
+                                    buildAgreeToPoliciesWidget(),
+                                  ],
                                 ),
                               ),
-                              // //////////////////////////
-                              buildPlaceOrderButton(orderState, homeState),
-                            ],
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            child: ValueListenableBuilder<bool>(
-                              valueListenable: isVerified,
-                              builder: (context, _isverified, _) {
-                                return _isverified
-                                    ? const SizedBox.shrink()
-                                    : _veryfiedOtp(context);
-                              },
                             ),
                           ),
+                          // //////////////////////////
+                          buildPlaceOrderButton(orderState, homeState),
                         ],
                       );
                     },
@@ -700,17 +675,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   onTap: () {
                     if (_agreeToPolicies) {
                       if (!(prefsRepository.isVerifiedPhone ?? false)) {
-                        isVerified.value = false;
-                        if ((prefsRepository
-                                .isVerifiedPhonePeforeExpiredToken ??
-                            false)) {
-                          GetIt.I<AuthBloc>().add(
-                            SendOtpEvent(
-                              phone: prefsRepository.myPhoneNumber!,
-                              isViaWhatsApp: 1,
-                            ),
-                          );
-                        }
+                        GuestPhoneVerificationDialog.show(context);
                         return;
                       }
                       BlocProvider.of<HomeBloc>(
@@ -1063,10 +1028,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       if (Navigator.of(context).canPop()) {
                         Navigator.of(context).pop();
                         return;
-                        // منع الإغلاق بعد تنفيذ pop
+                        // Ù…Ù†Ø¹ Ø§Ù„Ø¥ØºÙ„Ø§Ù‚ Ø¨Ø¹Ø¯ ØªÙ†ÙÙŠØ° pop
                       }
 
-                      // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
+                      // ÙŠØ³Ù…Ø­ Ø¨Ø§Ù„Ø¥ØºÙ„Ø§Ù‚ Ø¥Ø°Ø§ Ù„Ù… ØªÙ†Ø·Ø¨Ù‚ Ø£ÙŠ Ù…Ù† Ø§Ù„Ø´Ø±ÙˆØ·
 
                       return;
                     } else {}
@@ -1101,174 +1066,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _veryfiedOtp(BuildContext context) {
-    return AnimatedPadding(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: Container(
-        color: Colors.white,
-        height: 265,
-        width: 1.sw,
-        child: Stack(
-          children: [
-            PageView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: pageController,
-              children:
-                  (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
-                  ? [
-                      VerifyOtp(
-                        fromProfile: false,
-                        navigateToProfile: () {},
-                        fromExpired: true,
-                        isVisWhatsApp: 1,
-                        navigateToAddName: () {},
-                        navigateTocartOrProfile: () {
-                          isVerified.value = true;
-                        },
-                        fromLogin: false,
-                        onLoginFailed: () {
-                          //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                        },
-                        goBack: () {
-                          // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                        },
-                        methodIcon: AppAssets.whatsappSvg,
-                        phoneNumber: prefsRepository.myPhoneNumber!,
-                      ),
-                    ]
-                  : [
-                      InsertPhoneTab(
-                        focusNode: focusNode,
-                        moveToNextStep: (String phoneNumber) {
-                          this.phoneNumber = phoneNumber.replaceAll(' ', '');
-                          pageController.animateToPage(
-                            1,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                          setState(() {});
-                        },
-                      ),
-                      VerificationMethods(
-                        isFromLogin: false,
-                        phoneNumber: phoneNumber,
-                        onChooseWhatsapp: () {
-                          isVisWhatsApp = 1;
-                          if (kDebugMode) print("###################33333# isVisWhatsApp}");
-                          pageController.animateToPage(
-                            2,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-
-                          if (prefsRepository.isTimerForOtpRunning ?? false) {
-                            showWarningMessage(
-                              context,
-                              ' ${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}',
-                            );
-                            return;
-                          }
-                          /*   authBloc.add(
-                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));*/
-                        },
-                        goBackToPhone: () {
-                          pageController.animateToPage(
-                            0,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        onChooseSms: () {
-                          isVisWhatsApp = 0;
-                          pageController.animateToPage(
-                            3,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                          /* authBloc.add(
-                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));*/
-                        },
-                      ),
-                      VerifyOtp(
-                        fromProfile: false,
-                        navigateToProfile: () {},
-                        fromExpired: true,
-                        isVisWhatsApp: isVisWhatsApp,
-                        navigateToAddName: () {},
-                        navigateTocartOrProfile: () {
-                          isVerified.value = true;
-                          GetIt.I<HomeBloc>().add(
-                            GetCurrenciesForWalletEvent(
-                              currencySymbol:
-                                  GetIt.I<HomeBloc>()
-                                      .state
-                                      .getCurrencyForCountryModel
-                                      ?.data
-                                      ?.currency
-                                      ?.code ??
-                                  "",
-                            ),
-                          );
-
-                          orderBloc.add(
-                            GetOrdersEvent(
-                              status: "",
-                              getWithPagination: false,
-                            ),
-                          );
-                        },
-                        fromLogin: false,
-                        onLoginFailed: () {
-                          pageController.animateToPage(
-                            3,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        goBack: () {
-                          pageController.animateToPage(
-                            1,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        methodIcon: isVisWhatsApp == 1
-                            ? AppAssets.whatsappSvg
-                            : AppAssets.smsSvg,
-                        phoneNumber: phoneNumber,
-                      ),
-                    ],
-            ),
-            Positioned(
-              top: 0,
-              left: LanguageService.languageCode != "ar" ? null : 0,
-              right: LanguageService.languageCode != "ar" ? 0 : null,
-              child: Container(
-                margin: EdgeInsets.all(10.w),
-                height: 20.h,
-                width: 40.w,
-                child: InkWell(
-                  onTap: () => isVerified.value = true,
-                  child: SvgPicture.asset(
-                    AppAssets.closeSvg,
-                    height: 15.h,
-                    width: 30.w,
-                    // ignore: deprecated_member_use
-                    color: const Color(0xffFF5F61),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -1413,18 +1210,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         Navigator.of(context).pop();
                         Future.delayed(const Duration(seconds: 1), () {
                           if (!(prefsRepository.isVerifiedPhone ?? false)) {
-                            isVerified.value = false;
-                            if ((prefsRepository
-                                    .isVerifiedPhonePeforeExpiredToken ??
-                                false)) {
-                              GetIt.I<AuthBloc>().add(
-                                SendOtpEvent(
-                                  phone: prefsRepository.myPhoneNumber!,
-                                  isViaWhatsApp: 1,
-                                ),
-                              );
+                            if (mounted) {
+                              GuestPhoneVerificationDialog.show(context);
                             }
-                            return;
                           }
                         });
                       }

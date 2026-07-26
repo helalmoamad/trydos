@@ -51,12 +51,28 @@ class DeleteFcmTokenFromChatEvent extends AuthEvent {
   List<Object?> get props => [fcmToken];
 }
 
-class StoreFcmTokenEvent extends AuthEvent {
+class StoreFcmTokenInStoryEvent extends AuthEvent {
   final int userId;
   final String fcmToken;
   final ServerName serverName;
 
-  const StoreFcmTokenEvent({
+  const StoreFcmTokenInStoryEvent({
+    required this.userId,
+    required this.fcmToken,
+    required this.serverName,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [userId, fcmToken, serverName];
+}
+
+class StoreFcmTokenInChatEvent extends AuthEvent {
+  final int userId;
+  final String fcmToken;
+  final ServerName serverName;
+
+  const StoreFcmTokenInChatEvent({
     required this.userId,
     required this.fcmToken,
     required this.serverName,
@@ -170,6 +186,16 @@ class RefreshTokenEvent extends AuthEvent {
 
   @override
   List<Object?> get props => [];
+}
+
+/// Signals base_page to show the "session expired" dialog for a verified user
+/// whose refresh failed. Carries the account's phone to prefill the re-login.
+class ShowSessionExpiredEvent extends AuthEvent {
+  final String? phone;
+  const ShowSessionExpiredEvent({this.phone});
+
+  @override
+  List<Object?> get props => [phone];
 }
 
 class UpdateNameEvent extends AuthEvent {

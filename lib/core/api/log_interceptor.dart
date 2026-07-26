@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' hide Category;
@@ -25,9 +24,6 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (kDebugMode) {
-      log(_prefsRepository.chatToken.toString());
-      log('story ${_prefsRepository.storiesToken.toString()}');
-
       prettyPrinterI(
         "***|| INFO Request ${options.path} ||***"
         "\n HTTP Method: ${options.method}"

@@ -15,12 +15,6 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.da
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
-import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
-import 'package:trydos/features/authentication/presentation/widgets/welcome_section.dart';
-
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
@@ -41,14 +35,9 @@ class UserInformationPage extends StatefulWidget {
 class _UserInformationPageState extends State<UserInformationPage> {
   late HomeBloc homeBloc;
 
-    bool fromLogin = false;
+  bool fromLogin = false;
   final ValueNotifier<bool> animate = ValueNotifier(false);
   Duration animationDuration = const Duration(milliseconds: 500);
-
-  final ValueNotifier<int> pageContent = ValueNotifier(0);
-
-
-
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<String?> changeGender = ValueNotifier("null");
   final ValueNotifier<bool> visibleSave = ValueNotifier(false);
@@ -270,7 +259,6 @@ class _UserInformationPageState extends State<UserInformationPage> {
   Widget _addPhotoWidget() {
     return InkWell(
       onTap: () {
-        // If user is verified, navigate to add photo page
         if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)) {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -279,189 +267,6 @@ class _UserInformationPageState extends State<UserInformationPage> {
           );
           return;
         }
-
-        // Otherwise show a verification bottom sheet (similar to HomePage)
-        final PageController pageController = PageController();
-        String phoneNumber = '';
-        int isVisWhatsApp = 1;
-
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (ctx) {
-            return AnimatedPadding(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(ctx).viewInsets.bottom,
-              ),
-              child: Container(
-                margin: const EdgeInsets.only(top: 20),
-                height: MediaQuery.of(ctx).size.height,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white,
-                ),
-                child: Stack(
-                  children: [
-                    PageView(
-                      
-                      physics: const NeverScrollableScrollPhysics(),
-                      controller: pageController,
-                      children:
-                          (prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                              false)
-                          ? [
-                              VerifyOtp(
-                                fromProfile: false,
-                                navigateToProfile: () {},
-                                fromExpired: true,
-                                isVisWhatsApp: 1,
-                                navigateToAddName: () {},
-                                navigateTocartOrProfile: () {},
-                                fromLogin: false,
-                                onLoginFailed: () {},
-                                goBack: () {},
-                                methodIcon: AppAssets.whatsappSvg,
-                                phoneNumber:
-                                    prefsRepository.myPhoneNumber ?? '',
-                              ),
-                            ]
-                          : [
-
-WelcomeSection(
-                                                                              goToLoginSection: () {
-                                                                                fromLogin = true;
-                                                                                animationDuration = const Duration(
-                                                                                  seconds: 1,
-                                                                                );
-                                                                                animate.value = true;
-                                                                                pageContent.value = 2;
-                                                                                pageController.animateToPage(
-                                                                                  2,
-                                                                                  duration: const Duration(
-                                                                                    milliseconds: 100,
-                                                                                  ),
-                                                                                  curve: Curves.easeInOut,
-                                                                                );
-                                                                              },
-                                                                              goToCreateAccount: () {
-                                                                                fromLogin = false;
-                                                                                animate.value = true;
-                                                                                pageContent.value = 1;
-                                                                                pageController.animateToPage(
-                                                                                  1,
-                                                                                  duration: const Duration(
-                                                                                    milliseconds: 500,
-                                                                                  ),
-                                                                                  curve: Curves.easeInOut,
-                                                                                );
-                                                                                //_animationController.forward();
-                                                                              },
-                                                                            ),
-                                                                            CreateAccountSection(
-                                                                              moveToNextStep: () {
-                                                                                pageContent.value = 2;
-                                                                                pageController.animateToPage(
-                                                                                  2,
-                                                                                  duration: const Duration(
-                                                                                    milliseconds: 500,
-                                                                                  ),
-                                                                                  curve: Curves.easeInOut,
-                                                                                );
-                                                                              },
-                                                                            ),
-
-
-
-                              InsertPhoneTab(
-                                focusNode: FocusNode(),
-                                moveToNextStep: (String phone) {
-                                  phoneNumber = phone.replaceAll(' ', '');
-                                  pageController.animateToPage(
-                                    1,
-                                    duration: const Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
-                              ),
-                              VerificationMethods(
-                                phoneNumber: phoneNumber,
-                                isFromLogin: true,
-                                onChooseWhatsapp: () {
-                                  isVisWhatsApp = 1;
-                                  pageController.animateToPage(
-                                    2,
-                                    duration: const Duration(milliseconds: 100),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
-                                goBackToPhone: () {
-                                  pageController.animateToPage(
-                                    0,
-                                    duration: const Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
-                                onChooseSms: () {
-                                  isVisWhatsApp = 0;
-                                  pageController.animateToPage(
-                                    2,
-                                    duration: const Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
-                              ),
-                              VerifyOtp(
-                                fromProfile: false,
-                                navigateToProfile: () {},
-                                fromExpired: true,
-                                isVisWhatsApp: isVisWhatsApp,
-                                navigateToAddName: () {},
-                                navigateTocartOrProfile: () {},
-                                fromLogin: false,
-                                onLoginFailed: () {},
-                                goBack: () {
-                                  pageController.animateToPage(
-                                    1,
-                                    duration: const Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
-                                methodIcon: isVisWhatsApp == 1
-                                    ? AppAssets.whatsappSvg
-                                    : AppAssets.smsSvg,
-                                phoneNumber: phoneNumber,
-                              ),
-                            ],
-                    ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      left: 0,
-                      child: Container(
-                        margin: const EdgeInsets.all(10),
-                        height: 20,
-                        width: 40,
-                        child: InkWell(
-                          onTap: () => Navigator.of(ctx).pop(),
-                          child: SvgPicture.asset(
-                            AppAssets.closeSvg,
-                            height: 15,
-                            width: 30,
-                            // ignore: deprecated_member_use
-                            color: const Color(0xffFF5F61),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
       },
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>

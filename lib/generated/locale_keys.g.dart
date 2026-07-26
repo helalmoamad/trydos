@@ -627,6 +627,11 @@ abstract class LocaleKeys {
       'are_you_sure_restore_this_product';
   static const order_restored_successfully = 'order_restored_successfully';
   static const product_restored_successfully = 'product_restored_successfully';
+  static const your_session_has_expired = 'your_session_has_expired';
+  static const please_login_again_or_continue_guest =
+      'please_login_again_or_continue_guest';
+  static const login = 'login';
+  static const continue_as_guest = 'continue_as_guest';
   static const you_can_return_product_without_conditions =
       'you_can_return_product_without_conditions';
   static const return_policy_get_full_refund = 'return_policy_get_full_refund';

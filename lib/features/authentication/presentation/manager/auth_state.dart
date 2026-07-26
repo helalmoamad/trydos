@@ -53,6 +53,8 @@ class AuthState {
     this.getCustomerCountryStatus = GetCustomerCountryStatus.loading,
     this.updateStoriesUserStatus = UpdateStoriesUserStatus.init,
     this.updateChatUserNameStatus = UpdateChatUserNameStatus.init,
+    this.sessionExpiredTick = 0,
+    this.sessionExpiredPhone,
   });
 
   final CreateUserStatus createUserStatus;
@@ -77,6 +79,14 @@ class AuthState {
   final GenerateTokenForCommentStatus generateTokenForCommentStatus;
   final String? sendOtpError;
   final String? countryName;
+
+  /// Increments each time a verified user's session expires (refresh failed),
+  /// so base_page can show the "session expired" dialog once per event.
+  final int sessionExpiredTick;
+
+  /// The phone number of the account whose session expired — used to prefill
+  /// the re-login OTP flow inside the dialog.
+  final String? sessionExpiredPhone;
   AuthState copyWith({
     final CreateUserStatus? createUserStatus,
     final LoginToChatStatus? loginToChatStatus,
@@ -99,6 +109,8 @@ class AuthState {
     final UpdateStoriesUserStatus? updateStoriesUserStatus,
     final VerifyOtpSignInStatus? verifyOtpSignInStatus,
     final VerifyOtpFromGuestStatus? verifyOtpFromGuestStatus,
+    final int? sessionExpiredTick,
+    final String? sessionExpiredPhone,
   }) {
     return AuthState(
       updateChatUserNameStatus:
@@ -132,6 +144,8 @@ class AuthState {
           verifyOtpSignInStatus ?? this.verifyOtpSignInStatus,
       verifyOtpFromGuestStatus:
           verifyOtpFromGuestStatus ?? this.verifyOtpFromGuestStatus,
+      sessionExpiredTick: sessionExpiredTick ?? this.sessionExpiredTick,
+      sessionExpiredPhone: sessionExpiredPhone ?? this.sessionExpiredPhone,
     );
   }
 }

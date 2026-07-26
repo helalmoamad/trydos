@@ -20,7 +20,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
 import 'package:trydos/features/home/data/models/get_buyers_comments_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -43,11 +43,9 @@ class BuyerComment extends StatefulWidget {
   final PanelController panelBuyersComments;
   final String? ownerId;
   final String productSlug;
-  final ValueNotifier<bool>? isVerified;
   const BuyerComment({
     super.key,
     required this.productId,
-    required this.isVerified,
     required this.productSlug,
     required this.panelBuyersComments,
     required this.ownerType,
@@ -206,7 +204,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                 .getBuyersCommentsPaginationModel!['all']!
                                 .items[index],
                             (index + 1000000),
-                            widget.isVerified,
+
                             state,
                             widget.productSlug,
                           );
@@ -355,7 +353,6 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
   Widget _commentWidget(
     BuyersComment buyersComment,
     int index,
-    ValueNotifier<bool>? isVerified,
     HomeState state,
     String productSlug,
   ) {
@@ -491,11 +488,11 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
 
     String formatDateByLocale(DateTime isoDate, String locale) {
       final date = isoDate;
-      // صيغة "day short_month" مثل "18 Feb" أو "20 Oct"
+      // ØµÙŠØºØ© "day short_month" Ù…Ø«Ù„ "18 Feb" Ø£Ùˆ "20 Oct"
       final format = tran.DateFormat(
         'd MMM',
         locale,
-      ); // locale مثال "en", "ar", "fr", "tr" ...
+      ); // locale Ù…Ø«Ø§Ù„ "en", "ar", "fr", "tr" ...
       return format.format(date);
     }
 
@@ -585,18 +582,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                               LocaleKeys.must_login_to_edit_comment.tr(),
                             );
                             Future.delayed(const Duration(seconds: 1), () {
-                              widget.isVerified?.value = false;
-                              if ((GetIt.I<PrefsRepository>()
-                                      .isVerifiedPhonePeforeExpiredToken ??
-                                  false)) {
-                                GetIt.I<AuthBloc>().add(
-                                  SendOtpEvent(
-                                    phone: GetIt.I<PrefsRepository>()
-                                        .myPhoneNumber!,
-                                    isViaWhatsApp: 1,
-                                  ),
-                                );
-                              }
+                              GuestPhoneVerificationDialog.show(context);
                             });
                             return;
                           }
@@ -773,20 +759,14 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                 if (!(GetIt.I<PrefsRepository>()
                                         .isVerifiedPhone ??
                                     false)) {
-                                  Future.delayed(const Duration(seconds: 1), () {
-                                    isVerified?.value = false;
-                                    if ((GetIt.I<PrefsRepository>()
-                                            .isVerifiedPhonePeforeExpiredToken ??
-                                        false)) {
-                                      GetIt.I<AuthBloc>().add(
-                                        SendOtpEvent(
-                                          phone: GetIt.I<PrefsRepository>()
-                                              .myPhoneNumber!,
-                                          isViaWhatsApp: 1,
-                                        ),
+                                  Future.delayed(
+                                    const Duration(seconds: 1),
+                                    () {
+                                      GuestPhoneVerificationDialog.show(
+                                        context,
                                       );
-                                    }
-                                  });
+                                    },
+                                  );
                                   return;
                                 }
                                 BlocProvider.of<HomeBloc>(context).add(
@@ -803,18 +783,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                       .isVerifiedPhone ??
                                   false)) {
                                 Future.delayed(const Duration(seconds: 1), () {
-                                  isVerified?.value = false;
-                                  if ((GetIt.I<PrefsRepository>()
-                                          .isVerifiedPhonePeforeExpiredToken ??
-                                      false)) {
-                                    GetIt.I<AuthBloc>().add(
-                                      SendOtpEvent(
-                                        phone: GetIt.I<PrefsRepository>()
-                                            .myPhoneNumber!,
-                                        isViaWhatsApp: 1,
-                                      ),
-                                    );
-                                  }
+                                  GuestPhoneVerificationDialog.show(context);
                                 });
                                 return;
                               }
@@ -827,18 +796,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                                       .isVerifiedPhone ??
                                   false)) {
                                 Future.delayed(const Duration(seconds: 1), () {
-                                  isVerified?.value = false;
-                                  if ((GetIt.I<PrefsRepository>()
-                                          .isVerifiedPhonePeforeExpiredToken ??
-                                      false)) {
-                                    GetIt.I<AuthBloc>().add(
-                                      SendOtpEvent(
-                                        phone: GetIt.I<PrefsRepository>()
-                                            .myPhoneNumber!,
-                                        isViaWhatsApp: 1,
-                                      ),
-                                    );
-                                  }
+                                  GuestPhoneVerificationDialog.show(context);
                                 });
                                 return;
                               }
@@ -915,7 +873,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
                         ),
                       ),
 
-                // إذا كان هناك عمليات جارية (لودر الحذف أو التعديل)
+                // Ø¥Ø°Ø§ ÙƒØ§Ù† Ù‡Ù†Ø§Ùƒ Ø¹Ù…Ù„ÙŠØ§Øª Ø¬Ø§Ø±ÙŠØ© (Ù„ÙˆØ¯Ø± Ø§Ù„Ø­Ø°Ù Ø£Ùˆ Ø§Ù„ØªØ¹Ø¯ÙŠÙ„)
                 const Spacer(),
                 StarRatingProductWidget(
                   itemHeight: 13.h,
