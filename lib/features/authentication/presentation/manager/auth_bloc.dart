@@ -440,11 +440,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
           await _prefsRepository.setMarketToken(r.data?.token.toString());
           await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
-
-          Future.delayed(const Duration(seconds: 30), () {
-            if (kDebugMode) print("#########33333333332");
-            _prefsRepository.setTokenExpired(false);
-          });
+          add(GetCustomerInfoEvent());
           GetIt.I<HomeBloc>().add(
             SaveUserInfoFromAuthEvent(userInfo: r.data!.user!),
           );
@@ -719,6 +715,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           GetIt.I<HomeBloc>().add(
             SaveUserInfoFromAuthEvent(userInfo: r.data!.user!),
           );
+          add(GetCustomerInfoEvent());
           GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
           GetIt.I<HomeBloc>().add(const GetCartItemEvent());
           GetIt.I<HomeBloc>().add(const GetOldCartItemEvent());
@@ -879,6 +876,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         GetIt.I<HomeBloc>().add(
           SaveUserInfoFromAuthEvent(userInfo: r.data!.user!),
         );
+        add(GetCustomerInfoEvent());
         await _prefsRepository.setOtpCode(event.otp);
         await _prefsRepository.setMarketToken(r.data!.token!);
         await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
@@ -1041,6 +1039,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setTokenExpired(false);
         });
         ErrorManager.resetRetry('RegisterGuestEvent');
+        add(GetCustomerInfoEvent());
         await _prefsRepository.setMarketToken(r.data!.token!);
         await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
         await _prefsRepository.setMyProfilePhoto(
