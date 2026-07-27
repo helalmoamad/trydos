@@ -52,7 +52,14 @@ class SearchWithImageRelatedGemini {
             if (kDebugMode) print(
                 'SearchWithImageRelatedGemini: onChooseFileFromGalleryAction called');
             if (assetEntity != null) {
-              File file = (await assetEntity.originFile)!;
+              // originFile يرجع null للملفات غير المقروءة.
+              final File? pickedFile = await assetEntity.originFile;
+              if (pickedFile == null) {
+                showWarningMessage(
+                    context, LocaleKeys.error_picking_file.tr());
+                return;
+              }
+              File file = pickedFile;
               if (kDebugMode) print(
                   'SearchWithImageRelatedGemini: gallery file path = ${file.path}');
               String mimeStr = lookupMimeType(file.absolute.path) ?? '';

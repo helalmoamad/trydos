@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
+import 'package:trydos/common/helper/file_saving.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -31,7 +32,8 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
   Duration? videoDuration;
   String? imageUrl;
 
-  late Future<void> initializeVideo;
+  // كان late: لا يُسنَد حين يصل الملف null، فيقع LateInitializationError.
+  Future<void>? initializeVideo;
   ValueNotifier<double> downloadingProgress = ValueNotifier(0);
   ValueNotifier<bool> isDownloading = ValueNotifier(false);
   CancelToken cancelToken = CancelToken();
@@ -47,26 +49,53 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
           '?w=300&h=300';
     }
     if (widget.videoFile != null) {
-      debugPrint('yes from memory');
       _controller = VideoPlayerController.file(widget.videoFile!);
       initializeController();
+      _controller!.play();
+    } else if (widget.videoUrl != null) {
+      // كان `_controller!.play()` يُنفَّذ خارج الشرط، فينهار على null متى
+      // فُتحت الشاشة لفيديو وارد (videoFile يكون null دائماً في تلك الحالة).
+      _adoptCachedVideo();
     }
-    _controller!.play();
     super.initState();
+  }
+
+  Future<void> _adoptCachedVideo() async {
+    final File? cached = await FileSaving().cachedMediaFile(widget.videoUrl!);
+    if (cached == null || !mounted) return;
+    setState(() {
+      _controller = VideoPlayerController.file(cached);
+      initializeController();
+      _controller!.play();
+    });
   }
 
   void initializeController() {
     initializeVideo = _controller!.initialize().then((value) {
       setState(() {});
     });
-    _controller!.addListener(() {
-      setState(() {});
-    });
+    // كان addListener(() => setState(...)) — إعادة بناء الشاشة كاملة مع كل
+    // إطار فيديو. الأجزاء المتغيّرة تستمع وحدها عبر ValueListenableBuilder،
+    // و VideoProgressIndicator يستمع للـ controller أصلاً.
+    _controller!.addListener(_restartWhenFinished);
+  }
+
+  void _restartWhenFinished() {
+    final VideoPlayerValue? value = _controller?.value;
+    if (value == null || !value.isInitialized) return;
+    // كان هذا الفحص داخل build() — أثر جانبي في كل إعادة بناء.
+    if (value.position >= value.duration && value.duration > Duration.zero) {
+      _controller?.seekTo(Duration.zero);
+    }
   }
 
   @override
   void dispose() {
+    if (!cancelToken.isCancelled) cancelToken.cancel();
+    _controller?.removeListener(_restartWhenFinished);
     _controller?.dispose();
+    downloadingProgress.dispose();
+    isDownloading.dispose();
     super.dispose();
   }
 
@@ -90,11 +119,6 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
 
   @override
   Widget build(BuildContext context) {
-    if (_controller?.value.position == _controller?.value.duration) {
-      _controller?.seekTo(Duration.zero);
-    }
-    // If the VideoPlayerController has finished initialization, use
-    // the data it provides to limit the aspect ratio of the video.
     return Scaffold(
       body: FullScreenPage(
         child: Container(
@@ -126,21 +150,28 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
                             child: VideoPlayer(_controller!),
                           ),
                         ),
-                        _controller!.value.isPlaying
-                            ? Container()
-                            : Icon(
-                                Icons.play_arrow,
-                                size: 50,
-                                color: Colors.grey.shade300,
-                              ),
+                        // هذان وحدهما يتغيّران مع التشغيل، فيستمعان مباشرةً.
+                        ValueListenableBuilder<VideoPlayerValue>(
+                          valueListenable: _controller!,
+                          builder: (context, value, _) => value.isPlaying
+                              ? const SizedBox.shrink()
+                              : Icon(
+                                  Icons.play_arrow,
+                                  size: 50,
+                                  color: Colors.grey.shade300,
+                                ),
+                        ),
                         buildSpeed(),
                         Positioned(
                           left: 8,
                           bottom: 30,
-                          child: MyTextWidget(
-                            getPosition(),
-                            style: context.textTheme.titleLarge?.rq.copyWith(
-                              color: Colors.white,
+                          child: ValueListenableBuilder<VideoPlayerValue>(
+                            valueListenable: _controller!,
+                            builder: (context, value, _) => MyTextWidget(
+                              getPosition(),
+                              style: context.textTheme.titleLarge?.rq.copyWith(
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),

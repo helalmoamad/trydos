@@ -35,13 +35,11 @@ class ProductDetailsSheetCommentsContent extends StatefulWidget {
   final String currentVariant;
   final String? ownerType;
   final String? ownerId;
-  final ValueNotifier<bool>? isVerified;
   final ScrollController? scrollController;
   ProductDetailsSheetCommentsContent({
     super.key,
     this.scrollController,
     required this.productSlug,
-    required this.isVerified,
     required this.productSlugForTopic,
     required this.ownerType,
     required this.ownerId,
@@ -320,7 +318,6 @@ class _ProductDetailsSheetCommentsContentState
                           padding: HWEdgeInsets.symmetric(vertical: 2),
                           child: CommentCard(
                             state: state,
-                            isVerified: widget.isVerified,
                             productSlug: widget.productSlug,
                             commentTran:
                                 state
@@ -431,7 +428,6 @@ class CommentCard extends StatelessWidget {
   final String productSlug;
   final String commentId;
   final bool? isTran;
-  final ValueNotifier<bool>? isVerified;
   final String currentVariant;
   final String productId;
   final HomeState state;
@@ -442,7 +438,6 @@ class CommentCard extends StatelessWidget {
     required this.commentHasReply,
     required this.tapIndex,
     required this.state,
-    required this.isVerified,
     required this.isTran,
     required this.commentTran,
     required this.ownerType,

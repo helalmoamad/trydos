@@ -9,6 +9,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/helper/media_registry_entry.dart';
 import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -67,7 +69,6 @@ class _ProfilePageState extends State<ProfilePage> {
   List<String>? images = [];
 
   int imagess = 0;
-  late String mimeStr;
   int filess = 0;
   int videoss = 0;
   @override
@@ -78,25 +79,30 @@ class _ProfilePageState extends State<ProfilePage> {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     if (kDebugMode) print(images);
     images!.forEach((element) {
-      mimeStr = element.split(" ")[0];
-      if (mimeStr.split('/').contains("video") &&
-          !mimeStr.split('.').contains("aac")) {
-        videoss++;
-      } else if (mimeStr.split('/').contains("image")) {
-        imagess = imagess + 1;
-      } else if (mimeStr.split('/').contains("files")) {
-        filess++;
-      } else {}
+      final MediaRegistryEntry? entry = MediaRegistryEntry.tryParse(element);
+      if (entry == null) return;
+      // النوع من امتداد الملف المحلي لا من شكل الرابط — الصوت (aac) يُستبعد
+      // تلقائياً لأنه لا يطابق image ولا video.
+      switch (HelperFunctions.mediaTypeOfPath(entry.path)) {
+        case 'video':
+          videoss++;
+          break;
+        case 'image':
+          imagess++;
+          break;
+        case 'file':
+          filess++;
+          break;
+      }
     });
 
     chatBloc.add(
       AddMediaCountEvent(images: imagess, videos: videoss, file: filess),
     );
-    
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-    Posthog().capture(eventName: 'app_opened');
-  });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Posthog().capture(eventName: 'app_opened');
+    });
   }
 
   Widget build(BuildContext context) {
@@ -147,10 +153,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: MyCachedNetworkImage(
                                 imageUrl:
                                     (widget.receiverPhoto.toString().contains(
-                                          "cloudinary",
+                                          "media_server",
                                         )
                                         ? ""
-                                        : "${dotenv.env['Images_Url']}") +
+                                        : "${dotenv.env['Media_S3_Server']}") +
                                     widget.receiverPhoto!,
                                 imageFit: BoxFit.cover,
                                 progressIndicatorBuilderWidget: TrydosLoader(),
@@ -526,7 +532,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) =>
-                                  MediaInProfile(files: images ?? []),
+                                  MediaInProfile(
+                                    files: images ?? [],
+                                    chatId: widget.chatId,
+                                  ),
                             ),
                           ),
                         ),
@@ -542,19 +551,22 @@ class _ProfilePageState extends State<ProfilePage> {
                       scrollDirection: Axis.horizontal,
                       itemCount: images!.length,
                       itemBuilder: (context, index) {
-                        String mimeStr = images![index].split(" ")[0];
-                        if (mimeStr.split('/').contains("video") &&
-                            !mimeStr.split('.').contains("aac")) {
+                        final MediaRegistryEntry? entry =
+                            MediaRegistryEntry.tryParse(images![index]);
+                        if (entry == null) return const SizedBox.shrink();
+                        final String mediaType =
+                            HelperFunctions.mediaTypeOfPath(entry.path);
+                        if (mediaType == 'video') {
                           return Container(
                             margin: const EdgeInsets.all(2),
                             width: 200.w,
                             child: MYVideoPlayer(
-                              videoFile: File(images![index].split(" ")[1]),
+                              videoFile: File(entry.path),
                               chatId: widget.chatId,
                             ),
                           );
                         }
-                        if (mimeStr.split('/').contains("image")) {
+                        if (mediaType == 'image') {
                           return FullScreenWidget(
                             backgroundColor: const Color(0xffB4FFD9),
                             child: Hero(
@@ -567,9 +579,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 height: 400.h,
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
-                                    image: FileImage(
-                                      File(images![index].split(" ")[1]),
-                                    ),
+                                    image: FileImage(File(entry.path)),
                                     fit: BoxFit.fill,
                                   ),
                                   borderRadius: BorderRadius.circular(12.0),

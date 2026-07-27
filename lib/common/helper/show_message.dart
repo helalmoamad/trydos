@@ -29,7 +29,11 @@ showMessage(
   BuildContext? context,
 }) {
   if (kDebugMode || showInRelease || hasError) {
-    final currentContext = context ?? navigatorKey.currentState?.context;
+    // context قد يكون مُفكَّكاً (حوار أُغلق قبل انتهاء العملية غير المتزامنة)،
+    // والبحث عن ancestors عبره يرمي «deactivated widget's ancestor is unsafe».
+    final currentContext = (context != null && context.mounted)
+        ? context
+        : navigatorKey.currentState?.context;
 
     if (currentContext != null) {
       try {
@@ -78,7 +82,8 @@ showSuccessMessage(
 }) {
   // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
   OverlayState? overlayState =
-      Overlay.maybeOf(context) ?? navigatorKey.currentState?.overlay;
+      (context.mounted ? Overlay.maybeOf(context) : null) ??
+      navigatorKey.currentState?.overlay;
   if (overlayState == null) return;
 
   late OverlayEntry overlayEntry;
@@ -204,7 +209,8 @@ showErrorMessage(
 }) {
   // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
   OverlayState? overlayState =
-      Overlay.maybeOf(context) ?? navigatorKey.currentState?.overlay;
+      (context.mounted ? Overlay.maybeOf(context) : null) ??
+      navigatorKey.currentState?.overlay;
   if (overlayState == null) return;
 
   late OverlayEntry overlayEntry;
@@ -330,7 +336,8 @@ showWarningMessage(
 }) {
   // استخدام Overlay بدلاً من Dialog لتجنب إغلاق الصفحة
   OverlayState? overlayState =
-      Overlay.maybeOf(context) ?? navigatorKey.currentState?.overlay;
+      (context.mounted ? Overlay.maybeOf(context) : null) ??
+      navigatorKey.currentState?.overlay;
   if (overlayState == null) return;
 
   late OverlayEntry overlayEntry;
@@ -456,9 +463,10 @@ void _showCustomToast(
   OverlayState? overlayState;
   BuildContext? workingContext = context;
 
-  // المحاولة الأولى: الحصول على Overlay من الـ context الحالي
-  overlayState =
-      Overlay.maybeOf(context) ?? Overlay.maybeOf(context, rootOverlay: true);
+  // المحاولة الأولى: الحصول على Overlay من الـ context الحالي (إن كان حياً)
+  overlayState = context.mounted
+      ? (Overlay.maybeOf(context) ?? Overlay.maybeOf(context, rootOverlay: true))
+      : null;
 
   // المحاولة الثانية: استخدام navigatorKey إذا فشلت الأولى
   if (overlayState == null && navigatorKey.currentState != null) {

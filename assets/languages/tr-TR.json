@@ -241,6 +241,7 @@
   "cancel_product_hours_back_money": "Bu Ürünü {hours} Saat İçinde İptal Edin ve Paranızı Geri Alın",
   "coupon_link_not_allowed": "Kupon bağlantısına izin verilmiyor",
   "video_length_limit": "Video süresi 59 saniyeden uzun olmamalıdır",
+  "video_size_limit": "Video boyutu 10 MB'ı aşmamalıdır",
   "your_request_faild": "isteğiniz başarısız oldu",
   "continues": "devam et",
   "more": "Daha Fazla",

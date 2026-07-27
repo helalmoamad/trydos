@@ -25,7 +25,6 @@ import 'package:trydos/features/home/presentation/pages/product_details_page_new
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -182,7 +181,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
               widget.animatedController.stop();
               widget.animatedController.reset();
 
-              if (((state.currentStoryInEachCollection[widget.collectionIndex] ??
+              if (((state.currentStoryInEachCollection[widget
+                              .collectionIndex] ??
                           0) +
                       1) >=
                   state
@@ -592,7 +592,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       }
                     } else {
                       if (_videoController == null) {
-                        if (!mediaServerIsS3) {
+                        /* if (!mediaServerIsS3) {
                           _videoController = VideoPlayerController.networkUrl(
                             Uri.parse(
                               state
@@ -603,40 +603,40 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   .fullVideoPath!,
                             ),
                           );
-                        } else {
-                          final String rawVideoUrl =
-                              state
-                                  .storiesCollections[widget.collectionIndex]
-                                  .stories![state
-                                      .currentStoryInEachCollection[widget
-                                      .collectionIndex]!]
-                                  .fullVideoPath ??
-                              '';
+                        } else {*/
+                        final String rawVideoUrl =
+                            state
+                                .storiesCollections[widget.collectionIndex]
+                                .stories![state
+                                    .currentStoryInEachCollection[widget
+                                    .collectionIndex]!]
+                                .fullVideoPath ??
+                            '';
 
-                          Uri videoUri = Uri.parse(rawVideoUrl);
+                        Uri videoUri = Uri.parse(rawVideoUrl);
 
-                          if (!videoUri.queryParameters.containsKey('target')) {
-                            videoUri = videoUri.replace(
-                              queryParameters: {
-                                ...videoUri.queryParameters,
-                                'target': 'preview',
-                              },
-                            );
-                          }
-
-                          // Android TLS rejects underscore hostnames with HTTPS (media_server...).
-                          if (!kIsWeb &&
-                              Platform.isAndroid &&
-                              videoUri.scheme == 'https' &&
-                              videoUri.host == 'media_server.ramaaz.dev') {
-                            videoUri = videoUri.replace(scheme: 'http');
-                          }
-
-                          _videoController = VideoPlayerController.networkUrl(
-                            httpHeaders: {'x-api-key': MediaServerUrls.apiKey},
-                            videoUri,
+                        if (!videoUri.queryParameters.containsKey('target')) {
+                          videoUri = videoUri.replace(
+                            queryParameters: {
+                              ...videoUri.queryParameters,
+                              'target': 'story',
+                            },
                           );
                         }
+
+                        // Android TLS rejects underscore hostnames with HTTPS (media_server...).
+                        if (!kIsWeb &&
+                            Platform.isAndroid &&
+                            videoUri.scheme == 'https' &&
+                            videoUri.host == 'media_server.ramaaz.dev') {
+                          videoUri = videoUri.replace(scheme: 'http');
+                        }
+
+                        _videoController = VideoPlayerController.networkUrl(
+                          httpHeaders: {'x-api-key': MediaServerUrls.apiKey},
+                          videoUri,
+                        );
+                        // }
 
                         init = _videoController!.initialize().then(
                           (_) {
@@ -928,9 +928,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                                         .collectionIndex]
                                                     .photoPath
                                                     .toString()
-                                                    .contains("cloudinary"))
+                                                    .contains("media_server"))
                                                 ? ""
-                                                : "${dotenv.env['Images_Url']}") +
+                                                : "${dotenv.env['Media_S3_Server']}") +
                                             state
                                                 .storiesCollections[widget
                                                     .collectionIndex]

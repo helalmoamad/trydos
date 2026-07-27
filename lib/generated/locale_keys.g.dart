@@ -7,7 +7,7 @@ abstract class LocaleKeys {
   static const translate = 'translate';
   static const work_days = 'work_days';
   static const view_product = 'view_product';
-
+  static const video_size_limit = "video_size_limit";
   static const hide_this_pack = 'hide_this_pack';
   static const hide_this_pack_from_list = 'hide_this_pack_from_list';
 

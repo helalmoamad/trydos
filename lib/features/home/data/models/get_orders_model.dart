@@ -1,6 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/main.dart';
 
 class OrderModel {
   final bool? isSuccessful;
@@ -513,15 +512,9 @@ class OrderListDetailModel {
       odooOrderId: json["odoo_order_id"],
       image: (json["image"]?.contains("cloudinary") ?? false)
           ? json["image"]
-          : mediaServerIsS3
-          ? ((json["image"].contains("media_server") ?? false)
+          : ((json["image"].contains("media_server") ?? false)
                 ? json["image"]
-                : "${dotenv.env['Media_S3_Server']}${json["image"]}")
-          : (
-              (json["image"]?.contains("cloudinary") ?? false)
-                  ? json["image"]
-                  : "${dotenv.env['Images_Url']}${json["image"]}",
-            ),
+                : "${dotenv.env['Media_S3_Server']}${json["image"]}"),
     );
   }
 

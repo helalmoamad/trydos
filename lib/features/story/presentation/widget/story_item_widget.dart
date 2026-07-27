@@ -287,10 +287,10 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                                                       .photoPath
                                                                       .toString()
                                                                       .contains(
-                                                                        "cloudinary",
+                                                                        "media_server",
                                                                       )
                                                                   ? ""
-                                                                  : "${dotenv.env['Images_Url']}") +
+                                                                  : "${dotenv.env['Media_S3_Server']}") +
                                                               state
                                                                   .storiesCollections[widget
                                                                       .index]

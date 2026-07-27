@@ -130,7 +130,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
     if (kDebugMode) print('meesges ${widget.chat.messages?.length}');
     if (kDebugMode) print('meesges ${widget.chat.channelMembers?.length}');
     if (kDebugMode) print('meesges ${widget.chat.channelName}');
-    if (kDebugMode) print('_prefsRepository.myChatId ${_prefsRepository.myChatId}');
+    if (kDebugMode)
+      print('_prefsRepository.myChatId ${_prefsRepository.myChatId}');
 
     ChannelMember? me = !widget.chat.channelMembers.isNullOrEmpty
         ? widget.chat.channelMembers?.firstWhere(
@@ -194,9 +195,10 @@ class _ChatCardState extends ThemeState<ChatCard> {
               //     ..pop()
               //     ..pop();
               // }
-              if (kDebugMode) print(
-                "object///////////////////////////////////////#${_prefsRepository.myChatPhoto}}",
-              );
+              if (kDebugMode)
+                print(
+                  "object///////////////////////////////////////#${_prefsRepository.myChatPhoto}}",
+                );
               chatBloc.add(
                 ChangeGlobalUsedVariablesInBloc(
                   currentOpenedChatId: widget.chat.id,
@@ -353,12 +355,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                     ),
                                     child: MyCachedNetworkImage(
                                       imageUrl:
-                                          (receiver?.photoPath ?? "")
-                                              .toString()
-                                              .contains("cloudinary")
-                                          ? receiver?.photoPath
-                                          : ("${dotenv.env['Images_Url']}" +
-                                                receiver?.photoPath),
+                                          ("${dotenv.env['Media_S3_Server']}" +
+                                          receiver?.photoPath),
                                       imageFit: BoxFit.cover,
                                       height: 80.h,
                                       width: 60.w,

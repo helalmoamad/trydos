@@ -53,7 +53,6 @@ import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
-import '../../../app/svg_network_widget.dart';
 import '../../data/models/get_home_boutiqes_model.dart' as boutiques;
 import '../manager/homeBloc/home_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -932,24 +931,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     child:
                                                         widget.boutiqueIcon !=
                                                             null
-                                                        ? mediaServerIsS3
-                                                              ? MyCachedNetworkImage(
-                                                                  imageUrl:
-                                                                      widget
-                                                                          .boutiqueIcon ??
-                                                                      "",
-                                                                  height: 20.h,
-                                                                  imageFit: BoxFit
-                                                                      .contain,
-                                                                  width: 21.w,
-                                                                )
-                                                              : SvgNetworkWidget(
-                                                                  svgUrl:
-                                                                      widget
-                                                                          .boutiqueIcon ??
-                                                                      "",
-                                                                  height: 20.h,
-                                                                )
+                                                        ? MyCachedNetworkImage(
+                                                            imageUrl:
+                                                                widget
+                                                                    .boutiqueIcon ??
+                                                                "",
+                                                            height: 20.h,
+                                                            imageFit:
+                                                                BoxFit.contain,
+                                                            width: 21.w,
+                                                          )
                                                         : const SizedBox.shrink(),
                                                   ),
                                                   builder:
@@ -1980,21 +1971,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 children: [
                                                                   widget.boutiqueIcon !=
                                                                           null
-                                                                      ? mediaServerIsS3
-                                                                            ? MyCachedNetworkImage(
-                                                                                imageUrl:
-                                                                                    widget.boutiqueIcon ??
-                                                                                    "",
-                                                                                height: 20.h,
-                                                                                imageFit: BoxFit.contain,
-                                                                                width: 20.w,
-                                                                              )
-                                                                            : SvgNetworkWidget(
-                                                                                svgUrl:
-                                                                                    widget.boutiqueIcon ??
-                                                                                    "",
-                                                                                height: 20.h,
-                                                                              )
+                                                                      ? MyCachedNetworkImage(
+                                                                          imageUrl:
+                                                                              widget.boutiqueIcon ??
+                                                                              "",
+                                                                          height:
+                                                                              20.h,
+                                                                          imageFit:
+                                                                              BoxFit.contain,
+                                                                          width:
+                                                                              20.w,
+                                                                        )
                                                                       : const SizedBox.shrink(),
                                                                   SizedBox(
                                                                     width: 8.w,

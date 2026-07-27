@@ -8,7 +8,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
-import 'package:trydos/main.dart';
 
 GetProductFiltersModel getProductFiltersModelFromJson(String str) =>
     GetProductFiltersModel.fromJson(json.decode(str));
@@ -220,13 +219,9 @@ class CategoryBanner {
   );
 
   factory CategoryBanner.fromJson(Map<String, dynamic> json) => CategoryBanner(
-    filePath: mediaServerIsS3
-        ? (json["file_path"].contains("media_server")
-              ? json["file_path"]
-              : "${dotenv.env['Media_S3_Server']}${json["file_path"]}")
-        : (json["file_path"]?.contains("cloudinary")
-              ? json["file_path"]
-              : ("${dotenv.env['Images_Url']}" + (json["file_path"]))),
+    filePath: (json["file_path"].contains("media_server")
+        ? json["file_path"]
+        : "${dotenv.env['Media_S3_Server']}${json["file_path"]}"),
     originalWidth: (json["original_width"] ?? "").toString().replaceAll(
       RegExp(r'[^0-9.]'),
       '',
@@ -380,13 +375,9 @@ class Thumbnail {
   );
 
   factory Thumbnail.fromJson(Map<String, dynamic> json) => Thumbnail(
-    filePath: mediaServerIsS3
-        ? (json["file_path"].contains("media_server")
-              ? json["file_path"]
-              : "${dotenv.env['Media_S3_Server']}${json["file_path"]}")
-        : (json["file_path"]?.contains("cloudinary")
-              ? json["file_path"]
-              : ("${dotenv.env['Images_Url']}" + (json["file_path"]))),
+    filePath: (json["file_path"].contains("media_server")
+        ? json["file_path"]
+        : "${dotenv.env['Media_S3_Server']}${json["file_path"]}"),
     originalWidth: (json["original_width"] ?? "").toString().replaceAll(
       RegExp(r'[^0-9.]'),
       '',

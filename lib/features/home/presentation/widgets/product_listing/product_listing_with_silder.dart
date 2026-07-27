@@ -19,7 +19,6 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/features/app/svg_network_widget.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -689,32 +688,20 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
                     ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8.h)
                     : const SizedBox.shrink(),
                 SizedBox(width: isVerified ? 5.w : 0),
-                mediaServerIsS3
-                    ? MyCachedNetworkImage(
-                        imageUrl: brandIcon,
-                        height: 15.h,
-                        imageFit: BoxFit.contain,
-                        width: 30.w,
-                      )
-                    : SvgNetworkWidget(
-                        svgUrl: brandIcon,
-                        width: 30.w,
-                        height: 15.h,
-                      ),
+                MyCachedNetworkImage(
+                  imageUrl: brandIcon,
+                  height: 15.h,
+                  imageFit: BoxFit.contain,
+                  width: 30.w,
+                ),
               ]
             : [
-                mediaServerIsS3
-                    ? MyCachedNetworkImage(
-                        imageUrl: brandIcon,
-                        height: 15.h,
-                        imageFit: BoxFit.contain,
-                        width: 30.w,
-                      )
-                    : SvgNetworkWidget(
-                        svgUrl: brandIcon,
-                        width: 30.w,
-                        height: 15.h,
-                      ),
+                MyCachedNetworkImage(
+                  imageUrl: brandIcon,
+                  height: 15.h,
+                  imageFit: BoxFit.contain,
+                  width: 30.w,
+                ),
                 SizedBox(width: isVerified ? 5.w : 0),
                 isVerified
                     ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8.h)

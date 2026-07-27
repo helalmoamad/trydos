@@ -23,7 +23,6 @@ import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection_page_view.dart';
 import 'package:trydos/features/story/presentation/widget/story_item_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/main.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -201,22 +200,6 @@ class _StoriesListState extends State<StoriesList> {
                                                     ),
                                                   ),
 
-                                                  Container(
-                                                    width: 100.w,
-                                                    height: 150.h,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            20.r,
-                                                          ),
-                                                      color: Colors.grey,
-                                                    ),
-                                                    child: Icon(
-                                                      Icons.person,
-                                                      size: 40.w,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
                                                   InkWell(
                                                     highlightColor:
                                                         Colors.transparent,
@@ -356,20 +339,30 @@ class _StoriesListState extends State<StoriesList> {
                                                                     AssetEntity?
                                                                     assetEntity,
                                                                   ) async {
-                                                                    if (assetEntity !=
+                                                                    if (assetEntity ==
                                                                         null) {
-                                                                      File
-                                                                      file = (await assetEntity
-                                                                          .originFile)!;
-                                                                      GetIt.I<
-                                                                            StoryBloc
-                                                                          >()
-                                                                          .add(
-                                                                            UploadStoryCloudinaryEvent(
-                                                                              file,
-                                                                            ),
-                                                                          );
+                                                                      return;
                                                                     }
+                                                                    // originFile
+                                                                    // يرجع null
+                                                                    // للملفات
+                                                                    // غير
+                                                                    // المقروءة.
+                                                                    final File?
+                                                                    file = await assetEntity
+                                                                        .originFile;
+                                                                    if (file ==
+                                                                        null) {
+                                                                      return;
+                                                                    }
+                                                                    GetIt.I<
+                                                                          StoryBloc
+                                                                        >()
+                                                                        .add(
+                                                                          UploadStoryCloudinaryEvent(
+                                                                            file,
+                                                                          ),
+                                                                        );
                                                                   },
                                                             );
                                                           },
@@ -414,15 +407,14 @@ class _StoriesListState extends State<StoriesList> {
 
                                 String? imageOfVideoUrl;
                                 if (initialStory.isPhoto != 1) {
-                                  if (mediaServerIsS3 &&
-                                      !(initialStory.fullVideoPath?.contains(
-                                            "res.cloudinary.com",
-                                          ) ??
-                                          true)) {
-                                    imageOfVideoUrl =
-                                        initialStory.fullVideoPath! +
-                                        "?target=snapshot";
-                                  } else {
+                                  /*if (!(initialStory.fullVideoPath?.contains(
+                                        "res.cloudinary.com",
+                                      ) ??
+                                      true)) {*/
+                                  imageOfVideoUrl =
+                                      initialStory.fullVideoPath! +
+                                      "?target=snapshot";
+                                  /* } else {
                                     int index = initialStory.fullVideoPath!
                                         .lastIndexOf('.');
                                     imageOfVideoUrl =
@@ -431,7 +423,7 @@ class _StoriesListState extends State<StoriesList> {
                                           index,
                                         ) +
                                         '.png';
-                                  }
+                                  }*/
                                 }
                                 return AnimatedPadding(
                                   duration: const Duration(milliseconds: 200),

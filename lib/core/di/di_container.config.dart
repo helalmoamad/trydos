@@ -398,8 +398,6 @@ import '../../features/story/domain/useCases/increase_viewers_usecase.dart'
     as _i4;
 import '../../features/story/domain/useCases/report_about_story_usecase.dart'
     as _i905;
-import '../../features/story/domain/useCases/upload_story_usecase.dart'
-    as _i290;
 import '../../features/story/presentation/bloc/story_bloc.dart' as _i536;
 import '../data/data_source/common_use_repo_data_source.dart' as _i672;
 import '../data/repository/common_use_repository_impl.dart' as _i77;
@@ -501,9 +499,6 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i905.ReportAboutStoryUseCase>(
     () => _i905.ReportAboutStoryUseCase(gh<_i505.StoryRepository>()),
-  );
-  gh.factory<_i290.UploadStoryUseCase>(
-    () => _i290.UploadStoryUseCase(gh<_i505.StoryRepository>()),
   );
   gh.singleton<_i361.Dio>(
     () => appModule.dio(gh<_i361.BaseOptions>(), gh<_i974.Logger>()),
@@ -1179,7 +1174,6 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i1043.UploadFileCloudinaryUseCase>(),
       gh<_i804.GetStoryUseCase>(),
       gh<_i912.GetWidthAndHeightUseCase>(),
-      gh<_i290.UploadStoryUseCase>(),
       gh<_i4.IncreaseViewersUseCase>(),
       gh<_i737.AddStoryToOurServerUseCase>(),
       gh<_i318.UploadFileMediaServerUseCase>(),

@@ -8939,23 +8939,15 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                   withInnerShadow: true,
                                                   withImageShadow: true,
                                                   radius: 40,
-                                                  imageUrl: mediaServerIsS3
-                                                      ? (productSyncColorImages[index]
-                                                                .images![0]
-                                                                .contains(
-                                                                  "media_server",
-                                                                )
-                                                            ? productSyncColorImages[index]
-                                                                  .images![0]
-                                                            : "${dotenv.env['Media_S3_Server']}${productSyncColorImages[index].images![0]}")
-                                                      : (productSyncColorImages[index]
-                                                            .images![0]
-                                                            .contains(
-                                                              "cloudinary",
-                                                            ))
+                                                  imageUrl:
+                                                      (productSyncColorImages[index]
+                                                          .images![0]
+                                                          .contains(
+                                                            "media_server",
+                                                          )
                                                       ? productSyncColorImages[index]
                                                             .images![0]
-                                                      : "${dotenv.env['Images_Url']}${productSyncColorImages[index].images![0]}",
+                                                      : "${dotenv.env['Media_S3_Server']}${productSyncColorImages[index].images![0]}"),
                                                   imageFit: BoxFit.fill,
                                                   width: 70.w,
                                                   height: 70.h,
@@ -10155,9 +10147,29 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                   ) async {
                                                                     if (assetEntity !=
                                                                         null) {
+                                                                      // originFile
+                                                                      // يرجع
+                                                                      // null
+                                                                      // للملفات
+                                                                      // غير
+                                                                      // المقروءة.
+                                                                      final File?
+                                                                      pickedFile =
+                                                                          await assetEntity
+                                                                              .originFile;
+                                                                      if (pickedFile ==
+                                                                          null) {
+                                                                        showWarningMessage(
+                                                                          context,
+                                                                          LocaleKeys
+                                                                              .error_picking_file
+                                                                              .tr(),
+                                                                        );
+                                                                        return;
+                                                                      }
                                                                       File
-                                                                      file = (await assetEntity
-                                                                          .originFile)!;
+                                                                      file =
+                                                                          pickedFile;
                                                                       String
                                                                       mimeStr =
                                                                           lookupMimeType(
@@ -10311,9 +10323,26 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                             ) async {
                                                               if (assetEntity !=
                                                                   null) {
-                                                                File
-                                                                file = (await assetEntity
-                                                                    .originFile)!;
+                                                                // originFile
+                                                                // يرجع null
+                                                                // للملفات غير
+                                                                // المقروءة.
+                                                                final File?
+                                                                pickedFile =
+                                                                    await assetEntity
+                                                                        .originFile;
+                                                                if (pickedFile ==
+                                                                    null) {
+                                                                  showWarningMessage(
+                                                                    context,
+                                                                    LocaleKeys
+                                                                        .error_picking_file
+                                                                        .tr(),
+                                                                  );
+                                                                  return;
+                                                                }
+                                                                File file =
+                                                                    pickedFile;
                                                                 String mimeStr =
                                                                     lookupMimeType(
                                                                       file

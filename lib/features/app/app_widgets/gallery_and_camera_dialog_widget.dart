@@ -40,18 +40,20 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
           children: [
             TextButton(
               onPressed: () async {
-                Navigator.of(context).pop();
+                // نلتقط الـ Navigator قبل الإغلاق: بعد pop يصبح هذا الـ context
+                // مُفكَّكاً (deactivated) ولا يصلح للتنقّل لاحقاً.
+                final NavigatorState navigator = Navigator.of(context);
+                final BuildContext rootContext = navigator.context;
+                navigator.pop();
                 List<CameraDescription> cameras = [];
                 cameras = await availableCameras();
                 if (fromStory ?? false) {
-                  selectedFile = await Navigator.push<File>(
-                    context,
+                  selectedFile = await navigator.push<File>(
                     MaterialPageRoute(
                         builder: (context) => CameraScreenStory(cameras)),
                   );
                 } else {
-                  selectedFile = await Navigator.push<File>(
-                    context,
+                  selectedFile = await navigator.push<File>(
                     MaterialPageRoute(
                         builder: (context) => CameraScreen(cameras)),
                   );
@@ -63,14 +65,25 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                       lookupMimeType(selectedFile!.absolute.path) ?? '';
                   var fileType = mimeStr.split('/');
                   if (fileType[0] == 'image') {
-                    Navigator.of(context).pop();
+                    // لا pop هنا: الحوار أُغلق أصلاً أعلاه، وإعادة الإغلاق
+                    // كانت تُخرج المستخدم من الصفحة التي تحته.
                     onImagePreviewAction?.call(selectedFile!);
                     return;
                   }
                 }
 
+                // حدّ حجم فيديو الستوري — يكمّل حدّ المدّة: دقيقة بجودة عالية
+                // قد تتجاوز العشرة ميغابايت بسهولة.
+                if ((fromStory ?? false) &&
+                    selectedFile != null &&
+                    !_isStoryVideoSizeAllowed(selectedFile!)) {
+                  showWarningMessage(
+                      rootContext, LocaleKeys.video_size_limit.tr());
+                  return;
+                }
+
                 onChooseFileFromCameraAction.call(selectedFile);
-                
+
                 /////////////////////////////////
                 // FirebaseAnalyticsService.logEventForSession(
                 //   eventName: AnalyticsEventsConst.buttonClicked,
@@ -83,46 +96,59 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
             Builder(builder: (context) {
               return TextButton(
                 onPressed: () async {
-                  Navigator.of(context).pop();
-                  AssetEntity? assetEntity;
-                  assetEntity =
-                      await HelperFunctions.getAssetFromGallery(context);
-                  if (assetEntity != null) {
-                    if (assetEntity.type == AssetType.video &&
-                        assetEntity.duration > 59) {
-                      showWarningMessage(
-                          context, LocaleKeys.video_length_limit.tr());
-                    } else {
-                      if (fromStory ?? false) {
-                        File? gallaryFile = await assetEntity.file;
-                        Navigator.of(context).pushReplacement(PageRouteBuilder(
-                            pageBuilder: (context, animation,
-                                    secondaryAnimation) =>
-                                AddLinkToStory(
-                                    assetEntity?.type == AssetType.video
-                                        ? null
-                                        : gallaryFile,
-                                    assetEntity,
-                                    assetEntity?.type != AssetType.video
-                                        ? null
-                                        : gallaryFile,
-                                    onChooseFileFromGalleryAction)));
-                      } else if (fromChat == true &&
-                          assetEntity.type == AssetType.image) {
-                        // إذا كان من المحادثة وكانت صورة، اعرض المعاينة
-                        File? galleryFile = await assetEntity.file;
-                        if (galleryFile != null) {
-                          Navigator.of(context).pop();
-                          onImagePreviewAction?.call(galleryFile);
-                          return;
-                        }
-                      } else {
-                        onChooseFileFromGalleryAction.call(assetEntity);
-                        Navigator.of(context).pop();
-                      }
-                    }
+                  // يجب التقاط الـ Navigator و context الجذر قبل الإغلاق —
+                  // المستخدم يقضي ثوانٍ داخل المعرض، وبعدها يكون context الحوار
+                  // مُفكَّكاً فيرمي Flutter «deactivated widget's ancestor».
+                  final NavigatorState navigator = Navigator.of(context);
+                  final BuildContext rootContext = navigator.context;
+                  navigator.pop();
+
+                  final AssetEntity? assetEntity =
+                      await HelperFunctions.getAssetFromGallery(rootContext);
+                  if (assetEntity == null) return;
+
+                  if (assetEntity.type == AssetType.video &&
+                      assetEntity.duration > 59) {
+                    showWarningMessage(
+                        rootContext, LocaleKeys.video_length_limit.tr());
+                    return;
                   }
-                  //    Navigator.of(context).pop();
+
+                  if (fromStory ?? false) {
+                    // ملف غير مقروء (تالف أو محذوف من القرص مع بقاء سجلّه في
+                    // MediaStore) يرجع null — و AddLinkToStory يفكّه بـ ! .
+                    final File? gallaryFile = await assetEntity.file;
+                    if (gallaryFile == null) {
+                      showWarningMessage(
+                          rootContext, LocaleKeys.error_picking_file.tr());
+                      return;
+                    }
+                    final bool isVideo = assetEntity.type == AssetType.video;
+                    if (isVideo && !_isStoryVideoSizeAllowed(gallaryFile)) {
+                      showWarningMessage(
+                          rootContext, LocaleKeys.video_size_limit.tr());
+                      return;
+                    }
+                    navigator.push(PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            AddLinkToStory(
+                                isVideo ? null : gallaryFile,
+                                assetEntity,
+                                isVideo ? gallaryFile : null,
+                                onChooseFileFromGalleryAction)));
+                  } else if (fromChat == true &&
+                      assetEntity.type == AssetType.image) {
+                    // إذا كان من المحادثة وكانت صورة، اعرض المعاينة
+                    final File? galleryFile = await assetEntity.file;
+                    if (galleryFile == null) {
+                      showWarningMessage(
+                          rootContext, LocaleKeys.error_picking_file.tr());
+                      return;
+                    }
+                    onImagePreviewAction?.call(galleryFile);
+                  } else {
+                    onChooseFileFromGalleryAction.call(assetEntity);
+                  }
                   /////////////////////////////////
                   // FirebaseAnalyticsService.logEventForSession(
                   //   eventName: AnalyticsEventsConst.buttonClicked,
@@ -137,5 +163,22 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
         )
       ],
     );
+  }
+}
+
+/// حدّ حجم فيديو الستوري: عشرة ميغابايت.
+const int _maxStoryVideoBytes = 10 * 1024 * 1024;
+
+/// يرجع `false` **فقط** إذا كان الملف فيديو ويتجاوز الحدّ — الصور لا يشملها.
+///
+/// يكمّل حدّ المدّة (٥٩ ثانية) ولا يغني عنه: فيديو قصير بجودة عالية قد يتجاوز
+/// الحجم، وفيديو طويل رديء قد لا يتجاوزه.
+bool _isStoryVideoSizeAllowed(File file) {
+  if (HelperFunctions.mediaTypeOfPath(file.path) != 'video') return true;
+  try {
+    return file.lengthSync() <= _maxStoryVideoBytes;
+  } catch (e) {
+    // تعذّر قياس الحجم: لا نمنع رفعاً صالحاً بسبب فشل قراءة.
+    return true;
   }
 }

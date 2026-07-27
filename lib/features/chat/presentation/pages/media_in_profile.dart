@@ -8,6 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/helper/media_registry_entry.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -22,6 +24,8 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/app/vedio_player.dart';
+import 'package:trydos/common/helper/file_saving.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -35,10 +39,11 @@ import '../manager/chat_state.dart';
 
 class MediaInProfile extends StatefulWidget {
   final List<String>? files;
-  const MediaInProfile({
-    Key? key,
-    required this.files,
-  }) : super(key: key);
+
+  /// لازم لإعادة تنزيل مستند لم يعد موجوداً محلياً (وللتسجيل في سجلّ الوسائط).
+  final String chatId;
+  const MediaInProfile({Key? key, required this.files, this.chatId = ''})
+    : super(key: key);
 
   @override
   State<MediaInProfile> createState() => _MediaInProfileState();
@@ -53,6 +58,9 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
   void initState() {
     LastPagesTracker.push('MediaInProfile');
     chatBloc = BlocProvider.of<ChatBloc>(context);
+    // tabIndex مشترك مع شريط تبويبات التطبيق، وقد يحمل قيمة خارج مدى هذه
+    // الشاشة (ثلاث صفحات فقط). نبدأ من الصور مرّة واحدة عند الدخول.
+    BlocProvider.of<AppBloc>(context).add(ChangeTab(0));
     super.initState();
   }
 
@@ -63,118 +71,116 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
       FlutterError.dumpErrorToConsole(error);
     };
     List<Widget> chatPages = [
-      ImageInProfile(
-        files: widget.files ?? null,
-      ),
-      VideoInProfile(
-        files: widget.files ?? null,
-      ),
-      FilesInProfile(
-        files: widget.files ?? null,
-      )
+      ImageInProfile(files: widget.files ?? null),
+      VideoInProfile(files: widget.files ?? null),
+      FilesInProfile(files: widget.files ?? null, chatId: widget.chatId),
     ];
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),
       appBar: TrydosAppBar(
         appBarParams: AppBarParams(
-            backIconColor: Colors.black38,
-            hasLeading: false,
-            surfaceTintColor: Colors.transparent,
-            elevation: 1,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        GoRouter.of(context).pop();
-                      },
-                      child: Padding(
-                        padding:
-                            HWEdgeInsetsDirectional.fromSTEB(20.w, 15, 0, 15),
-                        child: SvgPicture.asset(
-                          AppAssets.backFromCallSvg,
-                          width: 8.w,
-                          // ignore: deprecated_member_use
-                          color: const Color(0xff388CFF),
+          backIconColor: Colors.black38,
+          hasLeading: false,
+          surfaceTintColor: Colors.transparent,
+          elevation: 1,
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      GoRouter.of(context).pop();
+                    },
+                    child: Padding(
+                      padding: HWEdgeInsetsDirectional.fromSTEB(
+                        20.w,
+                        15,
+                        0,
+                        15,
+                      ),
+                      child: SvgPicture.asset(
+                        AppAssets.backFromCallSvg,
+                        width: 8.w,
+                        // ignore: deprecated_member_use
+                        color: const Color(0xff388CFF),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 8.h),
+                    width: 400.w,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        BlocBuilder<ChatBloc, ChatState>(
+                          buildWhen: (p, c) =>
+                              p.unReadMessagesFromAllChats !=
+                              c.unReadMessagesFromAllChats,
+                          builder: (context, state) {
+                            return ChatTabItem(
+                              index: 0,
+                              text: LocaleKeys.images.tr(),
+                            );
+                          },
                         ),
-                      ),
+                        ChatTabItem(index: 1, text: LocaleKeys.videos.tr()),
+                        ChatTabItem(index: 2, text: LocaleKeys.files.tr()),
+                      ],
                     ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 8.h),
-                      width: 400.w,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          BlocBuilder<ChatBloc, ChatState>(
-                            buildWhen: (p, c) =>
-                                p.unReadMessagesFromAllChats !=
-                                c.unReadMessagesFromAllChats,
-                            builder: (context, state) {
-                              return ChatTabItem(
-                                  index: 0, text: LocaleKeys.images.tr());
-                            },
-                          ),
-                          ChatTabItem(
-                            index: 1,
-                            text: LocaleKeys.videos.tr(),
-                          ),
-                          ChatTabItem(
-                            index: 2,
-                            text: LocaleKeys.files.tr(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            )),
+            ),
+          ),
+        ),
       ),
       body: Container(
         color: const Color.fromARGB(255, 216, 214, 210),
         width: 1.sw,
         height: 1.sh,
         child: BlocBuilder<AppBloc, AppState>(
-            buildWhen: (p, c) => p.tabIndex != c.tabIndex,
-            builder: (context, state) {
-              return chatPages[state.tabIndex == -1 ? 0 : state.tabIndex];
-            }),
+          buildWhen: (p, c) => p.tabIndex != c.tabIndex,
+          builder: (context, state) {
+            // القيمة مشتركة مع شريط تبويبات التطبيق وقد تتجاوز عدد صفحات هذه
+            // الشاشة، فالقصّ يمنع RangeError.
+            return chatPages[state.tabIndex.clamp(0, chatPages.length - 1)];
+          },
+        ),
       ),
     );
   }
 }
 
 class ChatTabItem extends StatelessWidget {
-  const ChatTabItem({
-    Key? key,
-    required this.text,
-    required this.index,
-  }) : super(key: key);
+  const ChatTabItem({Key? key, required this.text, required this.index})
+    : super(key: key);
   final String text;
   final int index;
 
   @override
   Widget build(BuildContext context) {
     final AppBloc appBloc = BlocProvider.of<AppBloc>(context);
-    appBloc.add(ChangeTab(0));
+    // أُزيل add(ChangeTab(0)) من هنا: إرسال حدث داخل build يعني أن أي إعادة
+    // بناء تُعيد التبويب إلى الصور — وهو ما كان يحدث عند العودة من التطبيق
+    // الخارجي بعد فتح مستند. التصفير صار مرّة واحدة في initState.
     return InkWell(
       onTap: () => appBloc.add(ChangeTab(index)),
       child: BlocBuilder<AppBloc, AppState>(
         buildWhen: (p, c) => p.tabIndex != c.tabIndex,
         builder: (context, state) {
           return SizedBox(
-              width: 60.w,
-              height: 28,
-              child: Text(
-                text,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: state.tabIndex == index ? 20.sp : 14.sp,
-                ),
-              ));
+            width: 60.w,
+            height: 28,
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: state.tabIndex == index ? 20.sp : 14.sp,
+              ),
+            ),
+          );
         },
       ),
     );
@@ -199,23 +205,34 @@ class _ImageInProfileState extends ThemeState<ImageInProfile> {
     List<String> images = [];
     if (kDebugMode) print(widget.files);
     widget.files!.forEach((element) {
-      String mimeStr = element.split(" ")[0];
-
-      if (mimeStr.split('/').contains("image")) {
-        images.add(element.split(" ")[1]);
+      final MediaRegistryEntry? entry = MediaRegistryEntry.tryParse(element);
+      if (entry == null) return;
+      // النوع من امتداد الملف المحلي لا من شكل الرابط.
+      if (HelperFunctions.mediaTypeOfPath(entry.path) == 'image') {
+        images.add(entry.path);
       }
     });
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        error: error.toString(),
+      );
     };
 
     return widget.files == null
         ? const SizedBox.shrink()
         : GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, crossAxisSpacing: 2, mainAxisSpacing: 2),
+              crossAxisCount: 3,
+              crossAxisSpacing: 2,
+              mainAxisSpacing: 2,
+            ),
             itemCount: images.length,
             itemBuilder: (context, index) {
               File file = File(images[index]);
@@ -262,24 +279,34 @@ class _VideoInProfileState extends ThemeState<VideoInProfile> {
   Widget build(BuildContext context) {
     List<String> videos = [];
     widget.files!.forEach((element) {
-      String mimeStr = element.split(" ")[0];
-
-      if (mimeStr.split('/').contains("video") &&
-          !mimeStr.split('.').contains("aac")) {
-        videos.add(element.split(" ")[1]);
+      final MediaRegistryEntry? entry = MediaRegistryEntry.tryParse(element);
+      if (entry == null) return;
+      // الصوت (aac) يُستبعد تلقائياً — لا يطابق video.
+      if (HelperFunctions.mediaTypeOfPath(entry.path) == 'video') {
+        videos.add(entry.path);
       }
     });
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        error: error.toString(),
+      );
     };
 
     return widget.files == null
         ? const SizedBox.shrink()
         : GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, crossAxisSpacing: 2, mainAxisSpacing: 2),
+              crossAxisCount: 2,
+              crossAxisSpacing: 2,
+              mainAxisSpacing: 2,
+            ),
             itemCount: videos.length,
             itemBuilder: (context, index) {
               return Container(
@@ -301,7 +328,9 @@ class _VideoInProfileState extends ThemeState<VideoInProfile> {
 
 class FilesInProfile extends StatefulWidget {
   final List<String>? files;
-  const FilesInProfile({Key? key, required this.files}) : super(key: key);
+  final String chatId;
+  const FilesInProfile({Key? key, required this.files, this.chatId = ''})
+    : super(key: key);
 
   @override
   State<FilesInProfile> createState() => _FilesInProfileState();
@@ -312,19 +341,56 @@ class _FilesInProfileState extends ThemeState<FilesInProfile> {
     super.initState();
   }
 
+  Future<void> _openDocument(MediaRegistryEntry entry) async {
+    File file = File(entry.path);
+
+    if (!file.existsSync()) {
+      // المستند المرسَل يُسجَّل بمسار الملف المؤقّت الذي اختاره المستخدم، وقد
+      // يمسحه النظام لاحقاً. نستعيده من الرابط بدل الاكتفاء بلا استجابة.
+      final File? restored = await FileSaving().getOrDownloadMedia(
+        entry.url,
+        widget.chatId,
+      );
+      if (restored == null) {
+        showMessage(LocaleKeys.error_picking_file.tr(), hasError: true);
+        return;
+      }
+      file = restored;
+    }
+
+    final OpenResult result = await OpenFile.open(file.path);
+    if (result.type != ResultType.done) {
+      // كان الفشل صامتاً تماماً: لا فتح ولا رسالة، فتبدو الضغطة بلا أثر.
+      debugPrint('OpenFile failed (${result.type}): ${result.message}');
+      showMessage(LocaleKeys.error_picking_file.tr(), hasError: true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<String> files = [];
+    // نحتفظ بالرابط مع المسار: المستند المرسَل يُسجَّل بمسار الملف المؤقّت
+    // الذي اختاره المستخدم، وقد يمسحه النظام لاحقاً — فنحتاج الرابط لإعادة
+    // تنزيله عند الفتح بدل فشل صامت.
+    final List<MediaRegistryEntry> files = [];
     widget.files!.forEach((element) {
-      String mimeStr = element.split(" ")[0];
-      if (mimeStr.split('/').contains("files")) {
-        files.add(element.split(" ")[1]);
+      final MediaRegistryEntry? entry = MediaRegistryEntry.tryParse(element);
+      if (entry == null) return;
+      // كل ما ليس صورة أو فيديو أو صوت يُعدّ مستنداً.
+      if (HelperFunctions.mediaTypeOfPath(entry.path) == 'file') {
+        files.add(entry);
       }
     });
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        error: error.toString(),
+      );
     };
 
     return widget.files == null
@@ -334,9 +400,7 @@ class _FilesInProfileState extends ThemeState<FilesInProfile> {
             itemCount: files.length,
             itemBuilder: (context, index) {
               return InkWell(
-                onTap: () {
-                  OpenFile.open(files[index]);
-                },
+                onTap: () => _openDocument(files[index]),
                 child: Container(
                   height: 60.h,
                   margin: EdgeInsets.symmetric(horizontal: 5.w),
@@ -354,7 +418,7 @@ class _FilesInProfileState extends ThemeState<FilesInProfile> {
                               height: 60.h,
                             ),
                             10.horizontalSpace,
-                            Text(files[index].split("/").last)
+                            Text(files[index].path.split("/").last),
                           ],
                         ),
                       ],

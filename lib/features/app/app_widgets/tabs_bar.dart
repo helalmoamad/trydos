@@ -16,7 +16,6 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
@@ -28,7 +27,6 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
-import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../common/constant/design/assets_provider.dart';
@@ -380,293 +378,310 @@ class _TabsBarState extends State<TabsBar> {
                     builder: (context, bState) {
                       return AnimatedSearchBar(
                         autoFocus: TestVariables.kTestMode ? false : true,
-                        suggestion: bState.suggestion ?? homeState.theReplyFromGemini,
-                    onFieldSubmitted: (text) {
-                      if (text.replaceAll(" ", "").length > 1) {
-                        widget.buildSearchResult.value = text.length;
-                        widget.appearTrendingAndHistory.value = true;
+                        suggestion:
+                            bState.suggestion ?? homeState.theReplyFromGemini,
+                        onFieldSubmitted: (text) {
+                          if (text.replaceAll(" ", "").length > 1) {
+                            widget.buildSearchResult.value = text.length;
+                            widget.appearTrendingAndHistory.value = true;
 
-                        BlocProvider.of<HomeBloc>(
-                          context,
-                        ).add(AddSearchTextToHistoryEvent(searchTitle: text));
-                      }
-                    },
-                    width: 1.sw,
-                    height: 50.h,
-                    onClickClose: () {
-                      if (widget.controller.text.length > 0) {
-                        categoryBloc.add(
-                          ReplyFromGeminiEvent(
-                            fromSearch: true,
-                            resetTheReply: true,
-                          ),
-                        );
-                        Filter filters =
-                            boutiqueBloc
-                                .state
-                                .choosedFiltersByUser['search']
-                                ?.filters ??
-                            Filter();
-                        Filter appliedFilters =
-                            boutiqueBloc
-                                .state
-                                .appliedFiltersByUser['search']
-                                ?.filters ??
-                            Filter();
-                        boutiqueBloc.add(
-                          ChangeAppliedFiltersEvent(
-                            boutiqueSlug: 'search',
-                            filtersAppliedByUser: GetProductFiltersModel(
-                              filters: appliedFilters.copyWithSaveOtherField(
-                                prices: appliedFilters.prices,
-                                colors: [],
-                                attributes: [],
-                              ),
-                            ),
-                          ),
-                        );
-                        boutiqueBloc.add(
-                          ChangeSelectedFiltersEvent(
-                            boutiqueSlug: 'search',
-                            fromHomePageSearch: true,
-                            filtersChoosedByUser: GetProductFiltersModel(
-                              filters: filters.copyWithSaveOtherField(
-                                colors: [],
-                                attributes: [],
-                                prices: filters.prices,
-                              ),
-                            ),
-                          ),
-                        );
-                        widget.buildSearchResult.value = 0;
-                        widget.controller.clear();
-                        resetSearchAfterSearchingWhileRemoveSearch = false;
-                        widget.appearTrendingAndHistory.value = true;
-                        ///////////////////////////
-                        // FirebaseAnalyticsService.logEventForSession(
-                        //   eventName:
-                        //       AnalyticsEventsConst.buttonClicked,
-                        //   executedEventName:
-                        //       AnalyticsButtonsEventNameConst
-                        //           .resetCloseIconButton,
-                        // );
-                        return true;
-                      } else {
-                        appBloc.add(ChangeBasePage(0));
-                        boutiqueBloc.add(ResetAllSelectedAppliedFilterEvent());
-                        appBloc.add(HideBottomNavigationBar(false));
-
-                        ///////////////////////////
-                        // FirebaseAnalyticsService.logEventForSession(
-                        //   eventName:
-                        //       AnalyticsEventsConst.buttonClicked,
-                        //   executedEventName:
-                        //       AnalyticsButtonsEventNameConst
-                        //           .searchCloseIconButton,
-                        // );
-                      }
-                      return false;
-                    },
-                    textController: widget.controller,
-                    focusNode: focusNode,
-                    onSuffixTap: () {
-                      appBloc.add(ChangeIndexForSearch(2));
-                      widget.buildSearchResult.value = 1;
-                      widget.appearTrendingAndHistory.value = true;
-                      //////////////////////////////////
-                      Future.delayed(const Duration(milliseconds: 300), () {
-                        appBloc.add(ChangeBasePage(4));
-                        appBloc.add(HideBottomNavigationBar(true));
-                      });
-                      ////////////////////////////////
-                      // FirebaseAnalyticsService.logEventForSession(
-                      //   eventName: AnalyticsEventsConst.buttonClicked,
-                      //   executedEventName:
-                      //       AnalyticsButtonsEventNameConst
-                      //           .homeSearchButton,
-                      // );
-                    },
-                    suffixWidget: Center(
-                      key: TestVariables.kTestMode
-                          ? const Key(WidgetsKeys.homeSearchIconKey)
-                          : null,
-                      child: SvgPicture.asset(
-                        AppAssets.searchOutlinedSvg,
-                        height: 20.h,
-                        width: 40.w,
-                        // ignore: deprecated_member_use
-                        color: const Color(0xff388CFF),
-                      ),
-                    ),
-                    prefixWidget: Padding(
-                      padding: EdgeInsets.only(
-                        right: 15.w,
-                        top: 10.h,
-                        bottom: 10.h,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          InkWell(
-                            onTap: () async {
-                              SearchWithImageRelatedGemini.SelecteImageForSearch(
+                            BlocProvider.of<HomeBloc>(context).add(
+                              AddSearchTextToHistoryEvent(searchTitle: text),
+                            );
+                          }
+                        },
+                        width: 1.sw,
+                        height: 50.h,
+                        onClickClose: () {
+                          if (widget.controller.text.length > 0) {
+                            categoryBloc.add(
+                              ReplyFromGeminiEvent(
                                 fromSearch: true,
-                                context: context,
-                              );
-                            },
-                            child:
-                                homeState.sendRequestToGeminiStatus ==
-                                    SendRequestToGeminiStatus.loading
-                                ? TrydosLoader(size: 18.h)
-                                : SvgPicture.asset(
-                                    AppAssets.realCameraSvg,
-                                    height: 20.h,
-                                    width: 20.w,
+                                resetTheReply: true,
+                              ),
+                            );
+                            Filter filters =
+                                boutiqueBloc
+                                    .state
+                                    .choosedFiltersByUser['search']
+                                    ?.filters ??
+                                Filter();
+                            Filter appliedFilters =
+                                boutiqueBloc
+                                    .state
+                                    .appliedFiltersByUser['search']
+                                    ?.filters ??
+                                Filter();
+                            boutiqueBloc.add(
+                              ChangeAppliedFiltersEvent(
+                                boutiqueSlug: 'search',
+                                filtersAppliedByUser: GetProductFiltersModel(
+                                  filters: appliedFilters
+                                      .copyWithSaveOtherField(
+                                        prices: appliedFilters.prices,
+                                        colors: [],
+                                        attributes: [],
+                                      ),
+                                ),
+                              ),
+                            );
+                            boutiqueBloc.add(
+                              ChangeSelectedFiltersEvent(
+                                boutiqueSlug: 'search',
+                                fromHomePageSearch: true,
+                                filtersChoosedByUser: GetProductFiltersModel(
+                                  filters: filters.copyWithSaveOtherField(
+                                    colors: [],
+                                    attributes: [],
+                                    prices: filters.prices,
                                   ),
+                                ),
+                              ),
+                            );
+                            widget.buildSearchResult.value = 0;
+                            widget.controller.clear();
+                            resetSearchAfterSearchingWhileRemoveSearch = false;
+                            widget.appearTrendingAndHistory.value = true;
+                            ///////////////////////////
+                            // FirebaseAnalyticsService.logEventForSession(
+                            //   eventName:
+                            //       AnalyticsEventsConst.buttonClicked,
+                            //   executedEventName:
+                            //       AnalyticsButtonsEventNameConst
+                            //           .resetCloseIconButton,
+                            // );
+                            return true;
+                          } else {
+                            appBloc.add(ChangeBasePage(0));
+                            boutiqueBloc.add(
+                              ResetAllSelectedAppliedFilterEvent(),
+                            );
+                            appBloc.add(HideBottomNavigationBar(false));
+
+                            ///////////////////////////
+                            // FirebaseAnalyticsService.logEventForSession(
+                            //   eventName:
+                            //       AnalyticsEventsConst.buttonClicked,
+                            //   executedEventName:
+                            //       AnalyticsButtonsEventNameConst
+                            //           .searchCloseIconButton,
+                            // );
+                          }
+                          return false;
+                        },
+                        textController: widget.controller,
+                        focusNode: focusNode,
+                        onSuffixTap: () {
+                          appBloc.add(ChangeIndexForSearch(2));
+                          widget.buildSearchResult.value = 1;
+                          widget.appearTrendingAndHistory.value = true;
+                          //////////////////////////////////
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            appBloc.add(ChangeBasePage(4));
+                            appBloc.add(HideBottomNavigationBar(true));
+                          });
+                          ////////////////////////////////
+                          // FirebaseAnalyticsService.logEventForSession(
+                          //   eventName: AnalyticsEventsConst.buttonClicked,
+                          //   executedEventName:
+                          //       AnalyticsButtonsEventNameConst
+                          //           .homeSearchButton,
+                          // );
+                        },
+                        suffixWidget: Center(
+                          key: TestVariables.kTestMode
+                              ? const Key(WidgetsKeys.homeSearchIconKey)
+                              : null,
+                          child: SvgPicture.asset(
+                            AppAssets.searchOutlinedSvg,
+                            height: 20.h,
+                            width: 40.w,
+                            // ignore: deprecated_member_use
+                            color: const Color(0xff388CFF),
                           ),
-                          ValueListenableBuilder<bool>(
-                            valueListenable: isRecordeForSearchWithMic,
-                            builder: (context, recordeForSearchWithMic, _) {
-                              return InkWell(
+                        ),
+                        prefixWidget: Padding(
+                          padding: EdgeInsets.only(
+                            right: 15.w,
+                            top: 10.h,
+                            bottom: 10.h,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              InkWell(
                                 onTap: () async {
-                                  /*final status = await Permission
+                                  SearchWithImageRelatedGemini.SelecteImageForSearch(
+                                    fromSearch: true,
+                                    context: context,
+                                  );
+                                },
+                                child:
+                                    homeState.sendRequestToGeminiStatus ==
+                                        SendRequestToGeminiStatus.loading
+                                    ? TrydosLoader(size: 18.h)
+                                    : SvgPicture.asset(
+                                        AppAssets.realCameraSvg,
+                                        height: 20.h,
+                                        width: 20.w,
+                                      ),
+                              ),
+                              ValueListenableBuilder<bool>(
+                                valueListenable: isRecordeForSearchWithMic,
+                                builder: (context, recordeForSearchWithMic, _) {
+                                  return InkWell(
+                                    onTap: () async {
+                                      /*final status = await Permission
                                                 .microphone
                                                 .request();
                                             if (status !=
                                                 PermissionStatus.granted) {
                                               return;
                                             }*/
-                                  if (kDebugMode) print(
-                                    "**************************************//////",
-                                  );
+                                      if (kDebugMode)
+                                        print(
+                                          "**************************************//////",
+                                        );
 
-                                  _speechToText.isNotListening
-                                      ? _startListening()
-                                      : _stopListening();
-                                },
-                                child: Container(
-                                  width: 20.w,
-                                  child: Icon(
-                                    _speechToText.isNotListening ||
-                                            !recordeForSearchWithMic
-                                        ? Icons.mic_off
-                                        : Icons.mic,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    animationDurationInMilli: 400,
-                    searchDecoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: focusNode.hasFocus
-                              ? const Color(0xffE6E6E6)
-                              : const Color(0xffF8F8F8),
-                          width: 0.4,
-                        ),
-                        borderRadius: BorderRadius.circular(kbrBorderTextField),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: focusNode.hasFocus
-                              ? const Color(0xffE6E6E6)
-                              : const Color(0xffF8F8F8),
-                          width: 0.4,
-                        ),
-                        borderRadius: BorderRadius.circular(kbrBorderTextField),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: focusNode.hasFocus
-                              ? const Color(0xffE6E6E6)
-                              : const Color(0xffF8F8F8),
-                          width: 0.4,
-                        ),
-                        borderRadius: BorderRadius.circular(kbrBorderTextField),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: focusNode.hasFocus
-                              ? const Color(0xffE6E6E6)
-                              : const Color(0xffF8F8F8),
-                          width: 0.4,
-                        ),
-                        borderRadius: BorderRadius.circular(kbrBorderTextField),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: context.colorScheme.error,
-                          width: 0.4,
-                        ),
-                        borderRadius: BorderRadius.circular(kbrBorderTextField),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: context.colorScheme.error,
-                          width: 0.4,
-                        ),
-                        borderRadius: BorderRadius.circular(kbrBorderTextField),
-                      ),
-                      filled: true,
-                      fillColor: focusNode.hasFocus
-                          ? colorScheme.white
-                          : const Color(0xffF8F8F8),
-                      prefixIcon: Padding(
-                        padding: EdgeInsets.only(top: 12.h, bottom: 12.h),
-                        child: SvgPicture.asset(
-                          AppAssets.searchOutlinedSvg,
-                          height: 20.h,
-                          width: 40.w,
-                          // ignore: deprecated_member_use
-                          color: const Color(0xff388CFF),
-                        ),
-                      ),
-                      suffixIcon: Padding(
-                        padding: EdgeInsets.only(
-                          right: 15.w,
-                          top: 10.h,
-                          bottom: 10.h,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            InkWell(
-                              onTap: () async {
-                                SearchWithImageRelatedGemini.SelecteImageForSearch(
-                                  fromSearch: true,
-                                  context: context,
-                                );
-                                /////////////////////////////
-                                // FirebaseAnalyticsService
-                                //     .logEventForSession(
-                                //   eventName: AnalyticsEventsConst
-                                //       .buttonClicked,
-                                //   executedEventName:
-                                //       AnalyticsButtonsEventNameConst
-                                //           .searchWithImageButton,
-                                // );
-                              },
-                              child:
-                                  homeState.sendRequestToGeminiStatus ==
-                                      SendRequestToGeminiStatus.loading
-                                  ? TrydosLoader(size: 18.h)
-                                  : SvgPicture.asset(
-                                      AppAssets.realCameraSvg,
-                                      height: 20.h,
+                                      _speechToText.isNotListening
+                                          ? _startListening()
+                                          : _stopListening();
+                                    },
+                                    child: Container(
                                       width: 20.w,
+                                      child: Icon(
+                                        _speechToText.isNotListening ||
+                                                !recordeForSearchWithMic
+                                            ? Icons.mic_off
+                                            : Icons.mic,
+                                      ),
                                     ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        animationDurationInMilli: 400,
+                        searchDecoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: focusNode.hasFocus
+                                  ? const Color(0xffE6E6E6)
+                                  : const Color(0xffF8F8F8),
+                              width: 0.4,
                             ),
-                            SizedBox(width: 20.w),
-                            ValueListenableBuilder<bool>(
-                              valueListenable: isRecordeForSearchWithMic,
-                              builder: (context, recordeForSearchWithMic, _) {
-                                return InkWell(
+                            borderRadius: BorderRadius.circular(
+                              kbrBorderTextField,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: focusNode.hasFocus
+                                  ? const Color(0xffE6E6E6)
+                                  : const Color(0xffF8F8F8),
+                              width: 0.4,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              kbrBorderTextField,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: focusNode.hasFocus
+                                  ? const Color(0xffE6E6E6)
+                                  : const Color(0xffF8F8F8),
+                              width: 0.4,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              kbrBorderTextField,
+                            ),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: focusNode.hasFocus
+                                  ? const Color(0xffE6E6E6)
+                                  : const Color(0xffF8F8F8),
+                              width: 0.4,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              kbrBorderTextField,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: context.colorScheme.error,
+                              width: 0.4,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              kbrBorderTextField,
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: context.colorScheme.error,
+                              width: 0.4,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              kbrBorderTextField,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: focusNode.hasFocus
+                              ? colorScheme.white
+                              : const Color(0xffF8F8F8),
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.only(top: 12.h, bottom: 12.h),
+                            child: SvgPicture.asset(
+                              AppAssets.searchOutlinedSvg,
+                              height: 20.h,
+                              width: 40.w,
+                              // ignore: deprecated_member_use
+                              color: const Color(0xff388CFF),
+                            ),
+                          ),
+                          suffixIcon: Padding(
+                            padding: EdgeInsets.only(
+                              right: 15.w,
+                              top: 10.h,
+                              bottom: 10.h,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                InkWell(
                                   onTap: () async {
-                                    /*  final status = await Permission
+                                    SearchWithImageRelatedGemini.SelecteImageForSearch(
+                                      fromSearch: true,
+                                      context: context,
+                                    );
+                                    /////////////////////////////
+                                    // FirebaseAnalyticsService
+                                    //     .logEventForSession(
+                                    //   eventName: AnalyticsEventsConst
+                                    //       .buttonClicked,
+                                    //   executedEventName:
+                                    //       AnalyticsButtonsEventNameConst
+                                    //           .searchWithImageButton,
+                                    // );
+                                  },
+                                  child:
+                                      homeState.sendRequestToGeminiStatus ==
+                                          SendRequestToGeminiStatus.loading
+                                      ? TrydosLoader(size: 18.h)
+                                      : SvgPicture.asset(
+                                          AppAssets.realCameraSvg,
+                                          height: 20.h,
+                                          width: 20.w,
+                                        ),
+                                ),
+                                SizedBox(width: 20.w),
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: isRecordeForSearchWithMic,
+                                  builder: (context, recordeForSearchWithMic, _) {
+                                    return InkWell(
+                                      onTap: () async {
+                                        /*  final status = await Permission
                                                   .microphone
                                                   .request();
                                               if (status !=
@@ -674,68 +689,69 @@ class _TabsBarState extends State<TabsBar> {
                                                 return;
                                               }*/
 
-                                    if (_speechToText.isNotListening) {
-                                      _startListening();
-                                      /////////////////////////////
-                                      // FirebaseAnalyticsService
-                                      //     .logEventForSession(
-                                      //   eventName:
-                                      //       AnalyticsEventsConst
-                                      //           .buttonClicked,
-                                      //   executedEventName:
-                                      //       AnalyticsButtonsEventNameConst
-                                      //           .searchWithVoiceButton,
-                                      // );
-                                    } else {
-                                      _stopListening();
-                                    }
+                                        if (_speechToText.isNotListening) {
+                                          _startListening();
+                                          /////////////////////////////
+                                          // FirebaseAnalyticsService
+                                          //     .logEventForSession(
+                                          //   eventName:
+                                          //       AnalyticsEventsConst
+                                          //           .buttonClicked,
+                                          //   executedEventName:
+                                          //       AnalyticsButtonsEventNameConst
+                                          //           .searchWithVoiceButton,
+                                          // );
+                                        } else {
+                                          _stopListening();
+                                        }
+                                      },
+                                      child: Container(
+                                        width: 20.w,
+                                        child: Icon(
+                                          _speechToText.isNotListening ||
+                                                  !recordeForSearchWithMic
+                                              ? Icons.mic_off
+                                              : Icons.mic,
+                                        ),
+                                      ),
+                                    );
                                   },
-                                  child: Container(
-                                    width: 20.w,
-                                    child: Icon(
-                                      _speechToText.isNotListening ||
-                                              !recordeForSearchWithMic
-                                          ? Icons.mic_off
-                                          : Icons.mic,
-                                    ),
-                                  ),
-                                );
-                              },
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
+                          //context.colorScheme.white,
+                          contentPadding: HWEdgeInsetsDirectional.only(
+                            start: 20.w,
+                            end: 10.w,
+                            bottom: 12.h,
+                            top: 12.h,
+                          ),
+                          hintText: 'Search',
+                          hintStyle: context.textTheme.bodyMedium?.lq.copyWith(
+                            color: const Color(0xffC4C2C2),
+                          ),
+                          labelStyle: context.textTheme.titleLarge?.copyWith(
+                            color: context.colorScheme.hint,
+                          ),
                         ),
-                      ),
-                      //context.colorScheme.white,
-                      contentPadding: HWEdgeInsetsDirectional.only(
-                        start: 20.w,
-                        end: 10.w,
-                        bottom: 12.h,
-                        top: 12.h,
-                      ),
-                      hintText: 'Search',
-                      hintStyle: context.textTheme.bodyMedium?.lq.copyWith(
-                        color: const Color(0xffC4C2C2),
-                      ),
-                      labelStyle: context.textTheme.titleLarge?.copyWith(
-                        color: context.colorScheme.hint,
-                      ),
-                    ),
-                    onChanged: (String text) {
-                      if (kDebugMode) print(
-                        "**111111111111#########111111111111111-------------------------------${text}",
-                      );
-                      if (debounce?.isActive ?? false) {
-                        debounce!.cancel();
-                      }
-                      debounce = Timer(const Duration(seconds: 1), () {
-                        //  List<String>? colorsFilter = [];
-                        //  List<String> listSearchTextWithoutConstWord =
-                        //    text.split(" ").toList();
-                        String searchText = text;
-                        //   List<String>? sizesFilter = [];
+                        onChanged: (String text) {
+                          if (kDebugMode)
+                            print(
+                              "**111111111111#########111111111111111-------------------------------${text}",
+                            );
+                          if (debounce?.isActive ?? false) {
+                            debounce!.cancel();
+                          }
+                          debounce = Timer(const Duration(seconds: 1), () {
+                            //  List<String>? colorsFilter = [];
+                            //  List<String> listSearchTextWithoutConstWord =
+                            //    text.split(" ").toList();
+                            String searchText = text;
+                            //   List<String>? sizesFilter = [];
 
-                        if (text.length > 1) {
-                          /* List<String> listOfSearchText =
+                            if (text.length > 1) {
+                              /* List<String> listOfSearchText =
                                         text.split(" ").toList();
                                     for (var i = 0;
                                         i < colorsNameForSearch.length;
@@ -749,7 +765,7 @@ class _TabsBarState extends State<TabsBar> {
                                       }
                                     }*/
 
-                          /*  for (var i = 0;
+                              /*  for (var i = 0;
                                         i < sizesForSearch.length;
                                         i++) {
                                       if (listOfSearchText
@@ -759,7 +775,7 @@ class _TabsBarState extends State<TabsBar> {
                                             .remove(sizesForSearch[i]);
                                       }
                                     }*/
-                          /*  for (var i = 0;
+                              /*  for (var i = 0;
                                         i <
                                             constWordToRemoveItFromSearch
                                                 .length;
@@ -771,110 +787,113 @@ class _TabsBarState extends State<TabsBar> {
                                         (element) => searchText =
                                             searchText + " " + element);*/
 
-                          resetSearchAfterSearchingWhileRemoveSearch = true;
-                          Filter filters =
-                              boutiqueBloc
-                                  .state
-                                  .choosedFiltersByUser['search']
-                                  ?.filters ??
-                              Filter();
-                          //   print(sizesFilter.isEmpty);
-                          boutiqueBloc.add(
-                            ChangeSelectedFiltersEvent(
-                              boutiqueSlug: 'search',
-                              fromHomePageSearch: true,
-                              filtersChoosedByUser: GetProductFiltersModel(
-                                filters: filters.copyWithSaveOtherField(
-                                  prices: filters.prices,
+                              resetSearchAfterSearchingWhileRemoveSearch = true;
+                              Filter filters =
+                                  boutiqueBloc
+                                      .state
+                                      .choosedFiltersByUser['search']
+                                      ?.filters ??
+                                  Filter();
+                              //   print(sizesFilter.isEmpty);
+                              boutiqueBloc.add(
+                                ChangeSelectedFiltersEvent(
+                                  boutiqueSlug: 'search',
+                                  fromHomePageSearch: true,
+                                  filtersChoosedByUser: GetProductFiltersModel(
+                                    filters: filters.copyWithSaveOtherField(
+                                      prices: filters.prices,
+                                      searchText: searchText,
+                                    ),
+                                  ),
+                                ),
+                              );
+                              boutiqueBloc.add(
+                                GetProductsWithFiltersEvent(
+                                  fromChoosed: true,
+                                  offset: 1,
+                                  boutiqueSlug: 'search',
+                                  resetChoosedFilters: false,
+                                  fromSearch: true,
                                   searchText: searchText,
                                 ),
-                              ),
-                            ),
-                          );
-                          boutiqueBloc.add(
-                            GetProductsWithFiltersEvent(
-                              fromChoosed: true,
-                              offset: 1,
-                              boutiqueSlug: 'search',
-                              resetChoosedFilters: false,
-                              fromSearch: true,
-                              searchText: searchText,
-                            ),
-                          );
-                          if (kDebugMode) print(
-                            "**222222222222222-------------------------------${text}",
-                          );
+                              );
+                              if (kDebugMode)
+                                print(
+                                  "**222222222222222-------------------------------${text}",
+                                );
 
-                          widget.buildSearchResult.value = text.length;
-                        }
-                        if (text.length < 2) {
-                          categoryBloc.add(
-                            ReplyFromGeminiEvent(
-                              fromSearch: true,
-                              resetTheReply: true,
-                            ),
-                          );
-                          Filter filters =
-                              boutiqueBloc
-                                  .state
-                                  .choosedFiltersByUser['search']
-                                  ?.filters ??
-                              Filter();
+                              widget.buildSearchResult.value = text.length;
+                            }
+                            if (text.length < 2) {
+                              categoryBloc.add(
+                                ReplyFromGeminiEvent(
+                                  fromSearch: true,
+                                  resetTheReply: true,
+                                ),
+                              );
+                              Filter filters =
+                                  boutiqueBloc
+                                      .state
+                                      .choosedFiltersByUser['search']
+                                      ?.filters ??
+                                  Filter();
 
-                          boutiqueBloc.add(
-                            ChangeSelectedFiltersEvent(
-                              boutiqueSlug: 'search',
-                              requestToUpdateFilters: false,
-                              fromHomePageSearch: true,
-                              filtersChoosedByUser: GetProductFiltersModel(
-                                filters: filters.copyWithSaveOtherField(
-                                  prices: filters.prices,
+                              boutiqueBloc.add(
+                                ChangeSelectedFiltersEvent(
+                                  boutiqueSlug: 'search',
+                                  requestToUpdateFilters: false,
+                                  fromHomePageSearch: true,
+                                  filtersChoosedByUser: GetProductFiltersModel(
+                                    filters: filters.copyWithSaveOtherField(
+                                      prices: filters.prices,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                        }
-                        if (text.length < 2 &&
-                            resetSearchAfterSearchingWhileRemoveSearch) {
-                          resetSearchAfterSearchingWhileRemoveSearch = false;
-                          Filter filters =
-                              boutiqueBloc
-                                  .state
-                                  .choosedFiltersByUser['search']
-                                  ?.filters ??
-                              Filter();
-                          Filter appliedFilters =
-                              boutiqueBloc
-                                  .state
-                                  .appliedFiltersByUser['search']
-                                  ?.filters ??
-                              Filter();
-                          boutiqueBloc.add(
-                            ChangeAppliedFiltersEvent(
-                              boutiqueSlug: 'search',
-                              filtersAppliedByUser: GetProductFiltersModel(
-                                filters: appliedFilters.copyWithSaveOtherField(
-                                  prices: appliedFilters.prices,
-                                  colors: [],
-                                  attributes: [],
+                              );
+                            }
+                            if (text.length < 2 &&
+                                resetSearchAfterSearchingWhileRemoveSearch) {
+                              resetSearchAfterSearchingWhileRemoveSearch =
+                                  false;
+                              Filter filters =
+                                  boutiqueBloc
+                                      .state
+                                      .choosedFiltersByUser['search']
+                                      ?.filters ??
+                                  Filter();
+                              Filter appliedFilters =
+                                  boutiqueBloc
+                                      .state
+                                      .appliedFiltersByUser['search']
+                                      ?.filters ??
+                                  Filter();
+                              boutiqueBloc.add(
+                                ChangeAppliedFiltersEvent(
+                                  boutiqueSlug: 'search',
+                                  filtersAppliedByUser: GetProductFiltersModel(
+                                    filters: appliedFilters
+                                        .copyWithSaveOtherField(
+                                          prices: appliedFilters.prices,
+                                          colors: [],
+                                          attributes: [],
+                                        ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                          boutiqueBloc.add(
-                            ChangeSelectedFiltersEvent(
-                              boutiqueSlug: 'search',
-                              fromHomePageSearch: true,
-                              filtersChoosedByUser: GetProductFiltersModel(
-                                filters: filters.copyWithSaveOtherField(
-                                  prices: filters.prices,
+                              );
+                              boutiqueBloc.add(
+                                ChangeSelectedFiltersEvent(
+                                  boutiqueSlug: 'search',
+                                  fromHomePageSearch: true,
+                                  filtersChoosedByUser: GetProductFiltersModel(
+                                    filters: filters.copyWithSaveOtherField(
+                                      prices: filters.prices,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                        }
-                      });
-                    },
+                              );
+                            }
+                          });
+                        },
                         hideTrendingAndHistory: widget.appearTrendingAndHistory,
                       );
                     },
@@ -1127,29 +1146,15 @@ class _TabsBarState extends State<TabsBar> {
                                             builder: (context, state) {
                                               return Stack(
                                                 children: [
-                                                  mediaServerIsS3
-                                                      ? MyCachedNetworkImage(
-                                                          imageUrl: mainCategory
-                                                              .flatPhotoPath!
-                                                              .filePath
-                                                              .toString(),
-                                                          height: 24.h,
-                                                          imageFit:
-                                                              BoxFit.contain,
-                                                          width: 24.h,
-                                                        )
-                                                      : SvgNetworkWidget(
-                                                          svgUrl: mainCategory
-                                                              .flatPhotoPath!
-                                                              .filePath
-                                                              .toString(),
-                                                          height: 24.h,
-                                                          // color: state.tabIndex ==
-                                                          //         index
-                                                          //     ? Colors.black
-                                                          //     : Color(
-                                                          //         0xffC4C2C2),
-                                                        ),
+                                                  MyCachedNetworkImage(
+                                                    imageUrl: mainCategory
+                                                        .flatPhotoPath!
+                                                        .filePath
+                                                        .toString(),
+                                                    height: 24.h,
+                                                    imageFit: BoxFit.contain,
+                                                    width: 24.h,
+                                                  ),
                                                   BlocBuilder<
                                                     AppBloc,
                                                     AppState

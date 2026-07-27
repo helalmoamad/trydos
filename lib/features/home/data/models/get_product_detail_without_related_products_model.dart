@@ -8,7 +8,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/features/home/data/models/get_buyers_comments_model.dart';
 import 'package:trydos/features/home/data/models/get_fqa_comments_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
-import 'package:trydos/main.dart';
 
 GetProductDetailWithoutRelatedProductsModel
 getProductDetailWithoutRelatedProductsModelFromJson(String str) =>
@@ -318,7 +317,7 @@ class Product {
                   : Thumbnail.fromJson(x),
             ),
           ),
-    
+
     boutique: json["boutique"] == null
         ? null
         : BoutiqueForCart.fromJson(json["boutique"]),
@@ -685,13 +684,9 @@ class Icon {
   );
 
   factory Icon.fromJson(Map<String, dynamic> json) => Icon(
-    filePath: mediaServerIsS3
-        ? (json["file_path"].contains("media_server")
-              ? json["file_path"]
-              : "${dotenv.env['Media_S3_Server']}${json["file_path"]}")
-        : (json["file_path"]?.contains("cloudinary")
-              ? json["file_path"]
-              : ("${dotenv.env['Images_Url']}" + (json["file_path"]))),
+    filePath: (json["file_path"].contains("media_server")
+        ? json["file_path"]
+        : "${dotenv.env['Media_S3_Server']}${json["file_path"]}"),
     originalWidth: json["original_width"],
     originalHeight: json["original_height"],
   );

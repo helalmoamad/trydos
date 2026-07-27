@@ -241,6 +241,7 @@
   "cancel_product_hours_back_money": "Cancel This Product In {hours} Hours And Back Your Money",
   "coupon_link_not_allowed": "Coupon link is not allowed",
   "video_length_limit": "Video length must not be longer than 59 seconds",
+  "video_size_limit": "Video size must not exceed 10 MB",
   "your_request_faild": "your request faild",
   "continues": "continue",
   "more": "More",

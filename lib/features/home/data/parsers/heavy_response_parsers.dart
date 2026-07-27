@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:trydos/main.dart';
-
 import '../models/firebase_setting_for_notification_model.dart';
 import '../models/get_cart_item_model.dart';
 import '../models/get_home_boutiqes_model.dart';
@@ -38,17 +36,15 @@ import '../models/popular_search_terms_model.dart';
 /// (`dotenv.env` throws `NotInitializedError`) or silently produces wrong URLs.
 class _ParseArgs {
   final dynamic raw;
-  final bool isS3;
   final String mediaServer;
   final String imagesUrl;
 
-  const _ParseArgs(this.raw, this.isS3, this.mediaServer, this.imagesUrl);
+  const _ParseArgs(this.raw, this.mediaServer, this.imagesUrl);
 
   /// Snapshots the (startup-constant) globals on the calling isolate so they
   /// can travel into the worker isolate.
   factory _ParseArgs.capture(dynamic raw) => _ParseArgs(
     raw,
-    mediaServerIsS3,
     dotenv.env['Media_S3_Server'] ?? '',
     dotenv.env['Images_Url'] ?? '',
   );
@@ -56,7 +52,6 @@ class _ParseArgs {
 
 /// Runs inside the worker isolate: re-creates the globals the models depend on.
 void _seedGlobals(_ParseArgs a) {
-  mediaServerIsS3 = a.isS3;
   // testLoad is the supported way to initialise dotenv without a file; it marks
   // dotenv initialised so `dotenv.env[...]` no longer throws in this isolate.
   dotenv.testLoad(

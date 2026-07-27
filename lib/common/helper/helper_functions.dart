@@ -11,6 +11,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
+import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,11 +33,47 @@ import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../constant/design/assets_provider.dart';
+import 'show_message.dart';
 
 final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
 class HelperFunctions {
   static bool _versionDialogShown = false;
+
+  /// نوع الوسائط مستنتجاً من امتداد الملف المحلي: `image` أو `video` أو
+  /// `audio` أو `file`.
+  ///
+  /// الفحوص السابقة كانت تبحث عن المقطعين `image`/`video` داخل الرابط، وهو
+  /// شكل روابط Cloudinary وحدها (`/image/upload/`). بعد التحويل إلى S3 صارت
+  /// المقاطع بصيغة الجمع (`/images/test/`) فلم يطابقها شيء واختفت الوسائط.
+  /// الامتداد المحلي لا يتأثّر بمصدر الرفع.
+  static String mediaTypeOfPath(String localPath) {
+    final String type = (lookupMimeType(localPath) ?? '').split('/').first;
+    if (type == 'image' || type == 'video' || type == 'audio') return type;
+    return 'file';
+  }
+
+  /// مدّة فيديو من ملف محلي، أو `null` إن تعذّرت قراءتها.
+  ///
+  /// `AssetEntity` القادم من المعرض يحمل `duration` جاهزة، أما منتقي الملفات
+  /// فيرجع `File` مجرّداً بلا بيانات وصفية — فالسبيل الوحيد تهيئة مشغّل
+  /// مؤقّتاً وقراءة مدّته ثم التخلّص منه فوراً.
+  ///
+  /// السقف الزمني ثانيتان: لا نحبس الواجهة على ملف عصيّ. وعند التعذّر نرجع
+  /// `null` فيُسمح بالإرسال — أهون من منع فيديو صالح بسبب فشل قياس.
+  static Future<Duration?> videoDurationOf(File file) async {
+    final VideoPlayerController controller = VideoPlayerController.file(file);
+    try {
+      await controller.initialize().timeout(const Duration(seconds: 2));
+      final Duration duration = controller.value.duration;
+      return duration > Duration.zero ? duration : null;
+    } catch (e) {
+      if (kDebugMode) print('failed to read video duration: $e');
+      return null;
+    } finally {
+      await controller.dispose();
+    }
+  }
   static changeAppStatus(ThemeMode theme) {
     final color = theme == ThemeMode.dark
         ? const Color(0xFF191C1D)
@@ -309,19 +347,39 @@ class HelperFunctions {
 
   static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {
     final List<AssetEntity>? assets = await myMultiAssetPicker(context);
-    return assets?[0];
+    // المنتقي قد يرجع قائمة فارغة وليس null، و [0] عليها يرمي RangeError.
+    if (assets == null || assets.isEmpty) return null;
+    return assets.first;
   }
 
   static Future<List<AssetEntity>?> myMultiAssetPicker(
     BuildContext context,
   ) async {
-    return AssetPicker.pickAssets(
-      context,
-      pickerConfig: const AssetPickerConfig(
-        maxAssets: 1,
-        themeColor: Color(0xff137AC9),
-      ),
-    );
+    // نطلب إذن الوسائط بأنفسنا أولاً: AssetPicker.pickAssets يستدعي
+    // permissionCheck داخلياً وهو يرمي StateError عند الرفض بدل إرجاع null،
+    // فلا تُفتح أي شاشة ولا يعلم المستخدم بالسبب.
+    final PermissionState ps = await PhotoManager.requestPermissionExtend();
+    if (ps != PermissionState.authorized && ps != PermissionState.limited) {
+      if (context.mounted) {
+        showWarningMessage(context, LocaleKeys.permission_denied.tr());
+      }
+      return null;
+    }
+    try {
+      return await AssetPicker.pickAssets(
+        context,
+        pickerConfig: const AssetPickerConfig(
+          maxAssets: 1,
+          themeColor: Color(0xff137AC9),
+        ),
+      );
+    } catch (e) {
+      if (kDebugMode) print('AssetPicker.pickAssets failed: $e');
+      if (context.mounted) {
+        showWarningMessage(context, LocaleKeys.error_picking_file.tr());
+      }
+      return null;
+    }
   }
 
   static DateTime parseToUtc(String dateTimeString) {

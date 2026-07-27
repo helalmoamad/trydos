@@ -19,8 +19,6 @@ abstract class StoriesEndPoints {
   static final getStoriesEP = 'users_stories'.storiesScope();
   static String getStoriesForProsuctEP(String productId) =>
       'product_stories/$productId'.storiesScope();
-
-  static final uploadStoriesEP = 'upload_story'.storiesScope();
   static final addStoryToOurServerEP = 'add_story'.storiesScope();
   static String increaseViewersEP(String storyId) =>
       'increase_viewers'.storiesScope() + '/$storyId';

@@ -10,9 +10,6 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-
-import 'package:trydos/features/app/home_page_image_protector.dart';
-
 import 'package:trydos/features/app/trydos_shimmer_loading_stateless.dart';
 // Simplified without complex managers
 
@@ -111,22 +108,14 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
       // pixels actually drawn.
       fromBoutique: widget.fromBoutique,
     );
-
     // 🔧 إصلاح: استخدام URL الأصلي إذا فشل التحويل
     if (url.isEmpty || url == "null" || url == "undefined") {
       url = currentUrl;
     }
 
-    // 🛡️ حماية صور الصفحة الرئيسية
-    if (widget.imageSource != null && url.isNotEmpty) {
-      HomePageImageProtector.protectHomePageImage(
-        url,
-        source: widget.imageSource,
-      );
-    }
-
     // 🔧 إصلاح: التحقق النهائي من صحة URL
     if (url.isEmpty || url == "null" || url == "undefined") {
+      if (kDebugMode) print("url is empty or null or undefined${url}");
       return Container(
         width: widget.width,
         height: widget.height,
@@ -143,7 +132,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
         ),
       );
     }
-    if (kDebugMode) print("url is empty or null or undefined${url}");
+
     // RepaintBoundary isolates each image (and its loading shimmer) in its own
     // layer, so the placeholder->image swap and shimmer animation repaint only
     // this cell instead of the whole scrolling viewport — a major scroll-jank

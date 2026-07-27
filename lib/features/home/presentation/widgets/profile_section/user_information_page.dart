@@ -259,14 +259,9 @@ class _UserInformationPageState extends State<UserInformationPage> {
   Widget _addPhotoWidget() {
     return InkWell(
       onTap: () {
-        if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const AddPhotoProfilePage(),
-            ),
-          );
-          return;
-        }
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const AddPhotoProfilePage()),
+        );
       },
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>

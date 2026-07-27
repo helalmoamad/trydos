@@ -33,41 +33,88 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
   Duration? videoDuration;
   String? imageUrl;
 
-  late Future<void> initializeVideo;
+  // الملف المشغَّل فعلياً (الوارد مع الودجت، أو المستخرَج من الكاش، أو المنزَّل).
+  // كانت الشاشة الكاملة تتلقّى widget.videoFile وحده — وهو null للفيديو الوارد.
+  File? _localFile;
+
+  // كان late: حين يكون videoUrl و videoFile كلاهما null لا يُسنَد أبداً،
+  // فيصل البناء إلى FutureBuilder ويقع LateInitializationError.
+  Future<void>? initializeVideo;
   ValueNotifier<double> downloadingProgress = ValueNotifier(0);
   ValueNotifier<bool> isDownloading = ValueNotifier(false);
   CancelToken cancelToken = CancelToken();
 
   @override
   void initState() {
-    if (widget.videoUrl != null) {
-      imageUrl =
-          widget.videoUrl!.replaceFirst(
-            widget.videoUrl!.split('.').last,
-            'JPG',
-          ) +
-          '?w=300&h=300';
-    }
+    imageUrl = _thumbnailUrlFor(widget.videoUrl);
     if (widget.videoFile != null) {
-      debugPrint('yes from memory');
+      _localFile = widget.videoFile;
       _controller = VideoPlayerController.file(widget.videoFile!);
       initializeController();
+    } else if (widget.videoUrl != null) {
+      // فحص متزامن أولاً: بدونه يومض المصغَّر ثم يظهر المشغّل في كل تمرير،
+      // فيبدو وكأن الفيديو يُعاد تحميله من جديد.
+      final File? ready = FileSaving().cachedMediaFileSync(widget.videoUrl!);
+      if (ready != null) {
+        _localFile = ready;
+        _controller = VideoPlayerController.file(ready);
+        initializeController();
+      } else {
+        _adoptCachedVideo();
+      }
     }
     super.initState();
   }
 
+  /// فيديو سبق تنزيله يُشغَّل مباشرةً دون مطالبة المستخدم بتنزيله ثانيةً —
+  /// فحص قرص فقط، بلا شبكة، حفاظاً على سياسة «لا تنزيل تلقائي».
+  Future<void> _adoptCachedVideo() async {
+    final File? cached = await FileSaving().cachedMediaFile(widget.videoUrl!);
+    if (cached == null || !mounted) return;
+    setState(() {
+      _localFile = cached;
+      _controller = VideoPlayerController.file(cached);
+      initializeController();
+    });
+  }
+
+  /// يستبدل امتداد الفيديو وحده بـ JPG. الصيغة السابقة كانت
+  /// `replaceFirst(url.split('.').last, 'JPG')` — تستبدل أول ظهور للنص في
+  /// الرابط كلّه (النطاق أو المسار)، لا الامتداد.
+  String? _thumbnailUrlFor(String? videoUrl) {
+    if (videoUrl == null || videoUrl.isEmpty) return null;
+    final int lastDot = videoUrl.lastIndexOf('.');
+    final int lastSlash = videoUrl.lastIndexOf('/');
+    if (lastDot <= lastSlash) return null; // لا امتداد في الجزء الأخير
+    return '${videoUrl.substring(0, lastDot)}.JPG?w=300&h=300';
+  }
+
   void initializeController() {
-    initializeVideo = _controller!.initialize().then((value) {
-      setState(() {});
+    initializeVideo = _controller!.initialize().then((_) {
+      if (mounted) setState(() {});
     });
-    _controller!.addListener(() {
-      setState(() {});
-    });
+    // كان هنا addListener(() => setState(...)) — إعادة بناء الشجرة كاملة مع كل
+    // إطار فيديو داخل قائمة الدردشة. الأجزاء المتغيّرة تستمع وحدها الآن عبر
+    // ValueListenableBuilder على الـ controller.
+    _controller!.addListener(_restartWhenFinished);
+  }
+
+  void _restartWhenFinished() {
+    final VideoPlayerValue? value = _controller?.value;
+    if (value == null || !value.isInitialized) return;
+    // كان هذا الفحص داخل build() — أثر جانبي يُنفَّذ في كل إعادة بناء.
+    if (value.position >= value.duration && value.duration > Duration.zero) {
+      _controller?.seekTo(Duration.zero);
+    }
   }
 
   @override
   void dispose() {
+    if (!cancelToken.isCancelled) cancelToken.cancel();
+    _controller?.removeListener(_restartWhenFinished);
     _controller?.dispose();
+    downloadingProgress.dispose();
+    isDownloading.dispose();
     super.dispose();
   }
 
@@ -89,51 +136,81 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
         .padLeft(2, '0');
   }
 
+  /// المصغَّر — يُستعمل قبل التنزيل وأثناء تهيئة المشغّل معاً، فلا يرى
+  /// المستخدم فراغاً ولا مؤشّر تحميل عند العودة إلى فيديو منزَّل مسبقاً.
+  Widget _thumbnailImage() {
+    if (imageUrl == null) return _thumbnailFallback();
+    return CachedNetworkImage(
+      memCacheWidth: 200,
+      memCacheHeight: 300,
+      maxHeightDiskCache: 300,
+      maxWidthDiskCache: 200,
+      imageUrl: imageUrl!,
+      width: 200,
+      height: 300,
+      fit: BoxFit.cover,
+      // الخادم قد لا يملك مصغَّراً بجانب الفيديو؛ بدون هذين تبقى المساحة
+      // بيضاء فارغة بلا أي دلالة.
+      placeholder: (context, url) => _thumbnailFallback(),
+      errorWidget: (context, url, error) => _thumbnailFallback(),
+    );
+  }
+
+  Widget _thumbnailFallback() => Container(
+        width: 200,
+        height: 300,
+        color: Colors.black26,
+        alignment: Alignment.center,
+        child: Icon(
+          Icons.videocam_outlined,
+          size: 40,
+          color: Colors.grey.shade300,
+        ),
+      );
+
+  Future<void> _startDownload() async {
+    // رمز إلغاء جديد لكل محاولة: إعادة استخدام رمز مُلغى كانت تُفشل كل
+    // تنزيل لاحق فوراً بعد أول إلغاء.
+    cancelToken = CancelToken();
+    downloadingProgress.value = 0;
+    isDownloading.value = true;
+    final File? file = await FileSaving().getOrDownloadMedia(
+      widget.videoUrl!,
+      widget.chatId,
+      cancelToken: cancelToken,
+      onProgress: (progress) => downloadingProgress.value = progress,
+    );
+    if (!mounted) return;
+    // كانت تبقى true عند الفشل أو الإلغاء فيدور المؤشّر إلى الأبد.
+    isDownloading.value = false;
+    if (file == null) return;
+    setState(() {
+      _localFile = file;
+      _controller = VideoPlayerController.file(file);
+      initializeController();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_controller?.value.position == _controller?.value.duration) {
-      _controller?.seekTo(Duration.zero);
-    }
-    // If the VideoPlayerController has finished initialization, use
-    // the data it provides to limit the aspect ratio of the video.
-    return imageUrl != null && _controller == null
+    // سياسة الفيديو كسياسة واتساب: لا تنزيل تلقائي — مصغَّر وزر تنزيل،
+    // والمشغّل لا يُنشأ إلا بعد اكتمال التنزيل. الشرط على المشغّل وحده حتى
+    // لا ينتهي فيديو بلا مصغَّر إلى FutureBuilder بلا future.
+    return _controller == null
         ? SizedBox(
             width: 300,
             height: 300,
             child: Stack(
               alignment: Alignment.center,
               children: [
-                CachedNetworkImage(
-                  memCacheWidth: 200,
-                  memCacheHeight: 300,
-                  maxHeightDiskCache: 300,
-                  maxWidthDiskCache: 200,
-                  imageUrl: imageUrl!,
-                  width: 200,
-                  height: 300,
-                ),
+                _thumbnailImage(),
                 ValueListenableBuilder<bool>(
                   valueListenable: isDownloading,
                   builder: (context, downloading, _) {
                     return !downloading
                         ? InkWell(
-                            onTap: () {
-                              isDownloading.value = true;
-                              FileSaving().downloadFileUsingDio(
-                                widget.videoUrl!,
-                                cancelToken,
-                                widget.chatId,
-                                (progress) {
-                                  downloadingProgress.value = progress;
-                                },
-                                action: (File file) {
-                                  _controller = VideoPlayerController.file(
-                                    file,
-                                  );
-                                  initializeController();
-                                },
-                              );
-                            },
+                            onTap:
+                                widget.videoUrl == null ? null : _startDownload,
                             child: Icon(
                               Icons.play_arrow,
                               size: 50,
@@ -179,20 +256,18 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
               if (snapShot.connectionState == ConnectionState.done) {
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => {
-                    setState(() {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => MYVideoPlayerFull(
-                            chatId: widget.chatId,
-                            videoFile: widget.videoFile,
-                            videoUrl: widget.videoUrl,
-                            key: widget.key,
-                          ),
-                        ),
-                      );
-                    }),
-                  },
+                  // كان التنقّل ملفوفاً داخل setState — أثر جانبي في غير موضعه.
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => MYVideoPlayerFull(
+                        chatId: widget.chatId,
+                        // الملف المشغَّل فعلاً لا الوارد مع الودجت.
+                        videoFile: _localFile ?? widget.videoFile,
+                        videoUrl: widget.videoUrl,
+                        key: widget.key,
+                      ),
+                    ),
+                  ),
                   child: SizedBox(
                     height: 400.h,
                     width: 250.w,
@@ -211,20 +286,28 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                             ),
                           ),
                         ),
-                        _controller!.value.isPlaying
-                            ? Container()
-                            : Icon(
-                                Icons.play_arrow,
-                                size: 50,
-                                color: Colors.grey.shade300,
-                              ),
+                        // هذان وحدهما يتغيّران مع تقدّم التشغيل، فيستمعان
+                        // مباشرةً بدل إعادة بناء الشجرة كلها مع كل إطار.
+                        ValueListenableBuilder<VideoPlayerValue>(
+                          valueListenable: _controller!,
+                          builder: (context, value, _) => value.isPlaying
+                              ? const SizedBox.shrink()
+                              : Icon(
+                                  Icons.play_arrow,
+                                  size: 50,
+                                  color: Colors.grey.shade300,
+                                ),
+                        ),
                         Positioned(
                           left: 8,
                           bottom: 25,
-                          child: MyTextWidget(
-                            getPosition(),
-                            style: context.textTheme.titleLarge?.rq.copyWith(
-                              color: Colors.white,
+                          child: ValueListenableBuilder<VideoPlayerValue>(
+                            valueListenable: _controller!,
+                            builder: (context, value, _) => MyTextWidget(
+                              getPosition(),
+                              style: context.textTheme.titleLarge?.rq.copyWith(
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -233,6 +316,9 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                   ),
                 );
               }
+              // مؤشّر تحميل أثناء التهيئة (بطلب المستخدم). المصغَّر البديل
+              // الرمادي كان يظهر هنا لأن الخادم لا يوفّر مصغَّراً للفيديو،
+              // فبدا أسوأ من المؤشّر. التهيئة سريعة لأن الملف محلّي.
               return SizedBox(
                 width: 300,
                 height: 300,

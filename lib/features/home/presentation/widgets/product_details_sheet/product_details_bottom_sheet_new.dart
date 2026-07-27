@@ -20,7 +20,6 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/app/svg_network_widget.dart';
 
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
@@ -35,7 +34,6 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_share_content.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -77,7 +75,6 @@ class ProductDetailsBottomSheetNew extends StatefulWidget {
   final double redeemPrice;
   final double redeemVariantPrice;
   final bool collectedAfterOrdering;
-  final ValueNotifier<bool>? isVerified;
   final String maxAllowedToAddCart;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final ValueNotifier<int>? tapIndexToAddProductToCart;
@@ -94,7 +91,6 @@ class ProductDetailsBottomSheetNew extends StatefulWidget {
     this.currentSelectedColorAfterChangeVariant,
     this.tapIndexToAddProductToCart,
     this.showShadowForPanel,
-    this.isVerified,
     required this.flashDealEndDate,
     required this.isFlashDealEnded,
     required this.variationId,
@@ -568,8 +564,6 @@ class _ProductDetailsBottomSheetNewState
                                                         ownerId: widget
                                                             .productItem
                                                             .ownerId,
-                                                        isVerified:
-                                                            widget.isVerified,
                                                         ownerType: widget
                                                             .productItem
                                                             .ownerType,
@@ -678,7 +672,6 @@ class _ProductDetailsBottomSheetNewState
                             return ProductDetailsSheetBottomBarNew(
                               isRedeem: widget.isRedeem,
                               variationId: widget.variationId,
-                              isVerified: widget.isVerified,
                               redeemVariantPrice: widget.redeemVariantPrice,
                               flashDealEndDate: widget.flashDealEndDate,
                               isFlashDealEnded: widget.isFlashDealEnded,
@@ -907,22 +900,13 @@ class _ProductDetailsBottomSheetNewState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: 5.h),
-                        mediaServerIsS3
-                            ? MyCachedNetworkImage(
-                                imageUrl:
-                                    widget.productItem.brand?.icon?.filePath ??
-                                    '',
-                                height: 10.h,
-                                imageFit: BoxFit.contain,
-                                width: 11.h,
-                              )
-                            : SvgNetworkWidget(
-                                svgUrl:
-                                    widget.productItem.brand?.icon?.filePath ??
-                                    '',
-                                color: const Color(0xff1D1D1D),
-                                height: 10.h,
-                              ),
+                        MyCachedNetworkImage(
+                          imageUrl:
+                              widget.productItem.brand?.icon?.filePath ?? '',
+                          height: 10.h,
+                          imageFit: BoxFit.contain,
+                          width: 11.h,
+                        ),
 
                         ///////////////////
                         SizedBox(height: 5.h),
@@ -1368,9 +1352,10 @@ class _ProductDetailsBottomSheetNewState
   }
 
   Widget _availableColorWidget({required HomeState state}) {
-    if (kDebugMode) print(
-      "___${widget.productItem.syncColorImages?[0].colorOption}${(state.currentColorSizeForCart?["choiceOption"] ?? "") == "" ? "" : "-"}${state.currentColorSizeForCart?["choiceOption"] ?? ""}____",
-    );
+    if (kDebugMode)
+      print(
+        "___${widget.productItem.syncColorImages?[0].colorOption}${(state.currentColorSizeForCart?["choiceOption"] ?? "") == "" ? "" : "-"}${state.currentColorSizeForCart?["choiceOption"] ?? ""}____",
+      );
     int tapIndex =
         state.currentSelectedColorForEveryProduct[widget.productItem.slug
             .toString()] ??
@@ -1439,9 +1424,10 @@ class _ProductDetailsBottomSheetNewState
                                 .productItem
                                 .slug
                                 .toString()]) {
-                          if (kDebugMode) print(
-                            "_/__${(widget.productItem.variation?.length)}____",
-                          );
+                          if (kDebugMode)
+                            print(
+                              "_/__${(widget.productItem.variation?.length)}____",
+                            );
                           return;
                         }
                         FirebaseAnalyticsService.logEventForSession(
@@ -1669,7 +1655,8 @@ class _ProductDetailsBottomSheetNewState
             },
           );
 
-          if (kDebugMode) print("sizesQuantities: ${sizesQuantities[tappedIndex]}");
+          if (kDebugMode)
+            print("sizesQuantities: ${sizesQuantities[tappedIndex]}");
           if (sizesQuantities[tappedIndex] == 0 &&
               !widget.collectedAfterOrdering) {
             Future.delayed(const Duration(milliseconds: 300), () {

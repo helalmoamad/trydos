@@ -1269,10 +1269,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
         if (userInfo.image != null && userInfo.image != "") {
           await _prefsRepository.setMyProfilePhoto(
-            userInfo.image!.contains("cloudinary") ||
-                    userInfo.image!.contains("media_server")
+            userInfo.image!.contains("media_server")
                 ? userInfo.image
-                : ("${dotenv.env['Media_S3_Server']}" + userInfo.image!),
+                : ("${dotenv.env['Media_S3_Server']}/" + userInfo.image!),
           );
           await _prefsRepository.setMyChatPhoto(
             userInfo.image!.contains("cloudinary") ||

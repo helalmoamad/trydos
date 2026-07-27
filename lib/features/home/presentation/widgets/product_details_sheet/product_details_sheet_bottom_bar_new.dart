@@ -24,7 +24,6 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
@@ -79,7 +78,6 @@ class ProductDetailsSheetBottomBarNew extends StatefulWidget {
     required this.redeemVariantPrice,
     required this.variationId,
     required this.choiceOption,
-    this.isVerified,
     required this.isGetFullProductDetails,
     required this.sizeIsNotAvailableNotifier,
     required this.productNotAvailableNotifier,
@@ -95,7 +93,6 @@ class ProductDetailsSheetBottomBarNew extends StatefulWidget {
   final String imageUrl;
   final int countOfPieces;
   final ValueNotifier<bool> visibleRedeemNotifier;
-  final ValueNotifier<bool>? isVerified;
   final String? flashDealEndDate;
   final bool? isFlashDealEnded;
   final ValueNotifier<bool>? visibleFlashDeal;
@@ -209,32 +206,6 @@ class _ProductDetailsSheetBottomBarNewState
               current.updateOrderCommentRatingStatus ||
           previous.translateCommentStatus != current.translateCommentStatus,
       builder: (context, state) {
-        if (state.statusCodeOfCommentProcess == "401" &&
-            (state.updateOrderCommentRatingStatus ==
-                    UpdateOrderCommentRatingStatus.failure ||
-                state.deleteOrderCommentRatingStatus ==
-                    DeleteOrderCommentRatingStatus.failure ||
-                state.updateLikeCommentRatingStatus ==
-                    UpdateLikeCommentRatingStatus.failure ||
-                state.createCommentRatingStatus ==
-                    CreateCommentRatingStatus.failure ||
-                state.addOrRemoveLikeOfProductStatus ==
-                    AddOrRemoveLikeOfProductStatus.failure)) {
-          if (!(prefsRepository.isVerifiedPhone ?? false)) {
-            Future.delayed(const Duration(seconds: 1), () {
-              widget.isVerified?.value = false;
-              if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                  false)) {
-                GetIt.I<AuthBloc>().add(
-                  SendOtpEvent(
-                    phone: prefsRepository.myPhoneNumber!,
-                    isViaWhatsApp: 1,
-                  ),
-                );
-              }
-            });
-          }
-        }
         qtyForProductWithoutVariant =
             state.authProductDetailsModel?.data?.availableQuantity;
         double totalPrice = 0;
@@ -1826,29 +1797,6 @@ class _ProductDetailsSheetBottomBarNewState
                                                   ? AppAssets.favoriteActiveSvg
                                                   : AppAssets.addLikevg,
                                               onTap: () {
-                                                if (!(prefsRepository
-                                                        .isVerifiedPhone ??
-                                                    false)) {
-                                                  Future.delayed(
-                                                    const Duration(seconds: 1),
-                                                    () {
-                                                      widget.isVerified?.value =
-                                                          false;
-                                                      if ((prefsRepository
-                                                              .isVerifiedPhonePeforeExpiredToken ??
-                                                          false)) {
-                                                        GetIt.I<AuthBloc>().add(
-                                                          SendOtpEvent(
-                                                            phone: prefsRepository
-                                                                .myPhoneNumber!,
-                                                            isViaWhatsApp: 1,
-                                                          ),
-                                                        );
-                                                      }
-                                                    },
-                                                  );
-                                                  return;
-                                                }
                                                 FirebaseAnalyticsService.logEventForSession(
                                                   eventName:
                                                       AnalyticsEventsConst

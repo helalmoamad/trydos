@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
@@ -164,9 +163,10 @@ class _VoiceMessageState extends State<VoiceMessage> {
         }
       },
       builder: (context, state) {
-        if (kDebugMode) print(
-          "FFFFFFFFFFFFFFFFFF${widget.createAt}FFDD${widget.createAt!.isUtc}",
-        );
+        if (kDebugMode)
+          print(
+            "FFFFFFFFFFFFFFFFFF${widget.createAt}FFDD${widget.createAt!.isUtc}",
+          );
         return Padding(
           padding: HWEdgeInsets.only(
             right: widget.isSent ? 25.w : 0,
@@ -726,13 +726,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                         widget.userMessagePhoto != null
                                             ? MyCachedNetworkImage(
                                                 imageUrl:
-                                                    (widget.userMessagePhoto
-                                                        .toString()
-                                                        .contains("cloudinary")
-                                                    ? widget.userMessagePhoto!
-                                                    : ("${dotenv.env['Images_Url']}") +
-                                                          widget
-                                                              .userMessagePhoto!),
+                                                    widget.userMessagePhoto!,
                                                 progressIndicatorBuilderWidget:
                                                     TrydosLoader(),
                                                 imageFit: BoxFit.cover,

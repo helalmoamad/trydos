@@ -236,6 +236,7 @@
   "cancel_product_hours_back_money": "إلغاء هذا المنتج خلال {hours} ساعات واسترداد أموالك",
   "coupon_link_not_allowed": "رابط الكوبون غير مسموح به",
   "video_length_limit": "يجب ألا تزيد مدة الفيديو عن 59 ثانية",
+  "video_size_limit": "يجب ألا يزيد حجم الفيديو عن 10 ميغابايت",
   "your_request_faild": "طلبك لم ينجح",
   "continues": "المتابعة",
   "more": "المزيد",

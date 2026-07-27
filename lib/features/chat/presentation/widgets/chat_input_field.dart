@@ -26,6 +26,7 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 //import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
+import '../../../../common/helper/show_message.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../app/app_widgets/app_text_field.dart';
 import '../../../app/app_widgets/gallery_and_camera_dialog_widget.dart';
@@ -261,9 +262,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             imageUrl:
                                                 (widget.senderUserImage
                                                         .toString()
-                                                        .contains("cloudinary")
+                                                        .contains(
+                                                          "media_server",
+                                                        )
                                                     ? ""
-                                                    : "${dotenv.env['Images_Url']}") +
+                                                    : "${dotenv.env['Media_S3_Server']}") +
                                                 widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
                                             progressIndicatorBuilderWidget:
@@ -321,7 +324,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     ),
                                     20.horizontalSpace,
-                                    state.imageUrl?.contains('cloudinary') ??
+                                    state.imageUrl?.contains('trydos.s3') ??
                                             false
                                         ? MyCachedNetworkImage(
                                             height: 40.sp,
@@ -376,9 +379,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             imageUrl:
                                                 (widget.senderUserImage
                                                         .toString()
-                                                        .contains("cloudinary")
+                                                        .contains(
+                                                          "media_server",
+                                                        )
                                                     ? ""
-                                                    : "${dotenv.env['Images_Url']}") +
+                                                    : "${dotenv.env['Media_S3_Server']}") +
                                                 widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
                                             progressIndicatorBuilderWidget:
@@ -436,7 +441,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     ),
                                     20.horizontalSpace,
-                                    state.imageUrl?.contains('cloudinary') ??
+                                    state.imageUrl?.contains('trydos.s3') ??
                                             false
                                         ? MyCachedNetworkImage(
                                             height: 40.sp,
@@ -491,9 +496,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             imageUrl:
                                                 (widget.senderUserImage
                                                         .toString()
-                                                        .contains("cloudinary")
+                                                        .contains(
+                                                          "media_server",
+                                                        )
                                                     ? ""
-                                                    : "${dotenv.env['Images_Url']}") +
+                                                    : "${dotenv.env['Media_S3_Server']}") +
                                                 widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
                                             progressIndicatorBuilderWidget:
@@ -576,9 +583,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             imageUrl:
                                                 (widget.senderUserImage
                                                         .toString()
-                                                        .contains("cloudinary")
+                                                        .contains(
+                                                          "media_server",
+                                                        )
                                                     ? ""
-                                                    : "${dotenv.env['Images_Url']}") +
+                                                    : "${dotenv.env['Media_S3_Server']}") +
                                                 widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
                                             progressIndicatorBuilderWidget:
@@ -661,9 +670,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             imageUrl:
                                                 (widget.senderUserImage
                                                         .toString()
-                                                        .contains("cloudinary")
+                                                        .contains(
+                                                          "media_server",
+                                                        )
                                                     ? ""
-                                                    : "${dotenv.env['Images_Url']}") +
+                                                    : "${dotenv.env['Media_S3_Server']}") +
                                                 widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
                                             withImageShadow: true,
@@ -742,9 +753,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             imageUrl:
                                                 (widget.senderUserImage
                                                         .toString()
-                                                        .contains("cloudinary")
+                                                        .contains(
+                                                          "media_server",
+                                                        )
                                                     ? widget.senderUserImage!
-                                                    : "${dotenv.env['Images_Url']}") +
+                                                    : "${dotenv.env['Media_S3_Server']}") +
                                                 widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
                                             radius: 8,
@@ -896,7 +909,62 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           channelId: widget.channelId,
                                         );
                                         if (file != null) {
-                                          widget.onSendFile(file, 'file');
+                                          // المنتقي من نوع any، فقد يعود
+                                          // بصورة أو فيديو. يُعامَل كلٌّ بنوعه
+                                          // بدل إرساله مستنداً: الصورة تمرّ
+                                          // بالمعاينة أولاً، والفيديو يُرسل
+                                          // رسالةَ فيديو، وما عداهما مستند.
+                                          switch (HelperFunctions
+                                              .mediaTypeOfPath(file.path)) {
+                                            case 'image':
+                                              _showImagePreviewScreen(file);
+                                              break;
+                                            case 'video':
+                                              {
+                                                // المعرض يرفض ما يتجاوز ٦٠
+                                                // ثانية عبر AssetEntity.duration،
+                                                // ومنتقي الملفات لا يحمل هذه
+                                                // البيانات — فنقيسها هنا
+                                                // ليتوحّد الحدّ في المسارين.
+                                                final NavigatorState navigator =
+                                                    Navigator.of(
+                                                      context,
+                                                      rootNavigator: true,
+                                                    );
+                                                showDialog<void>(
+                                                  context: context,
+                                                  barrierDismissible: false,
+                                                  barrierColor: Colors.black26,
+                                                  builder: (_) => Center(
+                                                    child: TrydosLoader(),
+                                                  ),
+                                                );
+                                                final Duration? duration =
+                                                    await HelperFunctions
+                                                        .videoDurationOf(file);
+                                                // الـ navigator مُلتقَط قبل
+                                                // الانتظار: context الحوار
+                                                // يصبح مُفكَّكاً بعده.
+                                                navigator.pop();
+                                                if (duration != null &&
+                                                    duration.inSeconds > 59) {
+                                                  showMessage(
+                                                    LocaleKeys
+                                                        .video_length_limit
+                                                        .tr(),
+                                                    hasError: true,
+                                                  );
+                                                  return;
+                                                }
+                                                widget.onSendFile(
+                                                  file,
+                                                  'video',
+                                                );
+                                              }
+                                              break;
+                                            default:
+                                              widget.onSendFile(file, 'file');
+                                          }
                                         }
                                       },
                                       child: SvgPicture.asset(
@@ -973,9 +1041,22 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                       AssetEntity? assetEntity,
                                                     ) async {
                                                       if (assetEntity != null) {
-                                                        File file =
-                                                            (await assetEntity
-                                                                .originFile)!;
+                                                        // originFile يرجع null
+                                                        // للملفات غير المقروءة.
+                                                        final File? pickedFile =
+                                                            await assetEntity
+                                                                .originFile;
+                                                        if (pickedFile ==
+                                                            null) {
+                                                          showWarningMessage(
+                                                            context,
+                                                            LocaleKeys
+                                                                .error_picking_file
+                                                                .tr(),
+                                                          );
+                                                          return;
+                                                        }
+                                                        File file = pickedFile;
                                                         String mimeStr =
                                                             lookupMimeType(
                                                               file
