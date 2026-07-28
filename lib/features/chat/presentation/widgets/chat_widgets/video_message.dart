@@ -259,7 +259,9 @@ class _VideoMessageState extends State<VideoMessage> {
                             Container(
                               width: 300.w,
                               decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
+                                // كانت رمادية فاتحة فتظهر خلف المصغَّر الغائب
+                                // بمظهر باهت. السوداء تليق بمحتوى الفيديو.
+                                color: Colors.black,
                                 borderRadius: BorderRadius.circular(12.0),
                                 border: Border.all(
                                   width: 3.0,

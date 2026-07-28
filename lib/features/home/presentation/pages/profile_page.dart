@@ -373,6 +373,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                 SizedBox(height: 10.h, width: 1.sw),
                 _checklistWidget(),
                 SizedBox(height: 10.h, width: 1.sw),
+                _actionWidget(AppAssets.compareSvg, "Compare Products"),
+                SizedBox(height: 10.h, width: 1.sw),
                 _actionWidget(
                   AppAssets.termSvg,
                   LocaleKeys.terms_conditions.tr(),

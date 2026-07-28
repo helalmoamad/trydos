@@ -5,7 +5,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:get_it/get_it.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -570,6 +569,19 @@ class _ImageMessageState extends State<ImageMessage> {
   }
 
   // ✅ دالة لبناء الصورة المحملة
+  void _openFullScreen(File imageFile) {
+    Navigator.of(context).push(
+      PageRouteBuilder<void>(
+        opaque: false,
+        barrierColor: Colors.black,
+        pageBuilder: (_, __, ___) => _FullScreenImage(
+          imageFile: imageFile,
+          heroTag: "hero_${widget.messageId}",
+        ),
+      ),
+    );
+  }
+
   Widget _buildLoadedImage(File imageFile) {
     // فكّ الترميز بمقاس العرض لا بمقاس الأصل. بدونه تُفكّ صورة ١٢ ميغابكسل
     // كاملةً (\u200E~48MB\u200E في الذاكرة) لتُعرض في فقاعة 250×200 — فتلتهم وحدها
@@ -580,11 +592,12 @@ class _ImageMessageState extends State<ImageMessage> {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        FullScreenWidget(
-          backgroundColor: widget.isSent
-              ? const Color(0xffFFF9B4)
-              : const Color(0xffB4FFD9),
-          disposeLevel: DisposeLevel.High, // ✅ حماية أقوى من الاختفاء
+        // كان FullScreenWidget يعرض هذه الودجت نفسها ملء الشاشة — بقياسها
+        // الثابت 250×200 و BoxFit.cover — فترث القصّ والتكبير وتختفي الأطراف.
+        // العرض الكامل يحتاج تخطيطاً مختلفاً (contain وبلا قياس ثابت)، وهو ما
+        // لا توفّره تلك الحزمة لأنها تعيد استعمال الطفل كما هو.
+        GestureDetector(
+          onTap: () => _openFullScreen(imageFile),
           child: Hero(
             tag: "hero_${widget.messageId}",
             child: Container(
@@ -833,6 +846,59 @@ class _ImageMessageState extends State<ImageMessage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// عرض صورة ملء الشاشة: تظهر كاملةً (`contain`) لا مقصوصة، مع تكبير بالإصبع.
+class _FullScreenImage extends StatelessWidget {
+  final File imageFile;
+  final String heroTag;
+
+  const _FullScreenImage({required this.imageFile, required this.heroTag});
+
+  @override
+  Widget build(BuildContext context) {
+    // فكّ الترميز بعرض الشاشة الفعلي: حادّ عند العرض الطبيعي، ويبقى بعيداً عن
+    // فكّ الأصل كاملاً الذي قد يبلغ عشرات الميغابايتات لصورة عالية الدقّة.
+    final int decodeWidth = (MediaQuery.sizeOf(context).width *
+            MediaQuery.devicePixelRatioOf(context))
+        .round();
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: InteractiveViewer(
+              minScale: 1,
+              maxScale: 4,
+              child: Center(
+                child: Hero(
+                  tag: heroTag,
+                  child: Image.file(
+                    imageFile,
+                    fit: BoxFit.contain,
+                    cacheWidth: decodeWidth,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      Icons.broken_image_outlined,
+                      size: 60,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.paddingOf(context).top + 8,
+            right: 8,
+            child: IconButton(
+              icon: const Icon(Icons.close, color: Colors.white, size: 28),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ],
       ),
     );
   }

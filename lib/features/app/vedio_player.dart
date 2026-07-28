@@ -156,16 +156,13 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
     );
   }
 
+  /// خلفية سوداء صافية حين لا يوفّر الخادم مصغَّراً — بلا أيقونة كاميرا، لأن
+  /// زرّ التشغيل يعلوها وهو الدلالة الكافية. كانت black26 فوق grey.shade200
+  /// فتظهر بمظهر رمادي باهت.
   Widget _thumbnailFallback() => Container(
         width: 200,
         height: 300,
-        color: Colors.black26,
-        alignment: Alignment.center,
-        child: Icon(
-          Icons.videocam_outlined,
-          size: 40,
-          color: Colors.grey.shade300,
-        ),
+        color: Colors.black,
       );
 
   Future<void> _startDownload() async {
@@ -211,10 +208,10 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                         ? InkWell(
                             onTap:
                                 widget.videoUrl == null ? null : _startDownload,
-                            child: Icon(
+                            child: const Icon(
                               Icons.play_arrow,
-                              size: 50,
-                              color: Colors.grey.shade300,
+                              size: 60,
+                              color: Colors.white,
                             ),
                           )
                         : ValueListenableBuilder<double>(
@@ -230,7 +227,13 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                                   alignment: Alignment.center,
                                   children: [
                                     CircularProgressIndicator(
-                                      value: progress / 100,
+                                      // null = مؤشّر دوّار غير محدَّد. تمرير
+                                      // 0 كان يرسم قوساً بطول صفر، فلا يظهر
+                                      // إلا حرف X ويبدو أن شيئاً لم يحدث —
+                                      // والتقدّم يبقى صفراً حتى يصل أول قياس
+                                      // من الخادم (أو دائماً إن لم يرسل
+                                      // content-length).
+                                      value: progress > 0 ? progress / 100 : null,
                                       strokeWidth: 5,
                                       backgroundColor: Colors.grey,
                                       color: const Color(0xff388CFF),
@@ -238,7 +241,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                                     MyTextWidget(
                                       'X',
                                       style: context.textTheme.bodyLarge?.bq
-                                          .copyWith(color: Colors.grey),
+                                          .copyWith(color: Colors.white),
                                     ),
                                   ],
                                 ),
@@ -319,10 +322,12 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
               // مؤشّر تحميل أثناء التهيئة (بطلب المستخدم). المصغَّر البديل
               // الرمادي كان يظهر هنا لأن الخادم لا يوفّر مصغَّراً للفيديو،
               // فبدا أسوأ من المؤشّر. التهيئة سريعة لأن الملف محلّي.
-              return SizedBox(
+              return Container(
                 width: 300,
                 height: 300,
-                child: Center(child: TrydosLoader()),
+                color: Colors.black,
+                alignment: Alignment.center,
+                child: TrydosLoader(),
               );
             },
           );

@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
+import 'package:trydos/features/app/app_widgets/crop_image_screen.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:video_player/video_player.dart';
 import '../../features/app/my_text_widget.dart';
@@ -113,6 +114,19 @@ class _CameraScreenState extends State<CameraScreenStory>
 //  todo flash
   FlashMode? _currentFlashMode;
   File? imageFile;
+
+  /// قصّ الصورة الملتقطة قبل رفعها. زر الإرسال يمرّر `imageFile` نفسه، فاستبدال
+  /// المرجع هنا يكفي ليُرفع المقصوص دون أي تغيير في مسار الرفع.
+  Future<void> cropCapturedImage() async {
+    final File? current = imageFile;
+    if (current == null) return;
+    final File? result = await Navigator.of(context).push<File>(
+      MaterialPageRoute(builder: (_) => CropImageScreen(imageFile: current)),
+    );
+    if (result != null && mounted) {
+      setState(() => imageFile = result);
+    }
+  }
   //todo exposure values
 
   XFile? rawImage;
@@ -203,14 +217,44 @@ class _CameraScreenState extends State<CameraScreenStory>
                                         (_addUrlToStory ? 0.76 : 0.86),
                                     child: VideoPlayerWidget(videoFile!),
                                   )
-                                : Container(
-                                    width: 1.sw,
-                                    height: MediaQuery.sizeOf(context).height *
-                                        (_addUrlToStory ? 0.78 : 0.86),
-                                    child: Image.file(
-                                      imageFile!,
-                                      fit: BoxFit.cover,
-                                    ),
+                                : Stack(
+                                    children: [
+                                      Container(
+                                        width: 1.sw,
+                                        height:
+                                            MediaQuery.sizeOf(context).height *
+                                                (_addUrlToStory ? 0.78 : 0.86),
+                                        // خلفية سوداء: مع contain تظهر مساحة
+                                        // فارغة حين تختلف نسبة الصورة.
+                                        color: Colors.black,
+                                        child: Image.file(
+                                          // المسار يتغيّر بعد كل قصّة،
+                                          // والمفتاح يمنع عرض النسخة القديمة
+                                          // من الكاش.
+                                          key: ValueKey(imageFile!.path),
+                                          imageFile!,
+                                          // كان cover: يقصّ الصورة ويكبّرها،
+                                          // فلا يرى المستخدم ما سيرفعه فعلاً.
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      PositionedDirectional(
+                                        // الحاوية تبدأ من أعلى الشاشة، فبدون
+                                        // إزاحة شريط الحالة يقع الزر خلفه.
+                                        top: MediaQuery.paddingOf(context).top +
+                                            16,
+                                        end: 16,
+                                        child: FloatingActionButton(
+                                          heroTag: 'cropStoryCameraImage',
+                                          mini: true,
+                                          backgroundColor: Colors.blue,
+                                          tooltip: LocaleKeys.crop_image.tr(),
+                                          onPressed: cropCapturedImage,
+                                          child: const Icon(Icons.crop,
+                                              color: Colors.white),
+                                        ),
+                                      ),
+                                    ],
                                   )
                             : SizedBox(
                                 width: double.infinity,
