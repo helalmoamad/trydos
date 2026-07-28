@@ -850,5 +850,8 @@
   "sort_name": "Name",
   "sort_alphabetical": "Alphabetical",
   "sort_a_to_z": "A to Z",
-  "sort_z_to_a": "Z to A"
+  "sort_z_to_a": "Z to A",
+  "add_story": "Add Story",
+  "no_stories_yet": "No stories yet",
+  "failed_to_load_stories": "Failed to load stories"
 }

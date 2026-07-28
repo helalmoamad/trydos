@@ -831,5 +831,8 @@
   "sort_name": "İsim",
   "sort_alphabetical": "Alfabetik",
   "sort_a_to_z": "A'dan Z'ye",
-  "sort_z_to_a": "Z'den A'ya"
+  "sort_z_to_a": "Z'den A'ya",
+  "add_story": "Hikaye Ekle",
+  "no_stories_yet": "Henüz hikaye yok",
+  "failed_to_load_stories": "Hikayeler yüklenemedi"
 }

@@ -150,6 +150,8 @@ import '../../features/dashBoard/domain/useCase/change_order_status_usecase.dart
     as _i645;
 import '../../features/dashBoard/domain/useCase/change_orderDetail_to_packed_useCase.dart'
     as _i288;
+import '../../features/dashBoard/domain/useCase/create_seller_story_usecase.dart'
+    as _i129;
 import '../../features/dashBoard/domain/useCase/delete_user_usecase.dart'
     as _i441;
 import '../../features/dashBoard/domain/useCase/get_boutiques_usecase.dart'
@@ -160,6 +162,8 @@ import '../../features/dashBoard/domain/useCase/get_presigned_url_usecase.dart'
     as _i781;
 import '../../features/dashBoard/domain/useCase/get_products_usecase.dart'
     as _i51;
+import '../../features/dashBoard/domain/useCase/get_seller_stories_usecase.dart'
+    as _i824;
 import '../../features/dashBoard/domain/useCase/get_user_permission_usecase.dart.dart'
     as _i652;
 import '../../features/dashBoard/domain/useCase/get_user_roles_usecase.dart'
@@ -929,6 +933,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i645.ChangeOrderStatusUseCase>(
     () => _i645.ChangeOrderStatusUseCase(gh<_i70.DashBoardRepository>()),
   );
+  gh.factory<_i129.CreateSellerStoryUseCase>(
+    () => _i129.CreateSellerStoryUseCase(gh<_i70.DashBoardRepository>()),
+  );
   gh.factory<_i441.DeleteUserUseCase>(
     () => _i441.DeleteUserUseCase(gh<_i70.DashBoardRepository>()),
   );
@@ -943,6 +950,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i51.GetProductsUseCase>(
     () => _i51.GetProductsUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i824.GetSellerStoriesUseCase>(
+    () => _i824.GetSellerStoriesUseCase(gh<_i70.DashBoardRepository>()),
   );
   gh.factory<_i652.GetUserPermissionUseCase>(
     () => _i652.GetUserPermissionUseCase(gh<_i70.DashBoardRepository>()),
@@ -1106,29 +1116,6 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i268.RefreshTokenUseCase>(),
     ),
   );
-  gh.lazySingleton<_i976.DashboardBloc>(
-    () => _i976.DashboardBloc(
-      gh<_i652.GetUserPermissionUseCase>(),
-      gh<_i246.GetUserRolesUseCase>(),
-      gh<_i900.GetUsersUseCase>(),
-      gh<_i602.AddUserUseCase>(),
-      gh<_i919.GetOrdersUseCase>(),
-      gh<_i51.GetProductsUseCase>(),
-      gh<_i412.GetBoutiquesUseCase>(),
-      gh<_i645.ChangeOrderStatusUseCase>(),
-      gh<_i441.DeleteUserUseCase>(),
-      gh<_i1023.UpdateUserRoleUseCase>(),
-      gh<_i858.LeaveShopUseCase>(),
-      gh<_i781.GetPresignedUrlUseCase>(),
-      gh<_i282.UploadFileToS3UseCase>(),
-      gh<_i976.SubmitVendorRequestUseCase>(),
-      gh<_i135.GetVendorRequestUseCase>(),
-      gh<_i388.UpdateVendorRequestUseCase>(),
-      gh<_i129.NewGetOrdersUseCase>(),
-      gh<_i553.ChangeOrderDetailStatusToConfirmedUseCase>(),
-      gh<_i288.ChangeOrderDetailStatusToPackedUseCase>(),
-    ),
-  );
   gh.factory<_i661.AnswerCallUseCase>(
     () => _i661.AnswerCallUseCase(gh<_i1032.CallsRepository>()),
   );
@@ -1169,6 +1156,39 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i95.DeleteMessageUseCase>(),
     ),
   );
+  gh.lazySingleton<_i511.BoutiqueBloc>(
+    () => _i511.BoutiqueBloc(
+      gh<_i146.GetFeaturedProductsUseCase>(),
+      gh<_i955.GetProductsWithFiltersUseCase>(),
+      gh<_i889.GetRecommendProductsUseCase>(),
+      gh<_i290.GetProductFiltersUseCase>(),
+    ),
+  );
+  gh.lazySingleton<_i976.DashboardBloc>(
+    () => _i976.DashboardBloc(
+      gh<_i652.GetUserPermissionUseCase>(),
+      gh<_i246.GetUserRolesUseCase>(),
+      gh<_i900.GetUsersUseCase>(),
+      gh<_i602.AddUserUseCase>(),
+      gh<_i919.GetOrdersUseCase>(),
+      gh<_i51.GetProductsUseCase>(),
+      gh<_i412.GetBoutiquesUseCase>(),
+      gh<_i645.ChangeOrderStatusUseCase>(),
+      gh<_i441.DeleteUserUseCase>(),
+      gh<_i1023.UpdateUserRoleUseCase>(),
+      gh<_i858.LeaveShopUseCase>(),
+      gh<_i781.GetPresignedUrlUseCase>(),
+      gh<_i282.UploadFileToS3UseCase>(),
+      gh<_i976.SubmitVendorRequestUseCase>(),
+      gh<_i135.GetVendorRequestUseCase>(),
+      gh<_i388.UpdateVendorRequestUseCase>(),
+      gh<_i129.NewGetOrdersUseCase>(),
+      gh<_i553.ChangeOrderDetailStatusToConfirmedUseCase>(),
+      gh<_i288.ChangeOrderDetailStatusToPackedUseCase>(),
+      gh<_i824.GetSellerStoriesUseCase>(),
+      gh<_i976.CreateSellerStoryUseCase>(),
+    ),
+  );
   gh.lazySingleton<_i536.StoryBloc>(
     () => _i536.StoryBloc(
       gh<_i1043.UploadFileCloudinaryUseCase>(),
@@ -1178,14 +1198,6 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i737.AddStoryToOurServerUseCase>(),
       gh<_i318.UploadFileMediaServerUseCase>(),
       gh<_i176.DeleteStoryUseCase>(),
-    ),
-  );
-  gh.lazySingleton<_i511.BoutiqueBloc>(
-    () => _i511.BoutiqueBloc(
-      gh<_i146.GetFeaturedProductsUseCase>(),
-      gh<_i955.GetProductsWithFiltersUseCase>(),
-      gh<_i889.GetRecommendProductsUseCase>(),
-      gh<_i290.GetProductFiltersUseCase>(),
     ),
   );
   gh.lazySingleton<_i243.ChatBloc>(

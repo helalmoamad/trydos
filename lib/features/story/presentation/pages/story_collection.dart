@@ -7,12 +7,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:trydos/common/constant/configuration/media_server_url_routes.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
+import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart'
     as filter;
@@ -78,7 +80,11 @@ class StoryCollection extends StatefulWidget {
 class _StoryCollectionState extends ThemeState<StoryCollection> {
   late PageController pageController;
   VideoPlayerController? _videoController;
+  bool fromLogin = false;
+  final ValueNotifier<bool> animate = ValueNotifier(false);
+  Duration animationDuration = const Duration(milliseconds: 500);
 
+  final ValueNotifier<int> pageContent = ValueNotifier(0);
   LongPressDownDetails details = const LongPressDownDetails();
   var init;
   late AppBloc appBloc;
@@ -1083,7 +1089,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
   void showReportStorySheet(BuildContext context, String storyId) {
     // `context` here is the story page context; keep a reference to it because
     // inside the bottom-sheet builder `context` refers to the sheet itself.
-    final BuildContext pageContext = context;
+
     final reasons = <ReportReason>[
       ReportReason(
         key: "inappropriate_content",
@@ -1271,17 +1277,18 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               if (homeState.reportingAboutStory ==
                                   ReportingAboutStory.success) {
                                 final storyBloc = GetIt.I<StoryBloc>();
-                                final int ci = widget.collectionIndex;
+                                final int collectionIndex =
+                                    widget.collectionIndex;
                                 final stories =
                                     storyBloc
                                         .state
-                                        .storiesCollections[ci]
+                                        .storiesCollections[collectionIndex]
                                         .stories ??
                                     const [];
                                 final int currentIndex =
                                     storyBloc
                                         .state
-                                        .currentStoryInEachCollection[ci] ??
+                                        .currentStoryInEachCollection[collectionIndex] ??
                                     0;
                                 // Is there another story after the reported one
                                 // in this same collection?
@@ -1289,7 +1296,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                     currentIndex < stories.length - 1;
 
                                 // Close the report sheet.
-                                Navigator.pop(context);
                                 Navigator.pop(context);
                                 // Drop the reported story from the collection.
 
@@ -1304,7 +1310,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   // (image dimensions / video) gets loaded.
                                   storyBloc.add(
                                     StorySelectedEvent(
-                                      collectionIndex: ci,
+                                      collectionIndex: collectionIndex,
                                       selectedStoryIndexInCollection:
                                           currentIndex,
                                       currentPage: -1,
@@ -1316,24 +1322,19 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   // No next story in this collection -> close the
                                   // viewer (or advance to the next collection via
                                   // onReachStoryAtEdge if you prefer).
-                                  Navigator.of(pageContext).pop();
+                                  Navigator.of(context).pop();
                                 }
 
-                                ScaffoldMessenger.of(pageContext).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      LocaleKeys.report_sent_successfully.tr(),
-                                    ),
-                                  ),
+                                showMessage(
+                                  LocaleKeys.report_sent_successfully.tr(),
+                                  context: context,
                                 );
                               } else if (homeState.reportingAboutStory ==
                                   ReportingAboutStory.failure) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      LocaleKeys.report_failed.tr(),
-                                    ),
-                                  ),
+                                showMessage(
+                                  LocaleKeys.report_failed.tr(),
+                                  context: context,
+                                  hasError: true,
                                 );
                               }
                             },
@@ -1346,8 +1347,26 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   ReportingAboutStory.loading;
 
                               return ElevatedButton(
-                                onPressed: (enableButton && !loading)
-                                    ? () {
+                                onPressed: () {
+                                  // منع الضغط أثناء التحميل أو إذا كان الزر معطل
+                                  if (!enableButton || loading) return;
+
+                                  // المستخدم موثق
+                                  if (prefsRepository.isVerifiedPhone ??
+                                      false) {
+                                    homeBloc.add(
+                                      homeEvent.ReportAboutStoryEvent(
+                                        userId: prefsRepository.myMarketId
+                                            .toString(),
+                                        storyId: storyId,
+                                        reasons: selectedReasons.toList(),
+                                        notes: controller.text.trim(),
+                                      ),
+                                    );
+                                  } else {
+                                    GuestPhoneVerificationDialog.show(
+                                      context,
+                                      onVerified: () {
                                         homeBloc.add(
                                           homeEvent.ReportAboutStoryEvent(
                                             userId: prefsRepository.myMarketId
@@ -1357,8 +1376,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                             notes: controller.text.trim(),
                                           ),
                                         );
-                                      }
-                                    : null,
+                                      },
+                                    );
+                                  }
+                                },
+
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
                                   disabledBackgroundColor: const Color(

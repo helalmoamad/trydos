@@ -46,4 +46,11 @@ class DashboardPermissionChecker {
   bool canSeeUsers() {
     return isSuperAdmin;
   }
+
+  /// Check if user can see Stories tab
+  /// The backend does not expose a dedicated stories permission yet, so the tab
+  /// is visible to every shop member. Gate it here once the permission exists.
+  bool canSeeStories() {
+    return true;
+  }
 }

@@ -854,5 +854,8 @@
   "sort_name": "الاسم",
   "sort_alphabetical": "أبجديًا",
   "sort_a_to_z": "من الألف إلى الياء",
-  "sort_z_to_a": "من الياء إلى الألف"
+  "sort_z_to_a": "من الياء إلى الألف",
+  "add_story": "إضافة قصة",
+  "no_stories_yet": "لا توجد قصص بعد",
+  "failed_to_load_stories": "فشل تحميل القصص"
 }
