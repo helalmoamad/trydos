@@ -18,6 +18,7 @@ import 'package:trydos/features/dashBoard/data/models/get_user_roles_model.dart'
 import 'package:trydos/features/dashBoard/data/models/get_users_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_presigned_url_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.dart';
+import 'package:trydos/features/dashBoard/data/models/seller_story_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 
 @injectable
@@ -288,6 +289,36 @@ class DashBoardRemoteDataSource {
           ),
         );
     return getPresignedUrl();
+  }
+
+  Future<List<SellerStoryModel>> getSellerStories() {
+    GetClient<List<SellerStoryModel>> getSellerStories =
+        GetClient<List<SellerStoryModel>>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<List<SellerStoryModel>>(
+            endpoint: DashBoardEndPoints.getSellerStoriesEP,
+            response: ResponseValue<List<SellerStoryModel>>(
+              fromJson: (response) =>
+                  SellerStoryModel.listFromResponse(response),
+            ),
+          ),
+        );
+    return getSellerStories();
+  }
+
+  Future<SellerStoryModel> createSellerStory(Map<String, dynamic> params) {
+    PostClient<SellerStoryModel> createSellerStory =
+        PostClient<SellerStoryModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<SellerStoryModel>(
+            endpoint: DashBoardEndPoints.createSellerStoryEP,
+            data: params,
+            response: ResponseValue<SellerStoryModel>(
+              fromJson: (response) => SellerStoryModel.fromResponse(response),
+            ),
+          ),
+        );
+    return createSellerStory();
   }
 
   Future<ReadOnlyMessageFromApiModel> uploadFileToS3({

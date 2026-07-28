@@ -10,6 +10,7 @@ import 'package:trydos/features/dashBoard/data/models/get_user_roles_model.dart'
 import 'package:trydos/features/dashBoard/data/models/get_users_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_presigned_url_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.dart';
+import 'package:trydos/features/dashBoard/data/models/seller_story_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 
 abstract class DashBoardRepository {
@@ -46,6 +47,10 @@ abstract class DashBoardRepository {
     required String uploadUrl,
     required String mimeType,
   });
+  Future<Either<Failure, List<SellerStoryModel>>> getSellerStories();
+  Future<Either<Failure, SellerStoryModel>> createSellerStory(
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, GetVendorRequestModel>> getVendorRequest();
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> submitVendorRequest(
     Map<String, dynamic> params,

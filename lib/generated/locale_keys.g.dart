@@ -940,4 +940,7 @@ static const sort_name = 'sort_name';
 static const sort_alphabetical = 'sort_alphabetical';
 static const sort_a_to_z = 'sort_a_to_z';
 static const sort_z_to_a = 'sort_z_to_a';
+static const add_story = 'add_story';
+static const no_stories_yet = 'no_stories_yet';
+static const failed_to_load_stories = 'failed_to_load_stories';
 }

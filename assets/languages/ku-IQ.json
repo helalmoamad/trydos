@@ -832,5 +832,8 @@
   "sort_name": "ناو",
   "sort_alphabetical": "ئەلفوبێیی",
   "sort_a_to_z": "لە A بۆ Z",
-  "sort_z_to_a": "لە Z بۆ A"
+  "sort_z_to_a": "لە Z بۆ A",
+  "add_story": "زیادکردنی چیرۆک",
+  "no_stories_yet": "هێشتا هیچ چیرۆکێک نییە",
+  "failed_to_load_stories": "بارکردنی چیرۆکەکان سەرکەوتوو نەبوو"
 }

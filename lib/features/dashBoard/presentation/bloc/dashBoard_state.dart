@@ -34,6 +34,10 @@ enum GetVendorRequestStatus { init, loading, success, failure }
 
 enum UpdateVendorRequestStatus { init, loading, success, failure }
 
+enum GetSellerStoriesStatus { init, loading, success, failure }
+
+enum CreateSellerStoryStatus { init, loading, success, failure }
+
 @immutable
 class DashBoardState extends Equatable {
   final GetUserPermissionStatus getUserPermissionStatus;
@@ -70,7 +74,13 @@ class DashBoardState extends Equatable {
   final products_model.Meta? productsMeta;
   final List<users_model.User>? users;
   final users_model.Meta? usersMeta;
+  final GetSellerStoriesStatus storiesStatus;
+  final CreateSellerStoryStatus createStoryStatus;
+  final List<SellerStoryModel>? stories;
   DashBoardState({
+    this.storiesStatus = GetSellerStoriesStatus.init,
+    this.createStoryStatus = CreateSellerStoryStatus.init,
+    this.stories,
     this.changeOrderDetailStatusStatus = ChangeOrderDetailStatusStatus.init,
     this.new_orders,
     this.getUserPermissionStatus = GetUserPermissionStatus.init,
@@ -141,8 +151,16 @@ class DashBoardState extends Equatable {
     products_model.Meta? productsMeta,
     List<users_model.User>? users,
     users_model.Meta? usersMeta,
+    GetSellerStoriesStatus? storiesStatus,
+    CreateSellerStoryStatus? createStoryStatus,
+    List<SellerStoryModel>? stories,
   }) {
     return DashBoardState(
+      storiesStatus: storiesStatus ?? this.storiesStatus,
+      createStoryStatus: createStoryStatus ?? this.createStoryStatus,
+      stories: stories ?? this.stories,
+      changeOrderDetailStatusStatus:
+          changeOrderDetailStatusStatus ?? this.changeOrderDetailStatusStatus,
       newOrdersMeta: newOrdersMeta ?? this.newOrdersMeta,
       newOrdersUserAbilities:
           newOrdersUserAbilities ?? this.newOrdersUserAbilities,
@@ -221,5 +239,8 @@ class DashBoardState extends Equatable {
     productsMeta,
     users,
     usersMeta,
+    storiesStatus,
+    createStoryStatus,
+    stories,
   ];
 }

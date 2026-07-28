@@ -23,6 +23,7 @@ import '../widgets/add_user_widget.dart';
 import '../widgets/products_grid_widget.dart';
 import '../widgets/boutiques_grid_widget.dart';
 import '../widgets/dashboard_permission_checker.dart';
+import '../widgets/seller_stories_widget.dart';
 
 class DashboardPage extends StatefulWidget {
   final String shopName;
@@ -78,6 +79,8 @@ class _DashboardPageState extends State<DashboardPage> {
       _selectedTabIndex = _getFirstAvailableTabIndex();
     } else if (_selectedTabIndex == 4 && !_permissionChecker.canSeeUsers()) {
       _selectedTabIndex = _getFirstAvailableTabIndex();
+    } else if (_selectedTabIndex == 5) {
+      _selectedTabIndex = _getFirstAvailableTabIndex();
     }
 
     // Load initial data based on selected tab
@@ -87,6 +90,8 @@ class _DashboardPageState extends State<DashboardPage> {
       _dashboardBloc.add(GetBoutiquesEvent());
     } else if (_selectedTabIndex == 2 && _permissionChecker.canSeeOrders()) {
       _dashboardBloc.add(NewGetOrdersEvent());
+    } else if (_selectedTabIndex == 5) {
+      _dashboardBloc.add(GetSellerStoriesEvent());
     }
   }
 
@@ -108,7 +113,8 @@ class _DashboardPageState extends State<DashboardPage> {
               buildWhen: (previous, current) =>
                   previous.getProductsStatus != current.getProductsStatus ||
                   previous.getBoutiquesStatus != current.getBoutiquesStatus ||
-                  previous.getOrdersStatus != current.getOrdersStatus,
+                  previous.getOrdersStatus != current.getOrdersStatus ||
+                  previous.storiesStatus != current.storiesStatus,
               builder: (context, state) {
                 return DashboardTabBar(
                   selectedIndex: _selectedTabIndex,
@@ -126,6 +132,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         _dashboardBloc.add(NewGetOrdersEvent());
                       } else if (index == 4 && widget.canAddUser) {
                         _dashboardBloc.add(GetUserRolesEvent());
+                      } else if (index == 5) {
+                        _dashboardBloc.add(GetSellerStoriesEvent());
                       }
                     });
                   },
@@ -133,6 +141,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   boutiquesCount: state.boutiquesMeta?.total ?? 0,
                   ordersCount: state.new_orders?.length ?? 0,
                   permissionsCount: widget.permissions.length,
+                  storiesCount: state.stories?.length ?? 0,
                 );
               },
             ),
@@ -157,6 +166,8 @@ class _DashboardPageState extends State<DashboardPage> {
         return _buildPermissionsTab();
       case 4:
         return _buildUsersTab();
+      case 5:
+        return _buildStoriesTab();
       default:
         return _buildProductsTab();
     }
@@ -349,7 +360,6 @@ class _DashboardPageState extends State<DashboardPage> {
     ConstOrderStatus.all,
   );
 
-
   Widget buildStatusBar() {
     return ValueListenableBuilder<ConstOrderStatus>(
       valueListenable: currentStatusOfOrder,
@@ -377,7 +387,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     currentStatusOfOrder.value = status;
                     final String statusForApi = status.apiValue;
                     _dashboardBloc.ordersStatus = statusForApi;
-                    if (kDebugMode) print('Selected status: ${_dashboardBloc.ordersStatus}');
+                    if (kDebugMode)
+                      print('Selected status: ${_dashboardBloc.ordersStatus}');
                     _dashboardBloc.add(NewGetOrdersEvent());
                   },
                   child: Container(
@@ -641,5 +652,16 @@ class _DashboardPageState extends State<DashboardPage> {
     }
 
     return AddUserWidget(sellerId: widget.sellerId);
+  }
+
+  Widget _buildStoriesTab() {
+    // if (!_permissionChecker.canSeeStories()) {
+    //   return EmptyStateWidget(
+    //     title: LocaleKeys.access_denied.tr(),
+    //     message: LocaleKeys.no_permissions_assigned.tr(),
+    //   );
+    // }
+
+    return const SellerStoriesWidget();
   }
 }

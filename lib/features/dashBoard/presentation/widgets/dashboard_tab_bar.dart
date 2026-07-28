@@ -11,6 +11,7 @@ class DashboardTabBar extends StatelessWidget {
   final int boutiquesCount;
   final int ordersCount;
   final int permissionsCount;
+  final int storiesCount;
   final List<String> permissions;
 
   DashboardTabBar({
@@ -22,6 +23,7 @@ class DashboardTabBar extends StatelessWidget {
     this.boutiquesCount = 0,
     this.ordersCount = 0,
     this.permissionsCount = 0,
+    this.storiesCount = 0,
   }) : super(key: key);
 
   DashboardPermissionChecker get _permissionChecker =>
@@ -89,6 +91,16 @@ class DashboardTabBar extends StatelessWidget {
         ),
       );
     }
+
+    // Stories tab (index 5)
+    visibleTabs.add(
+      _TabInfo(
+        visualIndex: visualIndex++,
+        actualIndex: 5,
+        title: LocaleKeys.my_stories.tr(),
+        count: storiesCount,
+      ),
+    );
 
     return Container(
       width: 1.sw,

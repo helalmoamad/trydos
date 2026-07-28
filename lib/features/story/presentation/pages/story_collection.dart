@@ -13,6 +13,11 @@ import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
+import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
+import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
+import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
+import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/authentication/presentation/widgets/welcome_section.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart'
     as filter;
@@ -79,7 +84,11 @@ class StoryCollection extends StatefulWidget {
 class _StoryCollectionState extends ThemeState<StoryCollection> {
   late PageController pageController;
   VideoPlayerController? _videoController;
+  bool fromLogin = false;
+  final ValueNotifier<bool> animate = ValueNotifier(false);
+  Duration animationDuration = const Duration(milliseconds: 500);
 
+  final ValueNotifier<int> pageContent = ValueNotifier(0);
   LongPressDownDetails details = const LongPressDownDetails();
   var init;
   late AppBloc appBloc;
@@ -614,24 +623,23 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                 try {
                                   widget.animatedController.animateTo(
                                     1.0,
-                                    duration: const Duration(
-                                      milliseconds: 120,
-                                    ),
+                                    duration: const Duration(milliseconds: 120),
                                   );
                                 } catch (_) {
                                   // ignore if controller disposed
                                 }
                                 return;
                               }
-                            
+
                               // Otherwise, just stop the animation (paused mid-video)
                               widget.animatedController.stop();
                             });
                           },
                           onError: (e) {
-                            if (kDebugMode) print(
-                              "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG$e",
-                            );
+                            if (kDebugMode)
+                              print(
+                                "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG$e",
+                              );
                             GetIt.I<StoryBloc>().add(
                               LoadFailureEvent(
                                 collectionId: widget.collectionIndex,
@@ -1204,7 +1212,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
                                 // Close the report sheet.
                                 Navigator.pop(context);
-                                Navigator.pop(context);
                                 // Drop the reported story from the collection.
 
                                 // The old video belongs to the removed story.
@@ -1260,19 +1267,30 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   ReportingAboutStory.loading;
 
                               return ElevatedButton(
-                                onPressed: (enableButton && !loading)
+                                onPressed: enableButton
                                     ? () {
-                                        homeBloc.add(
-                                          homeEvent.ReportAboutStoryEvent(
-                                            userId: prefsRepository.myMarketId
-                                                .toString(),
-                                            storyId: storyId,
-                                            reasons: selectedReasons.toList(),
-                                            notes: controller.text.trim(),
-                                          ),
-                                        );
+                                        // منع الضغط أثناء التحميل أو إذا كان الزر معطل
+                                        if (!enableButton || loading) return;
+
+                                        // المستخدم موثق
+                                        if (prefsRepository.isVerifiedPhone ??
+                                            false) {
+                                          homeBloc.add(
+                                            homeEvent.ReportAboutStoryEvent(
+                                              userId: prefsRepository.myMarketId
+                                                  .toString(),
+                                              storyId: storyId,
+                                              reasons: selectedReasons.toList(),
+                                              notes: controller.text.trim(),
+                                            ),
+                                          );
+                                          return;
+                                        }
+
+                                        _showVerificationBottomSheet(context);
                                       }
                                     : null,
+
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
                                   disabledBackgroundColor: const Color(
@@ -1664,6 +1682,175 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
           },
         ),
       ),
+    );
+  }
+
+  void _showVerificationBottomSheet(BuildContext context) {
+    final PageController pageController = PageController();
+    String phoneNumber = '';
+    int isVisWhatsApp = 1;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return AnimatedPadding(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: Container(
+            margin: const EdgeInsets.only(top: 20),
+            height: MediaQuery.of(ctx).size.height,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
+            ),
+            child: Stack(
+              children: [
+                PageView(
+                  controller: pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children:
+                      (prefsRepository.isVerifiedPhonePeforeExpiredToken ??
+                          false)
+                      ? [
+                          VerifyOtp(
+                            fromProfile: false,
+                            navigateToProfile: () {},
+                            fromExpired: true,
+                            isVisWhatsApp: 1,
+                            navigateToAddName: () {},
+                            navigateTocartOrProfile: () {},
+                            fromLogin: false,
+                            onLoginFailed: () {},
+                            goBack: () {},
+                            methodIcon: AppAssets.whatsappSvg,
+                            phoneNumber: prefsRepository.myPhoneNumber ?? '',
+                          ),
+                        ]
+                      : [
+                          WelcomeSection(
+                            goToLoginSection: () {
+                              fromLogin = true;
+                              animationDuration = const Duration(seconds: 1);
+                              animate.value = true;
+                              pageContent.value = 2;
+                              pageController.animateToPage(
+                                2,
+                                duration: const Duration(milliseconds: 100),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            goToCreateAccount: () {
+                              fromLogin = false;
+                              animate.value = true;
+                              pageContent.value = 1;
+                              pageController.animateToPage(
+                                1,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeInOut,
+                              );
+                              //_animationController.forward();
+                            },
+                          ),
+                          CreateAccountSection(
+                            moveToNextStep: () {
+                              pageContent.value = 2;
+                              pageController.animateToPage(
+                                2,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                          ),
+
+                          InsertPhoneTab(
+                            focusNode: FocusNode(),
+                            moveToNextStep: (String phone) {
+                              phoneNumber = phone.replaceAll(' ', '');
+                              pageController.animateToPage(
+                                1,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                          ),
+                          VerificationMethods(
+                            phoneNumber: phoneNumber,
+                            isFromLogin: true,
+                            onChooseWhatsapp: () {
+                              isVisWhatsApp = 1;
+                              pageController.animateToPage(
+                                2,
+                                duration: const Duration(milliseconds: 100),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            goBackToPhone: () {
+                              pageController.animateToPage(
+                                0,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            onChooseSms: () {
+                              isVisWhatsApp = 0;
+                              pageController.animateToPage(
+                                2,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                          ),
+                          VerifyOtp(
+                            fromProfile: false,
+                            navigateToProfile: () {},
+                            fromExpired: true,
+                            isVisWhatsApp: isVisWhatsApp,
+                            navigateToAddName: () {},
+                            navigateTocartOrProfile: () {},
+                            fromLogin: false,
+                            onLoginFailed: () {},
+                            goBack: () {
+                              pageController.animateToPage(
+                                1,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            methodIcon: isVisWhatsApp == 1
+                                ? AppAssets.whatsappSvg
+                                : AppAssets.smsSvg,
+                            phoneNumber: phoneNumber,
+                          ),
+                        ],
+                ),
+
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  left: 0,
+                  child: Container(
+                    margin: const EdgeInsets.all(10),
+                    height: 20,
+                    child: InkWell(
+                      onTap: () => Navigator.pop(ctx),
+                      child: SvgPicture.asset(
+                        AppAssets.closeSvg,
+                        height: 15,
+                        width: 30,
+                        color: const Color(0xffFF5F61),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -101,3 +101,19 @@ class UpdateVendorRequestEvent extends DashBoardEvent {
 class ResetVendorRequestStatesEvent extends DashBoardEvent {
   ResetVendorRequestStatesEvent();
 }
+
+class GetSellerStoriesEvent extends DashBoardEvent {
+  GetSellerStoriesEvent();
+}
+
+class CreateSellerStoryEvent extends DashBoardEvent {
+  /// The S3 object key produced by the shared upload flow
+  /// ([UploadDocumentEvent] -> `uploadedDocumentKey`).
+  final String mediaKey;
+  final String? link;
+  CreateSellerStoryEvent({required this.mediaKey, this.link});
+}
+
+class ResetCreateStoryStateEvent extends DashBoardEvent {
+  ResetCreateStoryStateEvent();
+}

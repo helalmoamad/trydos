@@ -68,7 +68,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     on<IncreaseViewersEvent>(_IncreaseViewersEvent);
     on<ChangeStatusUploadToFailureEvent>(_onChangeStatusUploadToFailureEvent);
     on<DeleteStoryEvent>(_onDeleteStoryEvent);
-    on<RemoveStoryFromCollectionEvent>(_onRemoveStoryFromCollectionEvent);
 
     on<UpdateNameForUserInCollectionIfExistEvent>(
       _onUpdateNameForUserInCollectionIfExistEvent,
@@ -706,71 +705,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     );
   }
 
-  FutureOr<void> _onRemoveStoryFromCollectionEvent(
-    RemoveStoryFromCollectionEvent event,
-    Emitter<StoryState> emit,
-  ) {
-    if (event.collectionIndex < 0 ||
-        event.collectionIndex >= state.storiesCollections.length) {
-      return null;
-    }
-
-    final collections = List<CollectionStoryModel>.from(
-      state.storiesCollections,
-    );
-    final collection = collections[event.collectionIndex];
-    final stories = List<Story>.from(collection.stories ?? const []);
-
-    final removeIndex = stories.indexWhere(
-      (story) => story.id.toString() == event.storyId,
-    );
-    if (removeIndex == -1) return null;
-
-    stories.removeAt(removeIndex);
-
-    final updatedCurrent = Map<int, int?>.from(
-      state.currentStoryInEachCollection,
-    );
-
-    // The collection is now empty -> drop it and re-key the index map so the
-    // indices stay aligned with the new collections list.
-    if (stories.isEmpty) {
-      collections.removeAt(event.collectionIndex);
-
-      final remapped = <int, int?>{};
-      updatedCurrent.forEach((key, value) {
-        if (key < event.collectionIndex) {
-          remapped[key] = value;
-        } else if (key > event.collectionIndex) {
-          remapped[key - 1] = value;
-        }
-      });
-
-      emit(
-        state.copyWith(
-          storiesCollections: collections,
-          currentStoryInEachCollection: remapped,
-        ),
-      );
-      return null;
-    }
-
-    // Keep the same index so the story that was *next* now occupies the current
-    // slot; clamp when we removed the last story in the collection.
-    int current = updatedCurrent[event.collectionIndex] ?? 0;
-    if (current >= stories.length) current = stories.length - 1;
-    updatedCurrent[event.collectionIndex] = current;
-
-    collections[event.collectionIndex] = collection.copyWith(stories: stories);
-
-    emit(
-      state.copyWith(
-        storiesCollections: collections,
-        currentStoryInEachCollection: updatedCurrent,
-      ),
-    );
-    return null;
-  }
+ 
 
   FutureOr<void> _onDeleteStoryEvent(
     DeleteStoryEvent event,

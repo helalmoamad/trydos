@@ -13,6 +13,7 @@ import 'package:trydos/features/dashBoard/data/models/get_user_roles_model.dart'
 import 'package:trydos/features/dashBoard/data/models/get_users_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_presigned_url_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.dart';
+import 'package:trydos/features/dashBoard/data/models/seller_story_model.dart';
 import 'package:trydos/features/dashBoard/domain/repositories/dashBoard_repository.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 
@@ -157,6 +158,22 @@ class DashBoardRepositoryImpl extends DashBoardRepository
         uploadUrl: uploadUrl,
         mimeType: mimeType,
       ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<SellerStoryModel>>> getSellerStories() {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getSellerStories(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, SellerStoryModel>> createSellerStory(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.createSellerStory(params),
     );
   }
 

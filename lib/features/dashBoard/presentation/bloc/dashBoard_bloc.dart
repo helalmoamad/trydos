@@ -9,6 +9,7 @@ import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
+import 'package:trydos/features/dashBoard/data/models/seller_story_model.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/change_orderDetail_to_packed_useCase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/change_order_detail_status.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/newGetUserOrders_useCase.dart';
@@ -42,6 +43,9 @@ export 'package:trydos/features/dashBoard/domain/useCase/submit_vendor_request_u
 import 'package:trydos/features/dashBoard/domain/useCase/get_vendor_request_usecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/update_vendor_request_usecase.dart';
 import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/get_seller_stories_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/create_seller_story_usecase.dart';
+export 'package:trydos/features/dashBoard/domain/useCase/create_seller_story_usecase.dart';
 import 'package:equatable/equatable.dart';
 part 'dashBoard_event.dart';
 part 'dashBoard_state.dart';
@@ -69,6 +73,8 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   changeOrderDetailStatusToConfirmedUseCase;
   final ChangeOrderDetailStatusToPackedUseCase
   changeOrderDetailStatusToPackedUseCase;
+  final GetSellerStoriesUseCase getSellerStoriesUseCase;
+  final CreateSellerStoryUseCase createSellerStoryUseCase;
 
   DashboardBloc(
     this.getUserPermissionUseCase,
@@ -90,6 +96,8 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     this.newGetOrdersUseCase,
     this.changeOrderDetailStatusToConfirmedUseCase,
     this.changeOrderDetailStatusToPackedUseCase,
+    this.getSellerStoriesUseCase,
+    this.createSellerStoryUseCase,
   ) : super(DashBoardState()) {
     on<GetOrdersEvent>(_onGetOrdersEvent);
     on<NewGetOrdersEvent>(_onNewGetOrdersEvent);
@@ -109,6 +117,9 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     on<GetVendorRequestEvent>(_onGetVendorRequestEvent);
     on<UpdateVendorRequestEvent>(_onUpdateVendorRequestEvent);
     on<ResetVendorRequestStatesEvent>(_onResetVendorRequestStatesEvent);
+    on<GetSellerStoriesEvent>(_onGetSellerStoriesEvent);
+    on<CreateSellerStoryEvent>(_onCreateSellerStoryEvent);
+    on<ResetCreateStoryStateEvent>(_onResetCreateStoryStateEvent);
   }
 
   String? ordersStatus;
@@ -722,6 +733,67 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
         );
         showMessage(r.message ?? LocaleKeys.registration_successful.tr());
       },
+    );
+  }
+
+  FutureOr<void> _onGetSellerStoriesEvent(
+    GetSellerStoriesEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(state.copyWith(storiesStatus: GetSellerStoriesStatus.loading));
+
+    final response = await getSellerStoriesUseCase(NoParams());
+    response.fold(
+      (l) {
+        emit((state.copyWith(storiesStatus: GetSellerStoriesStatus.failure)));
+      },
+      (r) {
+        emit(
+          (state.copyWith(
+            stories: r,
+            storiesStatus: GetSellerStoriesStatus.success,
+          )),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onCreateSellerStoryEvent(
+    CreateSellerStoryEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(state.copyWith(createStoryStatus: CreateSellerStoryStatus.loading));
+
+    final response = await createSellerStoryUseCase(
+      CreateSellerStoryParams(mediaKey: event.mediaKey, link: event.link),
+    );
+    response.fold(
+      (l) {
+        emit(
+          (state.copyWith(createStoryStatus: CreateSellerStoryStatus.failure)),
+        );
+        showMessage(l.message, hasError: true);
+      },
+      (r) {
+        emit(
+          (state.copyWith(createStoryStatus: CreateSellerStoryStatus.success)),
+        );
+        showMessage(LocaleKeys.succesfully_added_story.tr());
+        // Refresh stories list after adding a story
+        add(GetSellerStoriesEvent());
+      },
+    );
+  }
+
+  FutureOr<void> _onResetCreateStoryStateEvent(
+    ResetCreateStoryStateEvent event,
+    Emitter<DashBoardState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        createStoryStatus: CreateSellerStoryStatus.init,
+        uploadDocumentStatus: UploadDocumentStatus.init,
+      ),
     );
   }
 

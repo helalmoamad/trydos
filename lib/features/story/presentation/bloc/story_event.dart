@@ -137,15 +137,4 @@ class DeleteStoryEvent extends StoryEvent {
 /// Removes a single story (e.g. after it has been reported) from a given
 /// collection. If the collection becomes empty it is dropped entirely and the
 /// per-collection index map is re-keyed.
-class RemoveStoryFromCollectionEvent extends StoryEvent {
-  final int collectionIndex;
-  final String storyId;
 
-  const RemoveStoryFromCollectionEvent({
-    required this.collectionIndex,
-    required this.storyId,
-  });
-
-  @override
-  List<Object?> get props => [collectionIndex, storyId];
-}
