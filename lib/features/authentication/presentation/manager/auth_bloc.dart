@@ -997,9 +997,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     RegisterGuestEvent event,
     Emitter<AuthState> emit,
   ) async {
-    _prefsRepository.clearTokenForMarket();
-    _prefsRepository.clearTokensForChatAndStory();
-
     emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.loading));
     final response = await registerGuestUseCase(
       RegisterGuestParams(
