@@ -273,6 +273,8 @@ class Story {
   int? isPhoto;
   int? isVideo;
   String? photoPath;
+  String? productSlug;
+  String? productId;
   String? oneLink;
   dynamic file;
   bool? isSeen;
@@ -292,6 +294,8 @@ class Story {
     this.fullVideoPath,
     this.createdAt,
     this.storageVideoPath,
+    this.productId,
+    this.productSlug,
     this.userId,
     this.isPhoto,
     this.isVideo,
@@ -314,6 +318,8 @@ class Story {
     dynamic storageVideoPath,
     int? userId,
     int? isPhoto,
+    String? productId,
+    String? productSlug,
     int? isVideo,
     String? oneLink,
     String? photoPath,
@@ -328,6 +334,8 @@ class Story {
     isInitialStory: isInitialStory ?? this.isInitialStory,
     id: id ?? this.id,
     cutVideoName: cutVideoName ?? this.cutVideoName,
+    productId: productId ?? this.productId,
+    productSlug: productSlug ?? this.productSlug,
     cutVideoPath: cutVideoPath ?? this.cutVideoPath,
     createdAt: createdAt ?? this.createdAt,
     fullVideoName: fullVideoName ?? this.fullVideoName,
@@ -356,6 +364,12 @@ class Story {
     isPhoto: json["is_photo"],
     isVideo: json["is_video"],
     photoPath: json["photo_path"],
+    productId: json["product_id"] == null
+        ? null
+        : json["product_id"].toString(),
+    productSlug: json["product_slug"] == null
+        ? null
+        : json["product_slug"].toString(),
     file: json["file"],
     isSeen: json["is_seen"],
     createdAt: json["created_at"] == null ? null : json["created_at"],
@@ -372,6 +386,8 @@ class Story {
     "created_at": createdAt,
     "link": oneLink,
     "full_video_name": fullVideoName,
+    "product_id": productId,
+    "product_slug": productSlug,
     "full_video_path": fullVideoPath,
     "storage_video_path": storageVideoPath,
     "user_id": userId,

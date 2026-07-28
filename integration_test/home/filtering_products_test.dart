@@ -8,7 +8,7 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
-import 'package:trydos/features/home/presentation/widgets/home_page_card2.dart';
+import 'package:trydos/features/home/presentation/widgets/home_page_boutique_card.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/categories_filter_list.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
@@ -55,8 +55,9 @@ void main() {
       /////////////  Register As Guest  /////////////
       await SharedScenarios.registerGuest(tester: tester);
       ////////////// Find Boutiques HomePageCard //////////////
-      final Finder boutiquesSuccessStatus =
-          find.byKey(const Key(WidgetsKeys.boutiquesSuccessStatusKey));
+      final Finder boutiquesSuccessStatus = find.byKey(
+        const Key(WidgetsKeys.boutiquesSuccessStatusKey),
+      );
       await GlobalTestFunctions.findWidget(
         tester: tester,
         actual: boutiquesSuccessStatus,
@@ -65,8 +66,10 @@ void main() {
         failedMessage: 'Find Boutiques HomePageCard2 failed',
       );
       // Check if the Boutique with the text 'best saller' is found.
-      final boutiqueBestSaller =
-          find.widgetWithText(HomePageCard2, 'best saller test');
+      final boutiqueBestSaller = find.widgetWithText(
+        HomePageBoutiqueCard,
+        'best saller test',
+      );
 
       final homeScroll = find.byKey(const Key(WidgetsKeys.homepageScrollKey));
 
@@ -77,17 +80,23 @@ void main() {
       );
 
       String boutiqueBestSellerSlug =
-          tester.widget<HomePageCard2>(boutiqueBestSaller).boutique.slug ?? '';
+          tester
+              .widget<HomePageBoutiqueCard>(boutiqueBestSaller)
+              .boutique
+              .slug ??
+          '';
 
       print(
-          '///////// boutique Slug : $boutiqueBestSellerSlug  ////////////////');
+        '///////// boutique Slug : $boutiqueBestSellerSlug  ////////////////',
+      );
 
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(boutiqueBestSaller);
       await tester.pumpAndSettle();
       ////////////// Find list of filters  //////////////
-      final Finder productListFilterWidget =
-          find.byKey(const Key(WidgetsKeys.productListFilterKey));
+      final Finder productListFilterWidget = find.byKey(
+        const Key(WidgetsKeys.productListFilterKey),
+      );
 
       ///////////////////////////////
 
@@ -101,13 +110,17 @@ void main() {
 
       ///////// Find categorys , brands , filters ///////////////////
 
-      final Finder categoriesProductListingFilterListWidget =
-          find.byKey(const Key(WidgetsKeys.categoriesProductListingFilterListKey));
-      expect(categoriesProductListingFilterListWidget,
-          findsOneWidget); // Ensure categories filter widget is found.
+      final Finder categoriesProductListingFilterListWidget = find.byKey(
+        const Key(WidgetsKeys.categoriesProductListingFilterListKey),
+      );
+      expect(
+        categoriesProductListingFilterListWidget,
+        findsOneWidget,
+      ); // Ensure categories filter widget is found.
       ///////////////////////////
-      final Finder brandsProductListingFilterListWidget =
-          find.byKey(const Key(WidgetsKeys.brandsProductListingFilterListKey));
+      final Finder brandsProductListingFilterListWidget = find.byKey(
+        const Key(WidgetsKeys.brandsProductListingFilterListKey),
+      );
       expect(brandsProductListingFilterListWidget, findsOneWidget);
       ///////// Find products for  boutique ///////////////////
       final Finder productsList = find.byKey(
@@ -124,7 +137,9 @@ void main() {
       //////////// filter by category and check the results//////
 
       final Finder categoryCircleFilterWidget = find.byKey(
-        const Key('${WidgetsKeys.categoryCircleWithOutSubProductListingFilterKey}0'),
+        const Key(
+          '${WidgetsKeys.categoryCircleWithOutSubProductListingFilterKey}0',
+        ),
       );
 
       expect(categoryCircleFilterWidget, findsOneWidget);
@@ -155,17 +170,22 @@ void main() {
 
       BoutiqueBloc boutiqueBloc = GetIt.I<BoutiqueBloc>();
       BoutiqueState boutiqueState = boutiqueBloc.state;
-      expect(boutiqueState.getProductListingWithFiltersPaginationModels,
-          isNotNull);
-      expect(boutiqueState.getProductListingWithFiltersPaginationModels,
-          isNot(equals({})));
+      expect(
+        boutiqueState.getProductListingWithFiltersPaginationModels,
+        isNotNull,
+      );
+      expect(
+        boutiqueState.getProductListingWithFiltersPaginationModels,
+        isNot(equals({})),
+      );
       //////////// get the category of the filtered products /////////////////////////////
       int productIndex1 = 0;
       List<String> productsCategoryAfterFilter = [];
       List<String> productsNameAfterFilter = [];
 
-      Finder productListingScroll =
-          find.byKey(const Key(WidgetsKeys.productListingScrollKey));
+      Finder productListingScroll = find.byKey(
+        const Key(WidgetsKeys.productListingScrollKey),
+      );
 
       bool reachedEnd = false;
       //////////////////// Scroll and test ////////////////////////////////////
@@ -173,7 +193,8 @@ void main() {
       while (!reachedEnd) {
         try {
           Finder productWidget = find.byKey(
-              Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex1'));
+            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex1'),
+          );
           //////////////////////////////////
           String productBoutCategoryName = tester
               .widget<ProductItem>(productWidget)
@@ -201,7 +222,8 @@ void main() {
         productIndex1++;
         // Try to scroll until the next product card becomes visible
         Finder finderWidget = find.byKey(
-            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex1'));
+          Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex1'),
+        );
         if (finderWidget.evaluate().isEmpty) {
           try {
             await tester.drag(productListingScroll, const Offset(0, -400));
@@ -255,8 +277,10 @@ void main() {
         const Key('${WidgetsKeys.brandProductListingFilterNameKey}0'),
       );
 
-      String brandName =
-          tester.widget<MyTextWidget>(brandFilterNameWidget).text.toString();
+      String brandName = tester
+          .widget<MyTextWidget>(brandFilterNameWidget)
+          .text
+          .toString();
 
       print('Filter Brand name $brandName');
 
@@ -265,25 +289,31 @@ void main() {
       await tester.pumpAndSettle();
       await Future.delayed(const Duration(seconds: 1));
 
-      expect(boutiqueState.getProductListingWithFiltersPaginationModels,
-          isNotNull);
-      expect(boutiqueState.getProductListingWithFiltersPaginationModels,
-          isNot(equals({})));
+      expect(
+        boutiqueState.getProductListingWithFiltersPaginationModels,
+        isNotNull,
+      );
+      expect(
+        boutiqueState.getProductListingWithFiltersPaginationModels,
+        isNot(equals({})),
+      );
       ////////////// get the Brand of the filtered products /////////////////////////////
       int productIndex2 = 0;
       List<String> productsBrandAfterFilter = [];
       String productBrandFilterName = '';
 
-      productListingScroll =
-          find.byKey(const Key(WidgetsKeys.productListingScrollKey));
+      productListingScroll = find.byKey(
+        const Key(WidgetsKeys.productListingScrollKey),
+      );
 
       reachedEnd = false;
       //////////////////// Scroll and test ////////////////////////////////////
       /////////////////////////////////
       while (!reachedEnd) {
         try {
-          Key productKey =
-              Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex2');
+          Key productKey = Key(
+            '${WidgetsKeys.productInBoutiqueListKey}$productIndex2',
+          );
           ///////////////////////
           String productBoutBrandName = tester
               .widget<ProductItem>(find.byKey(productKey))
@@ -310,7 +340,8 @@ void main() {
         productIndex2++;
         // Try to scroll until the next product card becomes visible
         Finder finderWidget = find.byKey(
-            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex2'));
+          Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex2'),
+        );
         if (finderWidget.evaluate().isEmpty) {
           try {
             await tester.drag(productListingScroll, const Offset(0, -400));
@@ -333,8 +364,9 @@ void main() {
       await Future.delayed(const Duration(seconds: 2));
 
       ////////// check there are no filters  //////////////////
-      final Finder productListingFilterListWidget =
-          find.byKey(const Key(WidgetsKeys.productListingFilterListKey));
+      final Finder productListingFilterListWidget = find.byKey(
+        const Key(WidgetsKeys.productListingFilterListKey),
+      );
 
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -408,7 +440,9 @@ void main() {
       //////////// filter by category in filter page //////
 
       final Finder categoryCircleFilterWidget2 = find.byKey(
-        const Key('${WidgetsKeys.categoryCircleWithOutSubProductListingFilterKey}0'),
+        const Key(
+          '${WidgetsKeys.categoryCircleWithOutSubProductListingFilterKey}0',
+        ),
       );
 
       String categoryName2 = tester
@@ -454,16 +488,18 @@ void main() {
       int productIndex3 = 0;
       List<String> productsCategoryAfterFilter2 = [];
 
-      productListingScroll =
-          find.byKey(const Key(WidgetsKeys.productListingScrollKey));
+      productListingScroll = find.byKey(
+        const Key(WidgetsKeys.productListingScrollKey),
+      );
 
       reachedEnd = false;
       //////////////////// Scroll and test ////////////////////////////////////
       /////////////////////////////////
       while (!reachedEnd) {
         try {
-          Key productKey =
-              Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex3');
+          Key productKey = Key(
+            '${WidgetsKeys.productInBoutiqueListKey}$productIndex3',
+          );
           ///////////////////////
           String productBoutCategoryName = tester
               .widget<ProductItem>(find.byKey(productKey))
@@ -492,7 +528,8 @@ void main() {
         productIndex3++;
         // Try to scroll until the next product card becomes visible
         Finder finderWidget = find.byKey(
-            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex3'));
+          Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex3'),
+        );
         if (finderWidget.evaluate().isEmpty) {
           try {
             await tester.drag(productListingScroll, const Offset(0, -400));
@@ -538,8 +575,10 @@ void main() {
       await tester.drag(scrollableFinder, const Offset(0, 2000));
       await tester.pumpAndSettle();
 
-      String brandName2 =
-          tester.widget<MyTextWidget>(brandFilterNameWidget).text.toString();
+      String brandName2 = tester
+          .widget<MyTextWidget>(brandFilterNameWidget)
+          .text
+          .toString();
 
       print('Filter Brand name $brandName2');
 
@@ -562,16 +601,18 @@ void main() {
       int productIndex4 = 0;
       List<String> productsBrandAfterFilter2 = [];
 
-      productListingScroll =
-          find.byKey(const Key(WidgetsKeys.productListingScrollKey));
+      productListingScroll = find.byKey(
+        const Key(WidgetsKeys.productListingScrollKey),
+      );
 
       reachedEnd = false;
       //////////////////// Scroll and test ////////////////////////////////////
       /////////////////////////////////
       while (!reachedEnd) {
         try {
-          Key productKey =
-              Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex4');
+          Key productKey = Key(
+            '${WidgetsKeys.productInBoutiqueListKey}$productIndex4',
+          );
           ///////////////////////
           String productBoutBrandName = tester
               .widget<ProductItem>(find.byKey(productKey))
@@ -600,7 +641,8 @@ void main() {
         productIndex4++;
         // Try to scroll until the next product card becomes visible
         Finder finderWidget = find.byKey(
-            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex4'));
+          Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex4'),
+        );
         if (finderWidget.evaluate().isEmpty) {
           try {
             await tester.drag(productListingScroll, const Offset(0, -400));
@@ -715,14 +757,16 @@ void main() {
       await Future.delayed(const Duration(seconds: 2));
 
       ////////////////////////////
-      final Finder categoriesFilterListFinder =
-          find.byType(CategoriesFilterList);
+      final Finder categoriesFilterListFinder = find.byType(
+        CategoriesFilterList,
+      );
       expect(categoriesFilterListFinder, findsOneWidget);
       String boutiqueSlug = tester
           .widget<CategoriesFilterList>(categoriesFilterListFinder)
           .boutiqueSlug;
 
-      String category = tester
+      String category =
+          tester
               .widget<CategoriesFilterList>(categoriesFilterListFinder)
               .category ??
           '';
@@ -733,19 +777,22 @@ void main() {
 
       Filter? filters2 =
           boutiqueState.getProductFiltersModel[key2]?.filters != null
-              ? boutiqueState.getProductFiltersModel[key2]?.filters ?? Filter()
-              : Filter();
+          ? boutiqueState.getProductFiltersModel[key2]?.filters ?? Filter()
+          : Filter();
 
       print(
-          'categories length : ${filters2.categories == null ? null : filters2.categories!.length}');
+        'categories length : ${filters2.categories == null ? null : filters2.categories!.length}',
+      );
 
       String boutiqueSlugInFilterData = filters2.boutiques?[0].slug ?? '';
 
       print(
-          '////// boutiques length : ${filters2.boutiques?.length} /////////////////');
+        '////// boutiques length : ${filters2.boutiques?.length} /////////////////',
+      );
 
       print(
-          '////// boutique Slug In Filter Data : $boutiqueSlugInFilterData /////////////////');
+        '////// boutique Slug In Filter Data : $boutiqueSlugInFilterData /////////////////',
+      );
 
       expect(boutiqueSlugInFilterData, equals(boutiqueBestSellerSlug));
 

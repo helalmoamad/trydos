@@ -29,6 +29,7 @@ import '../../../data/models/get_cart_item_model.dart';
 import '../../../data/models/get_old_cart_model.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as product;
+import '../../../data/models/get_checklist_model.dart';
 import '../../../data/models/get_user_notifications_model.dart';
 import '../../../data/models/starting_settings_response_model.dart';
 import '../../../data/models/get_auth_product_details_model.dart';
@@ -36,6 +37,12 @@ import '../../../data/models/get_order_rating_model.dart' as order_rating;
 part 'home_state.g.dart';
 
 enum GetStartingSettingsStatus { init, loading, success, failure }
+
+/// Covers the three per-product checklist calls (exist check / add / delete).
+/// Tracked per product id — see [HomeState.checklistItemStatus].
+enum ChecklistItemStatus { init, loading, success, failure }
+
+enum GetChecklistStatus { init, loading, success, failure }
 
 enum GetCountryBoundaryByIsoStatus { init, loading, success, failure }
 
@@ -194,6 +201,10 @@ class HomeState extends Equatable {
     this.getOldCartModel,
     this.countryCoordinatesBorders = const [],
     this.getUserNotificationModel,
+    this.checklistItemStatus = const {},
+    this.productInChecklist = const {},
+    this.getChecklistStatus = GetChecklistStatus.init,
+    this.checklistPageData,
     this.checkAvailabilityProductCartModel,
     this.currentPage = 0,
     this.productStatus,
@@ -333,6 +344,24 @@ class HomeState extends Equatable {
   // final GeColorsAndSizesForSearchModel? geColorsAndSizesForSearchModel;
   final PaginationModel<NotificationItemModel>? getUserNotificationModel;
 
+  /// productId -> status of the exist-check / add / delete call for *that*
+  /// product. Keyed per product so a slow response for one product can never
+  /// clobber a newer result for another.
+  final Map<String, ChecklistItemStatus> checklistItemStatus;
+
+  /// productId -> is the product currently in the user's checklist.
+  final Map<String, bool> productInChecklist;
+
+  final GetChecklistStatus getChecklistStatus;
+
+  /// Current page of `GET /checklist` (paginated, prev/next driven).
+  ///
+  /// Excluded from hydration: it is a re-fetchable server-owned cache, and
+  /// persisting it would both bloat every hydrated write and let a stale page
+  /// (wrong `currentPage`) drive the pagination math after a restart.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final ChecklistPageData? checklistPageData;
+
   final GetCartOverviewStatus? getCartOverviewStatus;
 
   final CheckAvailabilityProductCartModel? checkAvailabilityProductCartModel;
@@ -460,6 +489,11 @@ class HomeState extends Equatable {
     updateLikeCommentRatingStatus,
 
     getUserNotificationModel,
+
+    checklistItemStatus,
+    productInChecklist,
+    getChecklistStatus,
+    checklistPageData,
 
     getCartOverviewStatus,
 
@@ -592,6 +626,10 @@ class HomeState extends Equatable {
     final User? userInfo,
     final UploadUserPhotoCloudinaryStatus? uploadUserPhotoCloudinaryStatus,
     final PaginationModel<NotificationItemModel>? getUserNotificationModel,
+    final Map<String, ChecklistItemStatus>? checklistItemStatus,
+    final Map<String, bool>? productInChecklist,
+    final GetChecklistStatus? getChecklistStatus,
+    final ChecklistPageData? checklistPageData,
     final GetCartOverviewStatus? getCartOverviewStatus,
     // final GeColorsAndSizesForSearchModel? geColorsAndSizesForSearchModel,
     final CurrentSelectedColorForEveryProductStatus?
@@ -785,6 +823,10 @@ class HomeState extends Equatable {
 
       getUserNotificationModel:
           getUserNotificationModel ?? this.getUserNotificationModel,
+      checklistItemStatus: checklistItemStatus ?? this.checklistItemStatus,
+      productInChecklist: productInChecklist ?? this.productInChecklist,
+      getChecklistStatus: getChecklistStatus ?? this.getChecklistStatus,
+      checklistPageData: checklistPageData ?? this.checklistPageData,
       getCartOverviewStatus:
           getCartOverviewStatus ?? this.getCartOverviewStatus,
 

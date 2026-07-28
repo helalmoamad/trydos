@@ -7,10 +7,14 @@ import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/delete.dart';
 import 'package:trydos/core/api/methods/get.dart';
+import 'package:trydos/core/api/methods/patch.dart';
 import 'package:trydos/core/api/methods/put.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/DeliveredOrdersResponse.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/checklist_action_model.dart';
+import 'package:trydos/features/home/data/models/checklist_exist_model.dart';
+import 'package:trydos/features/home/data/models/get_checklist_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/create_return_request_model.dart';
@@ -25,6 +29,7 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_colors_and_sizes_model.dart';
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
+import 'package:trydos/features/home/data/models/get_hidden_orders_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
@@ -84,7 +89,7 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<StartingSettingsResponseModel> getStartingSettings =
         GetClient<StartingSettingsResponseModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<StartingSettingsResponseModel>(
             endpoint: MarketEndPoints.getStartingSettingsEP,
             response: ResponseValue<StartingSettingsResponseModel>(
@@ -362,7 +367,7 @@ class HomeRemoteDatasource {
   Future<GeColorsAndSizesForSearchModel> getColorsAndSizesForSearch() {
     GetClient<GeColorsAndSizesForSearchModel> getColorsAndSizesForSearch =
         GetClient<GeColorsAndSizesForSearchModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<GeColorsAndSizesForSearchModel>(
             endpoint: MarketEndPoints.getColorsAndSizesForSearchEP,
             response: ResponseValue<GeColorsAndSizesForSearchModel>(
@@ -396,7 +401,7 @@ class HomeRemoteDatasource {
   getNotificationTypeForProduct() async {
     // Build the model on a background isolate (see heavy_response_parsers.dart).
     GetClient<dynamic> getNotificationTypeForProduct = GetClient<dynamic>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<dynamic>(
         endpoint: MarketEndPoints.getNotificationTypeForProductEP,
         response: ResponseValue<dynamic>(fromJson: (response) => response),
@@ -465,7 +470,7 @@ class HomeRemoteDatasource {
     PostClient<FirebaseSettingForNotificationModel>
     changeCountryLanguageFornotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.changeCountryLanguageEP,
             data: params,
@@ -482,7 +487,7 @@ class HomeRemoteDatasource {
   Future<FirebaseSettingForNotificationModel> getMyFirebaseSettings() async {
     // Build the model on a background isolate (see heavy_response_parsers.dart).
     GetClient<dynamic> getMyFirebaseSettings = GetClient<dynamic>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<dynamic>(
         endpoint: MarketEndPoints.getMyFirebaseSettingsEP,
         response: ResponseValue<dynamic>(fromJson: (response) => response),
@@ -497,7 +502,7 @@ class HomeRemoteDatasource {
   ) {
     PostClient<FirebaseSettingForNotificationModel> updateWhatsappNotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.updateWhatsappEP,
             data: params,
@@ -516,7 +521,7 @@ class HomeRemoteDatasource {
   ) {
     PostClient<FirebaseSettingForNotificationModel> updateFirebaseNotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.updateFirebaseEP,
             data: params,
@@ -535,7 +540,7 @@ class HomeRemoteDatasource {
   ) {
     PostClient<FirebaseSettingForNotificationModel> updateEmailNotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.updateEmailEP,
             data: params,
@@ -555,7 +560,7 @@ class HomeRemoteDatasource {
     PostClient<FirebaseSettingForNotificationModel>
     updateNotificationFrequency =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.updateNotificationFrequencyEP,
             data: params,
@@ -575,7 +580,7 @@ class HomeRemoteDatasource {
     PostClient<FirebaseSettingForNotificationModel>
     unSubscribeTopicFornotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.unsubscribeTopicEP,
             data: params,
@@ -595,7 +600,7 @@ class HomeRemoteDatasource {
     PostClient<FirebaseSettingForNotificationModel>
     subscribeTopicFornotification =
         PostClient<FirebaseSettingForNotificationModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
             endpoint: MarketEndPoints.subscribeTopicEP,
             data: params,
@@ -678,7 +683,7 @@ class HomeRemoteDatasource {
   Future<GetCurrencyForCountryModel> getCurrencyForCountry() {
     GetClient<GetCurrencyForCountryModel> getCurrencyForCountry =
         GetClient<GetCurrencyForCountryModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<GetCurrencyForCountryModel>(
             endpoint: MarketEndPoints.getCurrencyEP,
             queryParameters: {
@@ -703,7 +708,7 @@ class HomeRemoteDatasource {
   Future<UpdateProfileModel> updateProfile(Map<String, dynamic> params) {
     PostClient<UpdateProfileModel> updateProfile =
         PostClient<UpdateProfileModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<UpdateProfileModel>(
             endpoint: MarketEndPoints.updateProfileEP,
             data: params,
@@ -833,7 +838,7 @@ class HomeRemoteDatasource {
 
   Future<bool> sendErrorToMobileErrorLog(Map<String, dynamic> params) {
     PostClient<bool> sendErrorToMobileErrorLog = PostClient<bool>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<bool>(
         endpoint: MarketEndPoints.sendErrorToMobileErrorLogEP,
         data: params,
@@ -862,7 +867,7 @@ class HomeRemoteDatasource {
   Future<GetOldCartModel> getOldCartItems() async {
     // Build the model on a background isolate (see heavy_response_parsers.dart).
     GetClient<dynamic> getOldCart = GetClient<dynamic>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<dynamic>(
         endpoint: MarketEndPoints.getOldCartItemsEP,
         response: ResponseValue<dynamic>(fromJson: (response) => response),
@@ -889,7 +894,7 @@ class HomeRemoteDatasource {
   Future<GetCartShippingItemsModel> getCartShippingItems() async {
     // Build the model on a background isolate (see heavy_response_parsers.dart).
     GetClient<dynamic> getCartShippingItems = GetClient<dynamic>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<dynamic>(
         endpoint: MarketEndPoints.getCartItemEP,
         response: ResponseValue<dynamic>(fromJson: (response) => response),
@@ -954,7 +959,7 @@ class HomeRemoteDatasource {
 
   Future<bool> hideItemsInOldCart(Map<String, dynamic> params) {
     PostClient<bool> hideItemsInOldCart = PostClient<bool>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<bool>(
         endpoint: MarketEndPoints.hideItemsInOldCartEP,
         data: params,
@@ -962,6 +967,47 @@ class HomeRemoteDatasource {
       ),
     );
     return hideItemsInOldCart();
+  }
+
+  Future<bool> setOrderVisibility(String orderId, Map<String, dynamic> params) {
+    PatchClient<bool> setOrderVisibility = PatchClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.hideOrderVisibilityEP(orderId),
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return setOrderVisibility();
+  }
+
+  Future<bool> setOrderDetailVisibility(
+    String detailId,
+    Map<String, dynamic> params,
+  ) {
+    PatchClient<bool> setOrderDetailVisibility = PatchClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.hideOrderDetailVisibilityEP(detailId),
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return setOrderDetailVisibility();
+  }
+
+  Future<GetHiddenOrdersModel> getHiddenOrders() {
+    GetClient<GetHiddenOrdersModel> getHiddenOrders =
+        GetClient<GetHiddenOrdersModel>(
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<GetHiddenOrdersModel>(
+            endpoint: MarketEndPoints.getHiddenOrdersEP,
+            response: ResponseValue<GetHiddenOrdersModel>(
+              fromJson: (response) => GetHiddenOrdersModel.fromJson(response),
+            ),
+          ),
+        );
+    return getHiddenOrders();
   }
 
   Future<ConvertItemFromCartToOldCartModel> convertItemInCartToOldCart(
@@ -1060,7 +1106,7 @@ class HomeRemoteDatasource {
   Future<UpdateItemInCartModel> updateItemInCart(Map<String, dynamic> params) {
     PostClient<UpdateItemInCartModel> updateItemInCart =
         PostClient<UpdateItemInCartModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<UpdateItemInCartModel>(
             endpoint: MarketEndPoints.updateItemCartItemEP,
             data: params,
@@ -1093,7 +1139,7 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<GetAllowedCountriesModel> verifyOtpSignIn =
         GetClient<GetAllowedCountriesModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<GetAllowedCountriesModel>(
             endpoint: MarketEndPoints.getAllowesdCountriesEP,
             response: ResponseValue<GetAllowedCountriesModel>(
@@ -1139,7 +1185,7 @@ class HomeRemoteDatasource {
 
   Future<String> storeFcmTokenOfMarket(Map<String, dynamic> params) {
     PostClient<String> storeFcmTokenOfMarket = PostClient<String>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<String>(
         endpoint: MarketEndPoints.storeFcmOfMarketEP,
         data: params,
@@ -1275,7 +1321,7 @@ class HomeRemoteDatasource {
   Future<CheckAvailabilityProductCartModel> checkAvailabilityProductCart() {
     GetClient<CheckAvailabilityProductCartModel> checkAvailabilityProductCart =
         GetClient<CheckAvailabilityProductCartModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<CheckAvailabilityProductCartModel>(
             endpoint: MarketEndPoints.checkAvailabilityProductCartEP,
             response: ResponseValue<CheckAvailabilityProductCartModel>(
@@ -1290,7 +1336,7 @@ class HomeRemoteDatasource {
 
   Future<ApplyCouponModel> applyCoupon({required String code}) {
     GetClient<ApplyCouponModel> applyCoupon = GetClient<ApplyCouponModel>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<ApplyCouponModel>(
         endpoint: MarketEndPoints.applyCouponEP,
         queryParameters: {"code": code},
@@ -1306,7 +1352,7 @@ class HomeRemoteDatasource {
   Future<GetCartShippingItemsModel> getCartOverview() {
     GetClient<GetCartShippingItemsModel> getCartOverview =
         GetClient<GetCartShippingItemsModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<GetCartShippingItemsModel>(
             endpoint: MarketEndPoints.getCartOverviewEP,
             response: ResponseValue<GetCartShippingItemsModel>(
@@ -1322,7 +1368,7 @@ class HomeRemoteDatasource {
   Future<GetUserNotificationsModel> getUserNotifications({required int page}) {
     GetClient<GetUserNotificationsModel> getUserNotifications =
         GetClient<GetUserNotificationsModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<GetUserNotificationsModel>(
             endpoint: MarketEndPoints.getUserNotificationsEP,
             queryParameters: {"page": page.toString()},
@@ -1372,7 +1418,7 @@ class HomeRemoteDatasource {
   ) {
     PostClient<ReadOnlyMessageFromApiModel> sendAcceptOfNotificationMarket =
         PostClient<ReadOnlyMessageFromApiModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
             endpoint: MarketEndPoints.sendAcceptOfNotificationMarketEP,
             data: params,
@@ -1423,7 +1469,7 @@ class HomeRemoteDatasource {
   Future<ColorSizeForProductModel> getProductColorSizeSyncAttribute(String id) {
     GetClient<ColorSizeForProductModel> getProductColorSizeSyncAttribute =
         GetClient<ColorSizeForProductModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<ColorSizeForProductModel>(
             endpoint: MarketEndPoints.getProductColorSizeSyncAttributeEP(id),
             response: ResponseValue<ColorSizeForProductModel>(
@@ -1711,6 +1757,79 @@ class HomeRemoteDatasource {
 
     final raw = await client();
     return parseRelatedProductsInBackground(raw);
+  }
+
+  //****************************** Checklist ******************************/
+
+  Future<ChecklistActionModel> addToChecklist({required int productId}) {
+    PostClient<ChecklistActionModel> addToChecklist =
+        PostClient<ChecklistActionModel>(
+          serverName: ServerName.marketGO,
+          requestPrams: RequestConfig<ChecklistActionModel>(
+            endpoint: MarketEndPoints.addToChecklistEP,
+            data: {"product_id": productId},
+            response: ResponseValue<ChecklistActionModel>(
+              fromJson: (response) => ChecklistActionModel.fromJson(response),
+            ),
+          ),
+        );
+
+    return addToChecklist();
+  }
+
+  Future<ChecklistActionModel> deleteFromChecklist({required int productId}) {
+    DeleteClient<ChecklistActionModel> deleteFromChecklist =
+        DeleteClient<ChecklistActionModel>(
+          serverName: ServerName.marketGO,
+          requestPrams: RequestConfig<ChecklistActionModel>(
+            endpoint: MarketEndPoints.deleteFromChecklistEP(
+              productId.toString(),
+            ),
+            response: ResponseValue<ChecklistActionModel>(
+              fromJson: (response) => ChecklistActionModel.fromJson(response),
+            ),
+          ),
+        );
+
+    return deleteFromChecklist();
+  }
+
+  Future<ChecklistExistModel> checkChecklistExist({required int productId}) {
+    GetClient<ChecklistExistModel> checkChecklistExist =
+        GetClient<ChecklistExistModel>(
+          serverName: ServerName.marketGO,
+          requestPrams: RequestConfig<ChecklistExistModel>(
+            endpoint: MarketEndPoints.checkChecklistExistEP(
+              productId.toString(),
+            ),
+            response: ResponseValue<ChecklistExistModel>(
+              fromJson: (response) => ChecklistExistModel.fromJson(response),
+            ),
+          ),
+        );
+
+    return checkChecklistExist();
+  }
+
+  Future<GetChecklistModel> getChecklist({
+    required int page,
+    required int pageSize,
+  }) {
+    GetClient<GetChecklistModel> getChecklist = GetClient<GetChecklistModel>(
+      serverName: ServerName.marketGO,
+      requestPrams: RequestConfig<GetChecklistModel>(
+        endpoint: MarketEndPoints.getChecklistEP,
+        queryParameters: {
+          "page": page.toString(),
+          "page_size": pageSize.toString(),
+        },
+        response: ResponseValue<GetChecklistModel>(
+          fromJson: (response) => GetChecklistModel.fromJson(response),
+        ),
+      ),
+    );
+
+    return getChecklist();
   }
 
   Future<DeliveredOrdersResponse> getDeliveredOrdersResponse({

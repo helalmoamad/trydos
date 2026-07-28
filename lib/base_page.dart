@@ -20,6 +20,7 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:flutter/services.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/widgets/session_expired_dialog.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
@@ -200,7 +201,8 @@ handleOpenChatPageFromNotificationInBackground(
   } else {
     // إضافة الرسالة إلى الـ bloc قبل الانتقال حتى تظهر في الدردشة عند فتحها من الإشعار
 
-    if (kDebugMode) print("chatNotification//////////////////////////333333333");
+    if (kDebugMode)
+      print("chatNotification//////////////////////////333333333");
     Future.delayed(
       const Duration(milliseconds: 600),
       () => navigationToSinglePageChat(message.channel!, message.senderUser!),
@@ -714,7 +716,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   late HomeBloc homeBloc;
   late CategoryBloc categoryBloc;
   late AppBloc appBloc;
-  final ValueNotifier<bool> isShowPanelForVerified = ValueNotifier(false);
   late CallsBloc callsBloc;
   ValueNotifier<bool> visibleCountries = ValueNotifier(false);
   final ValueNotifier<bool> _showSaveCountryButton = ValueNotifier(false);
@@ -768,14 +769,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     GetIt.I<PrefsRepository>()..setTagsInUrlToFilter([]);
     // GetIt.I<PrefsRepository>().remove()
     pages = [
-      HomePage(isShowPanelForVerified: isShowPanelForVerified),
+      HomePage(),
       const CartPage(),
       const ChatPages(description: ''),
       const ProfileHomePage(),
     ];
     pages!.add(
       SearchPage(
-        isShowPanelForVerified: isShowPanelForVerified,
         controller: controller,
         buildSearchResult: buildSearchResult,
         appearTrendingAndHistory: appearTrendingAndHistory,
@@ -815,14 +815,14 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         'android: ${homeBloc.state.startingSetting?.androidMinVersion}',
       );
       debugPrint('ios: ${homeBloc.state.startingSetting?.iosMinVersion}');
-      if (applicationVersion <
+      /* if (applicationVersion <
               (homeBloc.state.startingSetting!.androidMinVersion!) ||
           applicationVersion <
               (homeBloc.state.startingSetting!.iosMinVersion!)) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           HelperFunctions.showVersionDialog(context);
         });
-      }
+      }*/
     }
     super.initState();
   }
@@ -876,6 +876,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             ),
           )
         : null;
+    await Future.delayed(const Duration(milliseconds: 500));
+
     prefsRepository.addFcmToken("");
     BlocProvider.of<HomeBloc>(context).add(const ClearAllAppCashEvent());
     clearCustomCashe();
@@ -923,16 +925,18 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
-      if (kDebugMode) print(
-        "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ////",
-      );
+      if (kDebugMode)
+        print(
+          "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ////",
+        );
 
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
         event,
       )) {
-        if (kDebugMode) print(
-          "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQcheckIfTheNotifiatedToCha",
-        );
+        if (kDebugMode)
+          print(
+            "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQcheckIfTheNotifiatedToCha",
+          );
 
         LocalNotificationService().showNotificationWithPayload(
           message: event,
@@ -943,9 +947,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       Map<String, dynamic> remoteMessage = convert.jsonDecode(
         event.data['data'],
       );
-      if (kDebugMode) print(
-        "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ///....../${remoteMessage}",
-      );
+      if (kDebugMode)
+        print(
+          "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ///....../${remoteMessage}",
+        );
       dev.log("......${remoteMessage}...........");
       if (remoteMessage['type'] == 'RefuseCallEvent') {
         Map<String, dynamic> data = remoteMessage;
@@ -1040,9 +1045,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           ),
         );
       } else if (remoteMessage['type'] == 'VoiceCallEvent') {
-        if (kDebugMode) print(
-          "VoiceCallEvent ForeGround Message${remoteMessage['is_private']}",
-        );
+        if (kDebugMode)
+          print(
+            "VoiceCallEvent ForeGround Message${remoteMessage['is_private']}",
+          );
         dev.log("VoiceCallEvent ForeGround Message${remoteMessage}");
         GetIt.I<PrefsRepository>().saveRequestsData(
           null,
@@ -1175,15 +1181,18 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       } else {
         Message message = Message.fromJson(remoteMessage['message']);
         String prevMessageId = remoteMessage['prev_message_id'].toString();
-        if (kDebugMode) print(
-          "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(0, 100)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
-        );
-        if (kDebugMode) print(
-          "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(100, 200)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
-        );
-        if (kDebugMode) print(
-          "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(200, 300)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
-        );
+        if (kDebugMode)
+          print(
+            "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(0, 100)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
+          );
+        if (kDebugMode)
+          print(
+            "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(100, 200)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
+          );
+        if (kDebugMode)
+          print(
+            "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(200, 300)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
+          );
         chatBloc.add(
           AddChannelToChannels(
             message: message,
@@ -1247,200 +1256,222 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         listenWhen: (p, c) =>
             p.getChatsStatus != c.getChatsStatus &&
             c.getChatsStatus == GetChatsStatus.success,
-        child: BlocListener<HomeBloc, HomeState>(
+        child: BlocListener<AuthBloc, AuthState>(
+          // A verified user's session expired (refresh failed). They keep
+          // browsing as a fresh guest; prompt them to log back in — shown at
+          // base_page just like the app-update dialog.
           listenWhen: (p, c) =>
-              p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
-              c.getStartingSettingsStatus == GetStartingSettingsStatus.success,
+              p.sessionExpiredTick != c.sessionExpiredTick &&
+              c.sessionExpiredTick > 0,
           listener: (context, state) {
-            debugPrint('version gets successfully');
-            debugPrint('android: ${state.startingSetting?.androidMinVersion}');
-            debugPrint('ios: ${state.startingSetting?.iosMinVersion}');
-            if (applicationVersion <
-                    state.startingSetting!.androidMinVersion! ||
-                applicationVersion < state.startingSetting!.iosMinVersion!) {
-              HelperFunctions.showVersionDialog(context);
-            }
+            SessionExpiredDialog.show(
+              context,
+              phoneNumber: state.sessionExpiredPhone,
+            );
           },
-          child:
-              // ignore: deprecated_member_use
-              WillPopScope(
-                onWillPop: () async {
-                  // إذا كانت صفحة البحث مفتوحة (currentIndex == 4)
-                  //  print(
-                  //     "FFFFFFFFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDDDDDD${appBloc.state.currentIndex}");
-                  if (appBloc.state.currentIndex != 0) {
-                    // إذا كان الكيبورد مفتوح، أغلق الكيبورد فقط
-                    if (MediaQuery.of(context).viewInsets.bottom > 0) {
-                      FocusScope.of(context).unfocus();
+          child: BlocListener<HomeBloc, HomeState>(
+            listenWhen: (p, c) =>
+                p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
+                c.getStartingSettingsStatus ==
+                    GetStartingSettingsStatus.success,
+            listener: (context, state) {
+              debugPrint('version gets successfully');
+              debugPrint(
+                'android: ${state.startingSetting?.androidMinVersion}',
+              );
+              debugPrint('ios: ${state.startingSetting?.iosMinVersion}');
+              if (applicationVersion <
+                      state.startingSetting!.androidMinVersion! ||
+                  applicationVersion < state.startingSetting!.iosMinVersion!) {
+                HelperFunctions.showVersionDialog(context);
+              }
+            },
+            child:
+                // ignore: deprecated_member_use
+                WillPopScope(
+                  onWillPop: () async {
+                    // إذا كانت صفحة البحث مفتوحة (currentIndex == 4)
+                    //  print(
+                    //     "FFFFFFFFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDDDDDD${appBloc.state.currentIndex}");
+                    if (appBloc.state.currentIndex != 0) {
+                      // إذا كان الكيبورد مفتوح، أغلق الكيبورد فقط
+                      if (MediaQuery.of(context).viewInsets.bottom > 0) {
+                        FocusScope.of(context).unfocus();
+                        return false;
+                      }
+
+                      // نفذ منطق البحث
+                      controller.clear();
+                      appBloc.add(ChangeBasePage(0));
+                      GetIt.I<BoutiqueBloc>().add(
+                        ResetAllSelectedAppliedFilterEvent(),
+                      );
+                      appBloc.add(HideBottomNavigationBar(false));
                       return false;
                     }
 
-                    // نفذ منطق البحث
-                    controller.clear();
-                    appBloc.add(ChangeBasePage(0));
-                    GetIt.I<BoutiqueBloc>().add(
-                      ResetAllSelectedAppliedFilterEvent(),
-                    );
-                    appBloc.add(HideBottomNavigationBar(false));
-                    return false;
-                  }
-
-                  // للصفحات الأخرى، اسمح بالخروج العادي
-                  return true;
-                },
-                child: Scaffold(
-                  backgroundColor: colorScheme.surface,
-                  bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-                    buildWhen: (p, c) =>
-                        p.showBars != c.showBars ||
-                        p.hideBottomNavigationBar != c.hideBottomNavigationBar,
-                    builder: (context, state) {
-                      if (state.showBars == true) {
-                        return state.hideBottomNavigationBar
-                            ? const SizedBox.shrink()
-                            : AppBottomNavBar(
-                                isShowPanelForVerified: isShowPanelForVerified,
-                              );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    },
-                  ),
-                  body: BlocBuilder<HomeBloc, HomeState>(
-                    buildWhen: (p, c) =>
-                        p.getAllowedCountriesModel !=
-                            c.getAllowedCountriesModel ||
-                        p.getAllowedCountriesStatus !=
-                            c.getAllowedCountriesStatus,
-                    builder: (context, homestate) {
-                      return BlocBuilder<AuthBloc, AuthState>(
-                        buildWhen: (p, c) =>
-                            p.getCustomerCountryStatus !=
-                            c.getCustomerCountryStatus,
-                        builder: (context, authstate) {
-                          if ((homestate
-                                      .getAllowedCountriesModel
-                                      ?.data
-                                      ?.countries
-                                      ?.length ??
-                                  0) ==
-                              0) {
-                            if (homestate.getAllowedCountriesStatus ==
-                                GetAllowedCountriesStatus.failure) {
-                              return Center(
-                                child: Container(
-                                  width: 200.w,
-                                  height: 200.h,
-                                  child: TryAgainWidget(
-                                    tryAgain: () {
-                                      homeBloc.add(GetAllowedCountriesEvent());
-                                      GetIt.I<StoryBloc>().add(
-                                        const GetStoryEvent(
-                                          withPaginition: false,
-                                        ),
-                                      );
-                                      GetIt.I<AuthBloc>().add(
-                                        GetUserCountryEvent(),
-                                      );
-                                      Future.delayed(
-                                        const Duration(seconds: 3),
-                                        () => context.go("/"),
-                                      );
-                                    },
+                    // للصفحات الأخرى، اسمح بالخروج العادي
+                    return true;
+                  },
+                  child: Scaffold(
+                    backgroundColor: colorScheme.surface,
+                    bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
+                      buildWhen: (p, c) =>
+                          p.showBars != c.showBars ||
+                          p.hideBottomNavigationBar !=
+                              c.hideBottomNavigationBar,
+                      builder: (context, state) {
+                        if (state.showBars == true) {
+                          return state.hideBottomNavigationBar
+                              ? const SizedBox.shrink()
+                              : const AppBottomNavBar();
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      },
+                    ),
+                    body: BlocBuilder<HomeBloc, HomeState>(
+                      buildWhen: (p, c) =>
+                          p.getAllowedCountriesModel !=
+                              c.getAllowedCountriesModel ||
+                          p.getAllowedCountriesStatus !=
+                              c.getAllowedCountriesStatus,
+                      builder: (context, homestate) {
+                        return BlocBuilder<AuthBloc, AuthState>(
+                          buildWhen: (p, c) =>
+                              p.getCustomerCountryStatus !=
+                              c.getCustomerCountryStatus,
+                          builder: (context, authstate) {
+                            if ((homestate
+                                        .getAllowedCountriesModel
+                                        ?.data
+                                        ?.countries
+                                        ?.length ??
+                                    0) ==
+                                0) {
+                              if (homestate.getAllowedCountriesStatus ==
+                                  GetAllowedCountriesStatus.failure) {
+                                return Center(
+                                  child: Container(
+                                    width: 200.w,
+                                    height: 200.h,
+                                    child: TryAgainWidget(
+                                      tryAgain: () {
+                                        homeBloc.add(
+                                          GetAllowedCountriesEvent(),
+                                        );
+                                        GetIt.I<StoryBloc>().add(
+                                          const GetStoryEvent(
+                                            withPaginition: false,
+                                          ),
+                                        );
+                                        GetIt.I<AuthBloc>().add(
+                                          GetUserCountryEvent(),
+                                        );
+                                        Future.delayed(
+                                          const Duration(seconds: 3),
+                                          () => context.go("/"),
+                                        );
+                                      },
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
+                              return Center(child: TrydosLoader());
                             }
-                            return Center(child: TrydosLoader());
-                          }
-                          visibleCountries.value =
-                              (homestate
-                                  .getAllowedCountriesModel!
-                                  .data!
-                                  .countries!
-                                  .any((element) {
-                                    return element.iso ==
-                                        (_prefsRepository.countryIso ?? "");
-                                  }) ||
-                              _prefsRepository.userCountryIsAvailable == 1);
-                          return ValueListenableBuilder<bool>(
-                            valueListenable: visibleCountries,
-                            builder: (context, visible, _) {
-                              if (visible && !requestMainCategoriesDone) {
-                                requestMainCategoriesDone = true;
-                                // homeBloc.add(GetHomeBoutiqesEvent(
-                                //     getWithPrefetchForBoutiques: true,
-                                //     categorySlug: "Empty",
-                                //     offset: "1",
-                                //     context: context,
-                                //     getWithPagination: false));
-                                if (!(prefsRepository.isFoundDataCashed ??
-                                    false)) {
-                                  categoryBloc.add(
-                                    GetMainCategoriesEvent(context: context),
-                                  );
-                                  GetIt.I<BoutiqueBloc>().add(
-                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                      categorySlugs: [],
-                                      cashedOrginalBoutique: true,
-                                      boutiqueSlug: "*featured*",
-                                    ),
-                                  );
-                                  GetIt.I<BoutiqueBloc>().add(
-                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                      categorySlugs: [],
-                                      cashedOrginalBoutique: true,
-                                      boutiqueSlug: "*flashDeal*",
-                                    ),
-                                  );
-                                  GetIt.I<BoutiqueBloc>().add(
-                                    const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                      categorySlugs: [],
-                                      cashedOrginalBoutique: true,
-                                      boutiqueSlug: "*recommended*",
-                                    ),
-                                  );
-                                }
+                            visibleCountries.value =
+                                (homestate
+                                    .getAllowedCountriesModel!
+                                    .data!
+                                    .countries!
+                                    .any((element) {
+                                      return element.iso ==
+                                          (_prefsRepository.countryIso ?? "");
+                                    }) ||
+                                _prefsRepository.userCountryIsAvailable == 1);
+                            return ValueListenableBuilder<bool>(
+                              valueListenable: visibleCountries,
+                              builder: (context, visible, _) {
+                                if (visible && !requestMainCategoriesDone) {
+                                  requestMainCategoriesDone = true;
+                                  // homeBloc.add(GetHomeBoutiqesEvent(
+                                  //     getWithPrefetchForBoutiques: true,
+                                  //     categorySlug: "Empty",
+                                  //     offset: "1",
+                                  //     context: context,
+                                  //     getWithPagination: false));
+                                  if (!(prefsRepository.isFoundDataCashed ??
+                                      false)) {
+                                    categoryBloc.add(
+                                      GetMainCategoriesEvent(context: context),
+                                    );
+                                    GetIt.I<BoutiqueBloc>().add(
+                                      const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                        categorySlugs: [],
+                                        cashedOrginalBoutique: true,
+                                        boutiqueSlug: "*featured*",
+                                      ),
+                                    );
+                                    GetIt.I<BoutiqueBloc>().add(
+                                      const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                        categorySlugs: [],
+                                        cashedOrginalBoutique: true,
+                                        boutiqueSlug: "*flashDeal*",
+                                      ),
+                                    );
+                                    GetIt.I<BoutiqueBloc>().add(
+                                      const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                        categorySlugs: [],
+                                        cashedOrginalBoutique: true,
+                                        boutiqueSlug: "*recommended*",
+                                      ),
+                                    );
+                                  }
 
-                                /* if (prefsRepository.marketToken != null) {
+                                  /* if (prefsRepository.marketToken != null) {
                                       homeBloc
                                           .add(GetCurrencyForCountryEvent());
                                       homeBloc.add(GetCartItemEvent());
                                       homeBloc
                                           .add(GetProductsListInCartEvent());
                                     }*/
-                              }
+                                }
 
-                              visible
-                                  ? appBloc.add(HideBottomNavigationBar(false))
-                                  : appBloc.add(HideBottomNavigationBar(true));
-                              return !visible
-                                  ? _buildCountryRestrictionView(
-                                      homestate,
-                                      visible,
-                                    )
-                                  : Stack(
-                                      alignment: Alignment.topCenter,
-                                      children: [
-                                        BlocBuilder<AppBloc, AppState>(
-                                          buildWhen: (oldState, newState) =>
-                                              oldState.currentIndex !=
-                                              newState.currentIndex,
-                                          builder: (_, state) {
-                                            return pages![state.currentIndex];
-                                          },
-                                        ),
-                                        BlocBuilder<AppBloc, AppState>(
-                                          buildWhen: (p, c) =>
-                                              p.showBars != c.showBars ||
-                                              p.hideBottomNavigationBar !=
-                                                  c.hideBottomNavigationBar ||
-                                              p.currentIndex != c.currentIndex,
-                                          builder: (context, state) {
-                                            if (state.hideBottomNavigationBar ==
-                                                    true &&
-                                                state.currentIndex == 0) {
-                                              return const SizedBox.shrink(); /*TrydosAppBar(
+                                visible
+                                    ? appBloc.add(
+                                        HideBottomNavigationBar(false),
+                                      )
+                                    : appBloc.add(
+                                        HideBottomNavigationBar(true),
+                                      );
+                                return !visible
+                                    ? _buildCountryRestrictionView(
+                                        homestate,
+                                        visible,
+                                      )
+                                    : Stack(
+                                        alignment: Alignment.topCenter,
+                                        children: [
+                                          BlocBuilder<AppBloc, AppState>(
+                                            buildWhen: (oldState, newState) =>
+                                                oldState.currentIndex !=
+                                                newState.currentIndex,
+                                            builder: (_, state) {
+                                              return pages![state.currentIndex];
+                                            },
+                                          ),
+                                          BlocBuilder<AppBloc, AppState>(
+                                            buildWhen: (p, c) =>
+                                                p.showBars != c.showBars ||
+                                                p.hideBottomNavigationBar !=
+                                                    c.hideBottomNavigationBar ||
+                                                p.currentIndex !=
+                                                    c.currentIndex,
+                                            builder: (context, state) {
+                                              if (state.hideBottomNavigationBar ==
+                                                      true &&
+                                                  state.currentIndex == 0) {
+                                                return const SizedBox.shrink(); /*TrydosAppBar(
                                                           appBarParams:
                                                               AppBarParams(
                                                                   hasLeading:
@@ -1542,31 +1573,33 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                                   withShadow:
                                                                       false),
                                                         );*/
-                                            } else if (state.showBars == true &&
-                                                    state.currentIndex == 0 ||
-                                                state.currentIndex == 4) {
-                                              return TabsBar(
-                                                controller: controller,
-                                                buildSearchResult:
-                                                    buildSearchResult,
-                                                appearTrendingAndHistory:
-                                                    appearTrendingAndHistory,
-                                              );
-                                            } else {
-                                              return const SizedBox.shrink();
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    );
-                            },
-                          );
-                        },
-                      );
-                    },
+                                              } else if (state.showBars ==
+                                                          true &&
+                                                      state.currentIndex == 0 ||
+                                                  state.currentIndex == 4) {
+                                                return TabsBar(
+                                                  controller: controller,
+                                                  buildSearchResult:
+                                                      buildSearchResult,
+                                                  appearTrendingAndHistory:
+                                                      appearTrendingAndHistory,
+                                                );
+                                              } else {
+                                                return const SizedBox.shrink();
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
+          ),
         ),
       ),
     );

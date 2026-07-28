@@ -61,8 +61,7 @@ class GlobaleInfoProduct extends StatelessWidget {
             .cachedProductWithoutRelatedProductsModel[productId]
             ?.product
             ?.iso;
-        // TEMP DEBUG: remove after confirming the country renders.
-        debugPrint('[made_in] productId=$productId rawIso=$rawIso');
+
         final String productIso = (rawIso ?? '').toLowerCase();
         Country newCountry = countries.firstWhere(
           (element) => element.code.toLowerCase() == productIso,
@@ -235,20 +234,22 @@ class GlobaleInfoProduct extends StatelessWidget {
                             .isNullOrEmpty ??
                         true)
                     ? const SizedBox.shrink()
-                    : state
-                              .cachedProductWithoutRelatedProductsModel[productId]
-                              ?.product
-                              ?.recommendationStats?[0]
-                              .count ==
+                    : (state
+                                  .cachedProductWithoutRelatedProductsModel[productId]
+                                  ?.product
+                                  ?.recommendationStats?[0]
+                                  .count ??
+                              0) ==
                           0
                     ? const SizedBox.shrink()
                     : SvgPicture.asset(AppAssets.recommendSvg),
                 const SizedBox(width: 2),
-                state
-                            .cachedProductWithoutRelatedProductsModel[productId]
-                            ?.product
-                            ?.recommendationStats?[0]
-                            .count ==
+                (state
+                                .cachedProductWithoutRelatedProductsModel[productId]
+                                ?.product
+                                ?.recommendationStats?[0]
+                                .count ??
+                            0) ==
                         0
                     ? const SizedBox.shrink()
                     : MyTextWidget(
@@ -259,11 +260,12 @@ class GlobaleInfoProduct extends StatelessWidget {
                           fontSize: 9.sp,
                         ),
                       ),
-                state
-                            .cachedProductWithoutRelatedProductsModel[productId]
-                            ?.product
-                            ?.recommendationStats?[0]
-                            .count ==
+                (state
+                                .cachedProductWithoutRelatedProductsModel[productId]
+                                ?.product
+                                ?.recommendationStats?[0]
+                                .count ??
+                            0) ==
                         0
                     ? const SizedBox.shrink()
                     : MyTextWidget(
@@ -274,26 +276,29 @@ class GlobaleInfoProduct extends StatelessWidget {
                           fontSize: 9.sp,
                         ),
                       ),
-                CountryFlag.fromCountryCode(
-                  state
-                          .cachedProductWithoutRelatedProductsModel[productId]
-                          ?.product
-                          ?.iso ??
-                      '',
-                  height: 10.h,
-                  width: 15.w,
-                  borderRadius: 4.r,
-                ),
+                (rawIso?.isNotEmpty ?? false)
+                    ? CountryFlag.fromCountryCode(
+                        state
+                                .cachedProductWithoutRelatedProductsModel[productId]
+                                ?.product
+                                ?.iso ??
+                            '',
+                        height: 10.h,
+                        width: 15.w,
+                        borderRadius: 4.r,
+                      )
+                    : const SizedBox.shrink(),
                 const SizedBox(width: 2),
-                (rawIso?.isNotEmpty ?? false)  ?
-                MyTextWidget(
-                  "${LocaleKeys.made_in.tr()} ${newCountry.name} ",
-                  style: context.textTheme.titleMedium?.rq.copyWith(
-                    height: 1.4,
-                    color: const Color(0xff1D1D1D),
-                    fontSize: 9.sp,
-                  ),
-                ) : const SizedBox.shrink() ,
+                (rawIso?.isNotEmpty ?? false)
+                    ? MyTextWidget(
+                        "${LocaleKeys.made_in.tr()} ${newCountry.name} ",
+                        style: context.textTheme.titleMedium?.rq.copyWith(
+                          height: 1.4,
+                          color: const Color(0xff1D1D1D),
+                          fontSize: 9.sp,
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ],
             ),
           ),

@@ -354,7 +354,7 @@ class _ProductCollectionInCartPage1State
                                         fontSize: 13.sp,
                                         color: const Color(0xff505050),
                                         letterSpacing: 0.18,
-                                        height: 1.33,
+                                        height: 1.1,
                                       ),
                                 ),
                               ),
@@ -419,7 +419,7 @@ class _ProductCollectionInCartPage1State
                                                         0xff8D8D8D,
                                                       ),
                                                       letterSpacing: 0.18,
-                                                      height: 1.33,
+                                                      height: 1.1,
                                                     ),
                                               ),
                                               Text(
@@ -448,7 +448,7 @@ class _ProductCollectionInCartPage1State
                                                     ?.mq
                                                     .copyWith(
                                                       fontSize: 13.sp,
-                                                      height: 1.33,
+                                                      height: 1.1,
                                                       color: const Color(
                                                         (0xff505050),
                                                       ),
@@ -525,8 +525,8 @@ class _ProductCollectionInCartPage1State
                                                   "ar"
                                               ? Alignment.centerLeft
                                               : Alignment.centerRight,
-                                          width: 125.w,
-                                          height: 15.h,
+
+                                          height: 17.h,
                                           child: Row(
                                             children: [
                                               SvgPicture.asset(
@@ -550,7 +550,7 @@ class _ProductCollectionInCartPage1State
                                                         0xff8D8D8D,
                                                       ),
                                                       letterSpacing: 0.18,
-                                                      height: 1.2,
+                                                      height: 1.1,
                                                     ),
                                               ),
                                               Text(
@@ -579,7 +579,7 @@ class _ProductCollectionInCartPage1State
                                                     ?.mq
                                                     .copyWith(
                                                       fontSize: 13.sp,
-                                                      height: 1.2,
+                                                      height: 1.1,
                                                       color: const Color(
                                                         (0xff505050),
                                                       ),
@@ -617,7 +617,7 @@ class _ProductCollectionInCartPage1State
                                             fontSize: 13.sp,
                                             color: const Color(0xff8D8D8D),
                                             letterSpacing: 0.18,
-                                            height: 1.33,
+                                            height: 1.1,
                                           ),
                                     ),
                                     Text(
@@ -630,7 +630,7 @@ class _ProductCollectionInCartPage1State
                                             fontSize: 13.sp,
                                             color: const Color(0xff505050),
                                             letterSpacing: 0.18,
-                                            height: 1.33,
+                                            height: 1.1,
                                           ),
                                     ),
                                   ],
@@ -693,7 +693,7 @@ class _ProductCollectionInCartPage1State
                                                     0xff8D8D8D,
                                                   ),
                                                   letterSpacing: 0.18,
-                                                  height: 1.33,
+                                                  height: 1.1,
                                                 ),
                                           ),
                                           Text(
@@ -711,13 +711,11 @@ class _ProductCollectionInCartPage1State
                                                     0xff505050,
                                                   ),
                                                   letterSpacing: 0.18,
-                                                  height: 1.33,
+                                                  height: 1.1,
                                                 ),
                                           ),
                                           Text(
-                                            isOldCart
-                                                ? "${LocaleKeys.details.tr()}"
-                                                : "${LocaleKeys.details.tr()}",
+                                            "${LocaleKeys.details.tr()}",
                                             strutStyle:
                                                 LanguageService.languageCode !=
                                                     "ar"
@@ -802,7 +800,7 @@ class _ProductCollectionInCartPage1State
                                                           0xff1D1D1D,
                                                         ),
                                                         letterSpacing: 0.18,
-                                                        height: 1.33,
+                                                        height: 1.1,
                                                       ),
                                                 ),
                                                 InkWell(
@@ -1140,7 +1138,7 @@ class _ProductCollectionInCartPage1State
                                                                   ),
                                                               letterSpacing:
                                                                   0.18,
-                                                              height: 1.33,
+                                                              height: 1.1,
                                                             ),
                                                       ),
                                                 InkWell(
@@ -2005,7 +2003,7 @@ class _ProductCollectionInCartPage1State
                                               255,
                                             ),
                                             letterSpacing: 0.18,
-                                            height: 1.33,
+                                            height: 1.1,
                                           ),
                                     ),
                                   ),

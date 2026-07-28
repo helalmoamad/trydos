@@ -14,6 +14,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
@@ -47,6 +48,18 @@ class _ProductDetailsSheetMoreOptionsContentState
     extends ThemeState<ProductDetailsSheetMoreOptionsContent> {
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   int? tapIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    // The sheet is only built once the product details request has succeeded,
+    // so this is the point where we resolve whether the product is already in
+    // the user's checklist (drives the green row).
+    context.read<HomeBloc>().add(
+      CheckChecklistExistEvent(productId: widget.productId),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -85,7 +98,6 @@ class _ProductDetailsSheetMoreOptionsContentState
                   : Container(
                       padding: EdgeInsets.only(top: 20.h),
                       margin: EdgeInsets.symmetric(horizontal: 20.w),
-                      height: 106.h,
                       width: 1.sw,
                       decoration: BoxDecoration(
                         color: const Color(0xffF8F8F8),
@@ -300,30 +312,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                       ),
                     ),
               10.verticalSpace,
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20.w),
-                height: 65.h,
-                decoration: BoxDecoration(
-                  color: const Color(0xffF8F8F8),
-                  borderRadius: BorderRadius.circular(30.r),
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(width: 20.w),
-                    SvgPicture.asset(AppAssets.checklistSvg, height: 25.h),
-                    SizedBox(width: 20.w),
-                    Text(
-                      LocaleKeys.add_to_my_checklist.tr(),
-                      style: context.textTheme.bodyMedium?.rq.copyWith(
-                        color: const Color(0xff505050),
-                        letterSpacing: 0.18,
-                        fontSize: 16.sp,
-                        height: 0.8,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _ChecklistRow(productId: widget.productId),
               10.verticalSpace,
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 20.w),
@@ -351,6 +340,80 @@ class _ProductDetailsSheetMoreOptionsContentState
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+}
+
+/// "Add to my checklist" row.
+///
+/// Turns green once the product is in the checklist, and is replaced by a
+/// same-sized shimmer while any of the three checklist calls (exist / add /
+/// delete) for *this* product is in flight. Tapping toggles membership.
+class _ChecklistRow extends StatelessWidget {
+  const _ChecklistRow({required this.productId});
+
+  final String productId;
+
+  static const Color _idleColor = Color(0xffF8F8F8);
+  static const Color _selectedColor = Color(0xff7BE495);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          previous.checklistItemStatus[productId] !=
+              current.checklistItemStatus[productId] ||
+          previous.productInChecklist[productId] !=
+              current.productInChecklist[productId],
+      builder: (context, state) {
+        final bool isBusy =
+            state.checklistItemStatus[productId] == ChecklistItemStatus.loading;
+        final bool isInChecklist = state.productInChecklist[productId] ?? false;
+
+        final Widget row = Container(
+          margin: EdgeInsets.symmetric(horizontal: 20.w),
+          height: 65.h,
+          decoration: BoxDecoration(
+            color: isInChecklist ? _selectedColor : _idleColor,
+            borderRadius: BorderRadius.circular(30.r),
+          ),
+          child: Row(
+            children: [
+              SizedBox(width: 20.w),
+              SvgPicture.asset(AppAssets.checklistSvg, height: 25.h),
+              SizedBox(width: 20.w),
+              Text(
+                LocaleKeys.add_to_my_checklist.tr(),
+                style: context.textTheme.bodyMedium?.rq.copyWith(
+                  color: const Color(0xff505050),
+                  letterSpacing: 0.18,
+                  fontSize: 16.sp,
+                  height: 0.8,
+                ),
+              ),
+            ],
+          ),
+        );
+
+        if (isBusy) {
+          // AbsorbPointer: Shimmer does not block hit-testing on its child, so
+          // without it the row would stay tappable while the call is running.
+          return AbsorbPointer(
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey.shade300,
+              highlightColor: Colors.grey.shade100,
+              child: row,
+            ),
+          );
+        }
+
+        return GestureDetector(
+          onTap: () => context.read<HomeBloc>().add(
+            ToggleChecklistEvent(productId: productId),
+          ),
+          child: row,
         );
       },
     );

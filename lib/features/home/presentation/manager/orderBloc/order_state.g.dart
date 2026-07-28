@@ -268,6 +268,29 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
       : GetOrderReturntDetailsModel.fromJson(
           json['orderReturnDetailsModel'] as Map<String, dynamic>,
         ),
+  getHiddenOrdersStatus:
+      $enumDecodeNullable(
+        _$GetHiddenOrdersStatusEnumMap,
+        json['getHiddenOrdersStatus'],
+      ) ??
+      GetHiddenOrdersStatus.init,
+  getHiddenOrdersModel: json['getHiddenOrdersModel'] == null
+      ? null
+      : GetHiddenOrdersModel.fromJson(
+          json['getHiddenOrdersModel'] as Map<String, dynamic>,
+        ),
+  restoreOrderVisibilityStatus:
+      $enumDecodeNullable(
+        _$RestoreOrderVisibilityStatusEnumMap,
+        json['restoreOrderVisibilityStatus'],
+      ) ??
+      RestoreOrderVisibilityStatus.init,
+  hideOrderVisibilityStatus:
+      $enumDecodeNullable(
+        _$HideOrderVisibilityStatusEnumMap,
+        json['hideOrderVisibilityStatus'],
+      ) ??
+      HideOrderVisibilityStatus.init,
 );
 
 Map<String, dynamic> _$OrderStateToJson(
@@ -366,6 +389,14 @@ Map<String, dynamic> _$OrderStateToJson(
   'orderReturnDetailsStatus':
       _$OrderReturnDetailsStatusEnumMap[instance.orderReturnDetailsStatus]!,
   'orderReturnDetailsModel': instance.orderReturnDetailsModel?.toJson(),
+  'getHiddenOrdersStatus':
+      _$GetHiddenOrdersStatusEnumMap[instance.getHiddenOrdersStatus],
+  'getHiddenOrdersModel': instance.getHiddenOrdersModel?.toJson(),
+  'restoreOrderVisibilityStatus':
+      _$RestoreOrderVisibilityStatusEnumMap[instance
+          .restoreOrderVisibilityStatus],
+  'hideOrderVisibilityStatus':
+      _$HideOrderVisibilityStatusEnumMap[instance.hideOrderVisibilityStatus],
 };
 
 const _$WalletCheckoutStatusEnumMap = {
@@ -571,4 +602,25 @@ const _$OrderReturnDetailsStatusEnumMap = {
   OrderReturnDetailsStatus.loading: 'loading',
   OrderReturnDetailsStatus.success: 'success',
   OrderReturnDetailsStatus.failure: 'failure',
+};
+
+const _$GetHiddenOrdersStatusEnumMap = {
+  GetHiddenOrdersStatus.init: 'init',
+  GetHiddenOrdersStatus.loading: 'loading',
+  GetHiddenOrdersStatus.success: 'success',
+  GetHiddenOrdersStatus.failure: 'failure',
+};
+
+const _$RestoreOrderVisibilityStatusEnumMap = {
+  RestoreOrderVisibilityStatus.init: 'init',
+  RestoreOrderVisibilityStatus.loading: 'loading',
+  RestoreOrderVisibilityStatus.success: 'success',
+  RestoreOrderVisibilityStatus.failure: 'failure',
+};
+
+const _$HideOrderVisibilityStatusEnumMap = {
+  HideOrderVisibilityStatus.init: 'init',
+  HideOrderVisibilityStatus.loading: 'loading',
+  HideOrderVisibilityStatus.success: 'success',
+  HideOrderVisibilityStatus.failure: 'failure',
 };

@@ -11,8 +11,6 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
     as Brand;
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/main.dart';
-import '../../../../app/svg_network_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductDetailsTitle extends StatelessWidget {
@@ -63,17 +61,12 @@ class ProductDetailsTitle extends StatelessWidget {
                         ? brand!.icon!.filePath != null
                               ? Row(
                                   children: [
-                                    mediaServerIsS3
-                                        ? MyCachedNetworkImage(
-                                            imageUrl: brand!.icon!.filePath!,
-                                            height: 18.h,
-                                            imageFit: BoxFit.contain,
-                                            width: 19.w,
-                                          )
-                                        : SvgNetworkWidget(
-                                            svgUrl: brand!.icon!.filePath!,
-                                            height: 18.h,
-                                          ),
+                                    MyCachedNetworkImage(
+                                      imageUrl: brand!.icon!.filePath!,
+                                      height: 18.h,
+                                      imageFit: BoxFit.contain,
+                                      width: 19.w,
+                                    ),
                                     SizedBox(width: 10.w),
                                     (brand!.isVerified ?? 0) == 1
                                         ? SvgPicture.asset(

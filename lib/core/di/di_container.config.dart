@@ -46,6 +46,8 @@ import '../../features/authentication/domain/use_cases/login_to_stories_usecase.
     as _i656;
 import '../../features/authentication/domain/use_cases/login_to_wallet_usecase.dart'
     as _i304;
+import '../../features/authentication/domain/use_cases/refresh_token_usecase.dart'
+    as _i268;
 import '../../features/authentication/domain/use_cases/register_guest_usecase.dart'
     as _i49;
 import '../../features/authentication/domain/use_cases/send_otp_usecase.dart'
@@ -197,6 +199,8 @@ import '../../features/home/domain/use_cases/add_like_to_product_usecase.dart'
     as _i33;
 import '../../features/home/domain/use_cases/add_order_comment_usecase.dart'
     as _i823;
+import '../../features/home/domain/use_cases/add_to_checklist_usecase.dart'
+    as _i783;
 import '../../features/home/domain/use_cases/apply_coupon_usecase.dart'
     as _i493;
 import '../../features/home/domain/use_cases/cancel_order_item_usecase.dart'
@@ -215,6 +219,8 @@ import '../../features/home/domain/use_cases/change_order_item_variant_usecase.d
     as _i607;
 import '../../features/home/domain/use_cases/check_availability_product_cart_usecase.dart'
     as _i812;
+import '../../features/home/domain/use_cases/check_checklist_exist_usecase.dart'
+    as _i656;
 import '../../features/home/domain/use_cases/confirm_return_request_usecase.dart'
     as _i943;
 import '../../features/home/domain/use_cases/convert_item_from_Cart_to_oldCart_usecase.dart'
@@ -225,6 +231,8 @@ import '../../features/home/domain/use_cases/delete_comment_order_rating.dart'
     as _i403;
 import '../../features/home/domain/use_cases/delete_customer_address_usecase.dart'
     as _i71;
+import '../../features/home/domain/use_cases/delete_from_checklist_usecase.dart'
+    as _i795;
 import '../../features/home/domain/use_cases/delete_like_of_product_usecase.dart'
     as _i878;
 import '../../features/home/domain/use_cases/DeliveredOrdersResponse_usecase.dart'
@@ -243,6 +251,8 @@ import '../../features/home/domain/use_cases/get_cart_item_usecase.dart'
     as _i307;
 import '../../features/home/domain/use_cases/get_cart_overview_usecase.dart'
     as _i675;
+import '../../features/home/domain/use_cases/get_checklist_usecase.dart'
+    as _i745;
 import '../../features/home/domain/use_cases/get_colors_sizes_for_search_usecase.dart'
     as _i247;
 import '../../features/home/domain/use_cases/get_count_view_of_product_usecase.dart'
@@ -263,6 +273,8 @@ import '../../features/home/domain/use_cases/get_fqa_comments_usecase.dart'
     as _i131;
 import '../../features/home/domain/use_cases/get_full_product_details_usecase.dart'
     as _i149;
+import '../../features/home/domain/use_cases/get_hidden_orders_usecase.dart'
+    as _i415;
 import '../../features/home/domain/use_cases/get_home_boutiqes_usecase.dart'
     as _i518;
 import '../../features/home/domain/use_cases/get_main_categories_usecase.dart'
@@ -323,6 +335,8 @@ import '../../features/home/domain/use_cases/send_error_to_mobile_error_log.dart
     as _i78;
 import '../../features/home/domain/use_cases/set_customer_address_default_usecase.dart'
     as _i1064;
+import '../../features/home/domain/use_cases/set_order_visibility_usecase.dart'
+    as _i600;
 import '../../features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart'
     as _i366;
 import '../../features/home/domain/use_cases/store_return_request_product_usecase.dart'
@@ -388,8 +402,6 @@ import '../../features/story/domain/useCases/increase_viewers_usecase.dart'
     as _i4;
 import '../../features/story/domain/useCases/report_about_story_usecase.dart'
     as _i905;
-import '../../features/story/domain/useCases/upload_story_usecase.dart'
-    as _i290;
 import '../../features/story/presentation/bloc/story_bloc.dart' as _i536;
 import '../data/data_source/common_use_repo_data_source.dart' as _i672;
 import '../data/repository/common_use_repository_impl.dart' as _i77;
@@ -492,9 +504,6 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i905.ReportAboutStoryUseCase>(
     () => _i905.ReportAboutStoryUseCase(gh<_i505.StoryRepository>()),
   );
-  gh.factory<_i290.UploadStoryUseCase>(
-    () => _i290.UploadStoryUseCase(gh<_i505.StoryRepository>()),
-  );
   gh.singleton<_i361.Dio>(
     () => appModule.dio(gh<_i361.BaseOptions>(), gh<_i974.Logger>()),
   );
@@ -524,6 +533,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i304.LoginToWalletUseCase>(
     () => _i304.LoginToWalletUseCase(gh<_i742.AuthRepository>()),
+  );
+  gh.factory<_i268.RefreshTokenUseCase>(
+    () => _i268.RefreshTokenUseCase(gh<_i742.AuthRepository>()),
   );
   gh.factory<_i49.RegisterGuestUseCase>(
     () => _i49.RegisterGuestUseCase(gh<_i742.AuthRepository>()),
@@ -576,6 +588,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i823.AddOrderCommentUseCase>(
     () => _i823.AddOrderCommentUseCase(gh<_i0.HomeRepository>()),
   );
+  gh.factory<_i783.AddToChecklistUseCase>(
+    () => _i783.AddToChecklistUseCase(gh<_i0.HomeRepository>()),
+  );
   gh.factory<_i493.ApplyCouponUsecase>(
     () => _i493.ApplyCouponUsecase(gh<_i0.HomeRepository>()),
   );
@@ -599,6 +614,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i812.CheckAvailabilityProductCartUsecase>(
     () => _i812.CheckAvailabilityProductCartUsecase(gh<_i0.HomeRepository>()),
   );
+  gh.factory<_i656.CheckChecklistExistUseCase>(
+    () => _i656.CheckChecklistExistUseCase(gh<_i0.HomeRepository>()),
+  );
   gh.factory<_i94.ConvertItemFromcartToOldCartUsecase>(
     () => _i94.ConvertItemFromcartToOldCartUsecase(gh<_i0.HomeRepository>()),
   );
@@ -610,6 +628,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i71.DeleteCustomerAddressUseCase>(
     () => _i71.DeleteCustomerAddressUseCase(gh<_i0.HomeRepository>()),
+  );
+  gh.factory<_i795.DeleteFromChecklistUseCase>(
+    () => _i795.DeleteFromChecklistUseCase(gh<_i0.HomeRepository>()),
   );
   gh.factory<_i878.DeleteLikeOfProductUsecase>(
     () => _i878.DeleteLikeOfProductUsecase(gh<_i0.HomeRepository>()),
@@ -631,6 +652,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i675.GetCartOverviewUseCase>(
     () => _i675.GetCartOverviewUseCase(gh<_i0.HomeRepository>()),
+  );
+  gh.factory<_i745.GetChecklistUseCase>(
+    () => _i745.GetChecklistUseCase(gh<_i0.HomeRepository>()),
   );
   gh.factory<_i247.GetColorsAndSizesForSearchUseCase>(
     () => _i247.GetColorsAndSizesForSearchUseCase(gh<_i0.HomeRepository>()),
@@ -661,6 +685,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i149.GetFullProductDetailsUseCase>(
     () => _i149.GetFullProductDetailsUseCase(gh<_i0.HomeRepository>()),
+  );
+  gh.factory<_i415.GetHiddenOrdersUseCase>(
+    () => _i415.GetHiddenOrdersUseCase(gh<_i0.HomeRepository>()),
   );
   gh.factory<_i518.GetHomeBoutiqesUseCase>(
     () => _i518.GetHomeBoutiqesUseCase(gh<_i0.HomeRepository>()),
@@ -749,6 +776,12 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i1064.SetCustomerAddressDefaultUseCase>(
     () => _i1064.SetCustomerAddressDefaultUseCase(gh<_i0.HomeRepository>()),
   );
+  gh.factory<_i600.SetOrderVisibilityUseCase>(
+    () => _i600.SetOrderVisibilityUseCase(gh<_i0.HomeRepository>()),
+  );
+  gh.factory<_i600.SetOrderDetailVisibilityUseCase>(
+    () => _i600.SetOrderDetailVisibilityUseCase(gh<_i0.HomeRepository>()),
+  );
   gh.factory<_i366.StoreFcmTokenOfMarketUseCase>(
     () => _i366.StoreFcmTokenOfMarketUseCase(gh<_i0.HomeRepository>()),
   );
@@ -804,6 +837,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i682.WalletCheckoutUseCase>(
     () => _i682.WalletCheckoutUseCase(gh<_i0.HomeRepository>()),
   );
+  gh.lazySingleton<_i702.CommonUseRepository>(
+    () => _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()),
+  );
   gh.lazySingleton<_i903.HomeBloc>(
     () => _i903.HomeBloc(
       gh<_i533.GetStoryForProductUseCase>(),
@@ -856,10 +892,11 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i675.GetCartOverviewUseCase>(),
       gh<_i358.TranslateCommentUsecase>(),
       gh<_i1021.GetUserNotificationUseCase>(),
+      gh<_i783.AddToChecklistUseCase>(),
+      gh<_i795.DeleteFromChecklistUseCase>(),
+      gh<_i656.CheckChecklistExistUseCase>(),
+      gh<_i745.GetChecklistUseCase>(),
     ),
-  );
-  gh.lazySingleton<_i702.CommonUseRepository>(
-    () => _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()),
   );
   gh.lazySingleton<_i1032.CallsRepository>(
     () => _i722.CallsRepositoryImpl(gh<_i1061.CallsRemoteDataSource>()),
@@ -947,6 +984,43 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i282.UploadFileToS3UseCase>(
     () => _i282.UploadFileToS3UseCase(gh<_i70.DashBoardRepository>()),
   );
+  gh.lazySingleton<_i279.OrderBloc>(
+    () => _i279.OrderBloc(
+      gh<_i649.PlaceOrderUsecase>(),
+      gh<_i682.WalletCheckoutUseCase>(),
+      gh<_i197.CancelOrderItemUsecase>(),
+      gh<_i811.CancelOrderUsecase>(),
+      gh<_i291.UploadImagesProductReturnUseCase>(),
+      gh<_i636.ChangeOrderAddressUsecase>(),
+      gh<_i1003.GetOrdersByOrderGroupIDUsecase>(),
+      gh<_i59.GetOrdersByCartGroupIDUsecase>(),
+      gh<_i401.GetProvincesByIsoUseCase>(),
+      gh<_i361.GetCustomerWalletUseCase>(),
+      gh<_i241.StoreReturnRequestUseCase>(),
+      gh<_i943.ConfirmReturnRequestUseCase>(),
+      gh<_i926.OrderReturnRequestsViewUseCase>(),
+      gh<_i558.GetOrdersUseCase>(),
+      gh<_i1064.SetCustomerAddressDefaultUseCase>(),
+      gh<_i489.GetCustomerAddressesUseCase>(),
+      gh<_i71.DeleteCustomerAddressUseCase>(),
+      gh<_i70.AddCustomerAddressUseCase>(),
+      gh<_i418.UpdateCustomerAddressUseCase>(),
+      gh<_i970.GetAddressByCoordinatesUsecase>(),
+      gh<_i976.GetAddressByTextUsecase>(),
+      gh<_i493.ApplyCouponUsecase>(),
+      gh<_i716.GetProductColorSizeSyncAttributeUseCase>(),
+      gh<_i607.ChangeOrderItemVariantUsecase>(),
+      gh<_i815.GetReturnReasonsUseCase>(),
+      gh<_i285.StoreReturnRequestProductUseCase>(),
+      gh<_i441.CancelReturnRequestUseCase>(),
+      gh<_i217.CancelReturnRequestProductUseCase>(),
+      gh<_i799.UpdateReturnRequestProductUseCase>(),
+      gh<_i182.OrderReturnDetailsUseCase>(),
+      gh<_i600.SetOrderVisibilityUseCase>(),
+      gh<_i600.SetOrderDetailVisibilityUseCase>(),
+      gh<_i415.GetHiddenOrdersUseCase>(),
+    ),
+  );
   gh.factory<_i589.CreateUserUseCase>(
     () => _i589.CreateUserUseCase(gh<_i420.ChatRepository>()),
   );
@@ -1018,6 +1092,30 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i897.UploadFileUseCase>(
     () => _i897.UploadFileUseCase(gh<_i420.ChatRepository>()),
   );
+  gh.lazySingleton<_i561.AuthBloc>(
+    () => _i561.AuthBloc(
+      gh<_i434.UpdateStoriesUserUseCase>(),
+      gh<_i730.UpdateChatUserNameUseCase>(),
+      gh<_i589.CreateUserUseCase>(),
+      gh<_i919.LoginToChatUseCase>(),
+      gh<_i656.LoginToStoriesUseCase>(),
+      gh<_i142.StoreFcmUseCase>(),
+      gh<_i995.VerifyOtpInProfileUseCase>(),
+      gh<_i58.UpdateNameUseCase>(),
+      gh<_i49.RegisterGuestUseCase>(),
+      gh<_i650.CreateWalletUseCase>(),
+      gh<_i304.LoginToWalletUseCase>(),
+      gh<_i100.GeneratingTokenForCommentUseCase>(),
+      gh<_i952.SendOtpUseCase>(),
+      gh<_i862.GetCustomerInfoUseCase>(),
+      gh<_i236.VerifyOtpFromGuestUseCase>(),
+      gh<_i574.VerifyOtpSignInUseCase>(),
+      gh<_i644.GetUserCountryUseCase>(),
+      gh<_i231.DeleteFcmFromChatUseCase>(),
+      gh<_i282.VerifyOtpSignUpUseCase>(),
+      gh<_i268.RefreshTokenUseCase>(),
+    ),
+  );
   gh.factory<_i661.AnswerCallUseCase>(
     () => _i661.AnswerCallUseCase(gh<_i1032.CallsRepository>()),
   );
@@ -1058,18 +1156,6 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i95.DeleteMessageUseCase>(),
     ),
   );
-  gh.lazySingleton<_i536.StoryBloc>(
-    () => _i536.StoryBloc(
-      gh<_i1043.UploadFileCloudinaryUseCase>(),
-      gh<_i804.GetStoryUseCase>(),
-      gh<_i912.GetWidthAndHeightUseCase>(),
-      gh<_i290.UploadStoryUseCase>(),
-      gh<_i4.IncreaseViewersUseCase>(),
-      gh<_i737.AddStoryToOurServerUseCase>(),
-      gh<_i318.UploadFileMediaServerUseCase>(),
-      gh<_i176.DeleteStoryUseCase>(),
-    ),
-  );
   gh.lazySingleton<_i511.BoutiqueBloc>(
     () => _i511.BoutiqueBloc(
       gh<_i146.GetFeaturedProductsUseCase>(),
@@ -1103,61 +1189,15 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i976.CreateSellerStoryUseCase>(),
     ),
   );
-  gh.lazySingleton<_i279.OrderBloc>(
-    () => _i279.OrderBloc(
-      gh<_i649.PlaceOrderUsecase>(),
-      gh<_i682.WalletCheckoutUseCase>(),
-      gh<_i197.CancelOrderItemUsecase>(),
-      gh<_i811.CancelOrderUsecase>(),
-      gh<_i291.UploadImagesProductReturnUseCase>(),
-      gh<_i636.ChangeOrderAddressUsecase>(),
-      gh<_i1003.GetOrdersByOrderGroupIDUsecase>(),
-      gh<_i59.GetOrdersByCartGroupIDUsecase>(),
-      gh<_i401.GetProvincesByIsoUseCase>(),
-      gh<_i361.GetCustomerWalletUseCase>(),
-      gh<_i241.StoreReturnRequestUseCase>(),
-      gh<_i943.ConfirmReturnRequestUseCase>(),
-      gh<_i926.OrderReturnRequestsViewUseCase>(),
-      gh<_i558.GetOrdersUseCase>(),
-      gh<_i1064.SetCustomerAddressDefaultUseCase>(),
-      gh<_i489.GetCustomerAddressesUseCase>(),
-      gh<_i71.DeleteCustomerAddressUseCase>(),
-      gh<_i70.AddCustomerAddressUseCase>(),
-      gh<_i418.UpdateCustomerAddressUseCase>(),
-      gh<_i970.GetAddressByCoordinatesUsecase>(),
-      gh<_i976.GetAddressByTextUsecase>(),
-      gh<_i493.ApplyCouponUsecase>(),
-      gh<_i716.GetProductColorSizeSyncAttributeUseCase>(),
-      gh<_i607.ChangeOrderItemVariantUsecase>(),
-      gh<_i815.GetReturnReasonsUseCase>(),
-      gh<_i285.StoreReturnRequestProductUseCase>(),
-      gh<_i441.CancelReturnRequestUseCase>(),
-      gh<_i217.CancelReturnRequestProductUseCase>(),
-      gh<_i799.UpdateReturnRequestProductUseCase>(),
-      gh<_i182.OrderReturnDetailsUseCase>(),
-    ),
-  );
-  gh.lazySingleton<_i561.AuthBloc>(
-    () => _i561.AuthBloc(
-      gh<_i434.UpdateStoriesUserUseCase>(),
-      gh<_i730.UpdateChatUserNameUseCase>(),
-      gh<_i589.CreateUserUseCase>(),
-      gh<_i919.LoginToChatUseCase>(),
-      gh<_i656.LoginToStoriesUseCase>(),
-      gh<_i142.StoreFcmUseCase>(),
-      gh<_i995.VerifyOtpInProfileUseCase>(),
-      gh<_i58.UpdateNameUseCase>(),
-      gh<_i49.RegisterGuestUseCase>(),
-      gh<_i650.CreateWalletUseCase>(),
-      gh<_i304.LoginToWalletUseCase>(),
-      gh<_i100.GeneratingTokenForCommentUseCase>(),
-      gh<_i952.SendOtpUseCase>(),
-      gh<_i862.GetCustomerInfoUseCase>(),
-      gh<_i236.VerifyOtpFromGuestUseCase>(),
-      gh<_i574.VerifyOtpSignInUseCase>(),
-      gh<_i644.GetUserCountryUseCase>(),
-      gh<_i231.DeleteFcmFromChatUseCase>(),
-      gh<_i282.VerifyOtpSignUpUseCase>(),
+  gh.lazySingleton<_i536.StoryBloc>(
+    () => _i536.StoryBloc(
+      gh<_i1043.UploadFileCloudinaryUseCase>(),
+      gh<_i804.GetStoryUseCase>(),
+      gh<_i912.GetWidthAndHeightUseCase>(),
+      gh<_i4.IncreaseViewersUseCase>(),
+      gh<_i737.AddStoryToOurServerUseCase>(),
+      gh<_i318.UploadFileMediaServerUseCase>(),
+      gh<_i176.DeleteStoryUseCase>(),
     ),
   );
   gh.lazySingleton<_i243.ChatBloc>(

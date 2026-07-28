@@ -44,7 +44,6 @@ class SearchPage extends StatefulWidget {
     super.key,
     required this.buildSearchResult,
     required this.appearTrendingAndHistory,
-    required this.isShowPanelForVerified,
     required this.controller,
   });
 
@@ -52,7 +51,6 @@ class SearchPage extends StatefulWidget {
 
   final ValueNotifier<int> buildSearchResult;
   final ValueNotifier<bool> appearTrendingAndHistory;
-  final ValueNotifier<bool> isShowPanelForVerified;
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -543,8 +541,6 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                         () => HelperFunctions.slidingNavigation(
                                           context,
                                           listing_page.ProductListingPage(
-                                            isShowPanelForVerified:
-                                                widget.isShowPanelForVerified,
                                             controllerFormSearchPage:
                                                 widget.controller,
                                             boutiqueIcon: "",

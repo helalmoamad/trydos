@@ -26,12 +26,17 @@ class LastPagesTracker {
     GetIt.I<PrefsRepository>().saveRequestsData(
         null, null, null, null, null, null, null,
         error: error.toString());
-
-    GetIt.I<PrefsRepository>().saveRequestsData(
-        null, null, null, null, null, null, null,
-        error: error.toString());
     debugPrint('error $error');
-    GetIt.I<HomeBloc>().add(
+
+    // معالج الأخطاء يجب ألّا يرمي استثناءً بنفسه: إذا كان HomeBloc مُغلقاً
+    // (أُغلق الـ singleton من BlocProvider عند dispose مثلاً) نتجاهل الحدث
+    // بدل رمي StateError: "Cannot add new events after calling close".
+    final homeBloc = GetIt.I<HomeBloc>();
+    if (homeBloc.isClosed) {
+      debugPrint('⚠️ HomeBloc مُغلق — تم تجاهل إرسال حدث تسجيل الخطأ');
+      return;
+    }
+    homeBloc.add(
       SendErrorToMobileErrorLogEvent(
         errorExption:
             'Type:${error.exception.runtimeType.toString()} ${error.exceptionAsString().toString()}',

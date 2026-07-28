@@ -1137,3 +1137,47 @@ class ReportAboutStoryEvent extends HomeEvent {
   @override
   List<Object?> get props => [storyId, reasons, notes];
 }
+
+//****************************** Checklist ******************************/
+
+/// Fired once the product details request succeeds, to know whether the
+/// "Add to my checklist" row should render green.
+class CheckChecklistExistEvent extends HomeEvent {
+  final String productId;
+
+  const CheckChecklistExistEvent({required this.productId});
+
+  @override
+  List<Object?> get props => [productId];
+}
+
+/// Single tap handler on the checklist row: adds when absent, deletes when
+/// already present.
+class ToggleChecklistEvent extends HomeEvent {
+  final String productId;
+
+  const ToggleChecklistEvent({required this.productId});
+
+  @override
+  List<Object?> get props => [productId];
+}
+
+/// Loads one page of `GET /checklist`. [page] is 1-based.
+class GetChecklistEvent extends HomeEvent {
+  final int page;
+
+  const GetChecklistEvent({this.page = 1});
+
+  @override
+  List<Object?> get props => [page];
+}
+
+/// Removes an item directly from the checklist page, then reloads the page.
+class DeleteChecklistItemEvent extends HomeEvent {
+  final String productId;
+
+  const DeleteChecklistItemEvent({required this.productId});
+
+  @override
+  List<Object?> get props => [productId];
+}

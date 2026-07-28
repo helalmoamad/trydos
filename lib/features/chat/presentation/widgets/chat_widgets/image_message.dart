@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:get_it/get_it.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -79,10 +78,12 @@ class ImageMessage extends StatefulWidget {
   State<ImageMessage> createState() => _ImageMessageState();
 }
 
-class _ImageMessageState extends State<ImageMessage>
-    with AutomaticKeepAliveClientMixin {
+// أُزيل AutomaticKeepAliveClientMixin: كان يُبقي حالة كل صورة مرّ بها المستخدم
+// حيّة إلى الأبد، فتتراكم الصور المفكوكة في imageCache ولا تتحرّر الذاكرة.
+// إزالته صارت آمنة بعد أن صار الملف محفوظاً على القرص — العودة إلى الرسالة
+// تقرأه محلياً بلا شبكة.
+class _ImageMessageState extends State<ImageMessage> {
   int? width;
-  bool timer = false;
   int? height;
   late ChatBloc chatBloc;
   final ValueNotifier<int> _loadingImage = ValueNotifier(0);
@@ -94,8 +95,13 @@ class _ImageMessageState extends State<ImageMessage>
   File? _cachedImageFile; // ✅ حفظ مرجع للصورة المحملة
   bool _isFullScreenActive = false; // ✅ تتبع حالة FullScreen
 
-  @override
-  bool get wantKeepAlive => true; // ✅ الحفاظ على حالة Widget
+  // الملف موجود على القرص لكن فك ترميزه فشل (مقطوع/تالف). بدونه كان
+  // DecorationImage يفشل صامتاً فيظهر مربّع أبيض بلا أي مؤشّر.
+  bool _decodeFailed = false;
+
+  // فشل فك الترميز قد يكون عابراً (نسخة فاشلة عالقة في كاش Flutter بعد إعادة
+  // بناء). نُخرجها ونعيد المحاولة مرة واحدة قبل إظهار أي خطأ للمستخدم.
+  bool _decodeRetried = false;
 
   @override
   void initState() {
@@ -103,12 +109,25 @@ class _ImageMessageState extends State<ImageMessage>
       "🎯 ImageMessage initState - imageFile: ${widget.imageFile?.path ?? 'null'}, imageUrl: '${widget.imageUrl ?? 'null'}'",
     );
 
+    // استعلام واحد عن المخزن: النداء مرتين كان يسمح باختفاء الملف بينهما
+    // فيرمي `!` على null.
+    final File? readyFromStore = widget.imageUrl.isNullOrEmpty
+        ? null
+        : FileSaving().cachedMediaFileSync(widget.imageUrl!);
+
     // ✅ تحديد حالة الصورة الأولية بدقة
     if (widget.imageFile != null && widget.imageFile!.existsSync()) {
       debugPrint("📁 Image already exists as file");
       _cachedImageFile = widget.imageFile; // ✅ حفظ نسخة احتياطية
       _isImageLoaded = true;
       _loadingImage.value = 2; // تم التحميل بالفعل
+    } else if (readyFromStore != null) {
+      // منزَّلة سابقاً: تُعرض في الإطار نفسه بلا مربّع رمادي وسيط. بدون هذا
+      // الفرع كان كل تمرير أو تفاعل يُظهر وميض العنصر البديل من جديد.
+      widget.imageFile = readyFromStore;
+      _cachedImageFile = readyFromStore;
+      _isImageLoaded = true;
+      _loadingImage.value = 2;
     } else if (widget.imageUrl.isNullOrEmpty ||
         widget.imageUrl!.trim().isEmpty) {
       debugPrint("❌ No valid imageUrl - setting error state");
@@ -129,13 +148,6 @@ class _ImageMessageState extends State<ImageMessage>
       // );
     }
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    Timer(const Duration(seconds: 4), () {
-      if (mounted) {
-        setState(() {
-          timer = true;
-        });
-      }
-    });
 
     // ✅ بدء تحميل الصورة فقط إذا لم تكن محملة ولديها URL صالح
     if (!_isImageLoaded &&
@@ -195,51 +207,48 @@ class _ImageMessageState extends State<ImageMessage>
       _loadingImage.value = 1; // حالة التحميل
     }
 
-    // ✅ إضافة timeout للتحميل (30 ثانية)
-    Timer(const Duration(seconds: 30), () {
-      if (_isDownloading && _loadingImage.value == 1) {
-        debugPrint("⏰ Download timeout - switching to error state");
-        _isDownloading = false;
+    // لا مؤقّت زمني هنا بعد الآن: المؤقّت السابق (30 ثانية) كان يبدأ لحظة
+    // ظهور الصورة لا لحظة بدء تحميلها، فيحاسبها على انتظارها دورها في الطابور
+    // ويُظهر فشلاً كاذباً أثناء التمرير السريع. المهلة صارت على الشبكة نفسها
+    // داخل getOrDownloadMedia، وهي تُنهي الطلب دائماً بنجاح أو بـ null.
+    // بلا CancelToken عمداً: الصور لا تُلغى عند مغادرة الشاشة (انظر dispose)،
+    // وتمريره هنا كان يعني أن مُلغياً واحداً يُسقط تحميلاً تتشاركه ودجت أخرى.
+    FileSaving()
+        .getOrDownloadMedia(widget.imageUrl!, widget.channelId)
+        .then((File? file) {
+          debugPrint("✅ Download finished - file: ${file?.path}");
+          _isDownloading = false;
+          if (!mounted) return;
+          _applyDownloadResult(file);
+        });
+  }
+
+  /// الملف الموجود في المخزن يعود في microtask قد يقع **داخل إطار البناء**،
+  /// و setState حينها يرمي «called during build» — و FlutterError.onError
+  /// المعاد تعيينه في build يبتلعه بصمت، فيبقى مؤشّر التحميل ظاهراً حتى يأتي
+  /// حدث خارجي (تحريك الشاشة). لذا نؤجّل إلى ما بعد الإطار عند اللزوم فقط.
+  void _applyDownloadResult(File? file) {
+    void apply() {
+      if (!mounted) return;
+      if (file != null && file.existsSync()) {
+        widget.imageFile = file;
+        _cachedImageFile = file;
+        _isImageLoaded = true;
+        _loadingImage.value = 2;
+      } else {
         _isImageLoaded = false;
-        if (mounted) {
-          _loadingImage.value = -1;
-        }
-        if (mounted) setState(() {});
+        _cachedImageFile = null;
+        _loadingImage.value = -1; // يظهر زر إعادة المحاولة
       }
-    });
+      setState(() {});
+    }
 
-    FileSaving().downloadFileToLocalStorage(
-      widget.imageUrl!,
-      widget.channelId,
-      action: (File? file) {
-        debugPrint("✅ Download completed - file: ${file?.path}");
-
-        // ✅ إعادة تعيين حالة التحميل دائماً أولاً
-        _isDownloading = false;
-
-        if (file != null && file.existsSync()) {
-          debugPrint("✅ File exists and is valid");
-          widget.imageFile = file;
-          _cachedImageFile = file; // ✅ حفظ نسخة احتياطية
-          _isImageLoaded = true;
-          if (mounted) {
-            _loadingImage.value = 2; // تم التحميل بنجاح
-          }
-          if (mounted) setState(() {});
-        } else {
-          debugPrint("❌ Download failed - file is null or doesn't exist");
-          // ✅ التأكد من إعادة تعيين جميع الحالات عند الفشل
-          _isImageLoaded = false;
-          _cachedImageFile = null; // مسح أي كاش معطل
-          if (mounted) {
-            _loadingImage.value = -1; // فشل التحميل
-          }
-          if (mounted) {
-            setState(() {}); // ✅ إجبار إعادة بناء UI لإظهار زر إعادة المحاولة
-          }
-        }
-      },
-    );
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => apply());
+    } else {
+      apply();
+    }
   }
 
   @override
@@ -250,6 +259,8 @@ class _ImageMessageState extends State<ImageMessage>
     if (oldWidget.imageUrl != widget.imageUrl) {
       _isImageLoaded = false;
       _isDownloading = false;
+      _decodeFailed = false;
+      _decodeRetried = false;
       if (mounted) {
         _loadingImage.value = 0;
       }
@@ -274,8 +285,6 @@ class _ImageMessageState extends State<ImageMessage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // ✅ مطلوب لـ AutomaticKeepAliveClientMixin
-
     debugPrint(widget.imageFile.toString());
     FlutterError.onError = (FlutterErrorDetails error) {
       LastPagesTracker.sendErrorToBlocAndLog(error);
@@ -422,13 +431,7 @@ class _ImageMessageState extends State<ImageMessage>
                                     ),
                                     widget.userMessagePhoto != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl:
-                                                (widget.userMessagePhoto
-                                                    .toString()
-                                                    .contains("cloudinary")
-                                                ? widget.userMessagePhoto!
-                                                : ("${dotenv.env['Images_Url']}") +
-                                                      widget.userMessagePhoto!),
+                                            imageUrl: widget.userMessagePhoto!,
                                             imageFit: BoxFit.contain,
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),
@@ -487,7 +490,10 @@ class _ImageMessageState extends State<ImageMessage>
 
   @override
   void dispose() {
-    // ✅ إيقاف أي عمليات تحميل جارية
+    // لا إلغاء هنا عمداً. كان الإلغاء مبرَّراً حين كانت التحميلات تتابعية
+    // (طلب ميّت يحجب الأحياء)، لكن بعد التوازي صار يقتل كل تحميل أثناء
+    // التمرير — الودجت تُتلَف وتُبنى باستمرار — فتفشل الصور جميعاً.
+    // تركه يكتمل يكلّف نزراً ويجعل العودة إلى الرسالة فورية من القرص.
     _isDownloading = false;
     _isImageLoaded = false;
 
@@ -540,39 +546,69 @@ class _ImageMessageState extends State<ImageMessage>
     final hasCachedFile =
         _cachedImageFile != null && _cachedImageFile!.existsSync();
 
-    if (hasImageFile || hasCachedFile) {
+    // _decodeFailed يمنع العودة إلى فرع «مُحمَّلة» لملف موجود لكنه تالف —
+    // وإلا تكرّر errorBuilder إلى ما لا نهاية.
+    if (!_decodeFailed && (hasImageFile || hasCachedFile)) {
       final displayFile = widget.imageFile ?? _cachedImageFile!;
       return _buildLoadedImage(displayFile);
-    } else {
-      return _buildLoadingOrError();
     }
+
+    // الملف قد يكون في المخزن رغم أن هذه النسخة من الودجت فقدت مرجعه:
+    // ImageMessage قابلة للتعديل (must_be_immutable) و widget.imageFile يعود
+    // null كلما أعاد الأب البناء. السؤال عن المخزن هنا هو نفسه ما يفعله زرّ
+    // إعادة المحاولة — ولهذا كان الضغط عليه يُظهر الصورة فوراً.
+    if (!_decodeFailed && !widget.imageUrl.isNullOrEmpty) {
+      final File? ready = FileSaving().cachedMediaFileSync(widget.imageUrl!);
+      if (ready != null) {
+        _cachedImageFile = ready;
+        return _buildLoadedImage(ready);
+      }
+    }
+
+    return _buildLoadingOrError();
   }
 
   // ✅ دالة لبناء الصورة المحملة
+  void _openFullScreen(File imageFile) {
+    Navigator.of(context).push(
+      PageRouteBuilder<void>(
+        opaque: false,
+        barrierColor: Colors.black,
+        pageBuilder: (_, __, ___) => _FullScreenImage(
+          imageFile: imageFile,
+          heroTag: "hero_${widget.messageId}",
+        ),
+      ),
+    );
+  }
+
   Widget _buildLoadedImage(File imageFile) {
+    // فكّ الترميز بمقاس العرض لا بمقاس الأصل. بدونه تُفكّ صورة ١٢ ميغابكسل
+    // كاملةً (\u200E~48MB\u200E في الذاكرة) لتُعرض في فقاعة 250×200 — فتلتهم وحدها
+    // ميزانية imageCache وقد يفشل فكّها، وهو ما يجعل صورة كبيرة بعينها
+    // تضرب باستمرار بينما بقيّة الصور سليمة.
+    final int decodeWidth =
+        (250.w * MediaQuery.devicePixelRatioOf(context)).round();
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        FullScreenWidget(
-          backgroundColor: widget.isSent
-              ? const Color(0xffFFF9B4)
-              : const Color(0xffB4FFD9),
-          disposeLevel: DisposeLevel.High, // ✅ حماية أقوى من الاختفاء
+        // كان FullScreenWidget يعرض هذه الودجت نفسها ملء الشاشة — بقياسها
+        // الثابت 250×200 و BoxFit.cover — فترث القصّ والتكبير وتختفي الأطراف.
+        // العرض الكامل يحتاج تخطيطاً مختلفاً (contain وبلا قياس ثابت)، وهو ما
+        // لا توفّره تلك الحزمة لأنها تعيد استعمال الطفل كما هو.
+        GestureDetector(
+          onTap: () => _openFullScreen(imageFile),
           child: Hero(
             tag: "hero_${widget.messageId}",
             child: Container(
               key: ValueKey("image_${widget.messageId}"),
               width: 250.w,
               height: 200,
+              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: FileImage(imageFile),
-                  fit: BoxFit.cover,
-                  onError: (exception, stackTrace) {
-                    // ✅ في حالة الخطأ، log فقط - لا تغيير للحالة
-                    debugPrint("Image display error: $exception");
-                  },
-                ),
+                // خلفية صريحة: بدونها كان فشل الرسم يترك الإطار شفافاً
+                // فيبدو أبيض فوق خلفية الدردشة.
+                color: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(12.0),
                 border: Border.all(
                   width: 3.0,
@@ -580,6 +616,45 @@ class _ImageMessageState extends State<ImageMessage>
                       ? const Color(0xffFFF9B4)
                       : const Color(0xffB4FFD9),
                 ),
+              ),
+              child: Image.file(
+                imageFile,
+                fit: BoxFit.cover,
+                width: 250.w,
+                height: 200,
+                // العرض وحده: الارتفاع يُشتقّ فتبقى النسبة سليمة.
+                cacheWidth: decodeWidth,
+                // يُبقي الإطار السابق معروضاً أثناء إعادة الحل بدل وميض فارغ.
+                gaplessPlayback: true,
+                errorBuilder: (context, error, stackTrace) {
+                  debugPrint("Image display error: $error");
+                  if (!_decodeRetried) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) async {
+                      if (!mounted) return;
+                      _decodeRetried = true;
+                      // الانتظار ضروري: بدونه كانت إعادة البناء تسبق اكتمال
+                      // الإخلاء فتُحلّ النسخة الفاشلة نفسها، وتُهدر المحاولة
+                      // الوحيدة ويسقط العنصر في حالة الفشل الدائم.
+                      await FileImage(imageFile).evict();
+                      if (!mounted) return;
+                      setState(() {});
+                    });
+                    return const SizedBox.shrink();
+                  }
+                  if (!_decodeFailed) {
+                    // نقلة واحدة إلى حالة الخطأ لتظهر إعادة المحاولة.
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (!mounted) return;
+                      setState(() {
+                        _decodeFailed = true;
+                        _isImageLoaded = false;
+                        _cachedImageFile = null;
+                      });
+                      _loadingImage.value = -1;
+                    });
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
             ),
           ),
@@ -651,6 +726,22 @@ class _ImageMessageState extends State<ImageMessage>
               );
             }
 
+            // status == 2 يعني «مُحمَّلة» بينما لا ملف بين أيدينا. إعلان الفشل
+            // هنا كان خطأً — يُظهر زر إعادة تحميل كاذباً بعد كل تمرير أو تفاعل.
+            // الصواب إعادة المحاولة عبر المسار الطبيعي، وهي تنتهي فوراً من
+            // المخزن دون شبكة.
+            if (status == 2) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                _isImageLoaded = false;
+                _loadingImage.value = 0;
+              });
+              return CircularProgressIndicator(
+                backgroundColor: Colors.grey.shade100,
+                color: const Color(0xff388CFF),
+              );
+            }
+
             // عرض خطأ مع زر إعادة المحاولة
             if (status == -1) {
               return Column(
@@ -679,6 +770,9 @@ class _ImageMessageState extends State<ImageMessage>
                         _isDownloading = false; // ليس في حالة تحميل
                         _isImageLoaded = false; // لم يتم التحميل بعد
                         _cachedImageFile = null; // مسح الكاش المعطل
+                        _decodeFailed = false; // السماح بالعرض بعد النجاح
+                        _decodeRetried = false;
+                        widget.imageFile = null; // تجاهل الملف التالف
                       });
                       // بدء التحميل مرة أخرى
                       _initializeImage();
@@ -752,6 +846,59 @@ class _ImageMessageState extends State<ImageMessage>
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// عرض صورة ملء الشاشة: تظهر كاملةً (`contain`) لا مقصوصة، مع تكبير بالإصبع.
+class _FullScreenImage extends StatelessWidget {
+  final File imageFile;
+  final String heroTag;
+
+  const _FullScreenImage({required this.imageFile, required this.heroTag});
+
+  @override
+  Widget build(BuildContext context) {
+    // فكّ الترميز بعرض الشاشة الفعلي: حادّ عند العرض الطبيعي، ويبقى بعيداً عن
+    // فكّ الأصل كاملاً الذي قد يبلغ عشرات الميغابايتات لصورة عالية الدقّة.
+    final int decodeWidth = (MediaQuery.sizeOf(context).width *
+            MediaQuery.devicePixelRatioOf(context))
+        .round();
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: InteractiveViewer(
+              minScale: 1,
+              maxScale: 4,
+              child: Center(
+                child: Hero(
+                  tag: heroTag,
+                  child: Image.file(
+                    imageFile,
+                    fit: BoxFit.contain,
+                    cacheWidth: decodeWidth,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      Icons.broken_image_outlined,
+                      size: 60,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.paddingOf(context).top + 8,
+            right: 8,
+            child: IconButton(
+              icon: const Icon(Icons.close, color: Colors.white, size: 28),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ],
       ),
     );
   }

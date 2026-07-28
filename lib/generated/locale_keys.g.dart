@@ -6,6 +6,11 @@ abstract class LocaleKeys {
   static const information_securely = 'information_securely';
   static const translate = 'translate';
   static const work_days = 'work_days';
+  static const view_product = 'view_product';
+  static const video_size_limit = "video_size_limit";
+  static const hide_this_pack = 'hide_this_pack';
+  static const hide_this_pack_from_list = 'hide_this_pack_from_list';
+
   static const sellers = 'Sellers';
   static const all_questions_below_from = 'all_questions_below_from';
   static const visitors_not_necessarily_from = 'visitors_not_necessarily_from';
@@ -406,6 +411,9 @@ abstract class LocaleKeys {
   static const notify_me_about_the_product_when =
       'notify_me_about_the_product_when';
   static const add_to_my_checklist = 'add_to_my_checklist';
+  static const my_checklist = 'my_checklist';
+  static const checklist_is_empty = 'checklist_is_empty';
+  static const something_went_wrong = 'something_went_wrong';
   static const add_to_compare = 'add_to_compare';
   static const number_of_products = 'number_of_products';
   static const expected_delivery = 'expected_delivery';
@@ -601,6 +609,29 @@ abstract class LocaleKeys {
       'delivery_time_delivery_man_delivery_car';
   static const hide_this_product = 'hide_this_product';
   static const hide_this_product_from_list = 'hide_this_product_from_list';
+  static const are_you_sure_hide_this_pack = 'are_you_sure_hide_this_pack';
+  static const are_you_sure_hide_this_product =
+      'are_you_sure_hide_this_product';
+  static const pack_hidden_successfully = 'pack_hidden_successfully';
+  static const product_hidden_successfully = 'product_hidden_successfully';
+  static const hidden_orders = 'hidden_orders';
+  static const see_orders_and_products_you_hid =
+      'see_orders_and_products_you_hid';
+  static const action_about_your_orders = 'action_about_your_orders';
+  static const hidden_orders_hint = 'hidden_orders_hint';
+  static const restore_this_order = 'restore_this_order';
+  static const restore_this_product = 'restore_this_product';
+  static const are_you_sure_restore_this_order =
+      'are_you_sure_restore_this_order';
+  static const are_you_sure_restore_this_product =
+      'are_you_sure_restore_this_product';
+  static const order_restored_successfully = 'order_restored_successfully';
+  static const product_restored_successfully = 'product_restored_successfully';
+  static const your_session_has_expired = 'your_session_has_expired';
+  static const please_login_again_or_continue_guest =
+      'please_login_again_or_continue_guest';
+  static const login = 'login';
+  static const continue_as_guest = 'continue_as_guest';
   static const you_can_return_product_without_conditions =
       'you_can_return_product_without_conditions';
   static const return_policy_get_full_refund = 'return_policy_get_full_refund';
@@ -908,39 +939,37 @@ abstract class LocaleKeys {
   static const update = 'update';
   static const similar_products = 'similar_products';
 
-static const report_reason = 'report_reason';
-static const details_optional = 'details_optional';
-static const write_details_here = 'write_details_here';
-static const send_report = 'send_report';
+  static const report_reason = 'report_reason';
+  static const details_optional = 'details_optional';
+  static const write_details_here = 'write_details_here';
+  static const send_report = 'send_report';
 
-static const inappropriate_content = 'inappropriate_content';
-static const harassment = 'harassment';
-static const spam = 'spam';
-static const intellectual_property = 'intellectual_property';
-static const violence = 'violence';
-
-static const report_sent_successfully = 'report_sent_successfully';
-static const report_failed = 'report_failed';
-
-static const sort_products = 'sort_products';
-static const sort_choose_ordering = 'sort_choose_ordering';
-static const sort_default = 'sort_default';
-static const sort_best_match = 'sort_best_match';
-static const sort_best_sellers = 'sort_best_sellers';
-static const sort_most_bought = 'sort_most_bought';
-static const sort_new_arrivals = 'sort_new_arrivals';
-static const sort_by_date_added = 'sort_by_date_added';
-static const sort_newest = 'sort_newest';
-static const sort_oldest = 'sort_oldest';
-static const sort_price = 'sort_price';
-static const sort_by_product_price = 'sort_by_product_price';
-static const sort_low_to_high = 'sort_low_to_high';
-static const sort_high_to_low = 'sort_high_to_low';
-static const sort_name = 'sort_name';
-static const sort_alphabetical = 'sort_alphabetical';
-static const sort_a_to_z = 'sort_a_to_z';
-static const sort_z_to_a = 'sort_z_to_a';
-static const add_story = 'add_story';
-static const no_stories_yet = 'no_stories_yet';
-static const failed_to_load_stories = 'failed_to_load_stories';
+  static const inappropriate_content = 'inappropriate_content';
+  static const harassment = 'harassment';
+  static const spam = 'spam';
+  static const intellectual_property = 'intellectual_property';
+  static const violence = 'violence';
+  static const report_sent_successfully = 'report_sent_successfully';
+  static const report_failed = 'report_failed';
+  static const sort_products = 'sort_products';
+  static const sort_choose_ordering = 'sort_choose_ordering';
+  static const sort_default = 'sort_default';
+  static const sort_best_match = 'sort_best_match';
+  static const sort_best_sellers = 'sort_best_sellers';
+  static const sort_most_bought = 'sort_most_bought';
+  static const sort_new_arrivals = 'sort_new_arrivals';
+  static const sort_by_date_added = 'sort_by_date_added';
+  static const sort_newest = 'sort_newest';
+  static const sort_oldest = 'sort_oldest';
+  static const sort_price = 'sort_price';
+  static const sort_by_product_price = 'sort_by_product_price';
+  static const sort_low_to_high = 'sort_low_to_high';
+  static const sort_high_to_low = 'sort_high_to_low';
+  static const sort_name = 'sort_name';
+  static const sort_alphabetical = 'sort_alphabetical';
+  static const sort_a_to_z = 'sort_a_to_z';
+  static const sort_z_to_a = 'sort_z_to_a';
+  static const add_story = 'add_story';
+  static const no_stories_yet = 'no_stories_yet';
+  static const failed_to_load_stories = 'failed_to_load_stories';
 }

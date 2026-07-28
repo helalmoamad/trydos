@@ -27,6 +27,9 @@ abstract class AuthRepository {
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> registerGuest(
     Map<String, dynamic> params,
   );
+  Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> refreshToken(
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, LoginToStoriesResponseModel>> loginToStories(
     Map<String, dynamic> params,
   );

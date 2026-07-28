@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -71,19 +70,19 @@ class VideoMessage extends StatefulWidget {
   State<VideoMessage> createState() => _VideoMessageState();
 }
 
-class _VideoMessageState extends State<VideoMessage>
-    with AutomaticKeepAliveClientMixin {
+// أُزيل AutomaticKeepAliveClientMixin: كان يُبقي VideoPlayerController حيّاً
+// لكل فيديو مرّ به المستخدم — وهي مفكّكات ترميز أصلية محدودة العدد، أثقل
+// بكثير من الصور. الملف محفوظ على القرص فالعودة تُعيد التشغيل فوراً بلا شبكة.
+class _VideoMessageState extends State<VideoMessage> {
   late bool isRead;
   late bool isReceived;
+  // مستخدَم في اختيار أيقونة الحالة أدناه — ليس ميتاً كنظيره في ImageMessage.
   bool timer = false;
   late ChatBloc chatBloc;
 
   // ✅ إدارة حالة التحميل
   bool _isVideoDownloaded = false;
   bool _isDownloading = false;
-
-  @override
-  bool get wantKeepAlive => true; // ✅ الحفاظ على حالة Widget
 
   @override
   void initState() {
@@ -118,13 +117,15 @@ class _VideoMessageState extends State<VideoMessage>
       _isDownloading = true;
 
       FileSaving()
-          .downloadFileToLocalStorage(
+          .getOrDownloadMedia(
             widget.videoUrl ?? widget.videoFile!.path,
             widget.channelId,
           )
-          .then((_) {
+          .then((file) {
             _isDownloading = false;
-            _isVideoDownloaded = true;
+            // كان يُعلن النجاح دائماً. الدالة ترجع الآن null عند الفشل،
+            // فنميّز الحالتين بدل تثبيت «مُحمَّل» على ملف غير موجود.
+            _isVideoDownloaded = file != null;
             if (mounted) {
               setState(() {});
             }
@@ -152,7 +153,6 @@ class _VideoMessageState extends State<VideoMessage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // ✅ مطلوب لـ AutomaticKeepAliveClientMixin
     FlutterError.onError = (FlutterErrorDetails error) {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
@@ -259,7 +259,9 @@ class _VideoMessageState extends State<VideoMessage>
                             Container(
                               width: 300.w,
                               decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
+                                // كانت رمادية فاتحة فتظهر خلف المصغَّر الغائب
+                                // بمظهر باهت. السوداء تليق بمحتوى الفيديو.
+                                color: Colors.black,
                                 borderRadius: BorderRadius.circular(12.0),
                                 border: Border.all(
                                   width: 3.0,
@@ -435,13 +437,7 @@ class _VideoMessageState extends State<VideoMessage>
                                     ),
                                     widget.userMessagePhoto != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl:
-                                                (widget.userMessagePhoto
-                                                    .toString()
-                                                    .contains("cloudinary")
-                                                ? widget.userMessagePhoto!
-                                                : ("${dotenv.env['Images_Url']}") +
-                                                      widget.userMessagePhoto!),
+                                            imageUrl: widget.userMessagePhoto!,
                                             imageFit: BoxFit.cover,
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),

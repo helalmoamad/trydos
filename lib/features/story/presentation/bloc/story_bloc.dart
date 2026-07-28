@@ -23,11 +23,9 @@ import 'package:trydos/features/story/domain/useCases/get_stories_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/core/domin/usecases/upload_file_cloudinary_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/increase_viewers_usecase.dart';
-import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/delete_story_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/main.dart';
 import '../../data/models/get_stories_model.dart';
 import '../../domain/useCases/add_story_to_our_server_usecase.dart';
 
@@ -46,7 +44,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
   final GetStoryUseCase getStoryUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
   final UploadFileMediaServerUseCase uploadFileMediaServerUseCase;
-  final UploadStoryUseCase uploadStoryUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final AddStoryToOurServerUseCase addStoryToOurServerUseCase;
   final IncreaseViewersUseCase increaseViewersUseCase;
@@ -56,7 +53,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     this.uploadFileCloudinaryUseCase,
     this.getStoryUseCase,
     this.getWidthAndHeightUseCase,
-    this.uploadStoryUseCase,
     this.increaseViewersUseCase,
     this.addStoryToOurServerUseCase,
     this.uploadFileMediaServerUseCase,
@@ -119,56 +115,57 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.loading,
       ),
     );
-    if (mediaServerIsS3) {
-      final response = await uploadFileMediaServerUseCase(
-        UploadFileMediaServerParams(
-          file: event.file,
-          isStory: true,
-          usingOnUploadingFinishedFunction: false,
-          usingSendProgressFunction: false,
-        ),
-      );
+    // if (mediaServerIsS3) {
+    final response = await uploadFileMediaServerUseCase(
+      UploadFileMediaServerParams(
+        file: event.file,
+        isStory: true,
+        usingOnUploadingFinishedFunction: false,
+        usingSendProgressFunction: false,
+      ),
+    );
 
-      response.fold(
-        (l) {
-          if (ErrorManager.shouldRetry(
-            'UploadStoryCloudinaryEvent',
-            l.statusCode,
-          )) {
-            ErrorManager.incrementRetry('UploadStoryCloudinaryEvent');
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry(
+          'UploadStoryCloudinaryEvent',
+          l.statusCode,
+        )) {
+          ErrorManager.incrementRetry('UploadStoryCloudinaryEvent');
 
-            GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
-            return;
-          }
-          emit(
-            state.copyWith(
-              uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure,
-            ),
-          );
-        },
-        (r) async {
-          ErrorManager.resetRetry('UploadStoryCloudinaryEvent');
-          String fileName = event.file.path.split('/').last;
-          String mimeType = mime(fileName) ?? '';
-          String mimee = mimeType.split('/')[0];
-          bool isVideoFile;
+          GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
+          return;
+        }
+        emit(
+          state.copyWith(
+            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure,
+          ),
+        );
+      },
+      (r) async {
+        ErrorManager.resetRetry('UploadStoryCloudinaryEvent');
+        String fileName = event.file.path.split('/').last;
+        String mimeType = mime(fileName) ?? '';
+        String mimee = mimeType.split('/')[0];
+        bool isVideoFile;
 
-          if (mimee == 'image') {
-            isVideoFile = false;
-          } else {
-            isVideoFile = true;
-          }
+        if (mimee == 'image') {
+          isVideoFile = false;
+        } else {
+          isVideoFile = true;
+        }
 
-          add(
-            AddStoryToOurServerEvent(
-              path: r.url!,
-              durationSeconds: r.durationSeconds,
-              isVideo: isVideoFile ? 1 : 0,
-            ),
-          );
-        },
-      );
-    } else {
+        add(
+          AddStoryToOurServerEvent(
+            path: r.url!,
+            durationSeconds: r.durationSeconds,
+            isVideo: isVideoFile ? 1 : 0,
+          ),
+        );
+      },
+    );
+    // }
+    /*else {
       final response = await uploadFileCloudinaryUseCase(
         UploadFileCloudinaryParams(
           file: event.file,
@@ -218,7 +215,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           );
         },
       );
-    }
+    }*/
   }
 
   _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async {
@@ -270,7 +267,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     );
     currentStoryInEachCollection[event.collectionIndex] =
         event.selectedStoryIndexInCollection == -1
-        ? currentStoryInEachCollection[event.collectionIndex]
+        ? (currentStoryInEachCollection[event.collectionIndex] ?? 0)
         : event.selectedStoryIndexInCollection;
     //todo make  the state loading
     emit(
@@ -286,7 +283,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
 
     var currentStoryInSelectedCollection =
         state.storiesCollections[event.collectionIndex].stories![max(
-          state.currentStoryInEachCollection[event.collectionIndex]!,
+          state.currentStoryInEachCollection[event.collectionIndex] ?? 0,
           event.selectedStoryIndexInCollection,
         )];
     if (currentStoryInSelectedCollection.isPhoto == 1) {
@@ -413,8 +410,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           state.storiesCollections,
         );
         ErrorManager.resetRetry('GetStoryEvent');
-        Map<int, int> currentStoryInEachCollection = {};
-        int i = 0;
         List<CollectionStoryModel>? collections = r.data!.collections;
         /*  if (!(event.withPaginition)) {
         if ((collections?.length ?? 0) > 1) {
@@ -430,15 +425,16 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           }
         }
       }*/
+        // ترقيم موحّد يطابق القائمة المدموجة [...القديمة, ...الجديدة] بلا فجوات.
+        // مع الـ pagination نحتفظ بمفاتيح الصفحات السابقة ونضيف الجديدة انطلاقًا
+        // من نهاية القائمة القائمة؛ بدونه نبدأ خريطة جديدة من الصفر.
+        Map<int, int?> currentStoryInEachCollection = event.withPaginition
+            ? Map.of(state.currentStoryInEachCollection)
+            : {};
+        int i = event.withPaginition ? storiesCollections.length : 0;
         r.data?.collections?.forEach((element) {
           currentStoryInEachCollection[i++] = 0;
         });
-        if (event.withPaginition) {
-          int i = (storiesCollections).length;
-          r.data?.collections?.forEach((element) {
-            currentStoryInEachCollection[i++] = 0;
-          });
-        }
 
         emit(
           state.copyWith(
@@ -461,9 +457,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
   ) async {
     final response = await addStoryToOurServerUseCase.call(
       (AddStoryToOurServerParams(
-        filePath: mediaServerIsS3
-            ? "${dotenv.env['MEDIA_SERVER_URL']}${event.path}"
-            : event.path,
+        filePath: "${dotenv.env['MEDIA_SERVER_URL']}${event.path}",
 
         isVideo: event.isVideo,
         link: state.storyLink,
@@ -536,14 +530,10 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           isVideo: isVideoFile ? 1 : 0,
           isPhoto: !isVideoFile ? 1 : 0,
           photoPath: !isVideoFile
-              ? mediaServerIsS3
-                    ? "${dotenv.env['MEDIA_SERVER_URL']}${event.path}"
-                    : event.path
+              ? "${dotenv.env['MEDIA_SERVER_URL']}${event.path}"
               : null,
           fullVideoPath: isVideoFile
-              ? mediaServerIsS3
-                    ? "${dotenv.env['MEDIA_SERVER_URL']}${event.path}"
-                    : event.path
+              ? "${dotenv.env['MEDIA_SERVER_URL']}${event.path}"
               : null,
         );
         r.fold(

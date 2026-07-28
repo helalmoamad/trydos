@@ -26,12 +26,11 @@ import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 
 class HomePageBoutiqueCard extends StatelessWidget {
-  HomePageBoutiqueCard({
+  const HomePageBoutiqueCard({
     super.key,
     this.withSlidingImages = false,
     required this.boutique,
     required this.category_Slug,
-    required this.isShowPanelForVerified,
     required this.index,
     required this.descriptionPlain,
   });
@@ -39,7 +38,6 @@ class HomePageBoutiqueCard extends StatelessWidget {
   final int index;
   final bool withSlidingImages;
   final HomeBoutiques boutique;
-  final ValueNotifier<bool> isShowPanelForVerified;
 
   /// نص الوصف جاهز بدون HTML (يُمرَّر من الصفحة الرئيسية لتحسين الأداء)
   final String descriptionPlain;
@@ -115,7 +113,6 @@ class HomePageBoutiqueCard extends StatelessWidget {
                   context,
                   PageRouteBuilder(
                     pageBuilder: (_, __, ___) => ProductListingPage(
-                      isShowPanelForVerified: isShowPanelForVerified,
                       banner: boutique.banners,
                       withSlidingImages: withSlidingImages,
                       boutiqueSlug: boutique.slug!,
@@ -250,7 +247,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
             ),
           ),
 
-          (boutique.mainCategoriesForProductIds!.length) < 2
+          (boutique.mainCategoriesForProductIds?.length ?? 0) < 1
               ? const SizedBox.shrink()
               : SizedBox(
                   height: 102.h,
@@ -405,8 +402,6 @@ class HomePageBoutiqueCard extends StatelessWidget {
                                   PageRouteBuilder(
                                     pageBuilder: (_, __, ___) =>
                                         ProductListingPage(
-                                          isShowPanelForVerified:
-                                              isShowPanelForVerified,
                                           banner: boutique.banners,
                                           withSlidingImages: withSlidingImages,
                                           boutiqueSlug: boutique.slug!,

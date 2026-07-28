@@ -8,15 +8,19 @@ import '../../data/models/get_stories_model.dart';
 
 abstract class StoryRepository {
   Future<Either<Failure, GetStoriesModel>> getStories(
-      Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, Either<int, CollectionStoryModel>>>
-      addStoryToOurServer(Map<String, dynamic> params);
+  addStoryToOurServer(Map<String, dynamic> params);
   Future<Either<Failure, bool>> increaseViewers(Map<String, dynamic> params);
-  Future<Either<Failure, ImageDetail>> loadWidthAndHeight(
-      {required String url, required int collectionId});
-  Future<Either<Failure, Either<int, CollectionStoryModel>>> uploadStory(
-      Map<String, dynamic> params);
+  Future<Either<Failure, ImageDetail>> loadWidthAndHeight({
+    required String url,
+    required int collectionId,
+  });
   Future<Either<Failure, DeleteStoryModel>> deleteStory(
-      Map<String, dynamic> params);
-  Future<Either<Failure, ReportResponse>> reportAboutStory(Map<String, dynamic> params);
+    Map<String, dynamic> params,
+  );
+  Future<Either<Failure, ReportResponse>> reportAboutStory(
+    Map<String, dynamic> params,
+  );
 }

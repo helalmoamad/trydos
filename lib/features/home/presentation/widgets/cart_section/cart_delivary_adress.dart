@@ -87,9 +87,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
       vsync: this,
     );
     cartImages = widget.cartItems;
-    if (kDebugMode) print(
-      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG----------------${cartImages}",
-    );
+    if (kDebugMode)
+      print(
+        "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG----------------${cartImages}",
+      );
     // homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -599,8 +600,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
             check = false;
           }
           return (orderState.applyCouponStatus == ApplyCouponStatus.loading ||
-                  orderState.setCustomerAddressDefaultStatus !=
-                      SetCustomerAddressDefaultStatus.success ||
+                  (orderState.setCustomerAddressDefaultStatus !=
+                          SetCustomerAddressDefaultStatus.success &&
+                      !(orderState
+                          .listOfAddressInfoClassToSave
+                          .isNullOrEmpty)) ||
                   orderState.getCustomerAddressStatus !=
                       GetCustomerAddressesStatus.success ||
                   orderState.addAddressToOrderStatus ==

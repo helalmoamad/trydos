@@ -9,9 +9,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
-import 'package:trydos/main.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
@@ -45,19 +43,12 @@ class ProductDetailsChipWidget extends StatelessWidget {
           children: [
             Row(
               children: [
-                mediaServerIsS3
-                    ? MyCachedNetworkImage(
-                        imageUrl: descriptor!.descriptorGroup!.icon!,
-                        height: 11.h,
-                        imageFit: BoxFit.contain,
-                        width: 11.w,
-                      )
-                    : SvgNetworkWidget(
-                        svgUrl: descriptor!.descriptorGroup!.icon!,
-                        color: const Color(0xff1D1D1D),
-                        width: 11.w,
-                        height: 11.h,
-                      ),
+                MyCachedNetworkImage(
+                  imageUrl: descriptor!.descriptorGroup!.icon!,
+                  height: 11.h,
+                  imageFit: BoxFit.contain,
+                  width: 11.w,
+                ),
                 const SizedBox(width: 5),
                 MyTextWidget(
                   descriptor!.descriptorGroup!.name!,
@@ -92,25 +83,15 @@ class ProductDetailsChipWidget extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: mediaServerIsS3
-                                ? MyCachedNetworkImage(
-                                    imageUrl: descriptor!
-                                        .descriptors![index]
-                                        .descriptor!
-                                        .icon!,
-                                    height: 11.h,
-                                    imageFit: BoxFit.contain,
-                                    width: 11.w,
-                                  )
-                                : SvgNetworkWidget(
-                                    svgUrl: descriptor!
-                                        .descriptors![index]
-                                        .descriptor!
-                                        .icon!,
-                                    color: const Color(0xff1D1D1D),
-                                    width: 11.w,
-                                    height: 11.h,
-                                  ),
+                            child: MyCachedNetworkImage(
+                              imageUrl: descriptor!
+                                  .descriptors![index]
+                                  .descriptor!
+                                  .icon!,
+                              height: 11.h,
+                              imageFit: BoxFit.contain,
+                              width: 11.w,
+                            ),
                           ),
                         },
                         MyTextWidget(

@@ -9,7 +9,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_html/flutter_html.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -29,9 +28,6 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
@@ -123,9 +119,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   final ValueNotifier<int> tapIndexToAddProductToCart = ValueNotifier(-1);
   final ValueNotifier<bool> finishRedeem = ValueNotifier(false);
   final ValueNotifier<bool> productIsRecommend = ValueNotifier(false);
-  String phoneNumber = '';
-  int isVisWhatsApp = 0;
-  final ValueNotifier<bool> isVerified = ValueNotifier(true);
   final PanelController panelControllerForBuyersCameraShots = PanelController();
   final PanelController panelControllerForReels = PanelController();
   final PanelController panelBuyersComments = PanelController();
@@ -141,7 +134,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
   final ValueNotifier<bool> visibleVedio = ValueNotifier(true);
   final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
   final ValueNotifier<String> currentFilterForCommend = ValueNotifier("all");
-  final PageController pageController = PageController();
   bool isChangedvariationWhenQtyZeroForFirst = false;
   final ValueNotifier<String?> productNotAvailableNotifier = ValueNotifier(
     null,
@@ -171,7 +163,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
             productSlugToOnVoideo.add(key);
           }
         });
-      } catch (e) {} // آمن هنا
+      } catch (e) {} // Ø¢Ù…Ù† Ù‡Ù†Ø§
     });
 
     changeVariationIfQtyZero = true;
@@ -219,7 +211,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
       );
     }
 
-    // Timer لإرسال الحدث كل 20 ثانية
+    // Timer Ù„Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø­Ø¯Ø« ÙƒÙ„ 20 Ø«Ø§Ù†ÙŠØ©
 
     FirebaseAnalyticsService.logEventForSession(
       executedEventName: GlobalScreenConst.PRODUCT_SCREEN,
@@ -956,7 +948,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           isChangedvariationWhenQtyZeroForFirst = false;
                           getAllDataForProductForFirst = true;
 
-                          // إعادة تحميل بيانات المنتج
+                          // Ø¥Ø¹Ø§Ø¯Ø© ØªØ­Ù…ÙŠÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ù†ØªØ¬
                           if (widget.productItem != null) {
                             homeBloc.add(
                               GetProductDatailsWithoutRelatedProductsEvent(
@@ -1379,7 +1371,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               // ProductStoriesCard(),
                               storySection(),
                               BuyerComment(
-                                isVerified: isVerified,
                                 panelBuyersComments: panelBuyersComments,
                                 ownerId: productItem?.ownerId,
                                 productSlug: productItem?.slug ?? "",
@@ -1388,7 +1379,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               ),
                               BuyerSellerChat(
                                 panelBuyersSeller: panelBuyersSeller,
-                                isVerified: isVerified,
                                 productSlug: productItem?.slug ?? "",
                                 currentVariant: currentVariantType,
                                 ownerId: productItem?.ownerId,
@@ -1991,7 +1981,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 }
 
                                 return Container(
-                                  height: 80.h, // ارتفاع الـ panel المغلقة
+                                  height: 80
+                                      .h, // Ø§Ø±ØªÙØ§Ø¹ Ø§Ù„Ù€ panel Ø§Ù„Ù…ØºÙ„Ù‚Ø©
                                   child: ProductDetailsSheetHeader(
                                     redeemVariantPrice:
                                         HelperFunctions.truncateToDecimalPlaces(
@@ -2163,7 +2154,8 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                       }
 
                       return Container(
-                        height: 120.h, // ارتفاع الـ panel المغلقة
+                        height:
+                            120.h, // Ø§Ø±ØªÙØ§Ø¹ Ø§Ù„Ù€ panel Ø§Ù„Ù…ØºÙ„Ù‚Ø©
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
@@ -2173,7 +2165,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                         ),
                         child: Column(
                           children: [
-                            // Handle Bar (شريط الإغلاق)
+                            // Handle Bar (Ø´Ø±ÙŠØ· Ø§Ù„Ø¥ØºÙ„Ø§Ù‚)
                             Container(
                               margin: EdgeInsets.only(top: 7.h),
                               child: Container(
@@ -2185,7 +2177,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 ),
                               ),
                             ),
-                            // Bottom Action Bar (شريط الإجراءات السفلي)
+                            // Bottom Action Bar (Ø´Ø±ÙŠØ· Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª Ø§Ù„Ø³ÙÙ„ÙŠ)
                             Expanded(
                               child: Container(
                                 padding: EdgeInsets.symmetric(
@@ -2410,7 +2402,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                 "############${state.authProductDetailsModel?.data?.variation}",
                               );
                             return ProductDetailsBottomSheetNew(
-                              isVerified: isVerified,
                               variationId: currentVariationId,
                               showShadowForPanel: showShadowForPanel,
                               currentVariant: currentVariantType,
@@ -2778,7 +2769,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
               productFirstId: (productItem?.productId ?? "").toString(),
             ),
             BuyersCommentsPanel(
-              isVerified: isVerified,
               currentFilterForCommend: currentFilterForCommend,
               panelController: panelBuyersComments,
               productSlug:
@@ -2788,7 +2778,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
               productFirstId: (productItem?.productId ?? "").toString(),
             ),
             BuyerSellerPanel(
-              isVerified: isVerified,
               productSlug:
                   productItem?.slug ??
                   widget.productSlugForOpeningChatDirectly ??
@@ -2883,24 +2872,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                 visibleRedeem: visibleRedeem,
                 panelController: panelColorImages,
               ),
-            ),
-            ValueListenableBuilder<bool>(
-              valueListenable: isVerified,
-              builder: (context, _isverified, _) {
-                return _isverified
-                    ? const SizedBox.shrink()
-                    : Container(
-                        width: 1.sw,
-                        height: 1.sh,
-                        color: const Color.fromRGBO(0, 0, 0, 0.5),
-                      );
-              },
-            ),
-            ValueListenableBuilder<bool>(
-              valueListenable: isVerified,
-              builder: (context, _isverified, _) {
-                return _isverified ? const SizedBox.shrink() : _veryfiedOtp();
-              },
             ),
           ],
         ),
@@ -3205,7 +3176,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
         ),
         const Spacer(),
         Container(
-          height: 120.h, // ارتفاع الـ panel المغلقة
+          height: 120.h, // Ø§Ø±ØªÙØ§Ø¹ Ø§Ù„Ù€ panel Ø§Ù„Ù…ØºÙ„Ù‚Ø©
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -3215,7 +3186,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
           ),
           child: Column(
             children: [
-              // Handle Bar (شريط الإغلاق)
+              // Handle Bar (Ø´Ø±ÙŠØ· Ø§Ù„Ø¥ØºÙ„Ø§Ù‚)
               Container(
                 margin: EdgeInsets.only(top: 7.h),
                 child: Container(
@@ -3227,7 +3198,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                   ),
                 ),
               ),
-              // Bottom Action Bar (شريط الإجراءات السفلي)
+              // Bottom Action Bar (Ø´Ø±ÙŠØ· Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª Ø§Ù„Ø³ÙÙ„ÙŠ)
               Expanded(
                 child: Container(
                   padding: EdgeInsets.symmetric(
@@ -3711,18 +3682,11 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                       videoSource:
                                           productItem.videos.isNullOrEmpty
                                           ? null
-                                          : mediaServerIsS3
-                                          ? (productItem.videos!.first.contains(
+                                          : (productItem.videos!.first.contains(
                                                   "media_server",
                                                 )
                                                 ? productItem.videos!.first
-                                                : "${dotenv.env['Vedio_S3_Server']}${productItem.videos!.first}")
-                                          : productItem.videos!.first.contains(
-                                              "cloudinary",
-                                            )
-                                          ? productItem.videos!.first
-                                          : ("${dotenv.env['Video_url']}" +
-                                                (productItem.videos!.first)),
+                                                : "${dotenv.env['Vedio_S3_Server']}${productItem.videos!.first}"),
                                     ),
                                   ),
                                 ],
@@ -3913,169 +3877,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
       () => homeBloc.add(
         const IsChangedVariationWhenQtyZeroEvent(
           isChangedVariationWhenQtyZero: true,
-        ),
-      ),
-    );
-  }
-
-  Widget _veryfiedOtp() {
-    return AnimatedPadding(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: Container(
-        color: Colors.white,
-        height: 450,
-        width: 1.sw,
-        child: Scaffold(
-          body: SizedBox(
-            height: 400,
-            width: 1.sw,
-            child: Stack(
-              children: [
-                PageView(
-                  physics: const NeverScrollableScrollPhysics(),
-                  controller: pageController,
-                  children:
-                      (prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                          false)
-                      ? [
-                          VerifyOtp(
-                            fromProfile: false,
-                            navigateToProfile: () {},
-                            fromExpired: true,
-                            isVisWhatsApp: 1,
-                            navigateToAddName: () {},
-                            navigateTocartOrProfile: () {
-                              isVerified.value = true;
-                            },
-                            fromLogin: false,
-                            onLoginFailed: () {
-                              //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                            },
-                            goBack: () {
-                              // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                            },
-                            methodIcon: AppAssets.whatsappSvg,
-                            phoneNumber: prefsRepository.myPhoneNumber!,
-                          ),
-                        ]
-                      : [
-                          InsertPhoneTab(
-                            focusNode: focusNode,
-                            moveToNextStep: (String phoneNumber) {
-                              this.phoneNumber = phoneNumber.replaceAll(
-                                ' ',
-                                '',
-                              );
-                              pageController.animateToPage(
-                                1,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                              setState(() {});
-                            },
-                          ),
-                          VerificationMethods(
-                            isFromLogin: false,
-                            phoneNumber: phoneNumber,
-                            onChooseWhatsapp: () {
-                              isVisWhatsApp = 1;
-                              if (kDebugMode)
-                                print(
-                                  "###################33333# isVisWhatsApp}",
-                                );
-                              pageController.animateToPage(
-                                2,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-
-                              if (prefsRepository.isTimerForOtpRunning ??
-                                  false) {
-                                showWarningMessage(
-                                  context,
-                                  ' ${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}',
-                                );
-                                return;
-                              }
-                              /*   authBloc.add(
-                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));*/
-                            },
-                            goBackToPhone: () {
-                              pageController.animateToPage(
-                                0,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            onChooseSms: () {
-                              isVisWhatsApp = 0;
-                              pageController.animateToPage(
-                                3,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                              /* authBloc.add(
-                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));*/
-                            },
-                          ),
-                          VerifyOtp(
-                            fromProfile: false,
-                            navigateToProfile: () {},
-                            fromExpired: true,
-                            isVisWhatsApp: isVisWhatsApp,
-                            navigateToAddName: () {},
-                            navigateTocartOrProfile: () {
-                              isVerified.value = true;
-                            },
-                            fromLogin: false,
-                            onLoginFailed: () {
-                              pageController.animateToPage(
-                                3,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            goBack: () {
-                              pageController.animateToPage(
-                                1,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            methodIcon: isVisWhatsApp == 1
-                                ? AppAssets.whatsappSvg
-                                : AppAssets.smsSvg,
-                            phoneNumber: phoneNumber,
-                          ),
-                        ],
-                ),
-                Positioned(
-                  top: 0,
-                  left: LanguageService.languageCode != "ar" ? null : 0,
-                  right: LanguageService.languageCode != "ar" ? 0 : null,
-                  child: Container(
-                    margin: const EdgeInsets.all(10),
-                    height: 20,
-                    width: 40,
-                    child: InkWell(
-                      onTap: () => isVerified.value = true,
-                      child: SvgPicture.asset(
-                        AppAssets.closeSvg,
-                        height: 15,
-                        width: 30,
-                        // ignore: deprecated_member_use
-                        color: const Color(0xffFF5F61),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );

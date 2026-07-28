@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trydos/common/helper/media_registry_entry.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import '../../../../common/constant/configuration/prefs_key.dart';
 import '../../../config/theme/app_theme.dart';
@@ -60,19 +61,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.setString(PrefsKey.currentCountry, countryIso!);
 
   @override
-  Future<bool> setAllowedToUploadStories(bool allowedToUploadStories) {
-    return _preferences.setBool(
-      PrefsKey.allowedToUploadStories,
-      allowedToUploadStories,
-    );
-  }
-
-  @override
-  bool getAllowedToUploadStories() {
-    return _preferences.getBool(PrefsKey.allowedToUploadStories) ?? false;
-  }
-
-  @override
   String? get userChoosedCountryIso =>
       _preferences.getString(PrefsKey.currentCountry);
 
@@ -84,6 +72,20 @@ class PrefsRepositoryImpl extends PrefsRepository {
     await _secureStorage.write(key: PrefsKey.marketToken, value: token ?? "");
     _cachedMarketToken = token ?? "";
     return true;
+  }
+
+  @override
+  Future<bool> setMarketRefreshToken(String? token) async {
+    await _secureStorage.write(
+      key: PrefsKey.marketRefreshToken,
+      value: token ?? "",
+    );
+    return true;
+  }
+
+  @override
+  Future<String?> getMarketRefreshToken() {
+    return _secureStorage.read(key: PrefsKey.marketRefreshToken);
   }
 
   @override
@@ -407,12 +409,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
         return paths[chatId].toString().startsWith(filePath);
       }
       return false;
-    });
+    }, orElse: () => ''); // كان بلا orElse: يرمي StateError حين لا يوجد مطابق
+    if (path.isEmpty) return null;
 
     Map paths = convert.jsonDecode(path);
-    return paths[chatId].toString().split(' ').length > 1
-        ? paths[chatId].split(' ')[1]
-        : null;
+    // الفصل عند أول مسافة فقط — المسار المحلي قد يحوي مسافات.
+    return MediaRegistryEntry.tryParse(paths[chatId].toString())?.path;
   }
 
   @override

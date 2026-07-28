@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
@@ -136,9 +135,10 @@ class _TextMessageState extends ThemeState<TextMessage> {
         }
       },
       builder: (context, state) {
-        if (kDebugMode) print(
-          "object///////////////////////////////////////${widget.userMessagePhoto}/",
-        );
+        if (kDebugMode)
+          print(
+            "object///////////////////////////////////////${widget.userMessagePhoto}/",
+          );
         if (kDebugMode) print(state.currentMessage.contains(widget.messageId));
         return Column(
           key: key,
@@ -484,13 +484,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                         widget.userMessagePhoto != null
                                             ? MyCachedNetworkImage(
                                                 imageUrl:
-                                                    (widget.userMessagePhoto
-                                                        .toString()
-                                                        .contains("cloudinary")
-                                                    ? widget.userMessagePhoto!
-                                                    : ("${dotenv.env['Images_Url']}") +
-                                                          widget
-                                                              .userMessagePhoto!),
+                                                    widget.userMessagePhoto!,
                                                 imageFit: BoxFit.cover,
                                                 radius: 8,
                                                 progressIndicatorBuilderWidget:

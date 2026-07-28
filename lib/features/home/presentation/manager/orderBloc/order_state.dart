@@ -9,6 +9,7 @@ import '../../../data/models/color_size_for_product.dart';
 import '../../../data/models/get_address_by_coordinates_model.dart';
 import '../../../data/models/get_address_by_text_model.dart';
 import '../../../data/models/get_list_of_customer_addresses_model.dart';
+import '../../../data/models/get_hidden_orders_model.dart';
 import '../../../data/models/get_orders_model.dart';
 import '../../../data/models/place_order_model.dart';
 
@@ -80,6 +81,12 @@ enum WalletCheckoutStatus { init, loading, success, failure, unAuth }
 
 enum OrderReturnDetailsStatus { init, loading, success, failure }
 
+enum GetHiddenOrdersStatus { init, loading, success, failure }
+
+enum RestoreOrderVisibilityStatus { init, loading, success, failure }
+
+enum HideOrderVisibilityStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class OrderState extends Equatable {
@@ -138,6 +145,10 @@ class OrderState extends Equatable {
         CancelReturnRequestProductStatus.init,
     this.orderReturnDetailsStatus = OrderReturnDetailsStatus.init,
     this.orderReturnDetailsModel,
+    this.getHiddenOrdersStatus = GetHiddenOrdersStatus.init,
+    this.getHiddenOrdersModel,
+    this.restoreOrderVisibilityStatus = RestoreOrderVisibilityStatus.init,
+    this.hideOrderVisibilityStatus = HideOrderVisibilityStatus.init,
   });
   final OrderReturnRequestsViewStatus? orderReturnRequestsViewStatus;
   final ConfirmReturnRequestStatus? confirmReturnRequestStatus;
@@ -191,6 +202,10 @@ class OrderState extends Equatable {
   final CancelReturnRequestProductStatus? cancelReturnRequestProductStatus;
   final OrderReturnDetailsStatus orderReturnDetailsStatus;
   final GetOrderReturntDetailsModel? orderReturnDetailsModel;
+  final GetHiddenOrdersStatus? getHiddenOrdersStatus;
+  final GetHiddenOrdersModel? getHiddenOrdersModel;
+  final RestoreOrderVisibilityStatus? restoreOrderVisibilityStatus;
+  final HideOrderVisibilityStatus? hideOrderVisibilityStatus;
 
   @override
   List<Object?> get props => [
@@ -244,6 +259,10 @@ class OrderState extends Equatable {
     imagesForComment,
     orderReturnDetailsStatus,
     orderReturnDetailsModel,
+    getHiddenOrdersStatus,
+    getHiddenOrdersModel,
+    restoreOrderVisibilityStatus,
+    hideOrderVisibilityStatus,
   ];
 
   OrderState copyWith({
@@ -299,6 +318,10 @@ class OrderState extends Equatable {
     final CancelReturnRequestProductStatus? cancelReturnRequestProductStatus,
     final OrderReturnDetailsStatus? orderReturnDetailsStatus,
     final GetOrderReturntDetailsModel? orderReturnDetailsModel,
+    final GetHiddenOrdersStatus? getHiddenOrdersStatus,
+    final GetHiddenOrdersModel? getHiddenOrdersModel,
+    final RestoreOrderVisibilityStatus? restoreOrderVisibilityStatus,
+    final HideOrderVisibilityStatus? hideOrderVisibilityStatus,
   }) {
     return OrderState(
       placeOrderModel: placeOrderModel ?? this.placeOrderModel,
@@ -393,6 +416,13 @@ class OrderState extends Equatable {
           orderReturnDetailsStatus ?? this.orderReturnDetailsStatus,
       orderReturnDetailsModel:
           orderReturnDetailsModel ?? this.orderReturnDetailsModel,
+      getHiddenOrdersStatus:
+          getHiddenOrdersStatus ?? this.getHiddenOrdersStatus,
+      getHiddenOrdersModel: getHiddenOrdersModel ?? this.getHiddenOrdersModel,
+      restoreOrderVisibilityStatus:
+          restoreOrderVisibilityStatus ?? this.restoreOrderVisibilityStatus,
+      hideOrderVisibilityStatus:
+          hideOrderVisibilityStatus ?? this.hideOrderVisibilityStatus,
     );
   }
 

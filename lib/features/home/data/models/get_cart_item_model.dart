@@ -366,7 +366,7 @@ class Cart {
         : VariationCart.fromJson(json["variations"]),
     variant: json["variant"] == null ? null : json["variant"],
     availableQuantity: json["available_quantity"],
-    maxAllowedQty: json["max_allowed_qty"],
+    maxAllowedQty: json["max_allowed_qty"].toString(),
     vendorName: json["vendor_name"],
     quantity: json["quantity"],
     discount: json["discount"]?.toDouble(),
@@ -451,7 +451,11 @@ class BoutiquesCart {
 
   factory BoutiquesCart.fromJson(Map<String, dynamic> json) => BoutiquesCart(
     id: json["id"],
-    icon: json["icon"] == null ? null : IconCart.fromJson(json["icon"]),
+    icon: json["icon"] == null
+        ? null
+        : json["icon"] is Map
+        ? IconCart.fromJson(json["icon"])
+        : IconCart.fromJson({"file_path": json["icon"]}),
   );
 
   Map<String, dynamic> toJson() => {"id": id, "icon": icon?.toJson()};

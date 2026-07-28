@@ -1,3 +1,4 @@
+/*
 import 'dart:ui' as ui;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -41,15 +42,12 @@ class HomePageCard2 extends cupertino.StatelessWidget {
     this.withSlidingImages = false,
     required this.boutique,
     required this.category_Slug,
-    required this.isShowPanelForVerified,
     required this.index,
   });
   final String category_Slug;
   final int index;
   final bool withSlidingImages;
   final HomeBoutiques boutique;
-  final ValueNotifier<bool> isShowPanelForVerified;
-
   final ValueNotifier<int> resizeItems = ValueNotifier(-1);
   // final ValueNotifier<int> changeBackgroundBlurImage = ValueNotifier(0);
   //final Map<String, bool> _loadedImages = {}; // تتبع الصور المحملة
@@ -134,7 +132,6 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                 context,
                 PageRouteBuilder(
                   pageBuilder: (_, __, ___) => ProductListingPage(
-                    isShowPanelForVerified: isShowPanelForVerified,
                     banner: boutique.banners,
                     withSlidingImages: withSlidingImages,
                     boutiqueSlug: boutique.slug!,
@@ -491,8 +488,6 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                               context,
                               PageRouteBuilder(
                                 pageBuilder: (_, __, ___) => ProductListingPage(
-                                  isShowPanelForVerified:
-                                      isShowPanelForVerified,
                                   banner: boutique.banners,
                                   withSlidingImages: withSlidingImages,
                                   boutiqueSlug: boutique.slug!,
@@ -768,8 +763,6 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                       PageRouteBuilder(
                                         pageBuilder: (_, __, ___) =>
                                             ProductListingPage(
-                                              isShowPanelForVerified:
-                                                  isShowPanelForVerified,
                                               banner: boutique.banners,
                                               withSlidingImages:
                                                   withSlidingImages,
@@ -994,3 +987,4 @@ class ProductItemCircle extends StatelessWidget {
     );
   }
 }
+*/

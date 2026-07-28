@@ -111,9 +111,9 @@ class StoryCard extends StatelessWidget {
                               imageUrl:
                                   (collectionStoryModel.photoPath
                                           .toString()
-                                          .contains("cloudinary")
+                                          .contains("media_server")
                                       ? collectionStoryModel.photoPath
-                                      : "${dotenv.env['Images_Url']}") +
+                                      : "${dotenv.env['Media_S3_Server']}") +
                                   collectionStoryModel.photoPath,
                               imageFit: BoxFit.cover,
                             ),

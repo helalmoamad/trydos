@@ -37,14 +37,18 @@ import 'package:trydos/features/home/data/models/starting_settings_response_mode
 import 'package:trydos/features/home/domain/use_cases/DeliveredOrdersResponse_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/GetRelatedProductsUseCase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_like_to_product_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/add_to_checklist_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_country_language_for_notification_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/check_checklist_exist_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/convert_item_from_Cart_to_oldCart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/create_comment_order_rating.dart';
 import 'package:trydos/features/home/domain/use_cases/delete_comment_order_rating.dart';
+import 'package:trydos/features/home/domain/use_cases/delete_from_checklist_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/delete_like_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_auth_product_details_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_checklist_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_count_view_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_country_boundary_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_currencies_usecase.dart';
@@ -175,6 +179,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getCartOverviewUseCase,
     this.translateCommentUsecase,
     this.getUserNotificationUseCase,
+    this.addToChecklistUseCase,
+    this.deleteFromChecklistUseCase,
+    this.checkChecklistExistUseCase,
+    this.getChecklistUseCase,
   ) : super(const HomeState()) {
     on<HomeEvent>((event, emit) {});
 
@@ -246,7 +254,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     on<StoreFcmTokenOfMarketEvent>(
       _onStoreFcmTokenOfMarketEvent,
-      transformer: restartable(),
+      transformer: throttleDroppable(const Duration(seconds: 10)),
     );
     on<UpdateEmailNotificationEvent>(_onUpdateEmailNotificationEvent);
     on<UpdateFirebaseNotificationEvent>(_onUpdateFirebaseNotificationEvent);
@@ -350,6 +358,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
 
     on<GetUserNotificationEvent>(_onGetUserNotificationEvent);
+    on<CheckChecklistExistEvent>(_onCheckChecklistExistEvent);
+    on<ToggleChecklistEvent>(_onToggleChecklistEvent);
+    on<GetChecklistEvent>(_onGetChecklistEvent, transformer: restartable());
+    on<DeleteChecklistItemEvent>(_onDeleteChecklistItemEvent);
     on<DeleteCommentRatingEvent>(_onDeleteCommentRatingEvent);
     on<UpdateCommentRatingEvent>(_onUpdateCommentRatingEvent);
     on<TranslateCommentEvent>(_onTranslateCommentEvent);
@@ -431,6 +443,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetMyFirebaseSettingsUseCase getMyFirebaseSettingsUseCase;
 
   final GetUserNotificationUseCase getUserNotificationUseCase;
+  final AddToChecklistUseCase addToChecklistUseCase;
+  final DeleteFromChecklistUseCase deleteFromChecklistUseCase;
+  final CheckChecklistExistUseCase checkChecklistExistUseCase;
+  final GetChecklistUseCase getChecklistUseCase;
   final GetCurrenciesForWalletUseCase getCurrenciesForWalletUseCase;
 
   ////////////////////////////////////////////////////////////////
@@ -662,7 +678,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     currentStoryInEachCollection[event.collectionIndex] =
         event.selectedStoryIndexInCollection == -1
-        ? currentStoryInEachCollection[event.collectionIndex]
+        ? (currentStoryInEachCollection[event.collectionIndex] ?? 0)
         : event.selectedStoryIndexInCollection;
     //todo make  the state loading
 
@@ -679,7 +695,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     var currentStoryInSelectedCollection =
         state.storiesCollections[event.collectionIndex].stories![max(
-          state.currentStoryInEachCollection[event.collectionIndex]!,
+          state.currentStoryInEachCollection[event.collectionIndex] ?? 0,
           event.selectedStoryIndexInCollection,
         )];
     if (currentStoryInSelectedCollection.isPhoto == 1) {
@@ -2207,6 +2223,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               CheckAvailabilityProductCartStatus.init,
           checkWithGetCartStatus: CheckWithGetCartStatus.init,
           getUserNotificationModel: const PaginationModel.init(),
+          // Checklist membership is server-owned and re-fetched on every
+          // product open, so persisting it would only risk showing a stale
+          // green row after a restart.
+          checklistItemStatus: {},
+          productInChecklist: {},
+          getChecklistStatus: GetChecklistStatus.init,
         )
         .toJson();
   }
@@ -2617,11 +2639,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           );
           return;
         }
-        oldCarts = r.data?.original?.data?.oldCart;
+        oldCarts = r.data?.oldCart;
         oldCarts?.forEach((element) {
           oldCartCollection.add(element);
         });
-
+        print(
+          "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${oldCarts = r.data?.oldCart}",
+        );
         state.cartCollection?.forEach((elements) {
           oldCartCollection.removeWhere(
             (element) =>
@@ -2632,6 +2656,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 elements.productId == element.productId,
           );
         });
+        print(
+          "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS**${oldCartCollection}",
+        );
 
         //Map<String, Products> productITemForCart =
         //    Map.of(state.productITemForCart);
@@ -3062,12 +3089,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           ),
         );
 
-        showMessage(
-          l.message,
-          hasError: true,
-          foreGroundColor: Colors.white,
-          backGroundColor: Colors.black,
-        );
+        if (l.statusCode != 401) {
+          showMessage(
+            l.message,
+            foreGroundColor: Colors.white,
+            hasError: true,
+            backGroundColor: Colors.black,
+          );
+        }
       },
       (r) {
         add(GetCartOverviewEvent());
@@ -3453,12 +3482,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           );
           return;
         }
-        showMessage(
-          "${LocaleKeys.your_request_faild.tr()}",
-          foreGroundColor: Colors.white,
-          hasError: true,
-          backGroundColor: Colors.black,
-        );
+        if (l.statusCode != 401) {
+          showMessage(
+            "${LocaleKeys.your_request_faild.tr()}",
+            foreGroundColor: Colors.white,
+            hasError: true,
+            backGroundColor: Colors.black,
+          );
+        }
       },
       (r) {
         add(GetCartOverviewEvent());
@@ -3866,12 +3897,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           );
           return;
         }
-        showMessage(
-          l.message,
-          foreGroundColor: Colors.white,
-          hasError: true,
-          backGroundColor: Colors.black,
-        );
+        if (l.statusCode != 401) {
+          showMessage(
+            l.message,
+            foreGroundColor: Colors.white,
+            hasError: true,
+            backGroundColor: Colors.black,
+          );
+        }
         emit(
           state.copyWith(
             updateItemInCartStatus: UpdateItemInCartStatus.failure,
@@ -5461,6 +5494,228 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
   }
 
+  //****************************** Checklist ******************************/
+
+  // Note on `productInChecklist`: the map is rebuilt with a spread on every
+  // write because HomeState is immutable — mutating the existing map in place
+  // would not trigger a rebuild (Equatable would see the same instance). Since
+  // map keys are unique, `{...old, id: value}` overwrites an existing entry
+  // rather than appending a duplicate.
+
+  /// Per-product status write. Rebuilds the map with a spread because
+  /// HomeState is immutable — mutating in place would not trigger a rebuild
+  /// (Equatable would see the same instance). Map keys are unique, so this
+  /// overwrites an existing entry rather than appending a duplicate.
+  Map<String, ChecklistItemStatus> _withChecklistStatus(
+    String productId,
+    ChecklistItemStatus status,
+  ) => {...state.checklistItemStatus, productId: status};
+
+  bool _isChecklistBusy(String productId) =>
+      state.checklistItemStatus[productId] == ChecklistItemStatus.loading;
+
+  FutureOr<void> _onCheckChecklistExistEvent(
+    CheckChecklistExistEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    final int? productId = int.tryParse(event.productId);
+    if (productId == null) return;
+
+    // A toggle already in flight for this product knows the membership better
+    // than a check started before it — never let a stale check overwrite it.
+    if (_isChecklistBusy(event.productId)) return;
+
+    emit(
+      state.copyWith(
+        checklistItemStatus: _withChecklistStatus(
+          event.productId,
+          ChecklistItemStatus.loading,
+        ),
+      ),
+    );
+
+    final response = await checkChecklistExistUseCase(productId);
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            checklistItemStatus: _withChecklistStatus(
+              event.productId,
+              ChecklistItemStatus.failure,
+            ),
+          ),
+        );
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            checklistItemStatus: _withChecklistStatus(
+              event.productId,
+              ChecklistItemStatus.success,
+            ),
+            productInChecklist: {
+              ...state.productInChecklist,
+              event.productId: r.isExist,
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onToggleChecklistEvent(
+    ToggleChecklistEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    final int? productId = int.tryParse(event.productId);
+    if (productId == null) return;
+
+    // Guard against a double tap while this product's call is still running.
+    if (_isChecklistBusy(event.productId)) return;
+
+    final bool isCurrentlyInChecklist =
+        state.productInChecklist[event.productId] ?? false;
+
+    emit(
+      state.copyWith(
+        checklistItemStatus: _withChecklistStatus(
+          event.productId,
+          ChecklistItemStatus.loading,
+        ),
+      ),
+    );
+
+    final response = isCurrentlyInChecklist
+        ? await deleteFromChecklistUseCase(productId)
+        : await addToChecklistUseCase(productId);
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            checklistItemStatus: _withChecklistStatus(
+              event.productId,
+              ChecklistItemStatus.failure,
+            ),
+          ),
+        );
+        showMessage(
+          LocaleKeys.something_went_wrong.tr(),
+          hasError: true,
+          showInRelease: true,
+        );
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            checklistItemStatus: _withChecklistStatus(
+              event.productId,
+              ChecklistItemStatus.success,
+            ),
+            productInChecklist: {
+              ...state.productInChecklist,
+              event.productId: !isCurrentlyInChecklist,
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onGetChecklistEvent(
+    GetChecklistEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(state.copyWith(getChecklistStatus: GetChecklistStatus.loading));
+
+    final response = await getChecklistUseCase(
+      GetChecklistParams(page: event.page, pageSize: kPageSize),
+    );
+
+    response.fold(
+      (l) {
+        emit(state.copyWith(getChecklistStatus: GetChecklistStatus.failure));
+      },
+      (r) {
+        // Deleting the last row of a page (or a concurrent delete from another
+        // device) can leave us past the end. Self-heal by walking back a page
+        // instead of stranding the user on an empty view with no controls.
+        final bool isEmptyBeyondFirstPage =
+            (r.data?.items?.isEmpty ?? true) && event.page > 1;
+        if (isEmptyBeyondFirstPage) {
+          add(GetChecklistEvent(page: event.page - 1));
+          return;
+        }
+
+        emit(
+          state.copyWith(
+            getChecklistStatus: GetChecklistStatus.success,
+            checklistPageData: r.data,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onDeleteChecklistItemEvent(
+    DeleteChecklistItemEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    final int? productId = int.tryParse(event.productId);
+    if (productId == null) return;
+
+    if (_isChecklistBusy(event.productId)) return;
+
+    emit(
+      state.copyWith(
+        checklistItemStatus: _withChecklistStatus(
+          event.productId,
+          ChecklistItemStatus.loading,
+        ),
+      ),
+    );
+
+    final response = await deleteFromChecklistUseCase(productId);
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            checklistItemStatus: _withChecklistStatus(
+              event.productId,
+              ChecklistItemStatus.failure,
+            ),
+          ),
+        );
+        showMessage(
+          LocaleKeys.something_went_wrong.tr(),
+          hasError: true,
+          showInRelease: true,
+        );
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            checklistItemStatus: _withChecklistStatus(
+              event.productId,
+              ChecklistItemStatus.success,
+            ),
+            productInChecklist: {
+              ...state.productInChecklist,
+              event.productId: false,
+            },
+          ),
+        );
+
+        // Reload the page we are on. `_onGetChecklistEvent` walks back a page
+        // if this delete emptied it, so no page math is needed here — which
+        // also makes concurrent deletes on the same page safe.
+        add(GetChecklistEvent(page: state.checklistPageData?.currentPage ?? 1));
+      },
+    );
+  }
+
   FutureOr<void> _onUpdateProfileEvent(
     UpdateProfileEvent event,
     Emitter<HomeState> emit,
@@ -5564,13 +5819,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               phone: r.data?.phone,
             ),
           );
-          GetIt.I<AuthBloc>().add(
+          /*   GetIt.I<AuthBloc>().add(
             LoginToWalletEvent(
               otpIdToken: prefsRepository.idToken,
               name: r.data?.name,
               phone: r.data?.phone,
             ),
-          );
+          );*/
           await NotificationProcess().fcmToken(
             r.data?.phone,
             r.data?.name,

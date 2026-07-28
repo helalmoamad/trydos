@@ -5,6 +5,9 @@ import 'package:trydos/features/home/data/models/DeliveredOrdersResponse.dart';
 
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/apply_coupon_model.dart';
+import 'package:trydos/features/home/data/models/checklist_action_model.dart';
+import 'package:trydos/features/home/data/models/checklist_exist_model.dart';
+import 'package:trydos/features/home/data/models/get_checklist_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/currencies_response_model.dart';
@@ -25,6 +28,7 @@ import 'package:trydos/features/home/data/models/get_order_rating_model.dart'
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
+import 'package:trydos/features/home/data/models/get_hidden_orders_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 
@@ -338,6 +342,31 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
       tryCall: () => dataSource.hideItemsInOldCart(params),
     );
+  }
+
+  @override
+  Future<Either<Failure, bool>> setOrderVisibility(
+    String orderId,
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.setOrderVisibility(orderId, params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, bool>> setOrderDetailVisibility(
+    String detailId,
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.setOrderDetailVisibility(detailId, params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, GetHiddenOrdersModel>> getHiddenOrders() {
+    return handlingExceptionRequest(tryCall: () => dataSource.getHiddenOrders());
   }
 
   Future<Either<Failure, ConvertItemFromCartToOldCartModel>>
@@ -874,6 +903,45 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
       tryCall: () =>
           dataSource.getDeliveredOrdersResponse(productId: productId),
+    );
+  }
+
+  //****************************** Checklist ******************************/
+
+  @override
+  Future<Either<Failure, ChecklistActionModel>> addToChecklist({
+    required int productId,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.addToChecklist(productId: productId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ChecklistActionModel>> deleteFromChecklist({
+    required int productId,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.deleteFromChecklist(productId: productId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ChecklistExistModel>> checkChecklistExist({
+    required int productId,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.checkChecklistExist(productId: productId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, GetChecklistModel>> getChecklist({
+    required int page,
+    required int pageSize,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getChecklist(page: page, pageSize: pageSize),
     );
   }
 }

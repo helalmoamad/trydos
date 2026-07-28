@@ -22,24 +22,25 @@ class ServiceProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (BuildContext context) => GetIt.I<CallsBloc>()),
-        BlocProvider(
-          create: (BuildContext context) => GetIt.I<DashboardBloc>(),
-        ),
-        BlocProvider(create: (BuildContext context) => GetIt.I<StoryBloc>()),
-        BlocProvider(create: (BuildContext context) => GetIt.I<AppBloc>()),
+        // هذه البلوكات مُسجّلة كـ lazySingleton في GetIt (دورة حياتها يديرها الـ DI
+        // طوال عمر التطبيق). نستخدم BlocProvider.value حتى لا يمتلكها المزوّد ولا
+        // يستدعي close() عليها عند dispose — وإلا يُغلَق الـ singleton وتفشل أي
+        // إضافة حدث لاحقة بـ: "Cannot add new events after calling close".
+        BlocProvider.value(value: GetIt.I<CallsBloc>()),
+        BlocProvider.value(value: GetIt.I<DashboardBloc>()),
+        BlocProvider.value(value: GetIt.I<StoryBloc>()),
+        BlocProvider.value(value: GetIt.I<AppBloc>()),
+        // يُنشأ ويُملَك من المزوّد (ليس singleton في DI) — يبقى create: ليُغلق مع dispose.
         BlocProvider(
           create: (BuildContext context) => SensitiveConnectivityBloc(),
         ),
-        BlocProvider(create: (BuildContext context) => GetIt.I<AuthBloc>()),
-        BlocProvider(create: (BuildContext context) => GetIt.I<ChatBloc>()),
-        BlocProvider(create: (BuildContext context) => GetIt.I<CategoryBloc>()),
-        BlocProvider(create: (BuildContext context) => GetIt.I<HomeBloc>()),
-        BlocProvider(create: (BuildContext context) => GetIt.I<BoutiqueBloc>()),
-        BlocProvider(
-          create: (BuildContext context) => GetIt.I<PreCachingImageBloc>(),
-        ),
-        BlocProvider(create: (BuildContext context) => GetIt.I<OrderBloc>()),
+        BlocProvider.value(value: GetIt.I<AuthBloc>()),
+        BlocProvider.value(value: GetIt.I<ChatBloc>()),
+        BlocProvider.value(value: GetIt.I<CategoryBloc>()),
+        BlocProvider.value(value: GetIt.I<HomeBloc>()),
+        BlocProvider.value(value: GetIt.I<BoutiqueBloc>()),
+        BlocProvider.value(value: GetIt.I<PreCachingImageBloc>()),
+        BlocProvider.value(value: GetIt.I<OrderBloc>()),
       ],
       child: child,
     );

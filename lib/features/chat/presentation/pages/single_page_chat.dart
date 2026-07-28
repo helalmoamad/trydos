@@ -527,10 +527,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               child: MyCachedNetworkImage(
                                 imageUrl:
                                     (widget.receiverPhoto.toString().contains(
-                                      "cloudinary",
+                                      "media_server",
                                     )
                                     ? widget.receiverPhoto!
-                                    : ("${dotenv.env['Images_Url']}") +
+                                    : ("${dotenv.env['Media_S3_Server']}") +
                                           widget.receiverPhoto!),
                                 imageFit: BoxFit.cover,
                                 progressIndicatorBuilderWidget: TrydosLoader(),

@@ -12,12 +12,10 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
-import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 
 import '../../../../../common/test_utils/test_var.dart';
@@ -288,9 +286,10 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                             ),
                           );
                         } else {
-                          if (kDebugMode) print(
-                            'dwwdwdwqe32e23e ${boutiqueBloc.state.prefAppliedFilterForExtendFilter?.brands}',
-                          );
+                          if (kDebugMode)
+                            print(
+                              'dwwdwdwqe32e23e ${boutiqueBloc.state.prefAppliedFilterForExtendFilter?.brands}',
+                            );
                           boutiqueBloc.add(
                             ChangeSelectedFiltersEvent(
                               fromHomePageSearch: widget.fromHomeSearch,
@@ -343,25 +342,15 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                                       const EdgeInsets.symmetric(
                                                         horizontal: 5.0,
                                                       ),
-                                                  child: mediaServerIsS3
-                                                      ? MyCachedNetworkImage(
-                                                          imageUrl: widget
-                                                              .filters[index]
-                                                              .icon!
-                                                              .filePath!,
-                                                          height: 72.h,
-                                                          imageFit:
-                                                              BoxFit.contain,
-                                                          width: 70.w,
-                                                        )
-                                                      : SvgNetworkWidget(
-                                                          //  width: 70,
-                                                          width: 70.w,
-                                                          svgUrl: widget
-                                                              .filters[index]
-                                                              .icon!
-                                                              .filePath!,
-                                                        ),
+                                                  child: MyCachedNetworkImage(
+                                                    imageUrl: widget
+                                                        .filters[index]
+                                                        .icon!
+                                                        .filePath!,
+                                                    height: 72.h,
+                                                    imageFit: BoxFit.contain,
+                                                    width: 70.w,
+                                                  ),
                                                 )
                                               : const SizedBox.shrink()
                                         : const SizedBox.shrink()

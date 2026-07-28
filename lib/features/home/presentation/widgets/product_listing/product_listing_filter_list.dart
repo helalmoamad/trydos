@@ -19,7 +19,6 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/extensions/string.dart';
-import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart'
     as product_listing;
@@ -30,7 +29,6 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/price_
 import 'package:trydos/features/home/presentation/widgets/product_listing/price_filter_slider.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/sizes_filters_list.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/main.dart';
 import 'package:tuple/tuple.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
@@ -2936,18 +2934,12 @@ class FilterImage extends StatelessWidget {
         child: Stack(
           children: [
             isSvg
-                ? mediaServerIsS3
-                      ? MyCachedNetworkImage(
-                          imageUrl: imageUrl,
-                          height: height,
-                          imageFit: BoxFit.contain,
-                          width: width,
-                        )
-                      : SvgNetworkWidget(
-                          svgUrl: imageUrl,
-                          //height: height,
-                          width: width,
-                        )
+                ? MyCachedNetworkImage(
+                    imageUrl: imageUrl,
+                    height: height,
+                    imageFit: BoxFit.contain,
+                    width: width,
+                  )
                 : imageUrl.contains('assets')
                 ? Image.asset(
                     imageUrl,

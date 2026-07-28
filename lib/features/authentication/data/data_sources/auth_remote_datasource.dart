@@ -141,7 +141,7 @@ class AuthRemoteDatasource {
   Future<User> getCustomerInfo() async {
     // Build the model on a background isolate (see heavy_response_parsers.dart).
     GetClient<dynamic> getCustomerInfo = GetClient<dynamic>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<dynamic>(
         endpoint: MarketEndPoints.getCustomerInfoEP,
         response: ResponseValue<dynamic>(fromJson: (response) => response),
@@ -172,7 +172,7 @@ class AuthRemoteDatasource {
 
   Future<bool> updateName(Map<String, dynamic> params) {
     PostClient<bool> updateName = PostClient<bool>(
-      serverName: ServerName.market,
+      serverName: ServerName.marketGO,
       requestPrams: RequestConfig<bool>(
         endpoint: MarketEndPoints.updateNameEP,
         data: params,
@@ -279,7 +279,7 @@ class AuthRemoteDatasource {
   ) {
     PostClient<VerifyOtpSignUpAndInResponseModel> registerGuest =
         PostClient<VerifyOtpSignUpAndInResponseModel>(
-          serverName: ServerName.market,
+          serverName: ServerName.marketGO,
           requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
             endpoint: MarketEndPoints.registerGuestEP,
             data: params,
@@ -290,6 +290,26 @@ class AuthRemoteDatasource {
           ),
         );
     return registerGuest();
+  }
+
+  /// Exchanges the stored (single-use) refresh token for a new
+  /// access + refresh token pair.
+  Future<VerifyOtpSignUpAndInResponseModel> refreshToken(
+    Map<String, dynamic> params,
+  ) {
+    PostClient<VerifyOtpSignUpAndInResponseModel> refreshToken =
+        PostClient<VerifyOtpSignUpAndInResponseModel>(
+          serverName: ServerName.marketGO,
+          requestPrams: RequestConfig<VerifyOtpSignUpAndInResponseModel>(
+            endpoint: MarketEndPoints.refreshTokenEP,
+            data: params,
+            response: ResponseValue<VerifyOtpSignUpAndInResponseModel>(
+              fromJson: (response) =>
+                  VerifyOtpSignUpAndInResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return refreshToken();
   }
 
   Future<LoginToStoriesResponseModel> loginToStories(

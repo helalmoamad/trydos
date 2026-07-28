@@ -21,6 +21,7 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/user_info_page.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart'
     show ChatBloc;
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
@@ -48,9 +49,7 @@ import '../blocs/app_bloc/app_state.dart';
 import '../my_text_widget.dart';
 
 class AppBottomNavBar extends StatefulWidget {
-  final ValueNotifier<bool> isShowPanelForVerified;
-  const AppBottomNavBar({Key? key, required this.isShowPanelForVerified})
-    : super(key: key);
+  const AppBottomNavBar({Key? key}) : super(key: key);
 
   @override
   State<AppBottomNavBar> createState() => _AppBottomNavBarState();
@@ -61,6 +60,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
   late HomeBloc homeBloc;
   late BoutiqueBloc boutiqueBloc;
   late CategoryBloc categoryBloc;
+  late AuthBloc authBloc;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
   @override
@@ -68,8 +68,17 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    authBloc = BlocProvider.of<AuthBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     super.initState();
+  }
+
+  @override
+  dispose() {
+    // هذه بلوكات @LazySingleton يملكها GetIt طوال عمر التطبيق؛ لا نُغلقها هنا.
+    // إغلاقها كان يُغلق الـ singleton للتطبيق كله فتفشل أي إضافة حدث لاحقة بـ:
+    // "Cannot add new events after calling close" (ظهر عند تسجيل الخروج).
+    super.dispose();
   }
 
   @override
@@ -364,7 +373,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           appBloc.add(ChangeBasePage(0));
                           Future.delayed(
                             const Duration(milliseconds: 300),
-                            () => widget.isShowPanelForVerified.value = true,
+                            () => GuestPhoneVerificationDialog.show(context),
                           );
                         } else if ((prefsRepository.myMarketName?.length ?? 0) <
                             3) {
@@ -680,9 +689,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                                 .getFcmTokens
                                                                 .length >
                                                             0
-                                                        ? BlocProvider.of<AuthBloc>(
-                                                            context,
-                                                          ).add(
+                                                        ? authBloc.add(
                                                             DeleteFcmTokenFromChatEvent(
                                                               fcmToken:
                                                                   prefsRepository

@@ -215,6 +215,22 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           (value) =>
               NotificationItemModel.fromJson(value as Map<String, dynamic>),
         ),
+  checklistItemStatus:
+      (json['checklistItemStatus'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, $enumDecode(_$ChecklistItemStatusEnumMap, e)),
+      ) ??
+      const {},
+  productInChecklist:
+      (json['productInChecklist'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as bool),
+      ) ??
+      const {},
+  getChecklistStatus:
+      $enumDecodeNullable(
+        _$GetChecklistStatusEnumMap,
+        json['getChecklistStatus'],
+      ) ??
+      GetChecklistStatus.init,
   checkAvailabilityProductCartModel:
       json['checkAvailabilityProductCartModel'] == null
       ? null
@@ -618,6 +634,12 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
   'getUserNotificationModel': instance.getUserNotificationModel?.toJson(
     (value) => value.toJson(),
   ),
+  'checklistItemStatus': instance.checklistItemStatus.map(
+    (k, e) => MapEntry(k, _$ChecklistItemStatusEnumMap[e]!),
+  ),
+  'productInChecklist': instance.productInChecklist,
+  'getChecklistStatus':
+      _$GetChecklistStatusEnumMap[instance.getChecklistStatus]!,
   'getCartOverviewStatus':
       _$GetCartOverviewStatusEnumMap[instance.getCartOverviewStatus],
   'checkAvailabilityProductCartModel': instance
@@ -877,6 +899,20 @@ const _$GetOLdCartItemsStatusEnumMap = {
   GetOLdCartItemsStatus.loading: 'loading',
   GetOLdCartItemsStatus.success: 'success',
   GetOLdCartItemsStatus.failure: 'failure',
+};
+
+const _$ChecklistItemStatusEnumMap = {
+  ChecklistItemStatus.init: 'init',
+  ChecklistItemStatus.loading: 'loading',
+  ChecklistItemStatus.success: 'success',
+  ChecklistItemStatus.failure: 'failure',
+};
+
+const _$GetChecklistStatusEnumMap = {
+  GetChecklistStatus.init: 'init',
+  GetChecklistStatus.loading: 'loading',
+  GetChecklistStatus.success: 'success',
+  GetChecklistStatus.failure: 'failure',
 };
 
 const _$UpdateItemInCartStatusEnumMap = {

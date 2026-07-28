@@ -304,11 +304,17 @@ class _StoriesListState extends State<StoriesList> {
                                                                           },
                                                                           onChooseFileFromGalleryAction:
                                                                               (AssetEntity? assetEntity) async {
-                                                                            if (assetEntity !=
+                                                                            if (assetEntity ==
                                                                                 null) {
-                                                                              File file = (await assetEntity.originFile)!;
-                                                                              GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(file));
+                                                                              return;
                                                                             }
+                                                                            // originFile يرجع null للملفات غير المقروءة.
+                                                                            final File? file = await assetEntity.originFile;
+                                                                            if (file ==
+                                                                                null) {
+                                                                              return;
+                                                                            }
+                                                                            GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(file));
                                                                           },
                                                                         );
                                                                       },

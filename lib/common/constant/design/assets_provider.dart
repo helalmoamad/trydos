@@ -274,6 +274,7 @@ abstract class AppAssets {
   static String get privacySvg => 'privacy'.svg;
   static String get registerInfoSvg => 'register_info'.svg;
   static String get smsSvg => 'sms'.svg;
+  static String get loginAfterExpiredSvg => 'login_after_expired'.svg;
   static String get submitArrowSvg => 'submit_arrow'.svg;
   static String get whatsappSvg => 'whatsapp'.svg;
   static String get verifiedNumberSvg => 'verified_number'.svg;

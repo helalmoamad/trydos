@@ -15,7 +15,9 @@ import 'package:trydos/features/home/domain/use_cases/wallet_checkout_usecase.da
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../../../common/helper/show_message.dart';
+import '../../../../../generated/locale_keys.g.dart';
 import '../../../../../core/data/model/pagination_model.dart';
 import '../../../../../core/use_case/use_case.dart';
 import '../../../data/models/get_list_of_customer_addresses_model.dart';
@@ -34,6 +36,8 @@ import '../../../domain/use_cases/place_order_usecase.dart';
 import '../../../domain/use_cases/cancel_order_item_usecase.dart';
 import '../../../domain/use_cases/cancel_order_usecase.dart';
 import '../../../domain/use_cases/change_order_address_usecase.dart';
+import '../../../domain/use_cases/set_order_visibility_usecase.dart';
+import '../../../domain/use_cases/get_hidden_orders_usecase.dart';
 import '../../../domain/use_cases/get_product_color_size_sync_attribute_usecase.dart';
 import '../../../domain/use_cases/set_customer_address_default_usecase.dart';
 import '../../../domain/use_cases/update_customer_address_usecase.dart';
@@ -85,6 +89,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   final UploadImagesProductReturnUseCase uploadImagesProductReturnUseCase;
   final OrderReturnDetailsUseCase orderReturnDetailsUseCase;
   final UpdateReturnRequestProductUseCase updateReturnRequestProductUseCase;
+  final SetOrderVisibilityUseCase setOrderVisibilityUseCase;
+  final SetOrderDetailVisibilityUseCase setOrderDetailVisibilityUseCase;
+  final GetHiddenOrdersUseCase getHiddenOrdersUseCase;
   OrderBloc(
     this.placeOrderUsecase,
     this.walletCheckoutUseCase,
@@ -118,6 +125,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     this.cancelReturnRequestProductUseCase,
     this.updateReturnRequestProductUseCase,
     this.orderReturnDetailsUseCase,
+    this.setOrderVisibilityUseCase,
+    this.setOrderDetailVisibilityUseCase,
+    this.getHiddenOrdersUseCase,
   ) : super(const OrderState()) {
     on<PlaceOrderEvent>(_onPlaceOrderEvent);
     on<GetOrdersByOrderGroupIDEvent>(_onGetOrdersByOrderGroupIDEvent);
@@ -158,6 +168,11 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     on<StoreImagesForUpdateReturnEvent>(_onStoreImagesForUpdateReturnEvent);
     on<CancelOrderEvent>(_onCancelOrderEvent);
     on<ChangeOrderAddressEvent>(_onChangeOrderAddressEvent);
+    on<HideOrderEvent>(_onHideOrderEvent);
+    on<HideOrderDetailEvent>(_onHideOrderDetailEvent);
+    on<GetHiddenOrdersEvent>(_onGetHiddenOrdersEvent);
+    on<RestoreOrderEvent>(_onRestoreOrderEvent);
+    on<RestoreProductEvent>(_onRestoreProductEvent);
     on<GetProductColorSizeSyncAttributeEvent>(
       _onGetProductColorSizeSyncAttributeEvent,
     );
@@ -380,7 +395,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         List<List<OrderListModel>> listOrder =
             getOrdersModel[event.status]?.items ?? [];
         int index = listOrder.indexWhere(
-          (element) => element[0].orderGroupId == event.orderGroupId,
+          (element) =>
+              element.isNotEmpty &&
+              element[0].orderGroupId == event.orderGroupId,
         );
         if (index != -1) {
           listOrder[index] = r.orders ?? [];
@@ -741,8 +758,20 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     if (event.index != -1 && event.orders.isNotEmpty) {
       Map<String, PaginationModel<List<OrderListModel>>>? getOrdersModel =
           state.getOrdersModel;
-      List<List<OrderListModel>> listOrder =
-          getOrdersModel?[event.status]?.items ?? [];
+      // Work on a modifiable copy — the stored items may be a const (init)
+      // list while a full re-fetch is in flight, and writing into it throws.
+      List<List<OrderListModel>> listOrder = List.of(
+        getOrdersModel?[event.status]?.items ?? [],
+      );
+      // Skip the in-place update when the target slot is gone or no longer
+      // holds the same group (the list was reset/re-fetched meanwhile) — the
+      // full refresh covers it.
+      if (event.index >= listOrder.length ||
+          (listOrder[event.index].isNotEmpty &&
+              listOrder[event.index].first.orderGroupId !=
+                  event.orders.first.orderGroupId)) {
+        return;
+      }
       listOrder[event.index] = event.orders;
       getOrdersModel?[event.status] = PaginationModel<List<OrderListModel>>(
         page: 1,
@@ -1558,6 +1587,289 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         emit(
           state.copyWith(
             changeOrderAddressStatus: ChangeOrderAddressStatus.success,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onHideOrderEvent(
+    HideOrderEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        hideOrderVisibilityStatus: HideOrderVisibilityStatus.loading,
+      ),
+    );
+    final response = await setOrderVisibilityUseCase(
+      SetOrderVisibilityParams(
+        orderId: event.orderId,
+        isHidden: event.isHidden,
+      ),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('HideOrderEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('HideOrderEvent');
+          add(
+            HideOrderEvent(
+              orderId: event.orderId,
+              orderGroupId: event.orderGroupId,
+              isHidden: event.isHidden,
+            ),
+          );
+          return;
+        }
+        emit(
+          state.copyWith(
+            hideOrderVisibilityStatus: HideOrderVisibilityStatus.failure,
+          ),
+        );
+        showMessage(
+          l.message,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.red,
+          showInRelease: true,
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('HideOrderEvent');
+        debugPrint('HideOrderEvent success');
+        emit(
+          state.copyWith(
+            hideOrderVisibilityStatus: HideOrderVisibilityStatus.success,
+          ),
+        );
+        showMessage(
+          LocaleKeys.pack_hidden_successfully.tr(),
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+        );
+        // Re-fetch the group (so the detail pages can react/navigate) AND the
+        // main orders list (so an emptied group / removed pack disappears from
+        // the Orders page thumbnails too).
+        add(GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId));
+        add(
+          GetOrdersEvent(
+            status: state.currentOrederStatus ?? '',
+            getWithPagination: false,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onHideOrderDetailEvent(
+    HideOrderDetailEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        hideOrderVisibilityStatus: HideOrderVisibilityStatus.loading,
+      ),
+    );
+    final response = await setOrderDetailVisibilityUseCase(
+      SetOrderDetailVisibilityParams(
+        detailId: event.detailId,
+        isHidden: event.isHidden,
+      ),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('HideOrderDetailEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('HideOrderDetailEvent');
+          add(
+            HideOrderDetailEvent(
+              detailId: event.detailId,
+              orderGroupId: event.orderGroupId,
+              isHidden: event.isHidden,
+            ),
+          );
+          return;
+        }
+        emit(
+          state.copyWith(
+            hideOrderVisibilityStatus: HideOrderVisibilityStatus.failure,
+          ),
+        );
+        showMessage(
+          l.message,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.red,
+          showInRelease: true,
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('HideOrderDetailEvent');
+        debugPrint('HideOrderDetailEvent success');
+        emit(
+          state.copyWith(
+            hideOrderVisibilityStatus: HideOrderVisibilityStatus.success,
+          ),
+        );
+        showMessage(
+          LocaleKeys.product_hidden_successfully.tr(),
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+        );
+        // Re-fetch the group (so the detail pages can react/navigate) AND the
+        // main orders list (so the hidden product disappears from the Orders
+        // page thumbnails too — products of every group are shown there).
+        add(GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId));
+        add(
+          GetOrdersEvent(
+            status: state.currentOrederStatus ?? '',
+            getWithPagination: false,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onGetHiddenOrdersEvent(
+    GetHiddenOrdersEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(state.copyWith(getHiddenOrdersStatus: GetHiddenOrdersStatus.loading));
+    final response = await getHiddenOrdersUseCase(NoParams());
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('GetHiddenOrdersEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('GetHiddenOrdersEvent');
+          add(const GetHiddenOrdersEvent());
+          return;
+        }
+        emit(
+          state.copyWith(getHiddenOrdersStatus: GetHiddenOrdersStatus.failure),
+        );
+        showMessage(
+          l.message,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.red,
+          showInRelease: true,
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('GetHiddenOrdersEvent');
+        emit(
+          state.copyWith(
+            getHiddenOrdersStatus: GetHiddenOrdersStatus.success,
+            getHiddenOrdersModel: r,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onRestoreOrderEvent(
+    RestoreOrderEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        restoreOrderVisibilityStatus: RestoreOrderVisibilityStatus.loading,
+      ),
+    );
+    final response = await setOrderVisibilityUseCase(
+      SetOrderVisibilityParams(orderId: event.orderId, isHidden: false),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('RestoreOrderEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('RestoreOrderEvent');
+          add(RestoreOrderEvent(orderId: event.orderId));
+          return;
+        }
+        emit(
+          state.copyWith(
+            restoreOrderVisibilityStatus: RestoreOrderVisibilityStatus.failure,
+          ),
+        );
+        showMessage(
+          l.message,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.red,
+          showInRelease: true,
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('RestoreOrderEvent');
+        showMessage(
+          LocaleKeys.order_restored_successfully.tr(),
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+        );
+        emit(
+          state.copyWith(
+            restoreOrderVisibilityStatus: RestoreOrderVisibilityStatus.success,
+          ),
+        );
+        // Refresh the hidden list (current page) and the main orders list.
+        add(const GetHiddenOrdersEvent());
+        add(
+          GetOrdersEvent(
+            status: state.currentOrederStatus ?? '',
+            getWithPagination: false,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onRestoreProductEvent(
+    RestoreProductEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        restoreOrderVisibilityStatus: RestoreOrderVisibilityStatus.loading,
+      ),
+    );
+    final response = await setOrderDetailVisibilityUseCase(
+      SetOrderDetailVisibilityParams(detailId: event.detailId, isHidden: false),
+    );
+    response.fold(
+      (l) {
+        if (ErrorManager.shouldRetry('RestoreProductEvent', l.statusCode)) {
+          ErrorManager.incrementRetry('RestoreProductEvent');
+          add(RestoreProductEvent(detailId: event.detailId));
+          return;
+        }
+        emit(
+          state.copyWith(
+            restoreOrderVisibilityStatus: RestoreOrderVisibilityStatus.failure,
+          ),
+        );
+        showMessage(
+          l.message,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.red,
+          showInRelease: true,
+        );
+      },
+      (r) {
+        ErrorManager.resetRetry('RestoreProductEvent');
+        showMessage(
+          LocaleKeys.product_restored_successfully.tr(),
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+        );
+        emit(
+          state.copyWith(
+            restoreOrderVisibilityStatus: RestoreOrderVisibilityStatus.success,
+          ),
+        );
+        // Refresh the hidden list (current page) and the main orders list.
+        add(const GetHiddenOrdersEvent());
+        add(
+          GetOrdersEvent(
+            status: state.currentOrederStatus ?? '',
+            getWithPagination: false,
           ),
         );
       },

@@ -7,17 +7,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:trydos/common/constant/configuration/media_server_url_routes.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
-import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
-import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
-import 'package:trydos/features/authentication/presentation/widgets/welcome_section.dart';
+import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart'
     as filter;
@@ -30,7 +27,6 @@ import 'package:trydos/features/home/presentation/pages/product_details_page_new
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -96,6 +92,12 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
   late BoutiqueBloc boutiqueBloc;
   late CategoryBloc categoryBloc;
   bool fromBoutiqueListing = false;
+
+  /// Single status listener registered on the parent-owned animation
+  /// controller. Kept as a field so each rebuild replaces (not duplicates) it
+  /// and dispose can detach it — stale duplicates used to call stop() on an
+  /// already-disposed controller ('_ticker != null' assertion).
+  void Function(AnimationStatus)? _animStatusListener;
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
@@ -103,6 +105,10 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     debugPrint('initState ${widget.collectionIndex}');
+    // تهيئة مبدئية آمنة حتى لا يُرمى LateInitializationError إذا استُدعي
+    // dispose قبل تنفيذ build (تنقّل سريع ستوري <-> تفاصيل المنتج).
+    // build يعيد ضبط initialPage بالقيمة الصحيحة قبل أول رسم، فلا يتغيّر السلوك.
+    pageController = PageController();
     GetIt.I<StoryBloc>().add(
       StorySelectedEvent(
         collectionIndex: widget.collectionIndex,
@@ -115,6 +121,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
   @override
   void dispose() {
+    if (_animStatusListener != null) {
+      try {
+        widget.animatedController.removeStatusListener(_animStatusListener!);
+      } catch (_) {
+        // The controller may already be disposed by its owner.
+      }
+      _animStatusListener = null;
+    }
     pageController.dispose();
     _videoController?.dispose();
     super.dispose();
@@ -157,14 +171,25 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
           //        var currentStoryInEachCollection = collectionOfSelectedStory[currentInitialIndex];
           pageController = PageController(
             initialPage:
-                state.currentStoryInEachCollection[widget.collectionIndex]!,
+                state.currentStoryInEachCollection[widget.collectionIndex] ?? 0,
           );
-          widget.animatedController.addStatusListener((status) {
+          // Replace (never accumulate) the status listener: adding a new one on
+          // every rebuild leaked duplicates, and a stale duplicate could call
+          // stop() on an already-disposed controller.
+          if (_animStatusListener != null) {
+            widget.animatedController.removeStatusListener(
+              _animStatusListener!,
+            );
+          }
+          _animStatusListener = (status) {
+            if (!mounted) return;
             if (status == AnimationStatus.completed) {
               widget.animatedController.stop();
               widget.animatedController.reset();
 
-              if ((state.currentStoryInEachCollection[widget.collectionIndex]! +
+              if (((state.currentStoryInEachCollection[widget
+                              .collectionIndex] ??
+                          0) +
                       1) >=
                   state
                       .storiesCollections[widget.collectionIndex]
@@ -186,7 +211,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                 );
               }
             }
-          });
+          };
+          widget.animatedController.addStatusListener(_animStatusListener!);
           return Stack(
             children: [
               //          MyTextWidget('${state.selectedStoriesStatus}'),
@@ -519,20 +545,49 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                     .stories![state
                                         .currentStoryInEachCollection[widget
                                         .collectionIndex]!]
-                                    .oneLink
+                                    .productSlug
                                     .isNullOrEmpty
-                                ? const SizedBox.shrink()
+                                ? state
+                                          .storiesCollections[widget
+                                              .collectionIndex]
+                                          .stories![state
+                                              .currentStoryInEachCollection[widget
+                                              .collectionIndex]!]
+                                          .oneLink
+                                          .isNullOrEmpty
+                                      ? const SizedBox.shrink()
+                                      : positioned.Positioned(
+                                          bottom: 25,
+                                          child: _handleWithUrlWidget(
+                                            (state
+                                                    .storiesCollections[widget
+                                                        .collectionIndex]
+                                                    .stories![state
+                                                        .currentStoryInEachCollection[widget
+                                                        .collectionIndex]!]
+                                                    .oneLink ??
+                                                ""),
+                                          ),
+                                        )
                                 : positioned.Positioned(
                                     bottom: 25,
-                                    child: _handleWithUrlWidget(
-                                      (state
+                                    child: _handleWithProductWidget(
+                                      state
                                               .storiesCollections[widget
                                                   .collectionIndex]
                                               .stories![state
                                                   .currentStoryInEachCollection[widget
                                                   .collectionIndex]!]
-                                              .oneLink ??
-                                          ""),
+                                              .productId ??
+                                          "",
+                                      state
+                                              .storiesCollections[widget
+                                                  .collectionIndex]
+                                              .stories![state
+                                                  .currentStoryInEachCollection[widget
+                                                  .collectionIndex]!]
+                                              .productSlug ??
+                                          "",
                                     ),
                                   ),
                           ],
@@ -543,7 +598,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       }
                     } else {
                       if (_videoController == null) {
-                        if (!mediaServerIsS3) {
+                        /* if (!mediaServerIsS3) {
                           _videoController = VideoPlayerController.networkUrl(
                             Uri.parse(
                               state
@@ -554,40 +609,40 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   .fullVideoPath!,
                             ),
                           );
-                        } else {
-                          final String rawVideoUrl =
-                              state
-                                  .storiesCollections[widget.collectionIndex]
-                                  .stories![state
-                                      .currentStoryInEachCollection[widget
-                                      .collectionIndex]!]
-                                  .fullVideoPath ??
-                              '';
+                        } else {*/
+                        final String rawVideoUrl =
+                            state
+                                .storiesCollections[widget.collectionIndex]
+                                .stories![state
+                                    .currentStoryInEachCollection[widget
+                                    .collectionIndex]!]
+                                .fullVideoPath ??
+                            '';
 
-                          Uri videoUri = Uri.parse(rawVideoUrl);
+                        Uri videoUri = Uri.parse(rawVideoUrl);
 
-                          if (!videoUri.queryParameters.containsKey('target')) {
-                            videoUri = videoUri.replace(
-                              queryParameters: {
-                                ...videoUri.queryParameters,
-                                'target': 'preview',
-                              },
-                            );
-                          }
-
-                          // Android TLS rejects underscore hostnames with HTTPS (media_server...).
-                          if (!kIsWeb &&
-                              Platform.isAndroid &&
-                              videoUri.scheme == 'https' &&
-                              videoUri.host == 'media_server.ramaaz.dev') {
-                            videoUri = videoUri.replace(scheme: 'http');
-                          }
-
-                          _videoController = VideoPlayerController.networkUrl(
-                            httpHeaders: {'x-api-key': MediaServerUrls.apiKey},
-                            videoUri,
+                        if (!videoUri.queryParameters.containsKey('target')) {
+                          videoUri = videoUri.replace(
+                            queryParameters: {
+                              ...videoUri.queryParameters,
+                              'target': 'story',
+                            },
                           );
                         }
+
+                        // Android TLS rejects underscore hostnames with HTTPS (media_server...).
+                        if (!kIsWeb &&
+                            Platform.isAndroid &&
+                            videoUri.scheme == 'https' &&
+                            videoUri.host == 'media_server.ramaaz.dev') {
+                          videoUri = videoUri.replace(scheme: 'http');
+                        }
+
+                        _videoController = VideoPlayerController.networkUrl(
+                          httpHeaders: {'x-api-key': MediaServerUrls.apiKey},
+                          videoUri,
+                        );
+                        // }
 
                         init = _videoController!.initialize().then(
                           (_) {
@@ -702,19 +757,48 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                         .stories![state
                                             .currentStoryInEachCollection[widget
                                             .collectionIndex]!]
-                                        .oneLink
+                                        .productSlug
                                         .isNullOrEmpty
-                                    ? const SizedBox.shrink()
+                                    ? state
+                                              .storiesCollections[widget
+                                                  .collectionIndex]
+                                              .stories![state
+                                                  .currentStoryInEachCollection[widget
+                                                  .collectionIndex]!]
+                                              .oneLink
+                                              .isNullOrEmpty
+                                          ? const SizedBox.shrink()
+                                          : positioned.Positioned(
+                                              bottom: 25,
+                                              child: _handleWithUrlWidget(
+                                                state
+                                                        .storiesCollections[widget
+                                                            .collectionIndex]
+                                                        .stories![state
+                                                            .currentStoryInEachCollection[widget
+                                                            .collectionIndex]!]
+                                                        .oneLink ??
+                                                    "",
+                                              ),
+                                            )
                                     : positioned.Positioned(
                                         bottom: 25,
-                                        child: _handleWithUrlWidget(
+                                        child: _handleWithProductWidget(
                                           state
                                                   .storiesCollections[widget
                                                       .collectionIndex]
                                                   .stories![state
                                                       .currentStoryInEachCollection[widget
                                                       .collectionIndex]!]
-                                                  .oneLink ??
+                                                  .productId ??
+                                              "",
+                                          state
+                                                  .storiesCollections[widget
+                                                      .collectionIndex]
+                                                  .stories![state
+                                                      .currentStoryInEachCollection[widget
+                                                      .collectionIndex]!]
+                                                  .productSlug ??
                                               "",
                                         ),
                                       ),
@@ -850,9 +934,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                                         .collectionIndex]
                                                     .photoPath
                                                     .toString()
-                                                    .contains("cloudinary"))
+                                                    .contains("media_server"))
                                                 ? ""
-                                                : "${dotenv.env['Images_Url']}") +
+                                                : "${dotenv.env['Media_S3_Server']}") +
                                             state
                                                 .storiesCollections[widget
                                                     .collectionIndex]
@@ -1005,7 +1089,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
   void showReportStorySheet(BuildContext context, String storyId) {
     // `context` here is the story page context; keep a reference to it because
     // inside the bottom-sheet builder `context` refers to the sheet itself.
-    final BuildContext pageContext = context;
+
     final reasons = <ReportReason>[
       ReportReason(
         key: "inappropriate_content",
@@ -1193,17 +1277,18 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               if (homeState.reportingAboutStory ==
                                   ReportingAboutStory.success) {
                                 final storyBloc = GetIt.I<StoryBloc>();
-                                final int ci = widget.collectionIndex;
+                                final int collectionIndex =
+                                    widget.collectionIndex;
                                 final stories =
                                     storyBloc
                                         .state
-                                        .storiesCollections[ci]
+                                        .storiesCollections[collectionIndex]
                                         .stories ??
                                     const [];
                                 final int currentIndex =
                                     storyBloc
                                         .state
-                                        .currentStoryInEachCollection[ci] ??
+                                        .currentStoryInEachCollection[collectionIndex] ??
                                     0;
                                 // Is there another story after the reported one
                                 // in this same collection?
@@ -1225,7 +1310,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   // (image dimensions / video) gets loaded.
                                   storyBloc.add(
                                     StorySelectedEvent(
-                                      collectionIndex: ci,
+                                      collectionIndex: collectionIndex,
                                       selectedStoryIndexInCollection:
                                           currentIndex,
                                       currentPage: -1,
@@ -1237,24 +1322,19 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   // No next story in this collection -> close the
                                   // viewer (or advance to the next collection via
                                   // onReachStoryAtEdge if you prefer).
-                                  Navigator.of(pageContext).pop();
+                                  Navigator.of(context).pop();
                                 }
 
-                                ScaffoldMessenger.of(pageContext).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      LocaleKeys.report_sent_successfully.tr(),
-                                    ),
-                                  ),
+                                showMessage(
+                                  LocaleKeys.report_sent_successfully.tr(),
+                                  context: context,
                                 );
                               } else if (homeState.reportingAboutStory ==
                                   ReportingAboutStory.failure) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      LocaleKeys.report_failed.tr(),
-                                    ),
-                                  ),
+                                showMessage(
+                                  LocaleKeys.report_failed.tr(),
+                                  context: context,
+                                  hasError: true,
                                 );
                               }
                             },
@@ -1267,29 +1347,39 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   ReportingAboutStory.loading;
 
                               return ElevatedButton(
-                                onPressed: enableButton
-                                    ? () {
-                                        // منع الضغط أثناء التحميل أو إذا كان الزر معطل
-                                        if (!enableButton || loading) return;
+                                onPressed: () {
+                                  // منع الضغط أثناء التحميل أو إذا كان الزر معطل
+                                  if (!enableButton || loading) return;
 
-                                        // المستخدم موثق
-                                        if (prefsRepository.isVerifiedPhone ??
-                                            false) {
-                                          homeBloc.add(
-                                            homeEvent.ReportAboutStoryEvent(
-                                              userId: prefsRepository.myMarketId
-                                                  .toString(),
-                                              storyId: storyId,
-                                              reasons: selectedReasons.toList(),
-                                              notes: controller.text.trim(),
-                                            ),
-                                          );
-                                          return;
-                                        }
-
-                                        _showVerificationBottomSheet(context);
-                                      }
-                                    : null,
+                                  // المستخدم موثق
+                                  if (prefsRepository.isVerifiedPhone ??
+                                      false) {
+                                    homeBloc.add(
+                                      homeEvent.ReportAboutStoryEvent(
+                                        userId: prefsRepository.myMarketId
+                                            .toString(),
+                                        storyId: storyId,
+                                        reasons: selectedReasons.toList(),
+                                        notes: controller.text.trim(),
+                                      ),
+                                    );
+                                  } else {
+                                    GuestPhoneVerificationDialog.show(
+                                      context,
+                                      onVerified: () {
+                                        homeBloc.add(
+                                          homeEvent.ReportAboutStoryEvent(
+                                            userId: prefsRepository.myMarketId
+                                                .toString(),
+                                            storyId: storyId,
+                                            reasons: selectedReasons.toList(),
+                                            notes: controller.text.trim(),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
 
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
@@ -1450,6 +1540,30 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     }
   }
 
+  void tapOnProduct(String productId, String productSlug) async {
+    BlocProvider.of<HomeBloc>(context).add(
+      const homeEvent.ChangeStatusOFGetProductsDetailsToSuccessEvent(
+        isStatusInitaial: true,
+      ),
+    );
+    BlocProvider.of<HomeBloc>(
+      context,
+    ).add(homeEvent.GetFullProductDetailsEvent(productSlug: productSlug));
+
+    Future.delayed(
+      const Duration(milliseconds: 300),
+      () => Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              ProductDetailsPageNew(
+                productSlugForOpeningChatDirectly: productSlug,
+                productIdForOpeningChatDirectly: productId,
+              ),
+        ),
+      ),
+    );
+  }
+
   void tapOnUrl(String uri) async {
     try {
       if (uri.contains("trydos")) {
@@ -1523,6 +1637,45 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       }
       // Navigator.of(context).pop();
     } catch (e) {}
+  }
+
+  Widget _handleWithProductWidget(String productId, String productSlug) {
+    return Material(
+      color: const Color.fromRGBO(0, 0, 0, 0),
+      child: Container(
+        width: 150.w,
+        height: 35.h,
+        child: InkWell(
+          onTap: () {
+            _videoController?.pause();
+            widget.animatedController.stop();
+            tapOnProduct(productId, productSlug);
+          },
+          child: Center(
+            child: Container(
+              width: 150.w,
+              height: 35.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15.r),
+              ),
+              child: Center(
+                child: Text(
+                  LocaleKeys.view_product.tr(),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    fontSize: 10.sp,
+                    letterSpacing: 0.18,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _handleWithUrlWidget(String url) {
@@ -1682,175 +1835,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
           },
         ),
       ),
-    );
-  }
-
-  void _showVerificationBottomSheet(BuildContext context) {
-    final PageController pageController = PageController();
-    String phoneNumber = '';
-    int isVisWhatsApp = 1;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        return AnimatedPadding(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom,
-          ),
-          child: Container(
-            margin: const EdgeInsets.only(top: 20),
-            height: MediaQuery.of(ctx).size.height,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
-            ),
-            child: Stack(
-              children: [
-                PageView(
-                  controller: pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children:
-                      (prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                          false)
-                      ? [
-                          VerifyOtp(
-                            fromProfile: false,
-                            navigateToProfile: () {},
-                            fromExpired: true,
-                            isVisWhatsApp: 1,
-                            navigateToAddName: () {},
-                            navigateTocartOrProfile: () {},
-                            fromLogin: false,
-                            onLoginFailed: () {},
-                            goBack: () {},
-                            methodIcon: AppAssets.whatsappSvg,
-                            phoneNumber: prefsRepository.myPhoneNumber ?? '',
-                          ),
-                        ]
-                      : [
-                          WelcomeSection(
-                            goToLoginSection: () {
-                              fromLogin = true;
-                              animationDuration = const Duration(seconds: 1);
-                              animate.value = true;
-                              pageContent.value = 2;
-                              pageController.animateToPage(
-                                2,
-                                duration: const Duration(milliseconds: 100),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            goToCreateAccount: () {
-                              fromLogin = false;
-                              animate.value = true;
-                              pageContent.value = 1;
-                              pageController.animateToPage(
-                                1,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                              //_animationController.forward();
-                            },
-                          ),
-                          CreateAccountSection(
-                            moveToNextStep: () {
-                              pageContent.value = 2;
-                              pageController.animateToPage(
-                                2,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                          ),
-
-                          InsertPhoneTab(
-                            focusNode: FocusNode(),
-                            moveToNextStep: (String phone) {
-                              phoneNumber = phone.replaceAll(' ', '');
-                              pageController.animateToPage(
-                                1,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                          ),
-                          VerificationMethods(
-                            phoneNumber: phoneNumber,
-                            isFromLogin: true,
-                            onChooseWhatsapp: () {
-                              isVisWhatsApp = 1;
-                              pageController.animateToPage(
-                                2,
-                                duration: const Duration(milliseconds: 100),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            goBackToPhone: () {
-                              pageController.animateToPage(
-                                0,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            onChooseSms: () {
-                              isVisWhatsApp = 0;
-                              pageController.animateToPage(
-                                2,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                          ),
-                          VerifyOtp(
-                            fromProfile: false,
-                            navigateToProfile: () {},
-                            fromExpired: true,
-                            isVisWhatsApp: isVisWhatsApp,
-                            navigateToAddName: () {},
-                            navigateTocartOrProfile: () {},
-                            fromLogin: false,
-                            onLoginFailed: () {},
-                            goBack: () {
-                              pageController.animateToPage(
-                                1,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            methodIcon: isVisWhatsApp == 1
-                                ? AppAssets.whatsappSvg
-                                : AppAssets.smsSvg,
-                            phoneNumber: phoneNumber,
-                          ),
-                        ],
-                ),
-
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  left: 0,
-                  child: Container(
-                    margin: const EdgeInsets.all(10),
-                    height: 20,
-                    child: InkWell(
-                      onTap: () => Navigator.pop(ctx),
-                      child: SvgPicture.asset(
-                        AppAssets.closeSvg,
-                        height: 15,
-                        width: 30,
-                        color: const Color(0xffFF5F61),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

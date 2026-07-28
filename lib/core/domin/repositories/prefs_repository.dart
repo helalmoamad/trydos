@@ -110,8 +110,6 @@ abstract class PrefsRepository {
   Future<bool> removeFiveFilterHasPerfechedWhenOpenApp();
 
   Future<bool> setVerifiedPhone(bool verifiedPhone);
-  Future<bool> setAllowedToUploadStories(bool allowedToUploadStories);
-  bool getAllowedToUploadStories();
   Future<bool> setRequestNotificationPermission(
     bool requestNotificationPermission,
   );
@@ -140,6 +138,12 @@ abstract class PrefsRepository {
   Future<bool> setChatToken(String token);
 
   Future<bool> setMarketToken(String? token);
+
+  /// Stores the single-use market refresh token (rotated on every refresh).
+  Future<bool> setMarketRefreshToken(String? token);
+
+  /// Reads the stored market refresh token from secure storage.
+  Future<String?> getMarketRefreshToken();
 
   Future<bool> setStoriesToken(String token);
 

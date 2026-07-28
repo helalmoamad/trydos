@@ -29,5 +29,7 @@ class SendAcceptOfNotificationsUseCaseParams {
 
   SendAcceptOfNotificationsUseCaseParams({required this.firebaseTokenId});
 
-  Map<String, dynamic> get map => {"firebase_token_id": firebaseTokenId};
+  Map<String, dynamic> get map => {
+    "firebase_token_id": int.tryParse(firebaseTokenId),
+  };
 }

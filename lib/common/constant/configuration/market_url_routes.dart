@@ -20,8 +20,7 @@ extension ScopeApi on String {
   String productScope() => '$_api/${_currentVersion}/mobile/product/$this';
   String mobileScope() => '$_api/${_currentVersion}/mobile/$this';
   String likeScope() => '$_api/${_currentVersion}/product_likes/$this';
-  String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';
-  String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
+  String mobileHomeScope() => '$_api/${_currentVersion}/mobile/home/$this';
   String colorsSizesScope() => '$_api/${_currentVersion}/mobile/$this';
   String cartScope() => '$_api/${_currentVersion}/cart/$this';
   String oldCartScope() => '$_api/${_currentVersion}/old-cart/$this';
@@ -29,6 +28,8 @@ extension ScopeApi on String {
   String userNotificationScope() =>
       '$_api/${_currentVersion}/user-notifications/$this';
   String couponScope() => '$_api/${_currentVersion}/coupon/$this';
+  String checklistScope() =>
+      '$_api/${_currentVersion}/checklist${this != '' ? '/$this' : ''}';
   String firebaseTokensScope({bool current = false}) =>
       '$_api/${_currentVersion}/firebase_device_tokens${this != '' ? '/$this' : ''}';
 }
@@ -61,6 +62,11 @@ abstract class MarketEndPoints {
   static final cancelOrderItemEP = "order/cancel-item".customerScope();
   static final cancelOrderEP = "order/cancel".customerScope();
   static final changeOrderAddressEP = "order/change-address".customerScope();
+  static String hideOrderVisibilityEP(String orderId) =>
+      "order/$orderId/visibility".customerScope();
+  static String hideOrderDetailVisibilityEP(String detailId) =>
+      "order/detail/$detailId/visibility".customerScope();
+  static final getHiddenOrdersEP = "order/getHiddenOrders".customerScope();
   static final changeOrderItemVariantEP = "order/change-item-variant"
       .customerScope();
 
@@ -128,6 +134,7 @@ abstract class MarketEndPoints {
   static final verifyGuestPhoneEP = 'verify-guest-phone'.authFirebaseScope();
   static final registerEP = 'register'.authScope();
   static final registerGuestEP = 'register-guest'.authScope();
+  static final refreshTokenEP = 'refresh-token'.authScope();
   /*static final deleteLikeOFProductEP = 'delete'.likeScope();
   static final addLikeOFProductEP = 'store'.likeScope();*/
 
@@ -135,14 +142,14 @@ abstract class MarketEndPoints {
   static final getAllowesdCountriesEP = "countries".countryScope();
   static final updateNameEP = 'update-name'.customerScope();
   static final getCustomerInfoEP = 'info'.customerScope();
-  static final getStartingSettingsEP = 'startingSettings'.homeScope();
-  static final getHomeSectionsEP = 'home_sections'.homeScope();
-  static final getBrandEP = 'brands'.homeScope();
-  static final getCurrencyEP = 'currency'.homeScope();
+  static final getStartingSettingsEP = 'startingSettings'.mobileHomeScope();
+  static final getHomeSectionsEP = 'home_sections'.mobileHomeScope();
+  static final getBrandEP = 'brands'.mobileHomeScope();
+  static final getCurrencyEP = 'currency'.mobileHomeScope();
 
-  static final getCategoryEP = 'categories'.homeScope();
+  static final getCategoryEP = 'categories'.mobileHomeScope();
 
-  static final getHomeBoutiqesEP = 'boutiques'.homeScope();
+  static final getHomeBoutiqesEP = 'boutiques'.mobileHomeScope();
   static final addCommentEP = 'product_comment'.customerScope();
   static final addOrderCommentEP = 'product_comment/order'.customerScope();
   static final updateOrderCommentEP = 'product_comment/order/update'
@@ -151,9 +158,9 @@ abstract class MarketEndPoints {
       'likesCommentsSharesDetails/$productId'.productScope();
   static String getProductColorSizeSyncAttributeEP(String id) =>
       'details_color_sync_attribute/$id'.productScope();
-  static final getMainCategoriesEP = 'mainCategories'.homeScope();
+  static final getMainCategoriesEP = 'mainCategories'.mobileHomeScope();
   static final getMainCategoriesRelatedWithBoutiquesEP =
-      'mainCategoriesRelatedWithBoutique'.homeScope();
+      'mainCategoriesRelatedWithBoutique'.mobileHomeScope();
 
   static final getProductFiltersEP = 'filters'.productsScope();
   static final getSearchResultEP = 'search'.searchScope();
@@ -162,6 +169,14 @@ abstract class MarketEndPoints {
   static final getProductListingWithFiltersEP = 'with_filter'.productsScope();
 
   static final applyCouponEP = 'apply'.couponScope();
+
+  /// Checklist (marketGO server)
+  static final addToChecklistEP = ''.checklistScope();
+  static final getChecklistEP = ''.checklistScope();
+  static String checkChecklistExistEP(String productId) =>
+      'product/$productId/exist'.checklistScope();
+  static String deleteFromChecklistEP(String productId) =>
+      productId.checklistScope();
 
   static final storeFcmEP = ''.firebaseTokensScope();
   static String getOrderReturnDetailsEP(int returnRequestId) =>
@@ -183,7 +198,7 @@ abstract class MarketUrls {
 
   static String get baseUrlGo => _baseUrlDevGo;
 
-  static Uri get baseUrlGo1 => Uri.parse(_baseUrlDevGo);
+  static Uri get baseUriGo => Uri.parse(_baseUrlDevGo);
 
   static set setBaseUrlGo(String url) => _baseUrlDevGo = url;
 

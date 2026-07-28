@@ -576,9 +576,25 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                                                             ) async {
                                                               if (assetEntity !=
                                                                   null) {
-                                                                File
-                                                                file = (await assetEntity
-                                                                    .originFile)!;
+                                                                // originFile
+                                                                // يرجع null
+                                                                // للملفات غير
+                                                                // المقروءة.
+                                                                final File?
+                                                                pickedFile = await assetEntity
+                                                                    .originFile;
+                                                                if (pickedFile ==
+                                                                    null) {
+                                                                  showWarningMessage(
+                                                                    context,
+                                                                    LocaleKeys
+                                                                        .error_picking_file
+                                                                        .tr(),
+                                                                  );
+                                                                  return;
+                                                                }
+                                                                File file =
+                                                                    pickedFile;
                                                                 String mimeStr =
                                                                     lookupMimeType(
                                                                       file
@@ -729,9 +745,24 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                                                       ) async {
                                                         if (assetEntity !=
                                                             null) {
+                                                          // originFile يرجع
+                                                          // null للملفات غير
+                                                          // المقروءة.
+                                                          final File?
+                                                          pickedFile = await assetEntity
+                                                              .originFile;
+                                                          if (pickedFile ==
+                                                              null) {
+                                                            showWarningMessage(
+                                                              context,
+                                                              LocaleKeys
+                                                                  .error_picking_file
+                                                                  .tr(),
+                                                            );
+                                                            return;
+                                                          }
                                                           File file =
-                                                              (await assetEntity
-                                                                  .originFile)!;
+                                                              pickedFile;
                                                           String mimeStr =
                                                               lookupMimeType(
                                                                 file

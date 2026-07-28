@@ -268,11 +268,13 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     List<Chat> chats = List.of(state.chats);
     String? parentMessageId;
     if (kDebugMode)
-      if (kDebugMode) print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD******///${chats[0].id}");
+      if (kDebugMode)
+        print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD******///${chats[0].id}");
     if (kDebugMode)
-      if (kDebugMode) print(
-        "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD****////${event.channelId}",
-      );
+      if (kDebugMode)
+        print(
+          "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD****////${event.channelId}",
+        );
 
     //todo ---if-----
     //todo check if the channel exist and get the messages of this channel
@@ -503,9 +505,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           ),
         );
         if (kDebugMode)
-          if (kDebugMode) print(
-            "222222222222222222222222ddddddddddddddddddddddddddddddddd${state.currentMessage}",
-          );
+          if (kDebugMode)
+            print(
+              "222222222222222222222222ddddddddddddddddddddddddddddddddd${state.currentMessage}",
+            );
 
         //  add(IncreaseFileImageVideoCounterEvent(r.messageType!.name!));
       },
@@ -758,16 +761,20 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     if (kDebugMode)
-      if (kDebugMode) print(
-        "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH8${state.getChatsStatus}${(_prefsRepository.chatToken?.length ?? 0) < 10}${event.getWithPagination ?? false}888",
-      );
+      if (kDebugMode)
+        print(
+          "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH8${state.getChatsStatus}${(_prefsRepository.chatToken?.length ?? 0) < 10}${event.getWithPagination ?? false}888",
+        );
     if (state.getChatsStatus == GetChatsStatus.loading ||
         (_prefsRepository.chatToken?.length ?? 0) < 10 ||
         ((event.getWithPagination ?? false) && (state.getAllChat ?? false))) {
       return;
     }
     if (kDebugMode)
-      if (kDebugMode) print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH822");
+      if (kDebugMode)
+        print(
+          "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH822",
+        );
     emit(
       state.copyWith(
         getChatsStatus: GetChatsStatus.loading,
@@ -799,18 +806,20 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       (r) {
         try {
           if (kDebugMode)
-            if (kDebugMode) print(
-              "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH866622${state.sendMessageStatus}${state.receiveMessageStatus}",
-            );
+            if (kDebugMode)
+              print(
+                "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH866622${state.sendMessageStatus}${state.receiveMessageStatus}",
+              );
           if (state.sendMessageStatus == SendMessageStatus.loading ||
               state.receiveMessageStatus == ReceiveMessageStatus.loading) {
             emit(state.copyWith(getChatsStatus: GetChatsStatus.success));
             return;
           }
           if (kDebugMode)
-            if (kDebugMode) print(
-              "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH82772",
-            );
+            if (kDebugMode)
+              print(
+                "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH82772",
+              );
           enableRequestGetChats = false;
           /* if (r.data!.missedFcmToken) {
             GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
@@ -878,9 +887,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             ),
           );
           if (kDebugMode)
-            if (kDebugMode) print(
-              "FFFFFFFFFFFFFFFFFFFFFFFFFFFFF/////////****${state.getAllChat}",
-            );
+            if (kDebugMode)
+              print(
+                "FFFFFFFFFFFFFFFFFFFFFFFFFFFFF/////////****${state.getAllChat}",
+              );
         } catch (e, st) {
           if (kDebugMode) print(e);
           if (kDebugMode) print(st);
@@ -1174,8 +1184,13 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         chats: fromPinned ? state.chats : chats,
       ),
     );
+    // تنبيه: شكل الاستجابة هنا مقترن بقراءتها في fold أدناه
+    // (imageWidth/imageHeight/file_path). عند إعادة تفعيل Cloudinary يجب
+    // تعديل الموضعين معاً — فصلهما كان يقرأ r.width من
+    // UploadFileResponseModel فيرمي NoSuchMethodError وقت التشغيل،
+    // و'response' ضمنياً dynamic فلا يمنعه المترجم.
     final response;
-    if (event.useCloudinaryToUpload) {
+    /* if (event.useCloudinaryToUpload) {
       response = await uploadFileCloudinaryUseCase(
         UploadFileCloudinaryParams(
           file: event.file,
@@ -1183,11 +1198,11 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           usingOnUploadingFinishedFunction: false,
         ),
       );
-    } else {
-      response = await uploadFileUseCase(
-        UploadFileParams(event.file, event.filePath),
-      );
-    }
+    } else {*/
+    response = await uploadFileUseCase(
+      UploadFileParams(event.file, event.filePath),
+    );
+    // }
     response.fold(
       (l) {
         List<String> currentFailedMessage = List.of(state.currentFailedMessage);
@@ -1215,18 +1230,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             channelId: event.channelId,
             senderParentMessageId: event.senderParentMessageId,
             file: event.file,
-            imageWidth: event.useCloudinaryToUpload
-                ? r.width?.toDouble()
-                : null,
-            imageHeight: event.useCloudinaryToUpload
-                ? r.height?.toDouble()
-                : null,
             parentMessageContent: event.parentMessageContent,
             mediaContent: [
               {
-                'file_path': event.useCloudinaryToUpload
-                    ? r.secureUrl!
-                    : r.data!.filePath!,
+                'file_path': r.data!.filePath!,
                 'file_name': event.fileName,
                 'titleMedium': 'test image',
               },
@@ -1301,9 +1308,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     if (kDebugMode)
-      if (kDebugMode) print(
-        '_onReceiveMessageEvent_onReceiveMessageEvent${event.prevMessageId}  ${event.message.id}',
-      );
+      if (kDebugMode)
+        print(
+          '_onReceiveMessageEvent_onReceiveMessageEvent${event.prevMessageId}  ${event.message.id}',
+        );
 
     emit(state.copyWith(receiveMessageStatus: ReceiveMessageStatus.loading));
     try {
@@ -1368,9 +1376,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
       if (index == -1 && event.prevMessageId != null) {
         if (kDebugMode)
-          if (kDebugMode) print(
-            'get all messages between ${event.prevMessageId} and ${event.message.id}',
-          );
+          if (kDebugMode)
+            print(
+              'get all messages between ${event.prevMessageId} and ${event.message.id}',
+            );
         add(
           GetAllMessagesBetweenEvent(
             firstMessageId: event.prevMessageId!,
@@ -2716,20 +2725,22 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     response.fold(
       (l) {
         if (kDebugMode) {
-          if (kDebugMode) print(
-            "${event.error.toString().substring(1, 40)}" +
-                "failed to send error to back end" +
-                "544444444444444444444444444444444444444",
-          );
+          if (kDebugMode)
+            print(
+              "${event.error.toString().substring(1, 40)}" +
+                  "failed to send error to back end" +
+                  "544444444444444444444444444444444444444",
+            );
         }
       },
       (r) {
         if (kDebugMode)
-          if (kDebugMode) print(
-            "${event.error.toString().substring(1, 40)}" +
-                "success to send error to back end" +
-                "2222222222222222222222222222222222222222222222222222222222222222",
-          );
+          if (kDebugMode)
+            print(
+              "${event.error.toString().substring(1, 40)}" +
+                  "success to send error to back end" +
+                  "2222222222222222222222222222222222222222222222222222222222222222",
+            );
       },
     );
   }
@@ -2804,7 +2815,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
 
     if (kDebugMode)
-      if (kDebugMode) print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${resultOfSearch.items}");
+      if (kDebugMode)
+        print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${resultOfSearch.items}");
     if (event.getWithPagination &&
         (resultOfSearch.hasReachedMax || resultOfSearch.offset == null)) {
       return;
@@ -2826,9 +2838,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       });
     }
     if (kDebugMode)
-      if (kDebugMode) print(
-        "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%111111111111111111111111111111${resultOfSearch.items}",
-      );
+      if (kDebugMode)
+        print(
+          "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%111111111111111111111111111111${resultOfSearch.items}",
+        );
 
     emit(
       state.copyWith(
@@ -2840,9 +2853,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       ),
     );
     if (kDebugMode)
-      if (kDebugMode) print(
-        "%1112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}",
-      );
+      if (kDebugMode)
+        print(
+          "%1112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}",
+        );
     final response = await searchForMessageTextInChatUseCase(
       SearchForMessageTextInChatParams(
         offset: (event.getWithPagination) ? resultOfSearch.offset ?? "0" : "0",
@@ -2900,9 +2914,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           ),
         );
         if (kDebugMode)
-          if (kDebugMode) print(
-            "%3333333333333333333333333333333331112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}",
-          );
+          if (kDebugMode)
+            print(
+              "%3333333333333333333333333333333331112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}",
+            );
       },
     );
   }

@@ -15,7 +15,6 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
@@ -666,32 +665,20 @@ class _ProductListing3DSliderOptimizedState
                     ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8.h)
                     : const SizedBox.shrink(),
                 SizedBox(width: isVerified ? 5.w : 0),
-                mediaServerIsS3
-                    ? MyCachedNetworkImage(
-                        imageUrl: brandIcon,
-                        height: 15.h,
-                        imageFit: BoxFit.contain,
-                        width: 30.w,
-                      )
-                    : SvgNetworkWidget(
-                        svgUrl: brandIcon,
-                        width: 30.w,
-                        height: 15.h,
-                      ),
+                MyCachedNetworkImage(
+                  imageUrl: brandIcon,
+                  height: 15.h,
+                  imageFit: BoxFit.contain,
+                  width: 30.w,
+                ),
               ]
             : [
-                mediaServerIsS3
-                    ? MyCachedNetworkImage(
-                        imageUrl: brandIcon,
-                        height: 15.h,
-                        imageFit: BoxFit.contain,
-                        width: 30.w,
-                      )
-                    : SvgNetworkWidget(
-                        svgUrl: brandIcon,
-                        width: 30.w,
-                        height: 15.h,
-                      ),
+                MyCachedNetworkImage(
+                  imageUrl: brandIcon,
+                  height: 15.h,
+                  imageFit: BoxFit.contain,
+                  width: 30.w,
+                ),
                 SizedBox(width: isVerified ? 5.w : 0),
                 isVerified
                     ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8.h)
@@ -745,7 +732,13 @@ class _ProductListing3DSliderOptimizedState
           builder: (context, state) {
             final price = widget.productItem.price ?? 0;
             final offerPrice = widget.productItem.offerPrice ?? 0;
-
+            final decimalDigits =
+                state
+                    .getCurrencyForCountryModel
+                    ?.data
+                    ?.currency
+                    ?.decimalDigits ??
+                1;
             final exchangeRate =
                 state
                     .getCurrencyForCountryModel
@@ -753,6 +746,8 @@ class _ProductListing3DSliderOptimizedState
                     ?.currency
                     ?.exchangeRate ??
                 1;
+            final symbol =
+                state.getCurrencyForCountryModel?.data?.currency?.symbol ?? "";
 
             return Directionality(
               textDirection: LanguageService.languageCode == "ar"
@@ -823,11 +818,7 @@ class _ProductListing3DSliderOptimizedState
                                           numberToFormate:
                                               ((HelperFunctions.truncateToDecimalPlaces(
                                                 price,
-                                                state
-                                                    .getCurrencyForCountryModel!
-                                                    .data!
-                                                    .currency!
-                                                    .decimalDigits!,
+                                                decimalDigits,
                                               )) *
                                               exchangeRate),
                                         ),
@@ -859,11 +850,7 @@ class _ProductListing3DSliderOptimizedState
                                               0)
                                       ? ((HelperFunctions.truncateToDecimalPlaces(
                                               offerPrice,
-                                              state
-                                                  .getCurrencyForCountryModel!
-                                                  .data!
-                                                  .currency!
-                                                  .decimalDigits!,
+                                              decimalDigits,
                                             )) *
                                             exchangeRate)
                                       : ((HelperFunctions.truncateToDecimalPlaces(
@@ -871,11 +858,7 @@ class _ProductListing3DSliderOptimizedState
                                                       .productItem
                                                       .flashDealPrice ??
                                                   0,
-                                              state
-                                                  .getCurrencyForCountryModel!
-                                                  .data!
-                                                  .currency!
-                                                  .decimalDigits!,
+                                              decimalDigits,
                                             ))) *
                                             exchangeRate)),
                                 ),
@@ -898,14 +881,7 @@ class _ProductListing3DSliderOptimizedState
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                state.getCurrencyForCountryModel == null
-                                    ? ""
-                                    : state
-                                              .getCurrencyForCountryModel!
-                                              .data!
-                                              .currency!
-                                              .symbol ??
-                                          "",
+                                symbol,
                                 maxLines: 1,
 
                                 overflow: TextOverflow.ellipsis,
@@ -970,7 +946,8 @@ class _ProductListing3DSliderOptimizedState
               1;
           double redeemPrice = HelperFunctions.truncateToDecimalPlaces(
             widget.productItem.redeemPrice ?? 0,
-            state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!,
+            state.getCurrencyForCountryModel?.data?.currency?.decimalDigits ??
+                1,
           );
           bool isRedeem =
               (GetIt.I<PrefsRepository>()
@@ -1028,14 +1005,12 @@ class _ProductListing3DSliderOptimizedState
                 const SizedBox(width: 2),
                 isRedeem
                     ? Text(
-                        state.getCurrencyForCountryModel == null
-                            ? ""
-                            : state
-                                      .getCurrencyForCountryModel!
-                                      .data!
-                                      .currency!
-                                      .symbol ??
-                                  "",
+                        state
+                                .getCurrencyForCountryModel
+                                ?.data
+                                ?.currency
+                                ?.symbol ??
+                            "",
                         style: TextStyle(
                           fontSize: 9.sp,
                           color: const Color(0xffFF6200),

@@ -21,7 +21,6 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_with_silder.dart';
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/main.dart';
 import 'package:trydos/service/language_service.dart';
 
 class ProductItem extends StatefulWidget {
@@ -224,7 +223,7 @@ class _ProductItemState extends State<ProductItem> {
                     ? null
                     : widget.productItem.videos!.first.contains("cloudinary")
                     ? widget.productItem.videos!.first
-                    : ("${mediaServerIsS3 ? dotenv.env['Vedio_S3_Server'] : dotenv.env['Video_url']}" +
+                    : ("${dotenv.env['Vedio_S3_Server']}" +
                           (widget.productItem.videos!.first)),
                 productIsFlashDeal: widget.productIsFlashDeal,
                 productIsRecommend: widget.productIsRecommend,
@@ -244,7 +243,7 @@ class _ProductItemState extends State<ProductItem> {
                     ? null
                     : widget.productItem.videos!.first.contains("cloudinary")
                     ? widget.productItem.videos!.first
-                    : ("${mediaServerIsS3 ? dotenv.env['Vedio_S3_Server'] : dotenv.env['Video_url']}" +
+                    : ("${dotenv.env['Vedio_S3_Server']}" +
                           (widget.productItem.videos!.first)),
                 showShadowForColorImages: widget.showShadowForColorImages,
                 colorImagesPanelController: widget.colorImagesPanelController,

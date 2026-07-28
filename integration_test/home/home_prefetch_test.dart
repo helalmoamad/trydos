@@ -9,7 +9,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
-import 'package:trydos/features/home/presentation/widgets/home_page_card2.dart';
+import 'package:trydos/features/home/presentation/widgets/home_page_boutique_card.dart';
 import 'package:trydos/main.dart' as app;
 import '../shared/shared_scenarios.dart';
 import '../utils/global_test_functions.dart';
@@ -306,7 +306,7 @@ void main() {
                     ///////////////////
                     boutiqueSlugs.add(
                       tester
-                              .widget<HomePageCard2>(boutiqueCardWidget)
+                              .widget<HomePageBoutiqueCard>(boutiqueCardWidget)
                               .boutique
                               .slug ??
                           '',
@@ -397,7 +397,7 @@ void main() {
               print('find index : $index');
 
               slug = tester
-                      .widget<HomePageCard2>(boutiqueCardWidget)
+                      .widget<HomePageBoutiqueCard>(boutiqueCardWidget)
                       .boutique
                       .slug ??
                   '';

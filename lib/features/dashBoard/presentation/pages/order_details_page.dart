@@ -18,10 +18,7 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.da
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart'
     show CallsBloc, CallsState, MakeCallStatus;
 import 'package:trydos/features/calls/presentation/pages/in_app_view.dart'
@@ -100,7 +97,6 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
   final ValueNotifier<bool> showPanel = ValueNotifier(false);
   final ValueNotifier<bool> showShadowForCanselOrder = ValueNotifier(false);
   final ValueNotifier<int> indexTapAddress = ValueNotifier(0);
-  final PageController pageController = PageController();
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<int> indexTapPackage = ValueNotifier(0);
   final ValueNotifier<String?> optionModifyPanel = ValueNotifier(null);
@@ -114,10 +110,6 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
   String? pendingOrderDetailStatus;
   int firstAddressChoosed = 0;
   bool firstOpenPage = true;
-  String phoneNumber = '';
-  final FocusNode focusNode = FocusNode();
-  int isVisWhatsApp = 0;
-  final ValueNotifier<bool> isVerified = ValueNotifier(true);
   bool requestReturnApiFromNotification = false;
   bool requestReturnApi = false;
   bool canFetchReturnDetails = false;
@@ -157,10 +149,10 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
     //     ),
     //   );
 
-    //   // 🚀 إزالة التأخير المصطنع - دع البيانات تحدد سرعة التحميل!
+    //   // ðŸš€ Ø¥Ø²Ø§Ù„Ø© Ø§Ù„ØªØ£Ø®ÙŠØ± Ø§Ù„Ù…ØµØ·Ù†Ø¹ - Ø¯Ø¹ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª ØªØ­Ø¯Ø¯ Ø³Ø±Ø¹Ø© Ø§Ù„ØªØ­Ù…ÙŠÙ„!
     //   await Future.delayed(
     //     const Duration(seconds: 3),
-    //   ); // ❌ تم حذف التأخير المصطنع
+    //   ); // âŒ ØªÙ… Ø­Ø°Ù Ø§Ù„ØªØ£Ø®ÙŠØ± Ø§Ù„Ù…ØµØ·Ù†Ø¹
     // }
     Future<void> _refreshData() async {}
 
@@ -189,542 +181,345 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
         }
         return true;
       },
-      child: Stack(
-        children: [
-          BlocListener<DashboardBloc, DashBoardState>(
-            bloc: dashboardBloc,
-            listenWhen: (previous, current) =>
-                previous.changeOrderDetailStatusStatus !=
-                current.changeOrderDetailStatusStatus,
-            listener: (context, state) {
-              if (state.changeOrderDetailStatusStatus ==
-                  ChangeOrderDetailStatusStatus.failure) {
-                if (!mounted) {
-                  return;
-                }
+      child: BlocListener<DashboardBloc, DashBoardState>(
+        bloc: dashboardBloc,
+        listenWhen: (previous, current) =>
+            previous.changeOrderDetailStatusStatus !=
+            current.changeOrderDetailStatusStatus,
+        listener: (context, state) {
+          if (state.changeOrderDetailStatusStatus ==
+              ChangeOrderDetailStatusStatus.failure) {
+            if (!mounted) {
+              return;
+            }
 
-                setState(() {
-                  if (orderBeforePendingUpdate != null) {
-                    orders = orderBeforePendingUpdate;
-                  }
-                  orderBeforePendingUpdate = null;
-                  pendingOrderDetailId = null;
-                  pendingOrderDetailStatus = null;
-                });
-                return;
+            setState(() {
+              if (orderBeforePendingUpdate != null) {
+                orders = orderBeforePendingUpdate;
               }
+              orderBeforePendingUpdate = null;
+              pendingOrderDetailId = null;
+              pendingOrderDetailStatus = null;
+            });
+            return;
+          }
 
-              if (state.changeOrderDetailStatusStatus !=
-                  ChangeOrderDetailStatusStatus.success) {
-                return;
-              }
+          if (state.changeOrderDetailStatusStatus !=
+              ChangeOrderDetailStatusStatus.success) {
+            return;
+          }
 
-              UserOrderNew? updatedCurrentOrder;
-              final updatedOrders = state.new_orders;
-              if (updatedOrders != null) {
-                final matchedOrders = updatedOrders.where(
-                  (order) => order.id == orders?.id,
-                );
-                if (matchedOrders.isNotEmpty) {
-                  updatedCurrentOrder = matchedOrders.first;
-                }
-              }
+          UserOrderNew? updatedCurrentOrder;
+          final updatedOrders = state.new_orders;
+          if (updatedOrders != null) {
+            final matchedOrders = updatedOrders.where(
+              (order) => order.id == orders?.id,
+            );
+            if (matchedOrders.isNotEmpty) {
+              updatedCurrentOrder = matchedOrders.first;
+            }
+          }
 
-              if (updatedCurrentOrder == null &&
-                  orders != null &&
-                  pendingOrderDetailId != null &&
-                  pendingOrderDetailStatus != null) {
-                updatedCurrentOrder = _applyOrderDetailStatusLocally(
-                  orders!,
-                  pendingOrderDetailId!,
-                  pendingOrderDetailStatus!,
-                );
-              }
+          if (updatedCurrentOrder == null &&
+              orders != null &&
+              pendingOrderDetailId != null &&
+              pendingOrderDetailStatus != null) {
+            updatedCurrentOrder = _applyOrderDetailStatusLocally(
+              orders!,
+              pendingOrderDetailId!,
+              pendingOrderDetailStatus!,
+            );
+          }
 
-              if (!mounted) {
-                return;
-              }
+          if (!mounted) {
+            return;
+          }
 
-              setState(() {
-                if (updatedCurrentOrder != null) {
-                  orders = updatedCurrentOrder;
-                  apiOrderStatus = updatedCurrentOrder.orderStatus;
-                }
-                orderBeforePendingUpdate = null;
-                pendingOrderDetailId = null;
-                pendingOrderDetailStatus = null;
-              });
-            },
-            child: BlocListener<OrderBloc, OrderState>(
-              listenWhen: (p, c) =>
-                  p.getOrdersByOrderGroupIDStatus !=
-                  c.getOrdersByOrderGroupIDStatus,
-              listener: (context, state) {},
-              child: BlocBuilder<OrderBloc, OrderState>(
-                buildWhen: (p, c) =>
-                    p.getOrdersByOrderGroupIDStatus !=
-                    c.getOrdersByOrderGroupIDStatus,
-                builder: (context, state) {
-                  return ValueListenableBuilder<int>(
-                    valueListenable: indexTapPackage,
-                    builder: (context, _indexTapPackage, _) {
-                      addressParts = [
-                        // orders.shippingAddressData?.country,
-                        // orders.shippingAddressData?.province,
-                        // orders.shippingAddressData?.city,
-                        // orders.shippingAddressData?.town,
-                        // orders.shippingAddressData?.street,
-                        // orders.shippingAddressData?.building,
-                      ];
+          setState(() {
+            if (updatedCurrentOrder != null) {
+              orders = updatedCurrentOrder;
+              apiOrderStatus = updatedCurrentOrder.orderStatus;
+            }
+            orderBeforePendingUpdate = null;
+            pendingOrderDetailId = null;
+            pendingOrderDetailStatus = null;
+          });
+        },
+        child: BlocListener<OrderBloc, OrderState>(
+          listenWhen: (p, c) =>
+              p.getOrdersByOrderGroupIDStatus !=
+              c.getOrdersByOrderGroupIDStatus,
+          listener: (context, state) {},
+          child: BlocBuilder<OrderBloc, OrderState>(
+            buildWhen: (p, c) =>
+                p.getOrdersByOrderGroupIDStatus !=
+                c.getOrdersByOrderGroupIDStatus,
+            builder: (context, state) {
+              return ValueListenableBuilder<int>(
+                valueListenable: indexTapPackage,
+                builder: (context, _indexTapPackage, _) {
+                  addressParts = [
+                    // orders.shippingAddressData?.country,
+                    // orders.shippingAddressData?.province,
+                    // orders.shippingAddressData?.city,
+                    // orders.shippingAddressData?.town,
+                    // orders.shippingAddressData?.street,
+                    // orders.shippingAddressData?.building,
+                  ];
 
-                      return Container(
-                        color: const Color(0xffFFFFFF),
-                        child: Material(
-                          child: Stack(
-                            children: [
-                              Scaffold(
-                                resizeToAvoidBottomInset: true,
-                                backgroundColor: const Color(0xffF8F8F8),
-                                appBar: TrydosAppBar(
-                                  appBarParams: AppBarParams(
-                                    backgroundColor: const Color(0xffFFFFFF),
-                                    scrolledUnderElevation: 0,
-                                    backIconColor: Colors.black,
-                                    withShadow: false,
-                                    action: [
-                                      const Spacer(),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const SizedBox(width: 12),
-                                          SvgPicture.asset(
-                                            AppAssets.bagsSvg,
-                                            width: 23,
-                                          ),
-                                          ///////////////////////////
-                                          const SizedBox(width: 4),
-                                          ///////////////////////////
-                                          Text(
-                                            LocaleKeys.order_details.tr(),
-                                            style: context
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.mq
-                                                .copyWith(
-                                                  color: const Color(
-                                                    0xff1D1D1D,
-                                                  ),
-                                                  letterSpacing: 0.18,
-                                                  fontSize: 14,
-                                                  height: 1.3,
-                                                ),
-                                          ),
-                                          ///////////////////////////
-                                          const SizedBox(width: 15),
-                                          ///////////////////////////
-                                        ],
-                                      ),
-                                      const Spacer(),
-                                      ////////////
-                                      InkWell(
-                                        onTap: () {
-                                          if (state
-                                                  .getOrdersByOrderGroupIDStatus ==
-                                              GetOrdersByOrderGroupIDStatus
-                                                  .loading) {
-                                            return;
-                                          }
-                                          optionModifyPanel.value = "All_Order";
-                                          showPanel.value = true;
-                                          panelController.open();
-                                          showShadowForPanel.value = true;
-                                        },
-                                        child: Container(
-                                          width: 40,
-                                          height: 20,
-                                          child:
-                                              state.getOrdersByOrderGroupIDStatus ==
-                                                  GetOrdersByOrderGroupIDStatus
-                                                      .loading
-                                              ? TrydosLoader(size: 16)
-                                              : SvgPicture.asset(
-                                                  AppAssets.orderMenuSvg,
-                                                  width: 20,
-                                                ),
-                                        ),
+                  return Container(
+                    color: const Color(0xffFFFFFF),
+                    child: Material(
+                      child: Stack(
+                        children: [
+                          Scaffold(
+                            resizeToAvoidBottomInset: true,
+                            backgroundColor: const Color(0xffF8F8F8),
+                            appBar: TrydosAppBar(
+                              appBarParams: AppBarParams(
+                                backgroundColor: const Color(0xffFFFFFF),
+                                scrolledUnderElevation: 0,
+                                backIconColor: Colors.black,
+                                withShadow: false,
+                                action: [
+                                  const Spacer(),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(width: 12),
+                                      SvgPicture.asset(
+                                        AppAssets.bagsSvg,
+                                        width: 23,
                                       ),
                                       ///////////////////////////
-                                      const SizedBox(width: 12),
+                                      const SizedBox(width: 4),
+                                      ///////////////////////////
+                                      Text(
+                                        LocaleKeys.order_details.tr(),
+                                        style: context.textTheme.bodyMedium?.mq
+                                            .copyWith(
+                                              color: const Color(0xff1D1D1D),
+                                              letterSpacing: 0.18,
+                                              fontSize: 14,
+                                              height: 1.3,
+                                            ),
+                                      ),
+                                      ///////////////////////////
+                                      const SizedBox(width: 15),
+                                      ///////////////////////////
                                     ],
                                   ),
-                                ),
-                                body: RefreshIndicator(
-                                  backgroundColor: Colors.white,
-                                  color: Colors.black,
-                                  onRefresh: _refreshData,
-                                  child: SingleChildScrollView(
-                                    controller: singleChildController,
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: Column(
-                                      children: [
-                                        SizedBox(height: 11.h),
-                                        ///////////////////
-                                        BlocBuilder<HomeBloc, HomeState>(
-                                          buildWhen: (previous, current) =>
-                                              (previous
-                                                  .getCurrencyForCountryModel !=
-                                              current
-                                                  .getCurrencyForCountryModel),
-                                          builder: (context, state) {
-                                            double orderAmount = 0;
-                                            orders!.details.forEach(
-                                              (element) => orderAmount =
-                                                  orderAmount +
-                                                  (HelperFunctions.truncateToDecimalPlaces(
-                                                        element.unitPrice,
-                                                        state
-                                                            .getCurrencyForCountryModel!
-                                                            .data!
-                                                            .currency!
-                                                            .decimalDigits!,
-                                                      ) *
-                                                      state
-                                                          .getCurrencyForCountryModel!
-                                                          .data!
-                                                          .currency!
-                                                          .exchangeRate!),
-                                            );
-
-                                            return SizedBox(
-                                              height: 95,
-                                              child: buildFirstSection(
-                                                context: context,
-                                                orderNumber:
-                                                    widget.orderNumber!,
-                                                orderDate:
-                                                    orders!.createdAt.date +
-                                                    ' | ' +
-                                                    orders!.createdAt.time,
-                                                orderAmount: orders!.orderAmount
-                                                    .toString(),
-                                                orderCurrency: "USD",
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        SizedBox(height: 8.h),
-                                        ///////////////////////
-                                        SizedBox(
-                                          height: 85,
-                                          child:
-                                              state.getOrdersByOrderGroupIDStatus ==
-                                                  GetOrdersByOrderGroupIDStatus
-                                                      .loading
-                                              ? TrydosLoader(size: 16)
-                                              :
-                                                //  حالات العناصر و الوقت المتوقع للتوصيل
-                                                buildSecondSection(
-                                                  context: context,
-                                                  expectedDeliveryDate: orders!
-                                                      .remainingInMinutes
-                                                      .toString(),
-                                                  orderStatus:
-                                                      apiOrderStatus ??
-                                                      orders!.orderStatus,
-                                                  orderStatusLable:
-                                                      apiOrderStatus ??
-                                                      orders!.orderStatus,
-                                                  // deliverdTo:
-                                                  //     orders
-                                                  //         .shippingAddressData
-                                                  //         ?.contactPersonName ??
-                                                  //     '',
-                                                ),
-                                        ),
-                                        SizedBox(height: 8.h),
-                                        SizedBox(height: 8.h),
-                                        buildFourthSection(
-                                          context: context,
-                                          itemsCount: orders!.details.length
-                                              .toString(),
-                                        ),
-                                        SizedBox(height: 8.h),
-                                        for (var entry
-                                            in orders!.details.asMap().entries)
-                                          buildProductOrderCard(
-                                            index: entry.key + 1,
-                                            context: context,
-                                            imageUrl:
-                                                // dotenv.env['Images_Url']! +
-                                                entry.value.cartImage,
-                                            brand: entry.value.brandIcon,
-                                            title: entry.value.productName,
-                                            color: entry.value.color,
-                                            size: entry.value.size,
-                                            id: entry.value.id.toString(),
-                                            quantity: entry.value.qty,
-                                            status: _buildDetailCardStatusLabel(
-                                              entry.value,
+                                  const Spacer(),
+                                  ////////////
+                                  InkWell(
+                                    onTap: () {
+                                      if (state.getOrdersByOrderGroupIDStatus ==
+                                          GetOrdersByOrderGroupIDStatus
+                                              .loading) {
+                                        return;
+                                      }
+                                      optionModifyPanel.value = "All_Order";
+                                      showPanel.value = true;
+                                      panelController.open();
+                                      showShadowForPanel.value = true;
+                                    },
+                                    child: Container(
+                                      width: 40,
+                                      height: 20,
+                                      child:
+                                          state.getOrdersByOrderGroupIDStatus ==
+                                              GetOrdersByOrderGroupIDStatus
+                                                  .loading
+                                          ? TrydosLoader(size: 16)
+                                          : SvgPicture.asset(
+                                              AppAssets.orderMenuSvg,
+                                              width: 20,
                                             ),
-                                            price: entry.value.unitPrice
-                                                .toString(),
-                                            primaryActionLabel:
-                                                _buildPrimaryActionLabel(
-                                                  entry.value,
-                                                ),
-                                            isPrimaryActionEnabled:
-                                                _isPrimaryActionEnabled(
-                                                  entry.value,
-                                                ),
-                                            onPrimaryAction: () {
-                                              final nextStatus =
-                                                  _buildNextDetailStatus(
-                                                    entry.value,
-                                                  );
-
-                                              if (nextStatus == null) {
-                                                return;
-                                              }
-
-                                              final currentOrder = orders;
-                                              if (currentOrder == null) {
-                                                return;
-                                              }
-
-                                              final updatedOrder =
-                                                  _applyOrderDetailStatusLocally(
-                                                    currentOrder,
-                                                    entry.value.id,
-                                                    nextStatus,
-                                                  );
-
-                                              setState(() {
-                                                orderBeforePendingUpdate =
-                                                    currentOrder;
-                                                orders = updatedOrder;
-                                                pendingOrderDetailId =
-                                                    entry.value.id;
-                                                pendingOrderDetailStatus =
-                                                    nextStatus;
-                                              });
-
-                                              dashboardBloc.add(
-                                                ChangeOrderDetailStatusEvent(
-                                                  order_detail_id:
-                                                      entry.value.id,
-                                                  status: nextStatus,
-                                                ),
-                                              );
-                                            },
-                                            onCancel: () {},
-                                          ),
-                                        SizedBox(height: 8.h),
-                                      ],
                                     ),
                                   ),
+                                  ///////////////////////////
+                                  const SizedBox(width: 12),
+                                ],
+                              ),
+                            ),
+                            body: RefreshIndicator(
+                              backgroundColor: Colors.white,
+                              color: Colors.black,
+                              onRefresh: _refreshData,
+                              child: SingleChildScrollView(
+                                controller: singleChildController,
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 11.h),
+                                    ///////////////////
+                                    BlocBuilder<HomeBloc, HomeState>(
+                                      buildWhen: (previous, current) =>
+                                          (previous
+                                              .getCurrencyForCountryModel !=
+                                          current.getCurrencyForCountryModel),
+                                      builder: (context, state) {
+                                        double orderAmount = 0;
+                                        orders!.details.forEach(
+                                          (element) => orderAmount =
+                                              orderAmount +
+                                              (HelperFunctions.truncateToDecimalPlaces(
+                                                    element.unitPrice,
+                                                    state
+                                                        .getCurrencyForCountryModel!
+                                                        .data!
+                                                        .currency!
+                                                        .decimalDigits!,
+                                                  ) *
+                                                  state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .exchangeRate!),
+                                        );
+
+                                        return SizedBox(
+                                          height: 95,
+                                          child: buildFirstSection(
+                                            context: context,
+                                            orderNumber: widget.orderNumber!,
+                                            orderDate:
+                                                orders!.createdAt.date +
+                                                ' | ' +
+                                                orders!.createdAt.time,
+                                            orderAmount: orders!.orderAmount
+                                                .toString(),
+                                            orderCurrency: "USD",
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    ///////////////////////
+                                    SizedBox(
+                                      height: 85,
+                                      child:
+                                          state.getOrdersByOrderGroupIDStatus ==
+                                              GetOrdersByOrderGroupIDStatus
+                                                  .loading
+                                          ? TrydosLoader(size: 16)
+                                          :
+                                            //  Ø­Ø§Ù„Ø§Øª Ø§Ù„Ø¹Ù†Ø§ØµØ± Ùˆ Ø§Ù„ÙˆÙ‚Øª Ø§Ù„Ù…ØªÙˆÙ‚Ø¹ Ù„Ù„ØªÙˆØµÙŠÙ„
+                                            buildSecondSection(
+                                              context: context,
+                                              expectedDeliveryDate: orders!
+                                                  .remainingInMinutes
+                                                  .toString(),
+                                              orderStatus:
+                                                  apiOrderStatus ??
+                                                  orders!.orderStatus,
+                                              orderStatusLable:
+                                                  apiOrderStatus ??
+                                                  orders!.orderStatus,
+                                              // deliverdTo:
+                                              //     orders
+                                              //         .shippingAddressData
+                                              //         ?.contactPersonName ??
+                                              //     '',
+                                            ),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    SizedBox(height: 8.h),
+                                    buildFourthSection(
+                                      context: context,
+                                      itemsCount: orders!.details.length
+                                          .toString(),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    for (var entry
+                                        in orders!.details.asMap().entries)
+                                      buildProductOrderCard(
+                                        index: entry.key + 1,
+                                        context: context,
+                                        imageUrl:
+                                            // dotenv.env['Images_Url']! +
+                                            entry.value.cartImage,
+                                        brand: entry.value.brandIcon,
+                                        title: entry.value.productName,
+                                        color: entry.value.color,
+                                        size: entry.value.size,
+                                        id: entry.value.id.toString(),
+                                        quantity: entry.value.qty,
+                                        status: _buildDetailCardStatusLabel(
+                                          entry.value,
+                                        ),
+                                        price: entry.value.unitPrice.toString(),
+                                        primaryActionLabel:
+                                            _buildPrimaryActionLabel(
+                                              entry.value,
+                                            ),
+                                        isPrimaryActionEnabled:
+                                            _isPrimaryActionEnabled(
+                                              entry.value,
+                                            ),
+                                        onPrimaryAction: () {
+                                          final nextStatus =
+                                              _buildNextDetailStatus(
+                                                entry.value,
+                                              );
+
+                                          if (nextStatus == null) {
+                                            return;
+                                          }
+
+                                          final currentOrder = orders;
+                                          if (currentOrder == null) {
+                                            return;
+                                          }
+
+                                          final updatedOrder =
+                                              _applyOrderDetailStatusLocally(
+                                                currentOrder,
+                                                entry.value.id,
+                                                nextStatus,
+                                              );
+
+                                          setState(() {
+                                            orderBeforePendingUpdate =
+                                                currentOrder;
+                                            orders = updatedOrder;
+                                            pendingOrderDetailId =
+                                                entry.value.id;
+                                            pendingOrderDetailStatus =
+                                                nextStatus;
+                                          });
+
+                                          dashboardBloc.add(
+                                            ChangeOrderDetailStatusEvent(
+                                              order_detail_id: entry.value.id,
+                                              status: nextStatus,
+                                            ),
+                                          );
+                                        },
+                                        onCancel: () {},
+                                      ),
+                                    SizedBox(height: 8.h),
+                                  ],
                                 ),
                               ),
-                              shadowForPanel(),
-                              panelWidget(),
-                              // ValueListenableBuilder<int>(
-                              //   valueListenable: indexTapAddress,
-                              //   builder: (context, _indexTap, _) {
-                              //     return shadowForChangeAddressContent(_indexTap);
-                              //   },
-                              // ),
-                              // shadowForCanselOrRutuenOrder(false),
-                            ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ),
-          ValueListenableBuilder<bool>(
-            valueListenable: isVerified,
-            builder: (context, _isverified, _) {
-              return _isverified
-                  ? const SizedBox.shrink()
-                  : Container(
-                      width: 1.sw,
-                      height: 1.sh,
-                      color: const Color.fromRGBO(0, 0, 0, 0.5),
-                    );
-            },
-          ),
-          Positioned(
-            bottom: 0,
-            child: ValueListenableBuilder<bool>(
-              valueListenable: isVerified,
-              builder: (context, _isverified, _) {
-                return _isverified ? const SizedBox.shrink() : _veryfiedOtp();
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _veryfiedOtp() {
-    return AnimatedPadding(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: Container(
-        color: Colors.white,
-        height: 450,
-        width: 1.sw,
-        child: Scaffold(
-          body: SizedBox(
-            height: 400,
-            width: 1.sw,
-            child: Stack(
-              children: [
-                PageView(
-                  physics: const NeverScrollableScrollPhysics(),
-                  controller: pageController,
-                  children:
-                      (prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                          false)
-                      ? [
-                          VerifyOtp(
-                            fromProfile: false,
-                            navigateToProfile: () {},
-                            fromExpired: true,
-                            isVisWhatsApp: 1,
-                            navigateToAddName: () {},
-                            navigateTocartOrProfile: () {
-                              isVerified.value = true;
-                            },
-                            fromLogin: false,
-                            onLoginFailed: () {
-                              //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                            },
-                            goBack: () {
-                              // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                            },
-                            methodIcon: AppAssets.whatsappSvg,
-                            phoneNumber: prefsRepository.myPhoneNumber!,
-                          ),
-                        ]
-                      : [
-                          InsertPhoneTab(
-                            focusNode: focusNode,
-                            moveToNextStep: (String phoneNumber) {
-                              this.phoneNumber = phoneNumber.replaceAll(
-                                ' ',
-                                '',
-                              );
-                              pageController.animateToPage(
-                                1,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                              setState(() {});
-                            },
-                          ),
-                          VerificationMethods(
-                            isFromLogin: false,
-                            phoneNumber: phoneNumber,
-                            onChooseWhatsapp: () {
-                              isVisWhatsApp = 1;
-                              if (kDebugMode) print("###################33333# isVisWhatsApp}");
-                              pageController.animateToPage(
-                                2,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-
-                              if (prefsRepository.isTimerForOtpRunning ??
-                                  false) {
-                                showWarningMessage(
-                                  context,
-                                  ' ${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}',
-                                );
-                                return;
-                              }
-                              /*   authBloc.add(
-                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));*/
-                            },
-                            goBackToPhone: () {
-                              pageController.animateToPage(
-                                0,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            onChooseSms: () {
-                              isVisWhatsApp = 0;
-                              pageController.animateToPage(
-                                3,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                              /* authBloc.add(
-                              SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));*/
-                            },
-                          ),
-                          VerifyOtp(
-                            fromProfile: false,
-                            navigateToProfile: () {},
-                            fromExpired: true,
-                            isVisWhatsApp: isVisWhatsApp,
-                            navigateToAddName: () {},
-                            navigateTocartOrProfile: () {
-                              isVerified.value = true;
-                            },
-                            fromLogin: false,
-                            onLoginFailed: () {
-                              pageController.animateToPage(
-                                3,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            goBack: () {
-                              pageController.animateToPage(
-                                1,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            methodIcon: isVisWhatsApp == 1
-                                ? AppAssets.whatsappSvg
-                                : AppAssets.smsSvg,
-                            phoneNumber: phoneNumber,
-                          ),
+                          shadowForPanel(),
+                          panelWidget(),
+                          // ValueListenableBuilder<int>(
+                          //   valueListenable: indexTapAddress,
+                          //   builder: (context, _indexTap, _) {
+                          //     return shadowForChangeAddressContent(_indexTap);
+                          //   },
+                          // ),
+                          // shadowForCanselOrRutuenOrder(false),
                         ],
-                ),
-                Positioned(
-                  top: 0,
-                  left: LanguageService.languageCode != "ar" ? null : 0,
-                  right: LanguageService.languageCode != "ar" ? 0 : null,
-                  child: Container(
-                    margin: const EdgeInsets.all(10),
-                    height: 20,
-                    width: 40,
-                    child: InkWell(
-                      onTap: () => isVerified.value = true,
-                      child: SvgPicture.asset(
-                        AppAssets.closeSvg,
-                        height: 15,
-                        width: 30,
-                        // ignore: deprecated_member_use
-                        color: const Color(0xffFF5F61),
                       ),
                     ),
-                  ),
-                ),
-              ],
-            ),
+                  );
+                },
+              );
+            },
           ),
         ),
       ),
@@ -3558,16 +3353,8 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                                         CreateCommentRatingStatus.failure)) {
                               if (!(prefsRepository.isVerifiedPhone ?? false)) {
                                 Future.delayed(const Duration(seconds: 1), () {
-                                  isVerified.value = false;
-                                  if ((prefsRepository
-                                          .isVerifiedPhonePeforeExpiredToken ??
-                                      false)) {
-                                    GetIt.I<AuthBloc>().add(
-                                      SendOtpEvent(
-                                        phone: prefsRepository.myPhoneNumber!,
-                                        isViaWhatsApp: 1,
-                                      ),
-                                    );
+                                  if (mounted) {
+                                    GuestPhoneVerificationDialog.show(context);
                                   }
                                 });
                               }
@@ -3894,9 +3681,10 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                               p.makeCallStatus == MakeCallStatus.init &&
                               c.makeCallStatus == MakeCallStatus.loading,
                           listener: (context, state) {
-                            if (kDebugMode) print(
-                              "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ////",
-                            );
+                            if (kDebugMode)
+                              print(
+                                "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ////",
+                              );
                             callInProgressDialog(context);
                           },
                           child: BlocListener<CallsBloc, CallsState>(
@@ -3915,9 +3703,10 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                                   p.makeCallStatus != c.makeCallStatus &&
                                   c.makeCallStatus == MakeCallStatus.startCall,
                               listener: (context, state) {
-                                if (kDebugMode) print(
-                                  "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ",
-                                );
+                                if (kDebugMode)
+                                  print(
+                                    "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ",
+                                  );
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                     builder: (_) => AgoraInAppWebView(
@@ -3976,7 +3765,8 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                                         .tr();
                                     String? recipientUserId =
                                         state.recipientUserId;
-                                    if (kDebugMode) print("recipientUserId $recipientUserId");
+                                    if (kDebugMode)
+                                      print("recipientUserId $recipientUserId");
                                     if (recipientUserId == null) {
                                       return;
                                     }
@@ -4382,11 +4172,11 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                 ],
               ),
               title: _localizedText(
-                ar: 'المدة المتبقية للإجراء',
+                ar: 'Ø§Ù„Ù…Ø¯Ø© Ø§Ù„Ù…ØªØ¨Ù‚ÙŠØ© Ù„Ù„Ø¥Ø¬Ø±Ø§Ø¡',
                 en: 'Duration To Do Action',
               ),
               value: _localizedText(
-                ar: 'المتبقي ${orders!.remainingInMinutes} د',
+                ar: 'Ø§Ù„Ù…ØªØ¨Ù‚ÙŠ ${orders!.remainingInMinutes} Ø¯',
                 en: 'Remaining ${orders!.remainingInMinutes}M',
               ),
               titleIcons: const SizedBox.shrink(),
@@ -4414,16 +4204,19 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
 
     if (hasPendingConfirmation) {
       return _localizedText(
-        ar: 'بانتظار التأكيد',
+        ar: 'Ø¨Ø§Ù†ØªØ¸Ø§Ø± Ø§Ù„ØªØ£ÙƒÙŠØ¯',
         en: 'Waiting for confirmation',
       );
     }
 
     if (allPacked) {
-      return _localizedText(ar: 'تم التغليف', en: 'Packed');
+      return _localizedText(ar: 'ØªÙ… Ø§Ù„ØªØºÙ„ÙŠÙ', en: 'Packed');
     }
 
-    return _localizedText(ar: 'قيد التغليف', en: 'Packing in progress');
+    return _localizedText(
+      ar: 'Ù‚ÙŠØ¯ Ø§Ù„ØªØºÙ„ÙŠÙ',
+      en: 'Packing in progress',
+    );
   }
 
   Widget _buildOrderDetailProgressIcons() {
@@ -4460,17 +4253,20 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
   String _buildDetailCardStatusLabel(OrderDetail detail) {
     if (!detail.isConfirm && !detail.isPacked) {
       return _localizedText(
-        ar: 'بانتظار التأكيد',
+        ar: 'Ø¨Ø§Ù†ØªØ¸Ø§Ø± Ø§Ù„ØªØ£ÙƒÙŠØ¯',
         en: 'Waiting for confirmation',
       );
     }
 
     if (detail.isConfirm && !detail.isPacked) {
-      return _localizedText(ar: 'قيد التغليف', en: 'Packing in progress');
+      return _localizedText(
+        ar: 'Ù‚ÙŠØ¯ Ø§Ù„ØªØºÙ„ÙŠÙ',
+        en: 'Packing in progress',
+      );
     }
 
     if (detail.isPacked) {
-      return _localizedText(ar: 'تم التغليف', en: 'Packed');
+      return _localizedText(ar: 'ØªÙ… Ø§Ù„ØªØºÙ„ÙŠÙ', en: 'Packed');
     }
 
     return '';
@@ -4479,25 +4275,28 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
   String _buildPrimaryActionLabel(OrderDetail detail) {
     if (pendingOrderDetailId == detail.id) {
       if (detail.isPacked) {
-        return _localizedText(ar: 'تم التغليف', en: 'Packed');
+        return _localizedText(ar: 'ØªÙ… Ø§Ù„ØªØºÙ„ÙŠÙ', en: 'Packed');
       }
 
       if (detail.isConfirm && !detail.isPacked) {
-        return _localizedText(ar: 'تغليف', en: 'Mark as Packed');
+        return _localizedText(ar: 'ØªØºÙ„ÙŠÙ', en: 'Mark as Packed');
       }
 
-      return _localizedText(ar: 'جاري التحديث...', en: 'Updating...');
+      return _localizedText(
+        ar: 'Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ø¯ÙŠØ«...',
+        en: 'Updating...',
+      );
     }
 
     if (!detail.isConfirm && !detail.isPacked) {
-      return _localizedText(ar: 'تأكيد', en: 'Confirm');
+      return _localizedText(ar: 'ØªØ£ÙƒÙŠØ¯', en: 'Confirm');
     }
 
     if (detail.isConfirm && !detail.isPacked) {
-      return _localizedText(ar: 'تغليف', en: 'Mark as Packed');
+      return _localizedText(ar: 'ØªØºÙ„ÙŠÙ', en: 'Mark as Packed');
     }
 
-    return _localizedText(ar: 'تم التغليف', en: 'Packed');
+    return _localizedText(ar: 'ØªÙ… Ø§Ù„ØªØºÙ„ÙŠÙ', en: 'Packed');
   }
 
   bool _isPrimaryActionEnabled(OrderDetail detail) {
@@ -4697,7 +4496,7 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
           //////////////////////////
           const SizedBox(width: 8),
           //////////////////////////
-          ///هي للانفويس
+          ///Ù‡ÙŠ Ù„Ù„Ø§Ù†ÙÙˆÙŠØ³
           Expanded(
             child: buildDetailsMainInfoWidget(
               context: context,
@@ -4840,7 +4639,7 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
       ),
       child: Column(
         children: [
-          /// ───────── Product Info ─────────
+          /// â”€â”€â”€â”€â”€â”€â”€â”€â”€ Product Info â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -4877,14 +4676,14 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '${_localizedText(ar: 'اللون', en: 'Color')}: $color',
+                          '${_localizedText(ar: 'Ø§Ù„Ù„ÙˆÙ†', en: 'Color')}: $color',
                           style: const TextStyle(
                             fontSize: 12,
                             color: Color(0xFF505050),
                           ),
                         ),
                         Text(
-                          '${_localizedText(ar: 'المقاس', en: 'Size')}: $size',
+                          '${_localizedText(ar: 'Ø§Ù„Ù…Ù‚Ø§Ø³', en: 'Size')}: $size',
                           style: const TextStyle(
                             fontSize: 12,
                             color: Color(0xFF505050),
@@ -4913,7 +4712,7 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '${_localizedText(ar: 'الكمية', en: 'Quantity')}: $quantity',
+                          '${_localizedText(ar: 'Ø§Ù„ÙƒÙ…ÙŠØ©', en: 'Quantity')}: $quantity',
                           style: const TextStyle(
                             fontSize: 12,
                             color: Color(0xFF505050),
@@ -4956,7 +4755,7 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                     const SizedBox(height: 4),
 
                     Text(
-                      '${_localizedText(ar: 'الحالة', en: 'Status')}: $status',
+                      '${_localizedText(ar: 'Ø§Ù„Ø­Ø§Ù„Ø©', en: 'Status')}: $status',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFF505050),
@@ -4988,7 +4787,7 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
 
           const SizedBox(height: 12),
 
-          /// ───────── Buttons ─────────
+          /// â”€â”€â”€â”€â”€â”€â”€â”€â”€ Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Row(
             children: [
               Expanded(
@@ -5021,7 +4820,7 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                   ),
                 ),
                 child: Text(
-                  _localizedText(ar: 'إلغاء', en: 'Cancel'),
+                  _localizedText(ar: 'Ø¥Ù„ØºØ§Ø¡', en: 'Cancel'),
                   style: const TextStyle(color: Colors.red),
                 ),
               ),
