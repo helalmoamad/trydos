@@ -459,6 +459,7 @@ class _HomePageState extends State<HomePage> {
               ? const Key(WidgetsKeys.homepageScrollKey)
               : null,
           controller: scrollController,
+          cacheExtent: 400,
           physics: const ClampingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
@@ -532,6 +533,7 @@ class _HomePageState extends State<HomePage> {
                             0) {
                       return sliverListSeparated(
                         addSemanticIndexes: false,
+                        addAutomaticKeepAlives: false,
 
                         key: TestVariables.kTestMode
                             ? const Key(WidgetsKeys.boutiquesFailureStatusKey)
@@ -602,6 +604,7 @@ class _HomePageState extends State<HomePage> {
                       );
                     }
                     return sliverListSeparated(
+                      addAutomaticKeepAlives: false,
                       key: TestVariables.kTestMode
                           ? const Key(WidgetsKeys.boutiquesSuccessStatusKey)
                           : null,

@@ -133,177 +133,180 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
       );
     }
 
-    // RepaintBoundary isolates each image (and its loading shimmer) in its own
-    // layer, so the placeholder->image swap and shimmer animation repaint only
-    // this cell instead of the whole scrolling viewport — a major scroll-jank
-    // reducer in image-heavy lists.
-    return RepaintBoundary(
-      child: Container(
-        key: ValueKey(url),
-        alignment: Alignment.center,
-        /*constraints: BoxConstraints(
+    // أُزيل RepaintBoundary الذي كان يلفّ الودجت.
+    //
+    // العزل في صفحات القوائم صار من مسؤولية القائمة نفسها عبر
+    // `addRepaintBoundaries` على الـdelegate — ونطاقه أوسع: يعزل **العنصر
+    // كاملاً** (بطاقة، كاروسيل، نصّ) لا الصورة وحدها. فحاجزان متداخلان يعنيان
+    // طبقة GPU زائدة لكل صورة مرئية بلا تغطية إضافية داخل القوائم.
+    //
+    // مقصود: الشاشات غير القائمية (تفاصيل، صور في Row، شعارات) تفقد العزل،
+    // فشيمر التحميل فيها يُعيد رسم ما يحيطه. قرار مقبول لأن أولوية الأداء
+    // هنا لصفحات القوائم.
+    return Container(
+      key: ValueKey(url),
+      alignment: Alignment.center,
+      /*constraints: BoxConstraints(
       maxHeight: (widget.fromBoutique ?? false)
             ? (0.40 * 1.sh)
             : double.infinity,
         minHeight: (widget.fromBoutique ?? false) ? (0.10 * 1.sh) : 0,
       ),*/
-        width: widget.width,
-        height: (widget.fromBoutique ?? false) ? null : widget.height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(widget.radius),
-          boxShadow: widget.withImageShadow
-              ? [
-                  BoxShadow(
-                    // ignore: deprecated_member_use
-                    color: context.colorScheme.white.withOpacity(0.1),
-                    offset: const Offset(0, 3),
-                    blurRadius: 6,
-                  ),
-                ]
+      width: widget.width,
+      height: (widget.fromBoutique ?? false) ? null : widget.height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(widget.radius),
+        boxShadow: widget.withImageShadow
+            ? [
+                BoxShadow(
+                  // ignore: deprecated_member_use
+                  color: context.colorScheme.white.withOpacity(0.1),
+                  offset: const Offset(0, 3),
+                  blurRadius: 6,
+                ),
+              ]
+            : null,
+      ),
+      child: Center(
+        child: CachedNetworkImage(
+          httpHeaders: {
+            'User-Agent':
+                (kDebugMode ? "developer" : "users") +
+                'device OS:' +
+                (Platform.isAndroid ? 'Android' : 'IOS') +
+                ' '
+                    ', application version: 1.0.0',
+            "Referer":
+                (kDebugMode ? "developer" : "users") +
+                'device OS:' +
+                (Platform.isAndroid ? 'Android' : 'IOS'),
+          },
+          imageUrl: url,
+          fit: widget.imageFit,
+          width: widget.width,
+          color: widget.imageColor,
+          cacheManager: CustomCacheManagers(),
+          height: (widget.fromBoutique ?? false) ? null : widget.height,
+
+          // ⚡ تحسين: ضغط الصور في الذاكرة فقط (لا يؤثر على جودة العرض).
+          // ملاحظة: لا تستخدم maxHeightDiskCache هنا — إنها تصغّر النسخة
+          // المخزّنة على القرص لكل الشاشات فتتشوه الصور الكبيرة، والتصغير
+          // يتم أصلاً من الخادم عبر addSuitableWidthAndHeightToImage.
+          memCacheHeight: (widget.fromBoutique ?? false)
+              ? null
+              : (widget.height * MediaQuery.devicePixelRatioOf(context))
+                    .round(),
+
+          memCacheWidth: (widget.fromBoutique ?? false)
+              ? (widget.width * MediaQuery.devicePixelRatioOf(context)).round()
               : null,
-        ),
-        child: Center(
-          child: CachedNetworkImage(
-            httpHeaders: {
-              'User-Agent':
-                  (kDebugMode ? "developer" : "users") +
-                  'device OS:' +
-                  (Platform.isAndroid ? 'Android' : 'IOS') +
-                  ' '
-                      ', application version: 1.0.0',
-              "Referer":
-                  (kDebugMode ? "developer" : "users") +
-                  'device OS:' +
-                  (Platform.isAndroid ? 'Android' : 'IOS'),
-            },
-            imageUrl: url,
-            fit: widget.imageFit,
-            width: widget.width,
-            color: widget.imageColor,
-            cacheManager: CustomCacheManagers(),
-            height: (widget.fromBoutique ?? false) ? null : widget.height,
 
-            // ⚡ تحسين: ضغط الصور في الذاكرة فقط (لا يؤثر على جودة العرض).
-            // ملاحظة: لا تستخدم maxHeightDiskCache هنا — إنها تصغّر النسخة
-            // المخزّنة على القرص لكل الشاشات فتتشوه الصور الكبيرة، والتصغير
-            // يتم أصلاً من الخادم عبر addSuitableWidthAndHeightToImage.
-            memCacheHeight: (widget.fromBoutique ?? false)
-                ? null
-                : (widget.height * MediaQuery.devicePixelRatioOf(context))
-                      .round(),
+          placeholder: (context, url) {
+            widget.callWhenLoadingImage?.call();
+            return _buildSimpleShimmer();
+          },
 
-            memCacheWidth: (widget.fromBoutique ?? false)
-                ? (widget.width * MediaQuery.devicePixelRatioOf(context))
-                      .round()
-                : null,
-
-            placeholder: (context, url) {
-              widget.callWhenLoadingImage?.call();
-              return _buildSimpleShimmer();
-            },
-
-            // ⚡ تقليل زمن الانتقالات لتسريع عرض الصور
-            fadeInDuration: const Duration(),
-            placeholderFadeInDuration: const Duration(),
-            fadeOutDuration: const Duration(),
-            /*  progressIndicatorBuilder: (context, _, progress) {
+          // ⚡ تقليل زمن الانتقالات لتسريع عرض الصور
+          fadeInDuration: const Duration(),
+          placeholderFadeInDuration: const Duration(),
+          fadeOutDuration: const Duration(),
+          /*  progressIndicatorBuilder: (context, _, progress) {
             if (_isDisposed) return const SizedBox.shrink();
 
             widget.callWhenLoadingImage?.call();
 
            
           },*/
-            imageBuilder: (widget.fromBoutique ?? false)
-                ? null
-                : widget.imageBuilder ??
-                      (ctx, image) {
-                        if (_isDisposed) return const SizedBox.shrink();
+          imageBuilder: (widget.fromBoutique ?? false)
+              ? null
+              : widget.imageBuilder ??
+                    (ctx, image) {
+                      if (_isDisposed) return const SizedBox.shrink();
 
-                        widget.callWhenDisplayImage?.call();
+                      widget.callWhenDisplayImage?.call();
 
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(widget.radius),
-                          child: Container(
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(widget.radius),
+                        child: Container(
+                          width: widget.width,
+                          height: (widget.fromBoutique ?? false)
+                              ? null
+                              : widget.height,
+                          decoration: widget.withInnerShadow
+                              ? inset_shadow.BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    widget.radius,
+                                  ),
+                                  boxShadow: [
+                                    inset_shadow.BoxShadow(
+                                      offset: Offset(
+                                        0,
+                                        widget.innerShadowYOffset ?? 12,
+                                      ),
+                                      blurRadius: 24,
+                                      inset: true,
+                                      // ignore: deprecated_member_use
+                                      color: Colors.black.withOpacity(0.44),
+                                    ),
+                                  ],
+                                )
+                              : null,
+                          child: Image(
+                            image: image,
+                            fit: widget.imageFit,
                             width: widget.width,
                             height: (widget.fromBoutique ?? false)
                                 ? null
                                 : widget.height,
-                            decoration: widget.withInnerShadow
-                                ? inset_shadow.BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                      widget.radius,
-                                    ),
-                                    boxShadow: [
-                                      inset_shadow.BoxShadow(
-                                        offset: Offset(
-                                          0,
-                                          widget.innerShadowYOffset ?? 12,
-                                        ),
-                                        blurRadius: 24,
-                                        inset: true,
-                                        // ignore: deprecated_member_use
-                                        color: Colors.black.withOpacity(0.44),
-                                      ),
-                                    ],
-                                  )
-                                : null,
-                            child: Image(
-                              image: image,
-                              fit: widget.imageFit,
-                              width: widget.width,
-                              height: (widget.fromBoutique ?? false)
-                                  ? null
-                                  : widget.height,
-                              color: widget.imageColor,
-                            ),
+                            color: widget.imageColor,
                           ),
-                        );
-                      },
-            errorWidget: (context, url, error) {
-              if (_isDisposed) return const SizedBox.shrink();
+                        ),
+                      );
+                    },
+          errorWidget: (context, url, error) {
+            if (_isDisposed) return const SizedBox.shrink();
 
-              // 🔄 Widget to allow retrying the image download when it fails
-              return GestureDetector(
-                onTap: () async {
-                  try {
-                    // Remove the possibly corrupted file from the cache so that it is fetched again
-                    await CustomCacheManagers().removeFile(url);
-                  } catch (_) {}
-                  // Trigger a new download by changing the URL key slightly (cache-buster)
-                  if (mounted) {
-                    setState(() {
-                      currentUrl =
-                          widget.imageUrl +
-                          '?retry=${DateTime.now().millisecondsSinceEpoch}';
-                    });
-                  }
-                },
-                child: Container(
-                  width: widget.width,
-                  height: widget.height,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(widget.radius),
-                    color: Colors.grey[300],
-                  ),
-                  child: Center(
-                    child: Container(
-                      width: min(32.0, widget.height * 0.4),
-                      height: min(32.0, widget.height * 0.4),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.red,
-                      ),
-                      child: const Icon(
-                        Icons.refresh,
-                        color: Colors.white,
-                        size: 16,
-                      ),
+            // 🔄 Widget to allow retrying the image download when it fails
+            return GestureDetector(
+              onTap: () async {
+                try {
+                  // Remove the possibly corrupted file from the cache so that it is fetched again
+                  await CustomCacheManagers().removeFile(url);
+                } catch (_) {}
+                // Trigger a new download by changing the URL key slightly (cache-buster)
+                if (mounted) {
+                  setState(() {
+                    currentUrl =
+                        widget.imageUrl +
+                        '?retry=${DateTime.now().millisecondsSinceEpoch}';
+                  });
+                }
+              },
+              child: Container(
+                width: widget.width,
+                height: widget.height,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(widget.radius),
+                  color: Colors.grey[300],
+                ),
+                child: Center(
+                  child: Container(
+                    width: min(32.0, widget.height * 0.4),
+                    height: min(32.0, widget.height * 0.4),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.red,
+                    ),
+                    child: const Icon(
+                      Icons.refresh,
+                      color: Colors.white,
+                      size: 16,
                     ),
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

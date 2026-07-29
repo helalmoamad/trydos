@@ -728,7 +728,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                     overscroll: false,
                                   ),*/
                             // منع overscroll للحماية من crashes
-                            cacheExtent: 0, // قيمة محسنة لمنع التعليق
+                            cacheExtent: 250, // قيمة محسنة لمنع التعليق
                             key: TestVariables.kTestMode
                                 ? const Key(WidgetsKeys.productListingScrollKey)
                                 : null,
@@ -3038,7 +3038,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             delegate: SliverChildBuilderDelegate(
                                               addSemanticIndexes: false,
                                               addAutomaticKeepAlives: false,
-                                              addRepaintBoundaries: false,
+
                                               childCount: products.length,
                                               (
                                                 BuildContext context,
@@ -3358,9 +3358,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     : Expanded(
                         child: GridView.builder(
                           addAutomaticKeepAlives: false,
-                          addRepaintBoundaries: false,
+
                           addSemanticIndexes: false,
-                          cacheExtent: 0,
+                          cacheExtent: 250,
                           controller: sc,
                           itemCount: products[_tapIndexToShowColorImages]
                               .syncColorImages
