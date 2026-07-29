@@ -98,6 +98,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     );
     on<ChangeSortEvent>(_onChangeSortEvent);
     on<ResetSortEvent>(_onResetSortEvent);
+    on<SearchProductsForCompareEvent>(_onSearchProductsForCompareEvent);
+    on<ClearCompareSearchEvent>(_onClearCompareSearchEvent);
   }
   final GetProductsWithFiltersUseCase getProductsWithFiltersUseCase;
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
@@ -3231,6 +3233,89 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           ),
         );
       },
+    );
+  }
+
+  /// بحث نصّي مستقلّ لصفحة المقارنة.
+  ///
+  /// يمرّر حقل البحث وحده إلى [GetProductsWithFiltersUseCase] — بلا مرشّحات
+  /// ولا ترقيم ولا بوتيك — ويكتب النتيجة في حقول المقارنة وحدها، فلا تتأثّر
+  /// قوائم المنتجات ولا صفحة البوتيك بأي حال.
+  FutureOr<void> _onSearchProductsForCompareEvent(
+    SearchProductsForCompareEvent event,
+    Emitter<BoutiqueState> emit,
+  ) async {
+    final String query = event.query.trim();
+    if (query.isEmpty) {
+      _emitCompareSearch(
+        emit,
+        event.side,
+        status: SearchProductsForCompareStatus.init,
+        results: const [],
+      );
+      return;
+    }
+
+    _emitCompareSearch(
+      emit,
+      event.side,
+      status: SearchProductsForCompareStatus.loading,
+    );
+
+    final response = await getProductsWithFiltersUseCase(
+      GetProductsWithFiltersParams(searchText: query),
+    );
+
+    response.fold(
+      (l) => _emitCompareSearch(
+        emit,
+        event.side,
+        status: SearchProductsForCompareStatus.failure,
+        results: const [],
+      ),
+      (r) => _emitCompareSearch(
+        emit,
+        event.side,
+        status: SearchProductsForCompareStatus.success,
+        results: r.data?.products ?? const <product.Products>[],
+      ),
+    );
+  }
+
+  FutureOr<void> _onClearCompareSearchEvent(
+    ClearCompareSearchEvent event,
+    Emitter<BoutiqueState> emit,
+  ) {
+    _emitCompareSearch(
+      emit,
+      event.side,
+      status: SearchProductsForCompareStatus.init,
+      results: const [],
+    );
+  }
+
+  /// يكتب حالة/نتيجة عمود واحد دون المساس بالعمود الآخر — نسخ الخريطتين
+  /// ضروري، فتعديلهما في مكانهما يجعل Equatable يرى الحالتين متطابقتين
+  /// فيُسقط الانبعاث.
+  void _emitCompareSearch(
+    Emitter<BoutiqueState> emit,
+    int side, {
+    required SearchProductsForCompareStatus status,
+    List<product.Products>? results,
+  }) {
+    final Map<int, SearchProductsForCompareStatus> statuses =
+        Map<int, SearchProductsForCompareStatus>.of(state.compareSearchStatus);
+    statuses[side] = status;
+
+    final Map<int, List<product.Products>> data =
+        Map<int, List<product.Products>>.of(state.compareSearchResults);
+    if (results != null) data[side] = results;
+
+    emit(
+      state.copyWith(
+        compareSearchStatus: statuses,
+        compareSearchResults: data,
+      ),
     );
   }
 }

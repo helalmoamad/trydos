@@ -497,10 +497,8 @@ class _ProductQuickViewPopupState extends State<ProductQuickViewPopup> {
                 GetProductDetailWithoutSimilarRelatedProductsStatus.failure ||
             state.authProductDetailsStatus ==
                 AuthProductDetailsStatus.failure) &&
-        (prefsRepository.isTokenExpired ??
-            false ||
-                prefsRepository.marketToken == "" ||
-                prefsRepository.marketToken == null)) {
+        (prefsRepository.marketToken == "" ||
+            prefsRepository.marketToken == null)) {
       Future.delayed(const Duration(seconds: 5), () {
         homeBloc.add(
           GetProductDatailsWithoutRelatedProductsEvent(

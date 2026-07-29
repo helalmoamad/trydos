@@ -38,8 +38,6 @@ abstract class PrefsRepository {
 
   bool? get isVerifiedPhone;
   bool? get isFoundDataCashed;
-  bool? get isVerifiedPhonePeforeExpiredToken;
-  bool? get isTokenExpired;
   bool? get isRequestNotificationPermission;
   bool? get isCreateWallet;
 
@@ -113,10 +111,6 @@ abstract class PrefsRepository {
   Future<bool> setRequestNotificationPermission(
     bool requestNotificationPermission,
   );
-  Future<bool> setVerifiedPhonePeforeExpiredToken(
-    bool verifiedPhonePeforeExpiredToken,
-  );
-  Future<bool> setTokenExpired(bool tokenExpired);
   Future<bool> setTimerForOtpRunning(bool isRunning);
   int? get otpTimerEndTime;
   Future<bool> setOtpTimerEndTime(int endTime);

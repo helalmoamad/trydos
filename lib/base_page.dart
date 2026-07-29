@@ -728,6 +728,69 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   List<Widget>? pages;
   bool showUpgradeApp = true;
   Timer? _logoutTimer;
+
+  /// آخر قيمة عُرض عندها حوار انتهاء الجلسة.
+  ///
+  /// إشارة `sessionExpiredTick` عابرة: يرفعها AuthBloc لحظة فشل التحديث، وقد
+  /// يقع ذلك أثناء الإقلاع **قبل تركيب BasePage**. و BlocListener لا يتفاعل
+  /// إلا مع الانتقالات التي تقع وهو مشترك، فالانتقال 0 → 1 السابق لتركيبه
+  /// يضيع نهائياً ولا يظهر الحوار للمستخدم الموثّق.
+  ///
+  /// بمقارنة العدّاد بهذا الحقل نصالح الإشارة عند التركيب أيضاً، ويبقى العرض
+  /// مرّة واحدة لأن كلا المسارين يمرّان من [_showSessionExpiredIfPending].
+  int _lastShownSessionExpiredTick = 0;
+
+  /// طابور حوارات الإقلاع.
+  ///
+  /// كلّ حوار يحرس نفسه من التكرار (`_isOpen` و`_versionDialogShown`)، لكن لا
+  /// شيء يمنع حوارين **مختلفين** من التراكم فوق بعضهما — وهو ما يقع حين تجتمع
+  /// جلسة منتهية وتحديث إلزامي في الإطار نفسه. التسلسل يضمن ظهورهما واحداً
+  /// بعد الآخر مهما اختلف مصدر الإطلاق (مصالحة التركيب أو مستمع لاحق).
+  Future<void> _startupDialogQueue = Future<void>.value();
+
+  void _enqueueStartupDialog(Future<void> Function() show) {
+    _startupDialogQueue = _startupDialogQueue
+        .then((_) async {
+          if (!mounted) return;
+          await show();
+        })
+        // فشل حوار واحد لا يجوز أن يكسر السلسلة فيمنع ما بعده.
+        .catchError((Object _) {});
+  }
+
+  /// حوار التحديث الإلزامي.
+  ///
+  /// سلسلة الإطلاق تبدأ من splash_page: الفئات الرئيسية ثم إعدادات البدء. فإن
+  /// اكتملت قبل تركيب هذه الصفحة يضيع انتقال `loading → success` ولا يعرف
+  /// المستمع بشيء. لذا نفحص الحالة الراهنة عند التركيب أيضاً.
+  ///
+  /// العرض المزدوج غير ممكن: showVersionDialog تحرس نفسها بعلم داخلي.
+  void _showVersionDialogIfNeeded(HomeState state) {
+    if (state.getStartingSettingsStatus != GetStartingSettingsStatus.success) {
+      return;
+    }
+    final setting = state.startingSetting;
+    // كانت الأصلية تفكّ setting و androidMinVersion و iosMinVersion بـ `!`:
+    // ردّ ناجح بحقول فارغة كان يرمي بدل أن يتخطّى الفحص.
+    final int? androidMin = setting?.androidMinVersion;
+    final int? iosMin = setting?.iosMinVersion;
+    if (androidMin == null || iosMin == null) return;
+    if (applicationVersion < androidMin || applicationVersion < iosMin) {
+      _enqueueStartupDialog(() async {
+        await HelperFunctions.showVersionDialog(context);
+      });
+    }
+  }
+
+  void _showSessionExpiredIfPending(AuthState state) {
+    if (state.sessionExpiredTick <= _lastShownSessionExpiredTick) return;
+    _lastShownSessionExpiredTick = state.sessionExpiredTick;
+    // يُلتقط الرقم الآن لا عند التنفيذ: الحالة قد تتغيّر أثناء انتظار الدور.
+    final String? phone = state.sessionExpiredPhone;
+    _enqueueStartupDialog(
+      () => SessionExpiredDialog.show(context, phoneNumber: phone),
+    );
+  }
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
@@ -782,6 +845,16 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       ),
     );
     WidgetsBinding.instance.addObserver(this);
+
+    // التقاط إشارة انتهاء الجلسة إن رُفعت قبل تركيب هذه الصفحة (فشل تحديث
+    // الرمز أثناء الإقلاع). بعد الإطار الأول ليتوفّر Navigator صالح للحوار.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // التحديث الإلزامي أولاً: هو الأعلى أولويةً، ولا معنى لمطالبة المستخدم
+      // بتسجيل الدخول في نسخة يجب أن يغادرها أصلاً.
+      _showVersionDialogIfNeeded(BlocProvider.of<HomeBloc>(context).state);
+      _showSessionExpiredIfPending(BlocProvider.of<AuthBloc>(context).state);
+    });
 
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -907,8 +980,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     prefsRepository.setMyStoriesName("");
     prefs.setString('last_user_market_id', '');
     prefs.setInt('last_user_info_time', 0);
-    prefsRepository.setVerifiedPhonePeforeExpiredToken(false);
-
     prefsRepository.setMyProfilePhoto("");
     String? deviceId = await HelperFunctions.getDeviceId();
 
@@ -1236,7 +1307,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    _prefsRepository.setTokenExpired(false);
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         navigationToSinglePageChat(
@@ -1263,29 +1333,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           listenWhen: (p, c) =>
               p.sessionExpiredTick != c.sessionExpiredTick &&
               c.sessionExpiredTick > 0,
-          listener: (context, state) {
-            SessionExpiredDialog.show(
-              context,
-              phoneNumber: state.sessionExpiredPhone,
-            );
-          },
+          listener: (context, state) => _showSessionExpiredIfPending(state),
           child: BlocListener<HomeBloc, HomeState>(
             listenWhen: (p, c) =>
                 p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
                 c.getStartingSettingsStatus ==
                     GetStartingSettingsStatus.success,
-            listener: (context, state) {
-              debugPrint('version gets successfully');
-              debugPrint(
-                'android: ${state.startingSetting?.androidMinVersion}',
-              );
-              debugPrint('ios: ${state.startingSetting?.iosMinVersion}');
-              if (applicationVersion <
-                      state.startingSetting!.androidMinVersion! ||
-                  applicationVersion < state.startingSetting!.iosMinVersion!) {
-                HelperFunctions.showVersionDialog(context);
-              }
-            },
+            listener: (context, state) => _showVersionDialogIfNeeded(state),
             child:
                 // ignore: deprecated_member_use
                 WillPopScope(

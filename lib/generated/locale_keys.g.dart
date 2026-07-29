@@ -972,4 +972,18 @@ abstract class LocaleKeys {
   static const add_story = 'add_story';
   static const no_stories_yet = 'no_stories_yet';
   static const failed_to_load_stories = 'failed_to_load_stories';
+  static const compare_products = 'compare_products';
+  static const search_for_product = 'search_for_product';
+  static const product_name = 'product_name';
+  static const product_image = 'product_image';
+  static const product_colors = 'product_colors';
+  static const product_sizes = 'product_sizes';
+  static const product_price = 'product_price';
+  static const product_offer_price = 'product_offer_price';
+  static const product_details = 'product_details';
+  static const select_two_products_to_compare =
+      'select_two_products_to_compare';
+  static const added_to_compare = 'added_to_compare';
+  static const removed_from_compare = 'removed_from_compare';
+  static const compare_oldest_replaced = 'compare_oldest_replaced';
 }

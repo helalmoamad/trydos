@@ -710,7 +710,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           await _prefsRepository.setMarketToken(r.data!.token!);
           await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
-          await _prefsRepository.setTokenExpired(false);
           await _prefsRepository.setIdToken((r.data!.idToken).toString());
           GetIt.I<HomeBloc>().add(
             SaveUserInfoFromAuthEvent(userInfo: r.data!.user!),
@@ -880,7 +879,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await _prefsRepository.setOtpCode(event.otp);
         await _prefsRepository.setMarketToken(r.data!.token!);
         await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
-        await _prefsRepository.setTokenExpired(false);
 
         //////////////////////////////////////
         FirebaseAnalytics.instance.setUserId(id: r.data!.user!.id.toString());
@@ -1032,9 +1030,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             marketUser: r.data!.user,
           ),
         );
-        Future.delayed(const Duration(minutes: 2), () {
-          _prefsRepository.setTokenExpired(false);
-        });
+
         ErrorManager.resetRetry('RegisterGuestEvent');
         add(GetCustomerInfoEvent());
         await _prefsRepository.setMarketToken(r.data!.token!);
@@ -1118,7 +1114,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // rotation: the presented refresh token is now revoked).
         await _prefsRepository.setMarketToken(r.data!.token!);
         await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
-        await _prefsRepository.setTokenExpired(false);
         if (kDebugMode) print("Token refreshed successfully");
       },
     );
@@ -1147,7 +1142,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final String? expiredPhone = _prefsRepository.myPhoneNumber;
     final bool wasVerified = (expiredPhone?.length ?? 0) > 7;
 
-    await _prefsRepository.setMarketRefreshToken("");
+    // لا محو لرمز التحديث هنا. المحو كان **مؤكّداً وفورياً** بينما التعافي
+    // (RegisterGuestEvent) **قابل للإسقاط** — فهو مسجَّل بـ throttleDroppable(5s).
+    // فإن سبقه تسجيل ضيف خلال خمس ثوانٍ (وهو ما يحدث عند الإقلاع) يُسقَط الحدث
+    // بصمت، فيبقى المستخدم بلا رمز تحديث ولا جلسة حتى إعادة تشغيل التطبيق.
+    // ومعالج RegisterGuestEvent يستبدل الرمزين بنفسه عند النجاح، فالمحو المسبق
+    // لا يضيف شيئاً أصلاً.
     final String? deviceId = await HelperFunctions.getDeviceId();
     add(RegisterGuestEvent(deviceId: deviceId ?? ""));
 

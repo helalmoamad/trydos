@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:shimmer/shimmer.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -314,30 +315,7 @@ class _ProductDetailsSheetMoreOptionsContentState
               10.verticalSpace,
               _ChecklistRow(productId: widget.productId),
               10.verticalSpace,
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20.w),
-                height: 65.h,
-                decoration: BoxDecoration(
-                  color: const Color(0xffF8F8F8),
-                  borderRadius: BorderRadius.circular(30.r),
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(width: 20.w),
-                    SvgPicture.asset(AppAssets.compareSvg, height: 25.h),
-                    SizedBox(width: 20.w),
-                    Text(
-                      LocaleKeys.add_to_compare.tr(),
-                      style: context.textTheme.bodyMedium?.rq.copyWith(
-                        color: const Color(0xff505050),
-                        letterSpacing: 0.18,
-                        fontSize: 16.sp,
-                        height: 0.8,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _CompareRow(productSlug: widget.productSlug),
             ],
           ),
         );
@@ -413,6 +391,97 @@ class _ChecklistRow extends StatelessWidget {
           onTap: () => context.read<HomeBloc>().add(
             ToggleChecklistEvent(productId: productId),
           ),
+          child: row,
+        );
+      },
+    );
+  }
+}
+
+/// صفّ "أضف إلى المقارنة" — أخضر إن كان المنتج ضمن المقارنة.
+///
+/// المقارنة تسع منتجَين اثنين دائماً: الضغط على منتج ثالث يستبدل الأقدم،
+/// والضغط على منتج موجود يزيله. والرسالة تُحدَّد قبل الإرسال، فحالة ما بعده
+/// لا تدلّ على ما جرى.
+class _CompareRow extends StatelessWidget {
+  const _CompareRow({required this.productSlug});
+
+  final String productSlug;
+
+  static const Color _idleColor = Color(0xffF8F8F8);
+  static const Color _selectedColor = Color(0xff7BE495);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          previous.compareSlugs != current.compareSlugs ||
+          previous.compareProductDetailsStatus !=
+              current.compareProductDetailsStatus,
+      builder: (context, state) {
+        final bool isInCompare = state.compareSlugs.values.contains(
+          productSlug,
+        );
+        final int? side = state.compareSlugs.entries
+            .where((entry) => entry.value == productSlug)
+            .map((entry) => entry.key)
+            .firstOrNull;
+        final bool isBusy =
+            side != null &&
+            state.compareProductDetailsStatus[side] ==
+                GetCompareProductDetailsStatus.loading;
+
+        final Widget row = Container(
+          margin: EdgeInsets.symmetric(horizontal: 20.w),
+          height: 65.h,
+          decoration: BoxDecoration(
+            color: isInCompare ? _selectedColor : _idleColor,
+            borderRadius: BorderRadius.circular(30.r),
+          ),
+          child: Row(
+            children: [
+              SizedBox(width: 20.w),
+              SvgPicture.asset(AppAssets.compareSvg, height: 25.h),
+              SizedBox(width: 20.w),
+              Text(
+                LocaleKeys.add_to_compare.tr(),
+                style: context.textTheme.bodyMedium?.rq.copyWith(
+                  color: const Color(0xff505050),
+                  letterSpacing: 0.18,
+                  fontSize: 16.sp,
+                  height: 0.8,
+                ),
+              ),
+            ],
+          ),
+        );
+
+        if (isBusy) {
+          // AbsorbPointer: Shimmer لا يحجب اللمس عن طفله، فبدونه يبقى الصفّ
+          // قابلاً للضغط أثناء جلب التفاصيل.
+          return AbsorbPointer(
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey.shade300,
+              highlightColor: Colors.grey.shade100,
+              child: row,
+            ),
+          );
+        }
+
+        return GestureDetector(
+          onTap: () {
+            // الرسالة تُختار من الحالة **قبل** الإرسال: بعده تكون قد تغيّرت.
+            final String message = isInCompare
+                ? LocaleKeys.removed_from_compare.tr()
+                : state.compareSlugs.length >= 2
+                ? LocaleKeys.compare_oldest_replaced.tr()
+                : LocaleKeys.added_to_compare.tr();
+
+            context.read<HomeBloc>().add(
+              ToggleCompareProductEvent(productSlug),
+            );
+            showMessage(message, showInRelease: true);
+          },
           child: row,
         );
       },

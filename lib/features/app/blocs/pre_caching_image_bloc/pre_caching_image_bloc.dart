@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' hide Category;
 
 import 'package:flutter/material.dart';
@@ -26,179 +25,58 @@ class PreCachingImageBloc
     on<RemoveUrlThatNotUsedEvent>(_onRemoveUrlThatNotUsedEvent);
   }
 
+  /// أقصى عدد عمليات تخزين مسبق متزامنة.
+  ///
+  /// كان الاستدعاء بلا `await` وبلا سيمافور (السيمافورات معلَّقة في main.dart)،
+  /// فيبدأ تحميل وفكّ ترميز **كل** صورة فور وصول حدثها. وعند تمرير قائمة
+  /// منتجات تصل عشرات الأحداث معاً، فيمتلئ `imageCache` وتُخلى منه صور معروضة
+  /// على الشاشة الآن — فتُعاد قراءتها وفكّ ترميزها، وهو تقطيع مباشر.
+  ///
+  /// التخزين المسبق بلا حدّ يضرّ أكثر ممّا ينفع.
+  static const int _maxConcurrentPrecache = 5;
+  int _activePrecache = 0;
+  final List<Completer<void>> _precacheQueue = <Completer<void>>[];
+
+  Future<void> _acquirePrecacheSlot() {
+    if (_activePrecache < _maxConcurrentPrecache) {
+      _activePrecache++;
+      return Future<void>.value();
+    }
+    final Completer<void> waiter = Completer<void>();
+    _precacheQueue.add(waiter);
+    return waiter.future;
+  }
+
+  void _releasePrecacheSlot() {
+    if (_precacheQueue.isNotEmpty) {
+      _precacheQueue.removeAt(0).complete(); // ينتقل المقعد دون تصفير العدّاد
+    } else if (_activePrecache > 0) {
+      _activePrecache--;
+    }
+  }
+
   @override
-  PreCachingImageState? fromJson(Map<String, dynamic> json) {
-    return PreCachingImageState.fromJson(json);
-  }
+  PreCachingImageState? fromJson(Map<String, dynamic> json) => null;
 
   @override
-  Map<String, dynamic>? toJson(PreCachingImageState state) {
-    return state.toJson();
-  }
-
-  /*FutureOr<void> _onCacheSvgEvent(
-      CacheSvgEvent event, Emitter<PreCachingImageState> emit) async {
-    if (await CustomCacheManagers().getFileFromCache(event.svgUrl) != null) {
-      return;
-    }
-    if (state.cachehSvgs[event.svgUrl] == true) return;
-    Map<String, bool> cachehSvgs = Map.of(state.cachehSvgs);
-    cachehSvgs[event.svgUrl] = false;
-    emit(PreCachingImageState(cachehSvgs: cachehSvgs));
-    await brandListingImages.acquire();
-    await precacheImage(
-            SvgImage.cachedNetwork(
-              event.svgUrl,
-              width: event.width,
-              height: event.height,
-              cacheManager: CustomCacheManagers(),
-            ),
-            event.context)
-        .then(
-      (value) {
-        brandListingImages.release();
-      },
-    ).catchError((e) {
-      brandListingImages.release();
-    });
-    cachehSvgs = Map.of(state.cachehSvgs);
-    cachehSvgs[event.svgUrl] = true;
-    emit(PreCachingImageState(cachehSvgs: cachehSvgs));
-  }
-
-  FutureOr<void> _onCacheImageEvent(
-      CacheImageEvent event, Emitter<PreCachingImageState> emit) async {
-    if (await CustomCacheManagers().getFileFromCache(event.imageUrl) != null) {
-      return;
-    }
-    if (state.cachedImages[event.imageUrl] == true) return;
-
-    Map<String, bool> cachedImages = state.cachedImages;
-
-    cachedImages[event.imageUrl] = false;
-    emit(PreCachingImageState(cachedImages: cachedImages));
-    if (event.type == "banner") {
-      await imageBanner.acquire();
-    } else if (event.type == "categoryBoutique") {
-      await imageCategoryBoutiques.acquire();
-    } else if (event.type == "syncColorImages") {
-      await syncColorImages.acquire();
-    } else if (event.type == "productListingImages") {
-      await productListingImages.acquire();
-    } else if (event.type == "categoryListingImages") {
-      await categoryListingImages.acquire();
-    } else if (event.type == "productDetailsImages") {
-      await productDetailsImages.acquire();
-    }
-    if (kDebugMode) print(
-        "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqSSSSSSSSSSSSSSSSSSSSSSqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq${event.type}");
-    await precacheImage(
-            CachedNetworkImageProvider(event.imageUrl,
-                cacheManager: CustomCacheManagers()),
-            event.context)
-        .then(
-      (value) {
-        if (kDebugMode) print(
-            "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqffffffffffffffffffffffffffffffqqqqqqqqqqqqqqqqqqqqqqqqqqqqq${event.type}");
-        if (event.type == "banner") {
-          imageBanner.release();
-        } else if (event.type == "categoryBoutique") {
-          imageCategoryBoutiques.release();
-        } else if (event.type == "syncColorImages") {
-          syncColorImages.release();
-        } else if (event.type == "productListingImages") {
-          productListingImages.release();
-        } else if (event.type == "categoryListingImages") {
-          categoryListingImages.release();
-        } else if (event.type == "productDetailsImages") {
-          productDetailsImages.release();
-        }
-      },
-    ).catchError((e) {
-      if (event.type == "banner") {
-        imageBanner.release();
-      } else if (event.type == "categoryBoutique") {
-        imageCategoryBoutiques.release();
-      } else if (event.type == "syncColorImages") {
-        syncColorImages.release();
-      } else if (event.type == "productListingImages") {
-        productListingImages.release();
-      } else if (event.type == "categoryListingImages") {
-        categoryListingImages.release();
-      } else if (event.type == "productDetailsImages") {
-        productDetailsImages.release();
-      }
-    });
-
-    cachedImages[event.imageUrl] = true;
-
-    emit(PreCachingImageState(cachedImages: cachedImages));
-  }
-*/
+  Map<String, dynamic>? toJson(PreCachingImageState state) => null;
 
   FutureOr<void> _onCacheSvgEvent(
     CacheSvgEvent event,
     Emitter<PreCachingImageState> emit,
-  ) async {
-    /*
-  // 1. التحقق من وجود الملف في الكاش مسبقًا
-  final cachedFile = await CustomCacheManagers().getFileFromCache(event.svgUrl);
-  if (cachedFile != null) {
-    return; // الملف موجود مسبقًا، لا حاجة لإعادة التحميل
-  }
-
-  // 2. التحقق من عدم وجود تحميل جارٍ للملف
-  if (state.cachehSvgs[event.svgUrl] == true) return;
-
-  // 3. تحديث الحالة لإظهار أن التحميل جارٍ
-  final updatedCachehSvgs = Map<String, bool>.from(state.cachehSvgs);
-  updatedCachehSvgs[event.svgUrl] = false;
-  emit(PreCachingImageState(cachehSvgs: updatedCachehSvgs));
-
-  // 4. التحكم في التزامن باستخدام Semaphore المناسب
-  final semaphore = brandListingImages; // أو اختر Semaphore حسب نوع SVG إذا كان لديك
-
-  try {
-    await semaphore.acquire();
-
-    // 5. تحميل وتخزين SVG باستخدام CachedNetworkSVGImage.preCache
-    await SvgNetworkWidget(
-      event.svgUrl,
-      cacheManager: CustomCacheManagers(),
-      width: event.width,
-      height: event.height,
-    );
-
-    // 6. تحديث الحالة بعد نجاح التحميل
-    final successCachehSvgs = Map<String, bool>.from(updatedCachehSvgs);
-    successCachehSvgs[event.svgUrl] = true;
-    emit(PreCachingImageState(cachehSvgs: successCachehSvgs));
-  } catch (e) {
-    if (kDebugMode) print("Error caching SVG: $e");
-  } finally {
-    semaphore.release();
-  }*/
-  }
-
-  // ============= الدوال المساعدة =============
-
-  // أ) تحميل SVG مع عزل محتمل
-
-  // ب) معاملات العزل
+  ) async {}
 
   FutureOr<void> _onCacheImageEvent(
     CacheImageEvent event,
     Emitter<PreCachingImageState> emit,
   ) async {
-    if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC${event.imageUrl}//${event.type}");
+    if (kDebugMode)
+      print("CCCCCCCCCCCCCCCCCCCCCCC${event.imageUrl}//${event.type}");
     if (!event.imageUrl.contains("cloudinary") &&
         !event.imageUrl.contains("media_server")) {
       return;
     }
 
-    // منع التحميل إذا كانت الذاكرة ممتلئة أكثر من 90%
-
-    // التحقق من وجود الصورة في الكاش مسبقاً
     try {
       final cachedFile = await CustomCacheManagers().getFileFromCache(
         event.imageUrl,
@@ -210,77 +88,48 @@ class PreCachingImageBloc
       // في حالة فشل فحص الكاش، نكمل التحميل
     }
 
-    // اختيار Semaphore المناسب حسب نوع الصورة
-    //final semaphore = _getSemaphoreForType(event.type);
-
-    try {
-      // await semaphore.acquire();
-
-      // ⚡ تحميل غير متزامن مع تجنب blocking الـ UI thread
-      _precacheImageSafely(event);
-    } catch (e) {
-      //  semaphore.release();
-      debugPrint("Error starting image cache: $e");
-    }
+    _warmDiskCache(event);
   }
 
-  /// تحميل آمن للصور بدون تأثير على UI thread
-  void _precacheImageSafely(CacheImageEvent event) async {
+  /// تدفئة كاش القرص لصورة لم يرَها المستخدم بعد — **بلا فكّ ترميز**.
+  ///
+  /// كان هنا `precacheImage`، وهو يفعل شيئين: ينزّل **ويفكّ الترميز** إلى
+  /// `imageCache`. والثاني ضارّ في التخزين المسبق: صور قد لا يصلها المستخدم
+  /// تزاحم الصور المعروضة على ميزانية واحدة (١٠٠ ميغابايت افتراضياً)، فتُخلى
+  /// المعروضة وتُعاد قراءتها — وهو تقطيع مباشر.
+  ///
+  /// `downloadFile` ينزّل البايتات إلى القرص فقط. والبطيء في العملية هو الشبكة
+  /// (مئات الملّي ثانية) لا فكّ الترميز من ملف محلي، فتبقى فائدة التدفئة كاملة
+  /// بجزء يسير من الكلفة.
+  ///
+  /// وفكّ الترميز يقع عند العرض بالمقاس الصحيح عبر `MyCachedNetworkImage`
+  /// التي تضبط `memCacheWidth`/`memCacheHeight` أصلاً.
+  ///
+  /// ولا يحتاج `BuildContext` بخلاف `precacheImage` — فينتفي خطر استعماله بعد
+  /// تفكيكه.
+  void _warmDiskCache(CacheImageEvent event) async {
+    await _acquirePrecacheSlot();
     try {
-      if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC${event.imageUrl}//${event.type}");
-      // ⚡ استخدام Future.microtask لنقل العملية خارج UI thread
-      await Future.microtask(() async {
-        await precacheImage(
-          CachedNetworkImageProvider(
-            event.imageUrl,
-            headers: {
-              'User-Agent':
-                  (kDebugMode ? "developer" : "users") +
-                  'device OS:' +
-                  (Platform.isAndroid ? 'Android' : 'IOS') +
-                  ' , application version: 1.0.0',
-              "Referer":
-                  (kDebugMode ? "developer" : "users") +
-                  'device OS:' +
-                  (Platform.isAndroid ? 'Android' : 'IOS'),
-            },
-            cacheManager: CustomCacheManagers(),
-          ),
-          event.context,
-        );
-      });
-
-      debugPrint('✅ Successfully cached: ${event.type}');
+      await CustomCacheManagers().downloadFile(
+        event.imageUrl,
+        authHeaders: {
+          'User-Agent':
+              (kDebugMode ? "developer" : "users") +
+              'device OS:' +
+              (Platform.isAndroid ? 'Android' : 'IOS') +
+              ' , application version: 1.0.0',
+          "Referer":
+              (kDebugMode ? "developer" : "users") +
+              'device OS:' +
+              (Platform.isAndroid ? 'Android' : 'IOS'),
+        },
+      );
     } catch (e) {
-      debugPrint("Error caching image: $e");
+      debugPrint("Error warming disk cache: $e");
     } finally {
-      //  semaphore.release();
+      _releasePrecacheSlot();
     }
   }
-
-  // دالة اختيار Semaphore حسب نوع الصورة (كما لديك)
-  /* Semaphore _getSemaphoreForType(String type) {
-    switch (type) {
-      case "banner":
-        return imageBanner;
-      case "categoryBoutique":
-        return imageCategoryBoutiques;
-      case "syncColorImages":
-        return syncColorImages;
-      case "productListingImages":
-        return productListingImages;
-      case "categoryListingImages":
-        return categoryListingImages;
-      case "productDetailsImages":
-        return productDetailsImages;
-      default:
-        throw Exception("Unknown image type");
-    }
-  }
-*/
-  // ج) معاملات العزل
-
-  // د) الدالة المعزولة
 
   _onSetImageCacheStatusEvent(
     SetImageCacheStatusEvent event,
@@ -289,7 +138,7 @@ class PreCachingImageBloc
     if (state.cachedImages.containsKey(event.imageUrl)) return;
     Map<String, bool> cachedImages = Map.of(state.cachedImages);
     cachedImages[event.imageUrl] = event.isLoaded;
-    emit(PreCachingImageState(cachedImages: cachedImages));
+    emit(state.copyWith(cachedImages: cachedImages));
   }
 
   _onRemoveUrlThatNotUsedEvent(

@@ -10,6 +10,9 @@ import '../../../../../core/data/model/pagination_model.dart';
 
 enum GetProductFiltersStatus { init, loading, success, failure }
 
+/// حالة بحث المقارنة لعمود واحد.
+enum SearchProductsForCompareStatus { init, loading, success, failure }
+
 enum GetFiltersForNavigatorFromLinkToListingPageStatus {
   init,
   loading,
@@ -44,7 +47,18 @@ class BoutiqueState extends Equatable {
     this.countOfProductExpectedByFiltering,
         this.suggestion,
     this.sortKey = "",
+    this.compareSearchResults = const {},
+    this.compareSearchStatus = const {},
   });
+
+  /// نتائج بحث صفحة المقارنة، مفتاحها رقم العمود (0 و1).
+  ///
+  /// منفصلة تماماً عن قوائم المنتجات القائمة حتى لا يتداخل بحث المقارنة مع
+  /// نتائج صفحة القوائم أو البوتيك.
+  final Map<int, List<product.Products>> compareSearchResults;
+
+  /// حالة بحث كل عمود على حدة — فالعمودان يبحثان مستقلَّين.
+  final Map<int, SearchProductsForCompareStatus> compareSearchStatus;
   final Map<String, List<String>> sizeAndColorFilterinTextToSearch;
 
   /// Currently selected sort key for the listing page (e.g. best_selling,
@@ -103,6 +117,12 @@ class BoutiqueState extends Equatable {
         appliedFiltersByUser,
         choosedFiltersByUser,
         sortKey,
+        // كان غائباً عن props: أي انبعاث يغيّر عامل الترقيم وحده كان يُسقَط
+        // بصمت. يُبعث اليوم دائماً مرفقاً بحقول أخرى فلم يظهر أثره، لكنه
+        // يبقى فخّاً لأول انبعاث مستقبلي يمسّه منفرداً.
+        searchWithFilterOffset,
+        compareSearchResults,
+        compareSearchStatus,
         //   getProductListingWithFiltersPaginationWithPrefetchModels,
       ];
 
@@ -137,6 +157,8 @@ class BoutiqueState extends Equatable {
     final Map<String, List<double>>? searchWithFilterOffset,
         final String? suggestion,
     final String? sortKey,
+    final Map<int, List<product.Products>>? compareSearchResults,
+    final Map<int, SearchProductsForCompareStatus>? compareSearchStatus,
   }) {
     return BoutiqueState(
         sizeAndColorFilterinTextToSearch: sizeAndColorFilterinTextToSearch ??
@@ -184,6 +206,8 @@ class BoutiqueState extends Equatable {
                 this.isGettingProductListingWithPaginationForAppearProduct,
         suggestion: suggestion ?? this.suggestion,
         sortKey: sortKey ?? this.sortKey,
+        compareSearchResults: compareSearchResults ?? this.compareSearchResults,
+        compareSearchStatus: compareSearchStatus ?? this.compareSearchStatus,
         filterOffset: filterOffset ?? this.filterOffset);
   }
 }

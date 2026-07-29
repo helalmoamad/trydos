@@ -57,6 +57,9 @@ enum GetRelatedProductsStatus { init, loading, success, failure }
 
 enum GetFullProductDetailsStatus { init, loading, success, failure }
 
+/// حالة جلب تفاصيل منتج المقارنة لعمود واحد.
+enum GetCompareProductDetailsStatus { init, loading, success, failure }
+
 enum SelectedVideoStatus { init, loading, success, failure }
 
 //enum GetCommentForProductStatus { init, loading, success, failure }
@@ -276,7 +279,33 @@ class HomeState extends Equatable {
     this.getDeliveredOrdersResponseStatus =
         GetDeliveredOrdersResponseStatus.init,
     this.deliveredOrdersResponse,
+    this.compareProducts = const {},
+    this.compareProductDetailsStatus = const {},
+    this.compareSlugs = const {},
+    this.compareOrder = const [],
   });
+
+  /// مُعرِّف المنتج المحجوز في كل عمود مقارنة.
+  ///
+  /// يُسجَّل **لحظة الضغط** لا بعد وصول التفاصيل، فيتلوّن زرّ «أضف للمقارنة»
+  /// فوراً بدل انتظار الشبكة.
+  final Map<int, String> compareSlugs;
+
+  /// ترتيب امتلاء الأعمدة — الأقدم أولاً.
+  ///
+  /// المقارنة تسع منتجين، فإضافة ثالث تستبدل صاحب أقدم عمود. وبدون هذا
+  /// الترتيب لا سبيل لمعرفة أيّهما الأقدم.
+  final List<int> compareOrder;
+
+  /// المنتج المختار في كل عمود من صفحة المقارنة، مفتاحه رقم العمود (0 و1).
+  ///
+  /// مستقلّ عن حقول صفحة تفاصيل المنتج حتى لا تتداخل الشاشتان.
+  final Map<int, Products> compareProducts;
+
+  /// حالة جلب تفاصيل كل عمود على حدة — وعليها يعتمد إظهار الـ shimmer في
+  /// جهة المنتج قيد التحميل وحدها.
+  final Map<int, GetCompareProductDetailsStatus> compareProductDetailsStatus;
+
   final DeliveredOrdersResponse? deliveredOrdersResponse;
   final ReportingAboutStory reportingAboutStory;
   final GetDeliveredOrdersResponseStatus getDeliveredOrdersResponseStatus;
@@ -571,6 +600,21 @@ class HomeState extends Equatable {
     getStoryWithPagintionStatusLoading,
     reportingAboutStory,
     getDeliveredOrdersResponseStatus,
+    // كانت هذه الأربعة غائبة عن props رغم وجودها كحقول. وغياب حقل هنا يعني
+    // أن حالتين تختلفان فيه وحده تُعدّان متطابقتين، فيُسقط البلوك الانبعاث
+    // ولا تُعاد بناء الواجهة — بلا خطأ ولا تحذير.
+    //
+    // أوضحها أثراً getNotificationTypeProductStatus: يُبعث وحده عند loading
+    // و failure في _onGetNotificationTypeProductEvent، فكانت الحالتان لا
+    // تصلان إلى الواجهة إطلاقاً.
+    colorsForEachProduct,
+    colorsQuantitiesForEachProduct,
+    getNotificationTypeProductStatus,
+    searchWithOutFilterOffset,
+    compareProducts,
+    compareProductDetailsStatus,
+    compareSlugs,
+    compareOrder,
   ];
 
   HomeState copyWith({
@@ -707,6 +751,10 @@ class HomeState extends Equatable {
     //final Map<String, GetCommentForProductModel>? getCommentForProductModel,
     AuthProductDetailsStatus? authProductDetailsStatus,
     GetAuthProductDetailsModel? authProductDetailsModel,
+    final Map<int, Products>? compareProducts,
+    final Map<int, GetCompareProductDetailsStatus>? compareProductDetailsStatus,
+    final Map<int, String>? compareSlugs,
+    final List<int>? compareOrder,
   }) {
     return HomeState(
       deliveredOrdersResponse:
@@ -714,6 +762,11 @@ class HomeState extends Equatable {
       getDeliveredOrdersResponseStatus:
           getDeliveredOrdersResponseStatus ??
           this.getDeliveredOrdersResponseStatus,
+      compareProducts: compareProducts ?? this.compareProducts,
+      compareProductDetailsStatus:
+          compareProductDetailsStatus ?? this.compareProductDetailsStatus,
+      compareSlugs: compareSlugs ?? this.compareSlugs,
+      compareOrder: compareOrder ?? this.compareOrder,
       getAndAddCountViewOfProductStatus:
           getAndAddCountViewOfProductStatus ??
           this.getAndAddCountViewOfProductStatus,

@@ -750,10 +750,6 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                         .setMyChatName("");
                                                     prefsRepository
                                                         .setMyStoriesName("");
-                                                    prefsRepository
-                                                        .setVerifiedPhonePeforeExpiredToken(
-                                                          false,
-                                                        );
 
                                                     prefsRepository
                                                         .setMyProfilePhoto("");

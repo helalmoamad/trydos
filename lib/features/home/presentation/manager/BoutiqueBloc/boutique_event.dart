@@ -432,3 +432,32 @@ class AddIsExpandedForListingPageEvent extends BoutiqueEvent {
   // TODO: implement props
   List<Object?> get props => [category, boutiqueSlug, filterSlug];
 }*/
+
+/// بحث نصّي مستقلّ لصفحة مقارنة المنتجات.
+///
+/// يُرسل حقل البحث وحده — بلا مرشّحات ولا ترقيم ولا بوتيك — ويكتب نتيجته في
+/// حقول خاصّة بالمقارنة، فلا يمسّ حالة قوائم المنتجات القائمة إطلاقاً.
+///
+/// [side] يميّز عمود المقارنة: 0 للأيسر و1 للأيمن.
+class SearchProductsForCompareEvent extends BoutiqueEvent {
+  final String query;
+  final int side;
+
+  const SearchProductsForCompareEvent({
+    required this.query,
+    required this.side,
+  });
+
+  @override
+  List<Object?> get props => [query, side];
+}
+
+/// تفريغ نتائج بحث عمود واحد (عند مسح حقل البحث).
+class ClearCompareSearchEvent extends BoutiqueEvent {
+  final int side;
+
+  const ClearCompareSearchEvent(this.side);
+
+  @override
+  List<Object?> get props => [side];
+}

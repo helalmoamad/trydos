@@ -41,6 +41,10 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
   // فيصل البناء إلى FutureBuilder ويقع LateInitializationError.
   Future<void>? initializeVideo;
   ValueNotifier<double> downloadingProgress = ValueNotifier(0);
+
+  /// البايتات المستلمة — تُعرض حين يتعذّر حساب النسبة (لا Content-Length).
+  /// بدونها يبقى المؤشّر جامداً فيبدو التنزيل معلّقاً وهو يعمل.
+  ValueNotifier<int> downloadedBytes = ValueNotifier(0);
   ValueNotifier<bool> isDownloading = ValueNotifier(false);
   CancelToken cancelToken = CancelToken();
 
@@ -89,9 +93,14 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
     return '${videoUrl.substring(0, lastDot)}.JPG?w=300&h=300';
   }
 
-  void initializeController() {
+  /// [autoPlay] للتنزيل الذي طلبه المستخدم بضغطة صريحة فقط. الفيديو المستخرَج
+  /// من الكاش عند بناء الودجت لا يُشغَّل تلقائياً، وإلا انطلقت الفيديوهات
+  /// وحدها أثناء التمرير في الدردشة.
+  void initializeController({bool autoPlay = false}) {
     initializeVideo = _controller!.initialize().then((_) {
-      if (mounted) setState(() {});
+      if (!mounted) return;
+      if (autoPlay) _controller!.play();
+      setState(() {});
     });
     // كان هنا addListener(() => setState(...)) — إعادة بناء الشجرة كاملة مع كل
     // إطار فيديو داخل قائمة الدردشة. الأجزاء المتغيّرة تستمع وحدها الآن عبر
@@ -114,6 +123,7 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
     _controller?.removeListener(_restartWhenFinished);
     _controller?.dispose();
     downloadingProgress.dispose();
+    downloadedBytes.dispose();
     isDownloading.dispose();
     super.dispose();
   }
@@ -175,7 +185,12 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
       widget.videoUrl!,
       widget.chatId,
       cancelToken: cancelToken,
-      onProgress: (progress) => downloadingProgress.value = progress,
+      onProgress: (percent, receivedBytes) {
+        downloadingProgress.value = percent;
+        downloadedBytes.value = receivedBytes;
+      },
+      // ضغطة صريحة من المستخدم: لا تنتظر خلف تحميل صور الدردشة التلقائي.
+      priority: true,
     );
     if (!mounted) return;
     // كانت تبقى true عند الفشل أو الإلغاء فيدور المؤشّر إلى الأبد.
@@ -184,7 +199,8 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
     setState(() {
       _localFile = file;
       _controller = VideoPlayerController.file(file);
-      initializeController();
+      // الضغطة الأولى تكفي: ينتهي التنزيل فيبدأ التشغيل بلا ضغطة ثانية.
+      initializeController(autoPlay: true);
     });
   }
 
@@ -225,6 +241,9 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                                 },
                                 child: Stack(
                                   alignment: Alignment.center,
+                                  // نصّ الحجم يقع أسفل الحلقة خارج حدودها،
+                                  // والقصّ الافتراضي كان سيخفيه.
+                                  clipBehavior: Clip.none,
                                   children: [
                                     CircularProgressIndicator(
                                       // null = مؤشّر دوّار غير محدَّد. تمرير
@@ -243,6 +262,27 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                                       style: context.textTheme.bodyLarge?.bq
                                           .copyWith(color: Colors.white),
                                     ),
+                                    // حين تتعذّر النسبة نعرض ما نزل فعلاً —
+                                    // رقم يتحرّك يفرّق «يعمل» عن «معلّق».
+                                    if (progress < 0)
+                                      Positioned(
+                                        bottom: -22,
+                                        child:
+                                            ValueListenableBuilder<int>(
+                                              valueListenable: downloadedBytes,
+                                              builder: (context, bytes, _) =>
+                                                  MyTextWidget(
+                                                    '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB',
+                                                    style: context
+                                                        .textTheme
+                                                        .bodySmall
+                                                        ?.copyWith(
+                                                          color: Colors.white,
+                                                          fontSize: 10,
+                                                        ),
+                                                  ),
+                                            ),
+                                      ),
                                   ],
                                 ),
                               );
@@ -256,6 +296,29 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
         : FutureBuilder(
             future: initializeVideo,
             builder: (context, snapShot) {
+              // `done` يشمل الاكتمال **بخطأ**: ملف محذوف من المخزن، أو مسار
+              // مؤقّت مسحه النظام، أو ترميز غير مدعوم. وبلا هذا الفحص يُرسم
+              // VideoPlayer على مشغّل غير مهيّأ فيظهر مربّع أسود صامت لا
+              // يفرّقه المستخدم عن التحميل.
+              if (snapShot.hasError ||
+                  (snapShot.connectionState == ConnectionState.done &&
+                      !(_controller?.value.isInitialized ?? false))) {
+                return SizedBox(
+                  width: 300,
+                  height: 300,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      _thumbnailFallback(),
+                      Icon(
+                        Icons.videocam_off_outlined,
+                        size: 40,
+                        color: Colors.grey.shade400,
+                      ),
+                    ],
+                  ),
+                );
+              }
               if (snapShot.connectionState == ConnectionState.done) {
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
