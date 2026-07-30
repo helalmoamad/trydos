@@ -1706,7 +1706,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             );
             appBloc.add(HideBottomNavigationBar(false));
             appBloc.add(ShowOrHideBars(true));
-            appBloc.add(ChangeIndexForSearch(1));
+            appBloc.add(ChangeIndexForSearch(0));
 
             if (fromBoutiqueListing) {
               BlocProvider.of<BoutiqueBloc>(context).add(

@@ -131,8 +131,18 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
           //print('AnimatedSearchBar.build toggle=$toggle currentIndexForSearch=${state.currentIndexForSearch}');
         }
 
-        if (state.currentIndexForSearch == 0) {
+        if (state.currentIndexForSearch == 0 && toggle != 0) {
           toggle = 0;
+
+          // الإغلاق البرمجي كان **بصرياً فقط**: يغيّر toggle ولا يمسّ
+          // focusNode. فيبقى التركيز على حقل لم يعد ظاهراً، ويستعيده Flutter
+          // تلقائياً حين يُكشف المسار عند الرجوع — فيظهر الكيبورد بلا سبب
+          // مفهوم للمستخدم.
+          //
+          // التحرير بعد الإطار لا داخله: تعديل التركيز أثناء البناء غير مسموح.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && focusNode.hasFocus) focusNode.unfocus();
+          });
         }
 
         return AnimatedContainer(

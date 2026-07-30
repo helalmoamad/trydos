@@ -105,7 +105,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
               );
               appBloc.add(HideBottomNavigationBar(false));
               appBloc.add(ShowOrHideBars(true));
-              appBloc.add(ChangeIndexForSearch(1));
+              appBloc.add(ChangeIndexForSearch(0));
 
               Future.delayed(
                 const Duration(milliseconds: 300),
@@ -393,7 +393,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
                               );
                               appBloc.add(HideBottomNavigationBar(false));
                               appBloc.add(ShowOrHideBars(true));
-                              appBloc.add(ChangeIndexForSearch(1));
+                              appBloc.add(ChangeIndexForSearch(0));
 
                               Future.delayed(
                                 const Duration(milliseconds: 300),

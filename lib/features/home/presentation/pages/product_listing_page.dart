@@ -390,7 +390,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       );
       appBloc.add(HideBottomNavigationBar(false));
       appBloc.add(ShowOrHideBars(true));
-      appBloc.add(ChangeIndexForSearch(1));
+      appBloc.add(ChangeIndexForSearch(0));
       Future.delayed(const Duration(seconds: 1), () {
         boutiqueBloc.add(
           ChangeAppliedFiltersEvent(

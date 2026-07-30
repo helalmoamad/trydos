@@ -151,7 +151,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
               widget.animatedController.stop();
               widget.animatedController.reset();
 
-              if (((state.currentStoryInEachCollection[widget.collectionIndex] ??
+              if (((state.currentStoryInEachCollection[widget
+                              .collectionIndex] ??
                           0) +
                       1) >=
                   state
@@ -1039,7 +1040,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             );
             appBloc.add(HideBottomNavigationBar(false));
             appBloc.add(ShowOrHideBars(true));
-            appBloc.add(ChangeIndexForSearch(1));
+            appBloc.add(ChangeIndexForSearch(0));
 
             if (fromBoutiqueListing) {
               BlocProvider.of<BoutiqueBloc>(context).add(
