@@ -207,7 +207,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                           ),
                         ),
                         MyTextWidget(
-                          ' 3 ${LocaleKeys.day.tr()}',
+                          ' ${shippingDay} ${LocaleKeys.day.tr()}',
                           style: context.textTheme.titleLarge?.bq.copyWith(
                             color: const Color(0xff1D1D1D),
                             fontSize: 11.sp,
@@ -340,7 +340,7 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
                               ),
                             ),
                             MyTextWidget(
-                              ' 3 ${LocaleKeys.day.tr()} ',
+                              ' ${shippingDay} ${LocaleKeys.day.tr()} ',
                               style: context.textTheme.titleLarge?.bq.copyWith(
                                 fontSize: 11.sp,
                                 height: 16 / 13,

@@ -355,15 +355,15 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
           if (initialized) {
             videoChild = FittedBox(
               fit: BoxFit.cover,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15.r),
-                child: SizedBox(
-                  width: 190.w,
-                  height: 290.h,
-                  child: VideoPlayer(
-                    videoProductInListingController[widget.productItem.slug ??
-                        ""]!,
-                  ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15.r),
+                ),
+                width: 190.w,
+                height: 290.h,
+                child: VideoPlayer(
+                  videoProductInListingController[widget.productItem.slug ??
+                      ""]!,
                 ),
               ),
             );
@@ -376,18 +376,16 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
             children: [
               videoChild,
               if (showLoading)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(15.r),
-                  child: ProductListingImageWidget(
-                    borderColor: isRedeem ? const Color(0xffFF6200) : null,
-                    orginalHeight: 200.h,
-                    orginalWidth: 200.w,
-                    width: 200.w,
-                    imageUrl: imageUrl,
-                    height: 290.h,
-                    circleShape: false,
-                    innerShadowYOffset: 3.h,
-                  ),
+                ProductListingImageWidget(
+                  radius: 20.r,
+                  borderColor: isRedeem ? const Color(0xffFF6200) : null,
+                  orginalHeight: 200.h,
+                  orginalWidth: 200.w,
+                  width: 200.w,
+                  imageUrl: imageUrl,
+                  height: 290.h,
+                  circleShape: false,
+                  innerShadowYOffset: 3.h,
                 ),
               buffering
                   ? TrydosLoader(size: 20.h)

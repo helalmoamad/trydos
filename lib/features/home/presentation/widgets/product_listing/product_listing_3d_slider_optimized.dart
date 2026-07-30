@@ -332,15 +332,15 @@ class _ProductListing3DSliderOptimizedState
           if (initialized) {
             videoChild = FittedBox(
               fit: BoxFit.cover,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15.r),
-                child: SizedBox(
-                  width: 200.w,
-                  height: 250.h,
-                  child: VideoPlayer(
-                    videoProductInListingController[widget.productItem.slug ??
-                        ""]!,
-                  ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15.r),
+                ),
+                width: 200.w,
+                height: 250.h,
+                child: VideoPlayer(
+                  videoProductInListingController[widget.productItem.slug ??
+                      ""]!,
                 ),
               ),
             );
@@ -353,18 +353,16 @@ class _ProductListing3DSliderOptimizedState
             children: [
               videoChild,
               if (showLoading)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(15.r),
-                  child: ProductListingImageWidget(
-                    borderColor: isRedeem ? const Color(0xffFF6200) : null,
-                    orginalHeight: 250.h,
-                    orginalWidth: 200.w,
-                    width: 200.w,
-                    imageUrl: imageUrl,
-                    height: 250.h,
-                    circleShape: false,
-                    innerShadowYOffset: 3,
-                  ),
+                ProductListingImageWidget(
+                  radius: 15.r,
+                  borderColor: isRedeem ? const Color(0xffFF6200) : null,
+                  orginalHeight: 250.h,
+                  orginalWidth: 200.w,
+                  width: 200.w,
+                  imageUrl: imageUrl,
+                  height: 250.h,
+                  circleShape: false,
+                  innerShadowYOffset: 3,
                 ),
               buffering
                   ? TrydosLoader(size: 20.h)

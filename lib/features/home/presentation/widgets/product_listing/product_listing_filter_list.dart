@@ -2929,52 +2929,51 @@ class FilterImage extends StatelessWidget {
               ]
             : null,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(180.r)),
-        child: Stack(
-          children: [
-            isSvg
-                ? MyCachedNetworkImage(
-                    imageUrl: imageUrl,
-                    height: height,
-                    imageFit: BoxFit.contain,
-                    width: width,
-                  )
-                : imageUrl.contains('assets')
-                ? Image.asset(
-                    imageUrl,
-                    width: width,
-                    fit: BoxFit.cover,
-                    height: height,
-                  )
-                : MyCachedNetworkImage(
-                    //     progressIndicatorBuilderWidget:
-                    //           const SizedBox.shrink(),
-                    imageUrl: imageUrl,
-                    width: width,
-                    imageFit: BoxFit.contain,
-                    height: height,
-                  ),
-            //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
-            Container(
-              width: width,
-              height: height,
-              decoration: BoxDecoration(
-                boxShadow: withInnerShadow
-                    ? [
-                        BoxShadow(
-                          offset: const Offset(0, 4),
-                          blurRadius: 6,
-                          // ignore: deprecated_member_use
-                          color: Colors.white.withOpacity(0.5),
-                          inset: true,
-                        ),
-                      ]
-                    : null,
-              ),
+      child: Stack(
+        children: [
+          isSvg
+              ? MyCachedNetworkImage(
+                  imageUrl: imageUrl,
+                  height: height,
+                  radius: 180.r,
+                  imageFit: BoxFit.contain,
+                  width: width,
+                )
+              : imageUrl.contains('assets')
+              ? Image.asset(
+                  imageUrl,
+                  width: width,
+                  fit: BoxFit.cover,
+                  height: height,
+                )
+              : MyCachedNetworkImage(
+                  //     progressIndicatorBuilderWidget:
+                  //           const SizedBox.shrink(),
+                  imageUrl: imageUrl,
+                  width: width,
+                  radius: 180.r,
+                  imageFit: BoxFit.contain,
+                  height: height,
+                ),
+          //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
+          Container(
+            width: width,
+            height: height,
+            decoration: BoxDecoration(
+              boxShadow: withInnerShadow
+                  ? [
+                      BoxShadow(
+                        offset: const Offset(0, 4),
+                        blurRadius: 6,
+                        // ignore: deprecated_member_use
+                        color: Colors.white.withOpacity(0.5),
+                        inset: true,
+                      ),
+                    ]
+                  : null,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -459,7 +459,7 @@ class _HomePageState extends State<HomePage> {
               ? const Key(WidgetsKeys.homepageScrollKey)
               : null,
           controller: scrollController,
-          cacheExtent: 0,
+          cacheExtent: 150,
           physics: const ClampingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
@@ -534,14 +534,16 @@ class _HomePageState extends State<HomePage> {
                       return sliverListSeparated(
                         addSemanticIndexes: false,
                         addAutomaticKeepAlives: false,
-
+                        addRepaintBoundaries: false,
                         key: TestVariables.kTestMode
                             ? const Key(WidgetsKeys.boutiquesFailureStatusKey)
                             : null,
                         itemBuilder: (_, index) => Padding(
                           padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
                             child: Shimmer.fromColors(
                               baseColor: Colors.grey.shade300,
                               highlightColor: Colors.grey.shade100,
@@ -605,6 +607,7 @@ class _HomePageState extends State<HomePage> {
                     }
                     return sliverListSeparated(
                       addAutomaticKeepAlives: false,
+                      addRepaintBoundaries: false,
                       key: TestVariables.kTestMode
                           ? const Key(WidgetsKeys.boutiquesSuccessStatusKey)
                           : null,

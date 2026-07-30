@@ -728,7 +728,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                     overscroll: false,
                                   ),*/
                             // منع overscroll للحماية من crashes
-                            cacheExtent: 0, // قيمة محسنة لمنع التعليق
+                            cacheExtent: 100, // قيمة محسنة لمنع التعليق
                             key: TestVariables.kTestMode
                                 ? const Key(WidgetsKeys.productListingScrollKey)
                                 : null,
@@ -2089,16 +2089,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                       (widget.banner![index].filePath !=
                                                                                               null &&
                                                                                           isVisible) // 🔧 شرط الرؤية
-                                                                                      ? ClipRRect(
-                                                                                          borderRadius: BorderRadius.circular(
-                                                                                            15,
-                                                                                          ),
-                                                                                          child: MyCachedNetworkImage(
-                                                                                            imageUrl: widget.banner![index].filePath!,
-                                                                                            imageFit: BoxFit.cover,
-                                                                                            width: 1.sw,
-                                                                                            height: 128.h,
-                                                                                          ),
+                                                                                      ? MyCachedNetworkImage(
+                                                                                          imageUrl: widget.banner![index].filePath!,
+                                                                                          imageFit: BoxFit.cover,
+                                                                                          width: 1.sw,
+                                                                                          height: 128.h,
+                                                                                          radius: 15.r,
                                                                                         )
                                                                                       : Container(
                                                                                           // 🔧 placeholder للصور غير المرئية
@@ -2174,16 +2170,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 ),
                                                                               ],
                                                                             ),
-                                                                            child: ClipRRect(
-                                                                              borderRadius: BorderRadius.circular(
-                                                                                15,
-                                                                              ),
-                                                                              child: MyCachedNetworkImage(
-                                                                                imageUrl: widget.boutiqueFirstBanner!,
-                                                                                imageFit: BoxFit.cover,
-                                                                                width: 1.sw,
-                                                                                height: 130.h,
-                                                                              ),
+                                                                            child: MyCachedNetworkImage(
+                                                                              imageUrl: widget.boutiqueFirstBanner!,
+                                                                              imageFit: BoxFit.cover,
+                                                                              width: 1.sw,
+                                                                              radius: 15.r,
+                                                                              height: 130.h,
                                                                             ),
                                                                           ),
                                                                           Container(
@@ -3037,8 +3029,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 ),
                                             delegate: SliverChildBuilderDelegate(
                                               addSemanticIndexes: false,
-                                              addAutomaticKeepAlives: false,
 
+                                              addAutomaticKeepAlives: false,
+                                              addRepaintBoundaries: false,
                                               childCount: products.length,
                                               (
                                                 BuildContext context,
@@ -3358,9 +3351,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     : Expanded(
                         child: GridView.builder(
                           addAutomaticKeepAlives: false,
-
+                          addRepaintBoundaries: false,
                           addSemanticIndexes: false,
-                          cacheExtent: 0,
+                          cacheExtent: 100,
                           controller: sc,
                           itemCount: products[_tapIndexToShowColorImages]
                               .syncColorImages
