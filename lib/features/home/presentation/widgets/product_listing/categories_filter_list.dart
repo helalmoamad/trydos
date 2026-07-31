@@ -54,9 +54,10 @@ class CategoriesFilterList extends StatelessWidget {
     BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
     String key = boutiqueSlug + (category ?? '');
-    if (kDebugMode) print(
-      "##############################################################${key}",
-    );
+    if (kDebugMode)
+      print(
+        "##############################################################${key}",
+      );
     if (fromSearch) {
       key = boutiqueSlug;
     }
@@ -82,6 +83,8 @@ class CategoriesFilterList extends StatelessWidget {
 
         return ListView.builder(
           scrollDirection: Axis.horizontal,
+          addRepaintBoundaries: false,
+          addAutomaticKeepAlives: false,
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: filters.categories?.length ?? 0,
@@ -511,7 +514,10 @@ class CategoriesFilterList extends StatelessWidget {
                                                           .slug,
                                                 )))),
                                     addOrRemoveSpecificFilter: (bool add) {
-                                      if (kDebugMode) print("addOrRemoveSpecificFilter${add}");
+                                      if (kDebugMode)
+                                        print(
+                                          "addOrRemoveSpecificFilter${add}",
+                                        );
                                       if (appliedFilters?.categories == null &&
                                           choosedFilters?.categories == null) {
                                         expandingFiltersStack.value = -1;
@@ -540,9 +546,10 @@ class CategoriesFilterList extends StatelessWidget {
                                                             .categories![index]
                                                             .id,
                                                   ))) {
-                                        if (kDebugMode) print(
-                                          "111111111111111111111111111111qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
-                                        );
+                                        if (kDebugMode)
+                                          print(
+                                            "111111111111111111111111111111qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+                                          );
                                         expandingFiltersStack.value = index;
                                       }
                                       scaleTheTopItemInFiltersStack.value =
@@ -652,9 +659,10 @@ class CategoriesFilterList extends StatelessWidget {
                                                 );
                                       }
                                       if (!workWithChoosedFilter) {
-                                        if (kDebugMode) print(
-                                          "dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-                                        );
+                                        if (kDebugMode)
+                                          print(
+                                            "dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                                          );
 
                                         boutiqueBloc.add(
                                           ChangeAppliedFiltersEvent(
@@ -702,9 +710,10 @@ class CategoriesFilterList extends StatelessWidget {
                 },
               );
             } else {
-              if (kDebugMode) print(
-                "^^^^^*******************************************${filters.categories![index].mostViewedProductThumbnail}//****************************************${isChildCategorySlug || !workWithChoosedFilter}",
-              );
+              if (kDebugMode)
+                print(
+                  "^^^^^*******************************************${filters.categories![index].mostViewedProductThumbnail}//****************************************${isChildCategorySlug || !workWithChoosedFilter}",
+                );
               return filters.categories![index].mostViewedProductThumbnail !=
                       null
                   ? FilterCircleWidget(

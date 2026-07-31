@@ -69,17 +69,10 @@ class _ProductItemState extends State<ProductItem> {
   late final ValueNotifier<int> currentChosenColor;
   final ValueNotifier<bool> visibleRedeem = ValueNotifier(false);
   final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
+
   @override
   void initState() {
     super.initState();
-    /*
-    if (!productSlugToSaveVideoTimer
-        .contains(widget.productItem.slug.toString())) {
-      productSlugToSaveVideoTimer.insert(0, widget.productItem.slug.toString());
-    }*/
-
-    //    productIdToSaveRedeemTimer.add(widget.productItem.productId.toString());
-
     currentChosenColor = ValueNotifier(
       (widget.productItem.syncColorImages?.length ?? 0) ~/ 2,
     );
@@ -91,130 +84,18 @@ class _ProductItemState extends State<ProductItem> {
     }
   }
 
-  /*  @override
-  void dispose() {
-    if (kDebugMode) print(
-        "WSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSsssssssssww${widget.productItem.slug}");
-//    productIdToSaveRedeemTimer.remove(widget.productItem.productId.toString());
-    super.dispose();
-  }
-*/
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    /*  FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-    };*/
+
     return Stack(
       key: ValueKey(widget.productItem.slug),
       alignment: Alignment.bottomCenter,
       clipBehavior: Clip.none,
       children: [
-        /*  !widget.fromHomePage
-              ? SizedBox.fromSize()
-              : Container(
-                  height: widget.fromHomePage ? 250 : 350,
-                  width: widget.fromHomePage ? 120 : 200.w,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xff000000).withOpacity(0.1),
-                        offset: const Offset(0, 3),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: ValueListenableBuilder<int>(
-                          valueListenable: currentChosenColor,
-                          builder: (context, index, _) {
-                            if (widget
-                                .productItem.syncColorImages.isNullOrEmpty) {
-                              return Image.asset(
-                                  'assets/product_listing_background_blur_image.png',
-                                  fit: BoxFit.cover);
-                            }
-                            if (index >
-                                (widget.productItem.syncColorImages?.length ??
-                                        0) -
-                                    1) {
-                              currentChosenColor.value =
-                                  (widget.productItem.syncColorImages?.length ??
-                                          0) ~/
-                                      2;
-                              return MyCachedNetworkImage(
-                                ordinalHeight: double.parse(widget
-                                    .productItem
-                                    .syncColorImages![(widget.productItem
-                                                .syncColorImages?.length ??
-                                            0) ~/
-                                        2]
-                                    .images![0]
-                                    .originalHeight!),
-                                ordinalwidth: double.parse(widget
-                                    .productItem
-                                    .syncColorImages![(widget.productItem
-                                                .syncColorImages?.length ??
-                                            0) ~/
-                                        2]
-                                    .images![0]
-                                    .originalWidth!),
-                                imageUrl: widget
-                                    .productItem
-                                    .syncColorImages![(widget.productItem
-                                                .syncColorImages?.length ??
-                                            0) ~/
-                                        2]
-                                    .images![0]
-                                    .filePath!,
-                                height: widget.fromHomePage ? 250 : 350,
-                                width: 200.w,
-                                imageFit: BoxFit.cover,
-                              );
-                            }
-                            return widget.productItem.syncColorImages!
-                                        .isNullOrEmpty ||
-                                    widget.productItem.syncColorImages![index]
-                                        .images.isNullOrEmpty
-                                ? Image.asset(
-                                    'assets/product_listing_background_blur_image.png',
-                                    fit: BoxFit.cover)
-                                : MyCachedNetworkImage(
-                                    ordinalHeight: double.parse(widget
-                                        .productItem
-                                        .syncColorImages![index]
-                                        .images![0]
-                                        .originalHeight!),
-                                    ordinalwidth: double.parse(widget
-                                        .productItem
-                                        .syncColorImages![index]
-                                        .images![0]
-                                        .originalWidth!),
-                                    imageUrl: widget
-                                        .productItem
-                                        .syncColorImages![index]
-                                        .images![0]
-                                        .filePath!,
-                                    height: widget.fromHomePage ? 250 : 350,
-                                    width: 200.w,
-                                    imageFit: BoxFit.cover,
-                                  );
-                          })),
-                ),*/
         widget.fromHomePage
             ? ProductListing3DSliderOptimized(
                 visibleFlashDeal: visibleFlashDeal,
@@ -254,134 +135,11 @@ class _ProductItemState extends State<ProductItem> {
                 tapIndexToAddProductToCart: widget.tapIndexToAddProductToCart,
                 itemIndex: widget.itemIndex,
               ),
-        /*  Positioned(
-              left: LanguageService.languageCode != "ar" ? null : 5,
-              right: LanguageService.languageCode == "ar" ? null : 5,
-              top: (widget.productItem.flashDealEndDate == null ||
-                      widget.productItem.flashDealEndDate != "")
-                  ? 10
-                  : 55,
-              child: Column(
-                children: [
-                  ...List.generate(
-                      (widget.productItem.labelNames?.length ?? 0) > 3
-                          ? 3
-                          : (widget.productItem.labelNames?.length ?? 0),
-                      (index) => Container(
-                            margin: EdgeInsets.symmetric(vertical: 2),
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.symmetric(horizontal: 5),
-                            height: 30,
-                            constraints: BoxConstraints(maxWidth: 160),
-                            decoration: BoxDecoration(
-                              gradient: ((index % 2) == 0)
-                                  ? LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                          Color.fromARGB(255, 255, 119, 40),
-                                          Color.fromARGB(162, 255, 119, 40)
-                                        ])
-                                  : LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                          Color.fromARGB(255, 79, 40, 255),
-                                          Color.fromARGB(106, 79, 40, 255)
-                                        ]),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12)),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SvgPicture.asset(
-                                  AppAssets.lableSvg,
-                                  height: 16,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  width: 2,
-                                ),
-                                Text(
-                                  widget.productItem.labelNames?[index] ?? "",
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style:
-                                      context.textTheme.bodyMedium?.rr.copyWith(
-                                    color: Colors.white,
-                                    letterSpacing: 0.18,
-                                    fontSize: 14,
-                                    height: 1.3,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ))
-                ],
-              )),*/
+
         (widget.productItem.flashDealEndDate == null ||
                 widget.productItem.flashDealEndDate == "")
             ? const SizedBox.shrink()
-            :
-              /* Positioned(
-                  left: LanguageService.languageCode == "ar" ? null : 5,
-                  right: LanguageService.languageCode != "ar" ? null : 0,
-                  top: (widget.productItem.flashDealEndDate != null) ? 10 : 0,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 2),
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    height: 50,
-                    width: 110,
-                    constraints: BoxConstraints(maxWidth: 150),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color.fromARGB(234, 255, 65, 40),
-                            Color.fromARGB(255, 255, 119, 40)
-                          ]),
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment:
-                              LanguageService.languageCode == "ar"
-                                  ? MainAxisAlignment.end
-                                  : MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${LocaleKeys.flash_deal.tr()}",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: context.textTheme.bodyMedium?.rr.copyWith(
-                                color: Colors.white,
-                                letterSpacing: 0.18,
-                                fontSize: 14,
-                                height: 1.3,
-                              ),
-                            ),
-                            SvgPicture.asset(
-                              AppAssets.flashDealSvg,
-                              height: 16,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 2),
-                        FlashDealCountdownTimerWidget(
-                          endDateString:
-                              widget.productItem.flashDealEndDate ?? "",
-                        )
-                      ],
-                    ),
-                  ))*/
-              (widget.productItem.flashDealEndDate ?? "") == ""
+            : (widget.productItem.flashDealEndDate ?? "") == ""
             ? const SizedBox.shrink()
             : Directionality(
                 textDirection: LanguageService.languageCode == "ar"
@@ -419,9 +177,7 @@ class _ProductItemState extends State<ProductItem> {
                                 : null,
                             top: -5.h,
                             child: Transform(
-                              transform: Matrix4.skewX(
-                                -0.4,
-                              ), // انحراف بسيط للشكل
+                              transform: Matrix4.skewX(-0.4),
                               child: Container(
                                 margin: EdgeInsets.only(
                                   left: LanguageService.languageCode != "ar"
@@ -440,17 +196,17 @@ class _ProductItemState extends State<ProductItem> {
                                 ),
                                 height: 25.h,
                                 child: Transform(
-                                  transform: Matrix4.skewX(
-                                    0.4,
-                                  ), // انحراف بسيط للشكل
+                                  transform: Matrix4.skewX(0.4),
                                   child: Row(
                                     children: [
                                       SizedBox(width: 3.w),
                                       SvgPicture.asset(
                                         AppAssets.flashDealSvg,
                                         height: 9.h,
-                                        // ignore: deprecated_member_use
-                                        color: const Color(0xffFF6200),
+                                        colorFilter: const ColorFilter.mode(
+                                          Color(0xffFF6200),
+                                          BlendMode.srcIn,
+                                        ),
                                       ),
                                       SizedBox(width: 2.w),
                                       Text(
@@ -466,15 +222,18 @@ class _ProductItemState extends State<ProductItem> {
                                             ),
                                       ),
                                       SizedBox(width: 5.w),
-                                      FlashDealCountdownTimerWidget(
-                                        visibleFlashDeal: visibleFlashDeal,
-                                        refreshFlashDeal:
-                                            widget.refreshFlashDeal,
-                                        endDateString:
-                                            widget
-                                                .productItem
-                                                .flashDealEndDate ??
-                                            "",
+                                      // 💡 عزل عداد الفلاش ديل لمنع إعادة رسم الكارت عند تغيير الثواني
+                                      RepaintBoundary(
+                                        child: FlashDealCountdownTimerWidget(
+                                          visibleFlashDeal: visibleFlashDeal,
+                                          refreshFlashDeal:
+                                              widget.refreshFlashDeal,
+                                          endDateString:
+                                              widget
+                                                  .productItem
+                                                  .flashDealEndDate ??
+                                              "",
+                                        ),
                                       ),
                                       SizedBox(width: 10.w),
                                     ],
@@ -487,6 +246,7 @@ class _ProductItemState extends State<ProductItem> {
                   },
                 ),
               ),
+
         Directionality(
           textDirection: LanguageService.languageCode == "ar"
               ? TextDirection.rtl
@@ -516,7 +276,7 @@ class _ProductItemState extends State<ProductItem> {
                       right: LanguageService.languageCode == "ar" ? 5.w : null,
                       top: -5.h,
                       child: Transform(
-                        transform: Matrix4.skewX(-0.4), // انحراف بسيط للشكل
+                        transform: Matrix4.skewX(-0.4),
                         child: Container(
                           margin: EdgeInsets.only(
                             left: LanguageService.languageCode != "ar"
@@ -533,7 +293,7 @@ class _ProductItemState extends State<ProductItem> {
                           ),
                           height: 25.h,
                           child: Transform(
-                            transform: Matrix4.skewX(0.4), // انحراف بسيط للشكل
+                            transform: Matrix4.skewX(0.4),
                             child: Row(
                               children: [
                                 SizedBox(width: 3.w),
@@ -559,18 +319,21 @@ class _ProductItemState extends State<ProductItem> {
                                         color: const Color(0xffFF6200),
                                       ),
                                 ),
-                                SecondsCountdown(
-                                  productId: widget.productItem.productId
-                                      .toString(),
-                                  finishRedeem: widget.finishRedeem,
-                                  visibleRedeem: visibleRedeem,
-                                  endTime:
-                                      GetIt.I<PrefsRepository>()
-                                          .getRedeemDateForProduct(
-                                            widget.productItem.productId
-                                                .toString(),
-                                          ) ??
-                                      DateTime.now(),
+                                // 💡 عزل عداد الثواني الخاص بـ Redeem لمنع الـ Jank
+                                RepaintBoundary(
+                                  child: SecondsCountdown(
+                                    productId: widget.productItem.productId
+                                        .toString(),
+                                    finishRedeem: widget.finishRedeem,
+                                    visibleRedeem: visibleRedeem,
+                                    endTime:
+                                        GetIt.I<PrefsRepository>()
+                                            .getRedeemDateForProduct(
+                                              widget.productItem.productId
+                                                  .toString(),
+                                            ) ??
+                                        DateTime.now(),
+                                  ),
                                 ),
                                 Text(
                                   " ${LocaleKeys.seconds.tr()} ",

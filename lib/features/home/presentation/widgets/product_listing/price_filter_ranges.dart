@@ -67,6 +67,8 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
     return SizedBox(
       height: 70.h,
       child: ListView.separated(
+        addAutomaticKeepAlives: false,
+        addRepaintBoundaries: false,
         itemCount: widget.priceRanges.length,
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -131,9 +133,10 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                           widget.priceRanges[index].maxPrice ||
                       prevChoosedOrAppliedFilterToAddToIt.prices!.maxPrice !=
                           widget.priceRanges[index].minPrice) {
-                    if (kDebugMode) print(
-                      "*********************************************************************",
-                    );
+                    if (kDebugMode)
+                      print(
+                        "*********************************************************************",
+                      );
                     prevChoosedOrAppliedFilterToAddToIt =
                         prevChoosedOrAppliedFilterToAddToIt
                             .copyWithSaveOtherField(
@@ -146,9 +149,10 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                               ),
                             );
                   } else {
-                    if (kDebugMode) print(
-                      "*********************************************************************",
-                    );
+                    if (kDebugMode)
+                      print(
+                        "*********************************************************************",
+                      );
                     prevChoosedOrAppliedFilterToAddToIt =
                         prevChoosedOrAppliedFilterToAddToIt
                             .copyWithSaveOtherField(

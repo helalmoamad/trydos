@@ -120,7 +120,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
   final ValueNotifier<bool> showShadowForPanel = ValueNotifier(false);
   final TextEditingController controller = TextEditingController();
   Timer? timerForDisplayFilterSectionTitle;
-  final GlobalKey htmlDescriptionKey = GlobalKey();
   final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
   final ValueNotifier<double> htmlDescriptionHeight = ValueNotifier(0);
   final ScrollController scrollController = ScrollController();
@@ -133,7 +132,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Timer? debounce;
   final ValueNotifier<String?> showTitleForFilterList = ValueNotifier(null);
   final ValueNotifier<bool> displayBoutiqueIconInAppBar = ValueNotifier(false);
-  final ValueNotifier<bool> fromSearchListing = ValueNotifier(false);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final PanelController panelControllerForCart = PanelController();
 
@@ -728,7 +726,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                     overscroll: false,
                                   ),*/
                             // منع overscroll للحماية من crashes
-                            cacheExtent: 100, // قيمة محسنة لمنع التعليق
+                            cacheExtent: 0, // قيمة محسنة لمنع التعليق
                             key: TestVariables.kTestMode
                                 ? const Key(WidgetsKeys.productListingScrollKey)
                                 : null,
@@ -3029,9 +3027,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 ),
                                             delegate: SliverChildBuilderDelegate(
                                               addSemanticIndexes: false,
-
-                                              addAutomaticKeepAlives: false,
                                               addRepaintBoundaries: false,
+                                              addAutomaticKeepAlives: false,
+
                                               childCount: products.length,
                                               (
                                                 BuildContext context,
@@ -3352,8 +3350,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         child: GridView.builder(
                           addAutomaticKeepAlives: false,
                           addRepaintBoundaries: false,
+
                           addSemanticIndexes: false,
-                          cacheExtent: 100,
+                          cacheExtent: 0,
                           controller: sc,
                           itemCount: products[_tapIndexToShowColorImages]
                               .syncColorImages

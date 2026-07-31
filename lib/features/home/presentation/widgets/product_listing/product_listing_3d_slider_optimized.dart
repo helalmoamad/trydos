@@ -313,95 +313,97 @@ class _ProductListing3DSliderOptimizedState
       return Container(color: Colors.black12);
     }
 
-    return SizedBox(
-      height: 250.h,
-      child: FutureBuilder<void>(
-        future: _initializeVideoFuture,
-        builder: (context, snapshot) {
-          final bool initialized =
-              videoProductInListingController[widget.productItem.slug ?? ""]!
-                  .value
-                  .isInitialized;
-          final bool buffering =
-              videoProductInListingController[widget.productItem.slug ?? ""]!
-                  .value
-                  .isBuffering;
-          final bool showLoading = !initialized;
+    return RepaintBoundary(
+      child: SizedBox(
+        height: 250.h,
+        child: FutureBuilder<void>(
+          future: _initializeVideoFuture,
+          builder: (context, snapshot) {
+            final bool initialized =
+                videoProductInListingController[widget.productItem.slug ?? ""]!
+                    .value
+                    .isInitialized;
+            final bool buffering =
+                videoProductInListingController[widget.productItem.slug ?? ""]!
+                    .value
+                    .isBuffering;
+            final bool showLoading = !initialized;
 
-          Widget videoChild;
-          if (initialized) {
-            videoChild = FittedBox(
-              fit: BoxFit.cover,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.r),
-                ),
-                width: 200.w,
-                height: 250.h,
-                child: VideoPlayer(
-                  videoProductInListingController[widget.productItem.slug ??
-                      ""]!,
-                ),
-              ),
-            );
-          } else {
-            videoChild = const SizedBox.shrink();
-          }
-
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              videoChild,
-              if (showLoading)
-                ProductListingImageWidget(
-                  radius: 15.r,
-                  borderColor: isRedeem ? const Color(0xffFF6200) : null,
-                  orginalHeight: 250.h,
-                  orginalWidth: 200.w,
+            Widget videoChild;
+            if (initialized) {
+              videoChild = FittedBox(
+                fit: BoxFit.cover,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15.r),
+                  ),
                   width: 200.w,
-                  imageUrl: imageUrl,
                   height: 250.h,
-                  circleShape: false,
-                  innerShadowYOffset: 3,
+                  child: VideoPlayer(
+                    videoProductInListingController[widget.productItem.slug ??
+                        ""]!,
+                  ),
                 ),
-              buffering
-                  ? TrydosLoader(size: 20.h)
-                  : /* videoProductInListingController[
-                                widget.productItem.slug ?? ""]!
-                            .value
-                            .isPlaying
-                        ? InkWell(
-                            onTap: () {
-                              videoProductInListingController[
-                                      widget.productItem.slug ?? ""]!
-                                  .pause();
-                            },
-                            child: SizedBox(
-                              width: 60,
-                              height: 60,
-                            ),
-                          )
-                        : Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(1, 1, 0, 0.2),
-                                borderRadius: BorderRadius.circular(50),
-                                border: Border.all(color: Colors.white)),
-                            child: InkWell(
+              );
+            } else {
+              videoChild = const SizedBox.shrink();
+            }
+
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                videoChild,
+                if (showLoading)
+                  ProductListingImageWidget(
+                    radius: 15.r,
+                    borderColor: isRedeem ? const Color(0xffFF6200) : null,
+                    orginalHeight: 250.h,
+                    orginalWidth: 200.w,
+                    width: 200.w,
+                    imageUrl: imageUrl,
+                    height: 250.h,
+                    circleShape: false,
+                    innerShadowYOffset: 3,
+                  ),
+                buffering
+                    ? TrydosLoader(size: 20.h)
+                    : /* videoProductInListingController[
+                                  widget.productItem.slug ?? ""]!
+                              .value
+                              .isPlaying
+                          ? InkWell(
                               onTap: () {
-                                videoProductInListingController
-                                    .forEach((key, value) => value.pause());
                                 videoProductInListingController[
                                         widget.productItem.slug ?? ""]!
-                                    .play();
+                                    .pause();
                               },
-                              child: Icon(Icons.play_arrow,
-                                  size: 30, color: Colors.white),
-                            ))*/ const SizedBox.shrink(),
-            ],
-          );
-        },
+                              child: SizedBox(
+                                width: 60,
+                                height: 60,
+                              ),
+                            )
+                          : Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  color: Color.fromRGBO(1, 1, 0, 0.2),
+                                  borderRadius: BorderRadius.circular(50),
+                                  border: Border.all(color: Colors.white)),
+                              child: InkWell(
+                                onTap: () {
+                                  videoProductInListingController
+                                      .forEach((key, value) => value.pause());
+                                  videoProductInListingController[
+                                          widget.productItem.slug ?? ""]!
+                                      .play();
+                                },
+                                child: Icon(Icons.play_arrow,
+                                    size: 30, color: Colors.white),
+                              ))*/ const SizedBox.shrink(),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -436,12 +438,14 @@ class _ProductListing3DSliderOptimizedState
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      RotatingTextWidget(
-                        texts: widget.productItem.labelNames ?? [],
-                        textStyle: textTheme.titleMedium?.bq.copyWith(
-                          fontSize: 9.sp,
-                          color: const Color(0xff388CFF),
-                          height: 0,
+                      RepaintBoundary(
+                        child: RotatingTextWidget(
+                          texts: widget.productItem.labelNames ?? [],
+                          textStyle: textTheme.titleMedium?.bq.copyWith(
+                            fontSize: 9.sp,
+                            color: const Color(0xff388CFF),
+                            height: 0,
+                          ),
                         ),
                       ),
                       SizedBox(height: 5.h),
@@ -470,52 +474,55 @@ class _ProductListing3DSliderOptimizedState
                                                 ) ??
                                             0) >
                                         0
-                                ? Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      SvgPicture.asset(
-                                        AppAssets.redeemClockSvg,
-                                        // ignore: deprecated_member_use
-                                        color: const Color(0xffFF6200),
-                                      ),
-                                      const SizedBox(width: 2),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SecondsCountdown(
-                                            productId: widget
-                                                .productItem
-                                                .productId
-                                                .toString(),
-                                            finishRedeem: widget.finishRedeem,
-                                            visibleRedeem: widget.visibleRedeem,
-                                            endTime:
-                                                GetIt.I<PrefsRepository>()
-                                                    .getRedeemDateForProduct(
-                                                      widget
-                                                          .productItem
-                                                          .productId
-                                                          .toString(),
-                                                    ) ??
-                                                DateTime.now(),
-                                          ),
-                                          Text(
-                                            " ${LocaleKeys.seconds.tr()} ",
-                                            style: context
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.rq
-                                                .copyWith(
-                                                  fontSize: 9.sp,
-                                                  color: const Color(
-                                                    0xffFF6200,
+                                ? RepaintBoundary(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        SvgPicture.asset(
+                                          AppAssets.redeemClockSvg,
+                                          // ignore: deprecated_member_use
+                                          color: const Color(0xffFF6200),
+                                        ),
+                                        const SizedBox(width: 2),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SecondsCountdown(
+                                              productId: widget
+                                                  .productItem
+                                                  .productId
+                                                  .toString(),
+                                              finishRedeem: widget.finishRedeem,
+                                              visibleRedeem:
+                                                  widget.visibleRedeem,
+                                              endTime:
+                                                  GetIt.I<PrefsRepository>()
+                                                      .getRedeemDateForProduct(
+                                                        widget
+                                                            .productItem
+                                                            .productId
+                                                            .toString(),
+                                                      ) ??
+                                                  DateTime.now(),
+                                            ),
+                                            Text(
+                                              " ${LocaleKeys.seconds.tr()} ",
+                                              style: context
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.rq
+                                                  .copyWith(
+                                                    fontSize: 9.sp,
+                                                    color: const Color(
+                                                      0xffFF6200,
+                                                    ),
                                                   ),
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   )
                                 : const SizedBox.shrink();
                           },
