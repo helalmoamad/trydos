@@ -791,6 +791,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       () => SessionExpiredDialog.show(context, phoneNumber: phone),
     );
   }
+
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
@@ -1457,7 +1458,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                   if (!(prefsRepository.isFoundDataCashed ??
                                       false)) {
                                     categoryBloc.add(
-                                      GetMainCategoriesEvent(context: context),
+                                      const GetMainCategoriesEvent(),
                                     );
                                     GetIt.I<BoutiqueBloc>().add(
                                       const GetProductWithFiltersWithoutCancelingPreviousEvents(

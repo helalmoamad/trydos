@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 
 abstract class BoutiqueEvent extends Equatable {
@@ -97,7 +96,6 @@ class GetProductWithFiltersWithoutCancelingPreviousEvents
     this.category,
     this.fromHomePageSearch = false,
     required this.boutiqueSlug,
-    this.context,
     this.getWithoutFilter = false,
     this.indexOfCategory = 0,
     this.searchText,
@@ -116,7 +114,6 @@ class GetProductWithFiltersWithoutCancelingPreviousEvents
   final String? category;
   final int indexOfCategory;
   final bool forceUpdate;
-  final BuildContext? context;
   final List<String> categorySlugs;
   final bool fromHomePageSearch;
   final bool fromExpandPage;
@@ -192,7 +189,6 @@ class GetProductsWithFiltersEvent extends BoutiqueEvent {
   final String boutiqueSlug;
   final bool cashedOrginalBoutique;
   final bool? fromSearch;
-  final BuildContext? context;
   final bool? fromNotification;
   final bool? fromChoosed;
   final bool resetChoosedFilters;
@@ -202,7 +198,6 @@ class GetProductsWithFiltersEvent extends BoutiqueEvent {
   GetProductsWithFiltersEvent({
     required this.boutiqueSlug,
     this.getWithoutFilter = false,
-    this.context = null,
     this.resetChoosedFilters = true,
     this.searchText,
     this.fromNotification = false,
@@ -236,7 +231,6 @@ class GetProductsWithFiltersWithPaginationEvent extends BoutiqueEvent {
   final String boutiqueSlug;
   final bool cashedOrginalBoutique;
   final bool? fromSearch;
-  final BuildContext? context;
   final bool? fromNotification;
   final bool? fromChoosed;
   final bool resetChoosedFilters;
@@ -246,7 +240,6 @@ class GetProductsWithFiltersWithPaginationEvent extends BoutiqueEvent {
   GetProductsWithFiltersWithPaginationEvent({
     required this.boutiqueSlug,
     this.getWithoutFilter = false,
-    this.context = null,
     this.resetChoosedFilters = true,
     this.searchText,
     this.fromNotification = false,

@@ -1730,7 +1730,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   boutiqueSlug:
                       boutiqueState.boutiquesToNavigatorFromLink?[0].slug ?? "",
                   fromSearch: false,
-                  context: context,
+
                   offset: 1,
                 ),
               );

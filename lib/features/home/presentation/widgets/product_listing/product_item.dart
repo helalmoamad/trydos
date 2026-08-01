@@ -223,17 +223,15 @@ class _ProductItemState extends State<ProductItem> {
                                       ),
                                       SizedBox(width: 5.w),
                                       // 💡 عزل عداد الفلاش ديل لمنع إعادة رسم الكارت عند تغيير الثواني
-                                      RepaintBoundary(
-                                        child: FlashDealCountdownTimerWidget(
-                                          visibleFlashDeal: visibleFlashDeal,
-                                          refreshFlashDeal:
-                                              widget.refreshFlashDeal,
-                                          endDateString:
-                                              widget
-                                                  .productItem
-                                                  .flashDealEndDate ??
-                                              "",
-                                        ),
+                                      FlashDealCountdownTimerWidget(
+                                        visibleFlashDeal: visibleFlashDeal,
+                                        refreshFlashDeal:
+                                            widget.refreshFlashDeal,
+                                        endDateString:
+                                            widget
+                                                .productItem
+                                                .flashDealEndDate ??
+                                            "",
                                       ),
                                       SizedBox(width: 10.w),
                                     ],
@@ -320,20 +318,18 @@ class _ProductItemState extends State<ProductItem> {
                                       ),
                                 ),
                                 // 💡 عزل عداد الثواني الخاص بـ Redeem لمنع الـ Jank
-                                RepaintBoundary(
-                                  child: SecondsCountdown(
-                                    productId: widget.productItem.productId
-                                        .toString(),
-                                    finishRedeem: widget.finishRedeem,
-                                    visibleRedeem: visibleRedeem,
-                                    endTime:
-                                        GetIt.I<PrefsRepository>()
-                                            .getRedeemDateForProduct(
-                                              widget.productItem.productId
-                                                  .toString(),
-                                            ) ??
-                                        DateTime.now(),
-                                  ),
+                                SecondsCountdown(
+                                  productId: widget.productItem.productId
+                                      .toString(),
+                                  finishRedeem: widget.finishRedeem,
+                                  visibleRedeem: visibleRedeem,
+                                  endTime:
+                                      GetIt.I<PrefsRepository>()
+                                          .getRedeemDateForProduct(
+                                            widget.productItem.productId
+                                                .toString(),
+                                          ) ??
+                                      DateTime.now(),
                                 ),
                                 Text(
                                   " ${LocaleKeys.seconds.tr()} ",

@@ -189,7 +189,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           GetHomeBoutiqesEvent(
                             getWithPrefetchToStoreInMemory: false,
                             getWithOutPrefetchForEachBoutiques: true,
-                            context: context,
+
                             categorySlug: "Empty",
                             offset: "1",
                           ),

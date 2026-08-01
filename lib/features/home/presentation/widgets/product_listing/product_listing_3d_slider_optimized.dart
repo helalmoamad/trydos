@@ -438,14 +438,12 @@ class _ProductListing3DSliderOptimizedState
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      RepaintBoundary(
-                        child: RotatingTextWidget(
-                          texts: widget.productItem.labelNames ?? [],
-                          textStyle: textTheme.titleMedium?.bq.copyWith(
-                            fontSize: 9.sp,
-                            color: const Color(0xff388CFF),
-                            height: 0,
-                          ),
+                      RotatingTextWidget(
+                        texts: widget.productItem.labelNames ?? [],
+                        textStyle: textTheme.titleMedium?.bq.copyWith(
+                          fontSize: 9.sp,
+                          color: const Color(0xff388CFF),
+                          height: 0,
                         ),
                       ),
                       SizedBox(height: 5.h),
@@ -474,55 +472,52 @@ class _ProductListing3DSliderOptimizedState
                                                 ) ??
                                             0) >
                                         0
-                                ? RepaintBoundary(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SvgPicture.asset(
-                                          AppAssets.redeemClockSvg,
-                                          // ignore: deprecated_member_use
-                                          color: const Color(0xffFF6200),
-                                        ),
-                                        const SizedBox(width: 2),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            SecondsCountdown(
-                                              productId: widget
-                                                  .productItem
-                                                  .productId
-                                                  .toString(),
-                                              finishRedeem: widget.finishRedeem,
-                                              visibleRedeem:
-                                                  widget.visibleRedeem,
-                                              endTime:
-                                                  GetIt.I<PrefsRepository>()
-                                                      .getRedeemDateForProduct(
-                                                        widget
-                                                            .productItem
-                                                            .productId
-                                                            .toString(),
-                                                      ) ??
-                                                  DateTime.now(),
-                                            ),
-                                            Text(
-                                              " ${LocaleKeys.seconds.tr()} ",
-                                              style: context
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.rq
-                                                  .copyWith(
-                                                    fontSize: 9.sp,
-                                                    color: const Color(
-                                                      0xffFF6200,
-                                                    ),
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      SvgPicture.asset(
+                                        AppAssets.redeemClockSvg,
+                                        // ignore: deprecated_member_use
+                                        color: const Color(0xffFF6200),
+                                      ),
+                                      const SizedBox(width: 2),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SecondsCountdown(
+                                            productId: widget
+                                                .productItem
+                                                .productId
+                                                .toString(),
+                                            finishRedeem: widget.finishRedeem,
+                                            visibleRedeem: widget.visibleRedeem,
+                                            endTime:
+                                                GetIt.I<PrefsRepository>()
+                                                    .getRedeemDateForProduct(
+                                                      widget
+                                                          .productItem
+                                                          .productId
+                                                          .toString(),
+                                                    ) ??
+                                                DateTime.now(),
+                                          ),
+                                          Text(
+                                            " ${LocaleKeys.seconds.tr()} ",
+                                            style: context
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.rq
+                                                .copyWith(
+                                                  fontSize: 9.sp,
+                                                  color: const Color(
+                                                    0xffFF6200,
                                                   ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   )
                                 : const SizedBox.shrink();
                           },

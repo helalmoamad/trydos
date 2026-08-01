@@ -66,7 +66,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
         cashedOrginalBoutique: true,
         boutiqueSlug: boutiqueSlug,
         fromSearch: false,
-        context: context,
+
         offset: 1,
       ),
     );
@@ -342,7 +342,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
                             GetProductsWithFiltersEvent(
                               boutiqueSlug: boutiqueSlug,
                               fromSearch: false,
-                              context: context,
+
                               offset: 1,
                             ),
                           );

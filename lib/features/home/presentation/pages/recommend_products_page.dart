@@ -141,7 +141,6 @@ class _RecommendProductsPageState extends State<RecommendProductsPage> {
 
         boutiqueBloc.add(
           GetProductsWithFiltersEvent(
-            context: context,
             limit: 10,
             cashedOrginalBoutique: true,
             boutiqueSlug: "*recommended*",

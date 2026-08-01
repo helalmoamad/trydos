@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
-
 
 abstract class CategoryEvent extends Equatable {
   const CategoryEvent();
@@ -10,12 +8,11 @@ abstract class CategoryEvent extends Equatable {
 
 class GetMainCategoriesEvent extends CategoryEvent {
   final bool getWithPrefech;
-  const GetMainCategoriesEvent({this.context, this.getWithPrefech = true});
+  const GetMainCategoriesEvent({this.getWithPrefech = true});
 
-  final BuildContext? context;
   @override
   // TODO: implement props
-  List<Object?> get props => [context];
+  List<Object?> get props => [];
 }
 
 class ReplyFromGeminiEvent extends CategoryEvent {
@@ -23,8 +20,11 @@ class ReplyFromGeminiEvent extends CategoryEvent {
   final bool resetTheReply;
   final bool fromSearch;
 
-  ReplyFromGeminiEvent(
-      {this.image, required this.fromSearch, this.resetTheReply = false});
+  ReplyFromGeminiEvent({
+    this.image,
+    required this.fromSearch,
+    this.resetTheReply = false,
+  });
   @override
   List<Object?> get props => [];
 }
@@ -48,20 +48,17 @@ class GetHomeBoutiqesEvent extends CategoryEvent {
   bool? withSemaphore;
   final bool getWithPrefetchToStoreInMemory;
   final String categorySlug;
-  final BuildContext context;
 
   GetHomeBoutiqesEvent({
     required this.offset,
-    required this.context,
     this.withSemaphore,
     required this.getWithPrefetchToStoreInMemory,
     this.forRefresh = false,
     this.getWithOutPrefetchForEachBoutiques = false,
     this.getWithPagination = false,
     required this.categorySlug,
-  }
-      //  {this.getWithPagination = false}
-      );
+    //  {this.getWithPagination = false}
+  });
 
   @override
   // TODO: implement props

@@ -33,7 +33,7 @@ class PreCachingImageBloc
   /// على الشاشة الآن — فتُعاد قراءتها وفكّ ترميزها، وهو تقطيع مباشر.
   ///
   /// التخزين المسبق بلا حدّ يضرّ أكثر ممّا ينفع.
-  static const int _maxConcurrentPrecache = 5;
+  static const int _maxConcurrentPrecache = 9;
   int _activePrecache = 0;
   final List<Completer<void>> _precacheQueue = <Completer<void>>[];
 

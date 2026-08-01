@@ -1074,7 +1074,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           .slug ??
                       "",
                   fromSearch: false,
-                  context: context,
+
                   offset: 1,
                 ),
               );

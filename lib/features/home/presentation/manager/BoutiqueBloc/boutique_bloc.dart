@@ -1413,7 +1413,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               filtersChoosedByUser: event.filtersChoosedByUser,
               forceUpdate: event.forceUpdate,
               cashedOrginalBoutique: event.cashedOrginalBoutique,
-              context: event.context,
             ),
           );
           return;
@@ -1599,165 +1598,81 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         );
         List<String> cachedLinksOfImages = [];
         String url;
-        if (event.context != null) {
-          for (
-            var i = 0;
-            i <
-                ((r.data?.products?.length ?? 0) > 4
-                    ? 4
-                    : (r.data?.products?.length ?? 0));
-            i++
-          ) {
-            Products product = r.data!.products![i];
-            /* product.syncColorImages?.forEach((image) {
-          if (!image.images.isNullOrEmpty) {
-            image.images?.forEach((image) {
-              url = addSuitableWidthAndHeightToImage(
-                  imageUrl: image.filePath!,
-                  width: 200,
-                  // the width of the image in the ui
-                  height: 290,
-                  // the height of the image in the ui
-                  ordinalWidth: double.tryParse(image.originalWidth.toString()),
-                  ordinalHeight:
-                      double.tryParse(image.originalHeight.toString()));
-              url2 = addSuitableWidthAndHeightToImage(
-                imageUrl: image.filePath!,
-                width: 320,
-                // the width of the image in the ui
-                height: 464,
-              );
-              cachedLinksOfImages.add(url);
-              cachedLinksOfImages.add(url2);
-              prefetchImages(url, event.context);
-              prefetchImages(
-                url2,
-                event.context,
-              );
-            });
-          }
-        });
-*/
-            /*  product.syncColorImages?.forEach((image) async {
-            if (!image.images.isNullOrEmpty) {
-              url = addSuitableWidthAndHeightToImage(
-                imageUrl: image.images![0].filePath!,
-                width: 40,
-                // the width of the image in the ui
-                height: 40,
-                // the height of the image in the ui
-              );
-              prefetchImages(url, event.context!, "syncColorImages", 40, 40);
-            }
-          });*/
-            if ((product.syncColorImages?.length ?? 0) > 0) {
-              if ((product.syncColorImages![0].images?.length ?? 0) > 0) {
-                url = addSuitableWidthAndHeightToImage(
-                  imageUrl:
-                      product.syncColorImages![0].images![0].filePath ?? "",
-                  width: 200.w,
-                  // the width of the image in the ui
-                  height: 290.h,
 
-                  // the height of the image in the ui
-                );
-                if (!cachedLinksOfImages.contains(url)) {
-                  prefetchImages(
-                    url,
-                    event.context!,
-                    "productListingImages",
-                    200.w,
-                    290.h,
-                  );
-                }
-              }
-            }
+        for (
+          var i = 0;
+          i <
+              ((r.data?.products?.length ?? 0) > 4
+                  ? 4
+                  : (r.data?.products?.length ?? 0));
+          i++
+        ) {
+          Products product = r.data!.products![i];
 
-            if ((product.images?.length ?? 0) > 0) {
+          if ((product.syncColorImages?.length ?? 0) > 0) {
+            if ((product.syncColorImages![0].images?.length ?? 0) > 0) {
               url = addSuitableWidthAndHeightToImage(
-                imageUrl: product.images![0].filePath ?? "",
+                imageUrl: product.syncColorImages![0].images![0].filePath ?? "",
                 width: 200.w,
                 // the width of the image in the ui
                 height: 290.h,
+
                 // the height of the image in the ui
               );
-              /*url2 = addSuitableWidthAndHeightToImage(
+              if (!cachedLinksOfImages.contains(url)) {
+                prefetchImages(url, "productListingImages");
+              }
+            }
+          }
+
+          if ((product.images?.length ?? 0) > 0) {
+            url = addSuitableWidthAndHeightToImage(
+              imageUrl: product.images![0].filePath ?? "",
+              width: 200.w,
+              // the width of the image in the ui
+              height: 290.h,
+              // the height of the image in the ui
+            );
+            /*url2 = addSuitableWidthAndHeightToImage(
             imageUrl: image.filePath!,
             width: 200.w,
             // the width of the image in the ui
             height: 350,
           );*/
-              if (!cachedLinksOfImages.contains(url)) {
-                prefetchImages(
-                  url,
-                  event.context!,
-                  "productListingImages",
-                  200.w,
-                  290.h,
-                );
-              }
+            if (!cachedLinksOfImages.contains(url)) {
+              prefetchImages(url, "productListingImages");
             }
-            /*  Future.delayed(Duration(seconds: 5), () {
+          }
+          /*  Future.delayed(Duration(seconds: 5), () {
             if (!cachedLinksOfImages.contains(url2)) {
               prefetchImages(url2, event.context);
             }
           });*/
-          }
-          r.data?.categories?.forEach((category) {
-            url = addSuitableWidthAndHeightToImage(
-              imageUrl: category.flatPhotoPath?.filePath ?? "",
-              width: 70.w,
-              height: 70.h,
-            );
-            prefetchImages(
-              url,
-              event.context!,
-              "categoryListingImages",
-              70.w,
-              70.h,
-            );
-            category.subCategories?.forEach((sub) {
-              url = addSuitableWidthAndHeightToImage(
-                imageUrl: sub.flatPhotoPath?.filePath ?? "",
-                width: 50.w,
-                height: 50.h,
-              );
-              prefetchImages(
-                url,
-                event.context!,
-                "categoryListingImages",
-                50.w,
-                50.h,
-              );
-            });
-          });
-          r.data?.brands?.forEach((brand) {
-            prefetchSvgImages(
-              brand.icon!.filePath.toString(),
-              event.context!,
-              "brandListingImages",
-              ordinalWidth: double.tryParse(
-                brand.icon!.originalWidth.toString(),
-              ),
-              ordinalHeight: double.tryParse(
-                brand.icon!.originalHeight.toString(),
-              ),
-            );
-          });
-        } else {
-          if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC");
         }
+        r.data?.categories?.forEach((category) {
+          url = addSuitableWidthAndHeightToImage(
+            imageUrl: category.flatPhotoPath?.filePath ?? "",
+            width: 70.w,
+            height: 70.h,
+          );
+          prefetchImages(url, "categoryListingImages");
+          category.subCategories?.forEach((sub) {
+            url = addSuitableWidthAndHeightToImage(
+              imageUrl: sub.flatPhotoPath?.filePath ?? "",
+              width: 50.w,
+              height: 50.h,
+            );
+            prefetchImages(url, "categoryListingImages");
+          });
+        });
+        r.data?.brands?.forEach((brand) {
+          prefetchImages(brand.icon!.filePath.toString(), "brandListingImages");
+        });
       },
     );
   }
 
-  prefetchImages(
-    String url,
-    BuildContext context,
-    String type,
-    double width,
-    double height,
-  ) async {
+  prefetchImages(String url, String type) async {
     if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC");
     List<String> urlHasPredeched =
         prefsRepository.getImageUrlHasPrefeched ?? [];
@@ -1765,13 +1680,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       return;
     }
     GetIt.I<PreCachingImageBloc>().add(
-      CacheImageEvent(
-        imageUrl: url,
-        context: context,
-        type: type,
-        height: height,
-        width: width,
-      ),
+      CacheImageEvent(imageUrl: url, type: type),
     );
   }
 
@@ -2233,13 +2142,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 height: 464.h,
               );
 
-              prefetchImages(
-                url,
-                event.context!,
-                "productDetailsImages",
-                320.w,
-                464.h,
-              );
+              prefetchImages(url, "productDetailsImages");
               //   });
               //   }
               //   });
@@ -2253,13 +2156,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 height: 464.h,
               );
 
-              prefetchImages(
-                url,
-                event.context!,
-                "productDetailsImages",
-                320.w,
-                464.h,
-              );
+              prefetchImages(url, "productDetailsImages");
               //    });
             }
           });
@@ -3008,13 +2905,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 height: 464.h,
               );
 
-              prefetchImages(
-                url,
-                event.context!,
-                "productDetailsImages",
-                320.w,
-                464.h,
-              );
+              prefetchImages(url, "productDetailsImages");
               //   });
               //   }
               //   });
@@ -3028,13 +2919,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 height: 464.h,
               );
 
-              prefetchImages(
-                url,
-                event.context!,
-                "productDetailsImages",
-                320.w,
-                464.h,
-              );
+              prefetchImages(url, "productDetailsImages");
               //    });
             }
           });

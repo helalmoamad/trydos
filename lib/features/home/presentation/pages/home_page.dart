@@ -137,7 +137,7 @@ class _HomePageState extends State<HomePage> {
     if (debounce?.isActive ?? false) {
       debounce!.cancel();
     }
-    debounce = Timer(const Duration(milliseconds: 600), () {
+    debounce = Timer(const Duration(milliseconds: 300), () {
       int lastIndexSeenByUser =
           (scrollController.position.pixels +
               scrollController.position.viewportDimension +
@@ -160,7 +160,7 @@ class _HomePageState extends State<HomePage> {
 
       if (selectedCategorySlug == '') return;
       if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent * 0.6)) {
+          (scrollController.position.maxScrollExtent * 0.4)) {
         categoryBloc.add(
           GetHomeBoutiqesEvent(
             getWithPrefetchToStoreInMemory: false,
@@ -171,7 +171,6 @@ class _HomePageState extends State<HomePage> {
                     .getHomeBoutiquesPaginationObjectByMainCategory[selectedCategorySlug]!
                     .offset ??
                 "",
-            context: context,
             getWithPagination: true,
           ),
         );
@@ -184,7 +183,7 @@ class _HomePageState extends State<HomePage> {
           (scrollController.position.maxScrollExtent * 0.4)) {
         categoryBloc.prefetchBoutiques(
           selectedCategorySlug,
-          context,
+
           lastIndexSeenByUser,
         );
       }
@@ -248,9 +247,7 @@ class _HomePageState extends State<HomePage> {
       BlocProvider.of<StoryBloc>(
         context,
       ).add(const GetStoryEvent(withPaginition: false));
-      categoryBloc.add(
-        GetMainCategoriesEvent(getWithPrefech: false, context: context),
-      );
+      categoryBloc.add(const GetMainCategoriesEvent(getWithPrefech: false));
     }
   }
 
@@ -420,7 +417,7 @@ class _HomePageState extends State<HomePage> {
               ? const Key(WidgetsKeys.homepageScrollKey)
               : null,
           controller: scrollController,
-          cacheExtent: 0,
+          cacheExtent: 300,
           physics: const ClampingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),

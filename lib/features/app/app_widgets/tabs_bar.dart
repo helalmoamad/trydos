@@ -988,7 +988,6 @@ class _TabsBarState extends State<TabsBar> {
                                                   .data!
                                                   .mainCategories![index]
                                                   .slug!,
-                                              context: context,
                                             ),
                                           );
                                           ////////////////////////////
@@ -1099,7 +1098,7 @@ class _TabsBarState extends State<TabsBar> {
                                                   false,
                                               getWithOutPrefetchForEachBoutiques:
                                                   true,
-                                              context: context,
+
                                               categorySlug: "Empty",
                                               offset: "1",
                                             ),

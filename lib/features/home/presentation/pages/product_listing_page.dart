@@ -242,7 +242,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
         }
         boutiqueBloc.add(
           GetProductsWithFiltersWithPaginationEvent(
-            context: context,
             fromNotification: widget.fromNotificationCategory,
             limit: 10,
             cashedOrginalBoutique: !widget.fromSearch,
