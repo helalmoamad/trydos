@@ -331,11 +331,6 @@ class HomePageBoutiqueCard extends StatelessWidget {
                                       flatPhotoPath: CategoryBanner(
                                         filePath: item.flatPhotoPath?.filePath,
                                       ),
-                                      mostViewedProductThumbnail:
-                                          CategoryBanner(
-                                            filePath:
-                                                item.mostViewedProductThumbnail,
-                                          ),
                                     ),
                                   ],
                                 ),

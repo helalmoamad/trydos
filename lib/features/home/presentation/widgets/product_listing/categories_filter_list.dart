@@ -2,10 +2,7 @@ import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
@@ -20,7 +17,8 @@ import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 
 import '../../../data/models/get_product_filters_model.dart';
-import '../../../data/models/get_product_listing_with_filters_model.dart';
+import '../../../data/models/get_product_listing_with_filters_model.dart'
+    hide Color;
 
 class CategoriesFilterList extends StatelessWidget {
   const CategoriesFilterList({
@@ -84,7 +82,7 @@ class CategoriesFilterList extends StatelessWidget {
         return ListView.builder(
           scrollDirection: Axis.horizontal,
           addRepaintBoundaries: false,
-          addAutomaticKeepAlives: false,
+
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: filters.categories?.length ?? 0,
@@ -195,12 +193,10 @@ class CategoriesFilterList extends StatelessWidget {
                                     isChildCategorySlug
                                 ? innerIndex * 55.w
                                 : innerIndex >= (subCategories.length - 2)
-                                ? (innerIndex - 1) * 3
+                                ? (innerIndex - 1) * 4.w
                                 : 0,
                             child:
-                                subCategories[innerIndex]
-                                        .mostViewedProductThumbnail !=
-                                    null
+                                subCategories[innerIndex].flatPhotoPath != null
                                 ? FilterCircleWidget(
                                     isSubSubCategory:
                                         subCategories[innerIndex]
@@ -220,20 +216,20 @@ class CategoriesFilterList extends StatelessWidget {
                                         : 50.h,
                                     originalWidth: double.tryParse(
                                       subCategories[innerIndex]
-                                          .mostViewedProductThumbnail!
+                                          .flatPhotoPath!
                                           .originalWidth
                                           .toString(),
                                     ),
                                     originalHeight: double.tryParse(
                                       subCategories[innerIndex]
-                                          .mostViewedProductThumbnail!
+                                          .flatPhotoPath!
                                           .originalHeight
                                           .toString(),
                                     ),
                                     categoryName: subCategories[innerIndex].name
                                         .toString(),
                                     imageUrl: subCategories[innerIndex]
-                                        .mostViewedProductThumbnail!
+                                        .flatPhotoPath!
                                         .filePath
                                         .toString(),
                                     withBackGroundShadow: innerIndex != 0,
@@ -438,7 +434,7 @@ class CategoriesFilterList extends StatelessWidget {
                                             isChildCategorySlug
                                         ? 3
                                         : 0,
-                                    borderColor: context.colorScheme.white,
+                                    borderColor: const Color(0xff1D1D1D),
                                     isExpanded:
                                         (currentExpandedIndex == index) ||
                                         isChildCategorySlug,
@@ -449,9 +445,7 @@ class CategoriesFilterList extends StatelessWidget {
                         ValueListenableBuilder<bool>(
                           valueListenable: scaleTheTopItemInFiltersStack,
                           builder: (context, scale, _) {
-                            return filters
-                                        .categories![index]
-                                        .mostViewedProductThumbnail !=
+                            return filters.categories![index].flatPhotoPath !=
                                     null
                                 ? FilterCircleWidget(
                                     key: TestVariables.kTestMode == false
@@ -461,18 +455,19 @@ class CategoriesFilterList extends StatelessWidget {
                                           ),
                                     width: 70.w,
                                     height: 70.h,
+                                    borderColor: const Color(0xff1D1D1D),
                                     isTopItem: true,
                                     originalWidth: double.tryParse(
                                       filters
                                           .categories![index]
-                                          .mostViewedProductThumbnail!
+                                          .flatPhotoPath!
                                           .originalWidth
                                           .toString(),
                                     ),
                                     originalHeight: double.tryParse(
                                       filters
                                           .categories![index]
-                                          .mostViewedProductThumbnail!
+                                          .flatPhotoPath!
                                           .originalHeight
                                           .toString(),
                                     ),
@@ -482,7 +477,7 @@ class CategoriesFilterList extends StatelessWidget {
                                         .toString(),
                                     imageUrl: filters
                                         .categories![index]
-                                        .mostViewedProductThumbnail!
+                                        .flatPhotoPath!
                                         .filePath
                                         .toString(),
                                     scale: scale,
@@ -710,12 +705,7 @@ class CategoriesFilterList extends StatelessWidget {
                 },
               );
             } else {
-              if (kDebugMode)
-                print(
-                  "^^^^^*******************************************${filters.categories![index].mostViewedProductThumbnail}//****************************************${isChildCategorySlug || !workWithChoosedFilter}",
-                );
-              return filters.categories![index].mostViewedProductThumbnail !=
-                      null
+              return filters.categories![index].flatPhotoPath != null
                   ? FilterCircleWidget(
                       key: TestVariables.kTestMode == false
                           ? null
@@ -724,9 +714,10 @@ class CategoriesFilterList extends StatelessWidget {
                             ),
                       width: 70.w,
                       height: 70.h,
+                      borderColor: const Color(0xff1D1D1D),
                       imageUrl: filters
                           .categories![index]
-                          .mostViewedProductThumbnail!
+                          .flatPhotoPath!
                           .filePath
                           .toString(),
                       categoryName: filters.categories![index].name.toString(),

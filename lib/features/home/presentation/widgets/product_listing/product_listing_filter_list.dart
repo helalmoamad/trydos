@@ -603,7 +603,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     SizedBox(
                                       height: 8.h,
                                       child: ListView.builder(
-                                        addAutomaticKeepAlives: false,
                                         addRepaintBoundaries: false,
                                         itemCount: countOfFilters,
                                         physics:
@@ -1845,7 +1844,6 @@ Widget choosedOrAppliedFiltersWidget({
         height: 25.h,
         width: 30.w,
         child: ListView(
-          addAutomaticKeepAlives: false,
           addRepaintBoundaries: false,
           key: TestVariables.kTestMode == false
               ? null
@@ -2117,7 +2115,7 @@ Widget choosedOrAppliedFiltersWidget({
                 height: 28.h,
                 child: ListView.builder(
                   shrinkWrap: true,
-                  addAutomaticKeepAlives: false,
+
                   addRepaintBoundaries: false,
 
                   physics: const NeverScrollableScrollPhysics(),
@@ -2192,7 +2190,6 @@ Widget choosedOrAppliedFiltersWidget({
                 child: ListView.builder(
                   shrinkWrap: true,
 
-                  addAutomaticKeepAlives: false,
                   addRepaintBoundaries: false,
                   physics: const NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
@@ -2293,7 +2290,6 @@ Widget choosedOrAppliedFiltersWidget({
               child: ListView.builder(
                 shrinkWrap: true,
 
-                addAutomaticKeepAlives: false,
                 addRepaintBoundaries: false,
                 physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
@@ -2395,7 +2391,6 @@ Widget choosedOrAppliedFiltersWidget({
               child: ListView.builder(
                 shrinkWrap: true,
 
-                addAutomaticKeepAlives: false,
                 addRepaintBoundaries: false,
                 physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
@@ -2486,7 +2481,6 @@ Widget choosedOrAppliedFiltersWidget({
               child: ListView.builder(
                 shrinkWrap: true,
 
-                addAutomaticKeepAlives: false,
                 addRepaintBoundaries: false,
                 physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
@@ -2575,7 +2569,6 @@ Widget choosedOrAppliedFiltersWidget({
                 child: ListView.builder(
                   shrinkWrap: true,
 
-                  addAutomaticKeepAlives: false,
                   addRepaintBoundaries: false,
                   physics: const NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
@@ -2832,71 +2825,64 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
     };
     return Padding(
       padding: EdgeInsetsDirectional.only(end: widget.paddingValue),
-      child: Container(
-        width: widget.isSubSubCategory! ? widget.width + 22.w : null,
-        height: widget.isSubSubCategory! ? widget.height + 22.h : null,
-        child: Column(
-          children: [
-            Column(
-              children: [
-                InkWell(
-                  onTap: () => widget.addOrRemoveSpecificFilter.call(
-                    !widget.displayFilterMark,
-                  ),
-                  child: Stack(
-                    children: [
-                      AnimatedScale(
-                        curve: Curves.fastEaseInToSlowEaseOut,
-                        scale: widget.scale ? 0.92 : 1,
-                        duration: const Duration(milliseconds: 100),
-                        child: FilterImage(
-                          isSvg: widget.isSvg,
-                          imageUrl: widget.imageUrl,
-                          width: widget.width,
-                          height: widget.height,
-                          originalWidth: widget.originalWidth,
-                          originalHeight: widget.originalHeight,
-                          borderColor: widget.displayFilterMark
-                              ? const Color(0xffFF5F61)
-                              : widget.borderColor,
-                          withBackGroundShadow:
-                              !widget.displayFilterMark &&
-                              widget.withBackGroundShadow,
-                          withInnerShadow: !widget.scale,
-                        ),
-                      ),
-                      Visibility(
-                        visible: widget.displayFilterMark,
-                        child: FilterSelectedMark(
-                          width: widget.markWidth,
-                          height: widget.markHeight,
-                        ),
-                      ),
-                    ],
-                  ),
+      child: Column(
+        children: [
+          Column(
+            children: [
+              InkWell(
+                onTap: () => widget.addOrRemoveSpecificFilter.call(
+                  !widget.displayFilterMark,
                 ),
-                if (widget.isExpanded || widget.isTopItem) ...{
-                  SizedBox(height: 5.h),
-                  SizedBox(
-                    width: widget.width,
-                    child: MyTextWidget(
-                      widget.categoryName,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleMedium?.rq.copyWith(
-                        color: const Color(0xff8E8E8E),
-                        letterSpacing: 0,
-                        height: 1.25,
-                        fontSize: 13.sp,
+                child: Stack(
+                  children: [
+                    FilterImage(
+                      isSvg: widget.isSvg,
+                      imageUrl: widget.imageUrl,
+                      width: widget.width,
+                      height: widget.height,
+                      originalWidth: widget.originalWidth,
+                      originalHeight: widget.originalHeight,
+                      borderColor: widget.displayFilterMark
+                          ? const Color(0xffFF5F61)
+                          : widget.borderColor,
+                      withBackGroundShadow:
+                          !widget.displayFilterMark &&
+                          widget.withBackGroundShadow,
+                      withInnerShadow: !widget.scale,
+                    ),
+                    Visibility(
+                      visible: widget.displayFilterMark,
+                      child: FilterSelectedMark(
+                        width: widget.markWidth,
+                        height: widget.markHeight,
                       ),
                     ),
+                  ],
+                ),
+              ),
+              if (widget.isExpanded || widget.isTopItem) ...{
+                SizedBox(height: 5.h),
+                SizedBox(
+                  width: widget.isSubSubCategory!
+                      ? widget.width + 22.w
+                      : widget.width,
+                  child: MyTextWidget(
+                    widget.categoryName,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.titleMedium?.rq.copyWith(
+                      color: const Color(0xff8E8E8E),
+                      letterSpacing: 0,
+                      height: 1.25,
+                      fontSize: 11.sp,
+                    ),
                   ),
-                },
-              ],
-            ),
-          ],
-        ),
+                ),
+              },
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -2935,7 +2921,9 @@ class FilterImage extends StatelessWidget {
     return Container(
       width: width,
       height: height,
+
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(180.r)),
         border: borderColor != null
             ? Border.all(width: 0.5, color: borderColor!)

@@ -20,7 +20,6 @@ import '../models/login_to_chat_response_model.dart';
 import '../models/send_otp_response_model.dart';
 import '../models/verify_guest_phone_response_model.dart';
 import '../models/verify_otp_sign_up_and_in_response_model.dart';
-import '../parsers/heavy_response_parsers.dart';
 
 @injectable
 class AuthRemoteDatasource {
@@ -140,15 +139,17 @@ class AuthRemoteDatasource {
 
   Future<User> getCustomerInfo() async {
     // Build the model on a background isolate (see heavy_response_parsers.dart).
-    GetClient<dynamic> getCustomerInfo = GetClient<dynamic>(
+    GetClient<User> getCustomerInfo = GetClient<User>(
       serverName: ServerName.marketGO,
-      requestPrams: RequestConfig<dynamic>(
+      requestPrams: RequestConfig<User>(
         endpoint: MarketEndPoints.getCustomerInfoEP,
-        response: ResponseValue<dynamic>(fromJson: (response) => response),
+        response: ResponseValue<User>(
+          fromJson: (response) =>
+              User.fromJson(response['data']['customer_info']),
+        ),
       ),
     );
-    final raw = await getCustomerInfo();
-    return parseCustomerInfoInBackground(raw);
+    return getCustomerInfo();
   }
 
   Future<GetUserCountryResponseModel> getUserCountry() {

@@ -524,8 +524,13 @@ class _ProductQuickViewPopupState extends State<ProductQuickViewPopup> {
           widget.productNotAvailableNotifier.value = LocaleKeys
               .product_is_not_available_in_your_country
               .tr();
-        } else if (state.authProductDetailsModel?.data?.availableQuantity ==
-            0) {
+        } else if (state
+                .cachedProductWithoutRelatedProductsModel[products[tapIndex]
+                    .productId
+                    .toString()]
+                ?.product
+                ?.isActive ==
+            false) {
           widget.productNotAvailableNotifier.value = LocaleKeys
               .this_product_is_not_available_in_store
               .tr();

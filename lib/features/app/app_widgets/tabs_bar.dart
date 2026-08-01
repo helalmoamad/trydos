@@ -914,6 +914,7 @@ class _TabsBarState extends State<TabsBar> {
                           width: 1.sw - 40,
                           height: 80.h,
                           child: ListView.builder(
+                            addRepaintBoundaries: false,
                             //controller: scrollController,
                             padding: EdgeInsets.only(right: 15.w),
                             key: TestVariables.kTestMode

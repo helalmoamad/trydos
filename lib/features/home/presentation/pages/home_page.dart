@@ -420,7 +420,7 @@ class _HomePageState extends State<HomePage> {
               ? const Key(WidgetsKeys.homepageScrollKey)
               : null,
           controller: scrollController,
-          cacheExtent: 50,
+          cacheExtent: 0,
           physics: const ClampingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),

@@ -101,6 +101,7 @@ class ChatRemoteDataSource {
       ),
     );
     final raw = await getChats();
+
     return parseChatsInBackground(raw);
   }
 
@@ -331,7 +332,8 @@ class ChatRemoteDataSource {
   Future<GetSharedProductCountModel> getSharedProductCount(
     Map<String, dynamic> params,
   ) {
-    if (kDebugMode) print("/////////////////////////////////////////////////${params["id"]}");
+    if (kDebugMode)
+      print("/////////////////////////////////////////////////${params["id"]}");
     GetClient<GetSharedProductCountModel> getSharedProductCount =
         GetClient<GetSharedProductCountModel>(
           serverName: ServerName.chat,

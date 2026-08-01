@@ -14,7 +14,6 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
     as filters_model;
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
-import 'package:trydos/features/home/data/parsers/heavy_response_parsers.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as product;
 import 'package:get_it/get_it.dart';
@@ -22,6 +21,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/data/parsers/heavy_response_parsers.dart';
 import 'package:trydos/features/home/domain/use_cases/get_featured_products_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
@@ -1705,7 +1705,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           }
           r.data?.categories?.forEach((category) {
             url = addSuitableWidthAndHeightToImage(
-              imageUrl: category.mostViewedProductThumbnail?.filePath ?? "",
+              imageUrl: category.flatPhotoPath?.filePath ?? "",
               width: 70.w,
               height: 70.h,
             );
@@ -1718,7 +1718,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             );
             category.subCategories?.forEach((sub) {
               url = addSuitableWidthAndHeightToImage(
-                imageUrl: sub.mostViewedProductThumbnail?.filePath ?? "",
+                imageUrl: sub.flatPhotoPath?.filePath ?? "",
                 width: 50.w,
                 height: 50.h,
               );
@@ -3312,10 +3312,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     if (results != null) data[side] = results;
 
     emit(
-      state.copyWith(
-        compareSearchStatus: statuses,
-        compareSearchResults: data,
-      ),
+      state.copyWith(compareSearchStatus: statuses, compareSearchResults: data),
     );
   }
 }

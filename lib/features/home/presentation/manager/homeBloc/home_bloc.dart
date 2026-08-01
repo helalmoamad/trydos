@@ -2929,6 +2929,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               colorName: event.colorName,
               sizeName: event.sizeName,
               boutiqueIcon: event.boutiqueIcon,
+              variationId: event.variationId,
               boutiqueId: event.boutiqueId,
               finishAddAllTheItems: event.finishAddAllTheItems,
               countOfPieces: event.countOfPieces,
@@ -6870,7 +6871,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ..add(event.side);
     emit(state.copyWith(compareSlugs: slugs, compareOrder: order));
 
-    _emitCompareStatus(emit, event.side, GetCompareProductDetailsStatus.loading);
+    _emitCompareStatus(
+      emit,
+      event.side,
+      GetCompareProductDetailsStatus.loading,
+    );
 
     final response = await getFullProductDetailsUseCase(event.productSlug);
 

@@ -1,12 +1,11 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// flutter_screenutil not required here
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/test_utils/widgets_keys.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_state.dart';
 
 class AnimatedSearchBar extends StatefulWidget {
@@ -39,7 +38,7 @@ class AnimatedSearchBar extends StatefulWidget {
   final ValueNotifier<bool>? hideTrendingAndHistory;
 
   const AnimatedSearchBar({
-    Key? key,
+    super.key,
     required this.width,
     required this.textController,
     this.color = Colors.white,
@@ -64,57 +63,61 @@ class AnimatedSearchBar extends StatefulWidget {
     required this.onClickClose,
     this.suggestion,
     this.hideTrendingAndHistory,
-  }) : super(key: key);
+  });
 
   @override
-  _AnimatedSearchBarState createState() => _AnimatedSearchBarState();
+  State<AnimatedSearchBar> createState() => _AnimatedSearchBarState();
 }
 
-class _AnimatedSearchBarState extends State<AnimatedSearchBar>
-    with SingleTickerProviderStateMixin {
+class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
   int toggle = 0;
-  String textFieldValue = '';
-  late AnimationController _con;
-  late FocusNode focusNode;
   bool prevFocusStatus = false;
 
   @override
   void initState() {
-    focusNode = widget.focusNode;
-    focusNode.addListener(() {
-      if (!prevFocusStatus) {
-        if (mounted) {
-          setState(() {
-            prevFocusStatus = true;
-          });
-          if (!focusNode.hasFocus) {
-            prevFocusStatus = false;
-          }
-        }
-      }
-    });
-
     super.initState();
 
-    _con = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: widget.animationDurationInMilli),
-      reverseDuration: const Duration(),
-    );
+    widget.focusNode.addListener(_handleFocusChange);
+    widget.textController.addListener(_handleTextChange);
+  }
 
-    // ensure we rebuild on controller changes (live suggestions)
-    widget.textController.addListener(() {
-      if (mounted) setState(() {});
-    });
+  @override
+  void didUpdateWidget(covariant AnimatedSearchBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      oldWidget.focusNode.removeListener(_handleFocusChange);
+      widget.focusNode.addListener(_handleFocusChange);
+    }
+    if (oldWidget.textController != widget.textController) {
+      oldWidget.textController.removeListener(_handleTextChange);
+      widget.textController.addListener(_handleTextChange);
+    }
   }
 
   @override
   void dispose() {
-    _con.dispose();
+    widget.focusNode.removeListener(_handleFocusChange);
+    widget.textController.removeListener(_handleTextChange);
     super.dispose();
   }
 
-  unfocusKeyboard() {
+  void _handleFocusChange() {
+    if (!prevFocusStatus && widget.focusNode.hasFocus) {
+      if (mounted) {
+        setState(() => prevFocusStatus = true);
+      }
+    } else if (prevFocusStatus && !widget.focusNode.hasFocus) {
+      if (mounted) {
+        setState(() => prevFocusStatus = false);
+      }
+    }
+  }
+
+  void _handleTextChange() {
+    if (mounted) setState(() {});
+  }
+
+  void unfocusKeyboard() {
     final FocusScopeNode currentScope = FocusScope.of(context);
     if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
       FocusManager.instance.primaryFocus?.unfocus();
@@ -123,30 +126,22 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(
+    return BlocConsumer<AppBloc, AppState>(
+      listenWhen: (p, c) => p.currentIndexForSearch != c.currentIndexForSearch,
+      listener: (context, state) {
+        if (state.currentIndexForSearch == 0 && toggle != 0) {
+          setState(() {
+            toggle = 0;
+          });
+          if (widget.focusNode.hasFocus) {
+            widget.focusNode.unfocus();
+          }
+        }
+      },
       buildWhen: (p, c) => p.currentIndexForSearch != c.currentIndexForSearch,
       builder: (context, state) {
-        if (kDebugMode) {
-          // helpful for debugging
-          //print('AnimatedSearchBar.build toggle=$toggle currentIndexForSearch=${state.currentIndexForSearch}');
-        }
-
-        if (state.currentIndexForSearch == 0 && toggle != 0) {
-          toggle = 0;
-
-          // الإغلاق البرمجي كان **بصرياً فقط**: يغيّر toggle ولا يمسّ
-          // focusNode. فيبقى التركيز على حقل لم يعد ظاهراً، ويستعيده Flutter
-          // تلقائياً حين يُكشف المسار عند الرجوع — فيظهر الكيبورد بلا سبب
-          // مفهوم للمستخدم.
-          //
-          // التحرير بعد الإطار لا داخله: تعديل التركيز أثناء البناء غير مسموح.
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted && focusNode.hasFocus) focusNode.unfocus();
-          });
-        }
-
         return AnimatedContainer(
-          padding: const EdgeInsets.only(left: 10, right: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           duration: Duration(
             milliseconds: (toggle == 1) ? widget.animationDurationInMilli : 0,
           ),
@@ -176,19 +171,16 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                         child: Stack(
                           alignment: Alignment.centerLeft,
                           children: [
-                            // Text field painted first
                             TextFormField(
                               autocorrect: false,
                               enableSuggestions: false,
                               onFieldSubmitted: widget.onFieldSubmitted,
                               controller: widget.textController,
                               inputFormatters: widget.inputFormatters,
-                              focusNode: focusNode,
+                              focusNode: widget.focusNode,
                               cursorRadius: const Radius.circular(10.0),
                               onChanged: (value) {
-                                textFieldValue = value;
                                 widget.onChanged?.call(value);
-                                if (mounted) setState(() {});
                               },
                               style:
                                   widget.style ??
@@ -201,17 +193,12 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                                     )
                                   : const InputDecoration(),
                             ),
-
-                            // suggestion overlay on top (non-interactive)
                             IgnorePointer(
                               child: LayoutBuilder(
                                 builder: (context, constraints) {
                                   final inputText = widget.textController.text;
-                                  String finalSuggestion =
+                                  final String finalSuggestion =
                                       widget.suggestion ?? '';
-                                  try {
-                                    // intentionally left blank: keep safe access pattern for bloc
-                                  } catch (_) {}
 
                                   if (inputText.isNotEmpty &&
                                       finalSuggestion.isNotEmpty &&
@@ -267,7 +254,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                                                   ),
                                                 ),
                                                 const TextSpan(
-                                                  text: "             ",
+                                                  text: "            ",
                                                 ),
                                                 TextSpan(
                                                   text: suffix,
@@ -281,6 +268,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                                         ),
                                       );
                                     }
+
                                     return Padding(
                                       padding: EdgeInsets.only(
                                         left: resolvedPadding.left,
@@ -324,69 +312,66 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                           ],
                         ),
                       ),
+                      if (toggle != 0)
+                        InkWell(
+                          onTap: () {
+                            widget.hideTrendingAndHistory?.value = false;
+                            bool stop = widget.onClickClose.call();
+                            if (stop) return;
 
-                      (toggle == 0)
-                          ? const SizedBox.shrink()
-                          : InkWell(
-                              onTap: () {
-                                widget.hideTrendingAndHistory?.value = false;
-                                bool stop = widget.onClickClose.call();
-                                if (stop) return;
-                                toggle = 0;
-
-                                setState(() {
-                                  unfocusKeyboard();
-                                });
-
-                                _con.reverse();
-                              },
-                              child: SizedBox(
-                                height: widget.height,
-                                child: Row(
-                                  children: [
-                                    const SizedBox(width: 15),
-                                    SvgPicture.asset(
-                                      AppAssets.closeSvg,
-                                      height: 15,
-                                      width: 30,
-                                      // ignore: deprecated_member_use
-                                      color: const Color(0xffFF5F61),
-                                    ),
-                                    const SizedBox(width: 25),
-                                  ],
+                            setState(() {
+                              toggle = 0;
+                              unfocusKeyboard();
+                            });
+                          },
+                          child: SizedBox(
+                            height: widget.height,
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 15),
+                                SvgPicture.asset(
+                                  AppAssets.closeSvg,
+                                  height: 15,
+                                  width: 30,
+                                  colorFilter: const ColorFilter.mode(
+                                    Color(0xffFF5F61),
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 25),
+                              ],
                             ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
               ),
-
-              toggle != 0
-                  ? const SizedBox.shrink()
-                  : Material(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(15.0),
-                      child: GestureDetector(
-                        key: const Key(WidgetsKeys.productListingSearchIconKey),
-                        child: widget.suffixWidget,
-                        onTap: () {
-                          widget.onSuffixTap.call();
-                          setState(() {
-                            if (toggle == 0) {
-                              toggle = 1;
-                              if (widget.autoFocus)
-                                FocusScope.of(context).requestFocus(focusNode);
-                              _con.forward();
-                            } else {
-                              toggle = 0;
-                              if (widget.autoFocus) unfocusKeyboard();
-                              _con.reverse();
-                            }
-                          });
-                        },
-                      ),
-                    ),
+              if (toggle == 0)
+                Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(15.0),
+                  child: GestureDetector(
+                    key: const Key(WidgetsKeys.productListingSearchIconKey),
+                    child: widget.suffixWidget,
+                    onTap: () {
+                      widget.onSuffixTap.call();
+                      setState(() {
+                        if (toggle == 0) {
+                          toggle = 1;
+                          if (widget.autoFocus) {
+                            FocusScope.of(
+                              context,
+                            ).requestFocus(widget.focusNode);
+                          }
+                        } else {
+                          toggle = 0;
+                          if (widget.autoFocus) unfocusKeyboard();
+                        }
+                      });
+                    },
+                  ),
+                ),
             ],
           ),
         );

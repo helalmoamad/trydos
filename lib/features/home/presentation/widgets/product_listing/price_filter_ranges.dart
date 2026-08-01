@@ -67,7 +67,6 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
     return SizedBox(
       height: 70.h,
       child: ListView.separated(
-        addAutomaticKeepAlives: false,
         addRepaintBoundaries: false,
         itemCount: widget.priceRanges.length,
         shrinkWrap: true,

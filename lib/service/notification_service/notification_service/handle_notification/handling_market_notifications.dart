@@ -462,11 +462,9 @@ class HandlingMarketNotifications {
                             Category(
                               slug: data["category_slug"],
                               isSelected: true,
-                              mostViewedProductThumbnail: CategoryBanner(
-                                filePath: data["image"],
-                              ),
+
                               flatPhotoPath: CategoryBanner(
-                                filePath: data["image_svg"],
+                                filePath: data["image"],
                               ),
                               name: data["category_name"],
                               id: int.tryParse(data["category_id"].toString()),
@@ -493,12 +491,13 @@ class HandlingMarketNotifications {
             data["banner"]!.map((x) => BunnerBoutique.fromJson(x)),
           );
 
-          if (kDebugMode) print(
-            "${data["boutique_slug"]}" +
-                "${data['description']}" +
-                "${boutiqueIcon?["file_path"]}" +
-                "${boutiqueBannerList}",
-          );
+          if (kDebugMode)
+            print(
+              "${data["boutique_slug"]}" +
+                  "${data['description']}" +
+                  "${boutiqueIcon?["file_path"]}" +
+                  "${boutiqueBannerList}",
+            );
 
           await Future.delayed(
             const Duration(seconds: 1),

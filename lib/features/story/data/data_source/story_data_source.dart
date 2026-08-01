@@ -15,7 +15,6 @@ import '../../presentation/bloc/story_bloc.dart';
 import '../models/image_detail.dart';
 import '../models/delete_story_model.dart';
 import '../../data/models/get_stories_model.dart';
-import '../parsers/story_parsers.dart';
 
 @injectable
 class StoriesDataSource {
@@ -60,17 +59,18 @@ class StoriesDataSource {
     ////////////////////
     // Heavy response: return the raw json here and build the model on a
     // background isolate (see story_parsers.dart).
-    GetClient<dynamic> getStories = GetClient<dynamic>(
+    GetClient<GetStoriesModel> getStories = GetClient<GetStoriesModel>(
       serverName: ServerName.stories,
-      requestPrams: RequestConfig<dynamic>(
+      requestPrams: RequestConfig<GetStoriesModel>(
         endpoint: StoriesEndPoints.getStoriesEP,
         queryParameters: params,
-        response: ResponseValue<dynamic>(fromJson: (response) => response),
+        response: ResponseValue<GetStoriesModel>(
+          fromJson: (response) => GetStoriesModel.fromJson(response),
+        ),
       ),
     );
 
-    final raw = await getStories();
-    return parseStoriesInBackground(raw);
+    return getStories();
   }
 
   Future<Either<int, CollectionStoryModel>> addStoryToOurServer(

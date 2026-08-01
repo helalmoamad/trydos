@@ -918,39 +918,41 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   !isExpanded && !searchOpen,
                                               action: [
                                                 const Spacer(),
-                                                ValueListenableBuilder<bool>(
-                                                  valueListenable:
-                                                      displayBoutiqueIconInAppBar,
-                                                  child: Padding(
-                                                    padding:
-                                                        EdgeInsetsDirectional.only(
-                                                          start: 30.w,
-                                                        ),
-                                                    child:
-                                                        widget.boutiqueIcon !=
-                                                            null
-                                                        ? MyCachedNetworkImage(
-                                                            imageUrl:
-                                                                widget
-                                                                    .boutiqueIcon ??
-                                                                "",
-                                                            height: 20.h,
-                                                            imageFit:
-                                                                BoxFit.contain,
-                                                            width: 21.w,
-                                                          )
-                                                        : const SizedBox.shrink(),
+                                                RepaintBoundary(
+                                                  child: ValueListenableBuilder<bool>(
+                                                    valueListenable:
+                                                        displayBoutiqueIconInAppBar,
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsetsDirectional.only(
+                                                            start: 30.w,
+                                                          ),
+                                                      child:
+                                                          widget.boutiqueIcon !=
+                                                              null
+                                                          ? MyCachedNetworkImage(
+                                                              imageUrl:
+                                                                  widget
+                                                                      .boutiqueIcon ??
+                                                                  "",
+                                                              height: 20.h,
+                                                              imageFit: BoxFit
+                                                                  .contain,
+                                                              width: 21.w,
+                                                            )
+                                                          : const SizedBox.shrink(),
+                                                    ),
+                                                    builder:
+                                                        (
+                                                          context,
+                                                          display,
+                                                          child,
+                                                        ) {
+                                                          return display
+                                                              ? child!
+                                                              : const SizedBox.shrink();
+                                                        },
                                                   ),
-                                                  builder:
-                                                      (
-                                                        context,
-                                                        display,
-                                                        child,
-                                                      ) {
-                                                        return display
-                                                            ? child!
-                                                            : const SizedBox.shrink();
-                                                      },
                                                 ),
                                                 Padding(
                                                   padding:
@@ -2032,104 +2034,104 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 height: 5.h,
                                                               ),
                                                               widget.withSlidingImages
-                                                                  ? SizedBox(
-                                                                      height:
-                                                                          128.h,
-                                                                      //color: Colors.red,
-                                                                      child: CarouselSlider.builder(
-                                                                        itemCount: widget
-                                                                            .banner!
-                                                                            .length,
-                                                                        itemBuilder:
-                                                                            (
-                                                                              context,
-                                                                              index,
-                                                                              _,
-                                                                            ) {
-                                                                              // 🔧 إضافة lazy loading للصور
-                                                                              bool
-                                                                              isVisible =
-                                                                                  index <=
-                                                                                  2; // عرض أول 3 صور فقط
+                                                                  ? RepaintBoundary(
+                                                                      child: SizedBox(
+                                                                        height:
+                                                                            128.h,
+                                                                        //color: Colors.red,
+                                                                        child: CarouselSlider.builder(
+                                                                          itemCount: widget
+                                                                              .banner!
+                                                                              .length,
+                                                                          itemBuilder:
+                                                                              (
+                                                                                context,
+                                                                                index,
+                                                                                _,
+                                                                              ) {
+                                                                                // 🔧 إضافة lazy loading للصور
+                                                                                bool
+                                                                                isVisible =
+                                                                                    index <=
+                                                                                    2; // عرض أول 3 صور فقط
 
-                                                                              return Padding(
-                                                                                padding: EdgeInsets.only(
-                                                                                  right: 10.w,
-                                                                                  left: 10.w,
-                                                                                ),
-                                                                                child: Container(
-                                                                                  height: 128.h,
-                                                                                  width: 1.sw,
-                                                                                  decoration: BoxDecoration(
-                                                                                    borderRadius: BorderRadius.circular(
-                                                                                      15.0,
-                                                                                    ),
-                                                                                    border: Border.all(
-                                                                                      width: 0.5,
-                                                                                      color: const Color(
-                                                                                        0xfffafafa,
-                                                                                      ),
-                                                                                    ),
-                                                                                    boxShadow: const [
-                                                                                      BoxShadow(
-                                                                                        color: Color(
-                                                                                          0x33000000,
-                                                                                        ),
-                                                                                        offset: Offset(
-                                                                                          0,
-                                                                                          3,
-                                                                                        ),
-                                                                                        blurRadius: 10,
-                                                                                      ),
-                                                                                    ],
+                                                                                return Padding(
+                                                                                  padding: EdgeInsets.only(
+                                                                                    right: 10.w,
+                                                                                    left: 10.w,
                                                                                   ),
-                                                                                  child:
-                                                                                      (widget.banner![index].filePath !=
-                                                                                              null &&
-                                                                                          isVisible) // 🔧 شرط الرؤية
-                                                                                      ? MyCachedNetworkImage(
-                                                                                          imageUrl: widget.banner![index].filePath!,
-                                                                                          imageFit: BoxFit.cover,
-                                                                                          width: 1.sw,
-                                                                                          height: 128.h,
-                                                                                          radius: 15.r,
-                                                                                        )
-                                                                                      : Container(
-                                                                                          // 🔧 placeholder للصور غير المرئية
-                                                                                          decoration: BoxDecoration(
-                                                                                            color: Colors.grey[200],
-                                                                                            borderRadius: BorderRadius.circular(
-                                                                                              15,
-                                                                                            ),
-                                                                                          ),
-                                                                                          child: Center(
-                                                                                            child: Icon(
-                                                                                              Icons.image,
-                                                                                              color: Colors.grey[400],
-                                                                                              size: 40.h,
-                                                                                            ),
-                                                                                          ),
+                                                                                  child: Container(
+                                                                                    height: 128.h,
+                                                                                    width: 1.sw,
+                                                                                    decoration: BoxDecoration(
+                                                                                      borderRadius: BorderRadius.circular(
+                                                                                        15.0,
+                                                                                      ),
+                                                                                      border: Border.all(
+                                                                                        width: 0.5,
+                                                                                        color: const Color(
+                                                                                          0xfffafafa,
                                                                                         ),
-                                                                                ),
-                                                                              );
-                                                                            },
-                                                                        options: CarouselOptions(
-                                                                          autoPlayInterval: const Duration(
-                                                                            seconds:
-                                                                                30,
-                                                                          ), // 🔧 زيادة المدة لتقليل التحديثات
-                                                                          autoPlayAnimationDuration: const Duration(
-                                                                            milliseconds:
-                                                                                300,
-                                                                          ), // 🔧 تقليل مدة الحركة
-                                                                          height:
-                                                                              128.h,
-                                                                          enableInfiniteScroll:
-                                                                              false,
-                                                                          viewportFraction:
-                                                                              1.0, // 🔧 تغيير لـ 1.0 لتقليل الرسم الإضافي
-                                                                          pauseAutoPlayInFiniteScroll:
-                                                                              true, // 🔧 إيقاف في نهاية القائمة
+                                                                                      ),
+                                                                                      boxShadow: const [
+                                                                                        BoxShadow(
+                                                                                          color: Color(
+                                                                                            0x33000000,
+                                                                                          ),
+                                                                                          offset: Offset(
+                                                                                            0,
+                                                                                            3,
+                                                                                          ),
+                                                                                          blurRadius: 10,
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                    child:
+                                                                                        (widget.banner![index].filePath !=
+                                                                                                null &&
+                                                                                            isVisible) // 🔧 شرط الرؤية
+                                                                                        ? MyCachedNetworkImage(
+                                                                                            imageUrl: widget.banner![index].filePath!,
+                                                                                            imageFit: BoxFit.cover,
+                                                                                            width: 1.sw,
+                                                                                            height: 128.h,
+                                                                                            radius: 15.r,
+                                                                                          )
+                                                                                        : Container(
+                                                                                            // 🔧 placeholder للصور غير المرئية
+                                                                                            decoration: BoxDecoration(
+                                                                                              color: Colors.grey[200],
+                                                                                              borderRadius: BorderRadius.circular(
+                                                                                                15,
+                                                                                              ),
+                                                                                            ),
+                                                                                            child: Center(
+                                                                                              child: Icon(
+                                                                                                Icons.image,
+                                                                                                color: Colors.grey[400],
+                                                                                                size: 40.h,
+                                                                                              ),
+                                                                                            ),
+                                                                                          ),
+                                                                                  ),
+                                                                                );
+                                                                              },
+                                                                          options: CarouselOptions(
+                                                                            autoPlayInterval: const Duration(
+                                                                              seconds: 5,
+                                                                            ), // 🔧 زيادة المدة لتقليل التحديثات
+                                                                            autoPlayAnimationDuration: const Duration(
+                                                                              milliseconds: 600,
+                                                                            ), // 🔧 تقليل مدة الحركة
+                                                                            height:
+                                                                                128.h,
+                                                                            enableInfiniteScroll:
+                                                                                false,
+                                                                            viewportFraction:
+                                                                                1.0, // 🔧 تغيير لـ 1.0 لتقليل الرسم الإضافي
+                                                                            pauseAutoPlayInFiniteScroll:
+                                                                                true, // 🔧 إيقاف في نهاية القائمة
+                                                                          ),
                                                                         ),
                                                                       ),
                                                                     )

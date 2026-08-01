@@ -138,7 +138,6 @@ class _StoriesListState extends State<StoriesList> {
                               : null,
                           height: 220.h,
                           child: ListView.separated(
-                            addAutomaticKeepAlives: false,
                             addRepaintBoundaries: false,
                             controller: listViewController,
                             itemBuilder: (context, index) {
