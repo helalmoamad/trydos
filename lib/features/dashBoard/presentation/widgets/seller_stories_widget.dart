@@ -289,7 +289,7 @@ class SellerStoryCard extends StatelessWidget {
                     barrierColor: Colors.black87,
                     builder: (_) => StoryVideoPopup(
                       videoUrl: story.fullVideoPath!,
-                      thumbnailUrl: imageUrl,
+                      thumbnailUrl: story.fullVideoPath! + '?target=snapshot',
                     ),
                   );
                 } else if (imageUrl.isNotEmpty) {
