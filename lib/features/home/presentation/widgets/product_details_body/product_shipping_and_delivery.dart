@@ -283,7 +283,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                             ),
                           ),
                           MyTextWidget(
-                            ' 3 ${LocaleKeys.day.tr()} ',
+                            ' ${shippingDay} ${LocaleKeys.day.tr()} ',
                             style: context.textTheme.titleLarge?.bq.copyWith(
                               fontSize: 9.sp,
                               height: 16 / 13,

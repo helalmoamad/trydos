@@ -603,6 +603,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     SizedBox(
                                       height: 8.h,
                                       child: ListView.builder(
+                                        addRepaintBoundaries: false,
                                         itemCount: countOfFilters,
                                         physics:
                                             const NeverScrollableScrollPhysics(),
@@ -1843,6 +1844,7 @@ Widget choosedOrAppliedFiltersWidget({
         height: 25.h,
         width: 30.w,
         child: ListView(
+          addRepaintBoundaries: false,
           key: TestVariables.kTestMode == false
               ? null
               : const Key(WidgetsKeys.appliedFiltersProductListingKey),
@@ -2113,6 +2115,9 @@ Widget choosedOrAppliedFiltersWidget({
                 height: 28.h,
                 child: ListView.builder(
                   shrinkWrap: true,
+
+                  addRepaintBoundaries: false,
+
                   physics: const NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   itemCount:
@@ -2184,6 +2189,8 @@ Widget choosedOrAppliedFiltersWidget({
                 height: 28.h,
                 child: ListView.builder(
                   shrinkWrap: true,
+
+                  addRepaintBoundaries: false,
                   physics: const NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   itemCount: filters?.boutiques?.length,
@@ -2282,6 +2289,8 @@ Widget choosedOrAppliedFiltersWidget({
               height: 28.h,
               child: ListView.builder(
                 shrinkWrap: true,
+
+                addRepaintBoundaries: false,
                 physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemCount: filters?.categories?.length ?? 0,
@@ -2381,6 +2390,8 @@ Widget choosedOrAppliedFiltersWidget({
               height: 28.h,
               child: ListView.builder(
                 shrinkWrap: true,
+
+                addRepaintBoundaries: false,
                 physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemCount: filters?.brands?.length ?? 0,
@@ -2469,6 +2480,8 @@ Widget choosedOrAppliedFiltersWidget({
               height: 28.h,
               child: ListView.builder(
                 shrinkWrap: true,
+
+                addRepaintBoundaries: false,
                 physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemCount: filters?.attributes.isNullOrEmpty ?? true
@@ -2555,6 +2568,8 @@ Widget choosedOrAppliedFiltersWidget({
                 height: 28.h,
                 child: ListView.builder(
                   shrinkWrap: true,
+
+                  addRepaintBoundaries: false,
                   physics: const NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   itemCount: filters?.colors?.length ?? 0,
@@ -2810,71 +2825,64 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
     };
     return Padding(
       padding: EdgeInsetsDirectional.only(end: widget.paddingValue),
-      child: Container(
-        width: widget.isSubSubCategory! ? widget.width + 22.w : null,
-        height: widget.isSubSubCategory! ? widget.height + 22.h : null,
-        child: Column(
-          children: [
-            Column(
-              children: [
-                InkWell(
-                  onTap: () => widget.addOrRemoveSpecificFilter.call(
-                    !widget.displayFilterMark,
-                  ),
-                  child: Stack(
-                    children: [
-                      AnimatedScale(
-                        curve: Curves.fastEaseInToSlowEaseOut,
-                        scale: widget.scale ? 0.92 : 1,
-                        duration: const Duration(milliseconds: 100),
-                        child: FilterImage(
-                          isSvg: widget.isSvg,
-                          imageUrl: widget.imageUrl,
-                          width: widget.width,
-                          height: widget.height,
-                          originalWidth: widget.originalWidth,
-                          originalHeight: widget.originalHeight,
-                          borderColor: widget.displayFilterMark
-                              ? const Color(0xffFF5F61)
-                              : widget.borderColor,
-                          withBackGroundShadow:
-                              !widget.displayFilterMark &&
-                              widget.withBackGroundShadow,
-                          withInnerShadow: !widget.scale,
-                        ),
-                      ),
-                      Visibility(
-                        visible: widget.displayFilterMark,
-                        child: FilterSelectedMark(
-                          width: widget.markWidth,
-                          height: widget.markHeight,
-                        ),
-                      ),
-                    ],
-                  ),
+      child: Column(
+        children: [
+          Column(
+            children: [
+              InkWell(
+                onTap: () => widget.addOrRemoveSpecificFilter.call(
+                  !widget.displayFilterMark,
                 ),
-                if (widget.isExpanded || widget.isTopItem) ...{
-                  SizedBox(height: 5.h),
-                  SizedBox(
-                    width: widget.width,
-                    child: MyTextWidget(
-                      widget.categoryName,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleMedium?.rq.copyWith(
-                        color: const Color(0xff8E8E8E),
-                        letterSpacing: 0,
-                        height: 1.25,
-                        fontSize: 13.sp,
+                child: Stack(
+                  children: [
+                    FilterImage(
+                      isSvg: widget.isSvg,
+                      imageUrl: widget.imageUrl,
+                      width: widget.width,
+                      height: widget.height,
+                      originalWidth: widget.originalWidth,
+                      originalHeight: widget.originalHeight,
+                      borderColor: widget.displayFilterMark
+                          ? const Color(0xffFF5F61)
+                          : widget.borderColor,
+                      withBackGroundShadow:
+                          !widget.displayFilterMark &&
+                          widget.withBackGroundShadow,
+                      withInnerShadow: !widget.scale,
+                    ),
+                    Visibility(
+                      visible: widget.displayFilterMark,
+                      child: FilterSelectedMark(
+                        width: widget.markWidth,
+                        height: widget.markHeight,
                       ),
                     ),
+                  ],
+                ),
+              ),
+              if (widget.isExpanded || widget.isTopItem) ...{
+                SizedBox(height: 5.h),
+                SizedBox(
+                  width: widget.isSubSubCategory!
+                      ? widget.width + 22.w
+                      : widget.width,
+                  child: MyTextWidget(
+                    widget.categoryName,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.titleMedium?.rq.copyWith(
+                      color: const Color(0xff8E8E8E),
+                      letterSpacing: 0,
+                      height: 1.25,
+                      fontSize: 11.sp,
+                    ),
                   ),
-                },
-              ],
-            ),
-          ],
-        ),
+                ),
+              },
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -2913,7 +2921,9 @@ class FilterImage extends StatelessWidget {
     return Container(
       width: width,
       height: height,
+
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(180.r)),
         border: borderColor != null
             ? Border.all(width: 0.5, color: borderColor!)
@@ -2929,52 +2939,51 @@ class FilterImage extends StatelessWidget {
               ]
             : null,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(180.r)),
-        child: Stack(
-          children: [
-            isSvg
-                ? MyCachedNetworkImage(
-                    imageUrl: imageUrl,
-                    height: height,
-                    imageFit: BoxFit.contain,
-                    width: width,
-                  )
-                : imageUrl.contains('assets')
-                ? Image.asset(
-                    imageUrl,
-                    width: width,
-                    fit: BoxFit.cover,
-                    height: height,
-                  )
-                : MyCachedNetworkImage(
-                    //     progressIndicatorBuilderWidget:
-                    //           const SizedBox.shrink(),
-                    imageUrl: imageUrl,
-                    width: width,
-                    imageFit: BoxFit.contain,
-                    height: height,
-                  ),
-            //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
-            Container(
-              width: width,
-              height: height,
-              decoration: BoxDecoration(
-                boxShadow: withInnerShadow
-                    ? [
-                        BoxShadow(
-                          offset: const Offset(0, 4),
-                          blurRadius: 6,
-                          // ignore: deprecated_member_use
-                          color: Colors.white.withOpacity(0.5),
-                          inset: true,
-                        ),
-                      ]
-                    : null,
-              ),
+      child: Stack(
+        children: [
+          isSvg
+              ? MyCachedNetworkImage(
+                  imageUrl: imageUrl,
+                  height: height,
+                  radius: 180.r,
+                  imageFit: BoxFit.contain,
+                  width: width,
+                )
+              : imageUrl.contains('assets')
+              ? Image.asset(
+                  imageUrl,
+                  width: width,
+                  fit: BoxFit.cover,
+                  height: height,
+                )
+              : MyCachedNetworkImage(
+                  //     progressIndicatorBuilderWidget:
+                  //           const SizedBox.shrink(),
+                  imageUrl: imageUrl,
+                  width: width,
+                  radius: 180.r,
+                  imageFit: BoxFit.contain,
+                  height: height,
+                ),
+          //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
+          Container(
+            width: width,
+            height: height,
+            decoration: BoxDecoration(
+              boxShadow: withInnerShadow
+                  ? [
+                      BoxShadow(
+                        offset: const Offset(0, 4),
+                        blurRadius: 6,
+                        // ignore: deprecated_member_use
+                        color: Colors.white.withOpacity(0.5),
+                        inset: true,
+                      ),
+                    ]
+                  : null,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

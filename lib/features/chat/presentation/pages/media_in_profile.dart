@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -9,6 +8,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/common/helper/media_registry_entry.dart';
 
 import 'package:get_it/get_it.dart';
@@ -72,7 +73,7 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
     };
     List<Widget> chatPages = [
       ImageInProfile(files: widget.files ?? null),
-      VideoInProfile(files: widget.files ?? null),
+      VideoInProfile(files: widget.files ?? null, chatId: widget.chatId),
       FilesInProfile(files: widget.files ?? null, chatId: widget.chatId),
     ];
     return Scaffold(
@@ -202,14 +203,15 @@ class _ImageInProfileState extends ThemeState<ImageInProfile> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> images = [];
-    if (kDebugMode) print(widget.files);
+    // يُحتفظ بالمدخل كاملاً (رابط + مسار): الملف قد يكون قد حُذف من المخزن،
+    // وعندها نستعيد الصورة من رابطها بدل عرض فراغ.
+    final List<MediaRegistryEntry> images = [];
     widget.files!.forEach((element) {
       final MediaRegistryEntry? entry = MediaRegistryEntry.tryParse(element);
       if (entry == null) return;
       // النوع من امتداد الملف المحلي لا من شكل الرابط.
       if (HelperFunctions.mediaTypeOfPath(entry.path) == 'image') {
-        images.add(entry.path);
+        images.add(entry);
       }
     });
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -235,7 +237,8 @@ class _ImageInProfileState extends ThemeState<ImageInProfile> {
             ),
             itemCount: images.length,
             itemBuilder: (context, index) {
-              File file = File(images[index]);
+              final MediaRegistryEntry entry = images[index];
+              final File file = File(entry.path);
               return FullScreenWidget(
                 backgroundColor: const Color(0xffB4FFD9),
                 child: Hero(
@@ -243,17 +246,36 @@ class _ImageInProfileState extends ThemeState<ImageInProfile> {
                   child: Container(
                     width: 200.w,
                     height: 400,
+                    clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: FileImage(file),
-                        fit: BoxFit.fill,
-                      ),
+                      // خلفية صريحة: مع DecorationImage كان فشل الرسم يترك
+                      // الإطار شفافاً فيبدو أبيض بلا أي دلالة.
+                      color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(12.0),
                       border: Border.all(
                         width: 3.0,
                         color: const Color(0xffB4FFD9),
                       ),
                     ),
+                    // الملف المحلي قد يحذفه تنظيف المخزن بينما يبقى مدخله في
+                    // السجلّ — نستعيد الصورة من رابطها بدل عرض فراغ صامت.
+                    child: file.existsSync()
+                        ? Image.file(
+                            file,
+                            fit: BoxFit.fill,
+                            errorBuilder: (_, __, ___) => MyCachedNetworkImage(
+                              imageUrl: entry.url,
+                              imageFit: BoxFit.fill,
+                              width: 200.w,
+                              height: 400,
+                            ),
+                          )
+                        : MyCachedNetworkImage(
+                            imageUrl: entry.url,
+                            imageFit: BoxFit.fill,
+                            width: 200.w,
+                            height: 400,
+                          ),
                   ),
                 ),
               );
@@ -264,7 +286,11 @@ class _ImageInProfileState extends ThemeState<ImageInProfile> {
 
 class VideoInProfile extends StatefulWidget {
   final List<String>? files;
-  const VideoInProfile({Key? key, required this.files}) : super(key: key);
+
+  /// لازم لتسجيل أي فيديو يُستعاد من رابطه في سجلّ الوسائط.
+  final String chatId;
+  const VideoInProfile({Key? key, required this.files, this.chatId = ''})
+    : super(key: key);
 
   @override
   State<VideoInProfile> createState() => _VideoInProfileState();
@@ -277,13 +303,15 @@ class _VideoInProfileState extends ThemeState<VideoInProfile> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> videos = [];
+    // يُحتفظ بالمدخل كاملاً (رابط + مسار) لا بالمسار وحده: الملف قد يكون قد
+    // حُذف من المخزن، وعندها نحتاج الرابط ليستعيده المشغّل.
+    final List<MediaRegistryEntry> videos = [];
     widget.files!.forEach((element) {
       final MediaRegistryEntry? entry = MediaRegistryEntry.tryParse(element);
       if (entry == null) return;
       // الصوت (aac) يُستبعد تلقائياً — لا يطابق video.
       if (HelperFunctions.mediaTypeOfPath(entry.path) == 'video') {
-        videos.add(entry.path);
+        videos.add(entry);
       }
     });
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -314,8 +342,12 @@ class _VideoInProfileState extends ThemeState<VideoInProfile> {
                 height: 200,
                 child: Center(
                   child: MYVideoPlayer(
-                    chatId: "",
-                    videoFile: File(videos[index]),
+                    // كان "" — ومعرّف فارغ يُفسد تسجيل أي ملف يُستعاد لاحقاً.
+                    chatId: widget.chatId,
+                    videoFile: File(videos[index].path).existsSync()
+                        ? File(videos[index].path)
+                        : null,
+                    videoUrl: videos[index].url,
                   ),
                 ),
                 color: Colors.black,
@@ -347,10 +379,27 @@ class _FilesInProfileState extends ThemeState<FilesInProfile> {
     if (!file.existsSync()) {
       // المستند المرسَل يُسجَّل بمسار الملف المؤقّت الذي اختاره المستخدم، وقد
       // يمسحه النظام لاحقاً. نستعيده من الرابط بدل الاكتفاء بلا استجابة.
+      //
+      // ومؤشّر أثناء الاستعادة: بدونه تمرّ ثوانٍ صامتة بعد الضغط فتبدو
+      // الضغطة بلا أثر — وهو ما يدفع المستخدم للضغط مراراً.
+      final NavigatorState navigator = Navigator.of(context, rootNavigator: true);
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: Colors.black26,
+        builder: (_) => Center(child: TrydosLoader()),
+      );
+
       final File? restored = await FileSaving().getOrDownloadMedia(
         entry.url,
         widget.chatId,
+        // ضغطة صريحة والمستخدم ينتظر أمام الشاشة: لا تقف خلف تحميل الصور.
+        priority: true,
       );
+
+      // الـ navigator مُلتقَط قبل الانتظار: context يصبح مُفكَّكاً بعده.
+      navigator.pop();
+
       if (restored == null) {
         showMessage(LocaleKeys.error_picking_file.tr(), hasError: true);
         return;

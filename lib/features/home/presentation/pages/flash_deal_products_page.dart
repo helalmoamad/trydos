@@ -136,7 +136,6 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
 
         boutiqueBloc.add(
           GetProductsWithFiltersEvent(
-            context: context,
             limit: 10,
             cashedOrginalBoutique: true,
             boutiqueSlug: "*flashDeal*",

@@ -37,6 +37,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.da
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/checklist_page.dart';
+import 'package:trydos/features/home/presentation/widgets/profile_section/compare_products_page.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/language_profile.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/profile_country_page.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/user_information_page.dart';
@@ -373,7 +374,16 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                 SizedBox(height: 10.h, width: 1.sw),
                 _checklistWidget(),
                 SizedBox(height: 10.h, width: 1.sw),
-                _actionWidget(AppAssets.compareSvg, "Compare Products"),
+                InkWell(
+                  onTap: () => HelperFunctions.slidingNavigation(
+                    context,
+                    const CompareProductsPage(),
+                  ),
+                  child: _actionWidget(
+                    AppAssets.compareSvg,
+                    LocaleKeys.compare_products.tr(),
+                  ),
+                ),
                 SizedBox(height: 10.h, width: 1.sw),
                 _actionWidget(
                   AppAssets.termSvg,

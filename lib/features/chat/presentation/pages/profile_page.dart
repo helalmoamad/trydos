@@ -560,8 +560,16 @@ class _ProfilePageState extends State<ProfilePage> {
                           return Container(
                             margin: const EdgeInsets.all(2),
                             width: 200.w,
+                            // يُمرَّر الرابط دائماً والملف **إن وُجد** فقط.
+                            // ملفات المخزن قد يحذفها التنظيف الدوري بينما يبقى
+                            // مدخلها في السجلّ؛ وتمرير مسار غير موجود كان
+                            // يُفشل تهيئة المشغّل فيظهر مربّع صامت. مع الرابط
+                            // يعود المشغّل إلى مصغَّره وزرّ التنزيل تلقائياً.
                             child: MYVideoPlayer(
-                              videoFile: File(entry.path),
+                              videoFile: File(entry.path).existsSync()
+                                  ? File(entry.path)
+                                  : null,
+                              videoUrl: entry.url,
                               chatId: widget.chatId,
                             ),
                           );
@@ -577,17 +585,38 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                                 width: 150.w,
                                 height: 400.h,
+                                clipBehavior: Clip.antiAlias,
                                 decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: FileImage(File(entry.path)),
-                                    fit: BoxFit.fill,
-                                  ),
+                                  // خلفية صريحة: مع DecorationImage كان فشل
+                                  // الرسم يترك الإطار شفافاً فيبدو أبيض.
+                                  color: Colors.grey.shade200,
                                   borderRadius: BorderRadius.circular(12.0),
                                   border: Border.all(
                                     width: 3.0,
                                     color: const Color(0xffB4FFD9),
                                   ),
                                 ),
+                                // الملف المحلي قد يحذفه تنظيف المخزن بينما
+                                // يبقى مدخله في السجلّ. عندها نستعيد الصورة من
+                                // رابطها بدل عرض فراغ صامت.
+                                child: File(entry.path).existsSync()
+                                    ? Image.file(
+                                        File(entry.path),
+                                        fit: BoxFit.fill,
+                                        errorBuilder: (_, __, ___) =>
+                                            MyCachedNetworkImage(
+                                              imageUrl: entry.url,
+                                              imageFit: BoxFit.fill,
+                                              width: 150.w,
+                                              height: 400.h,
+                                            ),
+                                      )
+                                    : MyCachedNetworkImage(
+                                        imageUrl: entry.url,
+                                        imageFit: BoxFit.fill,
+                                        width: 150.w,
+                                        height: 400.h,
+                                      ),
                               ),
                             ),
                           );

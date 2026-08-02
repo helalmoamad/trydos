@@ -3,8 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-
-import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -13,6 +12,7 @@ import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
 
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 
@@ -224,7 +224,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
                 getWithOutPrefetchForEachBoutiques:
                     event.getWithOutPrefetchForEachBoutiques,
                 offset: event.offset,
-                context: event.context,
+
                 categorySlug: event.categorySlug,
                 getWithPagination: event.getWithPagination,
               ),
@@ -253,6 +253,18 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         }
       },
       (r) {
+        r.data?.boutiques?.forEach((element) {
+          String url = addSuitableWidthAndHeightToImage(
+            imageUrl: element.banners?.first.filePath ?? "",
+            fromBoutique: true,
+
+            width: 1.sw,
+            // the width of the image in the ui
+            height: 400.h,
+          );
+
+          prefetchImages(url, "home_page_boutique_card");
+        });
         if (!event.getWithPagination) {
           encodeBoutiquesPrefetchInBackground(r).then(
             (encoded) => prefsRepository
@@ -313,31 +325,26 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
           if (!event.getWithPagination &&
               event.getWithOutPrefetchForEachBoutiques) {
-            prefetchBoutiques(event.categorySlug, event.context, 0);
+            prefetchBoutiques(event.categorySlug, 0);
           }
         }
       },
     );
   }
 
-  prefetchBoutiques(
-    String currentSlug,
-    BuildContext context,
-    int boutiqueItemsCountWithScroll,
-  ) {
-    /* int maxItemsVisible =
-        (1.sh -
-                (GetIt.I<StoryBloc>().state.getStoriesStatus !=
-                        GetStoriesStatus.success
-                    ? 220
-                    : 0) -
-                50) ~/
-            235 +
-        1;*/
-    /* int maxItemsVisibleWithScroll = max(
-      maxItemsVisible,
-      boutiqueItemsCountWithScroll,
-    );*/
+  prefetchImages(String url, String type) async {
+    if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC");
+    List<String> urlHasPredeched =
+        prefsRepository.getImageUrlHasPrefeched ?? [];
+    if (urlHasPredeched.contains(url) || url == "") {
+      return;
+    }
+    GetIt.I<PreCachingImageBloc>().add(
+      CacheImageEvent(imageUrl: url, type: type),
+    );
+  }
+
+  prefetchBoutiques(String currentSlug, int boutiqueItemsCountWithScroll) {
     int boutiqueItemsCount =
         state
             .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
@@ -369,7 +376,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         GetIt.I<BoutiqueBloc>().add(
           GetProductWithFiltersWithoutCancelingPreviousEvents(
             categorySlugs: categorySlugs,
-            context: context,
             cashedOrginalBoutique: true,
             boutiqueSlug: slug,
           ),
@@ -440,29 +446,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     );
   }
 
-  prefetchImages(
-    String url,
-    BuildContext context,
-    String type,
-    double width,
-    double height,
-  ) {
-    List<String> urlHasPredeched =
-        prefsRepository.getImageUrlHasPrefeched ?? [];
-    if (urlHasPredeched.contains(url)) {
-      return;
-    }
-    GetIt.I<PreCachingImageBloc>().add(
-      CacheImageEvent(
-        imageUrl: url,
-        context: context,
-        type: type,
-        height: height,
-        width: width,
-      ),
-    );
-  }
-
   FutureOr<void> _onGetMainCategoriesEvent(
     GetMainCategoriesEvent event,
     Emitter<CategoryState> emit,
@@ -489,7 +472,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       GetHomeBoutiqesEvent(
         getWithPrefetchToStoreInMemory: false,
         getWithOutPrefetchForEachBoutiques: true,
-        context: event.context ?? navigatorKey.currentContext!,
+
         categorySlug: 'Empty',
         offset: "1",
       ),
@@ -511,7 +494,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       (l) {
         if (ErrorManager.shouldRetry('GetMainCategoriesEvent', l.statusCode)) {
           ErrorManager.incrementRetry('GetMainCategoriesEvent');
-          add(GetMainCategoriesEvent(context: event.context));
+          add(const GetMainCategoriesEvent());
           return; // لا تحدث الحالة
         }
         requestAPIAfterHome();

@@ -4,27 +4,23 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
-    as inset_shadow;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-import 'package:trydos/config/theme/my_color_scheme.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading_stateless.dart';
-// Simplified without complex managers
 
-class MyCachedNetworkImage extends StatefulWidget {
+class MyCachedNetworkImage extends StatelessWidget {
   const MyCachedNetworkImage({
     Key? key,
     required this.imageUrl,
     required this.width,
+    required this.height,
+    required this.imageFit,
     this.logoTextWidth,
     this.ordinalHeight,
     this.ordinalwidth,
     this.logoTextHeight,
     this.imageWidth,
     this.imageHeight,
-    required this.imageFit,
     this.imageBuilder,
     this.imageColor,
     this.progressIndicatorBuilderWidget,
@@ -35,7 +31,6 @@ class MyCachedNetworkImage extends StatefulWidget {
     this.withImageShadow = false,
     this.withInnerShadow = false,
     this.fromBoutique = false,
-    required this.height,
     this.fromStory,
     this.circleDimensions,
     this.imageSource,
@@ -43,15 +38,15 @@ class MyCachedNetworkImage extends StatefulWidget {
 
   final String imageUrl;
   final double width;
+  final double height;
+  final BoxFit imageFit;
+  final double radius;
   final double? logoTextWidth;
   final double? imageWidth;
   final double? imageHeight;
-  final double height;
   final double? ordinalHeight;
   final double? ordinalwidth;
   final double? logoTextHeight;
-  final BoxFit imageFit;
-  final double radius;
   final double? innerShadowYOffset;
   final bool withImageShadow;
   final bool withInnerShadow;
@@ -66,267 +61,137 @@ class MyCachedNetworkImage extends StatefulWidget {
   final String? imageSource;
 
   @override
-  State<MyCachedNetworkImage> createState() => _MyCachedNetworkImageState();
-}
-
-class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
-  late String currentUrl;
-  bool enable = true;
-  bool _isDisposed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    currentUrl = widget.imageUrl;
-  }
-
-  @override
-  void dispose() {
-    _isDisposed = true;
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(MyCachedNetworkImage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.imageUrl != widget.imageUrl) {
-      setState(() {
-        currentUrl = widget.imageUrl;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final bool isBoutique = fromBoutique ?? false;
+
     String url = addSuitableWidthAndHeightToImage(
-      imageUrl: currentUrl,
-      height: widget.height,
-      width: widget.width,
-      // Boutique banners render with `height: null` + BoxFit.fitWidth, so the
-      // URL must constrain width only. Without this the height branch below
-      // pads them to `height * 1.5` (600px for a 250.h carousel) — ~2.4x the
-      // pixels actually drawn.
-      fromBoutique: widget.fromBoutique,
+      imageUrl: imageUrl,
+      height: height,
+      width: width,
+      fromBoutique: isBoutique,
     );
-    // 🔧 إصلاح: استخدام URL الأصلي إذا فشل التحويل
+
     if (url.isEmpty || url == "null" || url == "undefined") {
-      url = currentUrl;
+      url = imageUrl;
     }
 
-    // 🔧 إصلاح: التحقق النهائي من صحة URL
+    final double safeFallbackHeight = height > 0 ? height : 180.0;
+
     if (url.isEmpty || url == "null" || url == "undefined") {
-      if (kDebugMode) print("url is empty or null or undefined${url}");
       return Container(
-        width: widget.width,
-        height: widget.height,
+        width: width,
+        height: isBoutique ? null : safeFallbackHeight,
+        constraints: isBoutique ? const BoxConstraints(minHeight: 120) : null,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(widget.radius),
+          borderRadius: BorderRadius.circular(radius),
           color: Colors.grey[300],
         ),
-        child: Center(
-          child: Icon(
-            Icons.image_not_supported,
-            color: Colors.grey[600],
-            size: min(24, widget.height * 0.4),
-          ),
+        child: const Center(
+          child: Icon(Icons.image_not_supported, color: Colors.grey, size: 24),
         ),
       );
     }
 
-    // RepaintBoundary isolates each image (and its loading shimmer) in its own
-    // layer, so the placeholder->image swap and shimmer animation repaint only
-    // this cell instead of the whole scrolling viewport — a major scroll-jank
-    // reducer in image-heavy lists.
-    return RepaintBoundary(
-      child: Container(
-        key: ValueKey(url),
-        alignment: Alignment.center,
-        /*constraints: BoxConstraints(
-      maxHeight: (widget.fromBoutique ?? false)
-            ? (0.40 * 1.sh)
-            : double.infinity,
-        minHeight: (widget.fromBoutique ?? false) ? (0.10 * 1.sh) : 0,
-      ),*/
-        width: widget.width,
-        height: (widget.fromBoutique ?? false) ? null : widget.height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(widget.radius),
-          boxShadow: widget.withImageShadow
-              ? [
-                  BoxShadow(
-                    // ignore: deprecated_member_use
-                    color: context.colorScheme.white.withOpacity(0.1),
-                    offset: const Offset(0, 3),
-                    blurRadius: 6,
-                  ),
-                ]
-              : null,
-        ),
-        child: Center(
-          child: CachedNetworkImage(
-            httpHeaders: {
-              'User-Agent':
-                  (kDebugMode ? "developer" : "users") +
-                  'device OS:' +
-                  (Platform.isAndroid ? 'Android' : 'IOS') +
-                  ' '
-                      ', application version: 1.0.0',
-              "Referer":
-                  (kDebugMode ? "developer" : "users") +
-                  'device OS:' +
-                  (Platform.isAndroid ? 'Android' : 'IOS'),
-            },
-            imageUrl: url,
-            fit: widget.imageFit,
-            width: widget.width,
-            color: widget.imageColor,
-            cacheManager: CustomCacheManagers(),
-            height: (widget.fromBoutique ?? false) ? null : widget.height,
+    final double devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
+    final int safeMemWidth = max(100, (width * devicePixelRatio).round());
 
-            // ⚡ تحسين: ضغط الصور في الذاكرة فقط (لا يؤثر على جودة العرض).
-            // ملاحظة: لا تستخدم maxHeightDiskCache هنا — إنها تصغّر النسخة
-            // المخزّنة على القرص لكل الشاشات فتتشوه الصور الكبيرة، والتصغير
-            // يتم أصلاً من الخادم عبر addSuitableWidthAndHeightToImage.
-            memCacheHeight: (widget.fromBoutique ?? false)
-                ? null
-                : (widget.height * MediaQuery.devicePixelRatioOf(context))
-                      .round(),
+    return Container(
+      key: ValueKey(url),
+      width: width,
+      height: isBoutique ? null : safeFallbackHeight,
+      child: CachedNetworkImage(
+        httpHeaders: {
+          'User-Agent':
+              '${kDebugMode ? "developer" : "users"}device OS:${Platform.isAndroid ? 'Android' : 'IOS'}, application version: 1.0.0',
+          "Referer":
+              '${kDebugMode ? "developer" : "users"}device OS:${Platform.isAndroid ? 'Android' : 'IOS'}',
+        },
+        imageUrl: url,
+        width: width,
+        height: isBoutique ? null : safeFallbackHeight,
+        cacheManager: CustomCacheManagers(),
 
-            memCacheWidth: (widget.fromBoutique ?? false)
-                ? (widget.width * MediaQuery.devicePixelRatioOf(context))
-                      .round()
-                : null,
+        memCacheWidth: safeMemWidth,
+        memCacheHeight: isBoutique
+            ? null
+            : max(100, (safeFallbackHeight * devicePixelRatio).round()),
 
-            placeholder: (context, url) {
-              widget.callWhenLoadingImage?.call();
-              return _buildSimpleShimmer();
-            },
+        placeholder: (context, url) {
+          callWhenLoadingImage?.call();
+          return _buildSimpleShimmer(isBoutique, safeFallbackHeight);
+        },
 
-            // ⚡ تقليل زمن الانتقالات لتسريع عرض الصور
-            fadeInDuration: const Duration(),
-            placeholderFadeInDuration: const Duration(),
-            fadeOutDuration: const Duration(),
-            /*  progressIndicatorBuilder: (context, _, progress) {
-            if (_isDisposed) return const SizedBox.shrink();
+        fadeInDuration: Duration.zero,
+        placeholderFadeInDuration: Duration.zero,
+        fadeOutDuration: Duration.zero,
 
-            widget.callWhenLoadingImage?.call();
+        imageBuilder:
+            imageBuilder ??
+            (ctx, imageProvider) {
+              callWhenDisplayImage?.call();
 
-           
-          },*/
-            imageBuilder: (widget.fromBoutique ?? false)
-                ? null
-                : widget.imageBuilder ??
-                      (ctx, image) {
-                        if (_isDisposed) return const SizedBox.shrink();
-
-                        widget.callWhenDisplayImage?.call();
-
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(widget.radius),
-                          child: Container(
-                            width: widget.width,
-                            height: (widget.fromBoutique ?? false)
-                                ? null
-                                : widget.height,
-                            decoration: widget.withInnerShadow
-                                ? inset_shadow.BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                      widget.radius,
-                                    ),
-                                    boxShadow: [
-                                      inset_shadow.BoxShadow(
-                                        offset: Offset(
-                                          0,
-                                          widget.innerShadowYOffset ?? 12,
-                                        ),
-                                        blurRadius: 24,
-                                        inset: true,
-                                        // ignore: deprecated_member_use
-                                        color: Colors.black.withOpacity(0.44),
-                                      ),
-                                    ],
-                                  )
-                                : null,
-                            child: Image(
-                              image: image,
-                              fit: widget.imageFit,
-                              width: widget.width,
-                              height: (widget.fromBoutique ?? false)
-                                  ? null
-                                  : widget.height,
-                              color: widget.imageColor,
-                            ),
-                          ),
-                        );
-                      },
-            errorWidget: (context, url, error) {
-              if (_isDisposed) return const SizedBox.shrink();
-
-              // 🔄 Widget to allow retrying the image download when it fails
-              return GestureDetector(
-                onTap: () async {
-                  try {
-                    // Remove the possibly corrupted file from the cache so that it is fetched again
-                    await CustomCacheManagers().removeFile(url);
-                  } catch (_) {}
-                  // Trigger a new download by changing the URL key slightly (cache-buster)
-                  if (mounted) {
-                    setState(() {
-                      currentUrl =
-                          widget.imageUrl +
-                          '?retry=${DateTime.now().millisecondsSinceEpoch}';
-                    });
-                  }
-                },
-                child: Container(
-                  width: widget.width,
-                  height: widget.height,
+              if (isBoutique) {
+                return Container(
+                  width: width,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(widget.radius),
-                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(radius),
                   ),
-                  child: Center(
-                    child: Container(
-                      width: min(32.0, widget.height * 0.4),
-                      height: min(32.0, widget.height * 0.4),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.red,
-                      ),
-                      child: const Icon(
-                        Icons.refresh,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
+                  child: Image(
+                    image: imageProvider,
+                    width: width,
+                    fit: BoxFit.fitWidth,
+                    color: imageColor,
+                    colorBlendMode: imageColor != null ? BlendMode.srcIn : null,
+                  ),
+                );
+              }
+
+              return Container(
+                width: width,
+                height: safeFallbackHeight,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(radius),
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: imageFit,
+                    colorFilter: imageColor != null
+                        ? ColorFilter.mode(imageColor!, BlendMode.srcIn)
+                        : null,
                   ),
                 ),
               );
             },
-          ),
-        ),
+
+        errorWidget: (context, errorUrl, error) =>
+            _buildErrorWidget(isBoutique, safeFallbackHeight),
       ),
     );
   }
 
-  /// 📱 Shimmer ثابت مع أبعاد صحيحة
-  Widget _buildSimpleShimmer() {
-    widget.callWhenLoadingImage?.call();
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(widget.radius),
-      child: Container(
-        width: widget.width,
-        height: widget.height,
+  Widget _buildErrorWidget(bool isBoutique, double safeHeight) {
+    return Container(
+      width: width,
+      height: isBoutique ? 150 : safeHeight,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius),
         color: Colors.grey[300],
-        child: TrydosShimmerLoadingStateless(
-          width: widget.width,
-          height: widget.height,
-          logoTextWidth: widget.width * 0.6, // 60% من العرض
-          logoTextHeight: widget.height * 0.3, // 30% من الارتفاع
-          radius: widget.radius,
-          circleDimensions: widget.circleDimensions,
-        ),
       ),
+      child: const Center(
+        child: Icon(Icons.broken_image_outlined, color: Colors.grey, size: 24),
+      ),
+    );
+  }
+
+  // 🎯 استدعاء الـ Shimmer الخاص بك دون أي تعديل أو تغليف زائد
+  Widget _buildSimpleShimmer(bool isBoutique, double safeHeight) {
+    final double shimmerHeight = isBoutique ? 200 : safeHeight;
+    return TrydosShimmerLoadingStateless(
+      width: width,
+      height: shimmerHeight,
+      logoTextWidth: logoTextWidth ?? width * 0.6,
+      logoTextHeight: logoTextHeight ?? shimmerHeight * 0.3,
+      radius: radius,
+      circleDimensions: circleDimensions,
     );
   }
 }
@@ -343,28 +208,15 @@ class CustomCacheManagers extends CacheManager {
     : super(
         Config(
           key,
-          maxNrOfCacheObjects: _getOptimizedCacheSize(),
-          stalePeriod: Duration(days: _getOptimizedStalePeriod()),
-          // 🔧 إصلاح: إضافة timeout للشبكة
+          maxNrOfCacheObjects: 500,
+          stalePeriod: const Duration(days: 7),
         ),
       );
-
-  /// 🎯 إعدادات كاش بسيطة وفعالة
-  static int _getOptimizedCacheSize() {
-    return 500; // قيمة ثابتة لجميع الأجهزة
-  }
-
-  /// 🎯 مدة كاش بسيطة
-  static int _getOptimizedStalePeriod() {
-    return 7; // 3 أيام ثابتة لجميع الأجهزة
-  }
 }
 
 void clearCustomCashe() async {
   await CustomCacheManagers().emptyCache();
 }
-
-/// 🎯 دالة مبسطة لتحسين الصور (بدون تعقيد)
 
 String addSuitableWidthAndHeightToImage({
   required String imageUrl,
@@ -372,69 +224,35 @@ String addSuitableWidthAndHeightToImage({
   required double width,
   required double height,
 }) {
-  if (kDebugMode) print("original image url: $imageUrl");
   if (imageUrl.isEmpty || imageUrl == "null" || imageUrl == "undefined") {
     return imageUrl;
   }
 
-  // 🔧 إصلاح: تحسين معالجة عدم توفر الأبعاد الأصلية
   if (!imageUrl.contains('upload')) {
     return imageUrl;
   }
 
-  int fHeight = 0;
-  int fWidth = 0;
-
-  fWidth = (width * 1.5).toInt();
-  fHeight = (height * 1.5).toInt();
+  final int fWidth = max(100, (width * 1.5).toInt());
+  final int fHeight = max(100, (height * 1.5).toInt());
 
   List<String> list = imageUrl.split('upload');
-  String url = '';
+
+  String pathAfterUpload = list[1];
+  if (!pathAfterUpload.startsWith('/')) {
+    pathAfterUpload = '/$pathAfterUpload';
+  }
+
   if (imageUrl.contains('media_server')) {
     if (fromBoutique ?? false) {
-      url =
-          list[0] +
-          'upload/w_${fWidth},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
-          list[1];
+      return '${list[0]}upload/w_$fWidth/f_auto/q_auto:good/fl_lossy/so_0$pathAfterUpload';
     } else {
-      // الصورة أعرض من الارتفاع - استخدم العرض
-      url =
-          list[0] +
-          'upload/h_${fHeight},w_${fWidth},c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0' +
-          list[1];
+      return '${list[0]}upload/h_$fHeight,w_$fWidth,c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0$pathAfterUpload';
     }
-
-    return url;
   }
 
   if (fromBoutique ?? false) {
-    url = list[0] + 'upload/w_${fWidth},c_fit,f_webp,q_85' + list[1];
-  } else if (width > height) {
-    // الصورة أعرض من الارتفاع - استخدم العرض
-    url =
-        list[0] +
-        'upload/w_${fWidth},h_${fHeight},c_pad,b_auto,f_webp,q_85' +
-        list[1];
+    return '${list[0]}upload/w_$fWidth,f_webp,q_85$pathAfterUpload';
   } else {
-    // الصورة أطول من العرض - استخدم الارتفاع
-    url =
-        list[0] +
-        'upload/w_${fWidth},h_${fHeight},c_pad,b_auto,f_webp,q_85' +
-        list[1];
+    return '${list[0]}upload/w_$fWidth,h_${fHeight},c_pad,b_auto,f_webp,q_85$pathAfterUpload';
   }
-  //}
-
-  // ⚡ تحسين: تحويل صور Cloudinary إلى WebP مع جودة محسّنة (إذا لم يتم تطبيقه بالفعل)
-  if (url.contains('cloudinary.com') && url.contains('/upload/')) {
-    // ✅ تحويل إلى WebP format (أصغر حجماً، نفس الجودة)
-    if (!url.contains('f_webp')) {
-      url = url.replaceFirst('/upload/', '/upload/f_webp,q_85/');
-    }
-    // ✅ ضبط الجودة إلى 85% (توازن ممتاز بين الحجم والجودة)
-    if (!url.contains('q_85') && !url.contains('q_auto')) {
-      url = url.replaceFirst('/upload/', '/upload/q_85/');
-    }
-  }
-
-  return url;
 }

@@ -142,6 +142,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
           SizedBox(
             height: 110.h,
             child: ListView.separated(
+              addRepaintBoundaries: false,
               controller: scrollController,
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
@@ -305,6 +306,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                       child: Stack(
                         children: [
                           Container(
+                            padding: EdgeInsets.all(1.h),
                             key: TestVariables.kTestMode == false
                                 ? null
                                 : Key(
@@ -314,48 +316,31 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                             height: 70.h,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  // ignore: deprecated_member_use
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 3,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
+
                               border: Border.all(
                                 color: isSelected
                                     ? const Color(0xffFF5F61)
                                     : const Color(0xffC4C2C2),
                               ),
                             ),
-                            child: Center(
-                              child: widget.isBrandFilter
-                                  ? widget.filters[index].icon != null
-                                        ? widget
-                                                      .filters[index]
-                                                      .icon!
-                                                      .filePath !=
-                                                  null
-                                              ? Padding(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 5.0,
-                                                      ),
-                                                  child: MyCachedNetworkImage(
-                                                    imageUrl: widget
-                                                        .filters[index]
-                                                        .icon!
-                                                        .filePath!,
-                                                    height: 72.h,
-                                                    imageFit: BoxFit.contain,
-                                                    width: 70.w,
-                                                  ),
-                                                )
-                                              : const SizedBox.shrink()
-                                        : const SizedBox.shrink()
-                                  : const SizedBox.shrink(),
-                            ),
+                            child: widget.isBrandFilter
+                                ? widget.filters[index].icon != null
+                                      ? widget.filters[index].icon!.filePath !=
+                                                null
+                                            ? MyCachedNetworkImage(
+                                                imageUrl: widget
+                                                    .filters[index]
+                                                    .icon!
+                                                    .filePath!,
+                                                height: 70.h,
+                                                radius: 70.r,
+
+                                                imageFit: BoxFit.fill,
+                                                width: 70.w,
+                                              )
+                                            : const SizedBox.shrink()
+                                      : const SizedBox.shrink()
+                                : const SizedBox.shrink(),
                           ),
                           Visibility(
                             visible: isSelected,

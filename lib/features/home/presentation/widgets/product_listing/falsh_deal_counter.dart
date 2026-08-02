@@ -114,15 +114,17 @@ class _FlashDealCountdownTimerWidgetState
             ? Alignment.centerRight
             : Alignment.centerLeft,
         height: 20.h,
-        child: Text(
-          _duration > Duration.zero ? _formatDuration(_duration) : "",
-          style: context.textTheme.bodyMedium?.mq.copyWith(
-            color: const Color(0xffFF6200),
-            letterSpacing: 0.18,
-            fontSize: 9.sp,
-            height: 1.3,
+        child: RepaintBoundary(
+          child: Text(
+            _duration > Duration.zero ? _formatDuration(_duration) : "",
+            style: context.textTheme.bodyMedium?.mq.copyWith(
+              color: const Color(0xffFF6200),
+              letterSpacing: 0.18,
+              fontSize: 9.sp,
+              height: 1.3,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
         ),
       ),
     );

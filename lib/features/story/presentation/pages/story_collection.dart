@@ -1102,7 +1102,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         title: LocaleKeys.intellectual_property.tr(),
       ),
       ReportReason(key: "violence", title: LocaleKeys.violence.tr()),
-      ReportReason(key: "other", title: LocaleKeys.other_option.tr()),
+      ReportReason(key: "other", title: LocaleKeys.other.tr()),
     ];
 
     final selectedReasons = <String>{};
@@ -1706,7 +1706,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             );
             appBloc.add(HideBottomNavigationBar(false));
             appBloc.add(ShowOrHideBars(true));
-            appBloc.add(ChangeIndexForSearch(1));
+            appBloc.add(ChangeIndexForSearch(0));
 
             if (fromBoutiqueListing) {
               BlocProvider.of<BoutiqueBloc>(context).add(
@@ -1730,7 +1730,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   boutiqueSlug:
                       boutiqueState.boutiquesToNavigatorFromLink?[0].slug ?? "",
                   fromSearch: false,
-                  context: context,
+
                   offset: 1,
                 ),
               );

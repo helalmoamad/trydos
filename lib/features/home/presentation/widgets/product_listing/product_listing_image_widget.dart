@@ -62,38 +62,33 @@ class ProductListingImageWidget extends StatelessWidget {
               ]
             : null,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.all(
-          Radius.circular(circleShape ? 180.r : 15.r),
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            imageUrl.contains('assets')
-                ? Image.asset(
-                    imageUrl,
-                    width: width!,
-                    fit: BoxFit.cover,
-                    height: height!,
-                  )
-                : MyCachedNetworkImage(
-                    //       progressIndicatorBuilderWidget:
-                    //           ((width ?? 0) > 50) ? null : SizedBox.shrink(),
-                    imageUrl: imageUrl,
-                    width: width!,
-                    ordinalwidth: orginalWidth,
-                    ordinalHeight: orginalHeight,
-                    imageHeight: imageHeight,
-                    imageWidth: imageWidth,
-                    radius: radius,
-                    imageFit: BoxFit.contain,
-                    innerShadowYOffset: innerShadowYOffset,
-                    withInnerShadow: true,
-                    height: height!,
-                  ),
-            //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
-          ],
-        ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          imageUrl.contains('assets')
+              ? Image.asset(
+                  imageUrl,
+                  width: width!,
+                  fit: BoxFit.cover,
+                  height: height!,
+                )
+              : MyCachedNetworkImage(
+                  //       progressIndicatorBuilderWidget:
+                  //           ((width ?? 0) > 50) ? null : SizedBox.shrink(),
+                  imageUrl: imageUrl,
+                  width: width!,
+                  ordinalwidth: orginalWidth,
+                  ordinalHeight: orginalHeight,
+                  imageHeight: imageHeight,
+                  imageWidth: imageWidth,
+                  radius: circleShape ? 180.r : radius,
+                  imageFit: BoxFit.contain,
+                  innerShadowYOffset: innerShadowYOffset,
+                  withInnerShadow: true,
+                  height: height!,
+                ),
+          //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
+        ],
       ),
     );
   }

@@ -138,6 +138,7 @@ class _StoriesListState extends State<StoriesList> {
                               : null,
                           height: 220.h,
                           child: ListView.separated(
+                            addRepaintBoundaries: false,
                             controller: listViewController,
                             itemBuilder: (context, index) {
                               if (index == storiesCollections.length + 1) {
@@ -184,20 +185,15 @@ class _StoriesListState extends State<StoriesList> {
                                               child: Stack(
                                                 alignment: Alignment.center,
                                                 children: [
-                                                  ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          20.r,
-                                                        ),
-                                                    child: MyCachedNetworkImage(
-                                                      imageUrl:
-                                                          prefsRepository
-                                                              .myProfilePhoto ??
-                                                          "",
-                                                      width: 100.w,
-                                                      imageFit: BoxFit.cover,
-                                                      height: 150.h,
-                                                    ),
+                                                  MyCachedNetworkImage(
+                                                    imageUrl:
+                                                        prefsRepository
+                                                            .myProfilePhoto ??
+                                                        "",
+                                                    radius: 20.r,
+                                                    width: 100.w,
+                                                    imageFit: BoxFit.cover,
+                                                    height: 150.h,
                                                   ),
 
                                                   InkWell(
@@ -210,25 +206,25 @@ class _StoriesListState extends State<StoriesList> {
                                                                 .loginToStoriesStatus ==
                                                             LoginToStoriesStatus
                                                                 .loading)
-                                                        ? ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  20.r,
+                                                        ? Container(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                        20.r,
+                                                                      ),
+                                                                  color: Colors
+                                                                      .grey,
                                                                 ),
-                                                            child: Container(
+
+                                                            alignment: Alignment
+                                                                .center,
+                                                            height: 150.h,
+                                                            width: 100.w,
+                                                            child: TrydosLoader(
+                                                              size: 25,
                                                               color:
-                                                                  Colors.grey,
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              height: 150.h,
-                                                              width: 100.w,
-                                                              child:
-                                                                  TrydosLoader(
-                                                                    size: 25,
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
+                                                                  Colors.white,
                                                             ),
                                                           )
                                                         : Container(
@@ -654,6 +650,9 @@ class _StoriesListState extends State<StoriesList> {
                             width: double.infinity,
                             height: 220.h,
                             child: ListView.separated(
+                              addAutomaticKeepAlives: false,
+                              addRepaintBoundaries: false,
+
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) => Padding(
                                 padding: EdgeInsetsDirectional.only(

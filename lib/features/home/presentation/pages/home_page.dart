@@ -20,15 +20,12 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/widgets/features_products_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/flash_deal_products_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_boutique_card.dart';
@@ -61,7 +58,6 @@ class _HomePageState extends State<HomePage> {
   // ðŸ›¡ï¸ Ø­Ù…Ø§ÙŠØ© Ø­Ø§Ù„Ø© Ø§Ù„ØµÙØ­Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©
 
   late AppBloc appBloc;
-  late HomeBloc homeBloc;
   late BoutiqueBloc boutiqueBloc;
   final ValueNotifier<bool> showShadowForPanel = ValueNotifier(false);
   late CategoryBloc categoryBloc;
@@ -81,8 +77,6 @@ class _HomePageState extends State<HomePage> {
   String selectedCategorySlug = "Empty";
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
-  late ChatBloc chatBloc;
-  late AuthBloc authBloc;
   final ValueNotifier<bool> finishRedeem = ValueNotifier(false);
   Timer? debounce;
   // Variables to prevent excessive API calls
@@ -143,7 +137,7 @@ class _HomePageState extends State<HomePage> {
     if (debounce?.isActive ?? false) {
       debounce!.cancel();
     }
-    debounce = Timer(const Duration(milliseconds: 600), () {
+    debounce = Timer(const Duration(milliseconds: 300), () {
       int lastIndexSeenByUser =
           (scrollController.position.pixels +
               scrollController.position.viewportDimension +
@@ -165,21 +159,8 @@ class _HomePageState extends State<HomePage> {
       }
 
       if (selectedCategorySlug == '') return;
-      /*  if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-              selectedCategorySlug] ==
-          null) {
-        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-            selectedCategorySlug] = -1;
-      }
-      if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-              selectedCategorySlug] !=
-          lastIndexSeenByUser) {
-        // prefetchBoutiques(selectedCategorySlug);
-        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-            selectedCategorySlug] = lastIndexSeenByUser;
-      }*/
       if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent * 0.6)) {
+          (scrollController.position.maxScrollExtent * 0.4)) {
         categoryBloc.add(
           GetHomeBoutiqesEvent(
             getWithPrefetchToStoreInMemory: false,
@@ -190,7 +171,6 @@ class _HomePageState extends State<HomePage> {
                     .getHomeBoutiquesPaginationObjectByMainCategory[selectedCategorySlug]!
                     .offset ??
                 "",
-            context: context,
             getWithPagination: true,
           ),
         );
@@ -203,7 +183,7 @@ class _HomePageState extends State<HomePage> {
           (scrollController.position.maxScrollExtent * 0.4)) {
         categoryBloc.prefetchBoutiques(
           selectedCategorySlug,
-          context,
+
           lastIndexSeenByUser,
         );
       }
@@ -221,15 +201,9 @@ class _HomePageState extends State<HomePage> {
       PermissionServices().requestNotificationPermission();
       prefsRepository.setRequestNotificationPermission(true);
     }
-
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
-    authBloc = BlocProvider.of<AuthBloc>(context);
-
-    homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
-    chatBloc = BlocProvider.of<ChatBloc>(context);
-
     appBloc.add(ChangeIndexForSearch(0));
     prefsRepository.setLanguage(
       (LanguageService.isKurdish ? "ku" : LanguageService.languageCode),
@@ -273,9 +247,7 @@ class _HomePageState extends State<HomePage> {
       BlocProvider.of<StoryBloc>(
         context,
       ).add(const GetStoryEvent(withPaginition: false));
-      categoryBloc.add(
-        GetMainCategoriesEvent(getWithPrefech: false, context: context),
-      );
+      categoryBloc.add(const GetMainCategoriesEvent(getWithPrefech: false));
     }
   }
 
@@ -283,7 +255,7 @@ class _HomePageState extends State<HomePage> {
   void _initializeBackgroundOperations() {
     if (!(prefsRepository.isFoundDataCashed ?? false)) {
       Future.delayed(
-        const Duration(seconds: 10),
+        const Duration(seconds: 3),
         () => prefsRepository.setIsFoundDataCashed(true),
       );
       Future.microtask(() {
@@ -310,20 +282,6 @@ class _HomePageState extends State<HomePage> {
             boutiqueSlug: 'search',
           ),
         );
-        /*  if ((prefsRepository.chatToken?.length ?? 0) > 10 &&
-            (prefsRepository.myChatName != prefsRepository.myMarketName &&
-                !(prefsRepository.myMarketName.isNullOrEmpty))) {
-          authBloc.add(
-            UpdateChatUserNameEvent(name: prefsRepository.myMarketName ?? ""),
-          );
-        }*/
-        /*if ((prefsRepository.storiesToken?.length ?? 0) > 10 &&
-            (prefsRepository.myStoriesName != prefsRepository.myMarketName &&
-                !(prefsRepository.myMarketName.isNullOrEmpty))) {
-          authBloc.add(
-            UpdateStoriesUserEvent(name: prefsRepository.myMarketName ?? ""),
-          );
-        }*/
       });
     }
     // ØªØ­Ù…ÙŠÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø¨Ø­Ø« ÙÙŠ Ø§Ù„Ø®Ù„ÙÙŠØ©
@@ -459,25 +417,30 @@ class _HomePageState extends State<HomePage> {
               ? const Key(WidgetsKeys.homepageScrollKey)
               : null,
           controller: scrollController,
+          cacheExtent: 300,
           physics: const ClampingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
           slivers: [
             SliverList(
-              delegate: SliverChildListDelegate.fixed([
-                100.verticalSpace,
-                storySection(currentLocale, context),
-                FeatureProductsWidget(
-                  finishRedeem: finishRedeem,
-                  tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-                ),
-                10.verticalSpace,
-                FlashDealProductsWidget(
-                  finishRedeem: finishRedeem,
-                  productIsFlashDeal: productIsFlashDeal,
-                  tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-                ),
-              ]),
+              delegate: SliverChildListDelegate.fixed(
+                addAutomaticKeepAlives: false,
+                addRepaintBoundaries: false,
+                [
+                  100.verticalSpace,
+                  storySection(currentLocale, context),
+                  FeatureProductsWidget(
+                    finishRedeem: finishRedeem,
+                    tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+                  ),
+                  10.verticalSpace,
+                  FlashDealProductsWidget(
+                    finishRedeem: finishRedeem,
+                    productIsFlashDeal: productIsFlashDeal,
+                    tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+                  ),
+                ],
+              ),
             ),
 
             BlocBuilder<AppBloc, AppState>(
@@ -532,14 +495,18 @@ class _HomePageState extends State<HomePage> {
                             0) {
                       return sliverListSeparated(
                         addSemanticIndexes: false,
+                        addAutomaticKeepAlives: false,
+                        addRepaintBoundaries: false,
 
                         key: TestVariables.kTestMode
                             ? const Key(WidgetsKeys.boutiquesFailureStatusKey)
                             : null,
                         itemBuilder: (_, index) => Padding(
                           padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
                             child: Shimmer.fromColors(
                               baseColor: Colors.grey.shade300,
                               highlightColor: Colors.grey.shade100,
@@ -602,63 +569,11 @@ class _HomePageState extends State<HomePage> {
                       );
                     }
                     return sliverListSeparated(
+                      addRepaintBoundaries: false,
+                      addAutomaticKeepAlives: false, // 🟢 ممتاز للأداء
                       key: TestVariables.kTestMode
                           ? const Key(WidgetsKeys.boutiquesSuccessStatusKey)
                           : null,
-                      itemBuilder: (_, index) =>
-                          ((((categoryState
-                                              .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                                              ?.items
-                                              .length ??
-                                          0)) <
-                                      3 &&
-                                  index ==
-                                      (categoryState
-                                              .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                                              ?.items
-                                              .length ??
-                                          0)) ||
-                              index == 2)
-                          ? RecommendProductsWidget(
-                              finishRedeem: finishRedeem,
-                              productIsRecommend: productIsRecommend,
-                              tapIndexToAddProductToCart:
-                                  tapIndexToAddProductToCart,
-                            )
-                          : Padding(
-                              padding: HWEdgeInsets.symmetric(),
-                              child: () {
-                                final boutiqueItem = categoryState
-                                    .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
-                                    .items[index > 2 ? index - 1 : index];
-                                if (boutiqueItem.banners.isNullOrEmpty) {
-                                  return const SizedBox.shrink();
-                                }
-                                final cacheKey =
-                                    boutiqueItem.slug ??
-                                    '${currentSlug}_$index';
-                                final descriptionPlain =
-                                    _boutiqueDescriptionCache[cacheKey] ??=
-                                        _stripHtmlTagsForBoutique(
-                                          boutiqueItem.description ?? '',
-                                        );
-                                return HomePageBoutiqueCard(
-                                  key: TestVariables.kTestMode
-                                      ? Key(
-                                          '${WidgetsKeys.boutiqueCardKey}${index > 2 ? index - 1 : index}',
-                                        )
-                                      : null,
-                                  category_Slug: currentSlug,
-                                  withSlidingImages:
-                                      boutiqueItem.banners!.length > 1,
-                                  boutique: boutiqueItem,
-                                  index: index > 2 ? index - 1 : index,
-                                  descriptionPlain: descriptionPlain,
-                                );
-                              }(),
-
-                              //HomePageCard(showWhite: index % 2 == 0),
-                            ),
                       separator: const SizedBox(height: 20),
                       childCount:
                           ((categoryState
@@ -667,6 +582,70 @@ class _HomePageState extends State<HomePage> {
                                   .length ??
                               0) +
                           1),
+                      itemBuilder: (context, index) {
+                        // 1️⃣ استخراج القائمة بأمان ومنع أي Null Exception
+                        final boutiquesList = categoryState
+                            .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+                            ?.items;
+                        final itemsCount = boutiquesList?.length ?? 0;
+
+                        // 2️⃣ حساب شرط إدراج ويدجت "المنتجات المقترحة" (RecommendProductsWidget)
+                        final isRecommendPosition =
+                            (itemsCount < 3 && index == itemsCount) ||
+                            index == 2;
+
+                        if (isRecommendPosition) {
+                          return RecommendProductsWidget(
+                            finishRedeem: finishRedeem,
+                            productIsRecommend: productIsRecommend,
+                            tapIndexToAddProductToCart:
+                                tapIndexToAddProductToCart,
+                          );
+                        }
+
+                        // 3️⃣ حساب فهرس البوتيك الصحيح بدقة
+                        final boutiqueIndex = index > 2 ? index - 1 : index;
+
+                        // التأكد من أن الفهرس داخل حدود القائمة
+                        if (boutiquesList == null ||
+                            boutiqueIndex >= itemsCount) {
+                          return const SizedBox.shrink();
+                        }
+
+                        final boutiqueItem = boutiquesList[boutiqueIndex];
+
+                        // إذا لم تكن هناك بنرات، لا نعرض البوتيك
+                        if (boutiqueItem.banners.isNullOrEmpty) {
+                          return const SizedBox.shrink();
+                        }
+
+                        // 4️⃣ قراءة أو حساب الوصف النصي المخزن كاش
+                        final cacheKey =
+                            boutiqueItem.slug ??
+                            '${currentSlug}_$boutiqueIndex';
+                        final descriptionPlain =
+                            _boutiqueDescriptionCache[cacheKey] ??=
+                                _stripHtmlTagsForBoutique(
+                                  boutiqueItem.description ?? '',
+                                );
+
+                        // 5️⃣ إرجاع البطاقة النهائية
+                        return Padding(
+                          padding: HWEdgeInsets.symmetric(),
+                          child: HomePageBoutiqueCard(
+                            key: TestVariables.kTestMode
+                                ? Key(
+                                    '${WidgetsKeys.boutiqueCardKey}$boutiqueIndex',
+                                  )
+                                : null,
+                            category_Slug: currentSlug,
+                            withSlidingImages: boutiqueItem.banners!.length > 1,
+                            boutique: boutiqueItem,
+                            index: boutiqueIndex,
+                            descriptionPlain: descriptionPlain,
+                          ),
+                        );
+                      },
                     );
                   },
                 );
@@ -740,7 +719,7 @@ class _HomePageState extends State<HomePage> {
         //  textDirection: TextDirection.ltr,
         const StoriesList(), // height 220
         Positioned(
-          top: 5.h,
+          top: 10.h,
           right: LanguageService.languageCode == "ar" ? 10.w : null,
           left: LanguageService.languageCode == "ar" ? null : 10.w,
           child: Row(

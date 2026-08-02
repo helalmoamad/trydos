@@ -370,15 +370,7 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                                                                   ),
                                                               child: MyCachedNetworkImage(
                                                                 imageUrl:
-                                                                    (_orderPhotos![index]
-                                                                        .toString()
-                                                                        .contains(
-                                                                          "cloudinary",
-                                                                        )
-                                                                    ? _orderPhotos[index]!
-                                                                    : ("${dotenv.env['Images_Url']}") +
-                                                                          "/rating_orders/" +
-                                                                          _orderPhotos[index]!),
+                                                                    '${dotenv.env['Media_S3_Server']}/rating_orders/${_orderPhotos![index]!}',
                                                                 imageFit:
                                                                     BoxFit.fill,
                                                                 width: 57,
@@ -464,15 +456,7 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                                                                   ),
                                                               child: MyCachedNetworkImage(
                                                                 imageUrl:
-                                                                    (_orderPhotos![index]
-                                                                        .toString()
-                                                                        .contains(
-                                                                          "cloudinary",
-                                                                        )
-                                                                    ? _orderPhotos[index]!
-                                                                    : ("${dotenv.env['Images_Url']}") +
-                                                                          "/rating_orders/" +
-                                                                          _orderPhotos[index]!),
+                                                                    '${dotenv.env['Media_S3_Server']}/rating_orders/${_orderPhotos![index]!}',
                                                                 imageFit:
                                                                     BoxFit.fill,
                                                                 width: 57,
@@ -581,8 +565,9 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                                                                 // للملفات غير
                                                                 // المقروءة.
                                                                 final File?
-                                                                pickedFile = await assetEntity
-                                                                    .originFile;
+                                                                pickedFile =
+                                                                    await assetEntity
+                                                                        .originFile;
                                                                 if (pickedFile ==
                                                                     null) {
                                                                   showWarningMessage(
@@ -749,8 +734,9 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                                                           // null للملفات غير
                                                           // المقروءة.
                                                           final File?
-                                                          pickedFile = await assetEntity
-                                                              .originFile;
+                                                          pickedFile =
+                                                              await assetEntity
+                                                                  .originFile;
                                                           if (pickedFile ==
                                                               null) {
                                                             showWarningMessage(

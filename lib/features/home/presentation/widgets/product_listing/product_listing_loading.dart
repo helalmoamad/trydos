@@ -25,74 +25,71 @@ class ProductListingLoading extends StatelessWidget {
           BuildContext context,
           int index,
         ) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Shimmer.fromColors(
-              baseColor: Colors.grey.shade300,
-              highlightColor: Colors.grey.shade100,
-              child: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.r),
-                      boxShadow: [
-                        BoxShadow(
-                          // ignore: deprecated_member_use
-                          color: const Color(0xff000000).withOpacity(0.4),
-                          offset: Offset(0, 3.h),
-                          blurRadius: 6.h,
-                        ),
-                      ],
-                    ),
+          return Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.r),
+                    boxShadow: [
+                      BoxShadow(
+                        // ignore: deprecated_member_use
+                        color: const Color(0xff000000).withOpacity(0.4),
+                        offset: Offset(0, 3.h),
+                        blurRadius: 6.h,
+                      ),
+                    ],
                   ),
-                  Container(
-                    height: 275.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.r),
-                      boxShadow: [
-                        BoxShadow(
-                          // ignore: deprecated_member_use
-                          color: const Color(0xff000000).withOpacity(0.6),
-                          offset: Offset(0, 3.h),
-                          blurRadius: 6.h,
-                        ),
-                      ],
-                    ),
+                ),
+                Container(
+                  height: 275.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.r),
+                    boxShadow: [
+                      BoxShadow(
+                        // ignore: deprecated_member_use
+                        color: const Color(0xff000000).withOpacity(0.6),
+                        offset: Offset(0, 3.h),
+                        blurRadius: 6.h,
+                      ),
+                    ],
                   ),
-                  Positioned(
-                    bottom: 70.h,
-                    left: 60.w,
-                    child: SizedBox(
-                      width: 100.w,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: List.generate(
-                          5,
-                          (index) => Positioned(
-                            left: index == 0
-                                ? 0
-                                : index == 2
-                                ? 15.w
-                                : null,
-                            right: index == 1
-                                ? 0
-                                : index == 3
-                                ? 15.w
-                                : null,
-                            child: CircleAvatar(
-                              radius: index == 4
-                                  ? 20.r
-                                  : index < 2
-                                  ? 12.r
-                                  : 15.r,
-                            ),
+                ),
+                Positioned(
+                  bottom: 70.h,
+                  left: 60.w,
+                  child: SizedBox(
+                    width: 100.w,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: List.generate(
+                        5,
+                        (index) => Positioned(
+                          left: index == 0
+                              ? 0
+                              : index == 2
+                              ? 15.w
+                              : null,
+                          right: index == 1
+                              ? 0
+                              : index == 3
+                              ? 15.w
+                              : null,
+                          child: CircleAvatar(
+                            radius: index == 4
+                                ? 20.r
+                                : index < 2
+                                ? 12.r
+                                : 15.r,
                           ),
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         }),

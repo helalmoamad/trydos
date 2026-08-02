@@ -164,7 +164,6 @@ class RecommendProductsWidget extends StatelessWidget {
         try {
           GetIt.I<BoutiqueBloc>().add(
             GetProductsWithFiltersEvent(
-              context: context,
               limit: 10,
               cashedOrginalBoutique: true,
               boutiqueSlug: "*recommended*",

@@ -1181,3 +1181,47 @@ class DeleteChecklistItemEvent extends HomeEvent {
   @override
   List<Object?> get props => [productId];
 }
+
+/// جلب تفاصيل منتج لصفحة المقارنة.
+///
+/// مستقلّ عن [GetFullProductDetailsEvent] عمداً: ذاك يجرّ معه المنتجات
+/// المرتبطة وحالة الطلبات و ChatBloc وتزامن ألوان الصور — وكلّها لا لزوم لها
+/// هنا، وتغيّر حالة صفحة تفاصيل المنتج القائمة. هذا يجلب التفاصيل ويكتبها في
+/// حقول المقارنة وحدها.
+///
+/// [side] يميّز عمود المقارنة: 0 للأيسر و1 للأيمن.
+class GetProductDetailsForCompareEvent extends HomeEvent {
+  final String productSlug;
+  final int side;
+
+  const GetProductDetailsForCompareEvent({
+    required this.productSlug,
+    required this.side,
+  });
+
+  @override
+  List<Object?> get props => [productSlug, side];
+}
+
+/// إزالة المنتج المختار من عمود واحد.
+class ClearCompareProductEvent extends HomeEvent {
+  final int side;
+
+  const ClearCompareProductEvent(this.side);
+
+  @override
+  List<Object?> get props => [side];
+}
+
+/// إضافة منتج للمقارنة أو إزالته منها — من زرّ صفحة تفاصيل المنتج.
+///
+/// المقارنة تسع **منتجَين**. فإن كان المنتج موجوداً أُزيل، وإن كان العمودان
+/// ممتلئَين استُبدل صاحب **أقدم** عمود ليبقى العدد اثنين دائماً.
+class ToggleCompareProductEvent extends HomeEvent {
+  final String productSlug;
+
+  const ToggleCompareProductEvent(this.productSlug);
+
+  @override
+  List<Object?> get props => [productSlug];
+}

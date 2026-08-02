@@ -251,10 +251,6 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       if (kDebugMode) {
         print("Access token rejected — requesting a token refresh...");
       }
-      _prefsRepository.setVerifiedPhonePeforeExpiredToken(
-        _prefsRepository.isVerifiedPhone ?? false,
-      );
-      _prefsRepository.setTokenExpired(true);
       GetIt.I<AuthBloc>().add(const RefreshTokenEvent());
     }
   }
