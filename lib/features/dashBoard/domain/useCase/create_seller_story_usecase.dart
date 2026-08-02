@@ -6,17 +6,47 @@ import 'package:trydos/features/dashBoard/domain/repositories/dashBoard_reposito
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
+/// `POST {STORIES_API}/api/v1/stories/add-seller-story`
 class CreateSellerStoryParams {
-  /// The S3 object key returned by the shared upload flow
-  /// (`UploadDocumentEvent` -> `getPresignedUrl` -> `uploadFileToS3`).
-  final String mediaKey;
-  final String? link;
+  /// The logged-in user id (NOT the shop id).
+  final int userId;
 
-  CreateSellerStoryParams({required this.mediaKey, this.link});
+  /// The shop the story belongs to.
+  final int sellerId;
+
+  /// Full media url: `MEDIA_SERVER_URL` + the path returned by the upload.
+  final String filePath;
+  final bool isVideo;
+  final String? link;
+  final int? productId;
+  final String? productSlug;
+
+  /// Note the singular `second` in the json key — that is what the API expects.
+  final int videoDurationInSecond;
+  final int? orderDetailId;
+
+  const CreateSellerStoryParams({
+    required this.userId,
+    required this.sellerId,
+    required this.filePath,
+    required this.isVideo,
+    this.link,
+    this.productId,
+    this.productSlug,
+    this.videoDurationInSecond = 0,
+    this.orderDetailId,
+  });
 
   Map<String, dynamic> toJson() => {
-    'key': mediaKey,
-    if (link != null && link!.isNotEmpty) 'link': link,
+    'user_id': userId,
+    'seller_id': sellerId,
+    'file_path': filePath,
+    'is_video': isVideo ? 1 : 0,
+    'link': (link != null && link!.trim().isNotEmpty) ? link!.trim() : null,
+    'product_id': productId,
+    'product_slug': productSlug,
+    'video_duration_in_second': videoDurationInSecond,
+    'order_detail_id': orderDetailId,
   };
 }
 

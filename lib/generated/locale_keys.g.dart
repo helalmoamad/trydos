@@ -7,10 +7,25 @@ abstract class LocaleKeys {
   static const translate = 'translate';
   static const work_days = 'work_days';
   static const view_product = 'view_product';
+  static const photo_or_video_up_to_10mb = 'photo_or_video_up_to_10mb';
+  static const delete_story = 'delete_story';
+  static const preview = "preview";
+  static const no_media_selected = "no_media_selected";
+  static const select_product = "select_product";
+  static const load_more = "load_more";
+  static const link = "link";
+  static const add_link_hint = "add_link_hint";
+  static const link_to_product = "link_to_product";
+  static const share_story = "share_story";
+  static const upload_photo_video = 'upload_photo_video';
+  static const delete_story_confirmation = 'delete_story_confirmation';
+  static const linked_product = 'linked_product';
+  static const stories = 'stories';
   static const video_size_limit = "video_size_limit";
+  static const story_deleted_successfully = "story_deleted_successfully";
   static const hide_this_pack = 'hide_this_pack';
   static const hide_this_pack_from_list = 'hide_this_pack_from_list';
-
+  static const video_up_to_60_seconds = "video_up_to_60_seconds";
   static const sellers = 'Sellers';
   static const all_questions_below_from = 'all_questions_below_from';
   static const visitors_not_necessarily_from = 'visitors_not_necessarily_from';
