@@ -8,34 +8,11 @@ abstract class PreCachingImageEvent {
 class CacheImageEvent extends PreCachingImageEvent {
   final String imageUrl;
   final String type;
+  final int priority; // 0 = الأعلى أولوية, 1 = متوسط, 2 = منخفض
 
-  const CacheImageEvent({required this.imageUrl, required this.type});
-}
-
-class CacheSvgEvent extends PreCachingImageEvent {
-  final String svgUrl;
-  final BuildContext context;
-  final double? width;
-  final double? height;
-  final String type;
-  const CacheSvgEvent({
-    required this.svgUrl,
-    required this.type,
-    required this.height,
-    required this.width,
-    required this.context,
-  });
-}
-
-class SetImageCacheStatusEvent extends PreCachingImageEvent {
-  final bool isLoaded;
-  final String imageUrl;
-  const SetImageCacheStatusEvent({
-    required this.isLoaded,
+  const CacheImageEvent({
     required this.imageUrl,
+    required this.type,
+    this.priority = 1, // القيمة الافتراضية
   });
-}
-
-class RemoveUrlThatNotUsedEvent extends PreCachingImageEvent {
-  const RemoveUrlThatNotUsedEvent();
 }

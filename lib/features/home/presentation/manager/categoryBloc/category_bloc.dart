@@ -263,7 +263,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             height: 400.h,
           );
 
-          prefetchImages(url, "home_page_boutique_card");
+          prefetchImages(url, "home_page_boutique_card", 0);
         });
         if (!event.getWithPagination) {
           encodeBoutiquesPrefetchInBackground(r).then(
@@ -332,7 +332,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     );
   }
 
-  prefetchImages(String url, String type) async {
+  prefetchImages(String url, String type, int priority) async {
     if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC");
     List<String> urlHasPredeched =
         prefsRepository.getImageUrlHasPrefeched ?? [];
@@ -340,7 +340,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       return;
     }
     GetIt.I<PreCachingImageBloc>().add(
-      CacheImageEvent(imageUrl: url, type: type),
+      CacheImageEvent(imageUrl: url, type: type, priority: priority),
     );
   }
 
