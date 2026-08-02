@@ -24,6 +24,13 @@ abstract class StoriesEndPoints {
       'increase_viewers'.storiesScope() + '/$storyId';
   static final deleteStoryEP = 'delete_story'.storiesScope();
   static final reportStoryEP = 'report'.storiesScope();
+  // ----<seller stories scope>----
+  // Per-shop stories: they live on the stories server (STORY_URL + stories
+  // token) and identify the shop through the `seller_id` field, so they must
+  // NOT be routed through the dashBoard server / `X-Seller-ID` header.
+  static final getSellerStoriesEP = 'seller-stories'.storiesScope();
+  static final addSellerStoryEP = 'add-seller-story'.storiesScope();
+  static final deleteSellerStoryEP = 'delete-seller-story'.storiesScope();
 }
 
 abstract class StoriesUrls {

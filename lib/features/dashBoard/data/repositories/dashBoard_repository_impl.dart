@@ -162,9 +162,11 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   }
 
   @override
-  Future<Either<Failure, List<SellerStoryModel>>> getSellerStories() {
+  Future<Either<Failure, List<SellerStoryModel>>> getSellerStories(
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-      tryCall: () => dataSource.getSellerStories(),
+      tryCall: () => dataSource.getSellerStories(params),
     );
   }
 
@@ -174,6 +176,15 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.createSellerStory(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteSellerStory(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.deleteSellerStory(params),
     );
   }
 

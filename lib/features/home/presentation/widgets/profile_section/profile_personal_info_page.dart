@@ -624,7 +624,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                           ),
                         ),
                         child: Text(
-                          LocaleKeys.other.tr(),
+                          LocaleKeys.other_option.tr(),
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: widget.changeGender.value == "Other"
                                 ? const Color(0xff1D1D1D)

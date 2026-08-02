@@ -103,15 +103,31 @@ class ResetVendorRequestStatesEvent extends DashBoardEvent {
 }
 
 class GetSellerStoriesEvent extends DashBoardEvent {
-  GetSellerStoriesEvent();
+  final int page;
+  final int perPage;
+  GetSellerStoriesEvent({this.page = 1, this.perPage = 20});
 }
 
+/// Picks up the raw media file: the bloc uploads it to the media server and
+/// then posts the story with the returned url (`add-seller-story`).
 class CreateSellerStoryEvent extends DashBoardEvent {
-  /// The S3 object key produced by the shared upload flow
-  /// ([UploadDocumentEvent] -> `uploadedDocumentKey`).
-  final String mediaKey;
+  final File file;
+  final bool isVideo;
   final String? link;
-  CreateSellerStoryEvent({required this.mediaKey, this.link});
+  final int? productId;
+  final String? productSlug;
+  CreateSellerStoryEvent({
+    required this.file,
+    required this.isVideo,
+    this.link,
+    this.productId,
+    this.productSlug,
+  });
+}
+
+class DeleteSellerStoryEvent extends DashBoardEvent {
+  final int storyId;
+  DeleteSellerStoryEvent({required this.storyId});
 }
 
 class ResetCreateStoryStateEvent extends DashBoardEvent {

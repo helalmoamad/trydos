@@ -47,10 +47,13 @@ abstract class DashBoardRepository {
     required String uploadUrl,
     required String mimeType,
   });
-  Future<Either<Failure, List<SellerStoryModel>>> getSellerStories();
+  Future<Either<Failure, List<SellerStoryModel>>> getSellerStories(
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, SellerStoryModel>> createSellerStory(
     Map<String, dynamic> params,
   );
+  Future<Either<Failure, bool>> deleteSellerStory(Map<String, dynamic> params);
   Future<Either<Failure, GetVendorRequestModel>> getVendorRequest();
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> submitVendorRequest(
     Map<String, dynamic> params,

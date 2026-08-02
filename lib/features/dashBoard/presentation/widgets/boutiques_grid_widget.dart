@@ -112,9 +112,7 @@ class BoutiqueCard extends StatelessWidget {
                     color: Colors.grey.shade100,
                     child: imageUrl.isNotEmpty
                         ? MyCachedNetworkImage(
-                            imageUrl: imageUrl.contains("cloudinary")
-                                ? imageUrl
-                                : "${dotenv.env['Images_Url']}$imageUrl",
+                            imageUrl: "$imageUrl",
                             width: 200.w,
                             imageFit: BoxFit.contain,
                             height: 200.h,

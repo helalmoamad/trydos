@@ -46,6 +46,9 @@ import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.d
 import 'package:trydos/features/dashBoard/domain/useCase/get_seller_stories_usecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/create_seller_story_usecase.dart';
 export 'package:trydos/features/dashBoard/domain/useCase/create_seller_story_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/delete_seller_story_usecase.dart';
+import 'package:trydos/core/domin/usecases/upload_file_media_server_usecase.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:equatable/equatable.dart';
 part 'dashBoard_event.dart';
 part 'dashBoard_state.dart';
@@ -75,6 +78,8 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   changeOrderDetailStatusToPackedUseCase;
   final GetSellerStoriesUseCase getSellerStoriesUseCase;
   final CreateSellerStoryUseCase createSellerStoryUseCase;
+  final DeleteSellerStoryUseCase deleteSellerStoryUseCase;
+  final UploadFileMediaServerUseCase uploadFileMediaServerUseCase;
 
   DashboardBloc(
     this.getUserPermissionUseCase,
@@ -98,6 +103,8 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     this.changeOrderDetailStatusToPackedUseCase,
     this.getSellerStoriesUseCase,
     this.createSellerStoryUseCase,
+    this.deleteSellerStoryUseCase,
+    this.uploadFileMediaServerUseCase,
   ) : super(DashBoardState()) {
     on<GetOrdersEvent>(_onGetOrdersEvent);
     on<NewGetOrdersEvent>(_onNewGetOrdersEvent);
@@ -119,6 +126,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     on<ResetVendorRequestStatesEvent>(_onResetVendorRequestStatesEvent);
     on<GetSellerStoriesEvent>(_onGetSellerStoriesEvent);
     on<CreateSellerStoryEvent>(_onCreateSellerStoryEvent);
+    on<DeleteSellerStoryEvent>(_onDeleteSellerStoryEvent);
     on<ResetCreateStoryStateEvent>(_onResetCreateStoryStateEvent);
   }
 
@@ -736,13 +744,44 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     );
   }
 
+  // -------------------------------------------------------------------------
+  // Seller stories
+  //
+  // The stories API needs two different ids: `user_id` is the logged-in user
+  // (stories server id) and `seller_id` is the shop currently open in the
+  // dashboard (`X-Seller-ID` value, set by DashboardPage).
+  // -------------------------------------------------------------------------
+
+  /// Max accepted video length, enforced by the backend as well.
+  static const int _maxStoryVideoSeconds = 60;
+
+  int? get _storiesUserId => int.tryParse(GetIt.I<PrefsRepository>().myMarketId!);
+
+  int? get _storiesSellerId =>
+      int.tryParse(GetIt.I<PrefsRepository>().getXSellerId ?? '');
+
   FutureOr<void> _onGetSellerStoriesEvent(
     GetSellerStoriesEvent event,
     Emitter<DashBoardState> emit,
   ) async {
+    final userId = _storiesUserId;
+    final sellerId = _storiesSellerId;
+
+    if (userId == null || sellerId == null) {
+      emit(state.copyWith(storiesStatus: GetSellerStoriesStatus.failure));
+      return;
+    }
+
     emit(state.copyWith(storiesStatus: GetSellerStoriesStatus.loading));
 
-    final response = await getSellerStoriesUseCase(NoParams());
+    final response = await getSellerStoriesUseCase(
+      GetSellerStoriesParams(
+        userId: userId,
+        sellerId: sellerId,
+        page: event.page,
+        perPage: event.perPage,
+      ),
+    );
     response.fold(
       (l) {
         emit((state.copyWith(storiesStatus: GetSellerStoriesStatus.failure)));
@@ -762,10 +801,59 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     CreateSellerStoryEvent event,
     Emitter<DashBoardState> emit,
   ) async {
+    final userId = _storiesUserId;
+    final sellerId = _storiesSellerId;
+
+    if (userId == null || sellerId == null) {
+      emit(state.copyWith(createStoryStatus: CreateSellerStoryStatus.failure));
+      showMessage(LocaleKeys.failed_to_add_story.tr(), hasError: true);
+      return;
+    }
+
+    // Step 1: upload the media to the media server (folder `stories`, and
+    // `?story=true` for videos so the server produces the story variants).
+    emit(state.copyWith(createStoryStatus: CreateSellerStoryStatus.uploading));
+
+    final uploadResponse = await uploadFileMediaServerUseCase(
+      UploadFileMediaServerParams(
+        file: event.file,
+        folder: 'stories',
+        isStory: event.isVideo,
+        usingOnUploadingFinishedFunction: false,
+        usingSendProgressFunction: false,
+      ),
+    );
+
+    final uploaded = uploadResponse.fold((l) => null, (r) => r);
+
+    if (uploaded?.url == null || uploaded!.url!.isEmpty) {
+      emit(state.copyWith(createStoryStatus: CreateSellerStoryStatus.failure));
+      showMessage(LocaleKeys.failed_to_add_story.tr(), hasError: true);
+      return;
+    }
+
+    final int durationInSeconds = (uploaded.durationSeconds ?? 0).round();
+
+    if (event.isVideo && durationInSeconds > _maxStoryVideoSeconds) {
+      emit(state.copyWith(createStoryStatus: CreateSellerStoryStatus.failure));
+      showMessage(LocaleKeys.video_up_to_60_seconds.tr(), hasError: true);
+      return;
+    }
+
+    // Step 2: post the story with the full media url.
     emit(state.copyWith(createStoryStatus: CreateSellerStoryStatus.loading));
 
     final response = await createSellerStoryUseCase(
-      CreateSellerStoryParams(mediaKey: event.mediaKey, link: event.link),
+      CreateSellerStoryParams(
+        userId: userId,
+        sellerId: sellerId,
+        filePath: '${dotenv.env['MEDIA_SERVER_URL']}${uploaded.url}',
+        isVideo: event.isVideo,
+        link: event.link,
+        productId: event.productId,
+        productSlug: event.productSlug,
+        videoDurationInSecond: event.isVideo ? durationInSeconds : 0,
+      ),
     );
     response.fold(
       (l) {
@@ -785,6 +873,51 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     );
   }
 
+  FutureOr<void> _onDeleteSellerStoryEvent(
+    DeleteSellerStoryEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    final userId = _storiesUserId;
+    final sellerId = _storiesSellerId;
+
+    if (userId == null || sellerId == null) {
+      emit(state.copyWith(deleteStoryStatus: DeleteSellerStoryStatus.failure));
+      return;
+    }
+
+    emit(state.copyWith(deleteStoryStatus: DeleteSellerStoryStatus.loading));
+
+    final response = await deleteSellerStoryUseCase(
+      DeleteSellerStoryParams(
+        userId: userId,
+        sellerId: sellerId,
+        storyId: event.storyId,
+      ),
+    );
+    response.fold(
+      (l) {
+        emit(
+          (state.copyWith(deleteStoryStatus: DeleteSellerStoryStatus.failure)),
+        );
+        showMessage(l.message, hasError: true);
+      },
+      (r) {
+        // Drop the deleted story locally so the grid updates immediately.
+        final stories = (state.stories ?? const <SellerStoryModel>[])
+            .where((story) => story.id != event.storyId)
+            .toList();
+
+        emit(
+          (state.copyWith(
+            stories: stories,
+            deleteStoryStatus: DeleteSellerStoryStatus.success,
+          )),
+        );
+        showMessage(LocaleKeys.story_deleted_successfully.tr());
+      },
+    );
+  }
+
   FutureOr<void> _onResetCreateStoryStateEvent(
     ResetCreateStoryStateEvent event,
     Emitter<DashBoardState> emit,
@@ -792,6 +925,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     emit(
       state.copyWith(
         createStoryStatus: CreateSellerStoryStatus.init,
+        deleteStoryStatus: DeleteSellerStoryStatus.init,
         uploadDocumentStatus: UploadDocumentStatus.init,
       ),
     );

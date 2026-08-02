@@ -1102,7 +1102,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         title: LocaleKeys.intellectual_property.tr(),
       ),
       ReportReason(key: "violence", title: LocaleKeys.violence.tr()),
-      ReportReason(key: "other", title: LocaleKeys.other.tr()),
+      ReportReason(key: "other", title: LocaleKeys.other_option.tr()),
     ];
 
     final selectedReasons = <String>{};

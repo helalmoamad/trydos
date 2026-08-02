@@ -27,9 +27,9 @@ abstract class DashBoardEndPoints {
   static final updateUserRoleEP = 'role/update'.usersScope();
   static final leaveShopEP = 'leave'.usersScope();
   static final getPresignedUrlEP = 'uploads/presigned-url'.shopScope();
-  // TODO: replace with the real backend routes once they are available.
-  static final getSellerStoriesEP = 'stories'.shopScope();
-  static final createSellerStoryEP = 'stories'.shopScope();
+  // Seller stories are served by the stories server — see
+  // `StoriesEndPoints.getSellerStoriesEP` / `addSellerStoryEP` /
+  // `deleteSellerStoryEP`.
   static final vendorRequestsEP = 'vendor-requests'.shopScope();
   static String updateVendorRequestEP(int vendorRequestId) =>
       'vendor-requests'.shopScope();

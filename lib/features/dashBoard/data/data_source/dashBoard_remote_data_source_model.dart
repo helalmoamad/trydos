@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/dashBoard_url_routes.dart';
+// `show` keeps the `ScopeApi` extension of both url-routes files from clashing.
+import 'package:trydos/common/constant/configuration/stories_url_routes.dart'
+    show StoriesEndPoints;
 import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/get.dart';
@@ -291,12 +294,25 @@ class DashBoardRemoteDataSource {
     return getPresignedUrl();
   }
 
-  Future<List<SellerStoryModel>> getSellerStories() {
+  // ---------------------------------------------------------------------
+  // Seller stories
+  //
+  // These three run against the stories server (STORY_URL + stories token)
+  // and carry the shop in the `seller_id` field — no `X-Seller-ID` header.
+  // ---------------------------------------------------------------------
+
+  Future<List<SellerStoryModel>> getSellerStories(
+    Map<String, dynamic> params,
+  ) {
     GetClient<List<SellerStoryModel>> getSellerStories =
         GetClient<List<SellerStoryModel>>(
-          serverName: ServerName.dashBoard,
+          serverName: ServerName.stories,
           requestPrams: RequestConfig<List<SellerStoryModel>>(
-            endpoint: DashBoardEndPoints.getSellerStoriesEP,
+            endpoint: StoriesEndPoints.getSellerStoriesEP,
+            // `Uri` only accepts String values in its query parameters.
+            queryParameters: params.map(
+              (key, value) => MapEntry(key, value.toString()),
+            ),
             response: ResponseValue<List<SellerStoryModel>>(
               fromJson: (response) =>
                   SellerStoryModel.listFromResponse(response),
@@ -309,9 +325,9 @@ class DashBoardRemoteDataSource {
   Future<SellerStoryModel> createSellerStory(Map<String, dynamic> params) {
     PostClient<SellerStoryModel> createSellerStory =
         PostClient<SellerStoryModel>(
-          serverName: ServerName.dashBoard,
+          serverName: ServerName.stories,
           requestPrams: RequestConfig<SellerStoryModel>(
-            endpoint: DashBoardEndPoints.createSellerStoryEP,
+            endpoint: StoriesEndPoints.addSellerStoryEP,
             data: params,
             response: ResponseValue<SellerStoryModel>(
               fromJson: (response) => SellerStoryModel.fromResponse(response),
@@ -319,6 +335,18 @@ class DashBoardRemoteDataSource {
           ),
         );
     return createSellerStory();
+  }
+
+  Future<bool> deleteSellerStory(Map<String, dynamic> params) {
+    PostClient<bool> deleteSellerStory = PostClient<bool>(
+      serverName: ServerName.stories,
+      requestPrams: RequestConfig<bool>(
+        endpoint: StoriesEndPoints.deleteSellerStoryEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return deleteSellerStory();
   }
 
   Future<ReadOnlyMessageFromApiModel> uploadFileToS3({
