@@ -138,8 +138,8 @@ class FeatureProductsWidget extends StatelessWidget {
                     height: 345.h,
                     child: ListView.separated(
                       addAutomaticKeepAlives: false,
-                      addRepaintBoundaries: false,
                       addSemanticIndexes: false,
+                      addRepaintBoundaries: false,
                       cacheExtent: 0,
                       itemBuilder: (context, index) {
                         // التحقق من صحة الفهرس

@@ -64,6 +64,7 @@ class _FlashDealCountdownTimerWidgetState
   }
 
   void _startTimer() {
+    print("DDDDDDDDDDDDDDDEEEE${widget.endDateString}");
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) {
         timer.cancel();

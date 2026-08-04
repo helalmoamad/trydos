@@ -51,6 +51,7 @@ class FlashDealProductsWidget extends StatelessWidget {
     };*/
     final ValueNotifier<bool> refreshFlashDeal = ValueNotifier(false);
     List<filter.Products> products = [];
+    final now = DateTime.now();
 
     return ValueListenableBuilder<bool>(
       valueListenable: refreshFlashDeal,
@@ -104,7 +105,7 @@ class FlashDealProductsWidget extends StatelessWidget {
               products.forEach((element) {
                 DateTime endDate;
                 Duration _duration = const Duration();
-                final now = DateTime.now();
+
                 try {
                   endDate = tran.DateFormat(
                     'MM/dd/yyyy',
@@ -170,8 +171,8 @@ class FlashDealProductsWidget extends StatelessWidget {
                         height: 345.w,
                         child: ListView.separated(
                           addAutomaticKeepAlives: false,
-                          addRepaintBoundaries: false,
                           addSemanticIndexes: false,
+
                           cacheExtent: 0,
                           itemBuilder: (context, index) {
                             // التحقق من صحة الفهرس

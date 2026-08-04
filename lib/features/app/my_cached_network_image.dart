@@ -60,14 +60,32 @@ class MyCachedNetworkImage extends StatelessWidget {
   final Widget? progressIndicatorBuilderWidget;
   final String? imageSource;
 
+  // ⚡ ثوابت الذاكرة لمنع إعادة إنشائها مع كل Build لكل صورة
+  static final CustomCacheManagers _cacheManager = CustomCacheManagers();
+  static final Map<String, String> _httpHeaders = {
+    'User-Agent':
+        '${kDebugMode ? "developer" : "users"}device OS:${Platform.isAndroid ? 'Android' : 'IOS'}, application version: 1.0.0',
+    "Referer":
+        '${kDebugMode ? "developer" : "users"}device OS:${Platform.isAndroid ? 'Android' : 'IOS'}',
+  };
+
   @override
   Widget build(BuildContext context) {
     final bool isBoutique = fromBoutique ?? false;
 
+    const double safeRatio = 1;
+
+    // ⚡ 2. حساب الأبعاد الآمنة وحماية الكود في حال تم تمرير double.infinity
+    final double effectiveWidth = width.isInfinite
+        ? MediaQuery.sizeOf(context).width
+        : width;
+    final double safeFallbackHeight = height > 0 ? height : 180.0;
+
+    // ⚡ 3. توحيد معامل المعالجة بين طلب السيرفر وتخزين الذاكرة MemCache
     String url = addSuitableWidthAndHeightToImage(
       imageUrl: imageUrl,
-      height: height,
-      width: width,
+      height: safeFallbackHeight,
+      width: effectiveWidth,
       fromBoutique: isBoutique,
     );
 
@@ -75,11 +93,10 @@ class MyCachedNetworkImage extends StatelessWidget {
       url = imageUrl;
     }
 
-    final double safeFallbackHeight = height > 0 ? height : 180.0;
-
+    // الـ Widget الاحتياطي للروابط التالفة أو الفارغة
     if (url.isEmpty || url == "null" || url == "undefined") {
       return Container(
-        width: width,
+        width: effectiveWidth,
         height: isBoutique ? null : safeFallbackHeight,
         constraints: isBoutique ? const BoxConstraints(minHeight: 120) : null,
         decoration: BoxDecoration(
@@ -92,33 +109,35 @@ class MyCachedNetworkImage extends StatelessWidget {
       );
     }
 
-    final double devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
-    final int safeMemWidth = max(100, (width * devicePixelRatio).round());
+    // ⚡ 4. توحيد الأبعاد المحسوبة للـ MemCache مع أبعاد صورة السيرفر تماماً
+    final int safeMemWidth = max(10, (effectiveWidth * safeRatio).round());
+    final int? safeMemHeight = isBoutique
+        ? null
+        : max(10, (safeFallbackHeight * safeRatio).round());
 
-    return Container(
+    // ⚡ 5. تغليف بصورة منفصلة لمنع إعادة رسم باقي عناصر البطاقة أثناء السكرول
+    return SizedBox(
       key: ValueKey(url),
-      width: width,
+      width: effectiveWidth,
       height: isBoutique ? null : safeFallbackHeight,
       child: CachedNetworkImage(
-        httpHeaders: {
-          'User-Agent':
-              '${kDebugMode ? "developer" : "users"}device OS:${Platform.isAndroid ? 'Android' : 'IOS'}, application version: 1.0.0',
-          "Referer":
-              '${kDebugMode ? "developer" : "users"}device OS:${Platform.isAndroid ? 'Android' : 'IOS'}',
-        },
+        httpHeaders: _httpHeaders,
         imageUrl: url,
-        width: width,
+        width: effectiveWidth,
         height: isBoutique ? null : safeFallbackHeight,
-        cacheManager: CustomCacheManagers(),
+        cacheManager: _cacheManager,
 
+        // ⚡ أبعاد الذاكرة متطابقة 100% مع أبعاد السيرفر لمنع إعادة التكييف بالـ CPU
         memCacheWidth: safeMemWidth,
-        memCacheHeight: isBoutique
-            ? null
-            : max(100, (safeFallbackHeight * devicePixelRatio).round()),
+        memCacheHeight: safeMemHeight,
 
         placeholder: (context, url) {
           callWhenLoadingImage?.call();
-          return _buildSimpleShimmer(isBoutique, safeFallbackHeight);
+          return _buildSimpleShimmer(
+            isBoutique,
+            safeFallbackHeight,
+            effectiveWidth,
+          );
         },
 
         fadeInDuration: Duration.zero,
@@ -132,13 +151,13 @@ class MyCachedNetworkImage extends StatelessWidget {
 
               if (isBoutique) {
                 return Container(
-                  width: width,
+                  width: effectiveWidth,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(radius),
                   ),
                   child: Image(
                     image: imageProvider,
-                    width: width,
+                    width: effectiveWidth,
                     fit: BoxFit.fitWidth,
                     color: imageColor,
                     colorBlendMode: imageColor != null ? BlendMode.srcIn : null,
@@ -147,7 +166,7 @@ class MyCachedNetworkImage extends StatelessWidget {
               }
 
               return Container(
-                width: width,
+                width: effectiveWidth,
                 height: safeFallbackHeight,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(radius),
@@ -163,14 +182,18 @@ class MyCachedNetworkImage extends StatelessWidget {
             },
 
         errorWidget: (context, errorUrl, error) =>
-            _buildErrorWidget(isBoutique, safeFallbackHeight),
+            _buildErrorWidget(isBoutique, safeFallbackHeight, effectiveWidth),
       ),
     );
   }
 
-  Widget _buildErrorWidget(bool isBoutique, double safeHeight) {
+  Widget _buildErrorWidget(
+    bool isBoutique,
+    double safeHeight,
+    double currentWidth,
+  ) {
     return Container(
-      width: width,
+      width: currentWidth,
       height: isBoutique ? 150 : safeHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
@@ -182,13 +205,16 @@ class MyCachedNetworkImage extends StatelessWidget {
     );
   }
 
-  // 🎯 استدعاء الـ Shimmer الخاص بك دون أي تعديل أو تغليف زائد
-  Widget _buildSimpleShimmer(bool isBoutique, double safeHeight) {
+  Widget _buildSimpleShimmer(
+    bool isBoutique,
+    double safeHeight,
+    double currentWidth,
+  ) {
     final double shimmerHeight = isBoutique ? 200 : safeHeight;
     return TrydosShimmerLoadingStateless(
-      width: width,
+      width: currentWidth,
       height: shimmerHeight,
-      logoTextWidth: logoTextWidth ?? width * 0.6,
+      logoTextWidth: logoTextWidth ?? currentWidth * 0.6,
       logoTextHeight: logoTextHeight ?? shimmerHeight * 0.3,
       radius: radius,
       circleDimensions: circleDimensions,
@@ -218,6 +244,7 @@ void clearCustomCashe() async {
   await CustomCacheManagers().emptyCache();
 }
 
+/// 🎯 دالة معالجة رابط Cloudinary مع توحيد معامل الكثافة
 String addSuitableWidthAndHeightToImage({
   required String imageUrl,
   bool? fromBoutique,
@@ -232,8 +259,9 @@ String addSuitableWidthAndHeightToImage({
     return imageUrl;
   }
 
-  final int fWidth = max(100, (width * 1.5).toInt());
-  final int fHeight = max(100, (height * 1.5).toInt());
+  // حساب أبعاد السيرفر بالاعتماد على نفس المعامل الآمن
+  final int fWidth = max(10, (width * 1.5).round());
+  final int fHeight = max(10, (height * 1.5).round());
 
   List<String> list = imageUrl.split('upload');
 
@@ -244,15 +272,15 @@ String addSuitableWidthAndHeightToImage({
 
   if (imageUrl.contains('media_server')) {
     if (fromBoutique ?? false) {
-      return '${list[0]}upload/w_$fWidth/f_auto/q_auto:good/fl_lossy/so_0$pathAfterUpload';
+      return '${list[0]}upload/w_$fWidth,c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0$pathAfterUpload';
     } else {
       return '${list[0]}upload/h_$fHeight,w_$fWidth,c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0$pathAfterUpload';
     }
   }
 
   if (fromBoutique ?? false) {
-    return '${list[0]}upload/w_$fWidth,f_webp,q_85$pathAfterUpload';
+    return '${list[0]}upload/w_$fWidth,f_webp,q_80$pathAfterUpload';
   } else {
-    return '${list[0]}upload/w_$fWidth,h_${fHeight},c_pad,b_auto,f_webp,q_85$pathAfterUpload';
+    return '${list[0]}upload/w_$fWidth,h_${fHeight},c_pad,b_auto,f_webp,q_80$pathAfterUpload';
   }
 }

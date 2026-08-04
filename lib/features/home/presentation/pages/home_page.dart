@@ -1,7 +1,6 @@
 ﻿import 'dart:async';
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart' as tran;
-import 'package:html/parser.dart' show parse;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -86,16 +85,6 @@ class _HomePageState extends State<HomePage> {
 
   /// Ù„ØªÙØ§Ø¯ÙŠ Ø¥Ø±Ø³Ø§Ù„ Ø£Ø­Ø¯Ø§Ø« Bloc ÙÙŠ ÙƒÙ„ rebuild â€” Ù†Ø±Ø³Ù„ ÙÙ‚Ø· Ø¹Ù†Ø¯ ØªØºÙŠÙ‘Ø± tapIndex
   bool _isQuickViewOpen = false;
-
-  /// ÙƒØ§Ø´ ÙˆØµÙ Ø§Ù„Ø¨ÙˆØªÙŠÙƒ Ø¨Ø¯ÙˆÙ† HTML (Ù…Ø±Ø© ÙˆØ§Ø­Ø¯Ø© Ù„ÙƒÙ„ Ø¨ÙˆØªÙŠÙƒ â€” Ø§Ù„ÙƒØ§Ø±Ø¯ ÙŠØ¨Ù‚Ù‰ StatelessWidget)
-  final Map<String, String> _boutiqueDescriptionCache = {};
-
-  static String _stripHtmlTagsForBoutique(String htmlString) {
-    final document = parse(htmlString);
-    final String parsedString =
-        parse(document.body?.text).documentElement?.text ?? '';
-    return parsedString.trim();
-  }
 
   /// ÙÙ„ØªØ±Ø© Ø¹Ø±ÙˆØ¶ Ø§Ù„ÙÙ„Ø§Ø´ Ø­Ø³Ø¨ ØªØ§Ø±ÙŠØ® Ø§Ù„Ø§Ù†ØªÙ‡Ø§Ø¡ (Ø®Ø§Ø±Ø¬ Ø§Ù„Ù€ builder Ù„ØªØ­Ø³ÙŠÙ† Ø§Ù„Ø£Ø¯Ø§Ø¡)
   /// يفتح نافذة تفاصيل/شراء المنتج كـ popup منفصل عند الضغط على منتج.
@@ -405,314 +394,295 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Locale currentLocale = Localizations.localeOf(context);
-    return Padding(
-      padding: HWEdgeInsets.symmetric(horizontal: 0.w),
-      child: RefreshIndicator(
-        backgroundColor: Colors.white,
-        color: Colors.black,
-        onRefresh: _refreshData,
-        child: CustomScrollView(
-          key: TestVariables.kTestMode
-              ? const Key(WidgetsKeys.homepageScrollKey)
-              : null,
-          controller: scrollController,
-          cacheExtent: 50,
-          physics: const ClampingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
-          ),
-          slivers: [
-            SliverList(
-              delegate: SliverChildListDelegate.fixed(
-                addAutomaticKeepAlives: false,
-                addRepaintBoundaries: false,
-                [
-                  100.verticalSpace,
-                  storySection(currentLocale, context),
-                  FeatureProductsWidget(
-                    finishRedeem: finishRedeem,
-                    tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-                  ),
-                  10.verticalSpace,
-                  FlashDealProductsWidget(
-                    finishRedeem: finishRedeem,
-                    productIsFlashDeal: productIsFlashDeal,
-                    tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-                  ),
-                ],
-              ),
+    return RefreshIndicator(
+      backgroundColor: Colors.white,
+      color: Colors.black,
+      onRefresh: _refreshData,
+      child: CustomScrollView(
+        key: TestVariables.kTestMode
+            ? const Key(WidgetsKeys.homepageScrollKey)
+            : null,
+        controller: scrollController,
+        cacheExtent: 100,
+        physics: const ClampingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        slivers: [
+          SliverList(
+            delegate: SliverChildListDelegate.fixed(
+              addAutomaticKeepAlives: false,
+              addRepaintBoundaries: false,
+
+              [
+                100.verticalSpace,
+                storySection(context),
+                FeatureProductsWidget(
+                  finishRedeem: finishRedeem,
+                  tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+                ),
+                10.verticalSpace,
+                FlashDealProductsWidget(
+                  finishRedeem: finishRedeem,
+                  productIsFlashDeal: productIsFlashDeal,
+                  tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+                ),
+              ],
             ),
+          ),
 
-            BlocBuilder<AppBloc, AppState>(
-              buildWhen: (previous, current) =>
-                  previous.tabIndex != current.tabIndex,
-              builder: (context, appState) {
-                return BlocBuilder<CategoryBloc, CategoryState>(
-                  buildWhen: (p, c) {
-                    String? currentSlug = appState.tabIndex != -1
-                        ? (c
-                                  .mainCategoriesResponseModel
-                                  ?.data
-                                  ?.mainCategories?[appState.tabIndex]
-                                  .slug ??
-                              "Empty")
-                        : "Empty";
-                    bool rebuild =
-                        (p
-                                .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                                ?.paginationStatus !=
-                            c
-                                .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                                ?.paginationStatus ||
-                        p.currentIndexForMainCategoryEvent !=
-                            c.currentIndexForMainCategoryEvent);
+          BlocBuilder<AppBloc, AppState>(
+            buildWhen: (previous, current) =>
+                previous.tabIndex != current.tabIndex,
+            builder: (context, appState) {
+              return BlocBuilder<CategoryBloc, CategoryState>(
+                buildWhen: (p, c) {
+                  String? currentSlug = appState.tabIndex != -1
+                      ? (c
+                                .mainCategoriesResponseModel
+                                ?.data
+                                ?.mainCategories?[appState.tabIndex]
+                                .slug ??
+                            "Empty")
+                      : "Empty";
+                  bool rebuild =
+                      (p
+                              .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+                              ?.paginationStatus !=
+                          c
+                              .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+                              ?.paginationStatus ||
+                      p.currentIndexForMainCategoryEvent !=
+                          c.currentIndexForMainCategoryEvent);
 
-                    return rebuild;
-                  },
-                  builder: (context, categoryState) {
-                    String? currentSlug = appState.tabIndex != -1
-                        ? (categoryState
-                                  .mainCategoriesResponseModel
-                                  ?.data
-                                  ?.mainCategories?[appState.tabIndex]
-                                  .slug ??
-                              "Empty")
-                        : "Empty";
+                  return rebuild;
+                },
+                builder: (context, categoryState) {
+                  String? currentSlug = appState.tabIndex != -1
+                      ? (categoryState
+                                .mainCategoriesResponseModel
+                                ?.data
+                                ?.mainCategories?[appState.tabIndex]
+                                .slug ??
+                            "Empty")
+                      : "Empty";
 
-                    if ((categoryState
-                                    .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                                    ?.paginationStatus ==
-                                PaginationStatus.loading ||
-                            categoryState
-                                    .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                                    ?.paginationStatus ==
-                                PaginationStatus.initial) &&
-                        (categoryState
-                                    .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                                    ?.items
-                                    .length ??
-                                0) ==
-                            0) {
-                      return sliverListSeparated(
-                        addSemanticIndexes: false,
-                        addAutomaticKeepAlives: false,
-                        addRepaintBoundaries: false,
-
-                        key: TestVariables.kTestMode
-                            ? const Key(WidgetsKeys.boutiquesFailureStatusKey)
-                            : null,
-                        itemBuilder: (_, index) => Padding(
-                          padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                            child: Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.grey.shade100,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Container(
-                                    width: 1.sw,
-                                    height: 235,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color(0xff000000)
-                                              // ignore: deprecated_member_use
-                                              .withOpacity(0.4),
-                                          offset: const Offset(0, 3),
-                                          blurRadius: 6,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                    ),
-                                    width: 1.sw,
-                                    height: 135,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color(0xff000000)
-                                              // ignore: deprecated_member_use
-                                              .withOpacity(0.6),
-                                          offset: const Offset(0, 3),
-                                          blurRadius: 6,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 30,
-                                    child: Row(
-                                      children: List.generate(
-                                        5,
-                                        (index) =>
-                                            const CircleAvatar(radius: 20),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        //HomePageCard(showWhite: index % 2 == 0),
-                        separator: const SizedBox(height: 20),
-                        childCount: 10,
-                      );
-                    }
-                    return sliverListSeparated(
-                      addRepaintBoundaries: false,
-                      addAutomaticKeepAlives: false, // 🟢 ممتاز للأداء
-                      key: TestVariables.kTestMode
-                          ? const Key(WidgetsKeys.boutiquesSuccessStatusKey)
-                          : null,
-                      separator: const SizedBox(height: 20),
-                      childCount:
-                          ((categoryState
+                  if ((categoryState
+                                  .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+                                  ?.paginationStatus ==
+                              PaginationStatus.loading ||
+                          categoryState
+                                  .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+                                  ?.paginationStatus ==
+                              PaginationStatus.initial) &&
+                      (categoryState
                                   .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
                                   ?.items
                                   .length ??
-                              0) +
-                          1),
-                      itemBuilder: (context, index) {
-                        // 1️⃣ استخراج القائمة بأمان ومنع أي Null Exception
-                        final boutiquesList = categoryState
-                            .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                            ?.items;
-                        final itemsCount = boutiquesList?.length ?? 0;
+                              0) ==
+                          0) {
+                    return sliverListSeparated(
+                      addAutomaticKeepAlives: false,
+                      addSemanticIndexes: false,
 
-                        // 2️⃣ حساب شرط إدراج ويدجت "المنتجات المقترحة" (RecommendProductsWidget)
-                        final isRecommendPosition =
-                            (itemsCount < 3 && index == itemsCount) ||
-                            index == 2;
-
-                        if (isRecommendPosition) {
-                          return RecommendProductsWidget(
-                            finishRedeem: finishRedeem,
-                            productIsRecommend: productIsRecommend,
-                            tapIndexToAddProductToCart:
-                                tapIndexToAddProductToCart,
-                          );
-                        }
-
-                        // 3️⃣ حساب فهرس البوتيك الصحيح بدقة
-                        final boutiqueIndex = index > 2 ? index - 1 : index;
-
-                        // التأكد من أن الفهرس داخل حدود القائمة
-                        if (boutiquesList == null ||
-                            boutiqueIndex >= itemsCount) {
-                          return const SizedBox.shrink();
-                        }
-
-                        final boutiqueItem = boutiquesList[boutiqueIndex];
-
-                        // إذا لم تكن هناك بنرات، لا نعرض البوتيك
-                        if (boutiqueItem.banners.isNullOrEmpty) {
-                          return const SizedBox.shrink();
-                        }
-
-                        // 4️⃣ قراءة أو حساب الوصف النصي المخزن كاش
-                        final cacheKey =
-                            boutiqueItem.slug ??
-                            '${currentSlug}_$boutiqueIndex';
-                        final descriptionPlain =
-                            _boutiqueDescriptionCache[cacheKey] ??=
-                                _stripHtmlTagsForBoutique(
-                                  boutiqueItem.description ?? '',
-                                );
-
-                        // 5️⃣ إرجاع البطاقة النهائية
-                        return Padding(
-                          padding: HWEdgeInsets.symmetric(),
-                          child: HomePageBoutiqueCard(
-                            key: TestVariables.kTestMode
-                                ? Key(
-                                    '${WidgetsKeys.boutiqueCardKey}$boutiqueIndex',
-                                  )
-                                : null,
-                            category_Slug: currentSlug,
-                            withSlidingImages: boutiqueItem.banners!.length > 1,
-                            boutique: boutiqueItem,
-                            index: boutiqueIndex,
-                            descriptionPlain: descriptionPlain,
+                      key: TestVariables.kTestMode
+                          ? const Key(WidgetsKeys.boutiquesFailureStatusKey)
+                          : null,
+                      itemBuilder: (_, index) => Padding(
+                        padding: HWEdgeInsets.symmetric(horizontal: 15.w),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.0),
                           ),
-                        );
-                      },
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.grey.shade300,
+                            highlightColor: Colors.grey.shade100,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Container(
+                                  width: 1.sw,
+                                  height: 235,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xff000000)
+                                            // ignore: deprecated_member_use
+                                            .withOpacity(0.4),
+                                        offset: const Offset(0, 3),
+                                        blurRadius: 6,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  width: 1.sw,
+                                  height: 135,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xff000000)
+                                            // ignore: deprecated_member_use
+                                            .withOpacity(0.6),
+                                        offset: const Offset(0, 3),
+                                        blurRadius: 6,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 30,
+                                  child: Row(
+                                    children: List.generate(
+                                      5,
+                                      (index) => const CircleAvatar(radius: 20),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      //HomePageCard(showWhite: index % 2 == 0),
+                      separator: const SizedBox(height: 20),
+                      childCount: 10,
                     );
-                  },
-                );
-              },
-            ),
-            SliverToBoxAdapter(child: 20.verticalSpace),
-            BlocBuilder<AppBloc, AppState>(
-              buildWhen: (previous, current) =>
-                  previous.tabIndex != current.tabIndex,
-              builder: (context, appState) {
-                return BlocBuilder<CategoryBloc, CategoryState>(
-                  buildWhen: (p, c) {
-                    String? currentSlug = appState.tabIndex != -1
-                        ? (c
-                                  .mainCategoriesResponseModel
-                                  ?.data
-                                  ?.mainCategories?[appState.tabIndex]
-                                  .slug ??
-                              "Empty")
-                        : "Empty";
-                    bool rebuild =
-                        (p
+                  }
+                  return sliverListSeparated(
+                    addAutomaticKeepAlives: false,
+                    addSemanticIndexes: false,
+
+                    key: TestVariables.kTestMode
+                        ? const Key(WidgetsKeys.boutiquesSuccessStatusKey)
+                        : null,
+                    separator: const SizedBox(height: 20),
+                    childCount:
+                        ((categoryState
                                 .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                                ?.paginationStatus !=
-                            c
-                                .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                                ?.paginationStatus ||
-                        p.currentIndexForMainCategoryEvent !=
-                            c.currentIndexForMainCategoryEvent);
-                    return rebuild;
-                  },
-                  builder: (context, state) {
-                    String? currentSlug = appState.tabIndex != -1
-                        ? (state
-                                  .mainCategoriesResponseModel
-                                  ?.data
-                                  ?.mainCategories?[appState.tabIndex]
-                                  .slug ??
-                              "Empty")
-                        : "Empty";
-                    if (((state
-                                    .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                                    ?.items
-                                    .length ??
-                                0) >
-                            9) &&
-                        state
-                                .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-                                ?.paginationStatus ==
-                            PaginationStatus.loading) {
-                      return SliverToBoxAdapter(
-                        child: Center(child: TrydosLoader()),
+                                ?.items
+                                .length ??
+                            0) +
+                        1),
+                    itemBuilder: (context, index) {
+                      // 1️⃣ استخراج القائمة بأمان ومنع أي Null Exception
+                      final boutiquesList = categoryState
+                          .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+                          ?.items;
+                      final itemsCount = boutiquesList?.length ?? 0;
+
+                      // 2️⃣ حساب شرط إدراج ويدجت "المنتجات المقترحة" (RecommendProductsWidget)
+                      final isRecommendPosition =
+                          (itemsCount < 3 && index == itemsCount) || index == 2;
+
+                      if (isRecommendPosition) {
+                        return RecommendProductsWidget(
+                          finishRedeem: finishRedeem,
+                          productIsRecommend: productIsRecommend,
+                          tapIndexToAddProductToCart:
+                              tapIndexToAddProductToCart,
+                        );
+                      }
+
+                      // 3️⃣ حساب فهرس البوتيك الصحيح بدقة
+                      final boutiqueIndex = index > 2 ? index - 1 : index;
+
+                      // التأكد من أن الفهرس داخل حدود القائمة
+                      if (boutiquesList == null ||
+                          boutiqueIndex >= itemsCount) {
+                        return const SizedBox.shrink();
+                      }
+
+                      final boutiqueItem = boutiquesList[boutiqueIndex];
+
+                      // إذا لم تكن هناك بنرات، لا نعرض البوتيك
+                      if (boutiqueItem.banners.isNullOrEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      // 5️⃣ إرجاع البطاقة النهائية
+                      return HomePageBoutiqueCard(
+                        key: TestVariables.kTestMode
+                            ? Key(
+                                '${WidgetsKeys.boutiqueCardKey}$boutiqueIndex',
+                              )
+                            : null,
+                        category_Slug: currentSlug,
+                        withSlidingImages: boutiqueItem.banners!.length > 1,
+                        boutique: boutiqueItem,
+                        index: boutiqueIndex,
+                        descriptionPlain: boutiqueItem.cleanDescription ?? '',
                       );
-                    }
-                    return const SliverToBoxAdapter();
-                  },
-                );
-              },
-            ),
-            SliverToBoxAdapter(child: 20.verticalSpace),
-          ],
-        ),
+                    },
+                  );
+                },
+              );
+            },
+          ),
+          SliverToBoxAdapter(child: 20.verticalSpace),
+          BlocBuilder<AppBloc, AppState>(
+            buildWhen: (previous, current) =>
+                previous.tabIndex != current.tabIndex,
+            builder: (context, appState) {
+              return BlocBuilder<CategoryBloc, CategoryState>(
+                buildWhen: (p, c) {
+                  String? currentSlug = appState.tabIndex != -1
+                      ? (c
+                                .mainCategoriesResponseModel
+                                ?.data
+                                ?.mainCategories?[appState.tabIndex]
+                                .slug ??
+                            "Empty")
+                      : "Empty";
+                  bool rebuild =
+                      (p
+                              .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+                              ?.paginationStatus !=
+                          c
+                              .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+                              ?.paginationStatus ||
+                      p.currentIndexForMainCategoryEvent !=
+                          c.currentIndexForMainCategoryEvent);
+                  return rebuild;
+                },
+                builder: (context, state) {
+                  String? currentSlug = appState.tabIndex != -1
+                      ? (state
+                                .mainCategoriesResponseModel
+                                ?.data
+                                ?.mainCategories?[appState.tabIndex]
+                                .slug ??
+                            "Empty")
+                      : "Empty";
+                  if (((state
+                                  .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+                                  ?.items
+                                  .length ??
+                              0) >
+                          9) &&
+                      state
+                              .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+                              ?.paginationStatus ==
+                          PaginationStatus.loading) {
+                    return SliverToBoxAdapter(
+                      child: Center(child: TrydosLoader()),
+                    );
+                  }
+                  return const SliverToBoxAdapter();
+                },
+              );
+            },
+          ),
+          SliverToBoxAdapter(child: 20.verticalSpace),
+        ],
       ),
     );
   }
 
-  Widget storySection(Locale currentLocale, BuildContext context) {
+  Widget storySection(BuildContext context) {
     return Stack(
       children: [
         //   Directionality(

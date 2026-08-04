@@ -138,7 +138,9 @@ class _StoriesListState extends State<StoriesList> {
                               : null,
                           height: 220.h,
                           child: ListView.separated(
-                            addRepaintBoundaries: false,
+                            addAutomaticKeepAlives: false,
+
+                            addSemanticIndexes: false,
                             controller: listViewController,
                             itemBuilder: (context, index) {
                               if (index == storiesCollections.length + 1) {

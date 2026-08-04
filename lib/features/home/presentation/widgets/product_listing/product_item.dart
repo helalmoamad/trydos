@@ -69,7 +69,8 @@ class _ProductItemState extends State<ProductItem> {
   late final ValueNotifier<int> currentChosenColor;
   final ValueNotifier<bool> visibleRedeem = ValueNotifier(false);
   final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
-
+  final dateNow = DateTime.now();
+  final pref = GetIt.I<PrefsRepository>();
   @override
   void initState() {
     super.initState();
@@ -77,7 +78,7 @@ class _ProductItemState extends State<ProductItem> {
       (widget.productItem.syncColorImages?.length ?? 0) ~/ 2,
     );
     if (widget.productItem.hasRedeemDiscount == true) {
-      GetIt.I<PrefsRepository>().setRedeemDateForProduct(
+      pref.setRedeemDateForProduct(
         widget.productItem.productId.toString(),
         "50",
       );
@@ -151,7 +152,7 @@ class _ProductItemState extends State<ProductItem> {
                     bool isFlashDealEnded = false;
                     DateTime endDate;
                     Duration _duration = const Duration();
-                    final now = DateTime.now();
+
                     try {
                       endDate = tran.DateFormat(
                         'MM/dd/yyyy',
@@ -159,10 +160,10 @@ class _ProductItemState extends State<ProductItem> {
                       ).parse(widget.productItem.flashDealEndDate ?? "");
                       endDate = endDate.add(const Duration(days: 1));
                     } catch (e) {
-                      endDate = DateTime.now();
+                      endDate = dateNow;
                       if (kDebugMode) print('Error parsing date: $e');
                     }
-                    _duration = endDate.difference(now);
+                    _duration = endDate.difference(dateNow);
                     if (_duration.isNegative || _duration.inSeconds < 1) {
                       isFlashDealEnded = true;
                     }
@@ -252,7 +253,7 @@ class _ProductItemState extends State<ProductItem> {
           child: ValueListenableBuilder<bool>(
             valueListenable: visibleRedeem,
             builder: (context, _visibleRedeem, _) {
-              return (GetIt.I<PrefsRepository>()
+              return (pref
                                   .getRedeemDateForProduct(
                                     widget.productItem.productId.toString(),
                                   )
@@ -263,10 +264,9 @@ class _ProductItemState extends State<ProductItem> {
                                   ) ==
                               true &&
                           widget.productItem.hasRedeemDiscount == true) ||
-                      (GetIt.I<PrefsRepository>()
-                                  .getRedeemSecondRemainingForProduct(
-                                    widget.productItem.productId.toString(),
-                                  ) ??
+                      (pref.getRedeemSecondRemainingForProduct(
+                                widget.productItem.productId.toString(),
+                              ) ??
                               0) >
                           0
                   ? Positioned(
@@ -324,12 +324,10 @@ class _ProductItemState extends State<ProductItem> {
                                   finishRedeem: widget.finishRedeem,
                                   visibleRedeem: visibleRedeem,
                                   endTime:
-                                      GetIt.I<PrefsRepository>()
-                                          .getRedeemDateForProduct(
-                                            widget.productItem.productId
-                                                .toString(),
-                                          ) ??
-                                      DateTime.now(),
+                                      pref.getRedeemDateForProduct(
+                                        widget.productItem.productId.toString(),
+                                      ) ??
+                                      dateNow,
                                 ),
                                 Text(
                                   " ${LocaleKeys.seconds.tr()} ",

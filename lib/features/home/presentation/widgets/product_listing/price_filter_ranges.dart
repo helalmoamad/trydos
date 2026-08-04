@@ -68,6 +68,8 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
       height: 70.h,
       child: ListView.separated(
         addRepaintBoundaries: false,
+        addAutomaticKeepAlives: false,
+        addSemanticIndexes: false,
         itemCount: widget.priceRanges.length,
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,

@@ -223,14 +223,12 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
 
                 (widget.productItem.labelNames?.length ?? 0) == 0
                     ? SizedBox(height: 10.h)
-                    : RepaintBoundary(
-                        child: RotatingTextWidget(
-                          texts: widget.productItem.labelNames ?? [],
-                          textStyle: textTheme.titleMedium?.bq.copyWith(
-                            fontSize: 9.sp,
-                            color: const Color(0xff388CFF),
-                            height: 0,
-                          ),
+                    : RotatingTextWidget(
+                        texts: widget.productItem.labelNames ?? [],
+                        textStyle: textTheme.titleMedium?.bq.copyWith(
+                          fontSize: 9.sp,
+                          color: const Color(0xff388CFF),
+                          height: 0,
                         ),
                       ),
               ],

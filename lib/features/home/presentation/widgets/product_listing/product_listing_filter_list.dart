@@ -603,7 +603,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     SizedBox(
                                       height: 8.h,
                                       child: ListView.builder(
-                                        addRepaintBoundaries: false,
+                                        addSemanticIndexes: false,
+                                        addAutomaticKeepAlives: false,
                                         itemCount: countOfFilters,
                                         physics:
                                             const NeverScrollableScrollPhysics(),
@@ -1844,7 +1845,8 @@ Widget choosedOrAppliedFiltersWidget({
         height: 25.h,
         width: 30.w,
         child: ListView(
-          addRepaintBoundaries: false,
+          addAutomaticKeepAlives: false,
+          addSemanticIndexes: false,
           key: TestVariables.kTestMode == false
               ? null
               : const Key(WidgetsKeys.appliedFiltersProductListingKey),
@@ -2115,7 +2117,7 @@ Widget choosedOrAppliedFiltersWidget({
                 height: 28.h,
                 child: ListView.builder(
                   shrinkWrap: true,
-
+                  addSemanticIndexes: false,
                   addRepaintBoundaries: false,
 
                   physics: const NeverScrollableScrollPhysics(),
@@ -2190,7 +2192,8 @@ Widget choosedOrAppliedFiltersWidget({
                 child: ListView.builder(
                   shrinkWrap: true,
 
-                  addRepaintBoundaries: false,
+                  addSemanticIndexes: false,
+                  addAutomaticKeepAlives: false,
                   physics: const NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   itemCount: filters?.boutiques?.length,
@@ -2289,8 +2292,8 @@ Widget choosedOrAppliedFiltersWidget({
               height: 28.h,
               child: ListView.builder(
                 shrinkWrap: true,
-
-                addRepaintBoundaries: false,
+                addSemanticIndexes: false,
+                addAutomaticKeepAlives: false,
                 physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemCount: filters?.categories?.length ?? 0,
@@ -2391,7 +2394,8 @@ Widget choosedOrAppliedFiltersWidget({
               child: ListView.builder(
                 shrinkWrap: true,
 
-                addRepaintBoundaries: false,
+                addSemanticIndexes: false,
+                addAutomaticKeepAlives: false,
                 physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemCount: filters?.brands?.length ?? 0,
@@ -2481,7 +2485,8 @@ Widget choosedOrAppliedFiltersWidget({
               child: ListView.builder(
                 shrinkWrap: true,
 
-                addRepaintBoundaries: false,
+                addSemanticIndexes: false,
+                addAutomaticKeepAlives: false,
                 physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemCount: filters?.attributes.isNullOrEmpty ?? true
@@ -2569,7 +2574,8 @@ Widget choosedOrAppliedFiltersWidget({
                 child: ListView.builder(
                   shrinkWrap: true,
 
-                  addRepaintBoundaries: false,
+                  addSemanticIndexes: false,
+                  addAutomaticKeepAlives: false,
                   physics: const NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   itemCount: filters?.colors?.length ?? 0,

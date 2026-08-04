@@ -136,8 +136,9 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
           SizedBox(
             height: 105.h,
             child: ListView.separated(
-              addRepaintBoundaries: false,
               controller: scrollController,
+              addAutomaticKeepAlives: false,
+              addSemanticIndexes: false,
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               itemBuilder: (ctx, index) {

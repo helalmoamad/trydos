@@ -19,19 +19,15 @@ class StaticShimmerLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: Container(
-        width: width ?? 200,
-        height: height ?? 200,
-        decoration: BoxDecoration(
-          color: baseColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: highlightColor,
-          ),
-        ),
-        child: showTrydosLogo ? _buildTrydosContent() : null,
+    return Container(
+      width: width ?? 200,
+      height: height ?? 200,
+      decoration: BoxDecoration(
+        color: baseColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: highlightColor),
       ),
+      child: showTrydosLogo ? _buildTrydosContent() : null,
     );
   }
 
@@ -144,10 +140,7 @@ class SimpleStaticShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF5F5F5),
         borderRadius: borderRadius ?? BorderRadius.circular(8),
-        border: Border.all(
-          color: const Color(0xFFE0E0E0),
-          width: 0.5,
-        ),
+        border: Border.all(color: const Color(0xFFE0E0E0), width: 0.5),
       ),
     );
   }
@@ -191,11 +184,8 @@ class CardStaticShimmer extends StatelessWidget {
   final double? width;
   final double? height;
 
-  const CardStaticShimmer({
-    Key? key,
-    this.width,
-    this.height,
-  }) : super(key: key);
+  const CardStaticShimmer({Key? key, this.width, this.height})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -205,9 +195,7 @@ class CardStaticShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF8F8F8),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFFE0E0E0),
-        ),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,9 +207,7 @@ class CardStaticShimmer extends StatelessWidget {
               width: double.infinity,
               decoration: const BoxDecoration(
                 color: Color(0xFFEEEEEE),
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(12),
-                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
               ),
               child: const Center(
                 child: Icon(

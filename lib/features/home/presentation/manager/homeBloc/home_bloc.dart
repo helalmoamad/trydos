@@ -4942,6 +4942,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       },
       (r) {
+        if (r.productItem?.productId == null) {
+          emit(
+            state.copyWith(
+              getFullProductDetailsStatus: GetFullProductDetailsStatus.failure,
+            ),
+          );
+          return;
+        }
         add(
           GetRelatedProductsEvent(
                 productSlug: r.productItem!.productId,

@@ -152,8 +152,9 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
               builder: (context, currentIndex, _) {
                 return ListView.separated(
                   controller: scrollController,
-
+                  addSemanticIndexes: false,
                   addRepaintBoundaries: false,
+                  addAutomaticKeepAlives: false,
                   itemCount: widget.attribute.options?.length ?? 0,
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,

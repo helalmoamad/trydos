@@ -142,7 +142,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
           SizedBox(
             height: 110.h,
             child: ListView.separated(
-              addRepaintBoundaries: false,
+              addAutomaticKeepAlives: false,
+              addSemanticIndexes: false,
               controller: scrollController,
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,

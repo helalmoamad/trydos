@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:html/parser.dart' show parse;
 
 GetHomeBoutiquesModel getHomeBoutiquesModelFromJson(String str) =>
     GetHomeBoutiquesModel.fromJson(json.decode(str));
@@ -81,6 +82,7 @@ class HomeBoutiques {
   final String? slug;
   final String? position;
   final String? description;
+  final String? cleanDescription;
   final List<BunnerBoutique>? banners;
   final List<MainCategoriesForProductId>? mainCategoriesForProductIds;
   final List<ChildCategoriesForProductId>? childCategoriesForProductIds;
@@ -91,6 +93,7 @@ class HomeBoutiques {
     this.icon,
     this.slug,
     this.position,
+    this.cleanDescription,
     this.description,
     this.banners,
     this.mainCategoriesForProductIds,
@@ -105,6 +108,7 @@ class HomeBoutiques {
     String? position,
     String? description,
     List<BunnerBoutique>? banners,
+    String? cleanDescription,
     List<MainCategoriesForProductId>? mainCategoriesForProductIds,
     List<ChildCategoriesForProductId>? childCategoriesForProductIds,
   }) => HomeBoutiques(
@@ -112,6 +116,7 @@ class HomeBoutiques {
     name: name ?? this.name,
     icon: icon ?? this.icon,
     slug: slug ?? this.slug,
+    cleanDescription: cleanDescription ?? this.cleanDescription,
     position: position ?? this.position,
     description: description ?? this.description,
     banners: banners ?? this.banners,
@@ -121,10 +126,20 @@ class HomeBoutiques {
         childCategoriesForProductIds ?? this.childCategoriesForProductIds,
   );
 
+  static String _stripHtmlTagsForBoutique(String htmlString) {
+    final document = parse(htmlString);
+    final String parsedString =
+        parse(document.body?.text).documentElement?.text ?? '';
+    return parsedString.trim();
+  }
+
   factory HomeBoutiques.fromJson(Map<String, dynamic> json) => HomeBoutiques(
     id: json["id"],
     name: json["name"],
     icon: json["icon"] == null ? null : BunnerBoutique.fromJson(json["icon"]),
+    cleanDescription: json["description"] == null
+        ? null
+        : _stripHtmlTagsForBoutique(json["description"]),
     slug: json["slug"],
     position: json["position"].toString(),
     description: json["description"],
@@ -156,6 +171,7 @@ class HomeBoutiques {
     "slug": slug,
     "position": position,
     "description": description,
+    "cleanDescription": cleanDescription,
     "banners": banners == null
         ? []
         : List<dynamic>.from(banners!.map((x) => x.toJson())),

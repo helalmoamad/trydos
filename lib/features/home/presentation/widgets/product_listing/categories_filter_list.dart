@@ -81,7 +81,9 @@ class CategoriesFilterList extends StatelessWidget {
 
         return ListView.builder(
           scrollDirection: Axis.horizontal,
-          addRepaintBoundaries: false,
+
+          addAutomaticKeepAlives: false,
+          addSemanticIndexes: false,
 
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,

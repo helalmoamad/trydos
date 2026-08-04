@@ -17,7 +17,6 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/rotating_text_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
@@ -79,12 +78,120 @@ class ProductListing3DSliderOptimized extends StatefulWidget {
 class _ProductListing3DSliderOptimizedState
     extends State<ProductListing3DSliderOptimized> {
   late HomeBloc _homeBloc;
+  final prefs = GetIt.I<PrefsRepository>();
 
   Future<void>? _initializeVideoFuture;
+  String? imageUrl;
+  List<String> productCategoryList = [];
+  String productCategory = "";
+  String? brandIcon;
+  DateTime? getRedeemDateForProduct;
+  bool isVerified = true;
+  int? getRedeemSecondRemainingForProduct;
+  bool isFlashDealEnded = false;
+  DateTime? endDate;
+  Duration _duration = const Duration();
+  double price = 0;
+  double offerPrice = 0;
+  int decimalDigits = 1;
+  double exchangeRate = 1;
+  String symbol = "";
+  String redeemPriceWithExchangeRate = "";
+  String offerPriceWithExchangeRate = "";
+  String priceWithExchangeRate = "";
+  String flashDealPriceWithExchangeRate = "";
 
   @override
   void initState() {
     super.initState();
+    getRedeemSecondRemainingForProduct = prefs
+        .getRedeemSecondRemainingForProduct(
+          widget.productItem.productId.toString(),
+        );
+    brandIcon = widget.productItem.brand?.icon?.filePath;
+    getRedeemDateForProduct = prefs.getRedeemDateForProduct(
+      widget.productItem.productId.toString(),
+    );
+    isVerified = (widget.productItem.brand?.isVerified ?? 0) > 0;
+    productCategoryList.add(widget.productItem.name ?? '');
+    productCategoryList.add(widget.productItem.categoriesTree ?? '');
+    productCategory = productCategoryList.join(' | ');
+    price = widget.productItem.price ?? 0;
+    offerPrice = widget.productItem.offerPrice ?? 0;
+    decimalDigits =
+        GetIt.I<HomeBloc>()
+            .state
+            .getCurrencyForCountryModel
+            ?.data
+            ?.currency
+            ?.decimalDigits ??
+        1;
+    symbol =
+        GetIt.I<HomeBloc>()
+            .state
+            .getCurrencyForCountryModel
+            ?.data
+            ?.currency
+            ?.symbol ??
+        "";
+    exchangeRate =
+        GetIt.I<HomeBloc>()
+            .state
+            .getCurrencyForCountryModel
+            ?.data
+            ?.currency
+            ?.exchangeRate ??
+        1;
+    priceWithExchangeRate = HelperFunctions.formatNumber(
+      numberToFormate:
+          ((HelperFunctions.truncateToDecimalPlaces(price, decimalDigits)) *
+          exchangeRate),
+    );
+    offerPriceWithExchangeRate = HelperFunctions.formatNumber(
+      numberToFormate:
+          ((HelperFunctions.truncateToDecimalPlaces(
+            offerPrice,
+            decimalDigits,
+          )) *
+          exchangeRate),
+    );
+    flashDealPriceWithExchangeRate = HelperFunctions.formatNumber(
+      numberToFormate:
+          ((HelperFunctions.truncateToDecimalPlaces(
+            widget.productItem.flashDealPrice ?? 0,
+            decimalDigits,
+          )) *
+          exchangeRate),
+    );
+    redeemPriceWithExchangeRate = HelperFunctions.formatNumber(
+      numberToFormate:
+          ((HelperFunctions.truncateToDecimalPlaces(
+            widget.productItem.redeemPrice ?? 0,
+            decimalDigits,
+          )) *
+          exchangeRate),
+    );
+    try {
+      endDate = DateFormat(
+        'MM/dd/yyyy',
+        'en_US',
+      ).parse(widget.productItem.flashDealEndDate ?? "");
+      endDate = endDate?.add(const Duration(days: 1));
+    } catch (e) {
+      endDate = DateTime.now();
+      if (kDebugMode) print('Error parsing date: $e');
+    }
+    // محاولة الحصول على الصورة من syncColorImages أولاً
+    if (widget.productItem.syncColorImages?.isNotEmpty == true) {
+      final firstColorImage = widget.productItem.syncColorImages!.first;
+      if (firstColorImage.images?.isNotEmpty == true) {
+        imageUrl = firstColorImage.images!.first.filePath;
+      }
+    }
+    if (imageUrl == null && widget.productItem.images?.isNotEmpty == true) {
+      final firstImage = widget.productItem.images!.first;
+      imageUrl = firstImage.filePath;
+    }
     _homeBloc = BlocProvider.of<HomeBloc>(context);
     if (widget.videoSource != null && widget.videoSource!.isNotEmpty) {
       videoProductInListingController[widget.productItem.slug ?? ""]?.dispose();
@@ -115,27 +222,6 @@ class _ProductListing3DSliderOptimizedState
     }
   }
 
-  /* @override
-  void dispose() {
-    if (debounce?.isActive ?? false) {
-      debounce!.cancel();
-    }
-    debounce = Timer(Duration(milliseconds: 2000), () {
-      for (var i = 0;
-          i < videoProductInListingController.keys.toList().length;
-          i++) {
-        if (!productSlugToSaveVideoTimer
-            .contains(videoProductInListingController.keys.toList()[i])) {
-          videoProductInListingController[i]?.pause();
-          videoProductInListingController[i]?.dispose();
-          videoProductInListingController
-              .remove(videoProductInListingController.keys.toList()[i]);
-        }
-      }
-    });
-    super.dispose();
-  }*/
-
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -164,27 +250,7 @@ class _ProductListing3DSliderOptimizedState
         mainAxisSize: MainAxisSize.min,
         children: [
           // 🖼️ صورة المنتج - بدون مسافات إضافية
-          SizedBox(
-            height: 250.h,
-            width: 200.w,
-            child: _buildSingleImage(
-              (GetIt.I<PrefsRepository>()
-                              .getRedeemDateForProduct(
-                                widget.productItem.productId.toString(),
-                              )
-                              ?.isAfter(
-                                DateTime.now().add(const Duration(seconds: 1)),
-                              ) ==
-                          true &&
-                      widget.productItem.hasRedeemDiscount == true) ||
-                  (GetIt.I<PrefsRepository>()
-                              .getRedeemSecondRemainingForProduct(
-                                widget.productItem.productId.toString(),
-                              ) ??
-                          0) >
-                      0,
-            ),
-          ),
+          SizedBox(height: 250.h, width: 200.w, child: _buildSingleImage()),
 
           // 💰 معلومات المنتج
           Expanded(child: _buildProductInfo()),
@@ -193,81 +259,27 @@ class _ProductListing3DSliderOptimizedState
     );
   }
 
-  /// 🎯 بناء مبسط للصورة والمعلومات
-  /*Widget _buildSimpleProductCardOld() {
-    return Container(
-      height: widget.fromHomePage ? 350 : 400, // الأبعاد الأصلية
-      width: 200,
-      child: Column(
-        children: [
-          // 🖼️ صورة واحدة بسيطة
-          Expanded(
-            flex: 3,
-            child: _buildSingleImage(),
-          ),
-
-          // 💰 معلومات المنتج
-          Expanded(
-            flex: 1,
-            child: _buildProductInfo(),
-          ),
-        ],
-      ),
-    );
-  }*/
-
   /// 🖼️ عرض صورة واحدة فقط (أول صورة) - مع الـ loading الأصلي
-  Widget _buildSingleImage(bool isRedeem) {
+  Widget _buildSingleImage() {
     // الحصول على أول صورة متاحة
-    String? imageUrl;
-    double imageHeight = 250.h;
-    double imageWidth = 200.w;
-
-    // محاولة الحصول على الصورة من syncColorImages أولاً
-    if (widget.productItem.syncColorImages?.isNotEmpty == true) {
-      final firstColorImage = widget.productItem.syncColorImages!.first;
-      if (firstColorImage.images?.isNotEmpty == true) {
-        imageUrl = firstColorImage.images!.first.filePath;
-        imageHeight =
-            double.tryParse(
-              firstColorImage.images!.first.originalHeight ?? '250',
-            ) ??
-            250.h;
-        imageWidth =
-            double.tryParse(
-              firstColorImage.images!.first.originalWidth ?? '200',
-            ) ??
-            200.w;
-      }
-    }
-
-    // إذا لم توجد، استخدم أول صورة من images العادية
-    if (imageUrl == null && widget.productItem.images?.isNotEmpty == true) {
-      final firstImage = widget.productItem.images!.first;
-      imageUrl = firstImage.filePath;
-      imageHeight =
-          double.tryParse(firstImage.originalHeight ?? '250') ?? 250.h;
-      imageWidth = double.tryParse(firstImage.originalWidth ?? '200') ?? 200.w;
-    }
 
     return ValueListenableBuilder<bool>(
       valueListenable: widget.visibleRedeem,
       builder: (context, _visibleRedeem, _) {
+        getRedeemDateForProduct = prefs.getRedeemDateForProduct(
+          widget.productItem.productId.toString(),
+        );
+        getRedeemSecondRemainingForProduct = prefs
+            .getRedeemSecondRemainingForProduct(
+              widget.productItem.productId.toString(),
+            );
         bool isRedeem =
-            (GetIt.I<PrefsRepository>()
-                        .getRedeemDateForProduct(
-                          widget.productItem.productId.toString(),
-                        )
-                        ?.isAfter(
-                          DateTime.now().add(const Duration(seconds: 1)),
-                        ) ==
+            (getRedeemDateForProduct?.isAfter(
+                      DateTime.now().add(const Duration(seconds: 1)),
+                    ) ==
                     true &&
                 widget.productItem.hasRedeemDiscount == true) ||
-            (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(
-                      widget.productItem.productId.toString(),
-                    ) ??
-                    0) >
-                0;
+            (getRedeemSecondRemainingForProduct ?? 0) > 0;
         final bool hasVideo =
             (widget.videoSource != null && widget.videoSource!.isNotEmpty);
 
@@ -286,10 +298,8 @@ class _ProductListing3DSliderOptimizedState
               ? _buildVideoBox(isRedeem, imageUrl ?? "")
               : (imageUrl != null
                     ? ProductListingImageWidget(
-                        orginalHeight: imageHeight,
-                        orginalWidth: imageWidth,
                         width: 200.w,
-                        imageUrl: imageUrl,
+                        imageUrl: imageUrl ?? "",
                         height: 250.h,
                         circleShape: false,
                         innerShadowYOffset: 3,
@@ -365,41 +375,7 @@ class _ProductListing3DSliderOptimizedState
                     circleShape: false,
                     innerShadowYOffset: 3,
                   ),
-                buffering
-                    ? TrydosLoader(size: 20.h)
-                    : /* videoProductInListingController[
-                                  widget.productItem.slug ?? ""]!
-                              .value
-                              .isPlaying
-                          ? InkWell(
-                              onTap: () {
-                                videoProductInListingController[
-                                        widget.productItem.slug ?? ""]!
-                                    .pause();
-                              },
-                              child: SizedBox(
-                                width: 60,
-                                height: 60,
-                              ),
-                            )
-                          : Container(
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: Color.fromRGBO(1, 1, 0, 0.2),
-                                  borderRadius: BorderRadius.circular(50),
-                                  border: Border.all(color: Colors.white)),
-                              child: InkWell(
-                                onTap: () {
-                                  videoProductInListingController
-                                      .forEach((key, value) => value.pause());
-                                  videoProductInListingController[
-                                          widget.productItem.slug ?? ""]!
-                                      .play();
-                                },
-                                child: Icon(Icons.play_arrow,
-                                    size: 30, color: Colors.white),
-                              ))*/ const SizedBox.shrink(),
+                buffering ? TrydosLoader(size: 20.h) : const SizedBox.shrink(),
               ],
             );
           },
@@ -452,25 +428,23 @@ class _ProductListing3DSliderOptimizedState
                         child: ValueListenableBuilder<bool>(
                           valueListenable: widget.visibleRedeem,
                           builder: (context, _visibleRedeem, _) {
-                            return (GetIt.I<PrefsRepository>()
-                                                .getRedeemDateForProduct(
-                                                  widget.productItem.productId
-                                                      .toString(),
-                                                )
-                                                ?.isAfter(
-                                                  DateTime.now().add(
-                                                    const Duration(seconds: 1),
-                                                  ),
-                                                ) ==
+                            getRedeemDateForProduct = prefs
+                                .getRedeemDateForProduct(
+                                  widget.productItem.productId.toString(),
+                                );
+                            getRedeemSecondRemainingForProduct = prefs
+                                .getRedeemSecondRemainingForProduct(
+                                  widget.productItem.productId.toString(),
+                                );
+                            return (getRedeemDateForProduct?.isAfter(
+                                              DateTime.now().add(
+                                                const Duration(seconds: 1),
+                                              ),
+                                            ) ==
                                             true &&
                                         widget.productItem.hasRedeemDiscount ==
                                             true) ||
-                                    (GetIt.I<PrefsRepository>()
-                                                .getRedeemSecondRemainingForProduct(
-                                                  widget.productItem.productId
-                                                      .toString(),
-                                                ) ??
-                                            0) >
+                                    (getRedeemSecondRemainingForProduct ?? 0) >
                                         0
                                 ? Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -493,13 +467,7 @@ class _ProductListing3DSliderOptimizedState
                                             finishRedeem: widget.finishRedeem,
                                             visibleRedeem: widget.visibleRedeem,
                                             endTime:
-                                                GetIt.I<PrefsRepository>()
-                                                    .getRedeemDateForProduct(
-                                                      widget
-                                                          .productItem
-                                                          .productId
-                                                          .toString(),
-                                                    ) ??
+                                                getRedeemDateForProduct ??
                                                 DateTime.now(),
                                           ),
                                           Text(
@@ -530,128 +498,14 @@ class _ProductListing3DSliderOptimizedState
             ),
           ),
         ),
-        /*    _buildRedeemSection(),
-        const SizedBox(height: 2),
-        _buildLabelSection(),*/
-        //    const SizedBox(height: 5),
-        // Price Section
+
         _buildPriceSection(),
       ],
     );
   }
 
-  /*Widget _buildRedeemSection() {
-    return ValueListenableBuilder<bool>(
-        valueListenable: widget.visibleRedeem,
-        builder: (context, _visibleRedeem, _) {
-          return GetIt.I<PrefsRepository>()
-                          .getRedeemDateForProduct(
-                              widget.productItem.productId.toString())
-                          ?.isAfter(DateTime.now().add(Duration(seconds: 1))) ==
-                      true &&
-                  widget.productItem.hasRedeemDiscount == true
-              ? Container(
-                  margin: EdgeInsets.only(left: 1, right: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.deepOrangeAccent),
-                    color: Color(0xffFDFDEF),
-                  ),
-                  height: 20,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        width: 3,
-                      ),
-                      SvgPicture.asset(AppAssets.alarmClockSvg),
-                      Text(LocaleKeys.luck.tr(),
-                          style: context.textTheme.bodyMedium?.ba.copyWith(
-                            fontSize: 11,
-                            color: const Color.fromARGB(255, 250, 71, 16),
-                          )),
-                      Text(" ${LocaleKeys.add_to_bag_within.tr()} ",
-                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                            fontSize: 10,
-                            color: const Color.fromARGB(255, 250, 71, 16),
-                          )),
-                      SecondsCountdown(
-                        finishRedeem: widget.finishRedeem,
-                        visibleRedeem: widget.visibleRedeem,
-                        endTime: GetIt.I<PrefsRepository>()
-                                .getRedeemDateForProduct(
-                                    widget.productItem.productId.toString()) ??
-                            DateTime.now(),
-                      ),
-                      Text(" ${LocaleKeys.seconds.tr()} ",
-                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                            fontSize: 10,
-                            color: const Color.fromARGB(255, 230, 67, 18),
-                          )),
-                    ].reversed.toList(),
-                  ),
-                )
-              : SizedBox.shrink();
-        });
-  }*/
-
-  /*Widget _buildLabelSection() {
-    return ValueListenableBuilder<bool>(
-        valueListenable: widget.visibleRedeem,
-        builder: (context, _visibleRedeem, _) {
-          return GetIt.I<PrefsRepository>()
-                          .getRedeemDateForProduct(
-                              widget.productItem.productId.toString())
-                          ?.isAfter(DateTime.now().add(Duration(seconds: 1))) !=
-                      true &&
-                  widget.productItem.hasRedeemDiscount != true
-              ? Container(
-                  margin: EdgeInsets.only(left: 1, right: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.deepOrangeAccent),
-                    color: Color(0xffFDFDEF),
-                  ),
-                  height: 20,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        width: 3,
-                      ),
-                      SvgPicture.asset(AppAssets.alarmClockSvg),
-                      Text(LocaleKeys.luck.tr(),
-                          style: context.textTheme.bodyMedium?.ba.copyWith(
-                            fontSize: 11,
-                            color: const Color.fromARGB(255, 250, 71, 16),
-                          )),
-                      Text(" ${LocaleKeys.add_to_bag_within.tr()} ",
-                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                            fontSize: 10,
-                            color: const Color.fromARGB(255, 250, 71, 16),
-                          )),
-                      SecondsCountdown(
-                        finishRedeem: widget.finishRedeem,
-                        visibleRedeem: widget.visibleRedeem,
-                        endTime: GetIt.I<PrefsRepository>()
-                                .getRedeemDateForProduct(
-                                    widget.productItem.productId.toString()) ??
-                            DateTime.now(),
-                      ),
-                      Text(" ${LocaleKeys.seconds.tr()} ",
-                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                            fontSize: 10,
-                            color: const Color.fromARGB(255, 230, 67, 18),
-                          )),
-                    ].reversed.toList(),
-                  ),
-                )
-              : SizedBox.shrink();
-        });
-  }*/
-
   /// 🏷️ Brand Icon
   Widget _buildBrandIcon() {
-    final brandIcon = widget.productItem.brand?.icon?.filePath;
-    bool isVerified = (widget.productItem.brand?.isVerified ?? 0) > 0;
     if (brandIcon == null) return const SizedBox.shrink();
 
     return SizedBox(
@@ -666,7 +520,7 @@ class _ProductListing3DSliderOptimizedState
                     : const SizedBox.shrink(),
                 SizedBox(width: isVerified ? 5.w : 0),
                 MyCachedNetworkImage(
-                  imageUrl: brandIcon,
+                  imageUrl: brandIcon ?? "",
                   height: 15.h,
                   imageFit: BoxFit.contain,
                   width: 30.w,
@@ -674,7 +528,7 @@ class _ProductListing3DSliderOptimizedState
               ]
             : [
                 MyCachedNetworkImage(
-                  imageUrl: brandIcon,
+                  imageUrl: brandIcon ?? "",
                   height: 15.h,
                   imageFit: BoxFit.contain,
                   width: 30.w,
@@ -690,10 +544,6 @@ class _ProductListing3DSliderOptimizedState
 
   /// 📝 Product Name Row
   Widget _buildProductCategoryRow() {
-    List<String> productCategory = [];
-    productCategory.add(widget.productItem.name ?? '');
-    productCategory.add(widget.productItem.categoriesTree ?? '');
-
     return Row(
       mainAxisAlignment: LanguageService.languageCode == "ar"
           ? MainAxisAlignment.end
@@ -705,7 +555,7 @@ class _ProductListing3DSliderOptimizedState
         // Product Name
         Flexible(
           child: MyTextWidget(
-            productCategory.join(' | '),
+            productCategory,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: textTheme.titleMedium?.rq.copyWith(
@@ -725,195 +575,121 @@ class _ProductListing3DSliderOptimizedState
     return SizedBox(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 5.w),
-        child: BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (previous, current) =>
-              previous.getCurrencyForCountryModel !=
-              current.getCurrencyForCountryModel,
-          builder: (context, state) {
-            final price = widget.productItem.price ?? 0;
-            final offerPrice = widget.productItem.offerPrice ?? 0;
-            final decimalDigits =
-                state
-                    .getCurrencyForCountryModel
-                    ?.data
-                    ?.currency
-                    ?.decimalDigits ??
-                1;
-            final exchangeRate =
-                state
-                    .getCurrencyForCountryModel
-                    ?.data
-                    ?.currency
-                    ?.exchangeRate ??
-                1;
-            final symbol =
-                state.getCurrencyForCountryModel?.data?.currency?.symbol ?? "";
+        child: Directionality(
+          textDirection: LanguageService.languageCode == "ar"
+              ? TextDirection.rtl
+              : TextDirection.ltr,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Price Row
+              ValueListenableBuilder<bool>(
+                valueListenable: widget.visibleFlashDeal,
+                builder: (context, _visibleFlashDeal, _) {
+                  _duration = endDate!.difference(DateTime.now());
+                  if (_duration.isNegative || _duration.inSeconds < 1) {
+                    isFlashDealEnded = true;
+                  }
 
-            return Directionality(
-              textDirection: LanguageService.languageCode == "ar"
-                  ? TextDirection.rtl
-                  : TextDirection.ltr,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Price Row
-                  ValueListenableBuilder<bool>(
-                    valueListenable: widget.visibleFlashDeal,
-                    builder: (context, _visibleFlashDeal, _) {
-                      bool isFlashDealEnded = false;
-                      DateTime endDate;
-                      Duration _duration = const Duration();
-                      final now = DateTime.now();
-                      try {
-                        endDate = DateFormat(
-                          'MM/dd/yyyy',
-                          'en_US',
-                        ).parse(widget.productItem.flashDealEndDate ?? "");
-                        endDate = endDate.add(const Duration(days: 1));
-                      } catch (e) {
-                        endDate = DateTime.now();
-                        if (kDebugMode) print('Error parsing date: $e');
-                      }
-                      _duration = endDate.difference(now);
-                      if (_duration.isNegative || _duration.inSeconds < 1) {
-                        isFlashDealEnded = true;
-                      }
+                  return ValueListenableBuilder<bool>(
+                    valueListenable: widget.visibleRedeem,
+                    builder: (context, _visibleRedeem, _) {
+                      getRedeemDateForProduct = prefs.getRedeemDateForProduct(
+                        widget.productItem.productId.toString(),
+                      );
 
-                      return ValueListenableBuilder<bool>(
-                        valueListenable: widget.visibleRedeem,
-                        builder: (context, _visibleRedeem, _) {
-                          bool isRedeem =
-                              (GetIt.I<PrefsRepository>()
-                                          .getRedeemDateForProduct(
-                                            widget.productItem.productId
-                                                .toString(),
-                                          )
-                                          ?.isAfter(
-                                            DateTime.now().add(
-                                              const Duration(seconds: 1),
-                                            ),
-                                          ) ==
-                                      true &&
-                                  widget.productItem.hasRedeemDiscount ==
-                                      true) ||
-                              (GetIt.I<PrefsRepository>()
-                                          .getRedeemSecondRemainingForProduct(
-                                            widget.productItem.productId
-                                                .toString(),
-                                          ) ??
-                                      0) >
-                                  0;
-
-                          return Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              price == offerPrice
-                                  ? const SizedBox.shrink()
-                                  : Container(
-                                      constraints: const BoxConstraints(
-                                        maxWidth: 50,
-                                      ),
-                                      child: Text(
-                                        HelperFunctions.formatNumber(
-                                          numberToFormate:
-                                              ((HelperFunctions.truncateToDecimalPlaces(
-                                                price,
-                                                decimalDigits,
-                                              )) *
-                                              exchangeRate),
-                                        ),
-                                        /* .toStringAsFixed(state.startingSetting
-                                                    ?.decimalPointSetting ??
-                                                2)
-                                            .toString()*/
-                                        maxLines: 1,
-
-                                        overflow: TextOverflow.ellipsis,
-                                        style: textTheme.titleMedium?.lq
-                                            .copyWith(
-                                              fontSize: 12.sp,
-                                              color: const Color(0xff3c3c3c),
-                                              decoration:
-                                                  TextDecoration.lineThrough,
-                                              height: 0,
-                                            ),
-                                      ),
-                                    ),
-                              const SizedBox(width: 2),
-
-                              Text(
-                                HelperFunctions.formatNumber(
-                                  numberToFormate:
-                                      (((isFlashDealEnded ||
-                                          (widget.productItem.flashDealPrice ??
-                                                  0) ==
-                                              0)
-                                      ? ((HelperFunctions.truncateToDecimalPlaces(
-                                              offerPrice,
-                                              decimalDigits,
-                                            )) *
-                                            exchangeRate)
-                                      : ((HelperFunctions.truncateToDecimalPlaces(
-                                              widget
-                                                      .productItem
-                                                      .flashDealPrice ??
-                                                  0,
-                                              decimalDigits,
-                                            ))) *
-                                            exchangeRate)),
-                                ),
-                                /*.toStringAsFixed(state.startingSetting
-                                                    ?.decimalPointSetting ??
-                                                2)
-                                            .toString()*/
-                                maxLines: 1,
-
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.titleMedium?.mq.copyWith(
-                                  fontSize: 11.sp,
-                                  decorationColor: const Color(0xffFF6200),
-                                  decoration: isRedeem
-                                      ? TextDecoration.lineThrough
-                                      : null,
-                                  color: const Color(0xff3c3c3c),
-                                  height: 0,
-                                ),
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                symbol,
-                                maxLines: 1,
-
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.titleMedium?.lq.copyWith(
-                                  fontSize: 10.sp,
-                                  decorationColor: const Color(0xff1D1D1D),
-                                  decoration: isRedeem
-                                      ? TextDecoration.lineThrough
-                                      : null,
-                                  color: const Color(0xff3c3c3c),
-                                  height: 1.3,
-                                ),
-                              ),
-                            ],
+                      getRedeemSecondRemainingForProduct = prefs
+                          .getRedeemSecondRemainingForProduct(
+                            widget.productItem.productId.toString(),
                           );
-                        },
+                      bool isRedeem =
+                          (getRedeemDateForProduct?.isAfter(
+                                    DateTime.now().add(
+                                      const Duration(seconds: 1),
+                                    ),
+                                  ) ==
+                                  true &&
+                              widget.productItem.hasRedeemDiscount == true) ||
+                          (getRedeemSecondRemainingForProduct ?? 0) > 0;
+
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          price == offerPrice
+                              ? const SizedBox.shrink()
+                              : Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 50,
+                                  ),
+                                  child: Text(
+                                    priceWithExchangeRate,
+
+                                    maxLines: 1,
+
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textTheme.titleMedium?.lq.copyWith(
+                                      fontSize: 12.sp,
+                                      color: const Color(0xff3c3c3c),
+                                      decoration: TextDecoration.lineThrough,
+                                      height: 0,
+                                    ),
+                                  ),
+                                ),
+                          const SizedBox(width: 2),
+
+                          Text(
+                            (isFlashDealEnded ||
+                                    (widget.productItem.flashDealPrice ?? 0) ==
+                                        0)
+                                ? offerPriceWithExchangeRate
+                                : flashDealPriceWithExchangeRate,
+
+                            maxLines: 1,
+
+                            overflow: TextOverflow.ellipsis,
+                            style: textTheme.titleMedium?.mq.copyWith(
+                              fontSize: 11.sp,
+                              decorationColor: const Color(0xffFF6200),
+                              decoration: isRedeem
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                              color: const Color(0xff3c3c3c),
+                              height: 0,
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          Text(
+                            symbol,
+                            maxLines: 1,
+
+                            overflow: TextOverflow.ellipsis,
+                            style: textTheme.titleMedium?.lq.copyWith(
+                              fontSize: 10.sp,
+                              decorationColor: const Color(0xff1D1D1D),
+                              decoration: isRedeem
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                              color: const Color(0xff3c3c3c),
+                              height: 1.3,
+                            ),
+                          ),
+                        ],
                       );
                     },
-                  ),
-                  // Buy Button
-                  _buildCompactBuyButton(state),
-                ],
+                  );
+                },
               ),
-            );
-          },
+              // Buy Button
+              _buildCompactBuyButton(),
+            ],
+          ),
         ),
       ),
     );
   }
 
   /// 🛒 Compact Buy Button - FIXED: أبعاد أصلية
-  Widget _buildCompactBuyButton(HomeState state) {
+  Widget _buildCompactBuyButton() {
     return InkWell(
       onTap: () {
         Future.delayed(
@@ -941,29 +717,20 @@ class _ProductListing3DSliderOptimizedState
       child: ValueListenableBuilder<bool>(
         valueListenable: widget.visibleRedeem,
         builder: (context, _visibleRedeem, _) {
-          final exchangeRate =
-              state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ??
-              1;
-          double redeemPrice = HelperFunctions.truncateToDecimalPlaces(
-            widget.productItem.redeemPrice ?? 0,
-            state.getCurrencyForCountryModel?.data?.currency?.decimalDigits ??
-                1,
+          getRedeemDateForProduct = prefs.getRedeemDateForProduct(
+            widget.productItem.productId.toString(),
           );
+          getRedeemSecondRemainingForProduct = prefs
+              .getRedeemSecondRemainingForProduct(
+                widget.productItem.productId.toString(),
+              );
           bool isRedeem =
-              (GetIt.I<PrefsRepository>()
-                          .getRedeemDateForProduct(
-                            widget.productItem.productId.toString(),
-                          )
-                          ?.isAfter(
-                            DateTime.now().add(const Duration(seconds: 1)),
-                          ) ==
+              (getRedeemDateForProduct?.isAfter(
+                        DateTime.now().add(const Duration(seconds: 1)),
+                      ) ==
                       true &&
                   widget.productItem.hasRedeemDiscount == true) ||
-              (GetIt.I<PrefsRepository>().getRedeemSecondRemainingForProduct(
-                        widget.productItem.productId.toString(),
-                      ) ??
-                      0) >
-                  0;
+              (getRedeemSecondRemainingForProduct ?? 0) > 0;
 
           return Container(
             height: 20.h, // الارتفاع الأصلي
@@ -989,9 +756,7 @@ class _ProductListing3DSliderOptimizedState
                     ? Container(
                         constraints: const BoxConstraints(maxWidth: 25),
                         child: Text(
-                          HelperFunctions.formatNumber(
-                            numberToFormate: (redeemPrice * exchangeRate),
-                          ),
+                          redeemPriceWithExchangeRate,
 
                           //      .toStringAsFixed(widget.decimalPoint),
                           style: textTheme.headlineMedium?.bq.copyWith(
@@ -1005,12 +770,7 @@ class _ProductListing3DSliderOptimizedState
                 const SizedBox(width: 2),
                 isRedeem
                     ? Text(
-                        state
-                                .getCurrencyForCountryModel
-                                ?.data
-                                ?.currency
-                                ?.symbol ??
-                            "",
+                        symbol,
                         style: TextStyle(
                           fontSize: 9.sp,
                           color: const Color(0xffFF6200),

@@ -54,18 +54,13 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading>
 
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(
-        milliseconds: _useStaticMode ? 500 : 300,
-      ),
+      duration: Duration(milliseconds: _useStaticMode ? 500 : 300),
     );
 
     _opacityAnimation = Tween<double>(
       begin: 0.4,
       end: 0.6,
-    ).animate(CurvedAnimation(
-      parent: _controller!,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller!, curve: Curves.easeInOut));
 
     if (!_isDisposed) {
       _controller!.repeat(reverse: true);
@@ -85,19 +80,17 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading>
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: Container(
-        key: const ValueKey("shimmer"),
-        width: widget.width,
-        height: widget.height,
-        decoration: BoxDecoration(
-          color: const Color(0xffE6E6E6),
-          borderRadius: BorderRadius.circular(widget.radius),
-        ),
-        child: _useStaticMode
-            ? _buildStaticPlaceholder()
-            : _buildAnimatedContent(),
+    return Container(
+      key: const ValueKey("shimmer"),
+      width: widget.width,
+      height: widget.height,
+      decoration: BoxDecoration(
+        color: const Color(0xffE6E6E6),
+        borderRadius: BorderRadius.circular(widget.radius),
       ),
+      child: _useStaticMode
+          ? _buildStaticPlaceholder()
+          : _buildAnimatedContent(),
     );
   }
 

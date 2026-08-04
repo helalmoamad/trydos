@@ -39,7 +39,8 @@ class _FiltersLoadingListPageState extends State<FiltersLoadingListPage> {
       baseColor: Colors.grey.shade300,
       highlightColor: Colors.grey.shade100,
       child: ListView.builder(
-        addRepaintBoundaries: false,
+        addAutomaticKeepAlives: false,
+        addSemanticIndexes: false,
         itemCount: widget.countOfListInPage,
         padding: EdgeInsetsDirectional.only(start: 15.w),
         shrinkWrap: true,
@@ -70,7 +71,8 @@ class _FiltersLoadingListPageState extends State<FiltersLoadingListPage> {
                         rangeSlider: true,
                       )
                     : ListView.separated(
-                        addRepaintBoundaries: false,
+                        addSemanticIndexes: false,
+                        addAutomaticKeepAlives: false,
                         physics: const NeverScrollableScrollPhysics(),
                         scrollDirection: Axis.horizontal,
                         separatorBuilder: (ctx, index) {

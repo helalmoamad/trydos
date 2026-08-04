@@ -174,6 +174,7 @@ class _SortSheetContentState extends State<_SortSheetContent> {
             child: ListView.separated(
               shrinkWrap: true,
               addAutomaticKeepAlives: false,
+              addSemanticIndexes: false,
               addRepaintBoundaries: false,
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               itemCount: _options.length,

@@ -120,9 +120,9 @@ class HomePageBoutiqueCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         // ignore: deprecated_member_use
-        border: Border.all(color: Colors.black.withOpacity(0.03)),
+        border: Border.all(color: Colors.black12),
       ),
-      width: 1.sw,
+      width: double.infinity,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -137,30 +137,29 @@ class HomePageBoutiqueCard extends StatelessWidget {
             child: Stack(
               children: [
                 withSlidingImages && banners.length > 1
-                    ? RepaintBoundary(
-                        child: CarouselSlider.builder(
-                          itemCount: banners.length,
-                          itemBuilder: (context, bannerIdx, _) {
-                            return MyCachedNetworkImage(
-                              imageUrl: banners[bannerIdx].filePath ?? '',
-                              imageFit: BoxFit.fitWidth,
-                              width: 1.sw,
-                              height: 400.h,
-                              radius: 0,
-                              fromBoutique: true,
-                              imageSource: 'home_page_boutique_card',
-                            );
-                          },
-                          options: CarouselOptions(
-                            autoPlay: true,
-                            autoPlayInterval: const Duration(seconds: 5),
-                            autoPlayAnimationDuration: const Duration(
-                              milliseconds: 600,
-                            ),
-                            height: 250.h,
-                            viewportFraction: 1.0,
-                            pauseAutoPlayInFiniteScroll: true,
+                    ? CarouselSlider.builder(
+                        key: ValueKey("${boutique.slug}*carousel*"),
+                        itemCount: banners.length,
+                        itemBuilder: (context, bannerIdx, _) {
+                          return MyCachedNetworkImage(
+                            imageUrl: banners[bannerIdx].filePath ?? '',
+                            imageFit: BoxFit.fitWidth,
+                            width: 1.sw,
+                            height: 400.h,
+                            radius: 0,
+                            fromBoutique: true,
+                            imageSource: 'home_page_boutique_card',
+                          );
+                        },
+                        options: CarouselOptions(
+                          autoPlay: true,
+                          autoPlayInterval: const Duration(seconds: 5),
+                          autoPlayAnimationDuration: const Duration(
+                            milliseconds: 600,
                           ),
+                          height: 250.h,
+                          viewportFraction: 1.0,
+                          pauseAutoPlayInFiniteScroll: true,
                         ),
                       )
                     : MyCachedNetworkImage(
@@ -174,28 +173,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
                         height: 250.h,
                         imageSource: 'home_page_boutique_card',
                       ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: IgnorePointer(
-                    child: Container(
-                      height: 60.h,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            Color.fromARGB(200, 33, 33, 33),
-                            Color.fromARGB(150, 58, 58, 58),
-                            Color.fromARGB(90, 82, 82, 82),
-                            Color.fromARGB(0, 82, 82, 82),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+
                 Positioned(
                   bottom: 6.h,
                   left: LanguageService.rtl ? null : 12,
@@ -211,14 +189,6 @@ class HomePageBoutiqueCard extends StatelessWidget {
                           style: context.textTheme.titleMedium?.br.copyWith(
                             fontSize: 16,
                             color: const Color(0xffFFFFFF),
-                            shadows: [
-                              Shadow(
-                                offset: const Offset(0, 1),
-                                blurRadius: 2.0,
-                                // ignore: deprecated_member_use
-                                color: Colors.black.withOpacity(0.7),
-                              ),
-                            ],
                           ),
                         ),
                         Text(
@@ -227,14 +197,7 @@ class HomePageBoutiqueCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: context.textTheme.titleMedium?.mq.copyWith(
                             fontSize: 12,
-                            shadows: [
-                              Shadow(
-                                offset: const Offset(0, 1),
-                                blurRadius: 3,
-                                // ignore: deprecated_member_use
-                                color: Colors.black.withOpacity(0.8),
-                              ),
-                            ],
+
                             color: const Color(0xffFFFFFF),
                           ),
                         ),
