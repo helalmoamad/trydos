@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart' as trans;
 import 'package:flutter/material.dart';
@@ -6,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:intl/intl.dart' show DateFormat;
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -171,16 +169,7 @@ class _ProductListing3DSliderOptimizedState
           )) *
           exchangeRate),
     );
-    try {
-      endDate = DateFormat(
-        'MM/dd/yyyy',
-        'en_US',
-      ).parse(widget.productItem.flashDealEndDate ?? "");
-      endDate = endDate?.add(const Duration(days: 1));
-    } catch (e) {
-      endDate = DateTime.now();
-      if (kDebugMode) print('Error parsing date: $e');
-    }
+    endDate = widget.productItem.flashDealEndDateTime ?? DateTime.now();
     // محاولة الحصول على الصورة من syncColorImages أولاً
     if (widget.productItem.syncColorImages?.isNotEmpty == true) {
       final firstColorImage = widget.productItem.syncColorImages!.first;
@@ -516,13 +505,13 @@ class _ProductListing3DSliderOptimizedState
         children: LanguageService.languageCode == "ar"
             ? [
                 isVerified
-                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8.h)
+                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 10.h)
                     : const SizedBox.shrink(),
                 SizedBox(width: isVerified ? 5.w : 0),
                 MyCachedNetworkImage(
                   imageUrl: brandIcon ?? "",
                   height: 15.h,
-                  imageFit: BoxFit.contain,
+                  imageFit: BoxFit.fill,
                   width: 30.w,
                 ),
               ]
@@ -530,12 +519,12 @@ class _ProductListing3DSliderOptimizedState
                 MyCachedNetworkImage(
                   imageUrl: brandIcon ?? "",
                   height: 15.h,
-                  imageFit: BoxFit.contain,
+                  imageFit: BoxFit.fill,
                   width: 30.w,
                 ),
                 SizedBox(width: isVerified ? 5.w : 0),
                 isVerified
-                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 8.h)
+                    ? SvgPicture.asset(AppAssets.productVerifySvg, height: 10.h)
                     : const SizedBox.shrink(),
               ],
       ),

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart' as tran;
 
 import 'package:flutter/material.dart';
@@ -105,17 +104,7 @@ class FlashDealProductsWidget extends StatelessWidget {
               products.forEach((element) {
                 DateTime endDate;
                 Duration _duration = const Duration();
-
-                try {
-                  endDate = tran.DateFormat(
-                    'MM/dd/yyyy',
-                    'en_US',
-                  ).parse(element.flashDealEndDate ?? "");
-                  endDate = endDate.add(const Duration(days: 1));
-                } catch (e) {
-                  endDate = DateTime.now();
-                  if (kDebugMode) print('Error parsing date: $e');
-                }
+                endDate = element.flashDealEndDateTime ?? now;
                 _duration = endDate.difference(now);
                 if (!(_duration.isNegative || _duration.inSeconds < 1)) {
                   productWithFlashDealEndDate.add(element);

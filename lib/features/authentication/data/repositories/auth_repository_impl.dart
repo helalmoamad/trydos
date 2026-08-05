@@ -161,6 +161,15 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, LoginToChatResponseModel>> refreshChatToken(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.refreshChatToken(params),
+    );
+  }
+
+  @override
   Future<Either<Failure, bool>> updateName(Map<String, dynamic> params) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.updateName(params),

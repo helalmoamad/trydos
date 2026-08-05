@@ -48,7 +48,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
 
   final List<String>? lableNames;
 
-  final String? flashDealEndDate;
+  final DateTime? flashDealEndDate;
   final bool? isRedeem;
 
   final bool? isFlashDealEnded;
@@ -245,7 +245,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                             const SizedBox(width: 2),
                             FlashDealCountdownTimerWidget(
                               visibleFlashDeal: visibleFlashDeal,
-                              endDateString: flashDealEndDate ?? "",
+                              endDateTime: flashDealEndDate ?? DateTime.now(),
                             ),
                           ],
                         ),

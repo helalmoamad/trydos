@@ -11,14 +11,14 @@ import 'dart:ui' as ui;
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class FlashDealCountdownTimerWidget extends StatefulWidget {
-  final String endDateString;
+  final DateTime endDateTime;
   // صيغة MM/dd/yyyy
   final ValueNotifier<bool>? visibleFlashDeal;
   final ValueNotifier<bool>? refreshFlashDeal;
 
   const FlashDealCountdownTimerWidget({
     Key? key,
-    required this.endDateString,
+    required this.endDateTime,
     required this.visibleFlashDeal,
     this.refreshFlashDeal,
   }) : super(key: key);
@@ -46,7 +46,7 @@ class _FlashDealCountdownTimerWidgetState
     super.didUpdateWidget(oldWidget);
 
     // إذا تغيرت endDateString، أعد تحليل التاريخ وابدأ التايمر من جديد
-    if (oldWidget.endDateString != widget.endDateString) {
+    if (oldWidget.endDateTime.second != widget.endDateTime.second) {
       _timer?.cancel();
       _parseEndDate();
       _startTimer();
@@ -55,8 +55,7 @@ class _FlashDealCountdownTimerWidgetState
 
   void _parseEndDate() {
     try {
-      endDate = DateFormat('MM/dd/yyyy', 'en_US').parse(widget.endDateString);
-      endDate = endDate.add(const Duration(days: 1));
+      endDate = widget.endDateTime;
     } catch (e) {
       endDate = DateTime.now();
       if (kDebugMode) print('Error parsing date: $e');
@@ -64,7 +63,6 @@ class _FlashDealCountdownTimerWidgetState
   }
 
   void _startTimer() {
-    print("DDDDDDDDDDDDDDDEEEE${widget.endDateString}");
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) {
         timer.cancel();

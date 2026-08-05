@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -15,7 +14,6 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import 'package:trydos/features/home/presentation/widgets/product_listing/falsh_deal_counter.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider_optimized.dart';
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_with_silder.dart';
@@ -69,8 +67,12 @@ class _ProductItemState extends State<ProductItem> {
   late final ValueNotifier<int> currentChosenColor;
   final ValueNotifier<bool> visibleRedeem = ValueNotifier(false);
   final ValueNotifier<bool> visibleFlashDeal = ValueNotifier(false);
-  final dateNow = DateTime.now();
   final pref = GetIt.I<PrefsRepository>();
+  bool isFlashDealEnded = false;
+  DateTime? endDate;
+
+  Duration _duration = const Duration();
+
   @override
   void initState() {
     super.initState();
@@ -87,13 +89,7 @@ class _ProductItemState extends State<ProductItem> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
-
     return Stack(
-      key: ValueKey(widget.productItem.slug),
       alignment: Alignment.bottomCenter,
       clipBehavior: Clip.none,
       children: [
@@ -137,10 +133,7 @@ class _ProductItemState extends State<ProductItem> {
                 itemIndex: widget.itemIndex,
               ),
 
-        (widget.productItem.flashDealEndDate == null ||
-                widget.productItem.flashDealEndDate == "")
-            ? const SizedBox.shrink()
-            : (widget.productItem.flashDealEndDate ?? "") == ""
+        (widget.productItem.flashDealEndDateTime == null)
             ? const SizedBox.shrink()
             : Directionality(
                 textDirection: LanguageService.languageCode == "ar"
@@ -149,21 +142,10 @@ class _ProductItemState extends State<ProductItem> {
                 child: ValueListenableBuilder<bool>(
                   valueListenable: visibleFlashDeal,
                   builder: (context, _visibleFlashDeal, _) {
-                    bool isFlashDealEnded = false;
-                    DateTime endDate;
-                    Duration _duration = const Duration();
-
-                    try {
-                      endDate = tran.DateFormat(
-                        'MM/dd/yyyy',
-                        'en_US',
-                      ).parse(widget.productItem.flashDealEndDate ?? "");
-                      endDate = endDate.add(const Duration(days: 1));
-                    } catch (e) {
-                      endDate = dateNow;
-                      if (kDebugMode) print('Error parsing date: $e');
-                    }
-                    _duration = endDate.difference(dateNow);
+                    endDate =
+                        widget.productItem.flashDealEndDateTime ??
+                        DateTime.now();
+                    _duration = endDate!.difference(DateTime.now());
                     if (_duration.isNegative || _duration.inSeconds < 1) {
                       isFlashDealEnded = true;
                     }
@@ -228,11 +210,11 @@ class _ProductItemState extends State<ProductItem> {
                                         visibleFlashDeal: visibleFlashDeal,
                                         refreshFlashDeal:
                                             widget.refreshFlashDeal,
-                                        endDateString:
+                                        endDateTime:
                                             widget
                                                 .productItem
-                                                .flashDealEndDate ??
-                                            "",
+                                                .flashDealEndDateTime ??
+                                            DateTime.now(),
                                       ),
                                       SizedBox(width: 10.w),
                                     ],
@@ -327,7 +309,7 @@ class _ProductItemState extends State<ProductItem> {
                                       pref.getRedeemDateForProduct(
                                         widget.productItem.productId.toString(),
                                       ) ??
-                                      dateNow,
+                                      DateTime.now(),
                                 ),
                                 Text(
                                   " ${LocaleKeys.seconds.tr()} ",

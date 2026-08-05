@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart' as trans;
 import 'package:flutter/material.dart';
@@ -8,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:intl/intl.dart' show DateFormat;
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
@@ -16,10 +13,8 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
-
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
@@ -177,16 +172,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
           )) *
           exchangeRate),
     );
-    try {
-      endDate = DateFormat(
-        'MM/dd/yyyy',
-        'en_US',
-      ).parse(widget.productItem.flashDealEndDate ?? "");
-      endDate = endDate?.add(const Duration(days: 1));
-    } catch (e) {
-      endDate = DateTime.now();
-      if (kDebugMode) print('Error parsing date: $e');
-    }
+    endDate = widget.productItem.flashDealEndDateTime ?? DateTime.now();
     // محاولة الحصول على الصورة من syncColorImages أولاً
     if (widget.productItem.syncColorImages?.isNotEmpty == true) {
       final firstColorImage = widget.productItem.syncColorImages!.first;

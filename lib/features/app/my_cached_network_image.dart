@@ -2,11 +2,13 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import 'package:trydos/features/app/trydos_shimmer_loading_stateless.dart';
+import 'package:trydos/generated/locale_keys.g.dart' show LocaleKeys;
 
 class MyCachedNetworkImage extends StatelessWidget {
   const MyCachedNetworkImage({
@@ -60,7 +62,7 @@ class MyCachedNetworkImage extends StatelessWidget {
   final Widget? progressIndicatorBuilderWidget;
   final String? imageSource;
 
-  // ⚡ ثوابت الذاكرة لمنع إعادة إنشائها مع كل Build لكل صورة
+  // ⚡ ثوابت الذاكرة لمنع إعادة إنشائها مع كل Build
   static final CustomCacheManagers _cacheManager = CustomCacheManagers();
   static final Map<String, String> _httpHeaders = {
     'User-Agent':
@@ -72,16 +74,13 @@ class MyCachedNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isBoutique = fromBoutique ?? false;
-
     const double safeRatio = 1;
 
-    // ⚡ 2. حساب الأبعاد الآمنة وحماية الكود في حال تم تمرير double.infinity
     final double effectiveWidth = width.isInfinite
         ? MediaQuery.sizeOf(context).width
         : width;
     final double safeFallbackHeight = height > 0 ? height : 180.0;
 
-    // ⚡ 3. توحيد معامل المعالجة بين طلب السيرفر وتخزين الذاكرة MemCache
     String url = addSuitableWidthAndHeightToImage(
       imageUrl: imageUrl,
       height: safeFallbackHeight,
@@ -93,31 +92,22 @@ class MyCachedNetworkImage extends StatelessWidget {
       url = imageUrl;
     }
 
-    // الـ Widget الاحتياطي للروابط التالفة أو الفارغة
     if (url.isEmpty || url == "null" || url == "undefined") {
-      return Container(
-        width: effectiveWidth,
-        height: isBoutique ? null : safeFallbackHeight,
-        constraints: isBoutique ? const BoxConstraints(minHeight: 120) : null,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius),
-          color: Colors.grey[300],
-        ),
-        child: const Center(
-          child: Icon(Icons.image_not_supported, color: Colors.grey, size: 24),
-        ),
+      return _buildErrorWidget(
+        isBoutique,
+        safeFallbackHeight,
+        effectiveWidth,
+        url,
       );
     }
 
-    // ⚡ 4. توحيد الأبعاد المحسوبة للـ MemCache مع أبعاد صورة السيرفر تماماً
     final int safeMemWidth = max(10, (effectiveWidth * safeRatio).round());
     final int? safeMemHeight = isBoutique
         ? null
         : max(10, (safeFallbackHeight * safeRatio).round());
 
-    // ⚡ 5. تغليف بصورة منفصلة لمنع إعادة رسم باقي عناصر البطاقة أثناء السكرول
+    // ⚡ خفيف جداً بدون Key وبدون State
     return SizedBox(
-      key: ValueKey(url),
       width: effectiveWidth,
       height: isBoutique ? null : safeFallbackHeight,
       child: CachedNetworkImage(
@@ -126,11 +116,8 @@ class MyCachedNetworkImage extends StatelessWidget {
         width: effectiveWidth,
         height: isBoutique ? null : safeFallbackHeight,
         cacheManager: _cacheManager,
-
-        // ⚡ أبعاد الذاكرة متطابقة 100% مع أبعاد السيرفر لمنع إعادة التكييف بالـ CPU
         memCacheWidth: safeMemWidth,
         memCacheHeight: safeMemHeight,
-
         placeholder: (context, url) {
           callWhenLoadingImage?.call();
           return _buildSimpleShimmer(
@@ -139,11 +126,9 @@ class MyCachedNetworkImage extends StatelessWidget {
             effectiveWidth,
           );
         },
-
         fadeInDuration: Duration.zero,
         placeholderFadeInDuration: Duration.zero,
         fadeOutDuration: Duration.zero,
-
         imageBuilder:
             imageBuilder ??
             (ctx, imageProvider) {
@@ -180,9 +165,13 @@ class MyCachedNetworkImage extends StatelessWidget {
                 ),
               );
             },
-
-        errorWidget: (context, errorUrl, error) =>
-            _buildErrorWidget(isBoutique, safeFallbackHeight, effectiveWidth),
+        // عند الفشل يعرض سهم إعادة التحميل فوراً وبشكل مستقر وبسيط
+        errorWidget: (context, errorUrl, error) => _buildErrorWidget(
+          isBoutique,
+          safeFallbackHeight,
+          effectiveWidth,
+          url,
+        ),
       ),
     );
   }
@@ -191,16 +180,39 @@ class MyCachedNetworkImage extends StatelessWidget {
     bool isBoutique,
     double safeHeight,
     double currentWidth,
+    String failedUrl,
   ) {
     return Container(
       width: currentWidth,
       height: isBoutique ? 150 : safeHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
-        color: Colors.grey[300],
+        color: Colors.grey[200],
       ),
-      child: const Center(
-        child: Icon(Icons.broken_image_outlined, color: Colors.grey, size: 24),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(
+                Icons.refresh_rounded,
+                color: Colors.black87,
+                size: 26,
+              ),
+              onPressed: () {
+                // مسح ملف الكاش التالف للرابط عند الضغط اليدوي فقط
+                if (failedUrl.isNotEmpty) {
+                  _cacheManager.removeFile(failedUrl);
+                }
+              },
+            ),
+            const SizedBox(height: 2),
+            Text(
+              LocaleKeys.retry_download.tr(),
+              style: const TextStyle(fontSize: 10, color: Colors.black54),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -244,7 +256,6 @@ void clearCustomCashe() async {
   await CustomCacheManagers().emptyCache();
 }
 
-/// 🎯 دالة معالجة رابط Cloudinary مع توحيد معامل الكثافة
 String addSuitableWidthAndHeightToImage({
   required String imageUrl,
   bool? fromBoutique,
@@ -259,7 +270,6 @@ String addSuitableWidthAndHeightToImage({
     return imageUrl;
   }
 
-  // حساب أبعاد السيرفر بالاعتماد على نفس المعامل الآمن
   final int fWidth = max(10, (width * 1.5).round());
   final int fHeight = max(10, (height * 1.5).round());
 
@@ -274,6 +284,9 @@ String addSuitableWidthAndHeightToImage({
     if (fromBoutique ?? false) {
       return '${list[0]}upload/w_$fWidth,c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0$pathAfterUpload';
     } else {
+      if (imageUrl.contains("/brand/")) {
+        return '${list[0]}upload/h_$fHeight,w_$fWidth,b_auto/f_auto/q_auto:good/fl_lossy/so_0$pathAfterUpload';
+      }
       return '${list[0]}upload/h_$fHeight,w_$fWidth,c_pad,b_auto/f_auto/q_auto:good/fl_lossy/so_0$pathAfterUpload';
     }
   }

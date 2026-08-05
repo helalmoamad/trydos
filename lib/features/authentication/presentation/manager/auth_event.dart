@@ -188,6 +188,13 @@ class RefreshTokenEvent extends AuthEvent {
   List<Object?> get props => [];
 }
 
+class RefreshChatTokenEvent extends AuthEvent {
+  const RefreshChatTokenEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 /// Signals base_page to show the "session expired" dialog for a verified user
 /// whose refresh failed. Carries the account's phone to prefill the re-login.
 class ShowSessionExpiredEvent extends AuthEvent {

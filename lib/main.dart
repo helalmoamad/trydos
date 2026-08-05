@@ -512,9 +512,11 @@ void main() async {
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];
-      options.tracesSampleRate = 0.1;
+      options.tracesSampleRate = 0.0;
+      options.enableUserInteractionBreadcrumbs = false;
       options.beforeBreadcrumb = (bread, hint) {
-        if (bread?.category == "ui.scroll") {
+        if (bread?.category == "ui.scroll" ||
+            (bread?.message?.contains("scroll") ?? false)) {
           return null;
         }
         return bread;

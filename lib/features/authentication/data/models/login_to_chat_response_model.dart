@@ -1,9 +1,10 @@
-
 import 'dart:convert';
 
-LoginToChatResponseModel loginUserResponseModelFromJson(String str) => LoginToChatResponseModel.fromJson(json.decode(str));
+LoginToChatResponseModel loginUserResponseModelFromJson(String str) =>
+    LoginToChatResponseModel.fromJson(json.decode(str));
 
-String loginToChatResponseModel(LoginToChatResponseModel data) => json.encode(data.toJson());
+String loginToChatResponseModel(LoginToChatResponseModel data) =>
+    json.encode(data.toJson());
 
 class LoginToChatResponseModel {
   bool? isSuccessful;
@@ -22,14 +23,15 @@ class LoginToChatResponseModel {
     this.data,
   });
 
-  factory LoginToChatResponseModel.fromJson(Map<String, dynamic> json) => LoginToChatResponseModel(
-    isSuccessful: json["isSuccessful"],
-    hasContent: json["hasContent"],
-    code: json["code"],
-    message: json["message"],
-    detailedError: json["detailed_error"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
-  );
+  factory LoginToChatResponseModel.fromJson(Map<String, dynamic> json) =>
+      LoginToChatResponseModel(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
+        message: json["message"],
+        detailedError: json["detailed_error"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {
     "isSuccessful": isSuccessful,
@@ -53,7 +55,7 @@ class Data {
   String? name;
   dynamic username;
   String? accessToken;
-  dynamic refreshToken;
+  String? refreshToken;
 
   Data({
     this.id,
@@ -74,8 +76,12 @@ class Data {
     id: json["id"],
     mobilePhone: json["mobile_phone"],
     photoPath: json["photo_path"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
     deletedAt: json["deleted_at"],
     isLockedByAdminForDelete: json["is_locked_by_admin_for_delete"],
     isLockedByAdminForUpdate: json["is_locked_by_admin_for_update"],

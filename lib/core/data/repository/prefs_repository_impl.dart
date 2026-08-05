@@ -89,6 +89,20 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
+  Future<bool> setChatRefreshToken(String? token) async {
+    await _secureStorage.write(
+      key: PrefsKey.chatRefreshToken,
+      value: token ?? "",
+    );
+    return true;
+  }
+
+  @override
+  Future<String?> getChatRefreshToken() {
+    return _secureStorage.read(key: PrefsKey.chatRefreshToken);
+  }
+
+  @override
   Future<bool> setStoriesToken(String token) async {
     await _secureStorage.write(key: PrefsKey.storiesToken, value: token);
     _cachedStoriesToken = token;

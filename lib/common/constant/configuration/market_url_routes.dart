@@ -135,6 +135,7 @@ abstract class MarketEndPoints {
   static final registerEP = 'register'.authScope();
   static final registerGuestEP = 'register-guest'.authScope();
   static final refreshTokenEP = 'refresh-token'.authScope();
+
   /*static final deleteLikeOFProductEP = 'delete'.likeScope();
   static final addLikeOFProductEP = 'store'.likeScope();*/
 

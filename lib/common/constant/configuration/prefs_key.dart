@@ -9,12 +9,11 @@ abstract class PrefsKey {
   static const currentCountry = r'__$__currentCountry__$__';
   static const onMessageRun = r'__$__onMessageRun__$__';
   static const walletToken = r'__$__walletToken__$__';
-   static const fcmMarketTokenId= r'__$fcmMarketTokenId$__';
+  static const fcmMarketTokenId = r'__$fcmMarketTokenId$__';
   static const requestNotificationPermission =
       r'__$__requestNotificationPermission__$__';
 
-      static const allowedToUploadStories = 'is_allowed_to_upload_stories';
-
+  static const allowedToUploadStories = 'is_allowed_to_upload_stories';
 
   static const tokenExpired = r'__$__tokenexpired__$__';
   static const isLogInToChat = r'__$__isLogInToChat__$__';
@@ -22,7 +21,7 @@ abstract class PrefsKey {
   static const sessionId = r'__$__sessionId__$__';
   static const userStoriesId = r'__$__userStoriesId__$__';
   static const isTimerRunningId = r'__$__isTimerRunning__$__';
-    static const otpTimerEndTime = r'__$__otpTimerEndTime__$__';
+  static const otpTimerEndTime = r'__$__otpTimerEndTime__$__';
   static const userCountryIsAvailable = r'__$__UserCountryIsAvailable__$__';
   static const language = r'__$__language__$__';
 
@@ -41,6 +40,8 @@ abstract class PrefsKey {
   static const marketToken = r'__$__marketToken__$__';
 
   static const marketRefreshToken = r'__$__marketRefreshToken__$__';
+
+  static const chatRefreshToken = r'__$__chatRefreshToken__$__';
 
   static const storiesToken = r'__$__storiesToken__$__';
 

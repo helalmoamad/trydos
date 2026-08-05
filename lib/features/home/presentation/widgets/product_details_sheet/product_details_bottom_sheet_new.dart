@@ -67,7 +67,7 @@ class ProductDetailsBottomSheetNew extends StatefulWidget {
   final int countOfPieces;
   final bool? isGetFullProductDetails;
   final bool? fromListingPage;
-  final String? flashDealEndDate;
+  final DateTime? flashDealEndDate;
   final bool? isFlashDealEnded;
   final ValueNotifier<bool>? visibleFlashDeal;
   final double initPrice;

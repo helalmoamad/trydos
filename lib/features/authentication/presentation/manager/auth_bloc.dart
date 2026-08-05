@@ -17,6 +17,7 @@ import 'package:trydos/features/authentication/data/models/get_user_country_resp
 import 'package:trydos/features/authentication/domain/use_cases/create_wallet_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/delete_fcm_from_chat_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/generating_token_for_comment.dart';
+import 'package:trydos/features/authentication/domain/use_cases/refresh_chat_token_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/refresh_token_usecase.dart';
@@ -69,6 +70,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.storeFcmUseCase,
     this.verifyOtpInProfileUseCase,
     this.updateNameUseCase,
+    this.refreshChatTokenUseCase,
     this.registerGuestUseCase,
     this.createWalletUseCase,
 
@@ -95,6 +97,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<UpdateChatUserNameEvent>(
       _onUpdateChatUserNameEvent,
       transformer: throttleDroppable(throttleDuration),
+    );
+    on<RefreshChatTokenEvent>(
+      _onRefreshChatTokenEvent,
+      transformer: throttleDroppable(const Duration(seconds: 10)),
     );
     on<LoginToChatEvent>(
       _onLoginToChatEvent,
@@ -173,6 +179,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final VerifyOtpFromGuestUseCase verifyOtpFromGuestUseCase;
   final RegisterGuestUseCase registerGuestUseCase;
   final RefreshTokenUseCase refreshTokenUseCase;
+  final RefreshChatTokenUseCase refreshChatTokenUseCase;
   final UpdateNameUseCase updateNameUseCase;
   final LoginToWalletUseCase loginToWalletUseCase;
   final DeleteFcmFromChatUseCase deleteFcmFromChatUseCase;
@@ -260,6 +267,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
         if (checkToken) {
           await _prefsRepository.setChatToken(token!);
+          await _prefsRepository.setChatRefreshToken(r.data?.refreshToken);
           await _prefsRepository.setMyChatId(id!);
           await _prefsRepository.setMyChatName(name ?? 'No Name');
           await _prefsRepository.setMyChatPhoto(photo);
@@ -1114,6 +1122,45 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // rotation: the presented refresh token is now revoked).
         await _prefsRepository.setMarketToken(r.data!.token!);
         await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
+        if (kDebugMode) print("Token refreshed successfully");
+      },
+    );
+  }
+
+  FutureOr<void> _onRefreshChatTokenEvent(
+    RefreshChatTokenEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    final String? storedRefreshToken = await _prefsRepository
+        .getChatRefreshToken();
+
+    if (storedRefreshToken == null || storedRefreshToken.isEmpty) {
+      // Nothing to exchange (e.g. first run after the app update) -> new guest.
+      await _fallBackToNewGuestSession();
+      return;
+    }
+
+    final response = await refreshChatTokenUseCase(
+      RefreshChatTokenParams(refreshToken: storedRefreshToken),
+    );
+    await response.fold(
+      (l) async {
+        if (kDebugMode) {
+          print(
+            "Refresh token rejected (${l.statusCode}) -> new guest session",
+          );
+        }
+        // The presented refresh token is invalid/expired/rotated -> the only
+        // recovery path is a brand-new guest session.
+        if (l.statusCode == 401) {
+          await _fallBackToNewGuestSession();
+        }
+      },
+      (r) async {
+        // Replace BOTH stored tokens with the returned pair (single-use
+        // rotation: the presented refresh token is now revoked).
+        await _prefsRepository.setChatToken(r.data!.accessToken!);
+        await _prefsRepository.setChatRefreshToken(r.data?.refreshToken);
         if (kDebugMode) print("Token refreshed successfully");
       },
     );

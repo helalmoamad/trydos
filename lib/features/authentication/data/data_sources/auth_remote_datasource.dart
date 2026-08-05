@@ -313,6 +313,26 @@ class AuthRemoteDatasource {
     return refreshToken();
   }
 
+  /// Exchanges the stored (single-use) refresh token for a new
+  /// access + refresh token pair.
+  Future<LoginToChatResponseModel> refreshChatToken(
+    Map<String, dynamic> params,
+  ) {
+    PostClient<LoginToChatResponseModel> refreshChatToken =
+        PostClient<LoginToChatResponseModel>(
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<LoginToChatResponseModel>(
+            endpoint: MarketEndPoints.refreshTokenEP,
+            data: params,
+            response: ResponseValue<LoginToChatResponseModel>(
+              fromJson: (response) =>
+                  LoginToChatResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return refreshChatToken();
+  }
+
   Future<LoginToStoriesResponseModel> loginToStories(
     Map<String, dynamic> params,
   ) {

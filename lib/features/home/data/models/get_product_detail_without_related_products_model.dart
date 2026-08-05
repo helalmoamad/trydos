@@ -58,7 +58,6 @@ class Product {
   final Seller? seller;
   final String? deliveryAt;
   final List<String>? labelNames;
-  final String? flashDealEndDate;
   final String? slug;
   final String? iso;
   final int? availableQuantity;
@@ -142,7 +141,6 @@ class Product {
     this.availableQuantity,
     this.leftStock,
     this.labelNames,
-    this.flashDealEndDate,
     this.commentsCount,
     this.shippingDays,
     this.isFeatured,
@@ -190,7 +188,6 @@ class Product {
     int? collectedAfterOrdering,
     String? tax,
     List<String>? labelNames,
-    String? flashDealEndDate,
     int? countOfPieces,
     String? unitPrice,
     int? availableQuantity,
@@ -256,7 +253,6 @@ class Product {
     priceFormatted: priceFormatted ?? this.priceFormatted,
     labelNames: labelNames ?? this.labelNames,
     sellerId: sellerId ?? this.sellerId,
-    flashDealEndDate: flashDealEndDate ?? this.flashDealEndDate,
     offerPrice: offerPrice ?? this.offerPrice,
     offerPriceFormatted: offerPriceFormatted ?? this.offerPriceFormatted,
     collectedAfterOrdering:
@@ -344,7 +340,6 @@ class Product {
             }
             return <String>[];
           }(),
-    flashDealEndDate: json["flash_deal_end_date"],
     priceFormatted: json["price_formatted"] ?? "",
     isLiked: json["is_liked"],
     totalViews: json["total_views"],
@@ -437,7 +432,6 @@ class Product {
         ? []
         : List<dynamic>.from(labelNames!.map((x) => x)),
 
-    "flash_deal_end_date": flashDealEndDate,
     "packed_after_ordering": collectedAfterOrdering,
     "comment_offset": commentOffset,
     "size_analysis": sizeAnalysis?.toJson(),

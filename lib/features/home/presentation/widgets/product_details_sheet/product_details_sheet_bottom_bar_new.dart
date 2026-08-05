@@ -93,7 +93,7 @@ class ProductDetailsSheetBottomBarNew extends StatefulWidget {
   final String imageUrl;
   final int countOfPieces;
   final ValueNotifier<bool> visibleRedeemNotifier;
-  final String? flashDealEndDate;
+  final DateTime? flashDealEndDate;
   final bool? isFlashDealEnded;
   final ValueNotifier<bool>? visibleFlashDeal;
   final bool collectedAfterOrder;
@@ -895,10 +895,10 @@ class _ProductDetailsSheetBottomBarNewState
                                                                 visibleFlashDeal:
                                                                     widget
                                                                         .visibleFlashDeal,
-                                                                endDateString:
+                                                                endDateTime:
                                                                     widget
                                                                         .flashDealEndDate ??
-                                                                    "",
+                                                                    DateTime.now(),
                                                               ),
                                                               const SizedBox(
                                                                 width: 2,

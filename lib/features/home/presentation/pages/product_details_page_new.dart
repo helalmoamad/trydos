@@ -1964,22 +1964,6 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             return ValueListenableBuilder<bool>(
                               valueListenable: visibleFlashDeal,
                               builder: (context, _visibleFlashDeal, _) {
-                                DateTime endDate;
-
-                                try {
-                                  endDate = DateFormat(
-                                    'MM/dd/yyyy',
-                                    'en_US',
-                                  ).parse(productItem?.flashDealEndDate ?? "");
-                                  endDate = endDate.add(
-                                    const Duration(days: 1),
-                                  );
-                                } catch (e) {
-                                  endDate = DateTime.now();
-                                  if (kDebugMode)
-                                    print('Error parsing date: $e');
-                                }
-
                                 return Container(
                                   height: 80
                                       .h, // Ø§Ø±ØªÙØ§Ø¹ Ø§Ù„Ù€ panel Ø§Ù„Ù…ØºÙ„Ù‚Ø©
@@ -2382,16 +2366,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             DateTime endDate;
                             Duration _duration = const Duration();
                             final now = DateTime.now();
-                            try {
-                              endDate = DateFormat(
-                                'MM/dd/yyyy',
-                                'en_US',
-                              ).parse(productItem?.flashDealEndDate ?? "");
-                              endDate = endDate.add(const Duration(days: 1));
-                            } catch (e) {
-                              endDate = DateTime.now();
-                              if (kDebugMode) print('Error parsing date: $e');
-                            }
+                            endDate =
+                                productItem?.flashDealEndDateTime ??
+                                DateTime.now();
                             _duration = endDate.difference(now);
                             if (_duration.isNegative ||
                                 _duration.inSeconds < 1) {
@@ -2409,7 +2386,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                               visibleFlashDeal: visibleFlashDeal,
                               isFlashDealEnded: isFlashDealEnded,
                               flashDealEndDate:
-                                  productItem?.flashDealEndDate ?? "",
+                                  productItem?.flashDealEndDateTime,
                               isRedeem:
                                   (prefsRepository
                                               .getRedeemDateForProduct(
@@ -3530,16 +3507,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                       DateTime endDate;
                       Duration _duration = const Duration();
                       final now = DateTime.now();
-                      try {
-                        endDate = DateFormat(
-                          'MM/dd/yyyy',
-                          'en_US',
-                        ).parse(productItem.flashDealEndDate ?? "");
-                        endDate = endDate.add(const Duration(days: 1));
-                      } catch (e) {
-                        endDate = DateTime.now();
-                        if (kDebugMode) print('Error parsing date: $e');
-                      }
+                      endDate = productItem.flashDealEndDateTime ?? now;
                       _duration = endDate.difference(now);
                       if (_duration.isNegative || _duration.inSeconds < 1) {
                         isFlashDealEnded = true;
@@ -3602,8 +3570,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             visibleFlashDeal: visibleFlashDeal,
                             isFlashDealEnded: isFlashDealEnded,
                             index: index,
-                            flashDealEndDate:
-                                productItem.flashDealEndDate ?? "",
+                            flashDealEndDate: productItem.flashDealEndDateTime,
                             productId: productItem.productId ?? 0,
                             isRedeem: isRedeem,
                             /*    flashDealTime: index != 0

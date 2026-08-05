@@ -523,9 +523,46 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       : DeliveredOrdersResponse.fromJson(
           json['deliveredOrdersResponse'] as Map<String, dynamic>,
         ),
+  compareProducts:
+      (json['compareProducts'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(
+          int.parse(k),
+          Products.fromJson(e as Map<String, dynamic>),
+        ),
+      ) ??
+      const {},
+  compareProductDetailsStatus:
+      (json['compareProductDetailsStatus'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(
+          int.parse(k),
+          $enumDecode(_$GetCompareProductDetailsStatusEnumMap, e),
+        ),
+      ) ??
+      const {},
+  compareSlugs:
+      (json['compareSlugs'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(int.parse(k), e as String),
+      ) ??
+      const {},
+  compareOrder:
+      (json['compareOrder'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
+  'compareSlugs': instance.compareSlugs.map(
+    (k, e) => MapEntry(k.toString(), e),
+  ),
+  'compareOrder': instance.compareOrder,
+  'compareProducts': instance.compareProducts.map(
+    (k, e) => MapEntry(k.toString(), e.toJson()),
+  ),
+  'compareProductDetailsStatus': instance.compareProductDetailsStatus.map(
+    (k, e) =>
+        MapEntry(k.toString(), _$GetCompareProductDetailsStatusEnumMap[e]!),
+  ),
   'deliveredOrdersResponse': instance.deliveredOrdersResponse?.toJson(),
   'reportingAboutStory':
       _$ReportingAboutStoryEnumMap[instance.reportingAboutStory]!,
@@ -1042,4 +1079,11 @@ const _$GetDeliveredOrdersResponseStatusEnumMap = {
   GetDeliveredOrdersResponseStatus.loading: 'loading',
   GetDeliveredOrdersResponseStatus.success: 'success',
   GetDeliveredOrdersResponseStatus.failure: 'failure',
+};
+
+const _$GetCompareProductDetailsStatusEnumMap = {
+  GetCompareProductDetailsStatus.init: 'init',
+  GetCompareProductDetailsStatus.loading: 'loading',
+  GetCompareProductDetailsStatus.success: 'success',
+  GetCompareProductDetailsStatus.failure: 'failure',
 };

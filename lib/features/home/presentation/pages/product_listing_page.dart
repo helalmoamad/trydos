@@ -340,7 +340,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
       "Product Listing Page , boutique Name:${widget.boutiqueName ?? widget.boutiqueSlug}",
     );
     if (kDebugMode)
-      print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
+      print(
+        "%%%%%%%%%*********************************************${widget.boutiqueFirstBanner}0*",
+      );
     if (kDebugMode)
       print("%%%%%%%%%${GetIt.I<PrefsRepository>().storiesToken}*");
     // 🔥 FIX: إزالة Timer.periodic الخطير - استخدام WidgetsBinding آمن بدلاً
@@ -2051,65 +2053,51 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   index <=
                                                                                   2; // عرض أول 3 صور فقط
 
-                                                                              return Padding(
-                                                                                padding: EdgeInsets.only(
+                                                                              return Container(
+                                                                                height: 128.h,
+                                                                                width: 1.sw,
+                                                                                margin: EdgeInsets.only(
                                                                                   right: 10.w,
                                                                                   left: 10.w,
                                                                                 ),
-                                                                                child: Container(
-                                                                                  height: 128.h,
-                                                                                  width: 1.sw,
-                                                                                  decoration: BoxDecoration(
-                                                                                    borderRadius: BorderRadius.circular(
-                                                                                      15.0,
-                                                                                    ),
-                                                                                    border: Border.all(
-                                                                                      width: 0.5,
-                                                                                      color: const Color(
-                                                                                        0xfffafafa,
-                                                                                      ),
-                                                                                    ),
-                                                                                    boxShadow: const [
-                                                                                      BoxShadow(
-                                                                                        color: Color(
-                                                                                          0x33000000,
-                                                                                        ),
-                                                                                        offset: Offset(
-                                                                                          0,
-                                                                                          3,
-                                                                                        ),
-                                                                                        blurRadius: 10,
-                                                                                      ),
-                                                                                    ],
+                                                                                decoration: BoxDecoration(
+                                                                                  borderRadius: BorderRadius.circular(
+                                                                                    20,
                                                                                   ),
-                                                                                  child:
-                                                                                      (widget.banner![index].filePath !=
-                                                                                              null &&
-                                                                                          isVisible) // 🔧 شرط الرؤية
-                                                                                      ? MyCachedNetworkImage(
-                                                                                          imageUrl: widget.banner![index].filePath!,
-                                                                                          imageFit: BoxFit.cover,
-                                                                                          width: 1.sw,
-                                                                                          height: 128.h,
-                                                                                          radius: 15.r,
-                                                                                        )
-                                                                                      : Container(
-                                                                                          // 🔧 placeholder للصور غير المرئية
-                                                                                          decoration: BoxDecoration(
-                                                                                            color: Colors.grey[200],
-                                                                                            borderRadius: BorderRadius.circular(
-                                                                                              15,
-                                                                                            ),
-                                                                                          ),
-                                                                                          child: Center(
-                                                                                            child: Icon(
-                                                                                              Icons.image,
-                                                                                              color: Colors.grey[400],
-                                                                                              size: 40.h,
-                                                                                            ),
+                                                                                  border: Border.all(
+                                                                                    width: 0.5,
+                                                                                    color: const Color(
+                                                                                      0xfffafafa,
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                                child:
+                                                                                    (widget.banner![index].filePath !=
+                                                                                            null &&
+                                                                                        isVisible) // 🔧 شرط الرؤية
+                                                                                    ? MyCachedNetworkImage(
+                                                                                        imageUrl: widget.banner![index].filePath!,
+                                                                                        imageFit: BoxFit.cover,
+                                                                                        width: 1.sw,
+                                                                                        height: 128.h,
+                                                                                        radius: 20,
+                                                                                      )
+                                                                                    : Container(
+                                                                                        // 🔧 placeholder للصور غير المرئية
+                                                                                        decoration: BoxDecoration(
+                                                                                          color: Colors.grey[200],
+                                                                                          borderRadius: BorderRadius.circular(
+                                                                                            15,
                                                                                           ),
                                                                                         ),
-                                                                                ),
+                                                                                        child: Center(
+                                                                                          child: Icon(
+                                                                                            Icons.image,
+                                                                                            color: Colors.grey[400],
+                                                                                            size: 40.h,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
                                                                               );
                                                                             },
                                                                         options: CarouselOptions(
@@ -2132,80 +2120,43 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         ),
                                                                       ),
                                                                     )
-                                                                  : Padding(
-                                                                      padding: EdgeInsets.symmetric(
-                                                                        horizontal:
-                                                                            25.w,
+                                                                  : Container(
+                                                                      height:
+                                                                          128.h,
+                                                                      width:
+                                                                          1.sw,
+                                                                      margin: EdgeInsets.only(
+                                                                        right:
+                                                                            10.w,
+                                                                        left: 10
+                                                                            .w,
                                                                       ),
-                                                                      child: Stack(
-                                                                        children: [
-                                                                          Container(
-                                                                            height:
-                                                                                135.h,
-                                                                            width:
-                                                                                1.sw,
-                                                                            decoration: BoxDecoration(
-                                                                              borderRadius: BorderRadius.circular(
-                                                                                15.0,
-                                                                              ),
-                                                                              border: Border.all(
-                                                                                width: 0.5,
-                                                                                color: const Color(
-                                                                                  0xfffafafa,
-                                                                                ),
-                                                                              ),
-                                                                              boxShadow: const [
-                                                                                BoxShadow(
-                                                                                  color: Color(
-                                                                                    0x33000000,
-                                                                                  ),
-                                                                                  offset: Offset(
-                                                                                    0,
-                                                                                    3,
-                                                                                  ),
-                                                                                  blurRadius: 10,
-                                                                                ),
-                                                                              ],
+                                                                      decoration: BoxDecoration(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                              20,
                                                                             ),
-                                                                            child: MyCachedNetworkImage(
-                                                                              imageUrl: widget.boutiqueFirstBanner!,
-                                                                              imageFit: BoxFit.cover,
-                                                                              width: 1.sw,
-                                                                              radius: 15.r,
-                                                                              height: 130.h,
-                                                                            ),
+                                                                        border: Border.all(
+                                                                          width:
+                                                                              0.5,
+                                                                          color: const Color(
+                                                                            0xfffafafa,
                                                                           ),
-                                                                          Container(
-                                                                            height:
-                                                                                htmlHeight ==
-                                                                                    0
-                                                                                ? 0
-                                                                                : 128.h,
-                                                                            width:
-                                                                                1.sw,
-                                                                            decoration: BoxDecoration(
-                                                                              borderRadius: BorderRadius.circular(
-                                                                                15.0,
-                                                                              ),
-                                                                              boxShadow: [
-                                                                                BoxShadow(
-                                                                                  // ignore: deprecated_member_use
-                                                                                  color:
-                                                                                      // ignore: deprecated_member_use
-                                                                                      Colors.white.withOpacity(
-                                                                                        0.7,
-                                                                                      ),
-                                                                                  offset: const Offset(
-                                                                                    0,
-                                                                                    3,
-                                                                                  ),
-                                                                                  blurRadius: 6,
-                                                                                  inset: true,
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                        ],
+                                                                        ),
+                                                                      ),
+                                                                      child: MyCachedNetworkImage(
+                                                                        imageUrl:
+                                                                            widget.boutiqueFirstBanner ??
+                                                                            "",
+                                                                        imageFit:
+                                                                            BoxFit.cover,
+
+                                                                        width: 1
+                                                                            .sw,
+                                                                        height:
+                                                                            128.h,
+                                                                        radius:
+                                                                            20,
                                                                       ),
                                                                     ),
                                                             ],

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +70,9 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
   int isVisWhatsApp = 0;
   final ValueNotifier<int> tapIndexToShowColorImages = ValueNotifier(-1);
   Timer? debounce;
+  DateTime? endDate;
+  Duration _duration = const Duration();
+  final now = DateTime.now();
 
   /// هل نافذة تفاصيل/شراء المنتج مفتوحة حالياً (لمنع فتح مسارين).
   bool _isQuickViewOpen = false;
@@ -245,20 +247,8 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                             List<filter.Products> productWithFlashDealEndDate =
                                 [];
                             products.forEach((element) {
-                              DateTime endDate;
-                              Duration _duration = const Duration();
-                              final now = DateTime.now();
-                              try {
-                                endDate = DateFormat(
-                                  'MM/dd/yyyy',
-                                  'en_US',
-                                ).parse(element.flashDealEndDate ?? "");
-                                endDate = endDate.add(const Duration(days: 1));
-                              } catch (e) {
-                                endDate = DateTime.now();
-                                if (kDebugMode) print('Error parsing date: $e');
-                              }
-                              _duration = endDate.difference(now);
+                              endDate = element.flashDealEndDateTime ?? now;
+                              _duration = endDate!.difference(now);
                               if (!(_duration.isNegative ||
                                   _duration.inSeconds < 1)) {
                                 productWithFlashDealEndDate.add(element);

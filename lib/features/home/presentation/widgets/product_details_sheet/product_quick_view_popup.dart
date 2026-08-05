@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart' as tran;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -241,15 +240,7 @@ class _ProductQuickViewPopupState extends State<ProductQuickViewPopup> {
     final List<filter.Products> result = [];
     for (final element in raw) {
       DateTime endDate;
-      try {
-        endDate = tran.DateFormat(
-          'MM/dd/yyyy',
-          'en_US',
-        ).parse(element.flashDealEndDate ?? '');
-        endDate = endDate.add(const Duration(days: 1));
-      } catch (e) {
-        endDate = now;
-      }
+      endDate = element.flashDealEndDateTime ?? now;
       final duration = endDate.difference(now);
       if (!duration.isNegative && duration.inSeconds >= 1) {
         result.add(element);
@@ -688,21 +679,7 @@ class _ProductQuickViewPopupState extends State<ProductQuickViewPopup> {
                       DateTime endDate;
                       Duration _duration = const Duration();
                       final now = DateTime.now();
-                      try {
-                        endDate = tran.DateFormat('MM/dd/yyyy', 'en_US').parse(
-                          state
-                                  .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                      .productId
-                                      .toString()]
-                                  ?.product
-                                  ?.flashDealEndDate ??
-                              "",
-                        );
-                        endDate = endDate.add(const Duration(days: 1));
-                      } catch (e) {
-                        endDate = DateTime.now();
-                        if (kDebugMode) print('Error parsing date: $e');
-                      }
+                      endDate = products[tapIndex].flashDealEndDateTime ?? now;
                       _duration = endDate.difference(now);
                       if (_duration.isNegative || _duration.inSeconds < 1) {
                         isFlashDealEnded = true;
@@ -716,13 +693,7 @@ class _ProductQuickViewPopupState extends State<ProductQuickViewPopup> {
                         visibleFlashDeal: widget.visibleFlashDeal,
                         isFlashDealEnded: isFlashDealEnded,
                         flashDealEndDate:
-                            state
-                                .cachedProductWithoutRelatedProductsModel[products[tapIndex]
-                                    .productId
-                                    .toString()]
-                                ?.product
-                                ?.flashDealEndDate ??
-                            "",
+                            products[tapIndex].flashDealEndDateTime,
                         redeemVariantPrice:
                             (currentVariation?.luckPrice != null)
                             ? currentVariation?.luckPrice ?? 0

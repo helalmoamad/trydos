@@ -135,9 +135,12 @@ abstract class PrefsRepository {
 
   /// Stores the single-use market refresh token (rotated on every refresh).
   Future<bool> setMarketRefreshToken(String? token);
+  Future<String?> getMarketRefreshToken();
+
+  Future<bool> setChatRefreshToken(String? token);
 
   /// Reads the stored market refresh token from secure storage.
-  Future<String?> getMarketRefreshToken();
+  Future<String?> getChatRefreshToken();
 
   Future<bool> setStoriesToken(String token);
 

@@ -233,7 +233,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       _prefsRepository.setWalletToken("");
     }
     if (isFrom('CHAT_URL')) {
-      _prefsRepository.setChatToken("");
+      GetIt.I<AuthBloc>().add(const RefreshChatTokenEvent());
     }
 
     if (isFrom('COMMENT_TOKEN_URL')) {

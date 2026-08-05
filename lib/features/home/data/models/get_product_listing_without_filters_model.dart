@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' hide Category;
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 
@@ -113,7 +114,7 @@ class Products {
   final List<String>? videos;
   final Category? category;
   final List<String>? labelNames;
-  final String? flashDealEndDate;
+  final DateTime? flashDealEndDateTime;
   final int? collectedAfterOrdering;
   final String? flashDealStatus;
   final double? flashDealDiscount;
@@ -192,6 +193,7 @@ class Products {
     this.isRedeem,
     this.redeemPrice,
     this.commentOffset,
+    this.flashDealEndDateTime,
     this.commentsCount,
     //this.comments,
     this.categories,
@@ -212,7 +214,6 @@ class Products {
     this.isFavourite,
     this.isActive,
     this.labelNames,
-    this.flashDealEndDate,
     this.rating,
     this.flashDealDetails,
     this.flashDealMaxAllowedQuantity,
@@ -274,6 +275,7 @@ class Products {
     List<Category>? categories,
     Category? category,
     CategoryHierarchy? categoryHierarchy,
+    DateTime? flashDealEndDateTime,
     String? categoriesTree,
     Brand? brand,
     List<dynamic>? commentOffset,
@@ -310,7 +312,6 @@ class Products {
     double? flashDealPrice,
     bool? hasDiscount,
     List<String>? labelNames,
-    String? flashDealEndDate,
     bool? hasTax,
     List<RatingDetail>? ratingDetails,
     List<RecommendationStat>? recommendationStats,
@@ -343,6 +344,7 @@ class Products {
     name: name ?? this.name,
     isRedeem: isRedeem ?? this.isRedeem,
     buyersComment: buyersComment ?? this.buyersComment,
+    flashDealEndDateTime: flashDealEndDateTime ?? this.flashDealEndDateTime,
     fqaQuestions: fqaQuestions ?? this.fqaQuestions,
     redeemPrice: redeemPrice ?? this.redeemPrice,
     slug: slug ?? this.slug,
@@ -390,7 +392,6 @@ class Products {
     hasTax: hasTax ?? this.hasTax,
     deliveryAt: deliveryAt ?? this.deliveryAt,
     labelNames: labelNames ?? this.labelNames,
-    flashDealEndDate: flashDealEndDate ?? this.flashDealEndDate,
     tax: tax ?? this.tax,
     unitPrice: unitPrice ?? this.unitPrice,
     ownerType: ownerType ?? this.ownerType,
@@ -424,6 +425,13 @@ class Products {
   );
 
   factory Products.fromJson(Map<String, dynamic> json) {
+    DateTime? flashDealEndDateTime = DateFormat(
+      'MM/dd/yyyy',
+      'en_US',
+    ).tryParse(json["flash_deal_end_date"] ?? "");
+    if (flashDealEndDateTime != null) {
+      flashDealEndDateTime = flashDealEndDateTime.add(const Duration(days: 1));
+    }
     return Products(
       productId: json["product_id"] != null
           ? int.tryParse(json["product_id"].toString())
@@ -539,7 +547,8 @@ class Products {
               }
               return <String>[];
             })(),
-      flashDealEndDate: json["flash_deal_end_date"],
+
+      flashDealEndDateTime: flashDealEndDateTime,
       rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
       flashDealDetails: json["flash_deal_details"],
       flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
@@ -659,7 +668,6 @@ class Products {
         ? []
         : List<dynamic>.from(labelNames!.map((x) => x)),
 
-    "flash_deal_end_date": flashDealEndDate,
     "shipping_cost_multiply_with_quantity": shippingCostMultiplyWithQuantity,
     "shipping_cost": shippingCost?.toDouble(),
     "packed_after_ordering": collectedAfterOrdering,
