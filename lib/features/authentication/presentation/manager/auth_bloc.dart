@@ -128,21 +128,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     on<VerifyOtpSignInEvent>(
       _onVerifyOtpSignInEvent,
-      transformer: throttleDroppable(const Duration(seconds: 6)),
+      transformer: throttleDroppable(const Duration(seconds: 2)),
     );
     on<VerifyOtpInProfileEvent>(_onVerifyOtpInProfileEvent);
     on<DeleteFcmTokenFromChatEvent>(_onDeleteFcmTokenFromChatEvent);
     on<VerifyOtpSignUpEvent>(
       _onVerifyOtpSignUpEvent,
-      transformer: throttleDroppable(const Duration(seconds: 6)),
+      transformer: throttleDroppable(const Duration(seconds: 2)),
     );
     on<VerifyOtpFromGuestEvent>(
       _onVerifyGuestPhoneEvent,
-      transformer: throttleDroppable(const Duration(seconds: 6)),
+      transformer: throttleDroppable(const Duration(seconds: 2)),
     );
     on<RegisterGuestEvent>(
       _onRegisterGuestEvent,
-      transformer: throttleDroppable(const Duration(seconds: 5)),
+      transformer: throttleDroppable(const Duration(seconds: 3)),
     );
     on<RefreshTokenEvent>(
       _onRefreshTokenEvent,
@@ -219,7 +219,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final response = await loginToChatUseCase(
       LoginToChatParams(
-        mobilePhone: event.mobilePhone,
+        mobilePhone: event.mobilePhone!.replaceFirst("+", ""),
         otpIdToken: event.otpIdToken,
         name: event.name,
         originalUserId: event.originalUserId,

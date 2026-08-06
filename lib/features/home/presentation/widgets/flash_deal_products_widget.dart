@@ -102,10 +102,14 @@ class FlashDealProductsWidget extends StatelessWidget {
                 }*/
               List<filter.Products> productWithFlashDealEndDate = [];
               products.forEach((element) {
-                DateTime endDate;
+                DateTime? endDate;
                 Duration _duration = const Duration();
-                endDate = element.flashDealEndDateTime ?? now;
-                _duration = endDate.difference(now);
+                endDate = element.flashDealEndDateTime;
+                if (endDate != null) {
+                  _duration = endDate.difference(now);
+                } else {
+                  return;
+                }
                 if (!(_duration.isNegative || _duration.inSeconds < 1)) {
                   productWithFlashDealEndDate.add(element);
                 }

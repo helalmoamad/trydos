@@ -239,11 +239,13 @@ class _ProductQuickViewPopupState extends State<ProductQuickViewPopup> {
     final now = DateTime.now();
     final List<filter.Products> result = [];
     for (final element in raw) {
-      DateTime endDate;
-      endDate = element.flashDealEndDateTime ?? now;
-      final duration = endDate.difference(now);
-      if (!duration.isNegative && duration.inSeconds >= 1) {
-        result.add(element);
+      DateTime? endDate;
+      endDate = element.flashDealEndDateTime;
+      if (endDate != null) {
+        final duration = endDate.difference(now);
+        if (!duration.isNegative && duration.inSeconds >= 1) {
+          result.add(element);
+        }
       }
     }
     return result;
@@ -676,13 +678,18 @@ class _ProductQuickViewPopupState extends State<ProductQuickViewPopup> {
                     valueListenable: widget.visibleFlashDeal,
                     builder: (context, _visibleFlashDeal, _) {
                       bool isFlashDealEnded = false;
-                      DateTime endDate;
-                      Duration _duration = const Duration();
-                      final now = DateTime.now();
-                      endDate = products[tapIndex].flashDealEndDateTime ?? now;
-                      _duration = endDate.difference(now);
-                      if (_duration.isNegative || _duration.inSeconds < 1) {
+                      DateTime? endDate;
+
+                      endDate = products[tapIndex].flashDealEndDateTime;
+                      if (endDate == null) {
                         isFlashDealEnded = true;
+                      } else {
+                        Duration _duration = const Duration();
+                        final now = DateTime.now();
+                        _duration = endDate.difference(now);
+                        if (_duration.isNegative || _duration.inSeconds < 1) {
+                          isFlashDealEnded = true;
+                        }
                       }
 
                       return ProductDetailsBottomSheetNew(

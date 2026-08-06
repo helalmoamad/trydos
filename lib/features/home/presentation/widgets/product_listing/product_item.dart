@@ -255,72 +255,77 @@ class _ProductItemState extends State<ProductItem> {
                       left: LanguageService.languageCode != "ar" ? 5.w : null,
                       right: LanguageService.languageCode == "ar" ? 5.w : null,
                       top: -5.h,
-                      child: Transform(
-                        transform: Matrix4.skewX(-0.4),
-                        child: Container(
-                          margin: EdgeInsets.only(
-                            left: LanguageService.languageCode != "ar"
-                                ? 0
-                                : 10.w,
-                            right: LanguageService.languageCode == "ar"
-                                ? 0
-                                : 10.w,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xffFF6200)),
-                            color: const Color(0xffFFF3E8),
-                            borderRadius: BorderRadius.circular(15.r),
-                          ),
-                          height: 25.h,
-                          child: Transform(
-                            transform: Matrix4.skewX(0.4),
-                            child: Row(
-                              children: [
-                                SizedBox(width: 3.w),
-                                SvgPicture.asset(
-                                  AppAssets.redeemClockSvg,
-                                  height: 9.h,
-                                ),
-                                SizedBox(width: 3.w),
-                                Text(
-                                  LocaleKeys.luck.tr(),
-                                  style: context.textTheme.bodyMedium?.bq
-                                      .copyWith(
-                                        fontSize: 9.sp,
-                                        color: const Color(0xffFF6200),
-                                      ),
-                                ),
-                                SizedBox(width: 1.w),
-                                Text(
-                                  " ${LocaleKeys.add_to_bag_within.tr()} ",
-                                  style: context.textTheme.bodyMedium?.mq
-                                      .copyWith(
-                                        fontSize: 9.sp,
-                                        color: const Color(0xffFF6200),
-                                      ),
-                                ),
-                                // 💡 عزل عداد الثواني الخاص بـ Redeem لمنع الـ Jank
-                                SecondsCountdown(
-                                  productId: widget.productItem.productId
-                                      .toString(),
-                                  finishRedeem: widget.finishRedeem,
-                                  visibleRedeem: visibleRedeem,
-                                  endTime:
-                                      pref.getRedeemDateForProduct(
-                                        widget.productItem.productId.toString(),
-                                      ) ??
-                                      DateTime.now(),
-                                ),
-                                Text(
-                                  " ${LocaleKeys.seconds.tr()} ",
-                                  style: context.textTheme.bodyMedium?.bq
-                                      .copyWith(
-                                        fontSize: 9.sp,
-                                        color: const Color(0xffFF6200),
-                                      ),
-                                ),
-                                SizedBox(width: 10.w),
-                              ],
+                      child: RepaintBoundary(
+                        child: Transform(
+                          transform: Matrix4.skewX(-0.4),
+                          child: Container(
+                            margin: EdgeInsets.only(
+                              left: LanguageService.languageCode != "ar"
+                                  ? 0
+                                  : 10.w,
+                              right: LanguageService.languageCode == "ar"
+                                  ? 0
+                                  : 10.w,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: const Color(0xffFF6200),
+                              ),
+                              color: const Color(0xffFFF3E8),
+                              borderRadius: BorderRadius.circular(15.r),
+                            ),
+                            height: 25.h,
+                            child: Transform(
+                              transform: Matrix4.skewX(0.4),
+                              child: Row(
+                                children: [
+                                  SizedBox(width: 3.w),
+                                  SvgPicture.asset(
+                                    AppAssets.redeemClockSvg,
+                                    height: 9.h,
+                                  ),
+                                  SizedBox(width: 3.w),
+                                  Text(
+                                    LocaleKeys.luck.tr(),
+                                    style: context.textTheme.bodyMedium?.bq
+                                        .copyWith(
+                                          fontSize: 9.sp,
+                                          color: const Color(0xffFF6200),
+                                        ),
+                                  ),
+                                  SizedBox(width: 1.w),
+                                  Text(
+                                    " ${LocaleKeys.add_to_bag_within.tr()} ",
+                                    style: context.textTheme.bodyMedium?.mq
+                                        .copyWith(
+                                          fontSize: 9.sp,
+                                          color: const Color(0xffFF6200),
+                                        ),
+                                  ),
+                                  // 💡 عزل عداد الثواني الخاص بـ Redeem لمنع الـ Jank
+                                  SecondsCountdown(
+                                    productId: widget.productItem.productId
+                                        .toString(),
+                                    finishRedeem: widget.finishRedeem,
+                                    visibleRedeem: visibleRedeem,
+                                    endTime:
+                                        pref.getRedeemDateForProduct(
+                                          widget.productItem.productId
+                                              .toString(),
+                                        ) ??
+                                        DateTime.now(),
+                                  ),
+                                  Text(
+                                    " ${LocaleKeys.seconds.tr()} ",
+                                    style: context.textTheme.bodyMedium?.bq
+                                        .copyWith(
+                                          fontSize: 9.sp,
+                                          color: const Color(0xffFF6200),
+                                        ),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                ],
+                              ),
                             ),
                           ),
                         ),

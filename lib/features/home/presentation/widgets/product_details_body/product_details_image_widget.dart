@@ -199,7 +199,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-          (flashDealEndDate ?? "") == "" || index != 0
+          (flashDealEndDate == null) || index != 0
               ? const SizedBox.shrink()
               : !(isFlashDealEnded ?? true)
               ? Positioned(

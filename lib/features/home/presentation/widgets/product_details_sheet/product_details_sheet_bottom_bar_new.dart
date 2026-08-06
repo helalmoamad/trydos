@@ -819,9 +819,8 @@ class _ProductDetailsSheetBottomBarNewState
                                                       ),
                                                     ],
                                                   )
-                                                : !((widget.flashDealEndDate ??
-                                                              "") ==
-                                                          "" ||
+                                                : !((widget.flashDealEndDate ==
+                                                          null) ||
                                                       (widget.isFlashDealEnded ??
                                                           true))
                                                 ? SingleChildScrollView(

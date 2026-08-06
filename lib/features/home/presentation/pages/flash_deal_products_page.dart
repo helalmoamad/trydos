@@ -247,7 +247,8 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                             List<filter.Products> productWithFlashDealEndDate =
                                 [];
                             products.forEach((element) {
-                              endDate = element.flashDealEndDateTime ?? now;
+                              endDate = element.flashDealEndDateTime;
+                              if (endDate == null) return;
                               _duration = endDate!.difference(now);
                               if (!(_duration.isNegative ||
                                   _duration.inSeconds < 1)) {

@@ -169,7 +169,7 @@ class _ProductListing3DSliderOptimizedState
           )) *
           exchangeRate),
     );
-    endDate = widget.productItem.flashDealEndDateTime ?? DateTime.now();
+    endDate = widget.productItem.flashDealEndDateTime;
     // محاولة الحصول على الصورة من syncColorImages أولاً
     if (widget.productItem.syncColorImages?.isNotEmpty == true) {
       final firstColorImage = widget.productItem.syncColorImages!.first;
@@ -575,9 +575,13 @@ class _ProductListing3DSliderOptimizedState
               ValueListenableBuilder<bool>(
                 valueListenable: widget.visibleFlashDeal,
                 builder: (context, _visibleFlashDeal, _) {
-                  _duration = endDate!.difference(DateTime.now());
-                  if (_duration.isNegative || _duration.inSeconds < 1) {
+                  if (endDate == null) {
                     isFlashDealEnded = true;
+                  } else {
+                    _duration = endDate!.difference(DateTime.now());
+                    if (_duration.isNegative || _duration.inSeconds < 1) {
+                      isFlashDealEnded = true;
+                    }
                   }
 
                   return ValueListenableBuilder<bool>(

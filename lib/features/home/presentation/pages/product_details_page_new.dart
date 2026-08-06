@@ -2363,17 +2363,21 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           valueListenable: visibleFlashDeal,
                           builder: (context, _visibleFlashDeal, _) {
                             bool isFlashDealEnded = false;
-                            DateTime endDate;
-                            Duration _duration = const Duration();
-                            final now = DateTime.now();
-                            endDate =
-                                productItem?.flashDealEndDateTime ??
-                                DateTime.now();
-                            _duration = endDate.difference(now);
-                            if (_duration.isNegative ||
-                                _duration.inSeconds < 1) {
+                            DateTime? endDate;
+
+                            endDate = productItem?.flashDealEndDateTime;
+                            if (endDate == null) {
                               isFlashDealEnded = true;
+                            } else {
+                              Duration _duration = const Duration();
+                              final now = DateTime.now();
+                              _duration = endDate.difference(now);
+                              if (_duration.isNegative ||
+                                  _duration.inSeconds < 1) {
+                                isFlashDealEnded = true;
+                              }
                             }
+
                             if (kDebugMode)
                               print(
                                 "############${state.authProductDetailsModel?.data?.variation}",
@@ -3504,13 +3508,17 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                     valueListenable: visibleFlashDeal,
                     builder: (context, _visibleFlashDeal, _) {
                       bool isFlashDealEnded = false;
-                      DateTime endDate;
-                      Duration _duration = const Duration();
-                      final now = DateTime.now();
-                      endDate = productItem.flashDealEndDateTime ?? now;
-                      _duration = endDate.difference(now);
-                      if (_duration.isNegative || _duration.inSeconds < 1) {
+                      DateTime? endDate;
+                      endDate = productItem.flashDealEndDateTime;
+                      if (endDate == null) {
                         isFlashDealEnded = true;
+                      } else {
+                        Duration _duration = const Duration();
+                        final now = DateTime.now();
+                        _duration = endDate.difference(now);
+                        if (_duration.isNegative || _duration.inSeconds < 1) {
+                          isFlashDealEnded = true;
+                        }
                       }
 
                       return ValueListenableBuilder<bool>(
