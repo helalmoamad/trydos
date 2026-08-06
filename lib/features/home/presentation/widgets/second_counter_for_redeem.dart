@@ -120,14 +120,12 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
-    return RepaintBoundary(
-      child: Text(
-        '$secondsLeft',
-        style: context.textTheme.bodyMedium?.bq.copyWith(
-          fontSize: 9,
-          height: 1.5,
-          color: const Color(0xffFF6200),
-        ),
+    return Text(
+      '$secondsLeft',
+      style: context.textTheme.bodyMedium?.bq.copyWith(
+        fontSize: 9,
+        height: 1.5,
+        color: const Color(0xffFF6200),
       ),
     );
   }

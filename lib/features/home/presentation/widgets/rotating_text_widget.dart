@@ -80,6 +80,6 @@ class _RotatingTextWidgetState extends State<RotatingTextWidget> {
       return widget.textBuilder!(currentText);
     }
 
-    return RepaintBoundary(child: Text(currentText, style: widget.textStyle));
+    return Text(currentText, style: widget.textStyle);
   }
 }

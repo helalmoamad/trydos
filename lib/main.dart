@@ -431,7 +431,7 @@ Future<void> _initPostHog() async {
 }
 
 void main() async {
-  debugPrintRebuildDirtyWidgets = true;
+  //debugPrintRebuildDirtyWidgets = true;
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 

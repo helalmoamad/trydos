@@ -251,8 +251,9 @@ class _TabsBarState extends State<TabsBar> {
   bool resetSearchAfterSearchingWhileRemoveSearch = false;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
   }
 
   @override

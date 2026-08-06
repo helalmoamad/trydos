@@ -107,74 +107,70 @@ class MyCachedNetworkImage extends StatelessWidget {
         : max(10, (safeFallbackHeight * safeRatio).round());
 
     // ⚡ خفيف جداً بدون Key وبدون State
-    return RepaintBoundary(
-      child: SizedBox(
+    return SizedBox(
+      width: effectiveWidth,
+      height: isBoutique ? null : safeFallbackHeight,
+      child: CachedNetworkImage(
+        httpHeaders: _httpHeaders,
+        imageUrl: url,
         width: effectiveWidth,
         height: isBoutique ? null : safeFallbackHeight,
-        child: CachedNetworkImage(
-          httpHeaders: _httpHeaders,
-          imageUrl: url,
-          width: effectiveWidth,
-          height: isBoutique ? null : safeFallbackHeight,
-          cacheManager: _cacheManager,
-          memCacheWidth: safeMemWidth,
-          memCacheHeight: safeMemHeight,
-          placeholder: (context, url) {
-            callWhenLoadingImage?.call();
-            return _buildSimpleShimmer(
-              isBoutique,
-              safeFallbackHeight,
-              effectiveWidth,
-            );
-          },
-          fadeInDuration: Duration.zero,
-          placeholderFadeInDuration: Duration.zero,
-          fadeOutDuration: Duration.zero,
-          imageBuilder:
-              imageBuilder ??
-              (ctx, imageProvider) {
-                callWhenDisplayImage?.call();
-
-                if (isBoutique) {
-                  return Container(
-                    width: effectiveWidth,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(radius),
-                    ),
-                    child: Image(
-                      image: imageProvider,
-                      width: effectiveWidth,
-                      fit: BoxFit.fitWidth,
-                      color: imageColor,
-                      colorBlendMode: imageColor != null
-                          ? BlendMode.srcIn
-                          : null,
-                    ),
-                  );
-                }
-
-                return Container(
-                  width: effectiveWidth,
-                  height: safeFallbackHeight,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(radius),
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: imageFit,
-                      colorFilter: imageColor != null
-                          ? ColorFilter.mode(imageColor!, BlendMode.srcIn)
-                          : null,
-                    ),
-                  ),
-                );
-              },
-          // عند الفشل يعرض سهم إعادة التحميل فوراً وبشكل مستقر وبسيط
-          errorWidget: (context, errorUrl, error) => _buildErrorWidget(
+        cacheManager: _cacheManager,
+        memCacheWidth: safeMemWidth,
+        memCacheHeight: safeMemHeight,
+        placeholder: (context, url) {
+          callWhenLoadingImage?.call();
+          return _buildSimpleShimmer(
             isBoutique,
             safeFallbackHeight,
             effectiveWidth,
-            url,
-          ),
+          );
+        },
+        fadeInDuration: Duration.zero,
+        placeholderFadeInDuration: Duration.zero,
+        fadeOutDuration: Duration.zero,
+        imageBuilder:
+            imageBuilder ??
+            (ctx, imageProvider) {
+              callWhenDisplayImage?.call();
+
+              if (isBoutique) {
+                return Container(
+                  width: effectiveWidth,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(radius),
+                  ),
+                  child: Image(
+                    image: imageProvider,
+                    width: effectiveWidth,
+                    fit: BoxFit.fitWidth,
+                    color: imageColor,
+                    colorBlendMode: imageColor != null ? BlendMode.srcIn : null,
+                  ),
+                );
+              }
+
+              return Container(
+                width: effectiveWidth,
+                height: safeFallbackHeight,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(radius),
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: imageFit,
+                    colorFilter: imageColor != null
+                        ? ColorFilter.mode(imageColor!, BlendMode.srcIn)
+                        : null,
+                  ),
+                ),
+              );
+            },
+        // عند الفشل يعرض سهم إعادة التحميل فوراً وبشكل مستقر وبسيط
+        errorWidget: (context, errorUrl, error) => _buildErrorWidget(
+          isBoutique,
+          safeFallbackHeight,
+          effectiveWidth,
+          url,
         ),
       ),
     );
