@@ -1675,7 +1675,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   }
 
   prefetchImages(String url, String type, int priority) async {
-    if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC");
     List<String> urlHasPredeched =
         prefsRepository.getImageUrlHasPrefeched ?? [];
     if (urlHasPredeched.contains(url) || url == "") {

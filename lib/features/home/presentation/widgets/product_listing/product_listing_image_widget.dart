@@ -2,7 +2,6 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductListingImageWidget extends StatelessWidget {
   const ProductListingImageWidget({
@@ -36,10 +35,6 @@ class ProductListingImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Container(
       alignment: Alignment.center,
       width: width,
@@ -62,34 +57,27 @@ class ProductListingImageWidget extends StatelessWidget {
               ]
             : null,
       ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          imageUrl.contains('assets')
-              ? Image.asset(
-                  imageUrl,
-                  width: width!,
-                  fit: BoxFit.cover,
-                  height: height!,
-                )
-              : MyCachedNetworkImage(
-                  //       progressIndicatorBuilderWidget:
-                  //           ((width ?? 0) > 50) ? null : SizedBox.shrink(),
-                  imageUrl: imageUrl,
-                  width: width!,
-                  ordinalwidth: orginalWidth,
-                  ordinalHeight: orginalHeight,
-                  imageHeight: imageHeight,
-                  imageWidth: imageWidth,
-                  radius: circleShape ? 180.r : radius,
-                  imageFit: BoxFit.contain,
-                  innerShadowYOffset: innerShadowYOffset,
-                  withInnerShadow: true,
-                  height: height!,
-                ),
-          //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
-        ],
-      ),
+      // كان Stack بابن واحد — أُزيل لتقليل طبقة رسم/تخطيط بلا فائدة
+      child: imageUrl.contains('assets')
+          ? Image.asset(
+              imageUrl,
+              width: width!,
+              fit: BoxFit.cover,
+              height: height!,
+            )
+          : MyCachedNetworkImage(
+              imageUrl: imageUrl,
+              width: width!,
+              ordinalwidth: orginalWidth,
+              ordinalHeight: orginalHeight,
+              imageHeight: imageHeight,
+              imageWidth: imageWidth,
+              radius: circleShape ? 180.r : radius,
+              imageFit: BoxFit.contain,
+              innerShadowYOffset: innerShadowYOffset,
+              withInnerShadow: true,
+              height: height!,
+            ),
     );
   }
 }

@@ -53,6 +53,9 @@ class _StoriesListState extends State<StoriesList> {
         debounce!.cancel();
       }
       debounce = Timer(const Duration(milliseconds: 600), () {
+        // بدون هذا الحارس يُنفَّذ الجسم بعد الخروج من الصفحة: قراءة من
+        // ScrollController محرَّر ثم BlocProvider.of على context ميّت
+        if (!mounted) return;
         if (listViewController.offset >=
             (listViewController.position.maxScrollExtent * 0.6)) {
           BlocProvider.of<StoryBloc>(
@@ -86,7 +89,9 @@ class _StoriesListState extends State<StoriesList> {
 
   @override
   void dispose() {
+    debounce?.cancel();
     listViewController.dispose();
+    resizeStories.dispose();
     super.dispose();
   }
 
@@ -139,6 +144,11 @@ class _StoriesListState extends State<StoriesList> {
                           height: 220.h,
                           child: ListView.separated(
                             addSemanticIndexes: false,
+                            // العناصر متفاوتة العرض (زر الرفع + البطاقات +
+                            // مؤشّر الترقيم) فلا تقبل itemExtent، لكن إبقاء
+                            // حالة العناصر الخارجة عن الشاشة حيّة بلا فائدة
+                            addAutomaticKeepAlives: false,
+                            cacheExtent: 300,
                             controller: listViewController,
                             itemBuilder: (context, index) {
                               if (index == storiesCollections.length + 1) {

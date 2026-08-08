@@ -460,10 +460,34 @@ class _ProductListingPageState extends State<ProductListingPage> {
       focusNode.dispose();
       appBloc.add(ShowOrHideBars(true));
       tapIndexToAddProductToCart.removeListener(_handleQuickViewRequest);
+
+      // ⏱️ إلغاء المؤقّتات: بدونها تُنفَّذ بعد الخروج من الصفحة وتلمس
+      // context/blocs لعنصر لم يعد موجوداً
+      debounce?.cancel();
+      searchDebounce?.cancel();
+      timerForDisplayFilterSectionTitle?.cancel();
+
       scrollController.dispose();
+      scrollControllerFilter.dispose();
       controller.dispose();
 
-      // 🎯 دع Flutter يدير الذاكرة تلقائياً عند dispose
+      // 🧹 تحرير مؤشّرات الصفحة (لم تكن تُحرَّر إطلاقاً)
+      expandingFiltersStack.dispose();
+      tapIndexToAddProductToCart.dispose();
+      tapIndexToShowColorImages.dispose();
+      loadingForRquestProductDetails.dispose();
+      searchVisible.dispose();
+      showShadowForPanel.dispose();
+      visibleFlashDeal.dispose();
+      htmlDescriptionHeight.dispose();
+      showShadowForColorImages.dispose();
+      addToBagButtonShapeNotifier.dispose();
+      showTitleForFilterList.dispose();
+      displayBoutiqueIconInAppBar.dispose();
+      currentActiveTab.dispose();
+      productNotAvailableNotifier.dispose();
+      isRecordeForSearchWithMic.dispose();
+      finishRedeem.dispose();
 
       categoryBloc.add(
         ReplyFromGeminiEvent(fromSearch: false, resetTheReply: true),
@@ -504,12 +528,59 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   bool resetSearchAfterSearchingWhileRemoveSearch = false;
 
+  /// تعبئة حقل البحث وإطلاق بحث Gemini — يُستدعى من listener عند وصول ردّ
+  /// جديد فقط، لا من داخل build.
+  void _applyGeminiSearch(CategoryState state) {
+    final String searchText = state.theReplyFromGemini ?? "";
+    if (searchText.isEmpty) return;
+
+    if (controller.text != searchText) {
+      controller.text = searchText;
+    }
+
+    final Filter filters =
+        boutiqueBloc.state.choosedFiltersByUser['search']?.filters ?? Filter();
+
+    boutiqueBloc.add(
+      ChangeSelectedFiltersEvent(
+        requestToUpdateFilters: false,
+        boutiqueSlug: widget.boutiqueSlug,
+        category: widget.category,
+        fromHomePageSearch: widget.fromSearch,
+        filtersChoosedByUser: GetProductFiltersModel(
+          filters: filters.copyWithSaveOtherField(
+            prices: filters.prices,
+            searchText: searchText,
+          ),
+        ),
+      ),
+    );
+    boutiqueBloc.add(
+      ChangeAppliedFiltersEvent(
+        boutiqueSlug: widget.boutiqueSlug,
+        category: widget.category,
+        filtersAppliedByUser: GetProductFiltersModel(
+          filters: filters.copyWithSaveOtherField(
+            prices: filters.prices,
+            searchText: searchText,
+          ),
+        ),
+      ),
+    );
+    boutiqueBloc.add(
+      GetProductsWithFiltersEvent(
+        offset: 1,
+        boutiqueSlug: widget.boutiqueSlug,
+        category: widget.category,
+        resetChoosedFilters: false,
+        fromSearch: widget.fromSearch,
+        searchText: searchText,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return
     // ignore: deprecated_member_use
     WillPopScope(
@@ -650,61 +721,22 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   buildWhen: (p, c) =>
                       p.isExpandedForListingPage != c.isExpandedForListingPage,
                   builder: (context, homeState) {
-                    return BlocBuilder<CategoryBloc, CategoryState>(
+                    return BlocConsumer<CategoryBloc, CategoryState>(
+                      // ⚡ الأثر الجانبي انتقل من الـ builder إلى listener:
+                      // كان يتكرّر مع كل إعادة بناء ويُطلق طلب بحث جديداً
+                      listenWhen: (p, c) =>
+                          (c.theReplyFromGemini ?? "") != "" &&
+                          c.fromSearchForSearchWithGemini == false &&
+                          (p.sendRequestToGeminiStatus !=
+                                  c.sendRequestToGeminiStatus ||
+                              p.theReplyFromGemini != c.theReplyFromGemini),
+                      listener: (context, state) => _applyGeminiSearch(state),
                       buildWhen: (p, c) =>
                           ((p.sendRequestToGeminiStatus !=
                                   c.sendRequestToGeminiStatus ||
                               p.theReplyFromGemini != c.theReplyFromGemini) &&
                           c.fromSearchForSearchWithGemini == false),
                       builder: (context, state) {
-                        if ((state.theReplyFromGemini ?? "") != "" &&
-                            state.fromSearchForSearchWithGemini == false) {
-                          String searchText = state.theReplyFromGemini!;
-
-                          controller.text = state.theReplyFromGemini ?? "";
-                          Filter filters =
-                              BlocProvider.of<BoutiqueBloc>(
-                                context,
-                              ).state.choosedFiltersByUser['search']?.filters ??
-                              Filter();
-                          BlocProvider.of<BoutiqueBloc>(context).add(
-                            ChangeSelectedFiltersEvent(
-                              requestToUpdateFilters: false,
-                              boutiqueSlug: widget.boutiqueSlug,
-                              category: widget.category,
-                              fromHomePageSearch: widget.fromSearch,
-                              filtersChoosedByUser: GetProductFiltersModel(
-                                filters: filters.copyWithSaveOtherField(
-                                  prices: filters.prices,
-                                  searchText: searchText,
-                                ),
-                              ),
-                            ),
-                          );
-                          BlocProvider.of<BoutiqueBloc>(context).add(
-                            ChangeAppliedFiltersEvent(
-                              boutiqueSlug: widget.boutiqueSlug,
-                              category: widget.category,
-                              filtersAppliedByUser: GetProductFiltersModel(
-                                filters: filters.copyWithSaveOtherField(
-                                  prices: filters.prices,
-                                  searchText: searchText,
-                                ),
-                              ),
-                            ),
-                          );
-
-                          BlocProvider.of<BoutiqueBloc>(context).add(
-                            GetProductsWithFiltersEvent(
-                              offset: 1,
-                              boutiqueSlug: widget.boutiqueSlug,
-                              category: widget.category,
-                              resetChoosedFilters: false,
-                              fromSearch: widget.fromSearch,
-                              searchText: searchText,
-                            ),
-                          );
-                        }
                         /*   if (!(homeState.isExpandedForListingPage ?? false) &&
                               !itExpendForFirst) {
                             /*    homeBloc.add(GetProductsWithFiltersEvent(
@@ -727,7 +759,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                     overscroll: false,
                                   ),*/
                             // منع overscroll للحماية من crashes
-                            cacheExtent: 50, // قيمة محسنة لمنع التعليق
+                            // بناء الصفوف قبل دخولها الشاشة بدل بنائها لحظة
+                            // ظهورها (كان 50 = ظهور مفاجئ + سقوط إطارات)
+                            cacheExtent: 300,
                             key: TestVariables.kTestMode
                                 ? const Key(WidgetsKeys.productListingScrollKey)
                                 : null,
@@ -764,15 +798,18 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                     pinned: true,
                                     backgroundColor: colorScheme.white,
                                     automaticallyImplyLeading: false,
-                                    flexibleSpace: ValueListenableBuilder<bool>(
-                                      valueListenable: searchVisible,
-                                      builder: (context, searchOpen, _) {
-                                        return Padding(
-                                          padding: EdgeInsets.only(
-                                            right: 5.w,
-                                            left: 5.w,
-                                          ),
-                                          child: /*TrydosAppBar(
+                                    // رأس مثبَّت: يُعاد رسمه مع كل إطار تمرير
+                                    // ما لم يُحفظ في طبقة مستقلّة
+                                    flexibleSpace: RepaintBoundary(
+                                      child: ValueListenableBuilder<bool>(
+                                        valueListenable: searchVisible,
+                                        builder: (context, searchOpen, _) {
+                                          return Padding(
+                                            padding: EdgeInsets.only(
+                                              right: 5.w,
+                                              left: 5.w,
+                                            ),
+                                            child: /*TrydosAppBar(
                                                                     appBarParams: AppBarParams(
                                                                         scrolledUnderElevation: 0,
                                                                         backIconColor: Colors.black,
@@ -848,448 +885,242 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         ],
                                                                         withShadow: false),
                                                                   )*/ TrydosAppBar(
-                                            appBarParams: AppBarParams(
-                                              onBack: () {
-                                                prefsRepository
-                                                    .setTagsInUrlToFilter([]);
-                                                FocusScope.of(
-                                                  context,
-                                                ).unfocus();
-                                                try {
-                                                  if (panelControllerForCart
-                                                      .isPanelOpen) {
-                                                    panelControllerForCart
-                                                        .close();
-                                                    return;
+                                              appBarParams: AppBarParams(
+                                                onBack: () {
+                                                  prefsRepository
+                                                      .setTagsInUrlToFilter([]);
+                                                  FocusScope.of(
+                                                    context,
+                                                  ).unfocus();
+                                                  try {
+                                                    if (panelControllerForCart
+                                                        .isPanelOpen) {
+                                                      panelControllerForCart
+                                                          .close();
+                                                      return;
+                                                    }
+                                                  } catch (e) {}
+                                                  if (widget.fromBackground) {
+                                                    context.go(
+                                                      GRouter.config.kRootRoute,
+                                                    );
                                                   }
-                                                } catch (e) {}
-                                                if (widget.fromBackground) {
-                                                  context.go(
-                                                    GRouter.config.kRootRoute,
+                                                  categoryBloc.add(
+                                                    ReplyFromGeminiEvent(
+                                                      fromSearch: false,
+                                                      resetTheReply: true,
+                                                    ),
                                                   );
-                                                }
-                                                categoryBloc.add(
-                                                  ReplyFromGeminiEvent(
-                                                    fromSearch: false,
-                                                    resetTheReply: true,
+                                                  if (widget.fromSearch) {
+                                                    widget
+                                                        .controllerFormSearchPage
+                                                        ?.text = controller
+                                                        .text;
+                                                    boutiqueBloc.add(
+                                                      ChangeAppliedFiltersEvent(
+                                                        boutiqueSlug:
+                                                            widget.boutiqueSlug,
+                                                        category:
+                                                            widget.category,
+                                                        filtersAppliedByUser:
+                                                            GetProductFiltersModel(
+                                                              filters: boutiqueBloc
+                                                                  .state
+                                                                  .appliedFiltersByUser[key]
+                                                                  ?.filters,
+                                                            ),
+                                                      ),
+                                                    );
+                                                    boutiqueBloc.add(
+                                                      ChangeSelectedFiltersEvent(
+                                                        fromHomePageSearch:
+                                                            widget.fromSearch,
+                                                        boutiqueSlug:
+                                                            widget.boutiqueSlug,
+                                                        category:
+                                                            widget.category,
+                                                        filtersChoosedByUser:
+                                                            GetProductFiltersModel(
+                                                              filters: boutiqueBloc
+                                                                  .state
+                                                                  .appliedFiltersByUser[key]
+                                                                  ?.filters,
+                                                            ),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                backgroundColor:
+                                                    colorScheme.white,
+                                                scrolledUnderElevation: 0,
+                                                backIconColor: Colors.black,
+                                                hasLeading:
+                                                    !isExpanded && !searchOpen,
+                                                action: [
+                                                  const Spacer(),
+                                                  ValueListenableBuilder<bool>(
+                                                    valueListenable:
+                                                        displayBoutiqueIconInAppBar,
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsetsDirectional.only(
+                                                            start: 30.w,
+                                                          ),
+                                                      child:
+                                                          widget.boutiqueIcon !=
+                                                              null
+                                                          ? MyCachedNetworkImage(
+                                                              imageUrl:
+                                                                  widget
+                                                                      .boutiqueIcon ??
+                                                                  "",
+                                                              height: 20.h,
+                                                              imageFit: BoxFit
+                                                                  .contain,
+                                                              width: 21.w,
+                                                            )
+                                                          : const SizedBox.shrink(),
+                                                    ),
+                                                    builder:
+                                                        (
+                                                          context,
+                                                          display,
+                                                          child,
+                                                        ) {
+                                                          return display
+                                                              ? child!
+                                                              : const SizedBox.shrink();
+                                                        },
                                                   ),
-                                                );
-                                                if (widget.fromSearch) {
-                                                  widget
-                                                      .controllerFormSearchPage
-                                                      ?.text = controller
-                                                      .text;
-                                                  boutiqueBloc.add(
-                                                    ChangeAppliedFiltersEvent(
-                                                      boutiqueSlug:
-                                                          widget.boutiqueSlug,
-                                                      category: widget.category,
-                                                      filtersAppliedByUser:
-                                                          GetProductFiltersModel(
-                                                            filters: boutiqueBloc
-                                                                .state
-                                                                .appliedFiltersByUser[key]
-                                                                ?.filters,
-                                                          ),
-                                                    ),
-                                                  );
-                                                  boutiqueBloc.add(
-                                                    ChangeSelectedFiltersEvent(
-                                                      fromHomePageSearch:
-                                                          widget.fromSearch,
-                                                      boutiqueSlug:
-                                                          widget.boutiqueSlug,
-                                                      category: widget.category,
-                                                      filtersChoosedByUser:
-                                                          GetProductFiltersModel(
-                                                            filters: boutiqueBloc
-                                                                .state
-                                                                .appliedFiltersByUser[key]
-                                                                ?.filters,
-                                                          ),
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                              backgroundColor:
-                                                  colorScheme.white,
-                                              scrolledUnderElevation: 0,
-                                              backIconColor: Colors.black,
-                                              hasLeading:
-                                                  !isExpanded && !searchOpen,
-                                              action: [
-                                                const Spacer(),
-                                                ValueListenableBuilder<bool>(
-                                                  valueListenable:
-                                                      displayBoutiqueIconInAppBar,
-                                                  child: Padding(
+                                                  Padding(
                                                     padding:
                                                         EdgeInsetsDirectional.only(
-                                                          start: 30.w,
+                                                          end: searchOpen
+                                                              ? 10.w
+                                                              : 20.w,
                                                         ),
-                                                    child:
-                                                        widget.boutiqueIcon !=
-                                                            null
-                                                        ? MyCachedNetworkImage(
-                                                            imageUrl:
-                                                                widget
-                                                                    .boutiqueIcon ??
-                                                                "",
-                                                            height: 20.h,
-                                                            imageFit:
-                                                                BoxFit.contain,
-                                                            width: 21.w,
-                                                          )
-                                                        : const SizedBox.shrink(),
-                                                  ),
-                                                  builder:
-                                                      (
-                                                        context,
-                                                        display,
-                                                        child,
-                                                      ) {
-                                                        return display
-                                                            ? child!
-                                                            : const SizedBox.shrink();
-                                                      },
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      EdgeInsetsDirectional.only(
-                                                        end: searchOpen
-                                                            ? 10.w
-                                                            : 20.w,
-                                                      ),
-                                                  child: AnimatedSearchBar(
-                                                    key: TestVariables.kTestMode
-                                                        ? const Key(
-                                                            WidgetsKeys
-                                                                .productListingSearchInputKey,
-                                                          )
-                                                        : null,
-                                                    width: isExpanded
-                                                        ? (1.sw - 90.w)
-                                                        : (1.sw - 120.w),
-                                                    height: 40.h,
-                                                    onClickClose: () {
-                                                      boutiqueBloc.add(
-                                                        AddSizeAndColorFilterinTextToSearchEvent(
-                                                          sizeAndColorFilterinTextToSearch:
-                                                              const {},
-                                                        ),
-                                                      );
-
-                                                      if (!isExpanded &&
-                                                          controller
-                                                              .text
-                                                              .isNotEmpty) {
-                                                        Filter filters =
-                                                            boutiqueBloc
-                                                                .state
-                                                                .appliedFiltersByUser[key]
-                                                                ?.filters ??
-                                                            Filter();
+                                                    child: AnimatedSearchBar(
+                                                      key:
+                                                          TestVariables
+                                                              .kTestMode
+                                                          ? const Key(
+                                                              WidgetsKeys
+                                                                  .productListingSearchInputKey,
+                                                            )
+                                                          : null,
+                                                      width: isExpanded
+                                                          ? (1.sw - 90.w)
+                                                          : (1.sw - 120.w),
+                                                      height: 40.h,
+                                                      onClickClose: () {
                                                         boutiqueBloc.add(
-                                                          ChangeAppliedFiltersEvent(
-                                                            boutiqueSlug: widget
-                                                                .boutiqueSlug,
-                                                            category:
-                                                                widget.category,
-                                                            filtersAppliedByUser:
-                                                                GetProductFiltersModel(
-                                                                  filters: filters
-                                                                      .copyWithSaveOtherField(
-                                                                        prices:
-                                                                            filters.prices,
-                                                                      ),
-                                                                ),
+                                                          AddSizeAndColorFilterinTextToSearchEvent(
+                                                            sizeAndColorFilterinTextToSearch:
+                                                                const {},
                                                           ),
                                                         );
-                                                        boutiqueBloc.add(
-                                                          GetProductsWithFiltersEvent(
-                                                            offset: 1,
-                                                            fromSearch:
-                                                                fromSearch,
-                                                            category:
-                                                                widget.category,
-                                                            boutiqueSlug: widget
-                                                                .boutiqueSlug,
+
+                                                        if (!isExpanded &&
+                                                            controller
+                                                                .text
+                                                                .isNotEmpty) {
+                                                          Filter filters =
+                                                              boutiqueBloc
+                                                                  .state
+                                                                  .appliedFiltersByUser[key]
+                                                                  ?.filters ??
+                                                              Filter();
+                                                          boutiqueBloc.add(
+                                                            ChangeAppliedFiltersEvent(
+                                                              boutiqueSlug: widget
+                                                                  .boutiqueSlug,
+                                                              category: widget
+                                                                  .category,
+                                                              filtersAppliedByUser: GetProductFiltersModel(
+                                                                filters: filters
+                                                                    .copyWithSaveOtherField(
+                                                                      prices: filters
+                                                                          .prices,
+                                                                    ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                          boutiqueBloc.add(
+                                                            GetProductsWithFiltersEvent(
+                                                              offset: 1,
+                                                              fromSearch:
+                                                                  fromSearch,
+                                                              category: widget
+                                                                  .category,
+                                                              boutiqueSlug: widget
+                                                                  .boutiqueSlug,
+                                                            ),
+                                                          );
+                                                        }
+                                                        if (isExpanded &&
+                                                            controller
+                                                                .text
+                                                                .isNotEmpty) {
+                                                          Filter filters =
+                                                              boutiqueBloc
+                                                                  .state
+                                                                  .choosedFiltersByUser[key]
+                                                                  ?.filters ??
+                                                              Filter();
+                                                          boutiqueBloc.add(
+                                                            ChangeSelectedFiltersEvent(
+                                                              fromHomePageSearch:
+                                                                  widget
+                                                                      .fromSearch,
+                                                              boutiqueSlug: widget
+                                                                  .boutiqueSlug,
+                                                              filtersChoosedByUser: GetProductFiltersModel(
+                                                                filters: filters
+                                                                    .copyWithSaveOtherField(
+                                                                      prices: filters
+                                                                          .prices,
+                                                                    ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }
+
+                                                        resetSearchAfterSearchingWhileRemoveSearch =
+                                                            false;
+                                                        FocusScope.of(
+                                                          context,
+                                                        ).unfocus();
+
+                                                        searchVisible.value =
+                                                            false;
+
+                                                        controller.clear();
+                                                        appBloc.add(
+                                                          HideBottomNavigationBar(
+                                                            false,
                                                           ),
                                                         );
-                                                      }
-                                                      if (isExpanded &&
-                                                          controller
-                                                              .text
-                                                              .isNotEmpty) {
-                                                        Filter filters =
-                                                            boutiqueBloc
-                                                                .state
-                                                                .choosedFiltersByUser[key]
-                                                                ?.filters ??
-                                                            Filter();
-                                                        boutiqueBloc.add(
-                                                          ChangeSelectedFiltersEvent(
-                                                            fromHomePageSearch:
-                                                                widget
-                                                                    .fromSearch,
-                                                            boutiqueSlug: widget
-                                                                .boutiqueSlug,
-                                                            filtersChoosedByUser:
-                                                                GetProductFiltersModel(
-                                                                  filters: filters
-                                                                      .copyWithSaveOtherField(
-                                                                        prices:
-                                                                            filters.prices,
-                                                                      ),
-                                                                ),
-                                                          ),
-                                                        );
-                                                      }
-
-                                                      resetSearchAfterSearchingWhileRemoveSearch =
-                                                          false;
-                                                      FocusScope.of(
-                                                        context,
-                                                      ).unfocus();
-
-                                                      searchVisible.value =
-                                                          false;
-
-                                                      controller.clear();
-                                                      appBloc.add(
-                                                        HideBottomNavigationBar(
-                                                          false,
-                                                        ),
-                                                      );
-                                                      ///////////////////////////
-                                                      /* FirebaseAnalyticsService.logEventForSession(
+                                                        ///////////////////////////
+                                                        /* FirebaseAnalyticsService.logEventForSession(
                                                                                 eventName: AnalyticsEventsConst.buttonClicked,
                                                                                 executedEventName: AnalyticsExecutedEventNameConst.resetCloseIconButton,
                                                                               );*/
-                                                      return false;
-                                                    },
-                                                    textController: controller,
-                                                    focusNode: focusNode,
-                                                    onSuffixTap: () {
-                                                      WidgetsBinding.instance
-                                                          .addPostFrameCallback(
-                                                            (timeStamp) {
-                                                              searchVisible
-                                                                      .value =
-                                                                  true;
-                                                            },
-                                                          );
-                                                    },
-                                                    suffixWidget: Center(
-                                                      child: SvgPicture.asset(
-                                                        AppAssets
-                                                            .searchOutlinedSvg,
-                                                        height: 20.h,
-                                                        width: 20.w,
-                                                        // ignore: deprecated_member_use
-                                                        color: const Color(
-                                                          0xff388CFF,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    prefixWidget: Padding(
-                                                      padding: EdgeInsets.only(
-                                                        right: 15.w,
-                                                        top: 10.h,
-                                                        bottom: 10.h,
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          InkWell(
-                                                            onTap: () async {
-                                                              SearchWithImageRelatedGemini.SelecteImageForSearch(
-                                                                fromSearch:
-                                                                    false,
-                                                                context:
-                                                                    context,
-                                                              );
-                                                              /////////////////////////////
-                                                              /*  FirebaseAnalyticsService.logEventForSession(
-                                                                                        eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                        executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
-                                                                                      );*/
-                                                            },
-                                                            child:
-                                                                state.sendRequestToGeminiStatus ==
-                                                                    SendRequestToGeminiStatus
-                                                                        .loading
-                                                                ? TrydosLoader(
-                                                                    size: 18.h,
-                                                                  )
-                                                                : SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .realCameraSvg,
-                                                                    height:
-                                                                        20.h,
-                                                                    width: 20.w,
-                                                                  ),
-                                                          ),
-                                                          ValueListenableBuilder<
-                                                            bool
-                                                          >(
-                                                            valueListenable:
-                                                                isRecordeForSearchWithMic,
-                                                            builder:
-                                                                (
-                                                                  context,
-                                                                  recordeForSearchWithMic,
-                                                                  _,
-                                                                ) {
-                                                                  return InkWell(
-                                                                    onTap: () async {
-                                                                      final status = await Permission
-                                                                          .microphone
-                                                                          .request();
-                                                                      if (status !=
-                                                                          PermissionStatus
-                                                                              .granted) {
-                                                                        return;
-                                                                      }
-                                                                      if (_speechToText
-                                                                          .isNotListening) {
-                                                                        _startListening();
-                                                                        /////////////////////////////
-                                                                        /*  FirebaseAnalyticsService.logEventForSession(
-                                                                                              eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                              executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
-                                                                                            );*/
-                                                                      } else {
-                                                                        _stopListening();
-                                                                      }
-                                                                    },
-                                                                    child: SizedBox(
-                                                                      width:
-                                                                          20.w,
-                                                                      child: Icon(
-                                                                        _speechToText.isNotListening ||
-                                                                                !recordeForSearchWithMic
-                                                                            ? Icons.mic_off
-                                                                            : Icons.mic,
-                                                                      ),
-                                                                    ),
-                                                                  );
-                                                                },
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    animationDurationInMilli:
-                                                        400,
-                                                    searchDecoration: InputDecoration(
-                                                      border: OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color:
-                                                              focusNode.hasFocus
-                                                              ? const Color(
-                                                                  0xffE6E6E6,
-                                                                )
-                                                              : const Color(
-                                                                  0xffF8F8F8,
-                                                                ),
-                                                          width: 0.4,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              kbrBorderTextField,
-                                                            ),
-                                                      ),
-                                                      focusedBorder: OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color:
-                                                              focusNode.hasFocus
-                                                              ? const Color(
-                                                                  0xffE6E6E6,
-                                                                )
-                                                              : const Color(
-                                                                  0xffF8F8F8,
-                                                                ),
-                                                          width: 0.4,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              kbrBorderTextField,
-                                                            ),
-                                                      ),
-                                                      enabledBorder: OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color:
-                                                              focusNode.hasFocus
-                                                              ? const Color(
-                                                                  0xffE6E6E6,
-                                                                )
-                                                              : const Color(
-                                                                  0xffF8F8F8,
-                                                                ),
-                                                          width: 0.4,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              kbrBorderTextField,
-                                                            ),
-                                                      ),
-                                                      disabledBorder: OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color:
-                                                              focusNode.hasFocus
-                                                              ? const Color(
-                                                                  0xffE6E6E6,
-                                                                )
-                                                              : const Color(
-                                                                  0xffF8F8F8,
-                                                                ),
-                                                          width: 0.4,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              kbrBorderTextField,
-                                                            ),
-                                                      ),
-                                                      errorBorder: OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color: context
-                                                              .colorScheme
-                                                              .error,
-                                                          width: 0.4,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              kbrBorderTextField,
-                                                            ),
-                                                      ),
-                                                      focusedErrorBorder:
-                                                          OutlineInputBorder(
-                                                            borderSide:
-                                                                BorderSide(
-                                                                  color: context
-                                                                      .colorScheme
-                                                                      .error,
-                                                                  width: 0.4,
-                                                                ),
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  kbrBorderTextField,
-                                                                ),
-                                                          ),
-                                                      filled: true,
-                                                      fillColor:
-                                                          focusNode.hasFocus
-                                                          ? colorScheme.white
-                                                          : const Color(
-                                                              0xffF8F8F8,
-                                                            ),
-                                                      prefixIcon: Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                              top: 12.h,
-                                                              bottom: 12.h,
-                                                            ),
+                                                        return false;
+                                                      },
+                                                      textController:
+                                                          controller,
+                                                      focusNode: focusNode,
+                                                      onSuffixTap: () {
+                                                        WidgetsBinding.instance
+                                                            .addPostFrameCallback(
+                                                              (timeStamp) {
+                                                                searchVisible
+                                                                        .value =
+                                                                    true;
+                                                              },
+                                                            );
+                                                      },
+                                                      suffixWidget: Center(
                                                         child: SvgPicture.asset(
                                                           AppAssets
                                                               .searchOutlinedSvg,
@@ -1301,7 +1132,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           ),
                                                         ),
                                                       ),
-                                                      suffixIcon: Padding(
+                                                      prefixWidget: Padding(
                                                         padding:
                                                             EdgeInsets.only(
                                                               right: 15.w,
@@ -1321,10 +1152,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       context,
                                                                 );
                                                                 /////////////////////////////
-                                                                /*   FirebaseAnalyticsService.logEventForSession(
-                                                                                          eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                          executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
-                                                                                        );*/
+                                                                /*  FirebaseAnalyticsService.logEventForSession(
+                                                                                        eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                        executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                                      );*/
                                                               },
                                                               child:
                                                                   state.sendRequestToGeminiStatus ==
@@ -1342,9 +1173,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       width:
                                                                           20.w,
                                                                     ),
-                                                            ),
-                                                            SizedBox(
-                                                              width: 20.w,
                                                             ),
                                                             ValueListenableBuilder<
                                                               bool
@@ -1370,10 +1198,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                             .isNotListening) {
                                                                           _startListening();
                                                                           /////////////////////////////
-                                                                          /*FirebaseAnalyticsService.logEventForSession(
-                                                                                                eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                                executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
-                                                                                              );*/
+                                                                          /*  FirebaseAnalyticsService.logEventForSession(
+                                                                                              eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                              executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                                            );*/
                                                                         } else {
                                                                           _stopListening();
                                                                         }
@@ -1394,69 +1222,342 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           ],
                                                         ),
                                                       ),
-                                                      //context.colorScheme.white,
-                                                      contentPadding:
-                                                          HWEdgeInsetsDirectional.only(
-                                                            start: 20.w,
-                                                            end: 10.w,
-                                                            bottom: 12.h,
-                                                            top: 12.h,
+                                                      animationDurationInMilli:
+                                                          400,
+                                                      searchDecoration: InputDecoration(
+                                                        border: OutlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                            color:
+                                                                focusNode
+                                                                    .hasFocus
+                                                                ? const Color(
+                                                                    0xffE6E6E6,
+                                                                  )
+                                                                : const Color(
+                                                                    0xffF8F8F8,
+                                                                  ),
+                                                            width: 0.4,
                                                           ),
-                                                      hintText:
-                                                          '${LocaleKeys.search.tr()}',
-                                                      hintStyle: context
-                                                          .textTheme
-                                                          .bodyMedium
-                                                          ?.lq
-                                                          .copyWith(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                kbrBorderTextField,
+                                                              ),
+                                                        ),
+                                                        focusedBorder: OutlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                            color:
+                                                                focusNode
+                                                                    .hasFocus
+                                                                ? const Color(
+                                                                    0xffE6E6E6,
+                                                                  )
+                                                                : const Color(
+                                                                    0xffF8F8F8,
+                                                                  ),
+                                                            width: 0.4,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                kbrBorderTextField,
+                                                              ),
+                                                        ),
+                                                        enabledBorder: OutlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                            color:
+                                                                focusNode
+                                                                    .hasFocus
+                                                                ? const Color(
+                                                                    0xffE6E6E6,
+                                                                  )
+                                                                : const Color(
+                                                                    0xffF8F8F8,
+                                                                  ),
+                                                            width: 0.4,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                kbrBorderTextField,
+                                                              ),
+                                                        ),
+                                                        disabledBorder: OutlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                            color:
+                                                                focusNode
+                                                                    .hasFocus
+                                                                ? const Color(
+                                                                    0xffE6E6E6,
+                                                                  )
+                                                                : const Color(
+                                                                    0xffF8F8F8,
+                                                                  ),
+                                                            width: 0.4,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                kbrBorderTextField,
+                                                              ),
+                                                        ),
+                                                        errorBorder: OutlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                                color: context
+                                                                    .colorScheme
+                                                                    .error,
+                                                                width: 0.4,
+                                                              ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                kbrBorderTextField,
+                                                              ),
+                                                        ),
+                                                        focusedErrorBorder:
+                                                            OutlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                color: context
+                                                                    .colorScheme
+                                                                    .error,
+                                                                width: 0.4,
+                                                              ),
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    kbrBorderTextField,
+                                                                  ),
+                                                            ),
+                                                        filled: true,
+                                                        fillColor:
+                                                            focusNode.hasFocus
+                                                            ? colorScheme.white
+                                                            : const Color(
+                                                                0xffF8F8F8,
+                                                              ),
+                                                        prefixIcon: Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                top: 12.h,
+                                                                bottom: 12.h,
+                                                              ),
+                                                          child: SvgPicture.asset(
+                                                            AppAssets
+                                                                .searchOutlinedSvg,
+                                                            height: 20.h,
+                                                            width: 20.w,
+                                                            // ignore: deprecated_member_use
                                                             color: const Color(
-                                                              0xffC4C2C2,
+                                                              0xff388CFF,
                                                             ),
                                                           ),
-                                                      labelStyle: context
-                                                          .textTheme
-                                                          .titleLarge
-                                                          ?.copyWith(
-                                                            color: context
-                                                                .colorScheme
-                                                                .hint,
-                                                          ),
-                                                    ),
-                                                    onChanged: (String text) {
-                                                      if (searchDebounce
-                                                              ?.isActive ??
-                                                          false) {
-                                                        searchDebounce!
-                                                            .cancel();
-                                                      }
-                                                      searchDebounce = Timer(
-                                                        const Duration(
-                                                          seconds: 1,
                                                         ),
-                                                        () {
-                                                          String searchText =
-                                                              text;
+                                                        suffixIcon: Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                right: 15.w,
+                                                                top: 10.h,
+                                                                bottom: 10.h,
+                                                              ),
+                                                          child: Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              InkWell(
+                                                                onTap: () async {
+                                                                  SearchWithImageRelatedGemini.SelecteImageForSearch(
+                                                                    fromSearch:
+                                                                        false,
+                                                                    context:
+                                                                        context,
+                                                                  );
+                                                                  /////////////////////////////
+                                                                  /*   FirebaseAnalyticsService.logEventForSession(
+                                                                                          eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                          executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                                        );*/
+                                                                },
+                                                                child:
+                                                                    state.sendRequestToGeminiStatus ==
+                                                                        SendRequestToGeminiStatus
+                                                                            .loading
+                                                                    ? TrydosLoader(
+                                                                        size: 18
+                                                                            .h,
+                                                                      )
+                                                                    : SvgPicture.asset(
+                                                                        AppAssets
+                                                                            .realCameraSvg,
+                                                                        height:
+                                                                            20.h,
+                                                                        width:
+                                                                            20.w,
+                                                                      ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: 20.w,
+                                                              ),
+                                                              ValueListenableBuilder<
+                                                                bool
+                                                              >(
+                                                                valueListenable:
+                                                                    isRecordeForSearchWithMic,
+                                                                builder:
+                                                                    (
+                                                                      context,
+                                                                      recordeForSearchWithMic,
+                                                                      _,
+                                                                    ) {
+                                                                      return InkWell(
+                                                                        onTap: () async {
+                                                                          final status = await Permission
+                                                                              .microphone
+                                                                              .request();
+                                                                          if (status !=
+                                                                              PermissionStatus.granted) {
+                                                                            return;
+                                                                          }
+                                                                          if (_speechToText
+                                                                              .isNotListening) {
+                                                                            _startListening();
+                                                                            /////////////////////////////
+                                                                            /*FirebaseAnalyticsService.logEventForSession(
+                                                                                                eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                                executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                                              );*/
+                                                                          } else {
+                                                                            _stopListening();
+                                                                          }
+                                                                        },
+                                                                        child: SizedBox(
+                                                                          width:
+                                                                              20.w,
+                                                                          child: Icon(
+                                                                            _speechToText.isNotListening ||
+                                                                                    !recordeForSearchWithMic
+                                                                                ? Icons.mic_off
+                                                                                : Icons.mic,
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        //context.colorScheme.white,
+                                                        contentPadding:
+                                                            HWEdgeInsetsDirectional.only(
+                                                              start: 20.w,
+                                                              end: 10.w,
+                                                              bottom: 12.h,
+                                                              top: 12.h,
+                                                            ),
+                                                        hintText:
+                                                            '${LocaleKeys.search.tr()}',
+                                                        hintStyle: context
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.lq
+                                                            .copyWith(
+                                                              color:
+                                                                  const Color(
+                                                                    0xffC4C2C2,
+                                                                  ),
+                                                            ),
+                                                        labelStyle: context
+                                                            .textTheme
+                                                            .titleLarge
+                                                            ?.copyWith(
+                                                              color: context
+                                                                  .colorScheme
+                                                                  .hint,
+                                                            ),
+                                                      ),
+                                                      onChanged: (String text) {
+                                                        if (searchDebounce
+                                                                ?.isActive ??
+                                                            false) {
+                                                          searchDebounce!
+                                                              .cancel();
+                                                        }
+                                                        searchDebounce = Timer(
+                                                          const Duration(
+                                                            seconds: 1,
+                                                          ),
+                                                          () {
+                                                            String searchText =
+                                                                text;
 
-                                                          if (isExpanded) {
-                                                            Filter filters =
-                                                                boutiqueBloc
-                                                                    .state
-                                                                    .choosedFiltersByUser[key]
-                                                                    ?.filters ??
-                                                                Filter();
+                                                            if (isExpanded) {
+                                                              Filter filters =
+                                                                  boutiqueBloc
+                                                                      .state
+                                                                      .choosedFiltersByUser[key]
+                                                                      ?.filters ??
+                                                                  Filter();
+                                                              if (text.length >
+                                                                  2) {
+                                                                resetSearchAfterSearchingWhileRemoveSearch =
+                                                                    true;
+                                                                boutiqueBloc.add(
+                                                                  ChangeSelectedFiltersEvent(
+                                                                    fromHomePageSearch:
+                                                                        widget
+                                                                            .fromSearch,
+                                                                    boutiqueSlug:
+                                                                        widget
+                                                                            .boutiqueSlug,
+                                                                    filtersChoosedByUser: GetProductFiltersModel(
+                                                                      filters: filters.copyWithSaveOtherField(
+                                                                        prices:
+                                                                            filters.prices,
+                                                                        searchText:
+                                                                            searchText,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              }
+                                                              if (text.length <
+                                                                      3 &&
+                                                                  resetSearchAfterSearchingWhileRemoveSearch) {
+                                                                resetSearchAfterSearchingWhileRemoveSearch =
+                                                                    false;
+                                                                boutiqueBloc.add(
+                                                                  ChangeSelectedFiltersEvent(
+                                                                    fromHomePageSearch:
+                                                                        widget
+                                                                            .fromSearch,
+                                                                    boutiqueSlug:
+                                                                        widget
+                                                                            .boutiqueSlug,
+                                                                    filtersChoosedByUser: GetProductFiltersModel(
+                                                                      filters: filters.copyWithSaveOtherField(
+                                                                        prices:
+                                                                            filters.prices,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              }
+                                                              return;
+                                                            }
                                                             if (text.length >
                                                                 2) {
                                                               resetSearchAfterSearchingWhileRemoveSearch =
                                                                   true;
+                                                              Filter filters =
+                                                                  boutiqueBloc
+                                                                      .state
+                                                                      .appliedFiltersByUser[key]
+                                                                      ?.filters ??
+                                                                  Filter();
+
                                                               boutiqueBloc.add(
-                                                                ChangeSelectedFiltersEvent(
-                                                                  fromHomePageSearch:
-                                                                      widget
-                                                                          .fromSearch,
+                                                                ChangeAppliedFiltersEvent(
+                                                                  category: widget
+                                                                      .category,
                                                                   boutiqueSlug:
                                                                       widget
                                                                           .boutiqueSlug,
-                                                                  filtersChoosedByUser: GetProductFiltersModel(
+                                                                  filtersAppliedByUser: GetProductFiltersModel(
                                                                     filters: filters.copyWithSaveOtherField(
                                                                       prices: filters
                                                                           .prices,
@@ -1466,21 +1567,48 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   ),
                                                                 ),
                                                               );
+
+                                                              boutiqueBloc.add(
+                                                                GetProductsWithFiltersEvent(
+                                                                  offset: 1,
+                                                                  searchText:
+                                                                      searchText,
+                                                                  fromSearch:
+                                                                      fromSearch,
+                                                                  category: widget
+                                                                      .category,
+                                                                  boutiqueSlug:
+                                                                      widget
+                                                                          .boutiqueSlug,
+                                                                ),
+                                                              );
                                                             }
                                                             if (text.length <
                                                                     3 &&
                                                                 resetSearchAfterSearchingWhileRemoveSearch) {
+                                                              boutiqueBloc.add(
+                                                                AddSizeAndColorFilterinTextToSearchEvent(
+                                                                  sizeAndColorFilterinTextToSearch:
+                                                                      const {},
+                                                                ),
+                                                              );
                                                               resetSearchAfterSearchingWhileRemoveSearch =
                                                                   false;
+                                                              Filter filters =
+                                                                  boutiqueBloc
+                                                                      .state
+                                                                      .appliedFiltersByUser[key]
+                                                                      ?.filters ??
+                                                                  Filter();
+
                                                               boutiqueBloc.add(
-                                                                ChangeSelectedFiltersEvent(
-                                                                  fromHomePageSearch:
-                                                                      widget
-                                                                          .fromSearch,
+                                                                ChangeAppliedFiltersEvent(
+                                                                  category: widget
+                                                                      .category,
                                                                   boutiqueSlug:
                                                                       widget
                                                                           .boutiqueSlug,
-                                                                  filtersChoosedByUser: GetProductFiltersModel(
+                                                                  filtersAppliedByUser: GetProductFiltersModel(
                                                                     filters: filters
                                                                         .copyWithSaveOtherField(
                                                                           prices:
@@ -1489,124 +1617,164 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   ),
                                                                 ),
                                                               );
-                                                            }
-                                                            return;
-                                                          }
-                                                          if (text.length > 2) {
-                                                            resetSearchAfterSearchingWhileRemoveSearch =
-                                                                true;
-                                                            Filter filters =
-                                                                boutiqueBloc
-                                                                    .state
-                                                                    .appliedFiltersByUser[key]
-                                                                    ?.filters ??
-                                                                Filter();
-
-                                                            boutiqueBloc.add(
-                                                              ChangeAppliedFiltersEvent(
-                                                                category: widget
-                                                                    .category,
-                                                                boutiqueSlug: widget
-                                                                    .boutiqueSlug,
-                                                                filtersAppliedByUser: GetProductFiltersModel(
-                                                                  filters: filters.copyWithSaveOtherField(
-                                                                    prices: filters
-                                                                        .prices,
-                                                                    searchText:
-                                                                        searchText,
-                                                                  ),
+                                                              boutiqueBloc.add(
+                                                                GetFiltersEvent(
+                                                                  fromHomePageSearch:
+                                                                      widget
+                                                                          .fromSearch,
+                                                                  category: widget
+                                                                      .category,
+                                                                  boutiqueSlug:
+                                                                      widget
+                                                                          .boutiqueSlug,
                                                                 ),
-                                                              ),
-                                                            );
-
-                                                            boutiqueBloc.add(
-                                                              GetProductsWithFiltersEvent(
-                                                                offset: 1,
-                                                                searchText:
-                                                                    searchText,
-                                                                fromSearch:
-                                                                    fromSearch,
-                                                                category: widget
-                                                                    .category,
-                                                                boutiqueSlug: widget
-                                                                    .boutiqueSlug,
-                                                              ),
-                                                            );
-                                                          }
-                                                          if (text.length < 3 &&
-                                                              resetSearchAfterSearchingWhileRemoveSearch) {
-                                                            boutiqueBloc.add(
-                                                              AddSizeAndColorFilterinTextToSearchEvent(
-                                                                sizeAndColorFilterinTextToSearch:
-                                                                    const {},
-                                                              ),
-                                                            );
-                                                            resetSearchAfterSearchingWhileRemoveSearch =
-                                                                false;
-                                                            Filter filters =
-                                                                boutiqueBloc
-                                                                    .state
-                                                                    .appliedFiltersByUser[key]
-                                                                    ?.filters ??
-                                                                Filter();
-
-                                                            boutiqueBloc.add(
-                                                              ChangeAppliedFiltersEvent(
-                                                                category: widget
-                                                                    .category,
-                                                                boutiqueSlug: widget
-                                                                    .boutiqueSlug,
-                                                                filtersAppliedByUser: GetProductFiltersModel(
-                                                                  filters: filters
-                                                                      .copyWithSaveOtherField(
-                                                                        prices:
-                                                                            filters.prices,
+                                                              );
+                                                              boutiqueBloc.add(
+                                                                GetProductsWithFiltersEvent(
+                                                                  offset: 1,
+                                                                  fromSearch:
+                                                                      fromSearch,
+                                                                  category: widget
+                                                                      .category,
+                                                                  boutiqueSlug:
+                                                                      widget
+                                                                          .boutiqueSlug,
+                                                                ),
+                                                              );
+                                                            }
+                                                          },
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                  AnimatedSize(
+                                                    curve: Curves.easeOut,
+                                                    duration: const Duration(
+                                                      milliseconds: 400,
+                                                    ),
+                                                    reverseDuration:
+                                                        const Duration(
+                                                          milliseconds: 400,
+                                                        ),
+                                                    child: Row(
+                                                      children: [
+                                                        isExpanded
+                                                            ? const SizedBox.shrink()
+                                                            : Padding(
+                                                                padding: EdgeInsetsDirectional.only(
+                                                                  end:
+                                                                      searchOpen
+                                                                      ? 10.w
+                                                                      : 20.w,
+                                                                ),
+                                                                child: InkWell(
+                                                                  onTap: () {
+                                                                    showSortProductsSheet(
+                                                                      context:
+                                                                          context,
+                                                                      searchText:
+                                                                          controller.text.length >
+                                                                              2
+                                                                          ? controller.text
+                                                                          : null,
+                                                                      boutiqueBloc:
+                                                                          boutiqueBloc,
+                                                                      boutiqueSlug:
+                                                                          widget
+                                                                              .boutiqueSlug,
+                                                                      category:
+                                                                          widget
+                                                                              .category,
+                                                                      fromSearch:
+                                                                          widget
+                                                                              .fromSearch,
+                                                                    );
+                                                                  },
+                                                                  child:
+                                                                      BlocBuilder<
+                                                                        BoutiqueBloc,
+                                                                        BoutiqueState
+                                                                      >(
+                                                                        buildWhen:
+                                                                            (
+                                                                              p,
+                                                                              c,
+                                                                            ) =>
+                                                                                p.sortKey.isEmpty !=
+                                                                                c.sortKey.isEmpty,
+                                                                        builder:
+                                                                            (
+                                                                              context,
+                                                                              sortState,
+                                                                            ) {
+                                                                              final bool
+                                                                              sortActive = sortState.sortKey.isNotEmpty;
+                                                                              return Stack(
+                                                                                clipBehavior: Clip.none,
+                                                                                children: [
+                                                                                  SvgPicture.asset(
+                                                                                    AppAssets.sortingSvg,
+                                                                                    width: 20.w,
+                                                                                    height: 20.h,
+                                                                                  ),
+                                                                                  if (sortActive)
+                                                                                    PositionedDirectional(
+                                                                                      top: -2.h,
+                                                                                      start: -2.w,
+                                                                                      child: Container(
+                                                                                        width: 8.w,
+                                                                                        height: 8.w,
+                                                                                        decoration: BoxDecoration(
+                                                                                          color: const Color(
+                                                                                            0xffFF5F61,
+                                                                                          ),
+                                                                                          shape: BoxShape.circle,
+                                                                                          border: Border.all(
+                                                                                            color: colorScheme.white,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                ],
+                                                                              );
+                                                                            },
                                                                       ),
                                                                 ),
                                                               ),
-                                                            );
-                                                            boutiqueBloc.add(
-                                                              GetFiltersEvent(
-                                                                fromHomePageSearch:
-                                                                    widget
-                                                                        .fromSearch,
-                                                                category: widget
-                                                                    .category,
-                                                                boutiqueSlug: widget
-                                                                    .boutiqueSlug,
-                                                              ),
-                                                            );
-                                                            boutiqueBloc.add(
-                                                              GetProductsWithFiltersEvent(
-                                                                offset: 1,
-                                                                fromSearch:
-                                                                    fromSearch,
-                                                                category: widget
-                                                                    .category,
-                                                                boutiqueSlug: widget
-                                                                    .boutiqueSlug,
-                                                              ),
-                                                            );
-                                                          }
-                                                        },
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                                AnimatedSize(
-                                                  curve: Curves.easeOut,
-                                                  duration: const Duration(
-                                                    milliseconds: 400,
-                                                  ),
-                                                  reverseDuration:
-                                                      const Duration(
-                                                        milliseconds: 400,
-                                                      ),
-                                                  child: Row(
-                                                    children: [
-                                                      isExpanded
-                                                          ? const SizedBox.shrink()
-                                                          : Padding(
+                                                        BlocBuilder<
+                                                          BoutiqueBloc,
+                                                          BoutiqueState
+                                                        >(
+                                                          buildWhen: (p, c) {
+                                                            return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                                        '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                        '${(widget.category ?? '')}'] !=
+                                                                    c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                                        '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                        '${(widget.category ?? '')}'] ||
+                                                                p.getProductFiltersStatus[key] !=
+                                                                    c.getProductFiltersStatus[key] ||
+                                                                p.isExpandedForListingPage !=
+                                                                    c.isExpandedForListingPage ||
+                                                                p.cashedOrginalBoutique !=
+                                                                    c.cashedOrginalBoutique);
+                                                          },
+                                                          builder: (context, state) {
+                                                            isExpanded =
+                                                                state
+                                                                    .isExpandedForListingPage ??
+                                                                false;
+                                                            if ((state
+                                                                        .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                                            '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                            '${(widget.category ?? '')}']
+                                                                        ?.items
+                                                                        .length ??
+                                                                    0) ==
+                                                                1) {
+                                                              return const SizedBox.shrink();
+                                                            }
+                                                            return Padding(
                                                               padding:
                                                                   EdgeInsetsDirectional.only(
                                                                     end:
@@ -1615,328 +1783,207 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         : 20.w,
                                                                   ),
                                                               child: InkWell(
+                                                                key:
+                                                                    TestVariables
+                                                                        .kTestMode
+                                                                    ? const Key(
+                                                                        WidgetsKeys
+                                                                            .filterIconKey,
+                                                                      )
+                                                                    : null,
                                                                 onTap: () {
-                                                                  showSortProductsSheet(
-                                                                    context:
-                                                                        context,
-                                                                    searchText:
-                                                                        controller.text.length >
-                                                                            2
-                                                                        ? controller
-                                                                              .text
-                                                                        : null,
-                                                                    boutiqueBloc:
-                                                                        boutiqueBloc,
-                                                                    boutiqueSlug:
-                                                                        widget
-                                                                            .boutiqueSlug,
-                                                                    category: widget
-                                                                        .category,
-                                                                    fromSearch:
-                                                                        widget
-                                                                            .fromSearch,
-                                                                  );
-                                                                },
-                                                                child:
-                                                                    BlocBuilder<
-                                                                      BoutiqueBloc,
-                                                                      BoutiqueState
-                                                                    >(
-                                                                      buildWhen:
-                                                                          (
-                                                                            p,
-                                                                            c,
-                                                                          ) =>
-                                                                              p.sortKey.isEmpty !=
-                                                                              c.sortKey.isEmpty,
-                                                                      builder:
-                                                                          (
-                                                                            context,
-                                                                            sortState,
-                                                                          ) {
-                                                                            final bool
-                                                                            sortActive =
-                                                                                sortState.sortKey.isNotEmpty;
-                                                                            return Stack(
-                                                                              clipBehavior: Clip.none,
-                                                                              children: [
-                                                                                SvgPicture.asset(
-                                                                                  AppAssets.sortingSvg,
-                                                                                  width: 20.w,
-                                                                                  height: 20.h,
-                                                                                ),
-                                                                                if (sortActive)
-                                                                                  PositionedDirectional(
-                                                                                    top: -2.h,
-                                                                                    start: -2.w,
-                                                                                    child: Container(
-                                                                                      width: 8.w,
-                                                                                      height: 8.w,
-                                                                                      decoration: BoxDecoration(
-                                                                                        color: const Color(
-                                                                                          0xffFF5F61,
-                                                                                        ),
-                                                                                        shape: BoxShape.circle,
-                                                                                        border: Border.all(
-                                                                                          color: colorScheme.white,
-                                                                                        ),
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                              ],
-                                                                            );
-                                                                          },
-                                                                    ),
-                                                              ),
-                                                            ),
-                                                      BlocBuilder<
-                                                        BoutiqueBloc,
-                                                        BoutiqueState
-                                                      >(
-                                                        buildWhen: (p, c) {
-                                                          return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
-                                                                      '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                                      '${(widget.category ?? '')}'] !=
-                                                                  c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
-                                                                      '${homeState.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                                      '${(widget.category ?? '')}'] ||
-                                                              p.getProductFiltersStatus[key] !=
-                                                                  c.getProductFiltersStatus[key] ||
-                                                              p.isExpandedForListingPage !=
-                                                                  c.isExpandedForListingPage ||
-                                                              p.cashedOrginalBoutique !=
-                                                                  c.cashedOrginalBoutique);
-                                                        },
-                                                        builder: (context, state) {
-                                                          isExpanded =
-                                                              state
-                                                                  .isExpandedForListingPage ??
-                                                              false;
-                                                          if ((state
-                                                                      .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
-                                                                          '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                                          '${(widget.category ?? '')}']
-                                                                      ?.items
-                                                                      .length ??
-                                                                  0) ==
-                                                              1) {
-                                                            return const SizedBox.shrink();
-                                                          }
-                                                          return Padding(
-                                                            padding:
-                                                                EdgeInsetsDirectional.only(
-                                                                  end:
-                                                                      searchOpen
-                                                                      ? 10.w
-                                                                      : 20.w,
-                                                                ),
-                                                            child: InkWell(
-                                                              key:
-                                                                  TestVariables
-                                                                      .kTestMode
-                                                                  ? const Key(
-                                                                      WidgetsKeys
-                                                                          .filterIconKey,
-                                                                    )
-                                                                  : null,
-                                                              onTap: () {
-                                                                if (!isExpanded) {
-                                                                  prefAppliedFilters =
-                                                                      boutiqueBloc
-                                                                          .state
-                                                                          .appliedFiltersByUser[key]
-                                                                          ?.filters;
-                                                                  boutiqueBloc.add(
-                                                                    ChangeAppliedFiltersEvent(
-                                                                      boutiqueSlug:
-                                                                          widget
-                                                                              .boutiqueSlug,
-                                                                      category:
-                                                                          widget
-                                                                              .category,
-                                                                      isExpandedForListing:
-                                                                          true,
-                                                                      resetAppliedFilters:
-                                                                          true,
-                                                                    ),
-                                                                  );
-                                                                  boutiqueBloc.add(
-                                                                    AddPrefAppliedFilterForExtendFilterEvent(
-                                                                      prefAppliedFilter:
-                                                                          prefAppliedFilters,
-                                                                    ),
-                                                                  );
-
-                                                                  boutiqueBloc.add(
-                                                                    ChangeSelectedFiltersEvent(
-                                                                      fromHomePageSearch:
-                                                                          widget
-                                                                              .fromSearch,
-                                                                      boutiqueSlug:
-                                                                          widget
-                                                                              .boutiqueSlug,
-                                                                      category:
-                                                                          widget
-                                                                              .category,
-                                                                      isExpandedForListing:
-                                                                          true,
-                                                                      filtersChoosedByUser: GetProductFiltersModel(
-                                                                        filters:
+                                                                  if (!isExpanded) {
+                                                                    prefAppliedFilters = boutiqueBloc
+                                                                        .state
+                                                                        .appliedFiltersByUser[key]
+                                                                        ?.filters;
+                                                                    boutiqueBloc.add(
+                                                                      ChangeAppliedFiltersEvent(
+                                                                        boutiqueSlug:
+                                                                            widget.boutiqueSlug,
+                                                                        category:
+                                                                            widget.category,
+                                                                        isExpandedForListing:
+                                                                            true,
+                                                                        resetAppliedFilters:
+                                                                            true,
+                                                                      ),
+                                                                    );
+                                                                    boutiqueBloc.add(
+                                                                      AddPrefAppliedFilterForExtendFilterEvent(
+                                                                        prefAppliedFilter:
                                                                             prefAppliedFilters,
                                                                       ),
-                                                                    ),
-                                                                  );
+                                                                    );
 
-                                                                  resetSearchAfterSearchingWhileRemoveSearch =
-                                                                      false;
-                                                                  // تم جعل الصفحة expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
-                                                                  // homeBloc
-                                                                  //     .add(
-                                                                  //     AddIsExpandedForLidtingPageEvent(
-                                                                  //         isExpandedForLidting: true));
-                                                                  /////////////////////////////////////////
-                                                                  /*FirebaseAnalyticsService.logEventForSession(
+                                                                    boutiqueBloc.add(
+                                                                      ChangeSelectedFiltersEvent(
+                                                                        fromHomePageSearch:
+                                                                            widget.fromSearch,
+                                                                        boutiqueSlug:
+                                                                            widget.boutiqueSlug,
+                                                                        category:
+                                                                            widget.category,
+                                                                        isExpandedForListing:
+                                                                            true,
+                                                                        filtersChoosedByUser: GetProductFiltersModel(
+                                                                          filters:
+                                                                              prefAppliedFilters,
+                                                                        ),
+                                                                      ),
+                                                                    );
+
+                                                                    resetSearchAfterSearchingWhileRemoveSearch =
+                                                                        false;
+                                                                    // تم جعل الصفحة expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
+                                                                    // homeBloc
+                                                                    //     .add(
+                                                                    //     AddIsExpandedForLidtingPageEvent(
+                                                                    //         isExpandedForLidting: true));
+                                                                    /////////////////////////////////////////
+                                                                    /*FirebaseAnalyticsService.logEventForSession(
                                                                                               eventName: AnalyticsEventsConst.buttonClicked,
                                                                                               executedEventName: AnalyticsExecutedEventNameConst.productListingFilterIconButton,
                                                                                             );*/
-                                                                  /////////////////////////////////////////
-                                                                  /* FirebaseAnalyticsService.logScreen(
+                                                                    /////////////////////////////////////////
+                                                                    /* FirebaseAnalyticsService.logScreen(
                                                                                               screen: AnalyticsScreensConst.productListingFilterScreen,
                                                                                             );*/
-                                                                }
-                                                              },
-                                                              child: SvgPicture.asset(
-                                                                AppAssets
-                                                                    .filtersSvg,
-                                                                width: 20.w,
-                                                                height: 20.h,
-                                                                // ignore: deprecated_member_use
-                                                                color:
-                                                                    isExpanded
-                                                                    ? const Color(
-                                                                        0xffFF5F61,
-                                                                      )
-                                                                    : null,
-                                                              ),
-                                                            ),
-                                                          );
-                                                        },
-                                                      ),
-                                                      InkWell(
-                                                        onTap: () {
-                                                          if (isExpanded) {
-                                                            prefAppliedFilters =
-                                                                boutiqueBloc
-                                                                    .state
-                                                                    .prefAppliedFilterForExtendFilter;
-                                                            controller.text =
-                                                                prefAppliedFilters
-                                                                    ?.searchText ??
-                                                                "";
-
-                                                            // homeBloc.add(GetProductFiltersEvent(
-                                                            //     fromHomePageSearch: widget
-                                                            //         .fromSearch,
-                                                            //     cashedOrginalBoutique:
-                                                            //         false,
-                                                            //     boutiqueSlug:
-                                                            //         widget.boutiqueSlug,
-                                                            //     category: widget.category,
-                                                            //     searchText: widget.searchText,
-                                                            //     filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
-                                                            boutiqueBloc.add(
-                                                              ChangeAppliedFiltersEvent(
-                                                                boutiqueSlug: widget
-                                                                    .boutiqueSlug,
-                                                                isExpandedForListing:
-                                                                    false,
-                                                                category: widget
-                                                                    .category,
-                                                                filtersAppliedByUser:
-                                                                    GetProductFiltersModel(
-                                                                      filters:
-                                                                          prefAppliedFilters,
-                                                                    ),
+                                                                  }
+                                                                },
+                                                                child: SvgPicture.asset(
+                                                                  AppAssets
+                                                                      .filtersSvg,
+                                                                  width: 20.w,
+                                                                  height: 20.h,
+                                                                  // ignore: deprecated_member_use
+                                                                  color:
+                                                                      isExpanded
+                                                                      ? const Color(
+                                                                          0xffFF5F61,
+                                                                        )
+                                                                      : null,
+                                                                ),
                                                               ),
                                                             );
-                                                            //////////////////////////////////
-                                                            /* FirebaseAnalyticsService.logEventForSession(
+                                                          },
+                                                        ),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            if (isExpanded) {
+                                                              prefAppliedFilters =
+                                                                  boutiqueBloc
+                                                                      .state
+                                                                      .prefAppliedFilterForExtendFilter;
+                                                              controller.text =
+                                                                  prefAppliedFilters
+                                                                      ?.searchText ??
+                                                                  "";
+
+                                                              // homeBloc.add(GetProductFiltersEvent(
+                                                              //     fromHomePageSearch: widget
+                                                              //         .fromSearch,
+                                                              //     cashedOrginalBoutique:
+                                                              //         false,
+                                                              //     boutiqueSlug:
+                                                              //         widget.boutiqueSlug,
+                                                              //     category: widget.category,
+                                                              //     searchText: widget.searchText,
+                                                              //     filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                              boutiqueBloc.add(
+                                                                ChangeAppliedFiltersEvent(
+                                                                  boutiqueSlug:
+                                                                      widget
+                                                                          .boutiqueSlug,
+                                                                  isExpandedForListing:
+                                                                      false,
+                                                                  category: widget
+                                                                      .category,
+                                                                  filtersAppliedByUser:
+                                                                      GetProductFiltersModel(
+                                                                        filters:
+                                                                            prefAppliedFilters,
+                                                                      ),
+                                                                ),
+                                                              );
+                                                              //////////////////////////////////
+                                                              /* FirebaseAnalyticsService.logEventForSession(
                                                                                         eventName: AnalyticsEventsConst.buttonClicked,
                                                                                         executedEventName: AnalyticsExecutedEventNameConst.filterCloseIconButton,
                                                                                       );*/
-                                                          }
-                                                          // تم جعل الصفحة not expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
-                                                          // homeBloc.add(
-                                                          //     AddIsExpandedForLidtingPageEvent(
-                                                          //         isExpandedForLidting:
-                                                          //         false));
+                                                            }
+                                                            // تم جعل الصفحة not expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
+                                                            // homeBloc.add(
+                                                            //     AddIsExpandedForLidtingPageEvent(
+                                                            //         isExpandedForLidting:
+                                                            //         false));
 
-                                                          resetSearchAfterSearchingWhileRemoveSearch =
-                                                              false;
-                                                        },
-                                                        child: SizedBox(
-                                                          height: 30.h,
-                                                          child: Row(
-                                                            children: [
-                                                              SizedBox(
-                                                                width:
-                                                                    searchOpen
-                                                                    ? 0
-                                                                    : !isExpanded
-                                                                    ? 10.w
-                                                                    : 12.5.w,
-                                                              ),
-                                                              !isExpanded
-                                                                  ? SvgPicture.asset(
-                                                                      AppAssets
-                                                                          .shareSvg,
-                                                                      width:
-                                                                          20.w,
-                                                                      height:
-                                                                          20.h,
-                                                                      // ignore: deprecated_member_use
-                                                                      color: const Color(
-                                                                        0xff3C3C3C,
+                                                            resetSearchAfterSearchingWhileRemoveSearch =
+                                                                false;
+                                                          },
+                                                          child: SizedBox(
+                                                            height: 30.h,
+                                                            child: Row(
+                                                              children: [
+                                                                SizedBox(
+                                                                  width:
+                                                                      searchOpen
+                                                                      ? 0
+                                                                      : !isExpanded
+                                                                      ? 10.w
+                                                                      : 12.5.w,
+                                                                ),
+                                                                !isExpanded
+                                                                    ? SvgPicture.asset(
+                                                                        AppAssets
+                                                                            .shareSvg,
+                                                                        width:
+                                                                            20.w,
+                                                                        height:
+                                                                            20.h,
+                                                                        // ignore: deprecated_member_use
+                                                                        color: const Color(
+                                                                          0xff3C3C3C,
+                                                                        ),
+                                                                      )
+                                                                    : SvgPicture.asset(
+                                                                        key:
+                                                                            TestVariables.kTestMode
+                                                                            ? const Key(
+                                                                                WidgetsKeys.closeFilterPageKey,
+                                                                              )
+                                                                            : null,
+                                                                        AppAssets
+                                                                            .closeSvg,
+                                                                        width:
+                                                                            15.w,
+                                                                        height:
+                                                                            15.h,
+                                                                        // ignore: deprecated_member_use
+                                                                        color: const Color(
+                                                                          0xffFF5F61,
+                                                                        ),
                                                                       ),
-                                                                    )
-                                                                  : SvgPicture.asset(
-                                                                      key:
-                                                                          TestVariables
-                                                                              .kTestMode
-                                                                          ? const Key(
-                                                                              WidgetsKeys.closeFilterPageKey,
-                                                                            )
-                                                                          : null,
-                                                                      AppAssets
-                                                                          .closeSvg,
-                                                                      width:
-                                                                          15.w,
-                                                                      height:
-                                                                          15.h,
-                                                                      // ignore: deprecated_member_use
-                                                                      color: const Color(
-                                                                        0xffFF5F61,
-                                                                      ),
-                                                                    ),
-                                                              SizedBox(
-                                                                width:
-                                                                    !isExpanded
-                                                                    ? 10.w
-                                                                    : 12.5.w,
-                                                              ),
-                                                            ],
+                                                                SizedBox(
+                                                                  width:
+                                                                      !isExpanded
+                                                                      ? 10.w
+                                                                      : 12.5.w,
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                              withShadow: false,
+                                                ],
+                                                withShadow: false,
+                                              ),
                                             ),
-                                          ),
-                                        );
-                                      },
+                                          );
+                                        },
+                                      ),
                                     ),
                                   );
                                 },
@@ -2381,67 +2428,75 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   null
                                             ? 115.h
                                             : 145.h,
-                                        flexibleSpace: StackedFiltersList(
-                                          expandingFiltersStack:
-                                              expandingFiltersStack,
-                                          key: TestVariables.kTestMode
-                                              ? const Key(
-                                                  WidgetsKeys
-                                                      .productListFilterKey,
-                                                )
-                                              : null,
-                                          textController: controller,
-                                          hideTitle: false,
-                                          fromSearch: fromSearch!,
-                                          searchText: controller.text.length > 2
-                                              ? controller.text
-                                              : null,
-                                          filterPageExpanded:
-                                              state.isExpandedForListingPage ??
-                                              false,
-                                          closeFilterPage: () {
-                                            boutiqueBloc.add(
-                                              AddIsExpandedForLidtingPageEvent(
-                                                isExpandedForLidting: false,
-                                              ),
-                                            );
-                                            ;
-                                          },
-                                          displayAppliedFiltersOnly:
-                                              (state
-                                                          .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
-                                                              '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                              '${(widget.category ?? '')}']
-                                                          ?.items
-                                                          .length ??
-                                                      0) <
-                                                  2 &&
-                                              state
-                                                      .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
-                                                          '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                          '${(widget.category ?? '')}']
-                                                      ?.paginationStatus ==
-                                                  PaginationStatus.success,
-                                          category: widget.category,
-                                          boutiqueSlug: widget.boutiqueSlug,
-                                          controller: isExpanded
-                                              ? scrollControllerFilter
-                                              : null,
-                                          onMoveToAnotherFiltersSection: (title) {
-                                            timerForDisplayFilterSectionTitle
-                                                ?.cancel();
-                                            showTitleForFilterList.value =
-                                                title;
-                                            timerForDisplayFilterSectionTitle =
-                                                Timer(
-                                                  const Duration(seconds: 3),
-                                                  () {
-                                                    showTitleForFilterList
-                                                            .value =
-                                                        null;
-                                                  },
-                                                );
-                                          },
+                                        // الرأس المثبَّت يُعاد رسمه مع كل إطار
+                                        // تمرير: RepaintBoundary يحفظ نتيجة
+                                        // رسم شريط الفلاتر في طبقة تُزاح بدل
+                                        // أن تُرسم من جديد
+                                        flexibleSpace: RepaintBoundary(
+                                          child: StackedFiltersList(
+                                            expandingFiltersStack:
+                                                expandingFiltersStack,
+                                            key: TestVariables.kTestMode
+                                                ? const Key(
+                                                    WidgetsKeys
+                                                        .productListFilterKey,
+                                                  )
+                                                : null,
+                                            textController: controller,
+                                            hideTitle: false,
+                                            fromSearch: fromSearch!,
+                                            searchText:
+                                                controller.text.length > 2
+                                                ? controller.text
+                                                : null,
+                                            filterPageExpanded:
+                                                state
+                                                    .isExpandedForListingPage ??
+                                                false,
+                                            closeFilterPage: () {
+                                              boutiqueBloc.add(
+                                                AddIsExpandedForLidtingPageEvent(
+                                                  isExpandedForLidting: false,
+                                                ),
+                                              );
+                                              ;
+                                            },
+                                            displayAppliedFiltersOnly:
+                                                (state
+                                                            .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                '${(widget.category ?? '')}']
+                                                            ?.items
+                                                            .length ??
+                                                        0) <
+                                                    2 &&
+                                                state
+                                                        .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
+                                                            '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                            '${(widget.category ?? '')}']
+                                                        ?.paginationStatus ==
+                                                    PaginationStatus.success,
+                                            category: widget.category,
+                                            boutiqueSlug: widget.boutiqueSlug,
+                                            controller: isExpanded
+                                                ? scrollControllerFilter
+                                                : null,
+                                            onMoveToAnotherFiltersSection: (title) {
+                                              timerForDisplayFilterSectionTitle
+                                                  ?.cancel();
+                                              showTitleForFilterList.value =
+                                                  title;
+                                              timerForDisplayFilterSectionTitle =
+                                                  Timer(
+                                                    const Duration(seconds: 3),
+                                                    () {
+                                                      showTitleForFilterList
+                                                              .value =
+                                                          null;
+                                                    },
+                                                  );
+                                            },
+                                          ),
                                         ),
                                       );
                                     },
@@ -2662,15 +2717,21 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   ? Key(WidgetsKeys
                                                       .productsListKey)
                                                   : gridViewKeyForRendering,
+                                              // مسافة متساوية على الجهتين،
+                                              // وفراغ سفلي ليظهر آخر منتج كاملاً
                                               padding: EdgeInsets.only(
-                                                  top: 10.h),
+                                                top: 10.h,
+                                                left: 5.w,
+                                                right: 5.w,
+                                                bottom: 24.h,
+                                              ),
                                               sliver: SliverGrid(
                                                 gridDelegate:
                                                     SliverGridDelegateWithFixedCrossAxisCount(
                                                   crossAxisCount: 2,
                                                   childAspectRatio: 200.w / 350,
                                                   crossAxisSpacing: 10,
-                                                  mainAxisSpacing: 15,
+                                                  mainAxisSpacing: 8,
                                                 ),
                                                 delegate:
                                                     SliverChildBuilderDelegate(
@@ -2965,7 +3026,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                         return SliverPadding(
                                           key: gridViewKeyForRendering,
-                                          padding: EdgeInsets.only(top: 10.h),
+                                          // مسافة متساوية على الجهتين حتى لا
+                                          // تلتصق البطاقات بحافة الشاشة،
+                                          // وفراغ سفلي ليظهر آخر منتج كاملاً
+                                          padding: EdgeInsets.only(
+                                            top: 10.h,
+                                            left: 5.w,
+                                            right: 5.w,
+                                            bottom: 24.h,
+                                          ),
                                           sliver: SliverGrid(
                                             gridDelegate:
                                                 SliverGridDelegateWithFixedCrossAxisCount(
@@ -2973,7 +3042,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   childAspectRatio:
                                                       1.sw / ((392.w) * 2),
                                                   crossAxisSpacing: 10.w,
-                                                  mainAxisSpacing: 15.h,
+                                                  mainAxisSpacing: 8.h,
                                                 ),
                                             delegate: SliverChildBuilderDelegate(
                                               addSemanticIndexes: false,
@@ -3096,21 +3165,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   ),
                                 ),
                               ),
-                              Container(
-                                width: 140.w,
-                                height: 40.h,
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      offset: const Offset(0, 3),
-                                      blurRadius: 6,
-                                      // ignore: deprecated_member_use
-                                      color: Colors.white.withOpacity(0.16),
-                                      inset: true,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              // حُذفت طبقة ظلّ داخلي أبيض بشفافية 0.16 فوق
+                              // زرّ داكن: أثرها البصري لا يكاد يُرى، وثمنها
+                              // saveLayer + تمويه في كل إطار
                             ],
                           ),
                         );
@@ -3269,7 +3326,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
   }
 
   Widget panelBuilderContent(ScrollController sc) {
-    final ValueNotifier<bool> visibleRedeem = ValueNotifier(false);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(30.r)),
@@ -3296,67 +3352,74 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     _tapIndexToShowColorImages < 0 ||
                         _tapIndexToShowColorImages >= products.length
                     ? const SizedBox.shrink()
-                    : Expanded(
-                        child: GridView.builder(
-                          addAutomaticKeepAlives: false,
+                    : _RedeemVisibilityScope(
+                        // نطاق المنتج: نسخة جديدة (ومصفّرة) عند تغيّر المنتج
+                        // المعروض، وتُحرَّر مع خروج اللوحة
+                        key: ValueKey<int>(_tapIndexToShowColorImages),
+                        builder: (visibleRedeem) => Expanded(
+                          child: GridView.builder(
+                            addAutomaticKeepAlives: false,
 
-                          addSemanticIndexes: false,
-                          cacheExtent: 50,
-                          controller: sc,
-                          itemCount: products[_tapIndexToShowColorImages]
-                              .syncColorImages
-                              ?.length,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                mainAxisSpacing: 5.h,
-                                crossAxisSpacing: 5.w,
-                                childAspectRatio: 1.sw / ((392.w) * 2),
-                                crossAxisCount: 2,
-                              ),
-                          itemBuilder: (context, index) => InkWell(
-                            onTap: () {
-                              GetIt.I<HomeBloc>().add(
-                                const ChangeStatusOFGetProductsDetailsToSuccessEvent(
-                                  isStatusInitaial: true,
+                            addSemanticIndexes: false,
+                            cacheExtent: 300,
+                            controller: sc,
+                            itemCount: products[_tapIndexToShowColorImages]
+                                .syncColorImages
+                                ?.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  mainAxisSpacing: 5.h,
+                                  crossAxisSpacing: 5.w,
+                                  childAspectRatio: 1.sw / ((392.w) * 2),
+                                  crossAxisCount: 2,
                                 ),
-                              );
-                              homeBloc.add(
-                                AddCurrentSelectedColorEvent(
-                                  currentSelectedColor: index,
-                                  productSlug:
-                                      products[_tapIndexToShowColorImages].slug
-                                          .toString(),
-                                ),
-                              );
+                            itemBuilder: (context, index) => InkWell(
+                              onTap: () {
+                                GetIt.I<HomeBloc>().add(
+                                  const ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                    isStatusInitaial: true,
+                                  ),
+                                );
+                                homeBloc.add(
+                                  AddCurrentSelectedColorEvent(
+                                    currentSelectedColor: index,
+                                    productSlug:
+                                        products[_tapIndexToShowColorImages]
+                                            .slug
+                                            .toString(),
+                                  ),
+                                );
 
-                              Future.delayed(
-                                const Duration(milliseconds: 300),
-                                () {
-                                  if (!mounted) return;
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (ctx) => ProductDetailsPageNew(
-                                        productItem:
-                                            products[_tapIndexToShowColorImages],
+                                Future.delayed(
+                                  const Duration(milliseconds: 300),
+                                  () {
+                                    if (!mounted) return;
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (ctx) => ProductDetailsPageNew(
+                                          productItem:
+                                              products[_tapIndexToShowColorImages],
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                            child: ProductColorPanal(
-                              colorImages:
-                                  products[_tapIndexToShowColorImages]
-                                      .syncColorImages?[index]
-                                      .images
-                                      ?.map((e) => e.filePath ?? "")
-                                      .toList() ??
-                                  [],
-                              visibleRedeem: visibleRedeem,
-                              productItem: products[_tapIndexToShowColorImages],
-                              tapIndexToAddProductToCart:
-                                  tapIndexToAddProductToCart,
-                              itemIndex: _tapIndexToShowColorImages,
+                                    );
+                                  },
+                                );
+                              },
+                              child: ProductColorPanal(
+                                colorImages:
+                                    products[_tapIndexToShowColorImages]
+                                        .syncColorImages?[index]
+                                        .images
+                                        ?.map((e) => e.filePath ?? "")
+                                        .toList() ??
+                                    [],
+                                visibleRedeem: visibleRedeem,
+                                productItem:
+                                    products[_tapIndexToShowColorImages],
+                                tapIndexToAddProductToCart:
+                                    tapIndexToAddProductToCart,
+                                itemIndex: _tapIndexToShowColorImages,
+                              ),
                             ),
                           ),
                         ),
@@ -3408,4 +3471,29 @@ class _ProductListingPageState extends State<ProductListingPage> {
       },*/
     );
   }
+}
+
+/// يملك مؤشّر ظهور الـ redeem الخاصّ بالمنتج المعروض في لوحة الألوان.
+/// كان يُنشأ داخل دالة البناء، فيتولّد `ValueNotifier` جديد مع كل إعادة بناء
+/// بلا تحرير — وهنا يُنشأ مرة واحدة لكل منتج ويُحرَّر مع خروج اللوحة.
+class _RedeemVisibilityScope extends StatefulWidget {
+  const _RedeemVisibilityScope({super.key, required this.builder});
+
+  final Widget Function(ValueNotifier<bool> visibleRedeem) builder;
+
+  @override
+  State<_RedeemVisibilityScope> createState() => _RedeemVisibilityScopeState();
+}
+
+class _RedeemVisibilityScopeState extends State<_RedeemVisibilityScope> {
+  final ValueNotifier<bool> _visibleRedeem = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _visibleRedeem.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(_visibleRedeem);
 }

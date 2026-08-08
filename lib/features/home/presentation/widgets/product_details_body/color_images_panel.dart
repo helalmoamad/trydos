@@ -68,7 +68,7 @@ class ColorImagesPanel extends StatelessWidget {
                 addAutomaticKeepAlives: false,
                 addRepaintBoundaries: false,
                 addSemanticIndexes: false,
-                cacheExtent: 0,
+                cacheExtent: 400, // بناء العناصر قبل دخولها الشاشة لمنع ظهورها المفاجئ
                 controller: sc,
                 itemCount: productItem.syncColorImages?.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

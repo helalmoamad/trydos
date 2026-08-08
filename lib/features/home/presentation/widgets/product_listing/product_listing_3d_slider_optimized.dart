@@ -25,7 +25,6 @@ import 'package:trydos/main.dart';
 import 'package:video_player/video_player.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 /// 🚀 نسخة مبسطة جداً من ProductListing3DSlider - أداء فائق ⚡
 class ProductListing3DSliderOptimized extends StatefulWidget {
@@ -79,6 +78,7 @@ class _ProductListing3DSliderOptimizedState
   final prefs = GetIt.I<PrefsRepository>();
 
   Future<void>? _initializeVideoFuture;
+  VideoPlayerController? _videoController;
   String? imageUrl;
   List<String> productCategoryList = [];
   String productCategory = "";
@@ -183,40 +183,52 @@ class _ProductListing3DSliderOptimizedState
     }
     _homeBloc = BlocProvider.of<HomeBloc>(context);
     if (widget.videoSource != null && widget.videoSource!.isNotEmpty) {
-      videoProductInListingController[widget.productItem.slug ?? ""]?.dispose();
-      videoProductInListingController.remove(widget.productItem.slug ?? "");
-      videoProductInListingController.addAll({
-        widget.productItem.slug ?? "": VideoPlayerController.networkUrl(
-          Uri.parse(widget.videoSource!),
-          videoPlayerOptions: VideoPlayerOptions(),
-        )..setLooping(true),
-      });
-      _initializeVideoFuture =
-          videoProductInListingController[widget.productItem.slug ?? ""]!
-              .initialize()
-              .then((_) {
-                if (!mounted) return;
-                setState(() {});
-                videoProductInListingController[widget.productItem.slug ?? ""]!
-                    .setVolume(0);
-                videoProductInListingController[widget.productItem.slug ?? ""]!
-                    .play();
-              });
+      final String slug = widget.productItem.slug ?? "";
+      videoProductInListingController[slug]?.dispose();
+      videoProductInListingController.remove(slug);
 
-      videoProductInListingController[widget.productItem.slug ?? ""]!
-          .addListener(() {
-            if (!mounted) return;
-            setState(() {});
-          });
+      final controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.videoSource!),
+        videoPlayerOptions: VideoPlayerOptions(),
+      )..setLooping(true);
+      _videoController = controller;
+      videoProductInListingController[slug] = controller;
+
+      _initializeVideoFuture = controller.initialize().then((_) {
+        if (!mounted) return;
+        setState(() {});
+        controller.setVolume(0);
+        controller.play();
+      });
+
+      controller.addListener(_onVideoTick);
     }
+  }
+
+  void _onVideoTick() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    // لم يكن هناك dispose: مشغّل الفيديو يبقى حيّاً بعد خروج البطاقة من
+    // الشاشة، محتفظاً بمفكّك ترميز أصلي (native decoder) ويستمر بالتشغيل
+    final controller = _videoController;
+    if (controller != null) {
+      final String slug = widget.productItem.slug ?? "";
+      controller.removeListener(_onVideoTick);
+      if (identical(videoProductInListingController[slug], controller)) {
+        videoProductInListingController.remove(slug);
+      }
+      controller.dispose();
+      _videoController = null;
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: _buildSimpleProductCard(),

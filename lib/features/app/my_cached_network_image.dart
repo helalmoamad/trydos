@@ -1,14 +1,10 @@
 import 'dart:io';
 import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-
 import 'package:trydos/features/app/trydos_shimmer_loading_stateless.dart';
-import 'package:trydos/generated/locale_keys.g.dart' show LocaleKeys;
 
 class MyCachedNetworkImage extends StatelessWidget {
   const MyCachedNetworkImage({
@@ -98,6 +94,7 @@ class MyCachedNetworkImage extends StatelessWidget {
         safeFallbackHeight,
         effectiveWidth,
         url,
+        null,
       );
     }
 
@@ -106,71 +103,84 @@ class MyCachedNetworkImage extends StatelessWidget {
         ? null
         : max(10, (safeFallbackHeight * safeRatio).round());
 
-    // ⚡ خفيف جداً بدون Key وبدون State
+    // ⚡ خفيف: الحالة الوحيدة المحفوظة هي عدّاد إعادة المحاولة اليدوية
     return SizedBox(
       width: effectiveWidth,
       height: isBoutique ? null : safeFallbackHeight,
-      child: CachedNetworkImage(
-        httpHeaders: _httpHeaders,
-        imageUrl: url,
-        width: effectiveWidth,
-        height: isBoutique ? null : safeFallbackHeight,
-        cacheManager: _cacheManager,
-        memCacheWidth: safeMemWidth,
-        memCacheHeight: safeMemHeight,
-        placeholder: (context, url) {
-          callWhenLoadingImage?.call();
-          return _buildSimpleShimmer(
+      child: _RetryScope(
+        builder: (attempt, retry) => CachedNetworkImage(
+          // تغيير الـ Key يجبر إعادة تحميل الصورة من الصفر عند الضغط على السهم
+          key: attempt == 0 ? null : ValueKey<String>('$url#$attempt'),
+          httpHeaders: _httpHeaders,
+          imageUrl: url,
+          width: effectiveWidth,
+          height: isBoutique ? null : safeFallbackHeight,
+          cacheManager: _cacheManager,
+          memCacheWidth: safeMemWidth,
+          memCacheHeight: safeMemHeight,
+          placeholder: (context, url) {
+            callWhenLoadingImage?.call();
+            return _buildSimpleShimmer(
+              isBoutique,
+              safeFallbackHeight,
+              effectiveWidth,
+            );
+          },
+          fadeInDuration: Duration.zero,
+          placeholderFadeInDuration: Duration.zero,
+          fadeOutDuration: Duration.zero,
+          imageBuilder:
+              imageBuilder ??
+              (ctx, imageProvider) {
+                callWhenDisplayImage?.call();
+
+                if (isBoutique) {
+                  return Container(
+                    width: effectiveWidth,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(radius),
+                    ),
+                    child: Image(
+                      image: imageProvider,
+                      width: effectiveWidth,
+                      fit: BoxFit.fitWidth,
+                      // low بدل medium الافتراضية: يلغي بناء mipmaps بلا فائدة
+                      // (الصور تُكبَّر لا تُصغَّر) ويخفّف كلفة الرسم على Impeller
+                      filterQuality: FilterQuality.low,
+                      color: imageColor,
+                      colorBlendMode: imageColor != null
+                          ? BlendMode.srcIn
+                          : null,
+                    ),
+                  );
+                }
+
+                return Container(
+                  width: effectiveWidth,
+                  height: safeFallbackHeight,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(radius),
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: imageFit,
+                      // low بدل medium الافتراضية: يلغي بناء mipmaps بلا فائدة
+                      // (الصور تُكبَّر لا تُصغَّر) ويخفّف كلفة الرسم على Impeller
+                      filterQuality: FilterQuality.low,
+                      colorFilter: imageColor != null
+                          ? ColorFilter.mode(imageColor!, BlendMode.srcIn)
+                          : null,
+                    ),
+                  ),
+                );
+              },
+          // عند الفشل يعرض سهم إعادة التحميل فوراً وبشكل مستقر وبسيط
+          errorWidget: (context, errorUrl, error) => _buildErrorWidget(
             isBoutique,
             safeFallbackHeight,
             effectiveWidth,
-          );
-        },
-        fadeInDuration: Duration.zero,
-        placeholderFadeInDuration: Duration.zero,
-        fadeOutDuration: Duration.zero,
-        imageBuilder:
-            imageBuilder ??
-            (ctx, imageProvider) {
-              callWhenDisplayImage?.call();
-
-              if (isBoutique) {
-                return Container(
-                  width: effectiveWidth,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(radius),
-                  ),
-                  child: Image(
-                    image: imageProvider,
-                    width: effectiveWidth,
-                    fit: BoxFit.fitWidth,
-                    color: imageColor,
-                    colorBlendMode: imageColor != null ? BlendMode.srcIn : null,
-                  ),
-                );
-              }
-
-              return Container(
-                width: effectiveWidth,
-                height: safeFallbackHeight,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(radius),
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: imageFit,
-                    colorFilter: imageColor != null
-                        ? ColorFilter.mode(imageColor!, BlendMode.srcIn)
-                        : null,
-                  ),
-                ),
-              );
-            },
-        // عند الفشل يعرض سهم إعادة التحميل فوراً وبشكل مستقر وبسيط
-        errorWidget: (context, errorUrl, error) => _buildErrorWidget(
-          isBoutique,
-          safeFallbackHeight,
-          effectiveWidth,
-          url,
+            url,
+            retry,
+          ),
         ),
       ),
     );
@@ -181,6 +191,7 @@ class MyCachedNetworkImage extends StatelessWidget {
     double safeHeight,
     double currentWidth,
     String failedUrl,
+    VoidCallback? onRetry,
   ) {
     return Container(
       width: currentWidth,
@@ -199,17 +210,20 @@ class MyCachedNetworkImage extends StatelessWidget {
                 color: Colors.black87,
                 size: 26,
               ),
-              onPressed: () {
-                // مسح ملف الكاش التالف للرابط عند الضغط اليدوي فقط
-                if (failedUrl.isNotEmpty) {
-                  _cacheManager.removeFile(failedUrl);
-                }
-              },
-            ),
-            const SizedBox(height: 2),
-            Text(
-              LocaleKeys.retry_download.tr(),
-              style: const TextStyle(fontSize: 10, color: Colors.black54),
+              onPressed: onRetry == null
+                  ? null
+                  : () async {
+                      // مسح ملف الكاش التالف للرابط عند الضغط اليدوي فقط
+                      if (failedUrl.isNotEmpty) {
+                        try {
+                          await _cacheManager.removeFile(failedUrl);
+                        } catch (_) {
+                          // الملف غير موجود في الكاش أصلاً — نتابع إعادة المحاولة
+                        }
+                      }
+                      // إعادة بناء الصورة بمفتاح جديد لبدء تحميل جديد فعلياً
+                      onRetry();
+                    },
             ),
           ],
         ),
@@ -232,6 +246,29 @@ class MyCachedNetworkImage extends StatelessWidget {
       circleDimensions: circleDimensions,
     );
   }
+}
+
+/// حامل حالة صغير: يحفظ عدّاد إعادة المحاولة اليدوية فقط،
+/// ليبقى [MyCachedNetworkImage] نفسه بلا حالة.
+class _RetryScope extends StatefulWidget {
+  const _RetryScope({required this.builder});
+
+  final Widget Function(int attempt, VoidCallback retry) builder;
+
+  @override
+  State<_RetryScope> createState() => _RetryScopeState();
+}
+
+class _RetryScopeState extends State<_RetryScope> {
+  int _attempt = 0;
+
+  void _retry() {
+    if (!mounted) return;
+    setState(() => _attempt++);
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(_attempt, _retry);
 }
 
 class CustomCacheManagers extends CacheManager {

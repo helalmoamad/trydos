@@ -88,6 +88,17 @@ class _ProductItemState extends State<ProductItem> {
   }
 
   @override
+  void dispose() {
+    // لم يكن هناك dispose إطلاقاً: كل بطاقة تخرج من الشاشة كانت تترك
+    // PageController وثلاثة ValueNotifier بلا تحرير
+    pageController.dispose();
+    currentChosenColor.dispose();
+    visibleRedeem.dispose();
+    visibleFlashDeal.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.bottomCenter,

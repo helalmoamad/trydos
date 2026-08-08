@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class RotatingTextWidget extends StatefulWidget {
   final List<String> texts;
@@ -66,20 +65,17 @@ class _RotatingTextWidgetState extends State<RotatingTextWidget> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     if (widget.texts.isEmpty) {
       return const SizedBox.shrink();
     }
 
     final currentText = widget.texts[_currentIndex];
 
-    if (widget.textBuilder != null) {
-      return widget.textBuilder!(currentText);
-    }
-
-    return Text(currentText, style: widget.textStyle);
+    // عزل الرسم: تبديل النص كل خمس ثوانٍ كان يعيد رسم طبقة البطاقة كاملة
+    return RepaintBoundary(
+      child: widget.textBuilder != null
+          ? widget.textBuilder!(currentText)
+          : Text(currentText, style: widget.textStyle),
+    );
   }
 }

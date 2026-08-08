@@ -364,6 +364,10 @@ class _HomePageState extends State<HomePage> {
       productIsFlashDeal.dispose();
       productIsRecommend.dispose();
       addToBagButtonShapeNotifier.dispose();
+      // كانت الثلاثة الباقية بلا تحرير
+      showShadowForPanel.dispose();
+      visibleFlashDeal.dispose();
+      finishRedeem.dispose();
 
       debugPrint('ðŸ  Home page disposed with instant loading optimization');
     } catch (e) {
@@ -403,31 +407,28 @@ class _HomePageState extends State<HomePage> {
             ? const Key(WidgetsKeys.homepageScrollKey)
             : null,
         controller: scrollController,
-        cacheExtent: 100,
+        // بناء الأقسام قبل دخولها الشاشة لمنع ظهورها المفاجئ أثناء التمرير
+        cacheExtent: 300,
         physics: const ClampingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),
         slivers: [
           SliverList(
-            delegate: SliverChildListDelegate.fixed(
-              addAutomaticKeepAlives: false,
-              addRepaintBoundaries: false,
-
-              [
-                100.verticalSpace,
-                storySection(context),
-                FeatureProductsWidget(
-                  finishRedeem: finishRedeem,
-                  tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-                ),
-                10.verticalSpace,
-                FlashDealProductsWidget(
-                  finishRedeem: finishRedeem,
-                  productIsFlashDeal: productIsFlashDeal,
-                  tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-                ),
-              ],
-            ),
+            delegate:
+                SliverChildListDelegate.fixed(addAutomaticKeepAlives: false, [
+                  100.verticalSpace,
+                  storySection(context),
+                  FeatureProductsWidget(
+                    finishRedeem: finishRedeem,
+                    tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+                  ),
+                  10.verticalSpace,
+                  FlashDealProductsWidget(
+                    finishRedeem: finishRedeem,
+                    productIsFlashDeal: productIsFlashDeal,
+                    tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+                  ),
+                ]),
           ),
 
           BlocBuilder<AppBloc, AppState>(

@@ -79,7 +79,6 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
     super.initState();
 
     widget.focusNode.addListener(_handleFocusChange);
-    widget.textController.addListener(_handleTextChange);
   }
 
   @override
@@ -89,16 +88,11 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
       oldWidget.focusNode.removeListener(_handleFocusChange);
       widget.focusNode.addListener(_handleFocusChange);
     }
-    if (oldWidget.textController != widget.textController) {
-      oldWidget.textController.removeListener(_handleTextChange);
-      widget.textController.addListener(_handleTextChange);
-    }
   }
 
   @override
   void dispose() {
     widget.focusNode.removeListener(_handleFocusChange);
-    widget.textController.removeListener(_handleTextChange);
     super.dispose();
   }
 
@@ -117,10 +111,6 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
         setState(() => prevFocusStatus = false);
       }
     }
-  }
-
-  void _handleTextChange() {
-    if (mounted) setState(() {});
   }
 
   void unfocusKeyboard() {
@@ -200,9 +190,12 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
                                   : const InputDecoration(),
                             ),
                             IgnorePointer(
-                              child: LayoutBuilder(
-                                builder: (context, constraints) {
-                                  final inputText = widget.textController.text;
+                              // يستمع للمحرّر وحده: تغيّر النص يعيد بناء طبقة
+                              // الاقتراح فقط بدل الشريط كاملاً
+                              child: ValueListenableBuilder<TextEditingValue>(
+                                valueListenable: widget.textController,
+                                builder: (context, editingValue, _) {
+                                  final inputText = editingValue.text;
                                   final String finalSuggestion =
                                       widget.suggestion ?? '';
 

@@ -287,10 +287,10 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                           children: [
                                             Expanded(
                                               child: GridView.builder(
-                                                addRepaintBoundaries: false,
                                                 addAutomaticKeepAlives: false,
                                                 addSemanticIndexes: false,
-                                                cacheExtent: 0,
+                                                cacheExtent:
+                                                    400, // بناء العناصر قبل دخولها الشاشة لمنع ظهورها المفاجئ
                                                 controller: scrollController,
                                                 gridDelegate:
                                                     SliverGridDelegateWithFixedCrossAxisCount(
@@ -497,9 +497,10 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                     child: GridView.builder(
                       controller: sc,
                       addAutomaticKeepAlives: false,
-                      addRepaintBoundaries: false,
+
                       addSemanticIndexes: false,
-                      cacheExtent: 0,
+                      cacheExtent:
+                          400, // بناء العناصر قبل دخولها الشاشة لمنع ظهورها المفاجئ
                       itemCount: selectedProduct.syncColorImages?.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         mainAxisSpacing: 5.h,

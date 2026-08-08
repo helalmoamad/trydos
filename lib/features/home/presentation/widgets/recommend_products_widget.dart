@@ -119,21 +119,25 @@ class RecommendProductsWidget extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 5),
                     width: 1.sw,
                     height: 345.h,
-                    child: ListView.separated(
+                    child: ListView.builder(
                       addAutomaticKeepAlives: false,
 
                       addSemanticIndexes: false,
-                      cacheExtent: 0,
+                      cacheExtent: 400, // بناء العناصر قبل دخولها الشاشة لمنع ظهورها المفاجئ
+                      // بطاقة ثابتة العرض (200) + فاصل (10)
+                      itemExtent: 210.w,
                       itemBuilder: (context, index) {
                         // التحقق من صحة الفهرس
                         if (index >= products.length) {
                           return const SizedBox.shrink();
                         }
 
-                        if (index == 5 && products.length > 5) {
-                          return _buildMoreButton(context, products, index);
-                        }
-                        return _buildProductItem(context, products, index);
+                        return Padding(
+                          padding: EdgeInsetsDirectional.only(end: 10.w),
+                          child: (index == 5 && products.length > 5)
+                              ? _buildMoreButton(context, products, index)
+                              : _buildProductItem(context, products, index),
+                        );
                       },
                       physics: const BouncingScrollPhysics(
                         parent: ClampingScrollPhysics(),
@@ -142,8 +146,6 @@ class RecommendProductsWidget extends StatelessWidget {
                         horizontal: 10,
                       ),
                       scrollDirection: Axis.horizontal,
-                      separatorBuilder: (context, index) =>
-                          SizedBox(width: 10.w),
                       itemCount: products.length > 6 ? 6 : products.length,
                     ),
                   ),

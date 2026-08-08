@@ -23,7 +23,6 @@ import 'package:trydos/features/home/presentation/widgets/rotating_text_widget.d
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/main.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import 'package:video_player/video_player.dart';
@@ -82,6 +81,7 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
   Timer? disDebounce;
   final prefs = GetIt.I<PrefsRepository>();
   Future<void>? _initializeVideoFuture;
+  VideoPlayerController? _videoController;
   String? imageUrl;
   List<String> productCategoryList = [];
   String productCategory = "";
@@ -185,41 +185,53 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
       imageUrl = firstImage.filePath;
     }
     if (widget.videoSource != null && widget.videoSource!.isNotEmpty) {
-      videoProductInListingController[widget.productItem.slug ?? ""]?.dispose();
-      videoProductInListingController.remove(widget.productItem.slug ?? "");
-      videoProductInListingController.addAll({
-        widget.productItem.slug ?? "": VideoPlayerController.networkUrl(
-          Uri.parse(widget.videoSource!),
-          videoPlayerOptions: VideoPlayerOptions(),
-        )..setLooping(true),
-      });
-      _initializeVideoFuture =
-          videoProductInListingController[widget.productItem.slug ?? ""]!
-              .initialize()
-              .then((_) {
-                if (!mounted) return;
-                setState(() {});
-                videoProductInListingController[widget.productItem.slug ?? ""]!
-                    .setVolume(0);
-                videoProductInListingController[widget.productItem.slug ?? ""]!
-                    .play();
-              });
+      final String slug = widget.productItem.slug ?? "";
+      videoProductInListingController[slug]?.dispose();
+      videoProductInListingController.remove(slug);
 
-      videoProductInListingController[widget.productItem.slug ?? ""]!
-          .addListener(() {
-            if (!mounted) return;
-            setState(() {});
-          });
+      final controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.videoSource!),
+        videoPlayerOptions: VideoPlayerOptions(),
+      )..setLooping(true);
+      _videoController = controller;
+      videoProductInListingController[slug] = controller;
+
+      _initializeVideoFuture = controller.initialize().then((_) {
+        if (!mounted) return;
+        setState(() {});
+        controller.setVolume(0);
+        controller.play();
+      });
+
+      controller.addListener(_onVideoTick);
     }
     _homeBloc = BlocProvider.of<HomeBloc>(context);
   }
 
+  void _onVideoTick() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    // لم يكن هناك dispose: مشغّل الفيديو يبقى حيّاً ويستمر بالتشغيل بعد
+    // خروج البطاقة من الشاشة، محتفظاً بمفكّك ترميز أصلي
+    final controller = _videoController;
+    if (controller != null) {
+      final String slug = widget.productItem.slug ?? "";
+      controller.removeListener(_onVideoTick);
+      if (identical(videoProductInListingController[slug], controller)) {
+        videoProductInListingController.remove(slug);
+      }
+      controller.dispose();
+      _videoController = null;
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: _buildSimpleProductCard(),
@@ -238,17 +250,20 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 🖼️ صورة المنتج - بدون مسافات إضافية
-          SizedBox(
-            height: 290.h,
-            width: 200.w,
-            child: _buildSingleImage(
+          // 🖼️ صورة المنتج — توسيط أفقي: العمود يحاذي من جهة البداية، فكان
+          // فائض العرض يظهر كفراغ على جهة واحدة
+          Center(
+            child: SizedBox(
+              height: 290.h,
+              width: 200.w,
+              child: _buildSingleImage(
               (getRedeemDateForProduct?.isAfter(
                             DateTime.now().add(const Duration(seconds: 1)),
                           ) ==
                           true &&
                       widget.productItem.hasRedeemDiscount == true) ||
                   (getRedeemSecondRemainingForProduct ?? 0) > 0,
+              ),
             ),
           ),
 

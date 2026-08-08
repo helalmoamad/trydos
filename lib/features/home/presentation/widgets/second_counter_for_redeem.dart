@@ -4,7 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SecondsCountdown extends StatefulWidget {
   final DateTime endTime;
@@ -27,7 +26,8 @@ class SecondsCountdown extends StatefulWidget {
 }
 
 class _SecondsCountdownState extends State<SecondsCountdown> {
-  late int secondsLeft;
+  // ⚡ الثواني المتبقّية في ValueNotifier: النبضة تعيد بناء الـ Text وحده
+  final ValueNotifier<int> _secondsLeft = ValueNotifier<int>(0);
   Timer? timer;
   late DateTime _endTime;
   String? _lastProductId;
@@ -42,6 +42,7 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
   @override
   void dispose() {
     timer?.cancel(); // أوقف المؤقت دائمًا
+    _secondsLeft.dispose();
     if (widget.denyStopTimer) {
       super.dispose();
       return;
@@ -73,7 +74,7 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
     }
   }
 
-  Future<void> _initTimer() async {
+  void _initTimer() {
     final prefs = GetIt.I<PrefsRepository>();
     int? savedSeconds = prefs.getRedeemSecondRemainingForProduct(
       widget.productId,
@@ -84,6 +85,8 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
       _endTime = widget.endTime;
     }
     _updateSeconds();
+    // ضمان عدم بقاء مؤقّت سابق معلّقاً يضاعف النبضات
+    timer?.cancel();
     timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateSeconds());
   }
 
@@ -93,9 +96,8 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
 
     if (!mounted) return;
 
-    setState(() {
-      secondsLeft = diff.inSeconds > 0 ? diff.inSeconds : 0;
-    });
+    final int secondsLeft = diff.inSeconds > 0 ? diff.inSeconds : 0;
+    _secondsLeft.value = secondsLeft;
     if (secondsLeft == 0) {
       timer?.cancel();
       if (mounted) {
@@ -116,16 +118,19 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
-    return Text(
-      '$secondsLeft',
-      style: context.textTheme.bodyMedium?.bq.copyWith(
-        fontSize: 9,
-        height: 1.5,
-        color: const Color(0xffFF6200),
+    // يُحسب مرة واحدة لكل build بدل كل نبضة ثانية
+    final TextStyle? textStyle = context.textTheme.bodyMedium?.bq.copyWith(
+      fontSize: 9,
+      height: 1.5,
+      color: const Color(0xffFF6200),
+    );
+
+    // عزل الرسم: نبضة الثانية تعيد رسم هذا النص وحده بدل طبقة البطاقة كاملة
+    return RepaintBoundary(
+      child: ValueListenableBuilder<int>(
+        valueListenable: _secondsLeft,
+        builder: (context, secondsLeft, _) =>
+            Text('$secondsLeft', style: textStyle),
       ),
     );
   }

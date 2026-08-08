@@ -8,7 +8,6 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import 'dart:ui' as ui;
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class FlashDealCountdownTimerWidget extends StatefulWidget {
   final DateTime endDateTime;
@@ -32,7 +31,10 @@ class _FlashDealCountdownTimerWidgetState
     extends State<FlashDealCountdownTimerWidget> {
   late DateTime endDate;
   Timer? _timer; // يجب أن يكون nullable بدون late
-  Duration _duration = const Duration();
+  // ⚡ الوقت المتبقّي في ValueNotifier: النبضة كل ثانية تعيد بناء الـ Text وحده
+  final ValueNotifier<Duration> _duration = ValueNotifier<Duration>(
+    Duration.zero,
+  );
 
   @override
   void initState() {
@@ -45,8 +47,8 @@ class _FlashDealCountdownTimerWidgetState
   void didUpdateWidget(FlashDealCountdownTimerWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // إذا تغيرت endDateString، أعد تحليل التاريخ وابدأ التايمر من جديد
-    if (oldWidget.endDateTime.second != widget.endDateTime.second) {
+    // إذا تغيّر وقت النهاية، أعد تحليل التاريخ وابدأ التايمر من جديد
+    if (oldWidget.endDateTime != widget.endDateTime) {
       _timer?.cancel();
       _parseEndDate();
       _startTimer();
@@ -60,32 +62,36 @@ class _FlashDealCountdownTimerWidgetState
       endDate = DateTime.now();
       if (kDebugMode) print('Error parsing date: $e');
     }
+    final Duration remaining = endDate.difference(DateTime.now());
+    _duration.value = remaining.isNegative ? Duration.zero : remaining;
   }
 
   void _startTimer() {
+    // ضمان عدم بقاء مؤقّت سابق معلّقاً يضاعف النبضات
+    _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) {
         timer.cancel();
         return;
       }
 
-      final now = DateTime.now();
-      setState(() {
-        _duration = endDate.difference(now);
-        if (_duration.isNegative) {
-          widget.refreshFlashDeal?.value = !widget.refreshFlashDeal!.value;
-          widget.visibleFlashDeal?.value = !widget.visibleFlashDeal!.value;
-          _duration = Duration.zero;
-          _timer?.cancel();
-          _timer = null;
-        }
-      });
+      final Duration remaining = endDate.difference(DateTime.now());
+      if (remaining.isNegative) {
+        widget.refreshFlashDeal?.value = !widget.refreshFlashDeal!.value;
+        widget.visibleFlashDeal?.value = !widget.visibleFlashDeal!.value;
+        _duration.value = Duration.zero;
+        _timer?.cancel();
+        _timer = null;
+        return;
+      }
+      _duration.value = remaining;
     });
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _duration.dispose();
     super.dispose();
   }
 
@@ -100,28 +106,30 @@ class _FlashDealCountdownTimerWidgetState
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
+    final bool isArabic = LanguageService.languageCode == "ar";
+    // يُحسب مرة واحدة لكل build بدل كل نبضة ثانية
+    final TextStyle? textStyle = context.textTheme.bodyMedium?.mq.copyWith(
+      color: const Color(0xffFF6200),
+      letterSpacing: 0.18,
+      fontSize: 9.sp,
+      height: 1.3,
+    );
+
     return Directionality(
-      textDirection: LanguageService.languageCode == "ar"
-          ? ui.TextDirection.rtl
-          : ui.TextDirection.ltr,
+      textDirection: isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr,
       child: Container(
-        alignment: LanguageService.languageCode == "ar"
-            ? Alignment.centerRight
-            : Alignment.centerLeft,
+        alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
         height: 20.h,
-        child: Text(
-          _duration > Duration.zero ? _formatDuration(_duration) : "",
-          style: context.textTheme.bodyMedium?.mq.copyWith(
-            color: const Color(0xffFF6200),
-            letterSpacing: 0.18,
-            fontSize: 9.sp,
-            height: 1.3,
+        // عزل الرسم: نبضة الثانية تعيد رسم هذا النص وحده بدل طبقة البطاقة كاملة
+        child: RepaintBoundary(
+          child: ValueListenableBuilder<Duration>(
+            valueListenable: _duration,
+            builder: (context, duration, _) => Text(
+              duration > Duration.zero ? _formatDuration(duration) : "",
+              style: textStyle,
+              textAlign: TextAlign.center,
+            ),
           ),
-          textAlign: TextAlign.center,
         ),
       ),
     );

@@ -38,7 +38,6 @@ import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
 import '../../../data/models/get_product_filters_model.dart' as filter_model;
 import '../../manager/homeBloc/home_bloc.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'categories_filter_list.dart';
 import 'color_list_filter.dart';
 import 'filters_loding_list.dart';
@@ -130,17 +129,19 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
 
   @override
   void dispose() {
+    // إلغاء المؤقّت أولاً: كان يبقى معلّقاً 600ms بعد الخروج ثم يقرأ
+    // autoScrollController.offset بعد تحريره — استثناء وقت التشغيل
+    debounce?.cancel();
     autoScrollController.dispose();
     lowerAndUpperPrices?.dispose();
+    // مؤشّران لم يكونا يُحرَّران
+    scaleTheTopItemInFiltersStack.dispose();
+    currentActiveSection.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     /*FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
@@ -266,13 +267,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 blurRadius: 6,
                                 offset: const Offset(0, 3),
                               ),
-                              BoxShadow(
-                                // ignore: deprecated_member_use
-                                color: Colors.white.withOpacity(0.4),
-                                blurRadius: 6,
-                                offset: const Offset(0, 3),
-                                inset: true,
-                              ),
+                              // حُذف ظلّ داخلي أبيض (saveLayer + تمويه) —
+                              // الظلّ الأسود أعلاه هو المرئي فعلاً
                             ],
                             border: Border.all(color: const Color(0xff388CFF)),
                           ),
@@ -758,9 +754,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                         return child!;
                                       },
                                   child: AutoScrollTag(
-                                    key: ValueKey(
-                                      '${DateTime.now()}index $index',
-                                    ),
+                                    // كان المفتاح يتضمّن DateTime.now(): مفتاح
+                                    // جديد مع كل إعادة بناء ⇒ Flutter يهدم
+                                    // قسم الفلاتر بأكمله ويعيد إنشاءه (عناصر
+                                    // وحالات وكائنات رسم) بدل تحديثه
+                                    key: ValueKey('filters-section-$index'),
                                     controller: autoScrollController,
                                     index: index,
                                     child:
@@ -1534,14 +1532,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                             blurRadius: 6,
                                             offset: const Offset(0, 3),
                                           ),
-                                          BoxShadow(
-                                            color: Colors.white
-                                                // ignore: deprecated_member_use
-                                                .withOpacity(0.4),
-                                            blurRadius: 6,
-                                            offset: const Offset(0, 3),
-                                            inset: true,
-                                          ),
+                                          // حُذف ظلّ داخلي أبيض: saveLayer + تمويه بلا أثر مرئي
                                         ],
                                         borderRadius: BorderRadius.circular(
                                           20.r,
@@ -1693,17 +1684,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                         3,
                                                       ),
                                                     ),
-                                                    BoxShadow(
-                                                      color: Colors.white
-                                                          // ignore: deprecated_member_use
-                                                          .withOpacity(0.4),
-                                                      blurRadius: 6,
-                                                      offset: const Offset(
-                                                        0,
-                                                        3,
-                                                      ),
-                                                      inset: true,
-                                                    ),
+                                                    // حُذف ظلّ داخلي أبيض:
+                                                    // saveLayer + تمويه بلا
+                                                    // أثر مرئي
                                                   ],
                                                   border: Border.all(
                                                     color: const Color(
@@ -2195,6 +2178,8 @@ Widget choosedOrAppliedFiltersWidget({
                   addSemanticIndexes: false,
                   addAutomaticKeepAlives: false,
                   physics: const NeverScrollableScrollPhysics(),
+                  // لا تُمرَّر أصلاً: طبقة رسم لكل عنصر بلا فائدة
+                  addRepaintBoundaries: false,
                   scrollDirection: Axis.horizontal,
                   itemCount: filters?.boutiques?.length,
                   itemBuilder: (ctx, index) {
@@ -2295,6 +2280,8 @@ Widget choosedOrAppliedFiltersWidget({
                 addSemanticIndexes: false,
                 addAutomaticKeepAlives: false,
                 physics: const NeverScrollableScrollPhysics(),
+                // لا تُمرَّر أصلاً: طبقة رسم لكل عنصر بلا فائدة
+                addRepaintBoundaries: false,
                 scrollDirection: Axis.horizontal,
                 itemCount: filters?.categories?.length ?? 0,
                 itemBuilder: (ctx, index) {
@@ -2397,6 +2384,8 @@ Widget choosedOrAppliedFiltersWidget({
                 addSemanticIndexes: false,
                 addAutomaticKeepAlives: false,
                 physics: const NeverScrollableScrollPhysics(),
+                // لا تُمرَّر أصلاً: طبقة رسم لكل عنصر بلا فائدة
+                addRepaintBoundaries: false,
                 scrollDirection: Axis.horizontal,
                 itemCount: filters?.brands?.length ?? 0,
                 itemBuilder: (ctx, index) {
@@ -2488,6 +2477,8 @@ Widget choosedOrAppliedFiltersWidget({
                 addSemanticIndexes: false,
                 addAutomaticKeepAlives: false,
                 physics: const NeverScrollableScrollPhysics(),
+                // لا تُمرَّر أصلاً: طبقة رسم لكل عنصر بلا فائدة
+                addRepaintBoundaries: false,
                 scrollDirection: Axis.horizontal,
                 itemCount: filters?.attributes.isNullOrEmpty ?? true
                     ? 0
@@ -2577,6 +2568,8 @@ Widget choosedOrAppliedFiltersWidget({
                   addSemanticIndexes: false,
                   addAutomaticKeepAlives: false,
                   physics: const NeverScrollableScrollPhysics(),
+                  // لا تُمرَّر أصلاً: طبقة رسم لكل عنصر بلا فائدة
+                  addRepaintBoundaries: false,
                   scrollDirection: Axis.horizontal,
                   itemCount: filters?.colors?.length ?? 0,
                   itemBuilder: (ctx, index) {
@@ -2825,10 +2818,6 @@ class FilterCircleWidget extends StatefulWidget {
 class _FilterCircleWidgetState extends State<FilterCircleWidget> {
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Padding(
       padding: EdgeInsetsDirectional.only(end: widget.paddingValue),
       child: Column(
@@ -2920,10 +2909,6 @@ class FilterImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Container(
       width: width,
       height: height,
@@ -2934,16 +2919,8 @@ class FilterImage extends StatelessWidget {
         border: borderColor != null
             ? Border.all(width: 0.5, color: borderColor!)
             : null,
-        boxShadow: withBackGroundShadow
-            ? [
-                BoxShadow(
-                  // ignore: deprecated_member_use
-                  color: Colors.white.withOpacity(0.6),
-                  offset: const Offset(0, 3),
-                  blurRadius: 3,
-                ),
-              ]
-            : null,
+        // حُذف ظلّ أبيض بشفافية 0.6 فوق خلفية بيضاء: غير مرئي، لكنه يفرض
+        // تمريرة تمويه (blur) لكل دائرة فلتر في كل إطار
       ),
       child: Stack(
         children: [
@@ -2971,24 +2948,9 @@ class FilterImage extends StatelessWidget {
                   imageFit: BoxFit.contain,
                   height: height,
                 ),
-          //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
-          Container(
-            width: width,
-            height: height,
-            decoration: BoxDecoration(
-              boxShadow: withInnerShadow
-                  ? [
-                      BoxShadow(
-                        offset: const Offset(0, 4),
-                        blurRadius: 6,
-                        // ignore: deprecated_member_use
-                        color: Colors.white.withOpacity(0.5),
-                        inset: true,
-                      ),
-                    ]
-                  : null,
-            ),
-          ),
+          // حُذفت طبقة الظلّ الداخلي (inset): كانت أبيض بشفافية 0.5 داخل
+          // دائرة بيضاء — أثرها البصري لا يُذكر، وثمنها saveLayer + تمويه
+          // لكل دائرة فلتر في كل إطار (وهي أغلى عملية على Impeller)
         ],
       ),
     );
@@ -3007,10 +2969,6 @@ class FilterSelectedMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Stack(
       children: [
         Container(
@@ -3042,15 +3000,7 @@ class FilterSelectedMark extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(180.r),
             border: Border.all(color: const Color(0xffFF5F61)),
-            boxShadow: [
-              BoxShadow(
-                offset: const Offset(0, 4),
-                blurRadius: 6,
-                // ignore: deprecated_member_use
-                color: Colors.white.withOpacity(0.7),
-                inset: true,
-              ),
-            ],
+            // حُذف ظلّ داخلي أبيض: saveLayer + تمويه لكل فلتر مُختار
           ),
         ),
       ],

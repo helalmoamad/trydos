@@ -13,7 +13,6 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
@@ -252,95 +251,59 @@ class _TabsBarState extends State<TabsBar> {
 
   @override
   void dispose() {
+    debounce?.cancel();
+    isRecordeForSearchWithMic.dispose();
     focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return SafeArea(
-      child: BlocBuilder<CategoryBloc, CategoryState>(
-        buildWhen: (oldState, newState) =>
-            (oldState.getMainCategoriesStatus ==
-                    GetMainCategoriesStatus.loading &&
-                newState.getMainCategoriesStatus ==
-                    GetMainCategoriesStatus.success) ||
-            oldState.sendRequestToGeminiStatus !=
-                newState.sendRequestToGeminiStatus,
-        builder: (context, homeState) {
-          if ((homeState.theReplyFromGemini ?? '') != "" &&
-              homeState.fromSearchForSearchWithGemini == true) {
-            // List<String>? colorsFilter = [];
-            //// List<String> listSearchTextWithoutConstWord =
-            //   homeState.theReplyFromGemini!.split(" ").toList();
-            String searchText = homeState.theReplyFromGemini!;
-            /* List<String>? sizesFilter = [];
-                List<String> listOfSearchText =
-                    homeState.theReplyFromGemini!.split(" ").toList();*/
-            /* for (var i = 0; i < colorsNameForSearch.length; i++) {
-                  if (listOfSearchText.contains(colorsNameForSearch[i])) {
-                    colorsFilter.add(colorsCodeForSearch[i]);
-                    listSearchTextWithoutConstWord
-                        .remove(colorsNameForSearch[i]);
-                  }
-                }*/
-
-            /* for (var i = 0; i < sizesForSearch.length; i++) {
-                  if (listOfSearchText.contains(sizesForSearch[i])) {
-                    sizesFilter.add(sizesForSearch[i]);
-                    listSearchTextWithoutConstWord.remove(sizesForSearch[i]);
-                  }
-                }
-                for (var i = 0; i < constWordToRemoveItFromSearch.length; i++) {
-                  listSearchTextWithoutConstWord
-                      .remove(constWordToRemoveItFromSearch[i]);
-                }*/
-            //listSearchTextWithoutConstWord.forEach(
-            //   (element) => searchText = searchText + " " + element);
-            widget.controller.text = homeState.theReplyFromGemini ?? "";
-            Filter filters =
-                BlocProvider.of<BoutiqueBloc>(
-                  context,
-                ).state.choosedFiltersByUser['search']?.filters ??
-                Filter();
-            BlocProvider.of<BoutiqueBloc>(context).add(
-              ChangeSelectedFiltersEvent(
-                boutiqueSlug: 'search',
-                fromHomePageSearch: true,
-                filtersChoosedByUser: GetProductFiltersModel(
-                  filters: filters.copyWithSaveOtherField(
-                    prices: filters.prices,
-                    searchText: searchText,
+      child: BlocListener<CategoryBloc, CategoryState>(
+        // ⚡ الأثر الجانبي (تعبئة حقل البحث + إطلاق البحث) كان داخل الـ builder،
+        // فيتكرّر مع كل إعادة بناء ويطلق طلب شبكة جديداً في كل مرة.
+        listenWhen: (oldState, newState) =>
+            (newState.theReplyFromGemini ?? '') != "" &&
+            newState.fromSearchForSearchWithGemini == true &&
+            (oldState.theReplyFromGemini != newState.theReplyFromGemini ||
+                oldState.fromSearchForSearchWithGemini !=
+                    newState.fromSearchForSearchWithGemini ||
+                oldState.sendRequestToGeminiStatus !=
+                    newState.sendRequestToGeminiStatus),
+        listener: (context, newState) => _applyGeminiSearch(newState),
+        child: BlocBuilder<CategoryBloc, CategoryState>(
+          buildWhen: (oldState, newState) =>
+              (oldState.getMainCategoriesStatus ==
+                      GetMainCategoriesStatus.loading &&
+                  newState.getMainCategoriesStatus ==
+                      GetMainCategoriesStatus.success) ||
+              oldState.sendRequestToGeminiStatus !=
+                  newState.sendRequestToGeminiStatus,
+          builder: (context, homeState) {
+            if (homeState.mainCategoriesResponseModel == null) {
+              return Container(
+                width: 1.sw,
+                height: 60.h,
+                padding: EdgeInsets.all(4.r),
+                decoration: BoxDecoration(
+                  color: colorScheme.white,
+                  boxShadow: const [
+                    BoxShadow(color: Color(0x1a000000), blurRadius: 6),
+                  ],
+                ),
+                child: Row(
+                  key: TestVariables.kTestMode
+                      ? const Key(WidgetsKeys.mainCategoriesTabNullKey)
+                      : null,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(
+                    5,
+                    (index) => TrydosLoader(size: 15.h),
                   ),
                 ),
-              ),
-            );
-            BlocProvider.of<BoutiqueBloc>(context).add(
-              ChangeAppliedFiltersEvent(
-                boutiqueSlug: 'search',
-                filtersAppliedByUser: GetProductFiltersModel(
-                  filters: filters.copyWithSaveOtherField(
-                    prices: filters.prices,
-                    searchText: searchText,
-                  ),
-                ),
-              ),
-            );
-            BlocProvider.of<BoutiqueBloc>(context).add(
-              GetProductsWithFiltersEvent(
-                offset: 1,
-                boutiqueSlug: 'search',
-                resetChoosedFilters: false,
-                fromSearch: true,
-                searchText: searchText,
-              ),
-            );
-          }
-          if (homeState.mainCategoriesResponseModel == null) {
+              );
+            }
             return Container(
               width: 1.sw,
               height: 60.h,
@@ -351,511 +314,40 @@ class _TabsBarState extends State<TabsBar> {
                   BoxShadow(color: Color(0x1a000000), blurRadius: 6),
                 ],
               ),
-              child: Row(
-                key: TestVariables.kTestMode
-                    ? const Key(WidgetsKeys.mainCategoriesTabNullKey)
-                    : null,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(5, (index) => TrydosLoader(size: 15.h)),
-              ),
-            );
-          }
-          return Container(
-            width: 1.sw,
-            height: 60.h,
-            padding: EdgeInsets.all(4.r),
-            decoration: BoxDecoration(
-              color: colorScheme.white,
-              boxShadow: const [
-                BoxShadow(color: Color(0x1a000000), blurRadius: 6),
-              ],
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                    builder: (context, bState) {
-                      return AnimatedSearchBar(
-                        autoFocus: TestVariables.kTestMode ? false : true,
-                        suggestion:
-                            bState.suggestion ?? homeState.theReplyFromGemini,
-                        onFieldSubmitted: (text) {
-                          if (text.replaceAll(" ", "").length > 1) {
-                            widget.buildSearchResult.value = text.length;
-                            widget.appearTrendingAndHistory.value = true;
-
-                            BlocProvider.of<HomeBloc>(context).add(
-                              AddSearchTextToHistoryEvent(searchTitle: text),
-                            );
-                          }
-                        },
-                        width: 1.sw,
-                        height: 50.h,
-                        onClickClose: () {
-                          if (widget.controller.text.length > 0) {
-                            categoryBloc.add(
-                              ReplyFromGeminiEvent(
-                                fromSearch: true,
-                                resetTheReply: true,
-                              ),
-                            );
-                            Filter filters =
-                                boutiqueBloc
-                                    .state
-                                    .choosedFiltersByUser['search']
-                                    ?.filters ??
-                                Filter();
-                            Filter appliedFilters =
-                                boutiqueBloc
-                                    .state
-                                    .appliedFiltersByUser['search']
-                                    ?.filters ??
-                                Filter();
-                            boutiqueBloc.add(
-                              ChangeAppliedFiltersEvent(
-                                boutiqueSlug: 'search',
-                                filtersAppliedByUser: GetProductFiltersModel(
-                                  filters: appliedFilters
-                                      .copyWithSaveOtherField(
-                                        prices: appliedFilters.prices,
-                                        colors: [],
-                                        attributes: [],
-                                      ),
-                                ),
-                              ),
-                            );
-                            boutiqueBloc.add(
-                              ChangeSelectedFiltersEvent(
-                                boutiqueSlug: 'search',
-                                fromHomePageSearch: true,
-                                filtersChoosedByUser: GetProductFiltersModel(
-                                  filters: filters.copyWithSaveOtherField(
-                                    colors: [],
-                                    attributes: [],
-                                    prices: filters.prices,
-                                  ),
-                                ),
-                              ),
-                            );
-                            widget.buildSearchResult.value = 0;
-                            widget.controller.clear();
-                            resetSearchAfterSearchingWhileRemoveSearch = false;
-                            widget.appearTrendingAndHistory.value = true;
-                            ///////////////////////////
-                            // FirebaseAnalyticsService.logEventForSession(
-                            //   eventName:
-                            //       AnalyticsEventsConst.buttonClicked,
-                            //   executedEventName:
-                            //       AnalyticsButtonsEventNameConst
-                            //           .resetCloseIconButton,
-                            // );
-                            return true;
-                          } else {
-                            appBloc.add(ChangeBasePage(0));
-                            boutiqueBloc.add(
-                              ResetAllSelectedAppliedFilterEvent(),
-                            );
-                            appBloc.add(HideBottomNavigationBar(false));
-
-                            ///////////////////////////
-                            // FirebaseAnalyticsService.logEventForSession(
-                            //   eventName:
-                            //       AnalyticsEventsConst.buttonClicked,
-                            //   executedEventName:
-                            //       AnalyticsButtonsEventNameConst
-                            //           .searchCloseIconButton,
-                            // );
-                          }
-                          return false;
-                        },
-                        textController: widget.controller,
-                        focusNode: focusNode,
-                        onSuffixTap: () {
-                          appBloc.add(ChangeIndexForSearch(2));
-                          widget.buildSearchResult.value = 1;
-                          widget.appearTrendingAndHistory.value = true;
-                          //////////////////////////////////
-                          Future.delayed(const Duration(milliseconds: 300), () {
-                            appBloc.add(ChangeBasePage(4));
-                            appBloc.add(HideBottomNavigationBar(true));
-                          });
-                          ////////////////////////////////
-                          // FirebaseAnalyticsService.logEventForSession(
-                          //   eventName: AnalyticsEventsConst.buttonClicked,
-                          //   executedEventName:
-                          //       AnalyticsButtonsEventNameConst
-                          //           .homeSearchButton,
-                          // );
-                        },
-                        suffixWidget: Center(
-                          key: TestVariables.kTestMode
-                              ? const Key(WidgetsKeys.homeSearchIconKey)
-                              : null,
-                          child: SvgPicture.asset(
-                            AppAssets.searchOutlinedSvg,
-                            height: 20.h,
-                            width: 40.w,
-                            // ignore: deprecated_member_use
-                            color: const Color(0xff388CFF),
-                          ),
-                        ),
-                        prefixWidget: Padding(
-                          padding: EdgeInsets.only(
-                            right: 15.w,
-                            top: 10.h,
-                            bottom: 10.h,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              InkWell(
-                                onTap: () async {
-                                  SearchWithImageRelatedGemini.SelecteImageForSearch(
-                                    fromSearch: true,
-                                    context: context,
-                                  );
-                                },
-                                child:
-                                    homeState.sendRequestToGeminiStatus ==
-                                        SendRequestToGeminiStatus.loading
-                                    ? TrydosLoader(size: 18.h)
-                                    : SvgPicture.asset(
-                                        AppAssets.realCameraSvg,
-                                        height: 20.h,
-                                        width: 20.w,
-                                      ),
-                              ),
-                              ValueListenableBuilder<bool>(
-                                valueListenable: isRecordeForSearchWithMic,
-                                builder: (context, recordeForSearchWithMic, _) {
-                                  return InkWell(
-                                    onTap: () async {
-                                      /*final status = await Permission
-                                                .microphone
-                                                .request();
-                                            if (status !=
-                                                PermissionStatus.granted) {
-                                              return;
-                                            }*/
-                                      if (kDebugMode)
-                                        print(
-                                          "**************************************//////",
-                                        );
-
-                                      _speechToText.isNotListening
-                                          ? _startListening()
-                                          : _stopListening();
-                                    },
-                                    child: Container(
-                                      width: 20.w,
-                                      child: Icon(
-                                        _speechToText.isNotListening ||
-                                                !recordeForSearchWithMic
-                                            ? Icons.mic_off
-                                            : Icons.mic,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        animationDurationInMilli: 400,
-                        searchDecoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: focusNode.hasFocus
-                                  ? const Color(0xffE6E6E6)
-                                  : const Color(0xffF8F8F8),
-                              width: 0.4,
-                            ),
-                            borderRadius: BorderRadius.circular(
-                              kbrBorderTextField,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: focusNode.hasFocus
-                                  ? const Color(0xffE6E6E6)
-                                  : const Color(0xffF8F8F8),
-                              width: 0.4,
-                            ),
-                            borderRadius: BorderRadius.circular(
-                              kbrBorderTextField,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: focusNode.hasFocus
-                                  ? const Color(0xffE6E6E6)
-                                  : const Color(0xffF8F8F8),
-                              width: 0.4,
-                            ),
-                            borderRadius: BorderRadius.circular(
-                              kbrBorderTextField,
-                            ),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: focusNode.hasFocus
-                                  ? const Color(0xffE6E6E6)
-                                  : const Color(0xffF8F8F8),
-                              width: 0.4,
-                            ),
-                            borderRadius: BorderRadius.circular(
-                              kbrBorderTextField,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: context.colorScheme.error,
-                              width: 0.4,
-                            ),
-                            borderRadius: BorderRadius.circular(
-                              kbrBorderTextField,
-                            ),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: context.colorScheme.error,
-                              width: 0.4,
-                            ),
-                            borderRadius: BorderRadius.circular(
-                              kbrBorderTextField,
-                            ),
-                          ),
-                          filled: true,
-                          fillColor: focusNode.hasFocus
-                              ? colorScheme.white
-                              : const Color(0xffF8F8F8),
-                          prefixIcon: Padding(
-                            padding: EdgeInsets.only(top: 12.h, bottom: 12.h),
-                            child: SvgPicture.asset(
-                              AppAssets.searchOutlinedSvg,
-                              height: 20.h,
-                              width: 40.w,
-                              // ignore: deprecated_member_use
-                              color: const Color(0xff388CFF),
-                            ),
-                          ),
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(
-                              right: 15.w,
-                              top: 10.h,
-                              bottom: 10.h,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                InkWell(
-                                  onTap: () async {
-                                    SearchWithImageRelatedGemini.SelecteImageForSearch(
-                                      fromSearch: true,
-                                      context: context,
-                                    );
-                                    /////////////////////////////
-                                    // FirebaseAnalyticsService
-                                    //     .logEventForSession(
-                                    //   eventName: AnalyticsEventsConst
-                                    //       .buttonClicked,
-                                    //   executedEventName:
-                                    //       AnalyticsButtonsEventNameConst
-                                    //           .searchWithImageButton,
-                                    // );
-                                  },
-                                  child:
-                                      homeState.sendRequestToGeminiStatus ==
-                                          SendRequestToGeminiStatus.loading
-                                      ? TrydosLoader(size: 18.h)
-                                      : SvgPicture.asset(
-                                          AppAssets.realCameraSvg,
-                                          height: 20.h,
-                                          width: 20.w,
-                                        ),
-                                ),
-                                SizedBox(width: 20.w),
-                                ValueListenableBuilder<bool>(
-                                  valueListenable: isRecordeForSearchWithMic,
-                                  builder: (context, recordeForSearchWithMic, _) {
-                                    return InkWell(
-                                      onTap: () async {
-                                        /*  final status = await Permission
-                                                  .microphone
-                                                  .request();
-                                              if (status !=
-                                                  PermissionStatus.granted) {
-                                                return;
-                                              }*/
-
-                                        if (_speechToText.isNotListening) {
-                                          _startListening();
-                                          /////////////////////////////
-                                          // FirebaseAnalyticsService
-                                          //     .logEventForSession(
-                                          //   eventName:
-                                          //       AnalyticsEventsConst
-                                          //           .buttonClicked,
-                                          //   executedEventName:
-                                          //       AnalyticsButtonsEventNameConst
-                                          //           .searchWithVoiceButton,
-                                          // );
-                                        } else {
-                                          _stopListening();
-                                        }
-                                      },
-                                      child: Container(
-                                        width: 20.w,
-                                        child: Icon(
-                                          _speechToText.isNotListening ||
-                                                  !recordeForSearchWithMic
-                                              ? Icons.mic_off
-                                              : Icons.mic,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                          //context.colorScheme.white,
-                          contentPadding: HWEdgeInsetsDirectional.only(
-                            start: 20.w,
-                            end: 10.w,
-                            bottom: 12.h,
-                            top: 12.h,
-                          ),
-                          hintText: 'Search',
-                          hintStyle: context.textTheme.bodyMedium?.lq.copyWith(
-                            color: const Color(0xffC4C2C2),
-                          ),
-                          labelStyle: context.textTheme.titleLarge?.copyWith(
-                            color: context.colorScheme.hint,
-                          ),
-                        ),
-                        onChanged: (String text) {
-                          if (kDebugMode)
-                            print(
-                              "**111111111111#########111111111111111-------------------------------${text}",
-                            );
-                          if (debounce?.isActive ?? false) {
-                            debounce!.cancel();
-                          }
-                          debounce = Timer(const Duration(seconds: 1), () {
-                            //  List<String>? colorsFilter = [];
-                            //  List<String> listSearchTextWithoutConstWord =
-                            //    text.split(" ").toList();
-                            String searchText = text;
-                            //   List<String>? sizesFilter = [];
-
-                            if (text.length > 1) {
-                              /* List<String> listOfSearchText =
-                                        text.split(" ").toList();
-                                    for (var i = 0;
-                                        i < colorsNameForSearch.length;
-                                        i++) {
-                                      if (listOfSearchText
-                                          .contains(colorsNameForSearch[i])) {
-                                        colorsFilter
-                                            .add(colorsCodeForSearch[i]);
-                                        listSearchTextWithoutConstWord
-                                            .remove(colorsNameForSearch[i]);
-                                      }
-                                    }*/
-
-                              /*  for (var i = 0;
-                                        i < sizesForSearch.length;
-                                        i++) {
-                                      if (listOfSearchText
-                                          .contains(sizesForSearch[i])) {
-                                        sizesFilter.add(sizesForSearch[i]);
-                                        listSearchTextWithoutConstWord
-                                            .remove(sizesForSearch[i]);
-                                      }
-                                    }*/
-                              /*  for (var i = 0;
-                                        i <
-                                            constWordToRemoveItFromSearch
-                                                .length;
-                                        i++) {
-                                      listSearchTextWithoutConstWord.remove(
-                                          constWordToRemoveItFromSearch[i]);
-                                    }
-                                    listSearchTextWithoutConstWord.forEach(
-                                        (element) => searchText =
-                                            searchText + " " + element);*/
-
-                              resetSearchAfterSearchingWhileRemoveSearch = true;
-                              Filter filters =
-                                  boutiqueBloc
-                                      .state
-                                      .choosedFiltersByUser['search']
-                                      ?.filters ??
-                                  Filter();
-                              //   print(sizesFilter.isEmpty);
-                              boutiqueBloc.add(
-                                ChangeSelectedFiltersEvent(
-                                  boutiqueSlug: 'search',
-                                  fromHomePageSearch: true,
-                                  filtersChoosedByUser: GetProductFiltersModel(
-                                    filters: filters.copyWithSaveOtherField(
-                                      prices: filters.prices,
-                                      searchText: searchText,
-                                    ),
-                                  ),
-                                ),
-                              );
-                              boutiqueBloc.add(
-                                GetProductsWithFiltersEvent(
-                                  fromChoosed: true,
-                                  offset: 1,
-                                  boutiqueSlug: 'search',
-                                  resetChoosedFilters: false,
-                                  fromSearch: true,
-                                  searchText: searchText,
-                                ),
-                              );
-                              if (kDebugMode)
-                                print(
-                                  "**222222222222222-------------------------------${text}",
-                                );
-
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                      // الحقل الوحيد المستخدم هنا هو suggestion — لا داعي لإعادة
+                      // بناء شريط البحث مع كل انبعاث لحالة البوتيك
+                      buildWhen: (p, c) => p.suggestion != c.suggestion,
+                      builder: (context, bState) {
+                        return AnimatedSearchBar(
+                          autoFocus: TestVariables.kTestMode ? false : true,
+                          suggestion:
+                              bState.suggestion ?? homeState.theReplyFromGemini,
+                          onFieldSubmitted: (text) {
+                            if (text.replaceAll(" ", "").length > 1) {
                               widget.buildSearchResult.value = text.length;
+                              widget.appearTrendingAndHistory.value = true;
+
+                              BlocProvider.of<HomeBloc>(context).add(
+                                AddSearchTextToHistoryEvent(searchTitle: text),
+                              );
                             }
-                            if (text.length < 2) {
+                          },
+                          width: 1.sw,
+                          height: 50.h,
+                          onClickClose: () {
+                            if (widget.controller.text.length > 0) {
                               categoryBloc.add(
                                 ReplyFromGeminiEvent(
                                   fromSearch: true,
                                   resetTheReply: true,
                                 ),
                               );
-                              Filter filters =
-                                  boutiqueBloc
-                                      .state
-                                      .choosedFiltersByUser['search']
-                                      ?.filters ??
-                                  Filter();
-
-                              boutiqueBloc.add(
-                                ChangeSelectedFiltersEvent(
-                                  boutiqueSlug: 'search',
-                                  requestToUpdateFilters: false,
-                                  fromHomePageSearch: true,
-                                  filtersChoosedByUser: GetProductFiltersModel(
-                                    filters: filters.copyWithSaveOtherField(
-                                      prices: filters.prices,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-                            if (text.length < 2 &&
-                                resetSearchAfterSearchingWhileRemoveSearch) {
-                              resetSearchAfterSearchingWhileRemoveSearch =
-                                  false;
                               Filter filters =
                                   boutiqueBloc
                                       .state
@@ -887,340 +379,834 @@ class _TabsBarState extends State<TabsBar> {
                                   fromHomePageSearch: true,
                                   filtersChoosedByUser: GetProductFiltersModel(
                                     filters: filters.copyWithSaveOtherField(
+                                      colors: [],
+                                      attributes: [],
                                       prices: filters.prices,
                                     ),
                                   ),
                                 ),
                               );
+                              widget.buildSearchResult.value = 0;
+                              widget.controller.clear();
+                              resetSearchAfterSearchingWhileRemoveSearch =
+                                  false;
+                              widget.appearTrendingAndHistory.value = true;
+                              ///////////////////////////
+                              // FirebaseAnalyticsService.logEventForSession(
+                              //   eventName:
+                              //       AnalyticsEventsConst.buttonClicked,
+                              //   executedEventName:
+                              //       AnalyticsButtonsEventNameConst
+                              //           .resetCloseIconButton,
+                              // );
+                              return true;
+                            } else {
+                              appBloc.add(ChangeBasePage(0));
+                              boutiqueBloc.add(
+                                ResetAllSelectedAppliedFilterEvent(),
+                              );
+                              appBloc.add(HideBottomNavigationBar(false));
+
+                              ///////////////////////////
+                              // FirebaseAnalyticsService.logEventForSession(
+                              //   eventName:
+                              //       AnalyticsEventsConst.buttonClicked,
+                              //   executedEventName:
+                              //       AnalyticsButtonsEventNameConst
+                              //           .searchCloseIconButton,
+                              // );
                             }
-                          });
-                        },
-                        hideTrendingAndHistory: widget.appearTrendingAndHistory,
-                      );
-                    },
-                  ),
-                  BlocBuilder<AppBloc, AppState>(
-                    buildWhen: (p, c) => p.currentIndex != c.currentIndex,
-                    builder: (context, state) {
-                      if (state.currentIndex != 4) {
-                        return Container(
-                          padding: EdgeInsets.only(
-                            left: LanguageService.languageCode == "ar"
-                                ? 15.w
-                                : 0,
-                            right: LanguageService.languageCode != "ar"
-                                ? 15.w
-                                : 0,
-                          ),
-                          width: 1.sw - 40,
-                          height: 80.h,
-                          child: ListView.builder(
-                            addAutomaticKeepAlives: false,
-                            addSemanticIndexes: false,
-                            //controller: scrollController,
-                            padding: EdgeInsets.only(right: 15.w),
+                            return false;
+                          },
+                          textController: widget.controller,
+                          focusNode: focusNode,
+                          onSuffixTap: () {
+                            appBloc.add(ChangeIndexForSearch(2));
+                            widget.buildSearchResult.value = 1;
+                            widget.appearTrendingAndHistory.value = true;
+                            //////////////////////////////////
+                            Future.delayed(
+                              const Duration(milliseconds: 300),
+                              () {
+                                appBloc.add(ChangeBasePage(4));
+                                appBloc.add(HideBottomNavigationBar(true));
+                              },
+                            );
+                            ////////////////////////////////
+                            // FirebaseAnalyticsService.logEventForSession(
+                            //   eventName: AnalyticsEventsConst.buttonClicked,
+                            //   executedEventName:
+                            //       AnalyticsButtonsEventNameConst
+                            //           .homeSearchButton,
+                            // );
+                          },
+                          suffixWidget: Center(
                             key: TestVariables.kTestMode
-                                ? const Key(WidgetsKeys.mainCategoriesTabKey)
+                                ? const Key(WidgetsKeys.homeSearchIconKey)
                                 : null,
-                            scrollDirection: Axis.horizontal,
-                            itemCount:
-                                (homeState
-                                    .mainCategoriesResponseModel
-                                    ?.data
-                                    ?.mainCategories
-                                    ?.length ??
-                                0),
-                            itemBuilder: (context, index) {
-                              MainCategory mainCategory = homeState
-                                  .mainCategoriesResponseModel!
-                                  .data!
-                                  .mainCategories![index];
-                              return Padding(
-                                key: TestVariables.kTestMode
-                                    ? Key(
-                                        '${WidgetsKeys.mainCategoriesItemKey}$index',
-                                      )
-                                    : null,
-                                padding: HWEdgeInsetsDirectional.only(end: 15),
-                                child: BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                                  buildWhen: (previous, current) =>
-                                      previous
-                                              .getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]
-                                              ?.paginationStatus !=
-                                          current
-                                              .getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]
-                                              ?.paginationStatus ||
-                                      previous
-                                              .getProductListingWithFiltersPaginationModels["*flashDeal*withoutFilter"]
-                                              ?.paginationStatus !=
-                                          current
-                                              .getProductListingWithFiltersPaginationModels["*flashDeal*withoutFilter"]
-                                              ?.paginationStatus ||
-                                      previous.getProductFiltersStatus["*flashDeal*"] !=
-                                          current
-                                              .getProductFiltersStatus["*flashDeal*"],
-                                  builder: (context, state) {
+                            child: SvgPicture.asset(
+                              AppAssets.searchOutlinedSvg,
+                              height: 20.h,
+                              width: 40.w,
+                              // ignore: deprecated_member_use
+                              color: const Color(0xff388CFF),
+                            ),
+                          ),
+                          prefixWidget: Padding(
+                            padding: EdgeInsets.only(
+                              right: 15.w,
+                              top: 10.h,
+                              bottom: 10.h,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                InkWell(
+                                  onTap: () async {
+                                    SearchWithImageRelatedGemini.SelecteImageForSearch(
+                                      fromSearch: true,
+                                      context: context,
+                                    );
+                                  },
+                                  child:
+                                      homeState.sendRequestToGeminiStatus ==
+                                          SendRequestToGeminiStatus.loading
+                                      ? TrydosLoader(size: 18.h)
+                                      : SvgPicture.asset(
+                                          AppAssets.realCameraSvg,
+                                          height: 20.h,
+                                          width: 20.w,
+                                        ),
+                                ),
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: isRecordeForSearchWithMic,
+                                  builder: (context, recordeForSearchWithMic, _) {
                                     return InkWell(
-                                      onTap: () {
-                                        if (state
-                                                    .getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]
-                                                    ?.paginationStatus ==
-                                                PaginationStatus.loading ||
-                                            state
-                                                    .getProductListingWithFiltersPaginationModels["*flashDeal*withoutFilter"]
-                                                    ?.paginationStatus ==
-                                                PaginationStatus.loading) {
-                                          return;
-                                        }
-                                        if (BlocProvider.of<AppBloc>(
-                                              context,
-                                            ).state.tabIndex !=
-                                            index) {
-                                          appBloc.add(ChangeTab(index));
-                                          ///////////////////////
-                                          categoryBloc.add(
-                                            GetHomeBoutiqesEvent(
-                                              getWithPrefetchToStoreInMemory:
-                                                  false,
-                                              getWithOutPrefetchForEachBoutiques:
-                                                  true,
-                                              offset: "1",
-                                              categorySlug: homeState
-                                                  .mainCategoriesResponseModel!
-                                                  .data!
-                                                  .mainCategories![index]
-                                                  .slug!,
-                                            ),
+                                      onTap: () async {
+                                        /*final status = await Permission
+                                                .microphone
+                                                .request();
+                                            if (status !=
+                                                PermissionStatus.granted) {
+                                              return;
+                                            }*/
+                                        if (kDebugMode)
+                                          print(
+                                            "**************************************//////",
                                           );
-                                          ////////////////////////////
-                                          categoryBloc.add(
-                                            ChangeCurrentIndexForMainCategoryEvent(
-                                              index: index,
-                                            ),
-                                          );
-                                          boutiqueBloc.add(
-                                            AddCurrentMainCategoryTapedEvent(
-                                              currentMainCategoryTaped: homeState
-                                                  .mainCategoriesResponseModel!
-                                                  .data!
-                                                  .mainCategories![index]
-                                                  .slug!,
-                                            ),
-                                          );
-                                          boutiqueBloc.add(
-                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                              categorySlugs: [],
-                                              cashedOrginalBoutique: true,
-                                              boutiqueSlug: "*featured*",
-                                            ),
-                                          );
-                                          boutiqueBloc.add(
-                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                              categorySlugs: [],
-                                              cashedOrginalBoutique: true,
-                                              boutiqueSlug: "*recommended*",
-                                            ),
-                                          );
-                                          boutiqueBloc.add(
-                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                              categorySlugs: [],
-                                              cashedOrginalBoutique: true,
-                                              boutiqueSlug: "*flashDeal*",
-                                            ),
-                                          );
-                                          ///////////////////////////
-                                          Future.delayed(
-                                            const Duration(milliseconds: 500),
-                                            () {
-                                              Map<
-                                                String,
-                                                PaginationModel<HomeBoutiques>
-                                              >
-                                              getHomeBoutiquesPaginationObjectByMainCategory =
-                                                  Map.of(
-                                                    categoryBloc
-                                                        .state
-                                                        .getHomeBoutiquesPaginationObjectByMainCategory,
-                                                  );
 
-                                              List<HomeBoutiques>
-                                              boutiques = List.of(
-                                                getHomeBoutiquesPaginationObjectByMainCategory[homeState
-                                                        .mainCategoriesResponseModel!
-                                                        .data!
-                                                        .mainCategories![index]
-                                                        .slug!]!
-                                                    .items,
-                                              );
-                                              ////////////////////////
-                                              List<Map<String, String>>
-                                              analyticsBoutiques = [];
-
-                                              boutiques.forEach((element) {
-                                                analyticsBoutiques.add({
-                                                  'item_id': element.id
-                                                      .toString(),
-                                                  'item_name': element.name
-                                                      .toString(),
-                                                });
-                                              });
-                                              ///////////////////////////
-                                              FirebaseAnalyticsService.logEventForSession(
-                                                executedEventName:
-                                                    GlobalScreenConst
-                                                        .HOME_SCREEN,
-                                                eventName: AnalyticsEventsConst
-                                                    .viewCategory,
-                                                extraParams: {
-                                                  'category_id': homeState
-                                                      .mainCategoriesResponseModel!
-                                                      .data!
-                                                      .mainCategories![index]
-                                                      .id
-                                                      .toString(),
-                                                  'category': homeState
-                                                      .mainCategoriesResponseModel!
-                                                      .data!
-                                                      .mainCategories![index]
-                                                      .name
-                                                      .toString(),
-                                                  'items': boutiques.toString(),
-                                                  'screen_name':
-                                                      GlobalScreenConst
-                                                          .HOME_SCREEN,
-                                                },
-                                              );
-                                            },
-                                          );
-                                        } else {
-                                          appBloc.add(ChangeTab(-1));
-                                          categoryBloc.add(
-                                            GetHomeBoutiqesEvent(
-                                              getWithPrefetchToStoreInMemory:
-                                                  false,
-                                              getWithOutPrefetchForEachBoutiques:
-                                                  true,
-
-                                              categorySlug: "Empty",
-                                              offset: "1",
-                                            ),
-                                          );
-                                          boutiqueBloc.add(
-                                            AddCurrentMainCategoryTapedEvent(
-                                              currentMainCategoryTaped: "Empty",
-                                            ),
-                                          );
-                                          categoryBloc.add(
-                                            ChangeCurrentIndexForMainCategoryEvent(
-                                              index: -1,
-                                            ),
-                                          );
-                                          boutiqueBloc.add(
-                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                              categorySlugs: [],
-                                              cashedOrginalBoutique: true,
-                                              boutiqueSlug: "*featured*",
-                                            ),
-                                          );
-                                          boutiqueBloc.add(
-                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                              categorySlugs: [],
-                                              cashedOrginalBoutique: true,
-                                              boutiqueSlug: "*recommended*",
-                                            ),
-                                          );
-                                          boutiqueBloc.add(
-                                            const GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                              categorySlugs: [],
-                                              cashedOrginalBoutique: true,
-                                              boutiqueSlug: "*flashDeal*",
-                                            ),
-                                          );
-                                        }
+                                        _speechToText.isNotListening
+                                            ? _startListening()
+                                            : _stopListening();
                                       },
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          BlocBuilder<AppBloc, AppState>(
-                                            buildWhen: (p, c) =>
-                                                p.tabIndex != c.tabIndex,
-                                            builder: (context, state) {
-                                              return Stack(
-                                                children: [
-                                                  MyCachedNetworkImage(
-                                                    imageUrl: mainCategory
-                                                        .flatPhotoPath!
-                                                        .filePath
-                                                        .toString(),
-                                                    height: 24.h,
-                                                    imageFit: BoxFit.contain,
-                                                    width: 24.h,
-                                                  ),
-                                                  BlocBuilder<
-                                                    AppBloc,
-                                                    AppState
-                                                  >(
-                                                    buildWhen: (p, c) =>
-                                                        p.tabIndex !=
-                                                        c.tabIndex,
-                                                    builder: (context, state) {
-                                                      return Positioned(
-                                                        top: 0,
-                                                        left: 0,
-                                                        child: Visibility(
-                                                          visible:
-                                                              state.tabIndex ==
-                                                              index,
-                                                          child:
-                                                              FilterSelectedMark(
-                                                                width: 12.w,
-                                                                height: 12.h,
-                                                              ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          ),
-                                          2.verticalSpace,
-                                          MyTextWidget(
-                                            mainCategory.name.toString(),
-                                            maxLines: 1,
-                                            style: textTheme.titleSmall?.lq
-                                                .copyWith(
-                                                  letterSpacing: 0,
-                                                  color: const Color(
-                                                    0xff505050,
-                                                  ),
-                                                  // color: state.tabIndex !=
-                                                  //         index
-                                                  //     ? Color(
-                                                  //         0xffC4C2C2)
-                                                  //     : Color(
-                                                  //         0xff505050)
-                                                ),
-                                          ),
-                                        ],
+                                      child: Container(
+                                        width: 20.w,
+                                        child: Icon(
+                                          _speechToText.isNotListening ||
+                                                  !recordeForSearchWithMic
+                                              ? Icons.mic_off
+                                              : Icons.mic,
+                                        ),
                                       ),
                                     );
                                   },
                                 ),
-                              );
-                            },
+                              ],
+                            ),
                           ),
+                          animationDurationInMilli: 400,
+                          searchDecoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: focusNode.hasFocus
+                                    ? const Color(0xffE6E6E6)
+                                    : const Color(0xffF8F8F8),
+                                width: 0.4,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                kbrBorderTextField,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: focusNode.hasFocus
+                                    ? const Color(0xffE6E6E6)
+                                    : const Color(0xffF8F8F8),
+                                width: 0.4,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                kbrBorderTextField,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: focusNode.hasFocus
+                                    ? const Color(0xffE6E6E6)
+                                    : const Color(0xffF8F8F8),
+                                width: 0.4,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                kbrBorderTextField,
+                              ),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: focusNode.hasFocus
+                                    ? const Color(0xffE6E6E6)
+                                    : const Color(0xffF8F8F8),
+                                width: 0.4,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                kbrBorderTextField,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: context.colorScheme.error,
+                                width: 0.4,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                kbrBorderTextField,
+                              ),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: context.colorScheme.error,
+                                width: 0.4,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                kbrBorderTextField,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: focusNode.hasFocus
+                                ? colorScheme.white
+                                : const Color(0xffF8F8F8),
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.only(top: 12.h, bottom: 12.h),
+                              child: SvgPicture.asset(
+                                AppAssets.searchOutlinedSvg,
+                                height: 20.h,
+                                width: 40.w,
+                                // ignore: deprecated_member_use
+                                color: const Color(0xff388CFF),
+                              ),
+                            ),
+                            suffixIcon: Padding(
+                              padding: EdgeInsets.only(
+                                right: 15.w,
+                                top: 10.h,
+                                bottom: 10.h,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  InkWell(
+                                    onTap: () async {
+                                      SearchWithImageRelatedGemini.SelecteImageForSearch(
+                                        fromSearch: true,
+                                        context: context,
+                                      );
+                                      /////////////////////////////
+                                      // FirebaseAnalyticsService
+                                      //     .logEventForSession(
+                                      //   eventName: AnalyticsEventsConst
+                                      //       .buttonClicked,
+                                      //   executedEventName:
+                                      //       AnalyticsButtonsEventNameConst
+                                      //           .searchWithImageButton,
+                                      // );
+                                    },
+                                    child:
+                                        homeState.sendRequestToGeminiStatus ==
+                                            SendRequestToGeminiStatus.loading
+                                        ? TrydosLoader(size: 18.h)
+                                        : SvgPicture.asset(
+                                            AppAssets.realCameraSvg,
+                                            height: 20.h,
+                                            width: 20.w,
+                                          ),
+                                  ),
+                                  SizedBox(width: 20.w),
+                                  ValueListenableBuilder<bool>(
+                                    valueListenable: isRecordeForSearchWithMic,
+                                    builder: (context, recordeForSearchWithMic, _) {
+                                      return InkWell(
+                                        onTap: () async {
+                                          /*  final status = await Permission
+                                                  .microphone
+                                                  .request();
+                                              if (status !=
+                                                  PermissionStatus.granted) {
+                                                return;
+                                              }*/
+
+                                          if (_speechToText.isNotListening) {
+                                            _startListening();
+                                            /////////////////////////////
+                                            // FirebaseAnalyticsService
+                                            //     .logEventForSession(
+                                            //   eventName:
+                                            //       AnalyticsEventsConst
+                                            //           .buttonClicked,
+                                            //   executedEventName:
+                                            //       AnalyticsButtonsEventNameConst
+                                            //           .searchWithVoiceButton,
+                                            // );
+                                          } else {
+                                            _stopListening();
+                                          }
+                                        },
+                                        child: Container(
+                                          width: 20.w,
+                                          child: Icon(
+                                            _speechToText.isNotListening ||
+                                                    !recordeForSearchWithMic
+                                                ? Icons.mic_off
+                                                : Icons.mic,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            //context.colorScheme.white,
+                            contentPadding: HWEdgeInsetsDirectional.only(
+                              start: 20.w,
+                              end: 10.w,
+                              bottom: 12.h,
+                              top: 12.h,
+                            ),
+                            hintText: 'Search',
+                            hintStyle: context.textTheme.bodyMedium?.lq
+                                .copyWith(color: const Color(0xffC4C2C2)),
+                            labelStyle: context.textTheme.titleLarge?.copyWith(
+                              color: context.colorScheme.hint,
+                            ),
+                          ),
+                          onChanged: (String text) {
+                            if (kDebugMode)
+                              print(
+                                "**111111111111#########111111111111111-------------------------------${text}",
+                              );
+                            if (debounce?.isActive ?? false) {
+                              debounce!.cancel();
+                            }
+                            debounce = Timer(const Duration(seconds: 1), () {
+                              //  List<String>? colorsFilter = [];
+                              //  List<String> listSearchTextWithoutConstWord =
+                              //    text.split(" ").toList();
+                              String searchText = text;
+                              //   List<String>? sizesFilter = [];
+
+                              if (text.length > 1) {
+                                /* List<String> listOfSearchText =
+                                        text.split(" ").toList();
+                                    for (var i = 0;
+                                        i < colorsNameForSearch.length;
+                                        i++) {
+                                      if (listOfSearchText
+                                          .contains(colorsNameForSearch[i])) {
+                                        colorsFilter
+                                            .add(colorsCodeForSearch[i]);
+                                        listSearchTextWithoutConstWord
+                                            .remove(colorsNameForSearch[i]);
+                                      }
+                                    }*/
+
+                                /*  for (var i = 0;
+                                        i < sizesForSearch.length;
+                                        i++) {
+                                      if (listOfSearchText
+                                          .contains(sizesForSearch[i])) {
+                                        sizesFilter.add(sizesForSearch[i]);
+                                        listSearchTextWithoutConstWord
+                                            .remove(sizesForSearch[i]);
+                                      }
+                                    }*/
+                                /*  for (var i = 0;
+                                        i <
+                                            constWordToRemoveItFromSearch
+                                                .length;
+                                        i++) {
+                                      listSearchTextWithoutConstWord.remove(
+                                          constWordToRemoveItFromSearch[i]);
+                                    }
+                                    listSearchTextWithoutConstWord.forEach(
+                                        (element) => searchText =
+                                            searchText + " " + element);*/
+
+                                resetSearchAfterSearchingWhileRemoveSearch =
+                                    true;
+                                Filter filters =
+                                    boutiqueBloc
+                                        .state
+                                        .choosedFiltersByUser['search']
+                                        ?.filters ??
+                                    Filter();
+                                //   print(sizesFilter.isEmpty);
+                                boutiqueBloc.add(
+                                  ChangeSelectedFiltersEvent(
+                                    boutiqueSlug: 'search',
+                                    fromHomePageSearch: true,
+                                    filtersChoosedByUser:
+                                        GetProductFiltersModel(
+                                          filters: filters
+                                              .copyWithSaveOtherField(
+                                                prices: filters.prices,
+                                                searchText: searchText,
+                                              ),
+                                        ),
+                                  ),
+                                );
+                                boutiqueBloc.add(
+                                  GetProductsWithFiltersEvent(
+                                    fromChoosed: true,
+                                    offset: 1,
+                                    boutiqueSlug: 'search',
+                                    resetChoosedFilters: false,
+                                    fromSearch: true,
+                                    searchText: searchText,
+                                  ),
+                                );
+                                if (kDebugMode)
+                                  print(
+                                    "**222222222222222-------------------------------${text}",
+                                  );
+
+                                widget.buildSearchResult.value = text.length;
+                              }
+                              if (text.length < 2) {
+                                categoryBloc.add(
+                                  ReplyFromGeminiEvent(
+                                    fromSearch: true,
+                                    resetTheReply: true,
+                                  ),
+                                );
+                                Filter filters =
+                                    boutiqueBloc
+                                        .state
+                                        .choosedFiltersByUser['search']
+                                        ?.filters ??
+                                    Filter();
+
+                                boutiqueBloc.add(
+                                  ChangeSelectedFiltersEvent(
+                                    boutiqueSlug: 'search',
+                                    requestToUpdateFilters: false,
+                                    fromHomePageSearch: true,
+                                    filtersChoosedByUser:
+                                        GetProductFiltersModel(
+                                          filters: filters
+                                              .copyWithSaveOtherField(
+                                                prices: filters.prices,
+                                              ),
+                                        ),
+                                  ),
+                                );
+                              }
+                              if (text.length < 2 &&
+                                  resetSearchAfterSearchingWhileRemoveSearch) {
+                                resetSearchAfterSearchingWhileRemoveSearch =
+                                    false;
+                                Filter filters =
+                                    boutiqueBloc
+                                        .state
+                                        .choosedFiltersByUser['search']
+                                        ?.filters ??
+                                    Filter();
+                                Filter appliedFilters =
+                                    boutiqueBloc
+                                        .state
+                                        .appliedFiltersByUser['search']
+                                        ?.filters ??
+                                    Filter();
+                                boutiqueBloc.add(
+                                  ChangeAppliedFiltersEvent(
+                                    boutiqueSlug: 'search',
+                                    filtersAppliedByUser:
+                                        GetProductFiltersModel(
+                                          filters: appliedFilters
+                                              .copyWithSaveOtherField(
+                                                prices: appliedFilters.prices,
+                                                colors: [],
+                                                attributes: [],
+                                              ),
+                                        ),
+                                  ),
+                                );
+                                boutiqueBloc.add(
+                                  ChangeSelectedFiltersEvent(
+                                    boutiqueSlug: 'search',
+                                    fromHomePageSearch: true,
+                                    filtersChoosedByUser:
+                                        GetProductFiltersModel(
+                                          filters: filters
+                                              .copyWithSaveOtherField(
+                                                prices: filters.prices,
+                                              ),
+                                        ),
+                                  ),
+                                );
+                              }
+                            });
+                          },
+                          hideTrendingAndHistory:
+                              widget.appearTrendingAndHistory,
                         );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                ],
+                      },
+                    ),
+                    BlocBuilder<AppBloc, AppState>(
+                      buildWhen: (p, c) => p.currentIndex != c.currentIndex,
+                      builder: (context, state) {
+                        if (state.currentIndex != 4) {
+                          return Container(
+                            padding: EdgeInsets.only(
+                              left: LanguageService.languageCode == "ar"
+                                  ? 15.w
+                                  : 0,
+                              right: LanguageService.languageCode != "ar"
+                                  ? 15.w
+                                  : 0,
+                            ),
+                            width: 1.sw - 40,
+                            height: 80.h,
+                            child: ListView.builder(
+                              addAutomaticKeepAlives: false,
+                              addSemanticIndexes: false,
+                              // عنصر التصنيف صغير جداً (أيقونة 24 + نص):
+                              // كلفة طبقة رسم مستقلة تفوق كلفة إعادة رسمه
+                              addRepaintBoundaries: false,
+                              //controller: scrollController,
+                              padding: EdgeInsets.only(right: 15.w),
+                              key: TestVariables.kTestMode
+                                  ? const Key(WidgetsKeys.mainCategoriesTabKey)
+                                  : null,
+                              scrollDirection: Axis.horizontal,
+                              itemCount:
+                                  (homeState
+                                      .mainCategoriesResponseModel
+                                      ?.data
+                                      ?.mainCategories
+                                      ?.length ??
+                                  0),
+                              itemBuilder: (context, index) {
+                                MainCategory mainCategory = homeState
+                                    .mainCategoriesResponseModel!
+                                    .data!
+                                    .mainCategories![index];
+                                return Padding(
+                                  key: TestVariables.kTestMode
+                                      ? Key(
+                                          '${WidgetsKeys.mainCategoriesItemKey}$index',
+                                        )
+                                      : null,
+                                  padding: HWEdgeInsetsDirectional.only(
+                                    end: 15,
+                                  ),
+                                  // كان BlocBuilder<BoutiqueBloc> يلفّ كل عنصر
+                                  // تصنيف لمجرّد قراءة الحالة داخل onTap —
+                                  // اشتراك وتقييم buildWhen وإعادة بناء لكل
+                                  // تصنيف مع كل انبعاث لحالة البوتيك.
+                                  child: InkWell(
+                                    onTap: () {
+                                      final boutiqueState = context
+                                          .read<BoutiqueBloc>()
+                                          .state;
+                                      if (boutiqueState
+                                                  .getProductListingWithFiltersPaginationModels["*featured*withoutFilter"]
+                                                  ?.paginationStatus ==
+                                              PaginationStatus.loading ||
+                                          boutiqueState
+                                                  .getProductListingWithFiltersPaginationModels["*flashDeal*withoutFilter"]
+                                                  ?.paginationStatus ==
+                                              PaginationStatus.loading) {
+                                        return;
+                                      }
+                                      if (BlocProvider.of<AppBloc>(
+                                            context,
+                                          ).state.tabIndex !=
+                                          index) {
+                                        appBloc.add(ChangeTab(index));
+                                        ///////////////////////
+                                        categoryBloc.add(
+                                          GetHomeBoutiqesEvent(
+                                            getWithPrefetchToStoreInMemory:
+                                                false,
+                                            getWithOutPrefetchForEachBoutiques:
+                                                true,
+                                            offset: "1",
+                                            categorySlug: homeState
+                                                .mainCategoriesResponseModel!
+                                                .data!
+                                                .mainCategories![index]
+                                                .slug!,
+                                          ),
+                                        );
+                                        ////////////////////////////
+                                        categoryBloc.add(
+                                          ChangeCurrentIndexForMainCategoryEvent(
+                                            index: index,
+                                          ),
+                                        );
+                                        boutiqueBloc.add(
+                                          AddCurrentMainCategoryTapedEvent(
+                                            currentMainCategoryTaped: homeState
+                                                .mainCategoriesResponseModel!
+                                                .data!
+                                                .mainCategories![index]
+                                                .slug!,
+                                          ),
+                                        );
+                                        boutiqueBloc.add(
+                                          const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                            categorySlugs: [],
+                                            cashedOrginalBoutique: true,
+                                            boutiqueSlug: "*featured*",
+                                          ),
+                                        );
+                                        boutiqueBloc.add(
+                                          const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                            categorySlugs: [],
+                                            cashedOrginalBoutique: true,
+                                            boutiqueSlug: "*recommended*",
+                                          ),
+                                        );
+                                        boutiqueBloc.add(
+                                          const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                            categorySlugs: [],
+                                            cashedOrginalBoutique: true,
+                                            boutiqueSlug: "*flashDeal*",
+                                          ),
+                                        );
+                                        ///////////////////////////
+                                        Future.delayed(
+                                          const Duration(milliseconds: 500),
+                                          () {
+                                            Map<
+                                              String,
+                                              PaginationModel<HomeBoutiques>
+                                            >
+                                            getHomeBoutiquesPaginationObjectByMainCategory =
+                                                Map.of(
+                                                  categoryBloc
+                                                      .state
+                                                      .getHomeBoutiquesPaginationObjectByMainCategory,
+                                                );
+
+                                            List<HomeBoutiques>
+                                            boutiques = List.of(
+                                              getHomeBoutiquesPaginationObjectByMainCategory[homeState
+                                                      .mainCategoriesResponseModel!
+                                                      .data!
+                                                      .mainCategories![index]
+                                                      .slug!]!
+                                                  .items,
+                                            );
+                                            ////////////////////////
+                                            List<Map<String, String>>
+                                            analyticsBoutiques = [];
+
+                                            boutiques.forEach((element) {
+                                              analyticsBoutiques.add({
+                                                'item_id': element.id
+                                                    .toString(),
+                                                'item_name': element.name
+                                                    .toString(),
+                                              });
+                                            });
+                                            ///////////////////////////
+                                            FirebaseAnalyticsService.logEventForSession(
+                                              executedEventName:
+                                                  GlobalScreenConst.HOME_SCREEN,
+                                              eventName: AnalyticsEventsConst
+                                                  .viewCategory,
+                                              extraParams: {
+                                                'category_id': homeState
+                                                    .mainCategoriesResponseModel!
+                                                    .data!
+                                                    .mainCategories![index]
+                                                    .id
+                                                    .toString(),
+                                                'category': homeState
+                                                    .mainCategoriesResponseModel!
+                                                    .data!
+                                                    .mainCategories![index]
+                                                    .name
+                                                    .toString(),
+                                                'items': boutiques.toString(),
+                                                'screen_name': GlobalScreenConst
+                                                    .HOME_SCREEN,
+                                              },
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        appBloc.add(ChangeTab(-1));
+                                        categoryBloc.add(
+                                          GetHomeBoutiqesEvent(
+                                            getWithPrefetchToStoreInMemory:
+                                                false,
+                                            getWithOutPrefetchForEachBoutiques:
+                                                true,
+
+                                            categorySlug: "Empty",
+                                            offset: "1",
+                                          ),
+                                        );
+                                        boutiqueBloc.add(
+                                          AddCurrentMainCategoryTapedEvent(
+                                            currentMainCategoryTaped: "Empty",
+                                          ),
+                                        );
+                                        categoryBloc.add(
+                                          ChangeCurrentIndexForMainCategoryEvent(
+                                            index: -1,
+                                          ),
+                                        );
+                                        boutiqueBloc.add(
+                                          const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                            categorySlugs: [],
+                                            cashedOrginalBoutique: true,
+                                            boutiqueSlug: "*featured*",
+                                          ),
+                                        );
+                                        boutiqueBloc.add(
+                                          const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                            categorySlugs: [],
+                                            cashedOrginalBoutique: true,
+                                            boutiqueSlug: "*recommended*",
+                                          ),
+                                        );
+                                        boutiqueBloc.add(
+                                          const GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                            categorySlugs: [],
+                                            cashedOrginalBoutique: true,
+                                            boutiqueSlug: "*flashDeal*",
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        BlocBuilder<AppBloc, AppState>(
+                                          buildWhen: (p, c) =>
+                                              p.tabIndex != c.tabIndex,
+                                          builder: (context, state) {
+                                            return Stack(
+                                              children: [
+                                                MyCachedNetworkImage(
+                                                  imageUrl: mainCategory
+                                                      .flatPhotoPath!
+                                                      .filePath
+                                                      .toString(),
+                                                  height: 24.h,
+                                                  imageFit: BoxFit.contain,
+                                                  width: 24.h,
+                                                ),
+                                                // كان BlocBuilder<AppBloc>
+                                                // ثانياً بنفس buildWhen
+                                                // للأب تماماً — اشتراك
+                                                // مكرّر لكل تصنيف بلا فائدة
+                                                Positioned(
+                                                  top: 0,
+                                                  left: 0,
+                                                  child: Visibility(
+                                                    visible:
+                                                        state.tabIndex == index,
+                                                    child: FilterSelectedMark(
+                                                      width: 12.w,
+                                                      height: 12.h,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                        2.verticalSpace,
+                                        MyTextWidget(
+                                          mainCategory.name.toString(),
+                                          maxLines: 1,
+                                          style: textTheme.titleSmall?.lq
+                                              .copyWith(
+                                                letterSpacing: 0,
+                                                color: const Color(0xff505050),
+                                                // color: state.tabIndex !=
+                                                //         index
+                                                //     ? Color(
+                                                //         0xffC4C2C2)
+                                                //     : Color(
+                                                //         0xff505050)
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  /// تعبئة حقل البحث وإطلاق بحث Gemini — يُستدعى من BlocListener عند وصول
+  /// ردّ جديد فقط، لا من داخل build.
+  void _applyGeminiSearch(CategoryState homeState) {
+    final String searchText = homeState.theReplyFromGemini ?? '';
+    if (searchText.isEmpty) return;
+
+    if (widget.controller.text != searchText) {
+      widget.controller.text = searchText;
+    }
+
+    final Filter filters =
+        boutiqueBloc.state.choosedFiltersByUser['search']?.filters ?? Filter();
+
+    boutiqueBloc.add(
+      ChangeSelectedFiltersEvent(
+        boutiqueSlug: 'search',
+        fromHomePageSearch: true,
+        filtersChoosedByUser: GetProductFiltersModel(
+          filters: filters.copyWithSaveOtherField(
+            prices: filters.prices,
+            searchText: searchText,
+          ),
+        ),
+      ),
+    );
+    boutiqueBloc.add(
+      ChangeAppliedFiltersEvent(
+        boutiqueSlug: 'search',
+        filtersAppliedByUser: GetProductFiltersModel(
+          filters: filters.copyWithSaveOtherField(
+            prices: filters.prices,
+            searchText: searchText,
+          ),
+        ),
+      ),
+    );
+    boutiqueBloc.add(
+      GetProductsWithFiltersEvent(
+        offset: 1,
+        boutiqueSlug: 'search',
+        resetChoosedFilters: false,
+        fromSearch: true,
+        searchText: searchText,
       ),
     );
   }
