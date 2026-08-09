@@ -95,13 +95,17 @@ class _FlashDealCountdownTimerWidgetState
     super.dispose();
   }
 
-  String _formatDuration(Duration duration) {
-    final days = duration.inDays;
-    final hours = duration.inHours % 24;
-    final minutes = duration.inMinutes % 60;
-    final seconds = duration.inSeconds % 60;
+  /// جزء الأيام: يتغيّر مرة كل يوم، فلا يسبّب اهتزازاً محسوساً
+  String _daysLabel(Duration duration) =>
+      '|${duration.inDays} ${LocaleKeys.day.tr()}|';
 
-    return '|${days} ${LocaleKeys.day.tr()}|${hours}:${minutes}:${seconds}';
+  /// جزء الساعة: يتغيّر كل ثانية، ولذلك يُعرض داخل صندوق ثابت العرض.
+  /// التصفير البادئ يبقي عدد الخانات ثابتاً (14:04:02 لا 14:4:2).
+  String _clock(Duration duration) {
+    String two(int v) => v.toString().padLeft(2, '0');
+    return '${two(duration.inHours % 24)}:'
+        '${two(duration.inMinutes % 60)}:'
+        '${two(duration.inSeconds % 60)}';
   }
 
   @override
@@ -113,6 +117,9 @@ class _FlashDealCountdownTimerWidgetState
       letterSpacing: 0.18,
       fontSize: 9.sp,
       height: 1.3,
+      // أرقام جدولية: كل رقم بعرض واحد، فلا يتغيّر عرض النصّ حين تتبدّل
+      // الأرقام (1 أضيق من 8 في الخطوط العادية) ولا يهتزّ إطار الشارة
+      fontFeatures: const [ui.FontFeature.tabularFigures()],
     );
 
     return Directionality(
@@ -124,11 +131,25 @@ class _FlashDealCountdownTimerWidgetState
         child: RepaintBoundary(
           child: ValueListenableBuilder<Duration>(
             valueListenable: _duration,
-            builder: (context, duration, _) => Text(
-              duration > Duration.zero ? _formatDuration(duration) : "",
-              style: textStyle,
-              textAlign: TextAlign.center,
-            ),
+            builder: (context, duration, _) {
+              if (duration <= Duration.zero) return const SizedBox.shrink();
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(_daysLabel(duration), style: textStyle),
+                  // عرض ثابت لجزء الساعة: أرقام الخطّ متفاوتة العرض، فبدون
+                  // هذا الصندوق يتغيّر عرض النصّ كل ثانية ويهتزّ إطار الشارة
+                  SizedBox(
+                    width: 40.w,
+                    child: Text(
+                      _clock(duration),
+                      style: textStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),

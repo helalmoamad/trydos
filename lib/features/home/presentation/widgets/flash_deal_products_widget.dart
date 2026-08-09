@@ -177,7 +177,9 @@ class _FlashDealProductsWidgetState extends State<FlashDealProductsWidget> {
                       Container(
                         margin: const EdgeInsets.only(bottom: 5),
                         width: 1.sw,
-                        height: 345.w,
+                        // 360.h بدل 345.w: شارة العرض مرسومة فوق حدّ البطاقة،
+                        // وكان القياس بـ .w (عرض) بدل .h (ارتفاع) — خطأ مقياس
+                        height: 360.h,
                         child: ListView.builder(
                           addAutomaticKeepAlives: false,
                           addSemanticIndexes: false,
@@ -206,8 +208,11 @@ class _FlashDealProductsWidgetState extends State<FlashDealProductsWidget> {
                           physics: const BouncingScrollPhysics(
                             parent: ClampingScrollPhysics(),
                           ),
-                          padding: const EdgeInsetsDirectional.symmetric(
-                            horizontal: 10,
+                          // حشو علوي يزيح البطاقات فتدخل الشارة داخل المنفذ
+                          padding: EdgeInsetsDirectional.only(
+                            start: 10,
+                            end: 10,
+                            top: 10.h,
                           ),
                           scrollDirection: Axis.horizontal,
                           itemCount: products.length > 6 ? 6 : products.length,

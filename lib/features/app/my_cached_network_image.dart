@@ -129,6 +129,10 @@ class MyCachedNetworkImage extends StatelessWidget {
           fadeInDuration: Duration.zero,
           placeholderFadeInDuration: Duration.zero,
           fadeOutDuration: Duration.zero,
+          // يُبقي الصورة المعروضة ظاهرة أثناء تحميل الصورة التالية بدل
+          // العودة إلى الشيمر — يمنع الوميض عند إعادة بناء الويدجت بمصدر
+          // جديد (كما يحدث عند وصول ردّ تفاصيل المنتج)
+          useOldImageOnUrlChange: true,
           imageBuilder:
               imageBuilder ??
               (ctx, imageProvider) {
@@ -193,40 +197,49 @@ class MyCachedNetworkImage extends StatelessWidget {
     String failedUrl,
     VoidCallback? onRetry,
   ) {
+    final double boxHeight = isBoutique ? 150 : safeHeight;
+    // حجم الأيقونة يتبع أصغر بُعد في الصندوق: كانت 26 ثابتة داخل IconButton
+    // (بمساحة لمس 48×48) فتطفح على الصور الصغيرة كأيقونات التصنيفات والعلامات
+    final double shortestSide = min(currentWidth, boxHeight);
+    final double iconSize = shortestSide <= 0
+        ? 12
+        : (shortestSide * 0.5).clamp(10.0, 26.0);
+
+    Future<void> handleRetry() async {
+      if (failedUrl.isNotEmpty) {
+        try {
+          await _cacheManager.removeFile(failedUrl);
+        } catch (_) {
+          // الملف غير موجود في الكاش أصلاً — نتابع إعادة المحاولة
+        }
+      }
+      // إعادة بناء الصورة بمفتاح جديد لبدء تحميل جديد فعلياً
+      onRetry!();
+    }
+
+    final Widget icon = Icon(
+      Icons.refresh_rounded,
+      color: Colors.black87,
+      size: iconSize,
+    );
+
     return Container(
       width: currentWidth,
-      height: isBoutique ? 150 : safeHeight,
+      height: boxHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
         color: Colors.grey[200],
       ),
+      // GestureDetector بدل IconButton: الأخير يفرض حدّاً أدنى 48×48 لمساحة
+      // اللمس فيتجاوز صندوق الصور الصغيرة
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: const Icon(
-                Icons.refresh_rounded,
-                color: Colors.black87,
-                size: 26,
+        child: onRetry == null
+            ? icon
+            : GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: handleRetry,
+                child: icon,
               ),
-              onPressed: onRetry == null
-                  ? null
-                  : () async {
-                      // مسح ملف الكاش التالف للرابط عند الضغط اليدوي فقط
-                      if (failedUrl.isNotEmpty) {
-                        try {
-                          await _cacheManager.removeFile(failedUrl);
-                        } catch (_) {
-                          // الملف غير موجود في الكاش أصلاً — نتابع إعادة المحاولة
-                        }
-                      }
-                      // إعادة بناء الصورة بمفتاح جديد لبدء تحميل جديد فعلياً
-                      onRetry();
-                    },
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -18,16 +18,64 @@ class TrydosShimmerLoadingStateless extends StatelessWidget {
   final double? circleDimensions;
   final double radius;
 
+  /// أصغر صندوق يتّسع لنصّ الشعار مع الدوائر.
+  static const double _minimumSizeForLogo = 70;
+
+  /// أصغر صندوق تُرى فيه العلامة (الدائرة) — تحته يبقى الرمادي وحده.
+  static const double _minimumSizeForMark = 20;
+
   @override
   Widget build(BuildContext context) {
+    final double shortestSide = width < height ? width : height;
+
+    final BoxDecoration decoration = BoxDecoration(
+      color: const Color(0xffE6E6E6),
+      borderRadius: BorderRadius.circular(radius),
+    );
+
+    // أصغر من أن تُرى فيه أي علامة
+    if (shortestSide < _minimumSizeForMark) {
+      return Container(
+        key: const ValueKey("shimmer_stateless"),
+        width: width,
+        height: height,
+        decoration: decoration,
+      );
+    }
+
+    // متوسّط: العلامة وحدها بلا نصّ الشعار (النصّ لا يُقرأ في هذا الحجم)
+    if (width < _minimumSizeForLogo || height < _minimumSizeForLogo) {
+      final double markSize = (shortestSide * 0.32).clamp(6.0, 16.0);
+      return Container(
+        key: const ValueKey("shimmer_stateless"),
+        width: width,
+        height: height,
+        decoration: decoration,
+        child: Center(
+          child: Container(
+            width: markSize,
+            height: markSize,
+            decoration: const BoxDecoration(
+              color: Color(0xFFFF6B6B),
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // القياسات تتبع الصندوق بدل أن تكون ثابتة، مع سقف يمنع تضخّمها
+    final double circleSize = (circleDimensions ?? (height * 0.08)).clamp(
+      6.0,
+      18.0,
+    );
+    final double dotSize = (circleSize * 0.22).clamp(2.0, 4.0);
+
     return Container(
       key: const ValueKey("shimmer_stateless"),
       width: width,
       height: height,
-      decoration: BoxDecoration(
-        color: const Color(0xffE6E6E6),
-        borderRadius: BorderRadius.circular(radius),
-      ),
+      decoration: decoration,
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -37,8 +85,8 @@ class TrydosShimmerLoadingStateless extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Container(
-                  width: circleDimensions ?? 18,
-                  height: circleDimensions ?? 18,
+                  width: circleSize,
+                  height: circleSize,
                   decoration: const BoxDecoration(
                     color: Color(0xFFFF6B6B),
                     shape: BoxShape.circle,
@@ -50,9 +98,9 @@ class TrydosShimmerLoadingStateless extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildStaticDot(3.0),
+                      _buildStaticDot(dotSize),
                       const SizedBox(width: 2),
-                      _buildStaticDot(4.0),
+                      _buildStaticDot(dotSize + 1),
                     ],
                   ),
                 ),
@@ -61,8 +109,9 @@ class TrydosShimmerLoadingStateless extends StatelessWidget {
             SizedBox(height: height / 10),
             SvgPicture.asset(
               AppAssets.trydosTextSvg,
-              width: logoTextWidth,
-              height: logoTextHeight,
+              // لا يتجاوز الشعار حدود الصندوق مهما مُرّر إليه
+              width: logoTextWidth.clamp(0.0, width * 0.7),
+              height: logoTextHeight.clamp(0.0, height * 0.3),
             ),
           ],
         ),

@@ -135,12 +135,15 @@ class FeatureProductsWidget extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.only(bottom: 5),
                     width: 1.sw,
-                    height: 345.h,
+                    // 360 بدل 345: شارة الاسترداد مرسومة فوق حدّ البطاقة
+                    // (top: -5) وكانت تُقصّ عند حافة منفذ القائمة
+                    height: 360.h,
                     child: ListView.builder(
                       addAutomaticKeepAlives: false,
                       addSemanticIndexes: false,
 
-                      cacheExtent: 400, // بناء العناصر قبل دخولها الشاشة لمنع ظهورها المفاجئ
+                      cacheExtent:
+                          400, // بناء العناصر قبل دخولها الشاشة لمنع ظهورها المفاجئ
                       // البطاقة ثابتة العرض (200) + فاصل (10). itemExtent
                       // يجعل القائمة تحسب المواضع بدل قياس كل بطاقة أثناء
                       // التمرير — وهو سبب انسيابية قائمة البوتيكات
@@ -161,8 +164,11 @@ class FeatureProductsWidget extends StatelessWidget {
                       physics: const BouncingScrollPhysics(
                         parent: ClampingScrollPhysics(),
                       ),
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: 10,
+                      // حشو علوي يزيح البطاقات للأسفل فتدخل الشارة داخل المنفذ
+                      padding: EdgeInsetsDirectional.only(
+                        start: 10,
+                        end: 10,
+                        top: 10.h,
                       ),
                       scrollDirection: Axis.horizontal,
                       itemCount: products.length > 6 ? 6 : products.length,

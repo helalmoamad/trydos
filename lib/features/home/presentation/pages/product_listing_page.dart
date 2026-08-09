@@ -2729,7 +2729,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 gridDelegate:
                                                     SliverGridDelegateWithFixedCrossAxisCount(
                                                   crossAxisCount: 2,
-                                                  childAspectRatio: 200.w / 350,
+                                                  // 360 بدل 350: تعويض الارتفاع
+                                                  // الذي فقدته الخانة بسبب
+                                                  // الحشو الأفقي الجديد
+                                                  childAspectRatio: 200.w / 360,
                                                   crossAxisSpacing: 10,
                                                   mainAxisSpacing: 8,
                                                 ),
@@ -3039,8 +3042,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             gridDelegate:
                                                 SliverGridDelegateWithFixedCrossAxisCount(
                                                   crossAxisCount: 2,
+                                                  // النسبة تشتقّ ارتفاع الخانة
+                                                  // من عرضها، والحشو الأفقي
+                                                  // ضيّق العرض فقصُر الارتفاع
+                                                  // وطفح محتوى بطاقة الاسترداد.
+                                                  // الضرب في 2.06 يعيد الارتفاع
+                                                  // السابق مع الحشو الجديد.
                                                   childAspectRatio:
-                                                      1.sw / ((392.w) * 2),
+                                                      1.sw / ((392.w) * 2.06),
                                                   crossAxisSpacing: 10.w,
                                                   mainAxisSpacing: 8.h,
                                                 ),

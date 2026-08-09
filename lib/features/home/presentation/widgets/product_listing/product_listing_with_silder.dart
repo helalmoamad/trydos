@@ -250,19 +250,21 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 🖼️ صورة المنتج — توسيط أفقي: العمود يحاذي من جهة البداية، فكان
-          // فائض العرض يظهر كفراغ على جهة واحدة
-          Center(
+          // 🖼️ صورة المنتج — الصندوق يملأ عرض البطاقة (double.infinity) بدل
+          // 200.w المثبّت الذي كان يتجاوز عرض خانة الشبكة فيُقصّ إطار الاسترداد.
+          // عرض الطلب داخل ProductListingImageWidget يبقى 200.w، فرابط الصورة
+          // ومفتاح التخزين المؤقّت لا يتغيّران ويبقى الـ precache صالحاً.
+          SizedBox(
+            width: double.infinity,
             child: SizedBox(
               height: 290.h,
-              width: 200.w,
               child: _buildSingleImage(
-              (getRedeemDateForProduct?.isAfter(
-                            DateTime.now().add(const Duration(seconds: 1)),
-                          ) ==
-                          true &&
-                      widget.productItem.hasRedeemDiscount == true) ||
-                  (getRedeemSecondRemainingForProduct ?? 0) > 0,
+                (getRedeemDateForProduct?.isAfter(
+                              DateTime.now().add(const Duration(seconds: 1)),
+                            ) ==
+                            true &&
+                        widget.productItem.hasRedeemDiscount == true) ||
+                    (getRedeemSecondRemainingForProduct ?? 0) > 0,
               ),
             ),
           ),

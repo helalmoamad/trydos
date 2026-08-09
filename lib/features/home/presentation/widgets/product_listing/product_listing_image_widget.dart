@@ -14,7 +14,8 @@ class ProductListingImageWidget extends StatelessWidget {
     this.orginalWidth,
     required this.innerShadowYOffset,
     this.borderColor,
-    this.radius = 12,
+    this.radius = 15,
+    this.imageFit = BoxFit.contain,
     this.withBackGroundShadow = false,
     required this.circleShape,
     required this.imageUrl,
@@ -33,6 +34,10 @@ class ProductListingImageWidget extends StatelessWidget {
   final Color? borderColor;
   final String imageUrl;
 
+  /// كان `contain` مثبّتاً: الصورة لا تملأ الإطار فتظهر أشرطة فارغة حين
+  /// تختلف نسبة أبعادها عن نسبة الصندوق (كما في مصغّرات الألوان).
+  final BoxFit imageFit;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,11 +45,17 @@ class ProductListingImageWidget extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
+        // كان 15.r ثابتاً فيتجاهل radius الممرَّر، فلا تطابق زوايا الإطار
+        // زوايا الصورة بداخله (6 مقابل 15 في مصغّرات الألوان)
         borderRadius: BorderRadius.all(
-          Radius.circular(circleShape ? 180.r : 15.r),
+          Radius.circular(circleShape ? 180.r : radius),
         ),
         border: Border.all(
-          width: (width == 20.w || width == 200.w) ? 0.5.w : 1.w,
+          // الحدّ الأبيض زخرفي فيكفيه شعرة (0.5)، أمّا الحدّ الملوّن الصريح
+          // (إطار الاسترداد البرتقالي) فرسالة للمستخدم ويجب أن يُرى
+          width: borderColor != null
+              ? 1.2.w
+              : ((width == 20.w || width == 200.w) ? 0.5.w : 1.w),
           color: borderColor ?? const Color(0xffffffff),
         ),
         boxShadow: withBackGroundShadow
@@ -73,7 +84,7 @@ class ProductListingImageWidget extends StatelessWidget {
               imageHeight: imageHeight,
               imageWidth: imageWidth,
               radius: circleShape ? 180.r : radius,
-              imageFit: BoxFit.contain,
+              imageFit: imageFit,
               innerShadowYOffset: innerShadowYOffset,
               withInnerShadow: true,
               height: height!,

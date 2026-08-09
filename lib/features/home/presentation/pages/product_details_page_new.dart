@@ -3528,10 +3528,13 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             print(
                               "GGGGGGGFFFFRRRProductDetailsImageWidget${productItem.productId}////${productItem.syncColorImages.isNullOrEmpty ? productItem.images![index].filePath! : productItem.syncColorImages![currentSelectedColor].images![index].filePath}",
                             );
+                          // بلا مفتاح: Flutter يطابق العناصر بالموضع والنوع،
+                          // فيُحدَّث العنصر بدل هدمه. المفتاح السابق كان مبنياً
+                          // على productId الذي يختلف بين استجابة القائمة
+                          // واستجابة التفاصيل ⇒ يتبدّل المفتاح عند وصول الردّ
+                          // ⇒ يُهدم العنصر ويُعاد إنشاؤه ⇒ شيمر وتحميل جديد.
+                          // والويدجت بلا حالة داخلية، فلا شيء يستدعي مفتاحاً.
                           return ProductDetailsImageWidget(
-                            key: ValueKey(
-                              "ProductDetailsImageWidget${productItem.productId}",
-                            ),
                             borderRadius: BorderRadius.circular(0),
                             borderColor:
                                 (GetIt.I<PrefsRepository>()

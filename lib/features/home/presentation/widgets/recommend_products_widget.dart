@@ -118,7 +118,8 @@ class RecommendProductsWidget extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.only(bottom: 5),
                     width: 1.sw,
-                    height: 345.h,
+                    // 360 بدل 345: شارة الاسترداد مرسومة فوق حدّ البطاقة
+                    height: 360.h,
                     child: ListView.builder(
                       addAutomaticKeepAlives: false,
 
@@ -142,8 +143,11 @@ class RecommendProductsWidget extends StatelessWidget {
                       physics: const BouncingScrollPhysics(
                         parent: ClampingScrollPhysics(),
                       ),
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: 10,
+                      // حشو علوي يزيح البطاقات للأسفل فتدخل الشارة داخل المنفذ
+                      padding: EdgeInsetsDirectional.only(
+                        start: 10,
+                        end: 10,
+                        top: 10.h,
                       ),
                       scrollDirection: Axis.horizontal,
                       itemCount: products.length > 6 ? 6 : products.length,

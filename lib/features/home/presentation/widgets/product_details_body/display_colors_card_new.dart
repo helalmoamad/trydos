@@ -83,9 +83,10 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
             (widget.productItem.syncColorImages?.length ?? 0)) {
           currentIndexInSlider = 0;
         }
-        if (kDebugMode) print(
-          "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS4/////////////${state.currentSelectedColorForEveryProduct[widget.productItem.slug.toString()]} ${widget.productItem.slug.toString()} ${currentIndexInSlider}",
-        );
+        if (kDebugMode)
+          print(
+            "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS4/////////////${state.currentSelectedColorForEveryProduct[widget.productItem.slug.toString()]} ${widget.productItem.slug.toString()} ${currentIndexInSlider}",
+          );
         return Container(
           margin: EdgeInsets.only(left: 10.w, right: 10.w, bottom: 10.h),
           height: 76.h,
@@ -198,6 +199,9 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
                               width: 55.w,
                               height: 75.h,
                               radius: 6.r,
+                              // مصغّرة تملأ إطارها: contain كانت تترك أشرطة
+                              // رمادية لاختلاف نسبة أبعاد الصورة عن الصندوق
+                              imageFit: BoxFit.cover,
                               withBackGroundShadow: true,
                               imageUrl: images[index],
                               innerShadowYOffset: 4,

@@ -1052,7 +1052,7 @@ class _ProductDetailsSheetBottomBarNewState
                                                                   ),
                                                             ),
                                                       widget.size == "" &&
-                                                              widget.colorNum !=
+                                                              widget.colorNum ==
                                                                   ""
                                                           ? const SizedBox.shrink()
                                                           : MyTextWidget(

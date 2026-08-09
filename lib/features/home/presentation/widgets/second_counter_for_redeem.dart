@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -123,14 +124,25 @@ class _SecondsCountdownState extends State<SecondsCountdown> {
       fontSize: 9,
       height: 1.5,
       color: const Color(0xffFF6200),
+      // أرقام جدولية: عرض ثابت لكل رقم فلا يهتزّ إطار الشارة
+      fontFeatures: const [FontFeature.tabularFigures()],
     );
 
     // عزل الرسم: نبضة الثانية تعيد رسم هذا النص وحده بدل طبقة البطاقة كاملة
+    // عرض ثابت لخانتين: ضمانة نهائية ضدّ اهتزاز الإطار حتى لو لم يدعم
+    // الخطّ خاصّية الأرقام الجدولية
     return RepaintBoundary(
-      child: ValueListenableBuilder<int>(
-        valueListenable: _secondsLeft,
-        builder: (context, secondsLeft, _) =>
-            Text('$secondsLeft', style: textStyle),
+      child: SizedBox(
+        width: 14.w,
+        child: ValueListenableBuilder<int>(
+          valueListenable: _secondsLeft,
+          builder: (context, secondsLeft, _) => Text(
+            // تصفير بادئ لخانتين: يمنع تغيّر عدد الخانات (10 ← 9)
+            secondsLeft.toString().padLeft(2, '0'),
+            style: textStyle,
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
     );
   }

@@ -77,6 +77,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
       LastPagesTracker.sendErrorToBlocAndLog(error);
       FlutterError.dumpErrorToConsole(error);
     };
+
     return InteractiveViewer(
       minScale: 0.1,
       maxScale: 4.0,
@@ -133,11 +134,14 @@ class ProductDetailsImageWidget extends StatelessWidget {
                           : Radius.circular(15.r),
                     )
                   : borderRadius ?? BorderRadius.circular((radius ?? 30.r)),
-              child: (imageUrl?.contains('assets') ?? true)
-                  ? Image.asset(
-                      'assets/images/address2.png',
-                      fit: imageFit ?? BoxFit.cover,
-                    )
+              // رابط فارغ ⇒ لا شيء. كان الشرط `?? true` يعرض صورة العنوان
+              // (address2.png) بمساحة الصندوق كاملة — وهو ما يظهر كوميض عريض
+              // في الأقسام التي تُبنى قبل وصول بياناتها (الريلز، صور المشترين).
+              child: (imageUrl == null || imageUrl!.isEmpty)
+                  ? const SizedBox.shrink()
+                  : imageUrl!.contains('assets')
+                  // كان يعرض address2.png دائماً متجاهلاً الرابط الممرَّر
+                  ? Image.asset(imageUrl!, fit: imageFit ?? BoxFit.cover)
                   : MyCachedNetworkImage(
                       ordinalHeight: orginalHeight,
                       ordinalwidth: orginalWidth,

@@ -193,7 +193,9 @@ class _ProductItemState extends State<ProductItem> {
                                   transform: Matrix4.skewX(0.4),
                                   child: Row(
                                     children: [
-                                      SizedBox(width: 3.w),
+                                      // 10 بدل 3: الأيقونة كانت ملاصقة للإطار،
+                                      // والميلان (skew) يقرّبها أكثر من الأعلى
+                                      SizedBox(width: 10.w),
                                       SvgPicture.asset(
                                         AppAssets.flashDealSvg,
                                         height: 9.h,
@@ -287,7 +289,8 @@ class _ProductItemState extends State<ProductItem> {
                             transform: Matrix4.skewX(0.4),
                             child: Row(
                               children: [
-                                SizedBox(width: 3.w),
+                                // 10 بدل 3: الأيقونة كانت ملاصقة للإطار
+                                SizedBox(width: 10.w),
                                 SvgPicture.asset(
                                   AppAssets.redeemClockSvg,
                                   height: 9.h,
