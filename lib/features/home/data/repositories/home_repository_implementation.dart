@@ -56,9 +56,11 @@ import 'package:trydos/features/home/data/models/translate_comment_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/data/models/update_return_request_model.dart';
-import 'package:trydos/features/home/data/models/upload_images_for_return_product_model.dart';
+// ⛔ مع الدوال المعلَّقة: الرفع انتقل إلى خادم الميديا
+// import 'package:trydos/features/home/data/models/upload_images_for_return_product_model.dart';
 import 'package:trydos/features/home/data/models/return_request_product_model.dart';
-import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
+// ⛔ مع الدوال المعلَّقة: الرفع انتقل إلى خادم الميديا
+// import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
 import 'package:trydos/features/home/data/models/get_auth_product_details_model.dart';
 import 'package:trydos/features/home/data/models/get_fqa_comments_model.dart';
 import 'package:trydos/features/home/data/models/get_buyers_comments_model.dart';
@@ -231,14 +233,15 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     );
   }
 
-  @override
-  Future<Either<Failure, UploadUserPhotoModel>> uploadUserPhoto(
-    Map<String, dynamic> params,
-  ) {
-    return handlingExceptionRequest(
-      tryCall: () => dataSource.uploadUserPhoto(params),
-    );
-  }
+  // ⛔ لم تعد مستعملة: الرفع انتقل إلى خادم الميديا (التدفّق المُقيَّد)
+  // @override
+  // Future<Either<Failure, UploadUserPhotoModel>> uploadUserPhoto(
+  //   Map<String, dynamic> params,
+  // ) {
+  //   return handlingExceptionRequest(
+  //     tryCall: () => dataSource.uploadUserPhoto(params),
+  //   );
+  // }
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
@@ -789,11 +792,21 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     );
   }
 
+  // ⛔ لم تعد مستعملة: الرفع انتقل إلى خادم الميديا (التدفّق المُقيَّد)
+  // @override
+  // Future<Either<Failure, UploadImagesForReturnProductModel>>
+  // uploadImagesForReturnProduct(Map<String, dynamic> params) {
+  //   return handlingExceptionRequest(
+  //     tryCall: () => dataSource.uploadImagesForReturnProduct(params),
+  //   );
+  // }
+
   @override
-  Future<Either<Failure, UploadImagesForReturnProductModel>>
-  uploadImagesForReturnProduct(Map<String, dynamic> params) {
+  Future<Either<Failure, ResponseOnlyMessageModel>> reportOrderProduct(
+    Map<String, dynamic> params,
+  ) {
     return handlingExceptionRequest(
-      tryCall: () => dataSource.uploadImagesForReturnProduct(params),
+      tryCall: () => dataSource.reportOrderProduct(params),
     );
   }
 

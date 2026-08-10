@@ -4,9 +4,11 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:mime/mime.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
@@ -1100,10 +1102,23 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     );
   }
 
+  /// الحدّ الأعلى لحجم مرفق الدردشة على نقطة النهاية المُقيَّدة
+  /// `POST /gated/chat/upload_file` — الخادم يردّ بـ 413 لما يتجاوزه.
+  static const int _chatAttachmentMaxBytes = 25 * 1024 * 1024;
+
   FutureOr<void> _onUploadFileEvent(
     UploadFileEvent event,
     Emitter<ChatState> emit,
   ) async {
+    // فحص الحجم قبل أي عمل: نقطة الاختناق الوحيدة التي تمرّ بها كل مرفقات
+    // الدردشة (صورة، فيديو، صوت، مستند) مهما كان مصدر الاختيار.
+    // بدونه تُبنى رسالة مؤقّتة ثم يفشل الرفع بـ 413 بلا سبب مفهوم للمستخدم.
+    final int fileSize = await event.file.length();
+    if (fileSize > _chatAttachmentMaxBytes) {
+      showMessage(LocaleKeys.chat_attachment_size_limit.tr(), hasError: true);
+      return;
+    }
+
     List<String> ids = List.of(state.currentMessage);
     ids.add(event.messageId);
     List<Message> messages;

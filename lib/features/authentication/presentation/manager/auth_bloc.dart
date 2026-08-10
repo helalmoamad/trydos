@@ -1286,7 +1286,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
-    GetIt.I<DashboardBloc>().add(GetUserPermissionEvent());
+
     final response = await getCustomerInfoUseCase(NoParams());
     await response.fold(
       (l) {

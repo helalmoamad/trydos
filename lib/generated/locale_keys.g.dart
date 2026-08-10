@@ -22,6 +22,7 @@ abstract class LocaleKeys {
   static const linked_product = 'linked_product';
   static const stories = 'stories';
   static const video_size_limit = "video_size_limit";
+  static const chat_attachment_size_limit = "chat_attachment_size_limit";
   static const story_deleted_successfully = "story_deleted_successfully";
   static const hide_this_pack = 'hide_this_pack';
   static const hide_this_pack_from_list = 'hide_this_pack_from_list';
@@ -620,6 +621,36 @@ abstract class LocaleKeys {
   static const return_this_product_in_24_hours_and_back_your_money =
       'return_this_product_in_24_hours_and_back_your_money';
   static const report_this_product = 'report_this_product';
+  static const report_this_product_subtitle = 'report_this_product_subtitle';
+  static const report_product_quality = 'report_product_quality';
+  static const report_damaged = 'report_damaged';
+  static const report_not_as_described = 'report_not_as_described';
+  static const report_poor_material = 'report_poor_material';
+  static const report_wrong_item = 'report_wrong_item';
+  static const report_expired = 'report_expired';
+  static const report_delivery_time = 'report_delivery_time';
+  static const report_too_late = 'report_too_late';
+  static const report_missed_window = 'report_missed_window';
+  static const report_no_eta = 'report_no_eta';
+  static const report_faster_than_expected = 'report_faster_than_expected';
+  static const report_delivery_worker = 'report_delivery_worker';
+  static const report_rude = 'report_rude';
+  static const report_unprofessional = 'report_unprofessional';
+  static const report_no_show = 'report_no_show';
+  static const report_asked_extra_fee = 'report_asked_extra_fee';
+  static const report_polite = 'report_polite';
+  static const report_delivery_car = 'report_delivery_car';
+  static const report_dirty_vehicle = 'report_dirty_vehicle';
+  static const report_no_cooling = 'report_no_cooling';
+  static const report_unsafe_handling = 'report_unsafe_handling';
+  static const report_no_vehicle = 'report_no_vehicle';
+  static const report_additional_notes = 'report_additional_notes';
+  static const report_write_more_details = 'report_write_more_details';
+  static const report_add_a_photo = 'report_add_a_photo';
+  static const report_optional = 'report_optional';
+  static const report_submit = 'report_submit';
+  static const report_received_title = 'report_received_title';
+  static const report_received_body = 'report_received_body';
   static const delivery_time_delivery_man_delivery_car =
       'delivery_time_delivery_man_delivery_car';
   static const hide_this_product = 'hide_this_product';

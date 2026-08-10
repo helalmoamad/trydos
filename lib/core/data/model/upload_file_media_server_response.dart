@@ -15,6 +15,7 @@ class UploadFileMediaServerResponseModel {
   String? type;
   String? url;
   MediaServerVideoVariants? variants;
+  MediaServerStoryVariants? story;
 
   UploadFileMediaServerResponseModel({
     this.key,
@@ -23,7 +24,27 @@ class UploadFileMediaServerResponseModel {
     this.url,
     this.durationSeconds,
     this.variants,
+    this.story,
   });
+
+  /// المسار الفرعي المكافئ لـ `sub_path` في نقاط الرفع القديمة.
+  ///
+  /// خادم الميديا يعيد `url` بصيغة `/image/upload/customers/profile/uuid.jpg`،
+  /// بينما يخزّن خادم السوق المسار الفرعي وحده (`customers/profile/uuid.jpg`)
+  /// ويركّب الرابط الكامل عند الإرجاع — فنقتطع بادئة التسليم
+  /// (`/image/upload/` أو `/video/upload/` …) ليبقى العقد كما كان.
+  String? get subPath {
+    final String? source = url;
+    if (source == null || source.isEmpty) return source;
+
+    const String marker = '/upload/';
+    final int markerIndex = source.indexOf(marker);
+    if (markerIndex == -1) {
+      // شكل غير متوقّع: نعيده بلا الشرطة البادئة فقط
+      return source.startsWith('/') ? source.substring(1) : source;
+    }
+    return source.substring(markerIndex + marker.length);
+  }
 
   UploadFileMediaServerResponseModel copyWith({
     String? key,
@@ -32,6 +53,7 @@ class UploadFileMediaServerResponseModel {
     double? durationSeconds,
     String? url,
     MediaServerVideoVariants? variants,
+    MediaServerStoryVariants? story,
   }) => UploadFileMediaServerResponseModel(
     key: key ?? this.key,
     size: size ?? this.size,
@@ -39,6 +61,7 @@ class UploadFileMediaServerResponseModel {
     durationSeconds: durationSeconds ?? this.durationSeconds,
     url: url ?? this.url,
     variants: variants ?? this.variants,
+    story: story ?? this.story,
   );
 
   factory UploadFileMediaServerResponseModel.fromJson(
@@ -54,6 +77,9 @@ class UploadFileMediaServerResponseModel {
     variants: json["variants"] != null
         ? MediaServerVideoVariants.fromJson(json["variants"])
         : null,
+    story: json["story"] != null
+        ? MediaServerStoryVariants.fromJson(json["story"])
+        : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -62,6 +88,28 @@ class UploadFileMediaServerResponseModel {
     "type": type,
     "url": url,
     "durationSeconds": durationSeconds,
+    "variants": variants?.toJson(),
+    "story": story?.toJson(),
+  };
+}
+
+/// يرد فقط حين تُستخرَج التذكرة بـ `story: true` (فيديو الستوري).
+class MediaServerStoryVariants {
+  MediaServerStoryVariants({this.enabled, this.variants});
+
+  final bool? enabled;
+  final MediaServerVideoVariants? variants;
+
+  factory MediaServerStoryVariants.fromJson(Map<String, dynamic> json) =>
+      MediaServerStoryVariants(
+        enabled: json["enabled"],
+        variants: json["variants"] != null
+            ? MediaServerVideoVariants.fromJson(json["variants"])
+            : null,
+      );
+
+  Map<String, dynamic> toJson() => {
+    "enabled": enabled,
     "variants": variants?.toJson(),
   };
 }

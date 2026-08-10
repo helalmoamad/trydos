@@ -211,15 +211,28 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   /// server the failing request belongs to and, for market-scoped servers,
   /// silently re-registers the user as a guest to refresh the token.
   ///
-  /// Any decode/lookup failure is intentionally allowed to throw — the caller
-  /// wraps this in a try/catch, matching the original behaviour.
+  /// The HTTP status code is the authoritative signal; the body is only a
+  /// fallback for servers that answer `200` with an error envelope.
   Future<void> _handleUnauthorizedError(DioException err) async {
-    final Map<String, dynamic> body = jsonDecode(err.response.toString());
+    // رمز الحالة أولاً: خادم الميديا المُقيَّد يردّ بـ 401 وجسمه
+    // `{"error": "Unauthorized"}` — بلا أيٍّ من الحقول الثلاثة أدناه، فكان
+    // الفحص القديم يخرج مبكراً ولا يُطلَق تحديث الرمز إطلاقاً.
+    bool isUnauthorized = err.response?.statusCode == 401;
 
-    final bool isUnauthorized =
-        body["message"].toString().contains("Unauth") ||
-        body["code"].toString() == "401" ||
-        body["statusCode"].toString() == "401";
+    if (!isUnauthorized) {
+      // احتياط: خوادم تردّ 200 ومعها غلاف خطأ. وفكّ الجسم قد يفشل إن لم يكن
+      // JSON (صفحة HTML مثلاً) — لا يجوز أن يُسقط ذلك المعالجة كلها.
+      try {
+        final Map<String, dynamic> body = jsonDecode(err.response.toString());
+        isUnauthorized =
+            body["message"].toString().contains("Unauth") ||
+            body["error"].toString().contains("Unauth") ||
+            body["code"].toString() == "401" ||
+            body["statusCode"].toString() == "401";
+      } catch (_) {
+        // جسم غير قابل للتحليل: نكتفي برمز الحالة
+      }
+    }
     if (!isUnauthorized) return;
 
     final String path = err.requestOptions.path;
@@ -247,7 +260,12 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     // guarded by isTokenExpired, which the refresh resets on success). If the
     // refresh itself is rejected, AuthBloc falls back to a brand-new guest
     // session (register-guest) per the auth contract.
-    if ((isFrom("MARKETGo_URL") || isFrom('MARKET_URL'))) {
+    // خادم الميديا يستعمل رمز دخول السوق نفسه في استخراج تذكرة الرفع
+    // (`POST /gated/ticket`)، فرفضه بـ 401 يعني انتهاء رمز السوق — ويُعالَج
+    // بنفس مسار التحديث. بدون هذا السطر كان الرفع يفشل بلا أن يُحدَّث الرمز.
+    if ((isFrom("MARKETGo_URL") ||
+        isFrom('MARKET_URL') ||
+        isFrom('MEDIA_SERVER_URL'))) {
       if (kDebugMode) {
         print("Access token rejected — requesting a token refresh...");
       }

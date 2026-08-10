@@ -29,7 +29,6 @@ import '../../../data/models/ImageDetail.dart';
 import '../../manager/chat_event.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 // ignore: must_be_immutable
 class ImageMessage extends StatefulWidget {
@@ -285,12 +284,6 @@ class _ImageMessageState extends State<ImageMessage> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(widget.imageFile.toString());
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
-    debugPrint('widget.isLocalMessage ${widget.isLocalMessage}');
     return Directionality(
       textDirection: TextDirection.ltr,
       child: BlocConsumer<ChatBloc, ChatState>(
@@ -825,15 +818,43 @@ class _ImageMessageState extends State<ImageMessage> {
               ),
               if (widget.isSent) ...{
                 10.horizontalSpace,
-                SvgPicture.asset(
-                  widget.isRead
-                      ? AppAssets.messageReadArrowSvg
-                      : widget.isReceived
-                      ? AppAssets.messageDeliveredArrowSvg
-                      : AppAssets.messageSentArrowSvg,
-                  width: 10.sp,
-                  height: 10.sp,
-                ),
+                // فشل الإرسال: زرّ إعادة المحاولة وعلامة الفشل — كانت هذه
+                // الحالة مفقودة في الصورة وحدها بينما تعالجها بقية الأنواع،
+                // فيبقى الفشل بلا أي أثر مرئي ولا سبيل لإعادة الإرسال.
+                if (chatBloc.state.currentFailedMessage.contains(
+                  widget.messageId,
+                )) ...{
+                  InkWell(
+                    onTap: () {
+                      chatBloc.add(
+                        ResendMessageEvent(
+                          messageType: "image",
+                          channelId: widget.channelId,
+                          messageId: widget.messageId,
+                        ),
+                      );
+                    },
+                    child: Icon(Icons.refresh, size: 27.w),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 5.w),
+                    child: SvgPicture.asset(
+                      AppAssets.messageFailedSvg,
+                      width: 10.sp,
+                      height: 10.sp,
+                    ),
+                  ),
+                } else ...{
+                  SvgPicture.asset(
+                    widget.isRead
+                        ? AppAssets.messageReadArrowSvg
+                        : widget.isReceived
+                        ? AppAssets.messageDeliveredArrowSvg
+                        : AppAssets.messageSentArrowSvg,
+                    width: 10.sp,
+                    height: 10.sp,
+                  ),
+                },
               },
               if (widget.isForwarded) ...{
                 10.horizontalSpace,

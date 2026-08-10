@@ -761,7 +761,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                             // منع overscroll للحماية من crashes
                             // بناء الصفوف قبل دخولها الشاشة بدل بنائها لحظة
                             // ظهورها (كان 50 = ظهور مفاجئ + سقوط إطارات)
-                            cacheExtent: 300,
+                            cacheExtent: 200,
                             key: TestVariables.kTestMode
                                 ? const Key(WidgetsKeys.productListingScrollKey)
                                 : null,
@@ -3370,7 +3370,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                             addAutomaticKeepAlives: false,
 
                             addSemanticIndexes: false,
-                            cacheExtent: 300,
+                            cacheExtent: 200,
                             controller: sc,
                             itemCount: products[_tapIndexToShowColorImages]
                                 .syncColorImages

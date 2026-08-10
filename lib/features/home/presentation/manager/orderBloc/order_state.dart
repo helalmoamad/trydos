@@ -49,6 +49,9 @@ enum UploadImagesForReturnProductStatus { init, loading, success, failure }
 
 enum UploadImagesToCloudinaryStatus { init, loading, success, failure }
 
+/// حالة إرسال بلاغ عن منتج داخل طلب
+enum ReportOrderProductStatus { init, loading, success, failure }
+
 enum CancelOrderStatus { init, loading, success, failure }
 
 enum ChangeOrderAddressStatus { init, loading, success, failure }
@@ -120,6 +123,7 @@ class OrderState extends Equatable {
     this.uploadImagesForReturnProductStatus =
         UploadImagesForReturnProductStatus.init,
     this.uploadImagesToCloudinaryStatus = UploadImagesToCloudinaryStatus.init,
+    this.reportOrderProductStatus = ReportOrderProductStatus.init,
     this.getAddressByTextStatus = GetAddressByTextStatus.init,
     this.applyCouponStatus = ApplyCouponStatus.init,
     this.applyCouponModel,
@@ -197,6 +201,7 @@ class OrderState extends Equatable {
   final WalletCheckoutStatus? walletCheckoutStatus;
   final UploadImagesForReturnProductStatus uploadImagesForReturnProductStatus;
   final UploadImagesToCloudinaryStatus uploadImagesToCloudinaryStatus;
+  final ReportOrderProductStatus reportOrderProductStatus;
   final StoreReturnRequestProductStatus? storeReturnRequestProductStatus;
   final CancelReturnRequestStatus? cancelReturnRequestStatus;
   final CancelReturnRequestProductStatus? cancelReturnRequestProductStatus;
@@ -233,6 +238,7 @@ class OrderState extends Equatable {
     removeAddressToOrderStatus,
     addAddressToOrderStatus,
     uploadImagesToCloudinaryStatus,
+    reportOrderProductStatus,
     editAddressToOrderStatus,
     getAddressByCoordinatesStatus,
     getAddressByCoordinatesModel,
@@ -282,6 +288,7 @@ class OrderState extends Equatable {
     final UploadImagesForReturnProductStatus?
     uploadImagesForReturnProductStatus,
     final UploadImagesToCloudinaryStatus? uploadImagesToCloudinaryStatus,
+    final ReportOrderProductStatus? reportOrderProductStatus,
     final Map<String, PaginationModel<List<OrderListModel>>>? getOrdersModel,
     final SetCustomerAddressDefaultStatus? setCustomerAddressDefaultStatus,
     final GetCustomerAddressesStatus? getCustomerAddressesStatus,
@@ -342,6 +349,8 @@ class OrderState extends Equatable {
 
       uploadImagesToCloudinaryStatus:
           uploadImagesToCloudinaryStatus ?? this.uploadImagesToCloudinaryStatus,
+      reportOrderProductStatus:
+          reportOrderProductStatus ?? this.reportOrderProductStatus,
       getOrdersByCartGroupIDModel:
           getOrdersByCartGroupIDModel ?? this.getOrdersByCartGroupIDModel,
       imagesForReturn: imagesForReturn ?? this.imagesForReturn,

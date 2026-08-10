@@ -13,6 +13,7 @@ import '../../../domain/use_cases/cancel_order_item_usecase.dart';
 import '../../../domain/use_cases/cancel_order_usecase.dart';
 import '../../../domain/use_cases/change_order_address_usecase.dart';
 import '../../../domain/use_cases/change_order_item_variant_usecase.dart';
+import '../../../domain/use_cases/report_order_product_usecase.dart';
 import '../../../domain/use_cases/store_return_request_product_usecase.dart';
 
 abstract class OrderEvent extends Equatable {
@@ -355,6 +356,29 @@ class UpdateOrderCommentEvent extends OrderEvent {
 
 class GetReturnReasonsEvent extends OrderEvent {
   const GetReturnReasonsEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+/// إرسال بلاغ عن منتج داخل طلب. البلاغ مسموح مرّة واحدة لكل منتج.
+class ReportOrderProductEvent extends OrderEvent {
+  final ReportOrderProductParams params;
+
+  const ReportOrderProductEvent({required this.params});
+
+  @override
+  List<Object?> get props => [
+    params.orderDetailId,
+    params.points.length,
+    params.note,
+    params.image?.path,
+  ];
+}
+
+/// إعادة حالة إرسال البلاغ إلى `init` عند فتح اللوحة أو إغلاقها.
+class ResetReportOrderProductStatusEvent extends OrderEvent {
+  const ResetReportOrderProductStatusEvent();
 
   @override
   List<Object?> get props => [];

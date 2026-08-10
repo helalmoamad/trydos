@@ -380,7 +380,12 @@ class OrderListDetailModel {
   //final List<OrderRatingAndComment>? comments;
   final String? image;
 
+  /// هل سبق الإبلاغ عن هذا المنتج؟ البلاغ مسموح **مرّة واحدة** لكل منتج،
+  /// وبعده تُعرَض بطاقة «استلمنا بلاغك» بلا إجراء.
+  final bool? isReported;
+
   OrderListDetailModel({
+    this.isReported,
     this.id,
     this.orderId,
     this.productId,
@@ -409,6 +414,7 @@ class OrderListDetailModel {
   });
 
   OrderListDetailModel copyWith({
+    bool? isReported,
     int? id,
     int? orderId,
     int? productId,
@@ -461,10 +467,16 @@ class OrderListDetailModel {
     odooId: odooId ?? this.odooId,
     odooOrderId: odooOrderId ?? this.odooOrderId,
     image: image ?? this.image,
+    isReported: isReported ?? this.isReported,
   );
 
   factory OrderListDetailModel.fromJson(Map<String, dynamic> json) {
     return OrderListDetailModel(
+      // يقبل الخادم أن يرسلها منطقية أو رقمية
+      isReported:
+          json["is_reported"] == true ||
+          json["is_reported"] == 1 ||
+          json["is_reported"] == "1",
       id: json["id"],
       orderId: json["order_id"],
       productId: json["product_id"],

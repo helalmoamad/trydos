@@ -87,6 +87,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       ),
     );
     authBloc.add(GetCustomerInfoEvent());
+    dashboardBloc.add(dashboard.GetUserPermissionEvent());
     orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
     // walletEvents = authEvents.listen((evt) async {
@@ -323,48 +324,44 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                           )
                         : (state.getUserPermissionStatus ==
                                   dashboard.GetUserPermissionStatus.success &&
-                              (!(state.shops?.isNullOrEmpty ?? true)))
-                        ? (state.shops?.first.isMaster ?? false)
-                              ? const SizedBox.shrink()
-                              : InkWell(
-                                  onTap: () {
-                                    if (!(prefsRepository.isVerifiedPhone ??
-                                        false)) {
-                                      GuestPhoneVerificationDialog.show(
-                                        context,
-                                        onVerified: _onGuestVerified,
-                                      );
-                                      return;
-                                    }
-                                    showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      backgroundColor: Colors.transparent,
-                                      builder: (context) => SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                            0.8,
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                            bottom: MediaQuery.of(
-                                              context,
-                                            ).viewInsets.bottom,
-                                          ),
-                                          child: const BecomeSellerPage(),
-                                        ),
-                                      ),
-                                    );
-                                  },
+                              ((state.shops?.isNullOrEmpty ?? true) ||
+                                  (((state.shops?.length ?? 0) > 0) &&
+                                      (state.shops?.first.isMaster ?? false))))
+                        ? InkWell(
+                            onTap: () {
+                              if (!(prefsRepository.isVerifiedPhone ?? false)) {
+                                GuestPhoneVerificationDialog.show(
+                                  context,
+                                  onVerified: _onGuestVerified,
+                                );
+                                return;
+                              }
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) => SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.8,
                                   child: Padding(
-                                    padding: EdgeInsetsGeometry.only(
-                                      bottom: 10.h,
+                                    padding: EdgeInsets.only(
+                                      bottom: MediaQuery.of(
+                                        context,
+                                      ).viewInsets.bottom,
                                     ),
-                                    child: _actionWidget(
-                                      AppAssets.sellerSvg,
-                                      LocaleKeys.become_a_seller_at_trydos.tr(),
-                                    ),
+                                    child: const BecomeSellerPage(),
                                   ),
-                                )
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding: EdgeInsetsGeometry.only(bottom: 10.h),
+                              child: _actionWidget(
+                                AppAssets.sellerSvg,
+                                LocaleKeys.become_a_seller_at_trydos.tr(),
+                              ),
+                            ),
+                          )
                         : const SizedBox.shrink();
                   },
                 ),
@@ -434,6 +431,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       ),
     );
     orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
+    dashboardBloc.add(dashboard.GetUserPermissionEvent());
   }
 
   Widget _languageWidget() {

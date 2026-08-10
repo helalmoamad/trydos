@@ -37,7 +37,8 @@ import 'package:trydos/features/home/data/models/translate_comment_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/data/models/update_return_request_model.dart';
-import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
+// ⛔ مع الدوال المعلَّقة: الرفع انتقل إلى خادم الميديا
+// import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
 import '../../../../core/error/failures.dart';
 import '../../data/models/apply_coupon_model.dart';
 import '../../data/models/check_availability_product_cart_model.dart';
@@ -56,7 +57,8 @@ import '../../data/models/change_order_address_model.dart';
 import '../../data/models/color_size_for_product.dart';
 import '../../data/models/order_comment_model.dart';
 import '../../data/models/return_reasons_model.dart';
-import '../../data/models/upload_images_for_return_product_model.dart';
+// ⛔ مع الدوال المعلَّقة: الرفع انتقل إلى خادم الميديا
+// import '../../data/models/upload_images_for_return_product_model.dart';
 import '../../data/models/return_request_product_model.dart';
 import 'package:trydos/features/home/data/models/create_return_request_model.dart';
 import 'package:trydos/features/home/data/models/get_auth_product_details_model.dart';
@@ -156,9 +158,10 @@ abstract class HomeRepository {
   Future<Either<Failure, GetProvincesByIsoModel>> getProvincesByIso();
   Future<Either<Failure, GetAllowedCountriesModel>> getAllowCountries();
   Future<Either<Failure, GetStoryForProductModel>> getStories(String productId);
-  Future<Either<Failure, UploadUserPhotoModel>> uploadUserPhoto(
-    Map<String, dynamic> params,
-  );
+  // ⛔ لم تعد مستعملة: الرفع انتقل إلى خادم الميديا (التدفّق المُقيَّد)
+  // Future<Either<Failure, UploadUserPhotoModel>> uploadUserPhoto(
+  //   Map<String, dynamic> params,
+  // );
   Future<Either<Failure, GetProductListingWithFiltersModel>>
   getProductsWithFilters(Map<String, dynamic> params);
   Future<Either<Failure, GetProductListingWithFiltersModel>>
@@ -276,8 +279,14 @@ abstract class HomeRepository {
 
   Future<Either<Failure, ReturnReasonsModel>> getReturnReasons();
 
-  Future<Either<Failure, UploadImagesForReturnProductModel>>
-  uploadImagesForReturnProduct(Map<String, dynamic> params);
+  // ⛔ لم تعد مستعملة: الرفع انتقل إلى خادم الميديا (التدفّق المُقيَّد)
+  // Future<Either<Failure, UploadImagesForReturnProductModel>>
+  // uploadImagesForReturnProduct(Map<String, dynamic> params);
+
+  /// الإبلاغ عن منتج داخل طلب — مرّة واحدة لكل منتج.
+  Future<Either<Failure, ResponseOnlyMessageModel>> reportOrderProduct(
+    Map<String, dynamic> params,
+  );
 
   Future<Either<Failure, StoreReturnRequestProductModel>>
   storeReturnRequestProduct(Map<String, dynamic> params);

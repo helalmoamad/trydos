@@ -47,6 +47,7 @@ import 'order_event.dart';
 import 'order_state.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import '../../../domain/use_cases/get_return_reasons_usecase.dart';
+import '../../../domain/use_cases/report_order_product_usecase.dart';
 import '../../../domain/use_cases/store_return_request_product_usecase.dart';
 import '../../../domain/use_cases/cancel_return_request_usecase.dart';
 import '../../../domain/use_cases/cancel_return_request_product_usecase.dart';
@@ -87,6 +88,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   final CancelReturnRequestProductUseCase cancelReturnRequestProductUseCase;
   final StoreReturnRequestUseCase storeReturnRequestUseCase;
   final UploadImagesProductReturnUseCase uploadImagesProductReturnUseCase;
+  final ReportOrderProductUseCase reportOrderProductUseCase;
   final OrderReturnDetailsUseCase orderReturnDetailsUseCase;
   final UpdateReturnRequestProductUseCase updateReturnRequestProductUseCase;
   final SetOrderVisibilityUseCase setOrderVisibilityUseCase;
@@ -98,6 +100,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     this.cancelOrderItemUsecase,
     this.cancelOrderUsecase,
     this.uploadImagesProductReturnUseCase,
+    this.reportOrderProductUseCase,
     this.changeOrderAddressUsecase,
     this.getOrdersByOrderGroupIDUsecase,
     this.getOrdersByCartGroupIDUsecase,
@@ -181,6 +184,11 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     //on<UpdateOrderCommentEvent>(_onUpdateOrderCommentEvent);
     on<GetReturnReasonsEvent>(_onGetReturnReasonsEvent);
     on<StoreReturnRequestProductEvent>(_onStoreReturnRequestProductEvent);
+    on<ReportOrderProductEvent>(_onReportOrderProductEvent);
+    on<ResetReportOrderProductStatusEvent>(
+      (event, emit) =>
+          emit(state.copyWith(reportOrderProductStatus: ReportOrderProductStatus.init)),
+    );
     on<CancelReturnRequestEvent>(_onCancelReturnRequestEvent);
     on<CancelReturnRequestProductEvent>(_onCancelReturnRequestProductEvent);
     on<FetchOrderReturnDetailsEvent>(
@@ -272,6 +280,80 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         imagesForComment: imagesForComment,
       ),
     );
+  }
+
+  /// إرسال بلاغ عن منتج داخل طلب.
+  ///
+  /// عند النجاح تُعلَّم تفصيلة المنتج بـ `isReported` في الطلبات المحمَّلة، فلا
+  /// يحتاج المستخدم إلى إعادة تحميل الصفحة لترى البطاقة حالتها الجديدة.
+  FutureOr<void> _onReportOrderProductEvent(
+    ReportOrderProductEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(
+      state.copyWith(reportOrderProductStatus: ReportOrderProductStatus.loading),
+    );
+
+    final response = await reportOrderProductUseCase(event.params);
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            reportOrderProductStatus: ReportOrderProductStatus.failure,
+          ),
+        );
+        showMessage(l.message, hasError: true);
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            reportOrderProductStatus: ReportOrderProductStatus.success,
+            getOrdersModel: _markProductAsReported(event.params.orderDetailId),
+          ),
+        );
+        // رسالة الخادم إن وُجدت، وإلا نصّ الاستلام المترجَم
+        showMessage(
+          (r.message?.isNotEmpty ?? false)
+              ? r.message!
+              : LocaleKeys.report_received_title.tr(),
+        );
+      },
+    );
+  }
+
+  /// تعليم تفصيلة المنتج المُبلَّغ عنها داخل نسخة الطلبات المحفوظة في الحالة.
+  Map<String, PaginationModel<List<OrderListModel>>> _markProductAsReported(
+    int orderDetailId,
+  ) {
+    final Map<String, PaginationModel<List<OrderListModel>>> orders = Map.of(
+      state.getOrdersModel ?? {},
+    );
+
+    // items هنا List<List<OrderListModel>> — صفحة تحوي مجموعات طلبات
+    orders.updateAll(
+      (key, page) => page.copyWith(
+        items: page.items
+            .map(
+              (group) => group
+                  .map(
+                    (order) => order.copyWith(
+                      details: order.details
+                          ?.map(
+                            (detail) => detail.id == orderDetailId
+                                ? detail.copyWith(isReported: true)
+                                : detail,
+                          )
+                          .toList(),
+                    ),
+                  )
+                  .toList(),
+            )
+            .toList(),
+      ),
+    );
+
+    return orders;
   }
 
   FutureOr<void> _onUploadImagesToCloudinaryEvent(

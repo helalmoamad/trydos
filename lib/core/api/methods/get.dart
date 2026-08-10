@@ -54,9 +54,10 @@ class GetClient<T> extends BaseApi<T> {
       );
 
       stopWatch.stop();
-      if (kDebugMode) print(
-        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${requestPrams.queryParameters}",
-      );
+      if (kDebugMode)
+        print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${requestPrams.queryParameters}",
+        );
       // Prepare data for saving - handle String, null, or empty responses
       dynamic dataToSave = response.data;
       if (dataToSave is String) {

@@ -46,7 +46,8 @@ abstract class MarketEndPoints {
   static final addCustomerAddressEP = "address/add".customerScope();
   static final getCustomerAddressesEP = "address/list".customerScope();
   static final getOrderListEP = "order/list".customerScope();
-  static final uploadUserPhotoModelEP = "storage-upload".storageScope();
+  // ⛔ لم تعد مستعملة: الرفع انتقل إلى خادم الميديا (التدفّق المُقيَّد)
+  // static final uploadUserPhotoModelEP = "storage-upload".storageScope();
   static final updateProfileEP = "update-profile".customerScope();
   static final setCustomerAddressDefaultEP = "address/set-default"
       .customerScope();
@@ -73,7 +74,11 @@ abstract class MarketEndPoints {
   static final getReturnReasonsEP = "order/return_requests/reasons"
       .customerScope();
 
-  static final uploadImagesForReturnProductEP = "storage-upload".storageScope();
+  // ⛔ لم تعد مستعملة: الرفع انتقل إلى خادم الميديا (التدفّق المُقيَّد)
+  // static final uploadImagesForReturnProductEP =
+  //     "storage-upload".storageScope();
+  /// الإبلاغ عن منتج داخل طلب — مرّة واحدة لكل منتج.
+  static final reportOrderProductEP = "order/report".customerScope();
   static final storeReturnRequestProductEP =
       "order/return_request_products/store".customerScope();
   static final updateReturnRequestProductEP =

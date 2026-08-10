@@ -408,7 +408,7 @@ class _HomePageState extends State<HomePage> {
             : null,
         controller: scrollController,
         // بناء الأقسام قبل دخولها الشاشة لمنع ظهورها المفاجئ أثناء التمرير
-        cacheExtent: 300,
+        cacheExtent: 200,
         physics: const ClampingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -23,6 +22,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/core/utils/media_display_url.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -370,7 +370,11 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                                                                   ),
                                                               child: MyCachedNetworkImage(
                                                                 imageUrl:
-                                                                    '${dotenv.env['Media_S3_Server']}/rating_orders/${_orderPhotos![index]!}',
+                                                                    mediaDisplayUrl(
+                                                                      _orderPhotos![index]!,
+                                                                      legacyFolder:
+                                                                          'rating_orders',
+                                                                    ),
                                                                 imageFit:
                                                                     BoxFit.fill,
                                                                 width: 57,
@@ -456,7 +460,11 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                                                                   ),
                                                               child: MyCachedNetworkImage(
                                                                 imageUrl:
-                                                                    '${dotenv.env['Media_S3_Server']}/rating_orders/${_orderPhotos![index]!}',
+                                                                    mediaDisplayUrl(
+                                                                      _orderPhotos![index]!,
+                                                                      legacyFolder:
+                                                                          'rating_orders',
+                                                                    ),
                                                                 imageFit:
                                                                     BoxFit.fill,
                                                                 width: 57,

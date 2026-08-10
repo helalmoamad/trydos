@@ -46,7 +46,8 @@ import 'package:trydos/features/home/data/models/translate_comment_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/data/models/update_return_request_model.dart';
-import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
+// ⛔ مع الدوال المعلَّقة: الرفع انتقل إلى خادم الميديا
+// import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
@@ -70,7 +71,8 @@ import '../models/change_order_address_model.dart';
 import '../models/color_size_for_product.dart';
 import '../models/order_comment_model.dart';
 import '../models/return_reasons_model.dart';
-import '../models/upload_images_for_return_product_model.dart';
+// ⛔ مع الدوال المعلَّقة: الرفع انتقل إلى خادم الميديا
+// import '../models/upload_images_for_return_product_model.dart';
 import '../models/return_request_product_model.dart';
 import 'package:trydos/features/home/data/models/get_order_details_return_model.dart';
 import 'package:trydos/features/home/data/models/get_auth_product_details_model.dart';
@@ -738,20 +740,25 @@ class HomeRemoteDatasource {
     return updateProfile();
   }
 
-  Future<UploadUserPhotoModel> uploadUserPhoto(Map<String, dynamic> params) {
-    PostClient<UploadUserPhotoModel> uploadUserPhoto =
-        PostClient<UploadUserPhotoModel>(
-          serverName: ServerName.market,
-          requestPrams: RequestConfig<UploadUserPhotoModel>(
-            endpoint: MarketEndPoints.uploadUserPhotoModelEP,
-            data: params['data'],
-            response: ResponseValue<UploadUserPhotoModel>(
-              fromJson: (response) => UploadUserPhotoModel.fromJson(response),
-            ),
-          ),
-        );
-    return uploadUserPhoto();
-  }
+  // ⛔ لم تعد مستعملة: رفع صورة الملف الشخصي انتقل إلى خادم الميديا عبر
+  // التدفّق المُقيَّد (`POST /gated/ticket` ثم `POST /gated/upload` بمجلّد
+  // `customers/profile`). انظر UpdateUserPhotoUseCase.
+  // تُركت معلَّقة للرجوع إليها إن لزم.
+  //
+  // Future<UploadUserPhotoModel> uploadUserPhoto(Map<String, dynamic> params) {
+  //   PostClient<UploadUserPhotoModel> uploadUserPhoto =
+  //       PostClient<UploadUserPhotoModel>(
+  //         serverName: ServerName.market,
+  //         requestPrams: RequestConfig<UploadUserPhotoModel>(
+  //           endpoint: MarketEndPoints.uploadUserPhotoModelEP,
+  //           data: params['data'],
+  //           response: ResponseValue<UploadUserPhotoModel>(
+  //             fromJson: (response) => UploadUserPhotoModel.fromJson(response),
+  //           ),
+  //         ),
+  //       );
+  //   return uploadUserPhoto();
+  // }
 
   Future<GetListOfCustomerAddressesInfoModel> getCustomerAddresses() {
     GetClient<GetListOfCustomerAddressesInfoModel> getCustomerAddresses =
@@ -1552,23 +1559,51 @@ class HomeRemoteDatasource {
     return getReturnReasons();
   }
 
-  Future<UploadImagesForReturnProductModel> uploadImagesForReturnProduct(
+  // ⛔ لم تعد مستعملة: رفع صور تقييم الطلب وطلب الإرجاع انتقل إلى خادم
+  // الميديا عبر التدفّق المُقيَّد، بمجلّدَي `rating_orders` و
+  // `return_request_products`. انظر UploadImagesProductReturnUseCase.
+  // تُركت معلَّقة للرجوع إليها إن لزم.
+  //
+  // Future<UploadImagesForReturnProductModel> uploadImagesForReturnProduct(
+  //   Map<String, dynamic> params,
+  // ) {
+  //   PostClient<UploadImagesForReturnProductModel> uploadImagesForReturnProduct =
+  //       PostClient<UploadImagesForReturnProductModel>(
+  //         serverName: ServerName.market,
+  //         requestPrams: RequestConfig<UploadImagesForReturnProductModel>(
+  //           endpoint: MarketEndPoints.uploadImagesForReturnProductEP,
+  //           data: params['data'],
+  //           response: ResponseValue<UploadImagesForReturnProductModel>(
+  //             fromJson: (response) =>
+  //                 UploadImagesForReturnProductModel.fromJson(response),
+  //           ),
+  //         ),
+  //       );
+  //
+  //   return uploadImagesForReturnProduct();
+  // }
+
+  /// `POST /customer/order/report`
+  ///
+  /// الجسم إمّا `FormData` (عند إرفاق صورة) أو JSON — تبنيه
+  /// [ReportOrderProductParams] ويصل هنا جاهزاً في `params['data']`.
+  Future<ResponseOnlyMessageModel> reportOrderProduct(
     Map<String, dynamic> params,
   ) {
-    PostClient<UploadImagesForReturnProductModel> uploadImagesForReturnProduct =
-        PostClient<UploadImagesForReturnProductModel>(
+    PostClient<ResponseOnlyMessageModel> reportOrderProduct =
+        PostClient<ResponseOnlyMessageModel>(
           serverName: ServerName.market,
-          requestPrams: RequestConfig<UploadImagesForReturnProductModel>(
-            endpoint: MarketEndPoints.uploadImagesForReturnProductEP,
+          requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+            endpoint: MarketEndPoints.reportOrderProductEP,
             data: params['data'],
-            response: ResponseValue<UploadImagesForReturnProductModel>(
+            response: ResponseValue<ResponseOnlyMessageModel>(
               fromJson: (response) =>
-                  UploadImagesForReturnProductModel.fromJson(response),
+                  ResponseOnlyMessageModel.fromJson(response),
             ),
           ),
         );
 
-    return uploadImagesForReturnProduct();
+    return reportOrderProduct();
   }
 
   Future<StoreReturnRequestProductModel> storeReturnRequestProduct(

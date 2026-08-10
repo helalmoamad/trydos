@@ -152,6 +152,12 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
         json['uploadImagesToCloudinaryStatus'],
       ) ??
       UploadImagesToCloudinaryStatus.init,
+  reportOrderProductStatus:
+      $enumDecodeNullable(
+        _$ReportOrderProductStatusEnumMap,
+        json['reportOrderProductStatus'],
+      ) ??
+      ReportOrderProductStatus.init,
   getAddressByTextStatus:
       $enumDecodeNullable(
         _$GetAddressByTextStatusEnumMap,
@@ -378,6 +384,8 @@ Map<String, dynamic> _$OrderStateToJson(
   'uploadImagesToCloudinaryStatus':
       _$UploadImagesToCloudinaryStatusEnumMap[instance
           .uploadImagesToCloudinaryStatus]!,
+  'reportOrderProductStatus':
+      _$ReportOrderProductStatusEnumMap[instance.reportOrderProductStatus]!,
   'storeReturnRequestProductStatus':
       _$StoreReturnRequestProductStatusEnumMap[instance
           .storeReturnRequestProductStatus],
@@ -511,6 +519,13 @@ const _$UploadImagesToCloudinaryStatusEnumMap = {
   UploadImagesToCloudinaryStatus.loading: 'loading',
   UploadImagesToCloudinaryStatus.success: 'success',
   UploadImagesToCloudinaryStatus.failure: 'failure',
+};
+
+const _$ReportOrderProductStatusEnumMap = {
+  ReportOrderProductStatus.init: 'init',
+  ReportOrderProductStatus.loading: 'loading',
+  ReportOrderProductStatus.success: 'success',
+  ReportOrderProductStatus.failure: 'failure',
 };
 
 const _$GetAddressByTextStatusEnumMap = {

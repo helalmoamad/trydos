@@ -17,6 +17,8 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/utils/media_display_url.dart';
+import 'package:trydos/features/home/presentation/widgets/order_report_panel.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
@@ -7718,6 +7720,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
     if (_option == "Return_This_Product") {
       return panelReturnedContent(sc);
     }
+    if (_option == "Report_This_Product") {
+      return panelReportContent(sc);
+    }
     if (_option == "Change_Product_Request") {
       return panelVaraintContent(sc);
     }
@@ -7993,21 +7998,40 @@ class _OrderDetails2 extends State<OrderDetails2> {
                   ),
                 )
               : const SizedBox.shrink(),
-          SizedBox(height: 5.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: optionOfModify(
-              onTap: () {
-                orderBloc.add(const ResetAllStatusEvent());
-                optionModifyPanel.value = "Report_This_Product";
-              },
-              svg: AppAssets.reporthisProductSvg,
-              image2: "",
-              tiltle: "${LocaleKeys.report_this_product.tr()}",
-              body:
-                  "${LocaleKeys.delivery_time_delivery_man_delivery_car.tr()}",
+          // الإبلاغ متاح فقط بعد التسليم — قبله لا معنى للسؤال عن جودة
+          // المنتج أو التوصيل أو المندوب.
+          if (_canReportOrder) ...[
+            SizedBox(height: 5.h),
+            // البلاغ مسموح مرّة واحدة لكل منتج: بعده تبقى البطاقة معروضة بلا
+            // إجراء، وتحمل رسالة الاستلام بدل عنوان الإبلاغ.
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: Builder(
+                builder: (context) {
+                  final bool isReported =
+                      (indexTap.value < (order?.details?.length ?? 0)) &&
+                      (order!.details![indexTap.value].isReported ?? false);
+
+                  return optionOfModify(
+                    onTap: () {
+                      if (isReported) return;
+                      orderBloc.add(const ResetAllStatusEvent());
+                      optionModifyPanel.value = "Report_This_Product";
+                    },
+                    svg: AppAssets.reporthisProductSvg,
+                    image2: "",
+                    tiltle: isReported
+                        ? LocaleKeys.report_received_title.tr()
+                        : LocaleKeys.report_this_product.tr(),
+                    body: isReported
+                        ? LocaleKeys.report_received_body.tr()
+                        : LocaleKeys.delivery_time_delivery_man_delivery_car
+                              .tr(),
+                  );
+                },
+              ),
             ),
-          ),
+          ],
           (order?.canCanceleOrder ?? false)
               ? SizedBox(height: 5.h)
               : const SizedBox.shrink(),
@@ -8076,6 +8100,53 @@ class _OrderDetails2 extends State<OrderDetails2> {
           ),
         ],
       ),
+    );
+  }
+
+  /// هل يجوز الإبلاغ عن منتجات هذا الطلب؟
+  ///
+  /// الإبلاغ متاح بعد التسليم فقط. وحالات الإرجاع تُحتسب تسليماً أيضاً —
+  /// المنتج وصل المستخدم فعلاً ثم طُلب إرجاعه، وهي نفس القاعدة المستعملة في
+  /// أيقونة حالة الطلب في هذه الصفحة.
+  bool get _canReportOrder {
+    final String status = order?.orderGroupStatus?.value ?? '';
+    return status == 'delivered';
+  }
+
+  /// لوحة الإبلاغ عن منتج داخل الطلب.
+  ///
+  /// المنطق كلّه في [OrderReportPanel]؛ هنا نمرّر معرّفات المنتج المختار
+  /// ونتكفّل بإغلاق اللوحة عند الإلغاء أو بعد نجاح الإرسال.
+  Widget panelReportContent(ScrollController sc) {
+    if (indexTap.value >= (order?.details?.length ?? 0)) {
+      return const SizedBox.shrink();
+    }
+    final OrderListDetailModel detail = order!.details![indexTap.value];
+
+    return OrderReportPanel(
+      scrollController: sc,
+      orderId: detail.orderId ?? order?.id ?? 0,
+      orderDetailId: detail.id ?? 0,
+      productId: detail.productId ?? 0,
+      orderGroupId: order?.orderGroupId ?? '',
+      // البطاقة تقرأ من نسخة الطلب المحلّية في هذه الصفحة، فتُعلَّم هنا فور
+      // نجاح البلاغ — بلا انتظار إعادة تحميل الصفحة.
+      onReported: () {
+        final int index = indexTap.value;
+        final List<OrderListDetailModel> details = List.of(
+          order?.details ?? const [],
+        );
+        if (index < details.length) {
+          details[index] = details[index].copyWith(isReported: true);
+          setState(() => order = order?.copyWith(details: details));
+        }
+      },
+      onClose: () {
+        panelController.close();
+        showPanel.value = false;
+        optionModifyPanel.value = null;
+        showShadowForPanel.value = false;
+      },
     );
   }
 
@@ -9928,14 +9999,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                           ),
                                                                         ),
                                                                     child: MyCachedNetworkImage(
-                                                                      imageUrl:
-                                                                          (_orderPhotos![index].toString().contains(
-                                                                            "cloudinary",
-                                                                          )
-                                                                          ? _orderPhotos[index]!
-                                                                          : ("${dotenv.env['Images_Url']}") +
-                                                                                "/return_request_products/" +
-                                                                                _orderPhotos[index]!),
+                                                                      imageUrl: mediaDisplayUrl(
+                                                                        _orderPhotos![index]!,
+                                                                        legacyFolder:
+                                                                            'return_request_products',
+                                                                        baseUrl:
+                                                                            dotenv.env['Images_Url'],
+                                                                      ),
                                                                       imageFit:
                                                                           BoxFit
                                                                               .fill,
@@ -10025,14 +10095,13 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                           ),
                                                                         ),
                                                                     child: MyCachedNetworkImage(
-                                                                      imageUrl:
-                                                                          (_orderPhotos![index].toString().contains(
-                                                                            "cloudinary",
-                                                                          )
-                                                                          ? _orderPhotos[index]!
-                                                                          : ("${dotenv.env['Images_Url']}") +
-                                                                                "/return_request_products/" +
-                                                                                _orderPhotos[index]!),
+                                                                      imageUrl: mediaDisplayUrl(
+                                                                        _orderPhotos![index]!,
+                                                                        legacyFolder:
+                                                                            'return_request_products',
+                                                                        baseUrl:
+                                                                            dotenv.env['Images_Url'],
+                                                                      ),
                                                                       imageFit:
                                                                           BoxFit
                                                                               .fill,

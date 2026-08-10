@@ -160,7 +160,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
       (r) {
         emit(
           (state.copyWith(
-            shops: r.shops,
+            shops: r.shops ?? [],
 
             getUserPermissionStatus: GetUserPermissionStatus.success,
           )),
@@ -755,7 +755,8 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   /// Max accepted video length, enforced by the backend as well.
   static const int _maxStoryVideoSeconds = 60;
 
-  int? get _storiesUserId => int.tryParse(GetIt.I<PrefsRepository>().myMarketId!);
+  int? get _storiesUserId =>
+      int.tryParse(GetIt.I<PrefsRepository>().myMarketId!);
 
   int? get _storiesSellerId =>
       int.tryParse(GetIt.I<PrefsRepository>().getXSellerId ?? '');
