@@ -18,7 +18,8 @@ class GetRecommendProductsUseCase
 
   @override
   Future<Either<Failure, GetProductListingWithFiltersModel>> call(
-      GetRecommendProductsParams params) async {
+    GetRecommendProductsParams params,
+  ) async {
     return repository.getRecommendedProducts(params.map);
   }
 }
@@ -27,17 +28,15 @@ class GetRecommendProductsParams {
   final List<double>? offset;
   final int? limit;
   final List<String>? categorySlugs;
-  GetRecommendProductsParams({
-    this.offset,
-    this.limit,
-    this.categorySlugs,
-  });
+  GetRecommendProductsParams({this.offset, this.limit, this.categorySlugs});
 
-  Map<String, dynamic> get map => {
+  Map<String, dynamic> get map =>
+      {
         "offset": offset.isNullOrEmpty ? null : offset.toString(),
-        "limit": "20",
+        "limit": "10",
         "user_id": GetIt.I<PrefsRepository>().myMarketId,
         "category_slugs": categorySlugs.toString(),
       }..removeWhere(
-          (key, value) => value == null || value == 'null' || value == '');
+        (key, value) => value == null || value == 'null' || value == '',
+      );
 }

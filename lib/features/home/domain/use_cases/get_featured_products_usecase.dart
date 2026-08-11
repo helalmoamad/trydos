@@ -16,7 +16,8 @@ class GetFeaturedProductsUseCase
 
   @override
   Future<Either<Failure, GetProductListingWithFiltersModel>> call(
-      GetFeaturedProductsParams params) async {
+    GetFeaturedProductsParams params,
+  ) async {
     return repository.getFeaturedProducts(params.map);
   }
 }
@@ -25,15 +26,11 @@ class GetFeaturedProductsParams {
   final List<double>? offset;
   final int? limit;
   final List<String>? categorySlugs;
-  GetFeaturedProductsParams({
-    this.offset,
-    this.limit,
-    this.categorySlugs,
-  });
+  GetFeaturedProductsParams({this.offset, this.limit, this.categorySlugs});
 
   Map<String, dynamic> get map => {
-        "offset": offset.isNullOrEmpty ? null : offset.toString(),
-        "limit": "20",
-        "category_slugs": categorySlugs.toString(),
-      }..removeWhere((key, value) => value == null || value == 'null');
+    "offset": offset.isNullOrEmpty ? null : offset.toString(),
+    "limit": "10",
+    "category_slugs": categorySlugs.toString(),
+  }..removeWhere((key, value) => value == null || value == 'null');
 }

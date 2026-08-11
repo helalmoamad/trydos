@@ -11,15 +11,18 @@ import '../repositories/home_repository.dart';
 @injectable
 class GetProductsWithFiltersUseCase
     implements
-        UseCase<GetProductListingWithFiltersModel,
-            GetProductsWithFiltersParams> {
+        UseCase<
+          GetProductListingWithFiltersModel,
+          GetProductsWithFiltersParams
+        > {
   GetProductsWithFiltersUseCase(this.repository);
 
   final HomeRepository repository;
 
   @override
   Future<Either<Failure, GetProductListingWithFiltersModel>> call(
-      GetProductsWithFiltersParams params) async {
+    GetProductsWithFiltersParams params,
+  ) async {
     return repository.getProductsWithFilters(params.map);
   }
 }
@@ -48,27 +51,29 @@ class GetProductsWithFiltersParams {
   /// Sort key sent to `searchInCatalog` (e.g. best_selling, newest, oldest,
   /// price_asc, price_desc, name_asc, name_desc). Null/empty = default relevance.
   final String? sort;
-  GetProductsWithFiltersParams(
-      {this.prices,
-      this.brands,
-      this.boutiqueSlugs,
-      this.attributes,
-      this.categories,
-      this.colors,
-      this.flashDeal = false,
-      this.scroll_id,
-      //required this.fromMarket,
-      this.boutiqueSlug,
-      this.searchText,
-      this.offset,
-      this.offsetFilter,
-      this.limit,
-      this.brandSlugs,
-      this.categorySlugs,
-      this.sort,
-      this.category});
+  GetProductsWithFiltersParams({
+    this.prices,
+    this.brands,
+    this.boutiqueSlugs,
+    this.attributes,
+    this.categories,
+    this.colors,
+    this.flashDeal = false,
+    this.scroll_id,
+    //required this.fromMarket,
+    this.boutiqueSlug,
+    this.searchText,
+    this.offset,
+    this.offsetFilter,
+    this.limit,
+    this.brandSlugs,
+    this.categorySlugs,
+    this.sort,
+    this.category,
+  });
 
-  Map<String, dynamic> get map => {
+  Map<String, dynamic> get map =>
+      {
         "category": category,
         "price": prices.toString(),
         "brands": brands.toString(),
@@ -76,32 +81,34 @@ class GetProductsWithFiltersParams {
         "attributes": "${attributes}",
         "tags_names":
             ((GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty)
-                ? null
-                : (GetIt.I<PrefsRepository>()
-                        .getTagsInUrlToFilter!
-                        .map((e) => '"${e}"')
-                        .toList())
-                    .toString()),
+            ? null
+            : (GetIt.I<PrefsRepository>().getTagsInUrlToFilter!
+                      .map((e) => '"${e}"')
+                      .toList())
+                  .toString()),
         "filters_offset": offsetFilter,
         "categories": categories.toString(),
         "colors": colors.toString(),
         //    "fromMarket": "$fromMarket",
-        "search_text":
-            searchText == "" || searchText == null ? null : '"${searchText}"',
+        "search_text": searchText == "" || searchText == null
+            ? null
+            : '"${searchText}"',
         "sort": sort == "" || sort == null ? null : sort,
         "offset": offset.toString(),
-        "limit": "20",
+        "limit": "10",
         // "scroll_id": scroll_id,
         "boutique_slug": boutiqueSlug,
         "boutique_slugs": boutiqueSlugs.toString(),
         "category_slugs": categorySlugs.toString(),
-        "brand_slugs": brandSlugs.toString()
-      }..removeWhere((key, value) =>
-          value == null ||
-          value == 'null' ||
-          value == [''].toString() ||
-          value == [].toString() ||
-          value == ["search"].toString() ||
-          value == ['null'].toString() ||
-          value == "");
+        "brand_slugs": brandSlugs.toString(),
+      }..removeWhere(
+        (key, value) =>
+            value == null ||
+            value == 'null' ||
+            value == [''].toString() ||
+            value == [].toString() ||
+            value == ["search"].toString() ||
+            value == ['null'].toString() ||
+            value == "",
+      );
 }

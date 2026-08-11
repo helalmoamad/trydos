@@ -17,7 +17,8 @@ class GetProductFiltersUseCase
 
   @override
   Future<Either<Failure, GetProductFiltersModel>> call(
-      GetProductsFiltersParams params) async {
+    GetProductsFiltersParams params,
+  ) async {
     return repository.getProductFilters(params.map);
   }
 }
@@ -41,56 +42,60 @@ class GetProductsFiltersParams {
   final List<String>? categorySlugs;
 
   final List<String>? brandSlugs;
-  GetProductsFiltersParams(
-      {this.prices,
-      this.brands,
-      this.boutiqueSlugs,
-      this.attributes,
-      this.offsetFilter,
-      this.colors,
-      this.boutiqueSlug,
-      this.searchText,
-      this.scroll_id,
-      //  required this.fromMarket,
-      this.offset,
-      this.limit,
-      this.brandSlugs,
-      this.categorySlugs,
-      this.category});
+  GetProductsFiltersParams({
+    this.prices,
+    this.brands,
+    this.boutiqueSlugs,
+    this.attributes,
+    this.offsetFilter,
+    this.colors,
+    this.boutiqueSlug,
+    this.searchText,
+    this.scroll_id,
+    //  required this.fromMarket,
+    this.offset,
+    this.limit,
+    this.brandSlugs,
+    this.categorySlugs,
+    this.category,
+  });
 
-  Map<String, dynamic> get map => {
+  Map<String, dynamic> get map =>
+      {
         "category": category,
         "price": prices.toString(),
         "brands": brands.toString(),
         "tags_names":
             ((GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty)
-                ? null
-                : (GetIt.I<PrefsRepository>()
-                        .getTagsInUrlToFilter!
-                        .map((e) => '"${e}"')
-                        .toList())
-                    .toString()),
+            ? null
+            : (GetIt.I<PrefsRepository>().getTagsInUrlToFilter!
+                      .map((e) => '"${e}"')
+                      .toList())
+                  .toString()),
         "filters_offset": offsetFilter,
         "attributes": attributes.toString(),
 
         "colors": colors.toString(),
-        "search_text":
-            searchText == "" || searchText == null ? null : '"${searchText}"',
+        "search_text": searchText == "" || searchText == null
+            ? null
+            : '"${searchText}"',
         "offset": "[]",
         // "scroll_id": scroll_id,
         "with_products": '${false}',
         //  "fromMarket": "$fromMarket",
-        "limit": "20",
+        "limit": "10",
         "boutique_slug": boutiqueSlug,
         "boutique_slugs": boutiqueSlugs.toString(),
         "category_slugs": categorySlugs.toString(),
-        "brand_slugs": brandSlugs.toString()
-      }..removeWhere((key, value) =>
-          value == null ||
-          value == 'null' ||
-          value == [].toString() ||
-          value == [''].toString() ||
-          value == ["null"].toString() ||
-          value == ["search"].toString() ||
-          value == "");
+        "brand_slugs": brandSlugs.toString(),
+      }..removeWhere(
+        (key, value) =>
+            value == null ||
+            value == 'null' ||
+            value == [].toString() ||
+            value == [''].toString() ||
+            value == ["null"].toString() ||
+            value == ["search"].toString() ||
+            value == "",
+      );
 }

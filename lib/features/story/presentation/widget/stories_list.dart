@@ -1,33 +1,27 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:dartz/dartz.dart' as dartz;
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:shimmer/shimmer.dart';
-
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection_page_view.dart';
 import 'package:trydos/features/story/presentation/widget/story_item_widget.dart';
-import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../app/my_text_widget.dart';
 import '../../data/models/get_stories_model.dart';
 import '../bloc/story_state.dart';
 
@@ -108,7 +102,6 @@ class _StoriesListState extends State<StoriesList> {
       builder: (context, authState) {
         bool allowedToUploadStories =
             authState.marketUser?.isAllowedToUploadStories ?? false;
-        print("DDDDDDDDDDDDDDD${allowedToUploadStories}");
 
         //todo the ScrollConfiguration make behavior to the scroll
         return BlocBuilder<StoryBloc, StoryState>(
@@ -175,27 +168,24 @@ class _StoriesListState extends State<StoriesList> {
                                 if (!allowedToUploadStories) {
                                   return const SizedBox.shrink();
                                 }
-                                return state.uploadStoryCloudinaryStatus ==
-                                        UploadStoryCloudinaryStatus.loading
-                                    ? TrydosLoader()
-                                    : Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          SizedBox(height: 40.h),
-                                          Material(
-                                            color: const Color.fromARGB(
-                                              0,
-                                              255,
-                                              222,
-                                              222,
-                                            ),
-                                            child: SizedBox(
-                                              width: 100.w,
-                                              height: 150.h,
-                                              child: Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  MyCachedNetworkImage(
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(height: 40.h),
+                                    Material(
+                                      color: const Color.fromARGB(
+                                        0,
+                                        255,
+                                        222,
+                                        222,
+                                      ),
+                                      child: SizedBox(
+                                        width: 100.w,
+                                        height: 150.h,
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            /*  MyCachedNetworkImage(
                                                     imageUrl:
                                                         prefsRepository
                                                             .myProfilePhoto ??
@@ -204,184 +194,164 @@ class _StoriesListState extends State<StoriesList> {
                                                     width: 100.w,
                                                     imageFit: BoxFit.cover,
                                                     height: 150.h,
-                                                  ),
-
-                                                  InkWell(
-                                                    highlightColor:
-                                                        Colors.transparent,
-                                                    splashColor:
-                                                        Colors.transparent,
-                                                    child:
-                                                        (authState
-                                                                .loginToStoriesStatus ==
-                                                            LoginToStoriesStatus
-                                                                .loading)
-                                                        ? Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                        20.r,
-                                                                      ),
-                                                                  color: Colors
-                                                                      .grey,
-                                                                ),
-
-                                                            alignment: Alignment
-                                                                .center,
-                                                            height: 150.h,
-                                                            width: 100.w,
-                                                            child: TrydosLoader(
-                                                              size: 25,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          )
-                                                        : Container(
-                                                            child: Center(
-                                                              child:
-                                                                  MyTextWidget(
-                                                                    LocaleKeys
-                                                                        .upload
-                                                                        .tr(),
-                                                                  ),
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              borderRadius:
-                                                                  BorderRadius.circular(
-                                                                    20.0.r,
-                                                                  ),
-                                                              color:
-                                                                  (prefsRepository
-                                                                              .myProfilePhoto ==
-                                                                          null ||
-                                                                      prefsRepository
-                                                                              .myProfilePhoto ==
-                                                                          "")
-                                                                  ? Colors.grey
-                                                                  // ignore: deprecated_member_use
-                                                                  : Colors.grey
-                                                                    // ignore: deprecated_member_use
-                                                                    .withOpacity(
-                                                                      0.7,
-                                                                    ),
-                                                            ),
-                                                            width: 100.w,
-                                                          ),
-                                                    onTap: () async {
-                                                      if (authState
-                                                              .loginToStoriesStatus ==
+                                                  ),*/
+                                            InkWell(
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              splashColor: Colors.transparent,
+                                              child:
+                                                  (authState.loginToStoriesStatus ==
                                                           LoginToStoriesStatus
-                                                              .loading) {
-                                                        return;
-                                                      }
-                                                      disableResizing();
-                                                      if ((GetIt.I<
-                                                                    PrefsRepository
-                                                                  >()
-                                                                  .myMarketName
-                                                                  ?.length ??
-                                                              0) <
-                                                          3) {
-                                                        showDialog(
-                                                          context: context,
-                                                          barrierDismissible:
-                                                              false,
-                                                          builder:
-                                                              (
-                                                                BuildContext
-                                                                context,
-                                                              ) {
-                                                                return UpdateUserNameWidget();
-                                                              },
-                                                        );
-                                                      } else {
-                                                        // FirebaseAnalyticsService
-                                                        //     .logEventForSession(
-                                                        //   eventName:
-                                                        //       AnalyticsEventsConst.buttonClicked,
-                                                        //   executedEventName:
-                                                        //       AnalyticsButtonsEventNameConst.uploadStoryButton,
-                                                        // );
-                                                        //////////////////////////////////////
-                                                        showDialog(
-                                                          context: context,
-                                                          builder: (BuildContext context) {
-                                                            return GalleryAndCameraDialogWidget(
-                                                              fromStory: true,
-                                                              onChooseFileFromCameraAction: (File? file) async {
-                                                                if (file !=
-                                                                    null) {
-                                                                  GetIt.I<
-                                                                        StoryBloc
-                                                                      >()
-                                                                      .add(
-                                                                        UploadStoryCloudinaryEvent(
-                                                                          file,
-                                                                        ),
-                                                                      );
+                                                              .loading ||
+                                                      state.uploadStoryCloudinaryStatus ==
+                                                          UploadStoryCloudinaryStatus
+                                                              .loading)
+                                                  ? Container(
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              20.r,
+                                                            ),
+                                                        color: Colors.grey,
+                                                      ),
 
-                                                                  // final cloudinary =
-                                                                  //     CloudinaryPublic(
-                                                                  //         'djooohujg',
-                                                                  //         'v4h8xqns',
-                                                                  //         cache:false);
-                                                                  // CloudinaryResponse
-                                                                  //     response =
-                                                                  //     await cloudinary
-                                                                  //         .uploadFile(
-                                                                  //
-                                                                  //
-                                                                  //   CloudinaryFile.fromFile(
-                                                                  ///////////////////////////////////////////
-                                                                  // FirebaseAnalyticsService.logEventForSession(
-                                                                  //   eventName: AnalyticsEventsConst.buttonClicked,
-                                                                  //   executedEventName: AnalyticsButtonsEventNameConst.confirmUploadStoryButton,
-                                                                  // );
-                                                                }
-                                                              },
-                                                              onChooseFileFromGalleryAction:
-                                                                  (
-                                                                    AssetEntity?
-                                                                    assetEntity,
-                                                                  ) async {
-                                                                    if (assetEntity ==
-                                                                        null) {
-                                                                      return;
-                                                                    }
-                                                                    // originFile
-                                                                    // يرجع null
-                                                                    // للملفات
-                                                                    // غير
-                                                                    // المقروءة.
-                                                                    final File?
-                                                                    file = await assetEntity
-                                                                        .originFile;
-                                                                    if (file ==
-                                                                        null) {
-                                                                      return;
-                                                                    }
-                                                                    GetIt.I<
-                                                                          StoryBloc
-                                                                        >()
-                                                                        .add(
-                                                                          UploadStoryCloudinaryEvent(
-                                                                            file,
-                                                                          ),
-                                                                        );
-                                                                  },
-                                                            );
-                                                          },
-                                                        );
-                                                      }
+                                                      alignment:
+                                                          Alignment.center,
+                                                      height: 150.h,
+                                                      width: 100.w,
+                                                      child: TrydosLoader(
+                                                        size: 25,
+                                                        color: Colors.white,
+                                                      ),
+                                                    )
+                                                  : Container(
+                                                      child: Center(
+                                                        child: SvgPicture.asset(
+                                                          AppAssets.addCartSvg,
+                                                          width: 9.w,
+                                                          height: 9.h,
+                                                          // ignore: deprecated_member_use
+                                                          color: const Color(
+                                                            0xff1D1D1D,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              20.0.r,
+                                                            ),
+                                                        color: Colors.grey
+                                                            // ignore: deprecated_member_use
+                                                            .withOpacity(0.3),
+                                                      ),
+                                                      width: 100.w,
+                                                    ),
+                                              onTap: () async {
+                                                if (authState
+                                                        .loginToStoriesStatus ==
+                                                    LoginToStoriesStatus
+                                                        .loading) {
+                                                  return;
+                                                }
+                                                disableResizing();
+                                                if ((GetIt.I<PrefsRepository>()
+                                                            .myMarketName
+                                                            ?.length ??
+                                                        0) <
+                                                    3) {
+                                                  showDialog(
+                                                    context: context,
+                                                    barrierDismissible: false,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                          return UpdateUserNameWidget();
+                                                        },
+                                                  );
+                                                } else {
+                                                  // FirebaseAnalyticsService
+                                                  //     .logEventForSession(
+                                                  //   eventName:
+                                                  //       AnalyticsEventsConst.buttonClicked,
+                                                  //   executedEventName:
+                                                  //       AnalyticsButtonsEventNameConst.uploadStoryButton,
+                                                  // );
+                                                  //////////////////////////////////////
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (BuildContext context) {
+                                                      return GalleryAndCameraDialogWidget(
+                                                        fromStory: true,
+                                                        onChooseFileFromCameraAction: (File? file) async {
+                                                          if (file != null) {
+                                                            GetIt.I<StoryBloc>()
+                                                                .add(
+                                                                  UploadStoryCloudinaryEvent(
+                                                                    file,
+                                                                  ),
+                                                                );
+
+                                                            // final cloudinary =
+                                                            //     CloudinaryPublic(
+                                                            //         'djooohujg',
+                                                            //         'v4h8xqns',
+                                                            //         cache:false);
+                                                            // CloudinaryResponse
+                                                            //     response =
+                                                            //     await cloudinary
+                                                            //         .uploadFile(
+                                                            //
+                                                            //
+                                                            //   CloudinaryFile.fromFile(
+                                                            ///////////////////////////////////////////
+                                                            // FirebaseAnalyticsService.logEventForSession(
+                                                            //   eventName: AnalyticsEventsConst.buttonClicked,
+                                                            //   executedEventName: AnalyticsButtonsEventNameConst.confirmUploadStoryButton,
+                                                            // );
+                                                          }
+                                                        },
+                                                        onChooseFileFromGalleryAction:
+                                                            (
+                                                              AssetEntity?
+                                                              assetEntity,
+                                                            ) async {
+                                                              if (assetEntity ==
+                                                                  null) {
+                                                                return;
+                                                              }
+                                                              // originFile
+                                                              // يرجع null
+                                                              // للملفات
+                                                              // غير
+                                                              // المقروءة.
+                                                              final File? file =
+                                                                  await assetEntity
+                                                                      .originFile;
+                                                              if (file ==
+                                                                  null) {
+                                                                return;
+                                                              }
+                                                              GetIt.I<
+                                                                    StoryBloc
+                                                                  >()
+                                                                  .add(
+                                                                    UploadStoryCloudinaryEvent(
+                                                                      file,
+                                                                    ),
+                                                                  );
+                                                            },
+                                                      );
                                                     },
-                                                  ),
-                                                ],
-                                              ),
+                                                  );
+                                                }
+                                              },
                                             ),
-                                          ),
-                                        ],
-                                      );
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
                               } else {
                                 //todo cause we take the index 0 to the upload button
                                 index = index - 1;
