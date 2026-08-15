@@ -1,0 +1,8 @@
+{
+  "extraKnownMarketplaces": {
+    "ramaaz-workflows": {
+      "source": { "source": "github", "repo": "ramaaz-tech/claude-workflows" }
+    }
+  },
+  "enabledPlugins": { "wf@ramaaz-workflows": true }
+}

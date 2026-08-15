@@ -1,231 +1,24 @@
-# Canonical workflow configuration for Engineering Workflow v1.
-# This file is the SINGLE source of truth for stages, the state machine, modes,
-# closure, decisions, high-risk triggers, and validation. All other docs describe/
-# reference it and must not contradict it.
+# Project configuration for Engineering Workflow v1 — PROJECT HALF.
+#
+# This file holds ONLY what differs per project. The generic half — stages, the
+# state machine, the workflow form, comprehension gates, the review panel,
+# notifications, closure, decisions, roles — ships with the `wf` plugin as
+# `workflow-config.yaml` and must NOT be repeated here. Nothing is duplicated
+# across the two files; together they are the whole config.
+#
+# Paths here are relative to the project root.
 
 project:
-  name: trydos
+  name: Trydos
   slug: trydos
-  description: >-
-    Trydos — a Flutter mobile app combining a marketplace, real-time chat/calls
-    (Agora via webview + CallKit) and stories. Clean Architecture, feature-first:
-    lib/features/<feature>/{data,domain,presentation}. Note the baked-in typo
-    `lib/core/domin/` (not `domain`). Multiple app-wide BLoCs (flutter_bloc +
-    hydrated_bloc) registered as singletons in DI and provided once in
-    lib/service/service_provider.dart. DI via get_it + injectable, functional
-    errors via dartz Either<Failure,T>, HTTP via a custom dio layer with a
-    multi-backend ServerName enum. UI is multilingual/RTL (ar-SY, en-US, ku-IQ,
-    tr-TR). See root CLAUDE.md.
+  description: Flutter mobile app - marketplace, real-time chat/calls (Agora + CallKit), and stories.
 
-  # Git topology (this repo has NO `main` branch).
-  base_branch: dev_new          # ticket branches are cut from and merged back into dev_new
-  branch_pattern: ticket/<slug>
-
-workflow:
-  version: v1
-
-stages:
-  - intake
-  - research
-  - spec
-  - plan
-  - review
-  - implement
-  - verify
-
-# ---------------------------------------------------------------------------
-# Canonical ticket state machine. `blocked` is NOT a state; it is an orthogonal
-# flag carried in artifact front-matter (see artifact_status). Each entry lists
-# the ONLY allowed next states; anything not listed is a forbidden transition.
-# ---------------------------------------------------------------------------
-lifecycle:
-  # Single canonical owner of ticket state (ADR-003). Commands read/write this
-  # file and must never infer state from artifact existence.
-  state_record: .claude/_specs/<ticket>/ticket.md
-  initial: draft
-  terminal: closed
-  states:
-    draft:                       [ready-for-research, closed]
-    ready-for-research:          [research-complete, closed]
-    research-complete:           [spec-complete, research-complete, closed]
-    spec-complete:               [plan-complete, research-complete, closed]
-    plan-complete:               [approved, plan-complete, spec-complete, closed]
-    approved:                    [implementation-in-progress, plan-complete, closed]
-    implementation-in-progress:  [implemented, closed]
-    implemented:                 [verified, implementation-in-progress, closed]
-    verified:                    [closed, implementation-in-progress]
-    closed:                      []   # terminal — no reopen; open a new ticket
-  artifact_status: [not_started, in_progress, blocked, complete]
-
-# ---------------------------------------------------------------------------
-# High-risk trigger paths (Trydos). Any change touching one of these globs — or
-# any logic hitting a cross-cutting trigger below — requires `mode: high_risk`
-# (1 approval + ADR + rollback rehearsal). Referenced by the governance doc,
-# workflow-rules, and validation-model.
-# ---------------------------------------------------------------------------
-high_risk_paths:
-  auth_and_session:      # login/OTP, token & session storage, per-server tokens
-    - lib/features/authentication/**
-    - lib/core/data/repository/prefs_repository_impl.dart
-    - lib/core/domin/repositories/prefs_repository.dart
-    - lib/common/constant/configuration/prefs_key.dart
-  api_network:           # dio layer, BaseApi headers/tokens, server detection, HTTP methods
-    - lib/core/api/**
-    - lib/common/constant/configuration/*_url_routes.dart
-  composition_root:      # app entrypoint + ordered init + DI wiring + root shells + routing
-    - lib/main.dart
-    - lib/core/di/**
-    - lib/base_page.dart
-    - lib/service/service_provider.dart
-    - lib/routes/**
-  hydrated_state:        # hydrated_bloc persisted state — shape changes need schema migration
-    - "**/*_state.dart"
-    - "**/*_state.g.dart"
-  realtime_calls_push:   # Agora call flow, CallKit, FCM background isolate handler
-    - lib/features/calls/**
-    - lib/service/notification_service/**
-    - lib/service/call_notification_service/**
-  money_wallet:          # wallet balances / payment surfaces — money shown or moved
-    - lib/common/constant/configuration/wallet_url_routes.dart
-    - lib/features/home/**/*payment*
-    - lib/features/home/**/*wallet*
-  config_secrets:        # env, native manifests, firebase config, localization bundles
-    - .env
-    - android/app/src/main/AndroidManifest.xml
-    - ios/Runner/Info.plist
-    - assets/languages/**
-  generated_code:        # codegen output — regenerate with gen.sh/keys.sh, never hand-edit
-    - "**/*.g.dart"
-    - "**/*.config.dart"
-    - lib/generated/locale_keys.g.dart
-# Cross-cutting rules (not glob-expressible). ANY change that:
-#   (a) alters authentication/session/token handling or per-server token wiring;
-#   (b) changes the SHAPE of a hydrated_bloc state (persisted via *_state.g.dart)
-#       without a migration path — old persisted payloads must still deserialize;
-#   (c) reorders or inserts steps in main.dart's ordered initialization
-#       (hydrated storage -> dotenv -> DI -> notifications -> Sentry -> runApp),
-#       including the `_firebaseMessagingBackgroundHandler` isolate guards;
-#   (d) alters wallet balances / order totals / the amount of money moved;
-#   (e) registers a NEW app-wide BLoC in DI + ServiceProvider, or changes an
-#       existing one's registration lifetime (singleton vs factory);
-#   (f) adds/renames a `ServerName` entry or its base-URI resolution
-# is high_risk even if its file is not listed above.
-# NOTE: Trydos legitimately has MANY BLoCs (auth, chat, home, order, story,
-# category, boutique, pre-caching). Adding a *feature-local* Bloc is normal
-# standard-mode work; only app-wide registration (e) is a high_risk trigger.
-
-# ---------------------------------------------------------------------------
-# Execution modes. v1 supports `standard` and `high_risk` only (lowercase
-# identifiers; STANDARD/HIGH_RISK in prose are display labels). `fast` mode is
-# DEFERRED (not in v1) — `/start-ticket` rejects it. Same lifecycle, different
-# depth. The review gate is required in ALL modes.
-# ---------------------------------------------------------------------------
-modes:
-  # fast: DEFERRED to a future version — intentionally omitted from v1.
-  standard:
-    description: Default lifecycle for normal work; all seven stages.
-    stages: [intake, research, spec, plan, review, implement, verify]
-    criteria: Normal feature/fix work with bounded blast radius (no high_risk_paths glob, no auth/session, hydrated-state-shape, main.dart-init, money or ServerName change; feature-local Blocs are fine).
-    approvals: 1            # one reviewer
-    adr_required: false
-    verification: all-ac    # every acceptance criterion mapped to a result
-  high_risk:
-    description: Auth/session, api/network + ServerName, composition root & main.dart init order, hydrated state shape, calls/push, wallet/order money, config/secrets, or generated code.
-    stages: [intake, research, spec, plan, review, implement, verify]
-    criteria: Touches any high_risk_paths glob or any cross-cutting trigger (a)-(f) above, is irreversible, or has broad impact.
-    approvals: 1            # single reviewer (must not be the plan author — separation of duties still applies)
-    adr_required: true
-    verification: all-ac+rollback   # every AC plus a rollback rehearsal
-
-# ---------------------------------------------------------------------------
-# Single closure strategy: there is no /close command. A ticket moves
-# verified -> closed at /verify sign-off, performed by the reviewer.
-# ---------------------------------------------------------------------------
-closure:
-  # No /close command. Closure is owned by two commands:
-  strategy: no-close-command
-  paths:
-    success:                       # successful implementation
-      owner: /verify
-      performed_by: reviewer
-      transition: verified -> closed
-    rejection:                     # plan rejected at the review gate
-      owner: /review
-      performed_by: reviewer
-      transition: spec-complete -> closed
-
-# Architectural decision tracking.
-decisions:
-  location: .claude/docs/adr/
-  template: .claude/docs/adr/ADR-0000-template.md
-
-roles:
-  workflow_owner:
-    description: >-
-      Owns workflow governance — workflow evolution, governance decisions,
-      escalations, and cross-project issues. NOT a per-ticket gate; does not
-      participate in every ticket.
-  reviewer:
-    description: >-
-      Per-ticket gate authority for /review and /verify. Any qualified team
-      member who is NOT the ticket's author (separation of duties). Need not be
-      an Engineering Manager.
-  developer:
-    description: Implements approved plans and authors ticket artifacts.
-  ai_agent:
-    description: Assists across stages within the rules in CLAUDE.md / workflow-governance.md.
-  # Legacy: earlier artifacts recorded `em` as the gate/governance actor. `em`
-  # now maps to `reviewer` (per-ticket gate) and `workflow_owner` (governance).
-
-# Role authority & separation of duties (validation: RA-1..RA-3; workflow-rules.md).
-role_authority:
-  gate_commands: [review, verify]                       # invocable by role `reviewer`
-  author_commands: [start-ticket, research, spec, plan, implement]   # developer/ai_agent
-  delivery_commands: []               # delivery is manual (git by hand); no delivery command. Orthogonal to the state machine, never a gate, performs no state transition.
-  governance_owner: workflow_owner    # owns evolution/escalation; not a per-ticket gate
-separation_of_duties:
-  enabled: true
-  rule: >-
-    The `reviewer` invoking a review gate (/review, /verify) must not be the author
-    of the plan/implementation under review. All recorded actors (owner, history
-    `by`) must be defined roles.
-  # Exception (opt-in, off by default). For `standard` (low-risk) tickets ONLY,
-  # the author may also serve as the `reviewer` gate actor when self-review is
-  # explicitly enabled below. `high_risk` ALWAYS requires a distinct second
-  # actor and can never self-review.
-  allow_self_review:
-    standard: false      # set true to permit author == reviewer on standard tickets
-    high_risk: false     # MUST stay false — high_risk never self-reviews
-
+# Which optional integrations this project uses. `false` means the workflow
+# simply never takes that path.
 features:
-  clickup: true
-  github: true           # delivery is a manual PR against `dev_new` (see base_branch)
-  observability: false   # Sentry/Firebase Analytics exist in-app but are not governed here.
-
-# ClickUp integration (read-only intake at /start-ticket; writes are manual REST).
-# The token is NEVER stored here — it lives in the gitignored `.claude/.env` as
-# CLICKUP_API_TOKEN (`.gitignore` covers it via `*.env`). Ids below are safe to
-# commit; they are not secrets.
-clickup:
-  token_env: CLICKUP_API_TOKEN
-  token_files: [.claude/.env, .env]                  # first match wins
-  intake_script: .claude/scripts/clickup_intake.py   # read-only GET, the ONLY HTTP path
-  workspace_id: "90182710436"      # team "Ramaaz Co"
-  space_id: "901811062695"         # space "TryDosProject"
-  list_id: "901818662901"          # default target: Backlog / "Product Backlog List"
-  test_list_id: "901818971923"     # test/backtest — use for dry runs, never for real tickets
-  default_assignee: 302565222      # Helal mohammad (token owner)
-  default_tag: flutter             # existing space tag; see `lists` below for per-area routing
-  # Per-area lists (Backlog is the default; move to a sprint list when scheduled).
-  lists:
-    backlog: "901818662901"        # Backlog / Product Backlog List
-    bugs: "901818924941"           # Backlog / Bugs
-    tech_debt: "901818896441"      # Backlog / Fixes & Technical Debt
-    auth: "901818623270"           # Auth / Development
-    chat: "901818623261"           # Chat / Development
-    story: "901818623262"          # Story / Development
-    mob_app: "901818623275"        # MobApp / Development
-    seller_dashboard: "901818623260"   # Seller DashBoard / Development
+  clickup: true          # /start-ticket may seed a ticket from a ClickUp task (read-only)
+  github: true           # /publish-pr may open a PR
+  observability: false   # this project owns no observability/** runtime files
 
 # ---------------------------------------------------------------------------
 # Validation profiles (WF-PILOT-003). TWO SEPARATE, ADDITIVE concepts:
@@ -238,23 +31,23 @@ clickup:
 # (deterministic, non-interactive, read-only), and records command, exit code,
 # output summary, and result mapped to AC-n. No profile referenced => unchanged
 # behavior. Local execution only — no GitHub/CI-CD/MCP/external runner.
-# Validation: VP-1..VP-5 in validation-model.md. Decision: ADR-006.
+# Validation: VP-1..VP-5 in rules/validation-model.md. Decision: ADR-006.
 # ---------------------------------------------------------------------------
 validation_checks:
   flutter-analyze:
-    description: Static analysis / lints pass across the whole package.
+    description: Static analysis and lints pass across the whole package.
     command: "flutter analyze"
     pass_when: exit-zero          # exit-zero | exit-code:<n>
   build-runner-clean:
-    description: Generated code (injectable DI + json_serializable) is in sync with sources (no diff after regeneration). Equivalent to `sh gen.sh`.
+    description: Generated code (injectable DI + json_serializable) is in sync with sources - no diff after regeneration. Same as `sh gen.sh`.
     command: "dart run build_runner build --delete-conflicting-outputs && git diff --exit-code"
     pass_when: exit-zero
   locale-keys-clean:
-    description: Generated localization keys are in sync with assets/languages/*.json (no diff after regeneration). Equivalent to `sh keys.sh`.
+    description: Generated localization keys are in sync with assets/languages/*.json - no diff after regeneration. Same as `sh keys.sh`.
     command: "flutter pub run easy_localization:generate -S assets/languages -f keys -o locale_keys.g.dart && git diff --exit-code"
     pass_when: exit-zero
   locale-bundles-in-sync:
-    description: All four language bundles (en-US, ar-SY, ku-IQ, tr-TR) declare the same key set — no missing translations.
+    description: All four language bundles (en-US, ar-SY, ku-IQ, tr-TR) declare the same key set - no missing translations.
     command: "py .claude/scripts/check_locale_parity.py"
     pass_when: exit-zero
 
@@ -263,16 +56,16 @@ validation_profiles:
     description: Default validation for normal Flutter changes (analyze only).
     requires:
       - check: flutter-analyze
-        depth: all-ac             # smoke | all-ac | rollback (reuse MO-6 tiers)
+        depth: all-ac
   codegen-change:
-    description: Required when @injectable / json_serializable / models / DI change (regeneration stays in sync, then analyze).
+    description: Required when @injectable / json_serializable / models / DI change - regeneration stays in sync, then analyze.
     requires:
       - check: build-runner-clean
-        depth: rollback           # high_risk codegen work: include rollback rehearsal
+        depth: all-ac
       - check: flutter-analyze
         depth: all-ac
   localization-change:
-    description: Required when assets/languages/*.json or locale keys change — all four bundles stay in sync and the generated keys match.
+    description: Required when assets/languages/*.json or locale keys change - all four bundles stay in sync and the generated keys match.
     requires:
       - check: locale-bundles-in-sync
         depth: all-ac
@@ -281,9 +74,9 @@ validation_profiles:
       - check: flutter-analyze
         depth: all-ac
   hydrated-state-change:
-    description: Required when a hydrated_bloc state shape changes — regenerated serializers stay in sync and a rollback rehearsal proves old persisted payloads still deserialize.
+    description: Required when a hydrated_bloc state shape changes - regenerated serializers stay in sync and old stored payloads still deserialize.
     requires:
       - check: build-runner-clean
-        depth: rollback
+        depth: all-ac
       - check: flutter-analyze
         depth: all-ac
