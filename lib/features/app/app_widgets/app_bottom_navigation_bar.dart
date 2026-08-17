@@ -747,6 +747,10 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                     prefsRepository
                                                         .setStoriesToken("");
                                                     prefsRepository
+                                                        .setStoriesRefreshToken(
+                                                          "",
+                                                        );
+                                                    prefsRepository
                                                         .setMyChatName("");
                                                     prefsRepository
                                                         .setMyStoriesName("");

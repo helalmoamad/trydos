@@ -975,6 +975,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     prefsRepository.setChatToken("");
     prefsRepository.setWalletToken("");
     prefsRepository.setStoriesToken("");
+    prefsRepository.setStoriesRefreshToken("");
     prefsRepository.setMarketToken(null);
     prefsRepository.setMyMarketName("");
     prefsRepository.setMyChatName("");

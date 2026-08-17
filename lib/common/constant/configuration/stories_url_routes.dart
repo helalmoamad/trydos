@@ -9,10 +9,17 @@ extension ScopeApi on String {
 
   String storiesScope() => '$_prefix/stories/$this';
   String usersScope() => '$_prefix/users/$this';
+  String authScope() => '$_prefix/auth/$this';
 }
 
 abstract class StoriesEndPoints {
   static final loginEP = 'login'.usersScope();
+
+  /// Exchanges the stored (single-use) stories refresh token for a new
+  /// access + refresh pair. Owned by this file on purpose: the chat refresh
+  /// borrows `MarketEndPoints.refreshTokenEP`, which would silently move the
+  /// stories path if the market API version is ever bumped.
+  static final refreshTokenEP = 'refresh-token'.authScope();
 
   static final updateUserEP = 'update'.usersScope();
   // ----<stories scope>----

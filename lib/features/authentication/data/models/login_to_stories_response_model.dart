@@ -71,6 +71,7 @@ class Data {
   final DateTime? createdAt;
   final int? id;
   final String? accessToken;
+  final String? refreshToken;
 
   Data({
     this.mobilePhone,
@@ -82,6 +83,7 @@ class Data {
     this.createdAt,
     this.id,
     this.accessToken,
+    this.refreshToken,
   });
 
   Data copyWith({
@@ -94,6 +96,7 @@ class Data {
     DateTime? createdAt,
     int? id,
     String? accessToken,
+    String? refreshToken,
   }) =>
       Data(
         mobilePhone: mobilePhone ?? this.mobilePhone,
@@ -105,6 +108,7 @@ class Data {
         createdAt: createdAt ?? this.createdAt,
         id: id ?? this.id,
         accessToken: accessToken ?? this.accessToken,
+        refreshToken: refreshToken ?? this.refreshToken,
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -117,6 +121,7 @@ class Data {
     createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
     id: json["id"],
     accessToken: json["access_token"],
+    refreshToken: json["refresh_token"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -129,5 +134,6 @@ class Data {
     "created_at": createdAt?.toIso8601String(),
     "id": id,
     "access_token": accessToken,
+    "refresh_token": refreshToken,
   };
 }

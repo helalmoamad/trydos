@@ -2809,23 +2809,36 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 isStatusInitaial:
                                                                     true));
 
+                                                        // Same reason as the
+                                                        // other listing tap:
+                                                        // resolve the navigator
+                                                        // and the product before
+                                                        // the wait, because this
+                                                        // `context` is the list
+                                                        // item's and the list can
+                                                        // recycle it first.
+                                                        final NavigatorState
+                                                            navigator =
+                                                            Navigator.of(
+                                                                context);
+                                                        final tappedProduct =
+                                                            products[index];
+
                                                         Future.delayed(
                                                             Duration(
                                                                 milliseconds:
-                                                                    300),
-                                                            () => Navigator.of(
-                                                                        context)
-                                                                    .push(
-                                                                  MaterialPageRoute(
-                                                                    builder:
-                                                                        (ctx) =>
-                                                                            ProductDetailsPage(
-                                                                      productItem:
-                                                                          products[
-                                                                              index],
-                                                                    ),
-                                                                  ),
-                                                                ));
+                                                                    300), () {
+                                                          if (!mounted) return;
+                                                          navigator.push(
+                                                            MaterialPageRoute(
+                                                              builder: (ctx) =>
+                                                                  ProductDetailsPage(
+                                                                productItem:
+                                                                    tappedProduct,
+                                                              ),
+                                                            ),
+                                                          );
+                                                        });
                                                       },
                                                       child: _productItem(
                                                         index: index,
@@ -3084,20 +3097,40 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       ),
                                                     );
 
+                                                    // Resolve the navigator and
+                                                    // the product NOW. This
+                                                    // `context` belongs to the
+                                                    // list item, and the list
+                                                    // can recycle it during the
+                                                    // 300 ms wait — looking its
+                                                    // ancestor up afterwards
+                                                    // throws "deactivated
+                                                    // widget's ancestor".
+                                                    // `mounted` does not catch
+                                                    // it: it reports the page,
+                                                    // which is still alive.
+                                                    // `index` is captured too,
+                                                    // because the list may have
+                                                    // changed by then.
+                                                    final NavigatorState
+                                                    navigator = Navigator.of(
+                                                      context,
+                                                    );
+                                                    final tappedProduct =
+                                                        products[index];
+
                                                     Future.delayed(
                                                       const Duration(
                                                         milliseconds: 300,
                                                       ),
                                                       () {
                                                         if (!mounted) return;
-                                                        Navigator.of(
-                                                          context,
-                                                        ).push(
+                                                        navigator.push(
                                                           MaterialPageRoute(
                                                             builder: (ctx) =>
                                                                 ProductDetailsPageNew(
                                                                   productItem:
-                                                                      products[index],
+                                                                      tappedProduct,
                                                                 ),
                                                           ),
                                                         );

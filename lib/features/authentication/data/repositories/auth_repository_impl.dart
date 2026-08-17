@@ -4,6 +4,7 @@ import 'package:trydos/features/authentication/data/models/verify_otp_response_m
 
 import 'package:trydos/features/authentication/data/models/get_user_country_response_model.dart';
 import 'package:trydos/features/authentication/data/models/login_to_stories_response_model.dart';
+import 'package:trydos/features/authentication/data/models/refresh_stories_token_response_model.dart';
 import 'package:trydos/features/authentication/data/models/send_otp_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_guest_phone_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
@@ -166,6 +167,15 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
   ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.refreshChatToken(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, RefreshStoriesTokenResponseModel>> refreshStoriesToken(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.refreshStoriesToken(params),
     );
   }
 

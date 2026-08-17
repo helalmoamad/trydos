@@ -22,13 +22,13 @@ class ErrorManager {
         );
       maxRetries = 2;
     }
-    if (statusCode == 401) {
-      if (kDebugMode)
-        print(
-          'statusCode:--------------------------------------------------------------- $statusCode',
-        );
-      maxRetries = 4;
-    }
+    // 401 has no special allowance any more. `LoggerInterceptor` now refreshes
+    // the token and replays the failed request itself, so a 401 only reaches an
+    // event when that already failed — repeating it four times would just fire
+    // four more refreshes. The single default retry is kept for the one case
+    // that still benefits: a multipart upload, which the interceptor cannot
+    // replay (its stream is consumed), but which succeeds when the event
+    // rebuilds it with the token the refresh just stored.
     int currentCount = _retryCounts[eventName] ?? 0;
     bool canRetry = currentCount < maxRetries;
 

@@ -6190,7 +6190,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           return;
         }
         if (l.statusCode == 401) {
-          showMessage(LocaleKeys.please_login_to_add_comment.tr());
+          // showMessage(LocaleKeys.please_login_to_add_comment.tr());
         } else {
           showMessage(l.message);
         }
@@ -6292,7 +6292,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           return;
         }
         if (l.statusCode == 401) {
-          showMessage(LocaleKeys.must_login_to_edit_comment.tr());
+          //    showMessage(LocaleKeys.must_login_to_edit_comment.tr());
         } else {
           showMessage(l.message);
         }
@@ -6400,7 +6400,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           return;
         }
         if (l.statusCode == 401) {
-          showMessage(LocaleKeys.must_login_to_delete_comment.tr());
+          //   showMessage(LocaleKeys.must_login_to_delete_comment.tr());
         } else {
           showMessage(l.message);
         }
@@ -6532,7 +6532,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
 
         if (l.statusCode == 401) {
-          showMessage(LocaleKeys.must_login_to_edit_comment.tr());
+          // showMessage(LocaleKeys.must_login_to_edit_comment.tr());
         } else {
           showMessage(l.message);
         }
@@ -6698,7 +6698,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     response.fold(
       (l) {
         if (l.statusCode == 401) {
-          showMessage(LocaleKeys.must_login_to_edit_comment.tr());
+          //  showMessage(LocaleKeys.must_login_to_edit_comment.tr());
         } else {
           showMessage(l.message);
         }

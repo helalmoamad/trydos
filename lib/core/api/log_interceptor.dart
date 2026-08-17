@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/api/token_refresh_coordinator.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -17,6 +18,10 @@ import '../domin/repositories/prefs_repository.dart';
 import 'api.dart';
 
 enum _StatusType { succeed, failed }
+
+/// Marks a request that was already replayed after a token refresh. A second
+/// 401 on the same request must report the error instead of refreshing again.
+const String _retriedKey = 'wf_retried_after_refresh';
 
 class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
@@ -50,6 +55,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
+      //  log("${response.data}");
       _StatusType statusType;
       if (response.statusCode == StatusCode.operationSucceeded.code ||
           response.statusCode == StatusCode.createdSucceeded.code ||
@@ -82,6 +88,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
+    String? freshToken;
     try {
       if (err.response?.statusCode == 400 || err.response?.statusCode == 422) {
         if (kDebugMode)
@@ -144,8 +151,21 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         );
       }
 
-      await _handleUnauthorizedError(err);
+      freshToken = await _handleUnauthorizedError(err);
     } catch (e) {}
+
+    // The token was renewed, so replay the request that triggered the refresh —
+    // the caller gets the real answer and never sees the 401.
+    if (freshToken != null && freshToken.isNotEmpty) {
+      final Response<dynamic>? retried = await _retryWithFreshToken(
+        err.requestOptions,
+        freshToken,
+      );
+      if (retried != null) {
+        handler.resolve(retried);
+        return;
+      }
+    }
     try {
       GetIt.I<HomeBloc>().add(
         SendErrorToMobileErrorLogEvent(
@@ -213,7 +233,12 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   ///
   /// The HTTP status code is the authoritative signal; the body is only a
   /// fallback for servers that answer `200` with an error envelope.
-  Future<void> _handleUnauthorizedError(DioException err) async {
+  ///
+  /// Returns the **new** bearer token when a refresh succeeded, so [onError] can
+  /// send the failed request again. Returns `null` when there is nothing to
+  /// retry with: the error was not a 401, the server has no refresh path, the
+  /// refresh failed, or this request was already retried once.
+  Future<String?> _handleUnauthorizedError(DioException err) async {
     // رمز الحالة أولاً: خادم الميديا المُقيَّد يردّ بـ 401 وجسمه
     // `{"error": "Unauthorized"}` — بلا أيٍّ من الحقول الثلاثة أدناه، فكان
     // الفحص القديم يخرج مبكراً ولا يُطلَق تحديث الرمز إطلاقاً.
@@ -233,20 +258,36 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         // جسم غير قابل للتحليل: نكتفي برمز الحالة
       }
     }
-    if (!isUnauthorized) return;
+    if (!isUnauthorized) return null;
+
+    // A request that already came back through here once must not start another
+    // refresh: the server keeps answering 401, so it would loop forever.
+    if (err.requestOptions.extra[_retriedKey] == true) return null;
 
     final String path = err.requestOptions.path;
     bool isFrom(String envKey) => path.contains(dotenv.env[envKey]!);
 
     // Clear the token of whichever server rejected the request.
     if (isFrom('STORY_URL')) {
-      _prefsRepository.setStoriesToken("");
+      // لا نمحو رمز الدخول هنا: المحو يجعل كل طلب stories آخر قيد التنفيذ
+      // يُبنى بلا bearer. التحديث يستبدله، ومسار الفشل هو الذي يمحوه.
+      final bool refreshed = await TokenRefreshCoordinator.instance.refresh(
+        RefreshScope.stories,
+        () => GetIt.I<AuthBloc>().add(const RefreshStoriesTokenEvent()),
+      );
+      return refreshed ? _prefsRepository.storiesToken : null;
     }
     if (isFrom('WALLET_URL')) {
       _prefsRepository.setWalletToken("");
     }
     if (isFrom('CHAT_URL')) {
-      GetIt.I<AuthBloc>().add(const RefreshChatTokenEvent());
+      // Wait for the refresh instead of firing and forgetting, so the caller
+      // can send the request again with the token it produces.
+      final bool refreshed = await TokenRefreshCoordinator.instance.refresh(
+        RefreshScope.chat,
+        () => GetIt.I<AuthBloc>().add(const RefreshChatTokenEvent()),
+      );
+      return refreshed ? _prefsRepository.chatToken : null;
     }
 
     if (isFrom('COMMENT_TOKEN_URL')) {
@@ -269,7 +310,53 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       if (kDebugMode) {
         print("Access token rejected — requesting a token refresh...");
       }
-      GetIt.I<AuthBloc>().add(const RefreshTokenEvent());
+      // All three carry the market access token, so one refresh covers them.
+      final bool refreshed = await TokenRefreshCoordinator.instance.refresh(
+        RefreshScope.market,
+        () => GetIt.I<AuthBloc>().add(const RefreshTokenEvent()),
+      );
+      return refreshed ? _prefsRepository.marketToken : null;
+    }
+    return null;
+  }
+
+  /// Sends [options] again with [freshToken], after a refresh replaced the
+  /// expired one.
+  ///
+  /// Returns `null` when the request cannot be replayed, and the caller then
+  /// reports the original error.
+  Future<Response<dynamic>?> _retryWithFreshToken(
+    RequestOptions options,
+    String freshToken,
+  ) async {
+    try {
+      final dynamic body = options.data;
+      if (body is FormData) {
+        // A multipart body is a single-use stream: the first attempt read it to
+        // the end, so replaying it as it is would send empty file parts — and
+        // the server would answer 200, hiding the loss. `clone()` rebuilds the
+        // parts from their sources, so the replay carries the real bytes again.
+        //
+        // Safe here because every upload in this app builds its parts with
+        // `MultipartFile.fromFile`, which keeps the path and can reopen it. A
+        // part built from a raw stream cannot be cloned; that throws, and the
+        // catch below then reports the original 401 instead.
+        options.data = body.clone();
+      }
+
+      // The stored headers still carry the OLD bearer token — `BaseApi` injects
+      // it when the request is built, so replaying them as they are would fail
+      // with the very same 401.
+      options.headers[HttpHeaders.authorizationHeader] = 'Bearer $freshToken';
+      options.extra = <String, dynamic>{...options.extra, _retriedKey: true};
+
+      if (kDebugMode) {
+        print("Token refreshed — replaying ${options.method} ${options.path}");
+      }
+      return await GetIt.I<Dio>().fetch(options);
+    } catch (_) {
+      // Anything at all: fall back to reporting the original 401.
+      return null;
     }
   }
 }

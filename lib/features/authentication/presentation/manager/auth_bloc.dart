@@ -10,6 +10,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/core/api/token_refresh_coordinator.dart';
 import 'package:trydos/core/error/error_manager.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/string.dart';
@@ -18,6 +19,7 @@ import 'package:trydos/features/authentication/domain/use_cases/create_wallet_us
 import 'package:trydos/features/authentication/domain/use_cases/delete_fcm_from_chat_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/generating_token_for_comment.dart';
 import 'package:trydos/features/authentication/domain/use_cases/refresh_chat_token_usecase.dart';
+import 'package:trydos/features/authentication/domain/use_cases/refresh_stories_token_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/refresh_token_usecase.dart';
@@ -84,6 +86,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.deleteFcmFromChatUseCase,
     this.verifyOtpSignUpUseCase,
     this.refreshTokenUseCase,
+    this.refreshStoriesTokenUseCase,
   ) : super(const AuthState()) {
     on<AuthEvent>((event, emit) {});
     on<CreateUserEvent>(
@@ -100,6 +103,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     on<RefreshChatTokenEvent>(
       _onRefreshChatTokenEvent,
+      transformer: throttleDroppable(const Duration(seconds: 10)),
+    );
+    on<RefreshStoriesTokenEvent>(
+      _onRefreshStoriesTokenEvent,
       transformer: throttleDroppable(const Duration(seconds: 10)),
     );
     on<LoginToChatEvent>(
@@ -180,6 +187,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RegisterGuestUseCase registerGuestUseCase;
   final RefreshTokenUseCase refreshTokenUseCase;
   final RefreshChatTokenUseCase refreshChatTokenUseCase;
+  final RefreshStoriesTokenUseCase refreshStoriesTokenUseCase;
   final UpdateNameUseCase updateNameUseCase;
   final LoginToWalletUseCase loginToWalletUseCase;
   final DeleteFcmFromChatUseCase deleteFcmFromChatUseCase;
@@ -522,7 +530,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final response = await loginToStoriesUseCase(
       LoginToStoriesParams(
-        phone: event.phone,
+        phone: event.phone!.replaceFirst("+", ""),
         name: event.name,
         otpIdToken: event.otpIdToken,
         originalUserId: event.originalUserId,
@@ -546,6 +554,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       },
       (r) async {
+        // The stories server answers 200 with `hasContent: false, data: null`
+        // when it accepts the request but resolves no user (e.g. a stale or
+        // missing `otp_id_token`). That is a failed login, not a successful
+        // one: reporting success here and then reading `r.data!` throws, and
+        // the throw happens after the success state was already emitted.
+        if (r.data == null) {
+          if (kDebugMode) {
+            print("Stories login returned no data — treating it as a failure");
+          }
+          emit(
+            state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.failure),
+          );
+          return;
+        }
         emit(
           state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.success),
         );
@@ -557,6 +579,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final name = r.data!.name;
         if (checkToken) {
           await _prefsRepository.setStoriesToken(token!);
+          // Keep the refresh token this response carries, so a later 401 can be
+          // answered with a refresh instead of a new guest session.
+          await _prefsRepository.setStoriesRefreshToken(r.data?.refreshToken);
           await _prefsRepository.setMyStoriesId(id!);
           await _prefsRepository.setMyStoriesName(name ?? 'No Name');
         }
@@ -1098,12 +1123,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (storedRefreshToken == null || storedRefreshToken.isEmpty) {
       // Nothing to exchange (e.g. first run after the app update) -> new guest.
       await _fallBackToNewGuestSession();
+      // Tell the network layer there is no new token, so the request that
+      // triggered this refresh fails instead of waiting for the timeout.
+      TokenRefreshCoordinator.instance.complete(RefreshScope.market, false);
       return;
     }
 
     final response = await refreshTokenUseCase(
       RefreshTokenParams(refreshToken: storedRefreshToken),
     );
+    bool refreshed = false;
     await response.fold(
       (l) async {
         if (kDebugMode) {
@@ -1122,9 +1151,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // rotation: the presented refresh token is now revoked).
         await _prefsRepository.setMarketToken(r.data!.token!);
         await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
+        refreshed = true;
         if (kDebugMode) print("Token refreshed successfully");
       },
     );
+    // Release every request waiting on this refresh (LoggerInterceptor retries
+    // them when it succeeded).
+    TokenRefreshCoordinator.instance.complete(RefreshScope.market, refreshed);
   }
 
   FutureOr<void> _onRefreshChatTokenEvent(
@@ -1137,12 +1170,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (storedRefreshToken == null || storedRefreshToken.isEmpty) {
       // Nothing to exchange (e.g. first run after the app update) -> new guest.
       await _fallBackToNewGuestSession();
+      // Tell the network layer there is no new token, so the request that
+      // triggered this refresh fails instead of waiting for the timeout.
+      TokenRefreshCoordinator.instance.complete(RefreshScope.chat, false);
       return;
     }
 
     final response = await refreshChatTokenUseCase(
       RefreshChatTokenParams(refreshToken: storedRefreshToken),
     );
+    bool refreshed = false;
     await response.fold(
       (l) async {
         if (kDebugMode) {
@@ -1161,9 +1198,74 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // rotation: the presented refresh token is now revoked).
         await _prefsRepository.setChatToken(r.data!.accessToken!);
         await _prefsRepository.setChatRefreshToken(r.data?.refreshToken);
+        refreshed = true;
         if (kDebugMode) print("Token refreshed successfully");
       },
     );
+    // Release every request waiting on this refresh (LoggerInterceptor retries
+    // them when it succeeded).
+    TokenRefreshCoordinator.instance.complete(RefreshScope.chat, refreshed);
+  }
+
+  FutureOr<void> _onRefreshStoriesTokenEvent(
+    RefreshStoriesTokenEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    final String? storedRefreshToken = await _prefsRepository
+        .getStoriesRefreshToken();
+
+    if (storedRefreshToken == null || storedRefreshToken.isEmpty) {
+      // Nothing to exchange (e.g. first run after the app update) -> new guest.
+      await _fallBackToNewGuestSession();
+      // Tell the network layer there is no new token, so the request that
+      // triggered this refresh fails instead of waiting for the timeout.
+      TokenRefreshCoordinator.instance.complete(RefreshScope.stories, false);
+      return;
+    }
+
+    final response = await refreshStoriesTokenUseCase(
+      RefreshStoriesTokenParams(refreshToken: storedRefreshToken),
+    );
+    bool refreshed = false;
+    await response.fold(
+      (l) async {
+        if (kDebugMode) {
+          print(
+            "Refresh token rejected (${l.statusCode}) -> new guest session",
+          );
+        }
+        // The presented refresh token is invalid/expired/rotated -> the only
+        // recovery path is a brand-new guest session.
+        if (l.statusCode == 401) {
+          await _fallBackToNewGuestSession();
+        }
+      },
+      (r) async {
+        // The tokens sit at the root of this response — it carries no
+        // `data` envelope (see RefreshStoriesTokenResponseModel).
+        //
+        // 200 with no usable access token: treat it as a failed refresh rather
+        // than storing an empty token. Force-unwrapping here would throw inside
+        // this callback, and the coordinator below would never be told — every
+        // waiting stories request would then hang until its 20s timeout.
+        final String? newAccessToken = r.accessToken;
+        if (newAccessToken == null || newAccessToken.isEmpty) {
+          if (kDebugMode) {
+            print("Stories refresh returned no access token — keeping tokens");
+          }
+          return;
+        }
+        // Replace BOTH stored tokens with the returned pair (single-use
+        // rotation: the presented refresh token is now revoked).
+        await _prefsRepository.setStoriesToken(newAccessToken);
+        await _prefsRepository.setStoriesRefreshToken(r.refreshToken);
+        refreshed = true;
+        if (kDebugMode) print("Token refreshed successfully");
+      },
+    );
+    // Release every request waiting on this refresh (LoggerInterceptor retries
+    // them when it succeeded).
+    TokenRefreshCoordinator.instance.complete(RefreshScope.stories, refreshed);
   }
 
   void _onShowSessionExpiredEvent(

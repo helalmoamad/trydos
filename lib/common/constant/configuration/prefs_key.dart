@@ -45,6 +45,8 @@ abstract class PrefsKey {
 
   static const storiesToken = r'__$__storiesToken__$__';
 
+  static const storiesRefreshToken = r'__$__storiesRefreshToken__$__';
+
   static const tokenForComment = r'__$__tokenForComment__$__';
 
   static const phoneNumber = r'__$__phoneNumber__$__';

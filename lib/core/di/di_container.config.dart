@@ -48,6 +48,8 @@ import '../../features/authentication/domain/use_cases/login_to_wallet_usecase.d
     as _i304;
 import '../../features/authentication/domain/use_cases/refresh_chat_token_usecase.dart'
     as _i685;
+import '../../features/authentication/domain/use_cases/refresh_stories_token_usecase.dart'
+    as _i246;
 import '../../features/authentication/domain/use_cases/refresh_token_usecase.dart'
     as _i268;
 import '../../features/authentication/domain/use_cases/register_guest_usecase.dart'
@@ -543,6 +545,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i685.RefreshChatTokenUseCase>(
     () => _i685.RefreshChatTokenUseCase(gh<_i742.AuthRepository>()),
+  );
+  gh.factory<_i246.RefreshStoriesTokenUseCase>(
+    () => _i246.RefreshStoriesTokenUseCase(gh<_i742.AuthRepository>()),
   );
   gh.factory<_i268.RefreshTokenUseCase>(
     () => _i268.RefreshTokenUseCase(gh<_i742.AuthRepository>()),
@@ -1115,6 +1120,7 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i231.DeleteFcmFromChatUseCase>(),
       gh<_i282.VerifyOtpSignUpUseCase>(),
       gh<_i268.RefreshTokenUseCase>(),
+      gh<_i246.RefreshStoriesTokenUseCase>(),
     ),
   );
   gh.lazySingleton<_i536.StoryBloc>(

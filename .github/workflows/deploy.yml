@@ -36,7 +36,7 @@ jobs:
           SMART_LOOK_KEY="bcc47eb08c142a3d766929499a74f11214c38261"
           MARKET_URL="https://trydos_develop.ramaaz.dev/"
           MARKETGo_URL="https://trydosv2.ramaaz.dev/"
-          STORY_URL="https://trydos_stories_staging.ramaaz.dev"
+          STORY_URL="https://trydo_story.ramaaz.dev"
           CHAT_URL="https://chating_staging_trydos_new.ramaaz.dev"
           CHAT_NEST_URL="https://trydoschatnest.ramaaz.dev"
           ELASTIC_URL="https://recomende_elasticsearch_engin_staging.ramaaz.dev"

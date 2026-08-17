@@ -195,6 +195,16 @@ class RefreshChatTokenEvent extends AuthEvent {
   List<Object?> get props => [];
 }
 
+/// Exchanges the stored stories refresh token for a new access + refresh pair
+/// (dispatched on a stories 401). Falls back to [RegisterGuestEvent] when no
+/// refresh token is stored or the refresh itself is rejected.
+class RefreshStoriesTokenEvent extends AuthEvent {
+  const RefreshStoriesTokenEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 /// Signals base_page to show the "session expired" dialog for a verified user
 /// whose refresh failed. Carries the account's phone to prefill the re-login.
 class ShowSessionExpiredEvent extends AuthEvent {

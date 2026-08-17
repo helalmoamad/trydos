@@ -6,6 +6,7 @@ import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/features/authentication/data/models/login_to_stories_response_model.dart';
+import 'package:trydos/features/authentication/data/models/refresh_stories_token_response_model.dart';
 import 'package:trydos/features/authentication/data/models/login_to_wallet_model.dart';
 import 'package:trydos/features/authentication/data/models/store_fcm_token_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_response_model.dart';
@@ -331,6 +332,26 @@ class AuthRemoteDatasource {
           ),
         );
     return refreshChatToken();
+  }
+
+  /// Exchanges the stored (single-use) stories refresh token for a new
+  /// access + refresh token pair.
+  Future<RefreshStoriesTokenResponseModel> refreshStoriesToken(
+    Map<String, dynamic> params,
+  ) {
+    PostClient<RefreshStoriesTokenResponseModel> refreshStoriesToken =
+        PostClient<RefreshStoriesTokenResponseModel>(
+          serverName: ServerName.stories,
+          requestPrams: RequestConfig<RefreshStoriesTokenResponseModel>(
+            endpoint: StoriesEndPoints.refreshTokenEP,
+            data: params,
+            response: ResponseValue<RefreshStoriesTokenResponseModel>(
+              fromJson: (response) =>
+                  RefreshStoriesTokenResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return refreshStoriesToken();
   }
 
   Future<LoginToStoriesResponseModel> loginToStories(
