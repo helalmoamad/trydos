@@ -7,7 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 class FiltersLoadingListPage extends StatefulWidget {
@@ -31,10 +30,6 @@ class _FiltersLoadingListPageState extends State<FiltersLoadingListPage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Shimmer.fromColors(
       baseColor: Colors.grey.shade300,
       highlightColor: Colors.grey.shade100,

@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart' hide Category;
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -57,10 +56,6 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     if (widget.priceRanges.isNullOrEmpty) {
       return const SizedBox.shrink();
     }

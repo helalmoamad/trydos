@@ -19,7 +19,6 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 
@@ -71,10 +70,6 @@ class _PriceFilterState extends State<PriceFilter> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     if ((widget.pricesFiltersRanges.maxPrice! -
             widget.pricesFiltersRanges.minPrice!) <
         1) {

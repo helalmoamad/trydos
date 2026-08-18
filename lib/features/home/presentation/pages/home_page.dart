@@ -2,6 +2,8 @@
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart' as tran;
 import 'package:flutter/material.dart';
+// ScrollCacheExtent غير مُصدَّرة عبر material.dart/widgets.dart
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -200,10 +202,6 @@ class _HomePageState extends State<HomePage> {
     // scrollController.addListener(listenToScroll);
 
     // Ù…Ø¹Ø§Ù„Ø¬ Ø§Ù„Ø£Ø®Ø·Ø§Ø¡ Ù…Ø±Ø© ÙˆØ§Ø­Ø¯Ø© ÙÙ‚Ø· (ØªØ­Ø³ÙŠÙ† Ø£Ø¯Ø§Ø¡ - Ù„Ø§ Ø¯Ø§Ø®Ù„ build)
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     // ðŸš€ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø£Ø³Ø§Ø³ÙŠØ© ÙÙˆØ±Ø§Ù‹ ÙÙŠ Ø§Ù„Ø®Ù„ÙÙŠØ©
     _initializeBackgroundOperations();
@@ -407,8 +405,13 @@ class _HomePageState extends State<HomePage> {
             ? const Key(WidgetsKeys.homepageScrollKey)
             : null,
         controller: scrollController,
-        // بناء الأقسام قبل دخولها الشاشة لمنع ظهورها المفاجئ أثناء التمرير
-        cacheExtent: 200,
+        // بناء الأقسام قبل دخولها الشاشة لمنع ظهورها المفاجئ أثناء التمرير.
+        // كان 200 — أقلّ من الافتراضي (250) وأقلّ من ارتفاع بطاقة بوتيك واحدة
+        // (بنر 250.h + شريط تصنيفات 102.h)، فكانت كل بطاقة تُبنى في اللحظة
+        // التي تدخل فيها الشاشة. المحتوى هنا متفاوت الارتفاع (قصص + صفوف
+        // منتجات + بطاقات بوتيك) فلا يوجد ارتفاع عنصر نشتقّ منه — نصف المنفذ
+        // يعادل بطاقة كاملة تقريباً على كل المقاسات.
+        scrollCacheExtent: const ScrollCacheExtent.viewport(0.5),
         physics: const ClampingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),

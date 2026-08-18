@@ -7,7 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
@@ -78,10 +77,6 @@ class _ChatCardState extends ThemeState<ChatCard> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     chatTime = null;
     if (kDebugMode) print('dwwdw ${widget.chat.messages}');
     if (!(widget.chat.messages.isNullOrEmpty)) {

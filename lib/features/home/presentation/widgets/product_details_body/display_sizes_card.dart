@@ -30,7 +30,6 @@ import '../../manager/homeBloc/home_bloc.dart';
 import '../../manager/homeBloc/home_event.dart';
 import '../../manager/homeBloc/home_state.dart';
 import 'dart:ui' as ui;
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class DisplaySizesCard extends StatefulWidget {
   const DisplaySizesCard(
@@ -222,10 +221,6 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocListener<HomeBloc, HomeState>(
       listenWhen: (p, c) =>
           p.currentColorSizeForCart?['choiceOption'] !=
@@ -846,10 +841,6 @@ class SizeItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Container(
       width: width,
       height: height,

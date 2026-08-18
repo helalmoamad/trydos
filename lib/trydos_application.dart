@@ -18,7 +18,6 @@ import 'package:trydos/service/ku_fallback_localizations.dart';
 import 'package:trydos/service/localization_service.dart';
 import 'package:trydos/service/screen_service.dart';
 import 'package:trydos/service/service_provider.dart';
-import 'core/domin/repositories/prefs_repository.dart';
 import 'features/chat/presentation/manager/chat_bloc.dart';
 
 class TrydosApplication extends StatefulWidget {
@@ -113,18 +112,6 @@ class _TrydosApplicationState extends State<TrydosApplication>
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        error: error.toString(),
-      );
-    };
     return ScreenUtilInit(
       designSize: kDesignSize,
       minTextAdapt: true,

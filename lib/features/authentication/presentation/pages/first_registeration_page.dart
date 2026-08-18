@@ -98,10 +98,6 @@ class _RegistrationPageState extends State<RegistrationPage>
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return PopScope(
       canPop: (widget.fromLogOut ?? false) ? false : true,
       onPopInvokedWithResult: (didPop, result) {

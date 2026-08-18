@@ -78,10 +78,6 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return ValueListenableBuilder<int>(
       valueListenable: pageContent,
       builder: (context, index, _) {

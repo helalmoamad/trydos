@@ -163,10 +163,6 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         navigationToSinglePageChat(

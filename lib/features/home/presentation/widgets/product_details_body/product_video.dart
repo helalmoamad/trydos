@@ -8,7 +8,6 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:video_player/video_player.dart';
 
 /// 🚀 نسخة مبسطة جداً من ProductListing3DSlider - أداء فائق ⚡
@@ -68,10 +67,6 @@ class _ProductVedioState extends State<ProductVedio> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: _buildVideoBox(widget.imageSource ?? ""),

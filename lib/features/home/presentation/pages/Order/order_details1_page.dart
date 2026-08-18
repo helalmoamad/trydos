@@ -225,10 +225,6 @@ class _OrderDetails1State extends State<OrderDetails1> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     Future<void> _refreshData() async {
       fromNotification = false;
       if (canFetchReturnDetails) {

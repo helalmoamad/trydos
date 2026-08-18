@@ -6,7 +6,6 @@ import 'package:get_it/get_it.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../manager/chat_state.dart';
 import 'document_message.dart';
 import 'image_message.dart';
@@ -92,10 +91,6 @@ class _ReplayMessageState extends State<ReplayMessage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocListener<ChatBloc, ChatState>(
       listenWhen: (p, c) =>
           p.changeMessageStateFromPusherStatus !=

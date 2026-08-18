@@ -16,7 +16,6 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -85,10 +84,6 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     if (widget.colors.isNullOrEmpty) {
       return const SizedBox.shrink();
     }

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// ScrollCacheExtent غير مُصدَّرة عبر material.dart/widgets.dart
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -141,7 +143,11 @@ class _StoriesListState extends State<StoriesList> {
                             // مؤشّر الترقيم) فلا تقبل itemExtent، لكن إبقاء
                             // حالة العناصر الخارجة عن الشاشة حيّة بلا فائدة
                             addAutomaticKeepAlives: false,
-                            cacheExtent: 300,
+                            // العناصر متفاوتة العرض فلا يوجد itemExtent نشتقّ
+                            // منه — نربط الاستباق بعرض المنفذ بدل رقم ثابت
+                            scrollCacheExtent: const ScrollCacheExtent.viewport(
+                              0.5,
+                            ),
                             controller: listViewController,
                             itemBuilder: (context, index) {
                               if (index == storiesCollections.length + 1) {

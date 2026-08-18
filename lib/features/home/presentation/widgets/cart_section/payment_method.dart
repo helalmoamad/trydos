@@ -21,7 +21,6 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../common/helper/show_message.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class PaymentMethod extends StatefulWidget {
   final ValueNotifier<List<String>> paymentMethods;
@@ -88,10 +87,6 @@ class _PaymentMethodState extends State<PaymentMethod> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Column(
       children: [
         ValueListenableBuilder<List<String>>(
@@ -592,10 +587,6 @@ class PaymentMethodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Container(
       height: 40.h,
       width: 1.sw,

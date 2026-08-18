@@ -99,10 +99,6 @@ class _BuyerSellerChatState extends ThemeState<BuyerSellerChat> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.getFqaCommentsPaginationModel?['all']?.paginationStatus !=

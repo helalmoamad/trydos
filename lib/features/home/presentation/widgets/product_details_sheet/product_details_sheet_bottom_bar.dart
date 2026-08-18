@@ -26,7 +26,6 @@ import 'package:trydos/features/app/my_text_widget.dart';
 
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as product;
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
@@ -143,10 +142,6 @@ class _ProductDetailsSheetBottomBarState
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous
@@ -1198,10 +1193,6 @@ class BarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Material(
       color: Colors.transparent,
       child: InkWell(

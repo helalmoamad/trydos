@@ -273,10 +273,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     int duration = GetIt.I<PrefsRepository>().getdurtion ?? 0;
     MoveToUpToScrollSearch(
       PaginationStatus resultOfSearchTextInChat,
@@ -314,26 +310,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
     ChannelMember? member;
     Locale locale = Localizations.localeOf(context);
     bool lan = !locale.languageCode.contains("ar");
-    FlutterError.onError = (details) {
-      chatBloc.add(
-        SendErrorChatToServerEvent(
-          error: details.toString(),
-          lastPage: "Single_Page_Chat",
-        ),
-      );
-
-      if (kDebugMode) print("asfsd${details.toString()}");
-      GetIt.I<PrefsRepository>().saveRequestsData(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        error: details.toString(),
-      );
-    };
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _scrollToBottom();
     });

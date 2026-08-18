@@ -7,7 +7,6 @@ import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/search/presentation/widgets/close_circle.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SearchHistoryChip extends StatelessWidget {
   final ValueNotifier<int> buildSearchResult;
@@ -28,10 +27,6 @@ class SearchHistoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Padding(
       padding: const EdgeInsets.only(right: 5.0),
       child: Stack(

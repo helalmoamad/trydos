@@ -7,7 +7,6 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CountDownTimer extends StatefulWidget {
   const CountDownTimer({super.key, required this.cartId});
@@ -43,10 +42,6 @@ class _CountDownTimerState extends State<CountDownTimer> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: CountdownTimer(

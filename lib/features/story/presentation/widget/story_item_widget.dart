@@ -17,7 +17,6 @@ import '../../../app/my_text_widget.dart';
 import '../../../chat/presentation/widgets/chat_widgets/no_image_widget.dart';
 import '../bloc/story_state.dart';
 import '../pages/story_collection.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StoryItemWidget extends StatefulWidget {
   const StoryItemWidget({
@@ -50,10 +49,6 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
   @override
   Widget build(BuildContext context) {
     resizeUserImageOnClick.value = false;
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocBuilder<StoryBloc, StoryState>(
       builder: (context, state) {
         bool isLastStoryShowed =

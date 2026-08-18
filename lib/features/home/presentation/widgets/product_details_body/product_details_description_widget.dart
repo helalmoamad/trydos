@@ -7,7 +7,6 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
     as productListingModel;
 
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -59,10 +58,6 @@ class _ProductDetailsDescriptionWidgetState
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: LayoutBuilder(

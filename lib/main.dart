@@ -9,6 +9,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:flutter_callkit_incoming/entities/android_params.dart';
 import 'package:flutter_callkit_incoming/entities/call_event.dart';
 import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
@@ -523,12 +524,29 @@ void main() async {
         return bread;
       };
     },
-    appRunner: () => runApp(
-      DefaultAssetBundle(
-        bundle: SentryAssetBundle(),
-        child: TrydosApplication(navKey: navigatorKey),
-      ),
-    ),
+    appRunner: () {
+      // معالج أخطاء Flutter واحد للتطبيق كلّه.
+      //
+      // `FlutterError.onError` حقل ساكن واحد: كل إسناد يمحو ما قبله. كان
+      // مُسنداً في 179 موضعاً، فكان آخر ويدجت يُبنى هو من يقرّر — وكان ذلك
+      // يمحو المعالج الذي ثبّتته SentryFlutter.init قبل سطور، فلا تصل أخطاء
+      // إطار العمل إلى Sentry إطلاقاً.
+      //
+      // هنا نُسنده مرّة واحدة، وبعد تهيئة Sentry، ونستدعي معالجها بعد تسجيلنا
+      // بدل أن نستبدله. حذف `previous?.call` يعيد تعطيل Sentry بصمت.
+      final previousOnError = FlutterError.onError;
+      FlutterError.onError = (FlutterErrorDetails details) {
+        LastPagesTracker.sendErrorToBlocAndLog(details);
+        previousOnError?.call(details);
+      };
+
+      runApp(
+        DefaultAssetBundle(
+          bundle: SentryAssetBundle(),
+          child: TrydosApplication(navKey: navigatorKey),
+        ),
+      );
+    },
   );
 }
 

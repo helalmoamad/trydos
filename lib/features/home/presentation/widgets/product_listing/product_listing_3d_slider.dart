@@ -258,9 +258,6 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
         ? widget.slidingModeItem.item2
         : 0;
 
-    FlutterError.onError = (error) {
-      debugPrint(error.toString());
-    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Material(

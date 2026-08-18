@@ -5,7 +5,6 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
 
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../app/my_text_widget.dart';
 
 class CallStatusWidget extends StatefulWidget {
@@ -26,10 +25,6 @@ class CallStatusWidget extends StatefulWidget {
 class _CallStatusWidgetState extends ThemeState<CallStatusWidget> {
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,

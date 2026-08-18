@@ -27,7 +27,6 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -61,10 +60,6 @@ class HomePageCard2 extends cupertino.StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return _buildCardContent(context);
   }
 
@@ -854,10 +849,6 @@ class ProductItemCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return SizedBox(
       width: isFocused ? 50.w : 40.w,
       height: isFocused ? 80.w : 40.w,

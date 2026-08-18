@@ -76,10 +76,6 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     bool verifiedBySignIn = false;
     return Scaffold(
       backgroundColor: const Color(0xffF4F8FF),

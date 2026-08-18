@@ -12,7 +12,6 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/common/helper/media_registry_entry.dart';
 
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:open_file/open_file.dart';
 
@@ -29,7 +28,6 @@ import 'package:trydos/common/helper/file_saving.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
-import '../../../../core/domin/repositories/prefs_repository.dart';
 
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
@@ -67,10 +65,6 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     List<Widget> chatPages = [
       ImageInProfile(files: widget.files ?? null),
       VideoInProfile(files: widget.files ?? null, chatId: widget.chatId),
@@ -214,18 +208,6 @@ class _ImageInProfileState extends ThemeState<ImageInProfile> {
         images.add(entry);
       }
     });
-    FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        error: error.toString(),
-      );
-    };
 
     return widget.files == null
         ? const SizedBox.shrink()
@@ -314,18 +296,6 @@ class _VideoInProfileState extends ThemeState<VideoInProfile> {
         videos.add(entry);
       }
     });
-    FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        error: error.toString(),
-      );
-    };
 
     return widget.files == null
         ? const SizedBox.shrink()
@@ -429,18 +399,6 @@ class _FilesInProfileState extends ThemeState<FilesInProfile> {
         files.add(entry);
       }
     });
-    FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        error: error.toString(),
-      );
-    };
 
     return widget.files == null
         ? const SizedBox.shrink()

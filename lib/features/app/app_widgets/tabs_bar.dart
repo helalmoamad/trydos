@@ -88,6 +88,7 @@ class _TabsBarState extends State<TabsBar> {
     }
 
     await _speechToText.listen(
+      // ignore: deprecated_member_use
       pauseFor: const Duration(seconds: 5),
       onResult: (result) async {
         if (result.recognizedWords.replaceAll(" ", "").length > 2) {

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+// ScrollCacheExtent غير مُصدَّرة عبر material.dart/widgets.dart
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -176,10 +178,6 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return
     // ignore: deprecated_member_use
     WillPopScope(
@@ -195,7 +193,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
         try {
           if (panelControllerForCart.isPanelOpen) {
             panelControllerForCart.close();
-            return Future.value(false);
+            return await Future.value(false);
           }
         } catch (e) {}
         return Future.value(true);
@@ -289,8 +287,17 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                               child: GridView.builder(
                                                 addAutomaticKeepAlives: false,
                                                 addSemanticIndexes: false,
-                                                cacheExtent:
-                                                    400, // بناء العناصر قبل دخولها الشاشة لمنع ظهورها المفاجئ
+                                                // صفّ كامل يُبنى قبل دخوله الشاشة.
+                                                // كان 400 ثابتاً: أقلّ من ارتفاع
+                                                // الصفّ على الشاشات الطويلة فتُبنى
+                                                // البطاقات لحظة ظهورها، وأكثر منه
+                                                // على القصيرة فتُبنى بلا حاجة.
+                                                // ربطه بـ itemHeight يجعله صحيحاً
+                                                // على كل المقاسات.
+                                                scrollCacheExtent:
+                                                    ScrollCacheExtent.pixels(
+                                                      itemHeight + spacing,
+                                                    ),
                                                 controller: scrollController,
                                                 gridDelegate:
                                                     SliverGridDelegateWithFixedCrossAxisCount(
@@ -499,8 +506,9 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                       addAutomaticKeepAlives: false,
 
                       addSemanticIndexes: false,
-                      cacheExtent:
-                          400, // بناء العناصر قبل دخولها الشاشة لمنع ظهورها المفاجئ
+                      // صفّ كامل مسبقاً. ارتفاع الخانة مشتقّ من
+                      // childAspectRatio أدناه فيساوي 392.h تقريباً
+                      scrollCacheExtent: ScrollCacheExtent.pixels(392.h + 5.h),
                       itemCount: selectedProduct.syncColorImages?.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         mainAxisSpacing: 5.h,

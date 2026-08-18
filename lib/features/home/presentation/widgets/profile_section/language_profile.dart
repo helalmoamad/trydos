@@ -69,10 +69,6 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return ValueListenableBuilder<bool>(
       valueListenable: visibleSave,
       builder: (context, _visibleSave, _) {

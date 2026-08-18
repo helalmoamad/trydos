@@ -20,7 +20,6 @@ import '../../../../service/language_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../data/models/my_chats_response_model.dart';
 import 'chat_widgets/no_image_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ContactCard extends StatelessWidget {
   const ContactCard({Key? key, required this.index, required this.contact})
@@ -30,10 +29,6 @@ class ContactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     final String receiverName, fullReceiverName;
     if (contact.name == null) {
       receiverName = LocaleKeys.uk.tr();

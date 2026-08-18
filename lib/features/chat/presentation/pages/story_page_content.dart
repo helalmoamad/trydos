@@ -6,7 +6,6 @@ import 'package:trydos/features/chat/presentation/manager/preload_bloc/preloadin
 import 'package:trydos/features/chat/presentation/manager/preload_bloc/preloading_videos_event.dart';
 import 'package:trydos/features/chat/presentation/manager/preload_bloc/preloading_videos_state.dart';
 import 'package:video_player/video_player.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StoryPageContent extends StatefulWidget {
   const StoryPageContent({Key? key}) : super(key: key);
@@ -18,10 +17,6 @@ class StoryPageContent extends StatefulWidget {
 class _StoryPageContentState extends State<StoryPageContent> {
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return SliverToBoxAdapter(
         child: BlocBuilder<PreloadingVideosBloc, PreloadingVideosState>(
       builder: (context, state) {

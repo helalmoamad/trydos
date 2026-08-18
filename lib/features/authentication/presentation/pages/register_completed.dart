@@ -49,10 +49,6 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Scaffold(
       backgroundColor: const Color(0xffBCFFDF),
       body: Stack(

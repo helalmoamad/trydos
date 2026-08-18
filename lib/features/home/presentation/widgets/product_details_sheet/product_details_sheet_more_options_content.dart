@@ -8,7 +8,6 @@ import 'package:get_it/get_it.dart';
 
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/common/helper/show_message.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -63,10 +62,6 @@ class _ProductDetailsSheetMoreOptionsContentState
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.getNotificationTypeProductStatus !=

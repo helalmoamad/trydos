@@ -1,14 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../app/trydos_shimmer_loading.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductStoryVideoItem extends StatefulWidget {
   const ProductStoryVideoItem({super.key, required this.videoUrl});
@@ -46,10 +44,6 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return FutureBuilder(
       future: initializeVideo,
       builder: (context, snapShot) {
@@ -89,7 +83,6 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
                         color: colorScheme.white,
                         offset: const Offset(0, 3),
                         blurRadius: 3,
-                        inset: true,
                       ),
                     ],
                   ),

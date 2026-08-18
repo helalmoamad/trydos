@@ -6,7 +6,6 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.da
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as listing;
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -48,10 +47,6 @@ class _ProductDetailsDisplayPicturesPageState
     final ValueNotifier<int> selectedPicture = ValueNotifier(
       widget.currentIndex,
     );
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(

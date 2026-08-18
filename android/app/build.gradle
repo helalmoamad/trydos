@@ -11,18 +11,15 @@ android {
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
-    lintOptions {
-        abortOnError false
+    // كان `lintOptions` — محذوفة في AGP 9، والبديل هو `lint`
+    lint {
+        abortOnError = false
     }
 
     compileOptions {
         sourceCompatibility  JavaVersion.VERSION_17
         targetCompatibility  JavaVersion.VERSION_17
         coreLibraryDesugaringEnabled true
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
     }
 
     defaultConfig {
@@ -47,7 +44,10 @@ android {
             // القراءة مباشرة من متغيرات السيرفر السحابي لضمان الأمان والرفع التلقائي السليم
             keyAlias System.getenv("ANDROID_KEY_ALIAS") ?: "upload"
             keyPassword System.getenv("ANDROID_KEY_PASSWORD") ?: "TrydosFlutterAppH12345"
-            storeFile file("${project.buildDir}/../upload-keystore.jks")
+            // كان `file("${project.buildDir}/../upload-keystore.jks")` — و
+            // project.buildDir محذوفة في Gradle 9. المسار الناتج لم يتغيّر:
+            // <repo>/build/upload-keystore.jks — وهو ما ينتجه Decode Keystore في CI
+            storeFile rootProject.file("../build/upload-keystore.jks")
             storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: "TrydosFlutterAppH12345"
         }
     }
@@ -71,13 +71,21 @@ android {
     }
 }
 
+// كان `kotlinOptions` داخل `android {}` — مهجورة في Kotlin 2.x.
+// البديل هو امتداد kotlin على مستوى المشروع.
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
+
 flutter {
     source = "../.."
 }
 
 dependencies {
     androidTestUtil "androidx.test:orchestrator:1.4.2"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.20"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.3.20"
     implementation "com.google.android.material:material:1.12.0"
     implementation platform('com.google.firebase:firebase-bom:33.10.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'

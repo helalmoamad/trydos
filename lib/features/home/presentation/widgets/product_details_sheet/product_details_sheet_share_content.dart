@@ -1,7 +1,6 @@
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 
 import 'dart:math';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,8 +11,7 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:flutter/material.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/home/presentation/widgets/share_products_with_social_media/build_social_buttons.dart';
 import '../../../../../common/helper/helper_functions.dart';
@@ -58,10 +56,6 @@ class _ProductDetailsSheetShareContentState
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return ScrollConfiguration(
       behavior: const cupertino.CupertinoScrollBehavior(),
       child: ListView(
@@ -270,10 +264,6 @@ class ChatCardForShare extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     final String receiverName, fullReceiverName;
     if (channelMember.user?.name == null) {
       receiverName = LocaleKeys.uk.tr();
@@ -362,7 +352,6 @@ class ChatCardForShare extends StatelessWidget {
                                   blurRadius: 6,
                                   // ignore: deprecated_member_use
                                   color: Colors.white.withOpacity(0.5),
-                                  inset: true,
                                 ),
                               ],
                             ),

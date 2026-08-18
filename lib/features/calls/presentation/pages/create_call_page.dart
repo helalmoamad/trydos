@@ -53,10 +53,6 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     GetIt.I<CallsBloc>().add(InitResponseRejectVideoCallEvent());
 

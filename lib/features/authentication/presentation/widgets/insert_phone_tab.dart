@@ -12,7 +12,6 @@ import 'package:trydos/features/authentication/presentation/widgets/phone_form_f
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../common/constant/countries.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -90,10 +89,6 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
   @override
   Widget build(BuildContext context) {
     debugPrint('yes rebuilt');
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Column(

@@ -76,10 +76,6 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>

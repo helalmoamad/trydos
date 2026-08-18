@@ -9,7 +9,6 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -74,10 +73,6 @@ class _ProductColorPanalState extends State<ProductColorPanal> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: _buildSimpleProductCard(),
@@ -616,10 +611,6 @@ class _ImagePageViewWithDotsState extends State<_ImagePageViewWithDots> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Column(
       children: [
         SizedBox(

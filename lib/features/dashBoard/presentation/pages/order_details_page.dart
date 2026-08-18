@@ -17,7 +17,6 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart'
     show CallsBloc, CallsState, MakeCallStatus;
@@ -126,10 +125,6 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     // Future<void> _refreshData() async {
     //   fromNotification = false;
     //   if (canFetchReturnDetails) {
@@ -4661,7 +4656,12 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SvgNetworkWidget(svgUrl: brand, width: 220, height: 8),
+                    MyCachedNetworkImage(
+                      imageUrl: brand,
+                      width: 220,
+                      height: 8,
+                      imageFit: BoxFit.contain,
+                    ),
                     const SizedBox(height: 2),
                     Text(
                       title,

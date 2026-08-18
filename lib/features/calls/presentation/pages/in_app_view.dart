@@ -117,9 +117,10 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         _setCallAudioMode(true); // Earpiece for outgoing voice calls
       }
     }
-    if (kDebugMode) print(
-      "myFcmToken ://///***/*8888****${GetIt.I<PrefsRepository>().getFcmTokens[0]}",
-    );
+    if (kDebugMode)
+      print(
+        "myFcmToken ://///***/*8888****${GetIt.I<PrefsRepository>().getFcmTokens[0]}",
+      );
     LastPagesTracker.push('AgoraInAppWebView');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     debugPrint("asdafsd{${widget.channelId}");
@@ -241,11 +242,6 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
-
     return BlocListener<CallsBloc, CallsState>(
       listener: (context, state) {
         timer?.cancel();
@@ -282,15 +278,17 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 },*/
                     onReceivedError: (controller, request, error) {
                       if (kDebugMode) {
-                        if (kDebugMode) print(
-                          "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${error}",
-                        );
+                        if (kDebugMode)
+                          print(
+                            "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${error}",
+                          );
                       }
                     },
                     onReceivedHttpError: (controller, webResources, webErrors) {
-                      if (kDebugMode) print(
-                        "*********************/////////////////////////////////////////////////${webErrors}",
-                      );
+                      if (kDebugMode)
+                        print(
+                          "*********************/////////////////////////////////////////////////${webErrors}",
+                        );
                       // showMessage('Can\'t lunch call , please try again' , showInRelease: true);
                       // GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
                       //     messageId: widget.messageId.toString()));
@@ -306,9 +304,10 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       if (!widget.isReceivingCall && widget.type == 'voice') {
                         _setCallAudioMode(true);
                       }
-                      if (kDebugMode) print(
-                        "//////////////////////////////////////1111111111111111111111///////////${url?.queryParameters}",
-                      );
+                      if (kDebugMode)
+                        print(
+                          "//////////////////////////////////////1111111111111111111111///////////${url?.queryParameters}",
+                        );
 
                       log('ring? ${url?.queryParameters.containsKey('ring')}');
                       if (_audioPlayer.state == PlayerState.playing &&
@@ -319,9 +318,10 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                         _audioPlayer.stop();
                       }
                       if ((url?.path ?? "").toString().contains('callInProg')) {
-                        if (kDebugMode) print(
-                          "57............................${url?.path.toString()}",
-                        );
+                        if (kDebugMode)
+                          print(
+                            "57............................${url?.path.toString()}",
+                          );
                         Timer.periodic(const Duration(seconds: 7), (timer) {
                           if (!mounted) {
                             timer.cancel();
@@ -420,9 +420,10 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     },
 
                     onProgressChanged: (controller, progress) {
-                      if (kDebugMode) print(
-                        "******************---------------------------------------------------------------------------------/////////////////////////////////////////////////${progress}",
-                      );
+                      if (kDebugMode)
+                        print(
+                          "******************---------------------------------------------------------------------------------/////////////////////////////////////////////////${progress}",
+                        );
 
                       if (mounted) {
                         setState(() {
@@ -434,9 +435,10 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                   ValueListenableBuilder<int>(
                     valueListenable: loadingNotifier,
                     builder: (context, progress, child) {
-                      if (kDebugMode) print(
-                        "///////*111111111111111111111111111111111111****${timer?.isActive ?? false}*****${progress}**4444444444444444*7777777777777777777777777/////////////////////////////////////////*************",
-                      );
+                      if (kDebugMode)
+                        print(
+                          "///////*111111111111111111111111111111111111****${timer?.isActive ?? false}*****${progress}**4444444444444444*7777777777777777777777777/////////////////////////////////////////*************",
+                        );
 
                       if (progress < 100)
                         return const Center(child: CircularProgressIndicator());

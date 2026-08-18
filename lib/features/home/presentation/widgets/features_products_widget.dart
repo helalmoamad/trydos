@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart' as tran;
 
 import 'package:flutter/material.dart';
+// ScrollCacheExtent غير مُصدَّرة عبر material.dart/widgets.dart
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -142,8 +144,9 @@ class FeatureProductsWidget extends StatelessWidget {
                       addAutomaticKeepAlives: false,
                       addSemanticIndexes: false,
 
-                      cacheExtent:
-                          400, // بناء العناصر قبل دخولها الشاشة لمنع ظهورها المفاجئ
+                      // بطاقتان مسبقاً — مشتقّ من itemExtent أدناه بدل رقم
+                      // ثابت، فيبقى صحيحاً على كل عرض شاشة
+                      scrollCacheExtent: ScrollCacheExtent.pixels(210.w * 2),
                       // البطاقة ثابتة العرض (200) + فاصل (10). itemExtent
                       // يجعل القائمة تحسب المواضع بدل قياس كل بطاقة أثناء
                       // التمرير — وهو سبب انسيابية قائمة البوتيكات

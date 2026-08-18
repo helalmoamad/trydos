@@ -93,7 +93,7 @@ dependencies:
   firebase_messaging: ^14.7.10
   firebase_analytics: ^10.8.0
   flutter_cache_manager: ^3.3.1
-  sentry_flutter: ^8.14.2
+  sentry_flutter: ^9.27.0
   #contacts_service: ^0.6.3
   mime: ^1.0.4
   fast_contacts: ^4.0.0

@@ -183,10 +183,6 @@ class _OrderDetails2 extends State<OrderDetails2> {
         _isLoading = false; // إنهاء التحميل
       });
     }*/
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return
     // ignore: deprecated_member_use
     WillPopScope(

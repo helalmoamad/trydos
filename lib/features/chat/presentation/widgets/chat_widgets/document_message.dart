@@ -25,7 +25,6 @@ import '../../manager/chat_event.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 import 'text_message.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 // ignore: must_be_immutable
 class DocumentMessage extends StatefulWidget {
@@ -101,10 +100,6 @@ class _DocumentMessageState extends State<DocumentMessage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: BlocConsumer<ChatBloc, ChatState>(

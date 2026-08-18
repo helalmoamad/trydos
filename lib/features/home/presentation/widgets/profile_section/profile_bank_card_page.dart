@@ -42,10 +42,6 @@ class _ProfileBankCartPageState extends State<ProfileBankCartPage>
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Scaffold(
       appBar: TrydosAppBar(
         appBarParams: AppBarParams(

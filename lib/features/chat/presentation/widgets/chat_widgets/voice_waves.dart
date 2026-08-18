@@ -1,6 +1,5 @@
 import 'package:audio_wave/audio_wave.dart';
 import 'package:flutter/material.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class VoiceWaves extends StatefulWidget {
   const VoiceWaves(
@@ -32,10 +31,6 @@ class _VoiceWavesState extends State<VoiceWaves>
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return ClipRect(
       child: Align(
         alignment: Alignment.centerLeft,

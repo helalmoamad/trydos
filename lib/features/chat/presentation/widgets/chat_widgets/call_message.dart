@@ -8,7 +8,6 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -39,10 +38,6 @@ class CallMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Directionality(
       textDirection: ui.TextDirection.ltr,
       child: Padding(

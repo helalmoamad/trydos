@@ -99,10 +99,6 @@ class _OrdersPageState extends State<OrdersPage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Container(
       color: const Color(0xffFFFFFF),
       child: SafeArea(

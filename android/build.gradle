@@ -1,13 +1,12 @@
 buildscript {
-    ext.kotlin_version = '2.1.20'
+    ext.kotlin_version = '2.3.20'
     repositories {
         google()
-        mavenCentral() // تصحيح الكلمة هنا
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.10.0'
+        classpath 'com.android.tools.build:gradle:8.13.2'
         classpath 'com.google.gms:google-services:4.4.2'
     }
 }
@@ -15,37 +14,42 @@ buildscript {
 allprojects {
     repositories {
         google()
-        mavenCentral() // تصحيح الكلمة هنا أيضاً
-        jcenter()
+        mavenCentral()
     }
 }
 
-rootProject.buildDir = '../build'
+// مجلد البناء موحّد في جذر المستودع (وليس داخل android/).
+// كان `rootProject.buildDir = '../build'` — وهي واجهة محذوفة في Gradle 9.
+// البديل هو layout.buildDirectory، والمسار الناتج هو نفسه: <repo>/build
+def sharedBuildDir = rootProject.layout.buildDirectory.dir("../../build").get()
+rootProject.layout.buildDirectory.value(sharedBuildDir)
 
 // تجميع كل إعدادات المشاريع الفرعية والمكتبات في مكان واحد منظم
 subprojects { project ->
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-    
+    // كان `project.buildDir = "${rootProject.buildDir}/${project.name}"`
+    project.layout.buildDirectory.value(sharedBuildDir.dir(project.name))
+
     afterEvaluate {
         if (project.plugins.hasPlugin("com.android.application") ||
                 project.plugins.hasPlugin("com.android.library")) {
-            
+
             project.android {
                 compileSdk 36
                 compileOptions {
                     sourceCompatibility JavaVersion.VERSION_17
                     targetCompatibility JavaVersion.VERSION_17
                 }
-                
+
                 // 🔥 الحل السحري: إذا كانت المكتبة قديمة ولا تملك namespace، يتم تعيينه لها تلقائيًا هنا لمنع خطأ البناء
                 if (project.android.hasProperty("namespace") && project.android.namespace == null) {
                     project.android.namespace = project.group
                 }
             }
-            
+
+            // كان `kotlinOptions { jvmTarget = "17" }` — مهجورة في Kotlin 2.x
             project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-                kotlinOptions {
-                    jvmTarget = "17"
+                compilerOptions {
+                    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
                 }
             }
         }
@@ -57,5 +61,5 @@ subprojects {
 }
 
 tasks.register("clean", Delete) {
-    delete rootProject.buildDir
+    delete rootProject.layout.buildDirectory
 }

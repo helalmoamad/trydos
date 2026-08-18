@@ -63,10 +63,6 @@ class _PaymentWebviewState extends State<PaymentWebview> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return SafeArea(
       child:
           // ignore: deprecated_member_use

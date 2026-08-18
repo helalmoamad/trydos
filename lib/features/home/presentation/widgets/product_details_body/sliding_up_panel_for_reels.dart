@@ -10,7 +10,6 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../app/my_text_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SlidingUpPanelForReels extends StatelessWidget {
   const SlidingUpPanelForReels({super.key, required this.panelController});
@@ -19,10 +18,6 @@ class SlidingUpPanelForReels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return SlidingUpPanel(
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(20.r),

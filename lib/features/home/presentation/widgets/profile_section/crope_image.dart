@@ -59,10 +59,6 @@ class _CopperImageState extends State<CopperImage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     Future<ui.Image> convertImageProviderToUiImage(
       ImageProvider imageProvider,
     ) async {

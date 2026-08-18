@@ -25,7 +25,6 @@ import 'package:trydos/features/calls/presentation/utils/caller_info.dart';
 import 'package:trydos/features/calls/presentation/widgets/no_image_widget.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CallsCard extends StatefulWidget {
   const CallsCard({
@@ -96,10 +95,6 @@ class _CallsCardState extends ThemeState<CallsCard> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'dart:math';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -102,10 +101,6 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     if (widget.wrongCode) {
       animationController.forward();
     }

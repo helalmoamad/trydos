@@ -11,7 +11,6 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
     as Brand;
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductDetailsTitle extends StatelessWidget {
   final Brand.Brand? brand;
@@ -36,10 +35,6 @@ class ProductDetailsTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (p, c) =>
           p.getProductDetailWithoutSimilarRelatedProductsStatus !=

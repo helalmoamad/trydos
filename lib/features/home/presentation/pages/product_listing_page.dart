@@ -3,8 +3,9 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:flutter/material.dart';
+// ScrollCacheExtent غير مُصدَّرة عبر material.dart/widgets.dart
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -264,6 +265,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       _speechEnabled = await _speechToText.initialize();
     }
     await _speechToText.listen(
+      // ignore: deprecated_member_use
       listenFor: const Duration(seconds: 7),
       onResult: (result) {
         if (result.recognizedWords.replaceAll(" ", "").length > 2) {
@@ -600,7 +602,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
         try {
           if (panelControllerForCart.isPanelOpen) {
             panelControllerForCart.close();
-            return Future.value(false);
+            return await Future.value(false);
           }
         } catch (e) {}
         if (widget.fromBackground) {
@@ -760,8 +762,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   ),*/
                             // منع overscroll للحماية من crashes
                             // بناء الصفوف قبل دخولها الشاشة بدل بنائها لحظة
-                            // ظهورها (كان 50 = ظهور مفاجئ + سقوط إطارات)
-                            cacheExtent: 200,
+                            // ظهورها. كان 200 — أقلّ من الافتراضي (250) وأقلّ
+                            // من نصف ارتفاع صفّ الشبكة، والصفّ يحمل بطاقتين
+                            // فتُبنيان معاً داخل الإطار المرئي. نصف المنفذ
+                            // يعادل صفّاً كاملاً تقريباً على كل المقاسات.
+                            scrollCacheExtent: const ScrollCacheExtent.viewport(
+                              0.3,
+                            ),
                             key: TestVariables.kTestMode
                                 ? const Key(WidgetsKeys.productListingScrollKey)
                                 : null,
@@ -3191,7 +3198,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                     BoxShadow(
                                       color: Color(0x19000000),
                                       offset: Offset(0, 3),
-                                      blurRadius: 6,
+                                      blurRadius: 3,
                                     ),
                                   ],
                                   borderRadius: BorderRadius.circular(15.r),
@@ -3403,7 +3410,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                             addAutomaticKeepAlives: false,
 
                             addSemanticIndexes: false,
-                            cacheExtent: 200,
+                            // صفّ كامل مسبقاً. ارتفاع الخانة مشتقّ من
+                            // childAspectRatio أدناه فيساوي 392.w تقريباً،
+                            // ويضاف إليه mainAxisSpacing. كان 200 = نصف صفّ.
+                            scrollCacheExtent: ScrollCacheExtent.pixels(
+                              392.w + 5.h,
+                            ),
                             controller: sc,
                             itemCount: products[_tapIndexToShowColorImages]
                                 .syncColorImages

@@ -16,7 +16,6 @@ import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductDetailsSheetHeader extends StatefulWidget {
   final String price;
@@ -110,10 +109,6 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     List<String> svg = [
       AppAssets.freeShippingSvg,
       AppAssets.freeReturnSvg,

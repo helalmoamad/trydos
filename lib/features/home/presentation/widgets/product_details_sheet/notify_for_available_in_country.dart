@@ -21,7 +21,6 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../app/my_text_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class NotifyWhenAvailableInCountryButton extends StatefulWidget {
   const NotifyWhenAvailableInCountryButton({
@@ -66,10 +65,6 @@ class _NotifyWhenAvailableInCountryButtonState
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (p, c) =>
           p.getFirebaseSettingForNotificationStatus !=

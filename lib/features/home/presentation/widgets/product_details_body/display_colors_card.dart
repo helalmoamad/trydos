@@ -19,7 +19,6 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../../core/utils/theme_state.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
@@ -205,10 +204,6 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
   bool isColorWhite = false;
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     bool isCloseToWhite(Color color, {int threshold = 50}) {
       return (color.red > 255 - threshold &&
           color.green > 255 - threshold &&

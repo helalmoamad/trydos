@@ -11,7 +11,6 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../trydos_application.dart';
 import '../../../../app/my_text_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SlidingUpPanelForBuyersCameraShots extends StatelessWidget {
   const SlidingUpPanelForBuyersCameraShots({
@@ -24,10 +23,6 @@ class SlidingUpPanelForBuyersCameraShots extends StatelessWidget {
   final PanelController panelControllerForReels;
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return SlidingUpPanel(
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(20.w),

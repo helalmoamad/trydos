@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';
 
@@ -15,10 +14,6 @@ class SearchChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.w).copyWith(bottom: 10.h),
       padding: EdgeInsets.symmetric(vertical: 10.h),

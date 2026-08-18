@@ -51,10 +51,6 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Scaffold(
       backgroundColor: const Color(0xffE0FFEE),
       body: Stack(

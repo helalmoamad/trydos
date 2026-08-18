@@ -74,10 +74,6 @@ class _AnswerCallState extends State<AnswerCall> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     // er.oGoRoutf(context).p
     return Scaffold(

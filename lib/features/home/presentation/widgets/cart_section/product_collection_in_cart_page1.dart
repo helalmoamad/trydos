@@ -21,7 +21,6 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/countdown
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductCollectionInCartPage1 extends StatefulWidget {
   ProductCollectionInCartPage1({
@@ -53,10 +52,6 @@ class _ProductCollectionInCartPage1State
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     final List<Cart>? cartCollection;
     final List<OldCart>? oldCartCollection;
     final bool isOldCart;

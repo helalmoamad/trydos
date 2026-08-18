@@ -10,7 +10,6 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../app/my_text_widget.dart';
 
@@ -30,10 +29,6 @@ class ShippingDeliveryDatePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return SlidingUpPanel(
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(20.w),

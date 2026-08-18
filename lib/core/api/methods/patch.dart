@@ -74,7 +74,7 @@ class PatchClient<T> extends BaseApi<T> {
       if (response.statusCode == StatusCode.operationSucceeded.code ||
           response.statusCode == StatusCode.createdSucceeded.code) {
         if (_fromJson == null) {
-          return Future.value(_valueOnSuccess);
+          return await Future.value(_valueOnSuccess);
         }
 
         return _fromJson(response.data);

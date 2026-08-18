@@ -25,7 +25,6 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class AddingName extends StatefulWidget {
   const AddingName({required this.fromLogin, Key? key}) : super(key: key);
@@ -70,23 +69,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
   final GlobalKey<FormState> _formkey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     bool updateNameLoading = false;
-    FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        error: error.toString(),
-      );
-    };
     return BlocListener<AuthBloc, AuthState>(
       listenWhen: (p, c) =>
           p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus ||

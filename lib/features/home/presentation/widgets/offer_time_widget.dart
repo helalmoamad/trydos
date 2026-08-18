@@ -6,7 +6,6 @@ import 'package:trydos/config/theme/typography.dart';
 
 import '../../../../core/utils/theme_state.dart';
 import '../../../app/my_text_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class OfferTimeWidget extends StatefulWidget {
   const OfferTimeWidget({super.key});
@@ -33,10 +32,6 @@ class _OfferTimeWidgetState extends ThemeState<OfferTimeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Row(
       children: [
         MyTextWidget(

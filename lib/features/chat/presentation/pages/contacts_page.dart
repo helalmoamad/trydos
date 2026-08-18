@@ -54,10 +54,6 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),
       appBar: TrydosAppBar(

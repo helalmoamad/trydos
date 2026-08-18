@@ -31,7 +31,6 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SizesFiltersList extends StatefulWidget {
   const SizesFiltersList({
@@ -100,10 +99,6 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Padding(
       padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 25.w),
       child: Column(

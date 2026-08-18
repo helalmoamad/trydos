@@ -19,7 +19,6 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.da
 import 'package:trydos/features/home/presentation/widgets/product_details_body/star_ratting_product.dart';
 
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class GlobaleInfoProduct extends StatelessWidget {
   final String productId;
@@ -32,10 +31,6 @@ class GlobaleInfoProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (p, c) =>
           p.getProductDetailWithoutSimilarRelatedProductsStatus !=

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// ScrollCacheExtent غير مُصدَّرة عبر material.dart/widgets.dart
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -8,7 +10,6 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_colors_panel.dart';
 
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ColorImagesPanel extends StatelessWidget {
   const ColorImagesPanel({
@@ -26,10 +27,6 @@ class ColorImagesPanel extends StatelessWidget {
   final ValueNotifier<int> currentActiveTab;
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return SlidingUpPanel(
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(20.r),
@@ -68,7 +65,9 @@ class ColorImagesPanel extends StatelessWidget {
                 addAutomaticKeepAlives: false,
                 addRepaintBoundaries: false,
                 addSemanticIndexes: false,
-                cacheExtent: 400, // بناء العناصر قبل دخولها الشاشة لمنع ظهورها المفاجئ
+                // صفّ كامل مسبقاً. ارتفاع الخانة مشتقّ من childAspectRatio
+                // أدناه فيساوي 397.w تقريباً، ويضاف إليه mainAxisSpacing
+                scrollCacheExtent: ScrollCacheExtent.pixels(397.w + 5.h),
                 controller: sc,
                 itemCount: productItem.syncColorImages?.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

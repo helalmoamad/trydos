@@ -64,10 +64,6 @@ class _AgoraWebViewState extends State<AgoraWebView> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     Uri baseUrl = Uri.parse('https://webdev.trydos.com');
 

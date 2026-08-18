@@ -6,12 +6,6 @@ import '../../../chat/data/models/my_chats_response_model.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
 
 List<Map<String, dynamic>> callerInfo({required String channelId}) {
-  FlutterError.onError = (details) {
-    debugPrint("asfsd${details.toString()}");
-    GetIt.I<PrefsRepository>().saveRequestsData(
-        null, null, null, null, null, null, null,
-        error: details.toString());
-  };
   Chat currentChat = GetIt.I<ChatBloc>().state.chats.firstWhere(
       (element) => element.id == channelId || element.localId == channelId,
       orElse: () => GetIt.I<ChatBloc>()

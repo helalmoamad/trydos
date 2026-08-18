@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+//import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 
 class LastPagesTracker {
   static final List<String> _lastPages = [];
+
+  /// توقيع آخر خطأ أُرسل ووقت إرساله.
+  ///
+  /// خطأ يقع أثناء `build` أو `layout` يتكرّر مع **كل إطار** ما دامت الويدجت
+  /// معروضة. وبما أن هذا المعالج يضيف حدث Bloc يُطلق طلب شبكة ثم `emit` ثم
+  /// إعادة بناء، فإن الخطأ المتكرّر يصنع حلقة مغلقة: خطأ ← حدث ← شبكة ←
+  /// إعادة بناء ← نفس الخطأ. النتيجة تعليق كامل لا تقطّع.
+  ///
+  /// الحارس أدناه يقطع الحلقة: الخطأ نفسه يُرسل مرّة واحدة كل [_dedupeWindow]
+  /// بدل ستّين مرّة في الثانية. لا معلومة تُفقد — الخطأ مسجَّل أصلاً.
+  static String? _lastSignature;
+  static DateTime? _lastSentAt;
+
+  static const Duration _dedupeWindow = Duration(seconds: 30);
 
   static void push(String pageName) {
     if (_lastPages.isNotEmpty) {
@@ -23,10 +37,21 @@ class LastPagesTracker {
   static List<String> get lastPages => List.unmodifiable(_lastPages);
 
   static void sendErrorToBlocAndLog(FlutterErrorDetails error) {
-    GetIt.I<PrefsRepository>().saveRequestsData(
+    /* GetIt.I<PrefsRepository>().saveRequestsData(
         null, null, null, null, null, null, null,
         error: error.toString());
     debugPrint('error $error');
+*/
+    // التوقيع يعتمد على نوع الاستثناء ونصّه فقط — لا على المكدّس، لأن
+    // `error.stack.toString()` عملية غير رخيصة ونريد الخروج قبلها.
+    final String signature =
+        '${error.exception.runtimeType}:${error.exceptionAsString()}';
+    final DateTime now = DateTime.now();
+    if (signature == _lastSignature &&
+        _lastSentAt != null &&
+        now.difference(_lastSentAt!) < _dedupeWindow) {
+      return;
+    }
 
     // معالج الأخطاء يجب ألّا يرمي استثناءً بنفسه: إذا كان HomeBloc مُغلقاً
     // (أُغلق الـ singleton من BlocProvider عند dispose مثلاً) نتجاهل الحدث
@@ -36,6 +61,11 @@ class LastPagesTracker {
       debugPrint('⚠️ HomeBloc مُغلق — تم تجاهل إرسال حدث تسجيل الخطأ');
       return;
     }
+    // التسجيل بعد التأكّد من الإرسال: لو كان الـ Bloc مغلقاً لا نكتم الخطأ
+    // ثلاثين ثانية بلا أن يصل أحداً.
+    _lastSignature = signature;
+    _lastSentAt = now;
+
     homeBloc.add(
       SendErrorToMobileErrorLogEvent(
         errorExption:

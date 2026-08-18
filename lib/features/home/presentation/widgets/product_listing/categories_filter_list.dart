@@ -6,7 +6,6 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -45,10 +44,6 @@ class CategoriesFilterList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
     String key = boutiqueSlug + (category ?? '');

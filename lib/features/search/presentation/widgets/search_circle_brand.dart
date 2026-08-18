@@ -13,7 +13,6 @@ import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';
@@ -66,10 +65,6 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocBuilder<BoutiqueBloc, BoutiqueState>(
       builder: (context, state) {
         String key = 'search';

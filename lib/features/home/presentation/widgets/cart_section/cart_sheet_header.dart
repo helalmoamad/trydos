@@ -12,7 +12,6 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class CartDetailsSheetHeader extends StatefulWidget {
   final double shippingCost;
@@ -98,10 +97,6 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     if (widget.shippingCost == 0) {
       texts.remove('${LocaleKeys.free_shipping.tr()}');
       svg.remove(AppAssets.freeShippingSvg);

@@ -506,10 +506,6 @@ class _AddShippingAdressState extends State<AddShippingAdress>
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     String _formatNumber(String input, String countryCode) {
       // إزالة الفراغات
 

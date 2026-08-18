@@ -12,7 +12,6 @@ import '../../../../core/utils/responsive_padding.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../app/my_text_widget.dart';
 import 'chat_widgets/no_image_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class AddStoryCard extends StatelessWidget {
   const AddStoryCard({Key? key, required this.collectionStoryModel})
@@ -21,10 +20,6 @@ class AddStoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     return SizedBox(
       height: 100.h,

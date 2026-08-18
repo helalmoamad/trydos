@@ -12,7 +12,6 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/star_ratting_product.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../app/my_text_widget.dart';
 
@@ -41,10 +40,6 @@ class BuyersProductRatePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     String productId = productFirstId;
     return SlidingUpPanel(

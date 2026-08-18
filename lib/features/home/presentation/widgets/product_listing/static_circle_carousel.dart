@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StaticCircleCarousel extends StatelessWidget {
   final List<String> imageUrls;
@@ -24,10 +23,6 @@ class StaticCircleCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     // إعداد أحجام الدوائر
     double big = 22.h;
     double medium = 22.h;

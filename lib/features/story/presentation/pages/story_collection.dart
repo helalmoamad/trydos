@@ -53,7 +53,6 @@ import '../../data/models/get_stories_model.dart';
 import '../bloc/story_state.dart';
 import '../widget/animated_builder.dart';
 import 'dart:ui';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 // ignore: must_be_immutable
 class StoryCollection extends StatefulWidget {
@@ -136,10 +135,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     return Hero(
       tag: widget.collectionIndex,

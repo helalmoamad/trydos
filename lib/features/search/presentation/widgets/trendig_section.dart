@@ -12,7 +12,6 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class TrendingSection extends StatefulWidget {
   final List<PopularSearchTerm> popularSearchTerms;
@@ -36,10 +35,6 @@ class _TrendingSectionState extends State<TrendingSection> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Padding(
       padding: EdgeInsetsDirectional.only(top: 20.h, start: 20.w),
       child: Column(

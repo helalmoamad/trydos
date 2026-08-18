@@ -5,8 +5,7 @@ import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:flutter/material.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:get_it/get_it.dart';
@@ -14,7 +13,6 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/falsh_
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/generated/locale_keys.g.dart' show LocaleKeys;
 import 'package:trydos/service/language_service.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class ProductDetailsImageWidget extends StatelessWidget {
   const ProductDetailsImageWidget({
@@ -73,11 +71,6 @@ class ProductDetailsImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
-
     return InteractiveViewer(
       minScale: 0.1,
       maxScale: 4.0,
@@ -167,7 +160,6 @@ class ProductDetailsImageWidget extends StatelessWidget {
                         color: context.colorScheme.white,
                         offset: const Offset(0, 3),
                         blurRadius: 6,
-                        inset: true,
                       ),
                     ]
                   : null,

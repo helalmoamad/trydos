@@ -1305,10 +1305,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         navigationToSinglePageChat(

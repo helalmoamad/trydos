@@ -35,10 +35,6 @@ class _StoriesForChatPageContentState
   bool thereIsAddStoryCard = false;
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     return BlocBuilder<StoryBloc, StoryState>(
       // buildWhen: (previous, current) {

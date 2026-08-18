@@ -43,10 +43,6 @@ class _ChecklistPageState extends State<ChecklistPage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     return Scaffold(
       appBar: TrydosAppBar(

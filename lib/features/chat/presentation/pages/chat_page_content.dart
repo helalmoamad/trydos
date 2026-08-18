@@ -103,10 +103,6 @@ class ChatPageContentState extends State<ChatPageContent> {
   @override
   // ! asd
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     //todo  9/21  change it to BlocBuilder
     return BlocBuilder<ChatBloc, ChatState>(
       buildWhen: (p, c) =>

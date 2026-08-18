@@ -4,7 +4,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -85,10 +84,6 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     if (widget.filters.isNullOrEmpty) {
       return const SizedBox.shrink();
     }

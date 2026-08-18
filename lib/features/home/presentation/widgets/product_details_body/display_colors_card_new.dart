@@ -12,7 +12,6 @@ import 'package:trydos/config/theme/typography.dart';
 
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
@@ -64,10 +63,6 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.currentSelectedColorForEveryProduct[widget.productItem.slug

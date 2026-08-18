@@ -23,7 +23,6 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.da
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/helper_functions/check_showing_stories.dart';
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/pages/story_collection_page_view.dart';
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/widget/story_item_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class StoriesList extends StatefulWidget {
   const StoriesList({super.key});
@@ -86,10 +85,6 @@ class _StoriesListState extends State<StoriesList> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocBuilder<AuthBloc, AuthState>(
       buildWhen: (previous, current) =>
           previous.loginToStoriesStatus != current.loginToStoriesStatus,

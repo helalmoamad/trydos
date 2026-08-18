@@ -75,10 +75,6 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return OverscrollPop(
       dragToPopDirection: DragToPopDirection.toBottom,
       friction: 2,

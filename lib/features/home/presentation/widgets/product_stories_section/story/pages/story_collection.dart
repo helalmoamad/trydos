@@ -31,7 +31,6 @@ import 'package:trydos/features/home/presentation/pages/product_listing_page.dar
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -109,10 +108,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     return Hero(
       tag: widget.collectionIndex,

@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:flutter/material.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class AnimatedProductListingImageWidget extends StatelessWidget {
   const AnimatedProductListingImageWidget({
@@ -30,10 +29,6 @@ class AnimatedProductListingImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return AnimatedSize(
       duration: const Duration(milliseconds: 7000),
       curve: Curves.fastEaseInToSlowEaseOut,
@@ -79,7 +74,6 @@ class AnimatedProductListingImageWidget extends StatelessWidget {
                       offset: Offset(0, innerShadowYOffset),
                       blurRadius: 6,
                       color: Colors.white,
-                      inset: true,
                     ),
                   ],
                 ),

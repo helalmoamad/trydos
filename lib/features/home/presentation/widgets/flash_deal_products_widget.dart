@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart' as tran;
 
 import 'package:flutter/material.dart';
+// ScrollCacheExtent غير مُصدَّرة عبر material.dart/widgets.dart
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -184,7 +186,11 @@ class _FlashDealProductsWidgetState extends State<FlashDealProductsWidget> {
                           addAutomaticKeepAlives: false,
                           addSemanticIndexes: false,
 
-                          cacheExtent: 400, // بناء العناصر قبل دخولها الشاشة لمنع ظهورها المفاجئ
+                          // بطاقتان مسبقاً — مشتقّ من itemExtent أدناه بدل رقم
+                          // ثابت، فيبقى صحيحاً على كل عرض شاشة
+                          scrollCacheExtent: ScrollCacheExtent.pixels(
+                            210.w * 2,
+                          ),
                           // بطاقة ثابتة العرض (200) + فاصل (10)
                           itemExtent: 210.w,
                           itemBuilder: (context, index) {

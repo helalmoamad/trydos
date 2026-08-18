@@ -98,10 +98,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return
     // ignore: deprecated_member_use
     WillPopScope(

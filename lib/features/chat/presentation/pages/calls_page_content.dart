@@ -41,10 +41,6 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     return BlocBuilder<CallsBloc, CallsState>(
       buildWhen: (previous, current) {

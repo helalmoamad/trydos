@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -9,7 +8,6 @@ import 'package:trydos/features/home/presentation/widgets/product_details_body/p
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../app/my_text_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../app/trydos_favorite_buton.dart';
 
 class ReelWidget extends StatelessWidget {
@@ -17,10 +15,6 @@ class ReelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Column(
       children: [
         Stack(
@@ -107,7 +101,6 @@ class ReelWidget extends StatelessWidget {
                               blurRadius: 6,
                               // ignore: deprecated_member_use
                               color: Colors.white.withOpacity(0.5),
-                              inset: true,
                             ),
                           ],
                         ),

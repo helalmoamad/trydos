@@ -9,7 +9,6 @@ import 'package:simple_image_cropper/simple_image_cropper.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../../generated/locale_keys.g.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class SearchImagePreviewWidget extends StatefulWidget {
   final File imageFile;
@@ -143,10 +142,6 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Material(
       color: Colors.black,
       child: Container(

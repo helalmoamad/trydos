@@ -41,7 +41,6 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/falsh_
 import 'package:trydos/features/home/presentation/widgets/second_counter_for_redeem.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -156,10 +155,6 @@ class _ProductDetailsSheetBottomBarNewState
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     /*  bool isCloseToWhite(Color color, {int threshold = 50}) {
       return (color.red > 255 - threshold &&
           color.green > 255 - threshold &&
@@ -1994,10 +1989,6 @@ class BarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Material(
       child: InkWell(
         onTap: onTap,

@@ -21,7 +21,6 @@ import 'package:trydos/features/search/presentation/widgets/search_image_preview
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/core/utils/media_display_url.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -993,10 +992,6 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return SizedBox(
       width: 80,
       height: 26,

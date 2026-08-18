@@ -106,22 +106,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
-    FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        error: error.toString(),
-      );
-    };
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),
       body: SafeArea(

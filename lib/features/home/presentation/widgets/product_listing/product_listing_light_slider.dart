@@ -24,7 +24,6 @@ import '../../../../app/my_text_widget.dart';
 import '../../../../../core/utils/theme_state.dart';
 import '../../../../../service/language_service.dart';
 import 'product_listing_image_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 /// ---------------------------------------------------------------------------
 /// ProductListingLightSlider
@@ -127,10 +126,6 @@ class _ProductListingLightSliderState
   // -------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     _slideMode = widget.itemIndex == widget.slidingModeItem.item1
         ? widget.slidingModeItem.item2
         : 0;

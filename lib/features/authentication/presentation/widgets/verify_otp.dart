@@ -14,7 +14,6 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
 import 'package:trydos/core/utils/form_utils.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/authentication/presentation/widgets/pin_item.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
@@ -137,10 +136,6 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocListener<AuthBloc, AuthState>(
       listenWhen: (p, c) =>
           p.sendOtpStatus != c.sendOtpStatus &&

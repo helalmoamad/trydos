@@ -125,10 +125,6 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     List<Map<String, String>> cartImages = [];
     return Scaffold(
       resizeToAvoidBottomInset: true,

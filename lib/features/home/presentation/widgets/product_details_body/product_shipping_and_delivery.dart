@@ -7,7 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -34,10 +33,6 @@ class ProductShippingAndDelivery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.w),
       padding: EdgeInsets.all(10.r),

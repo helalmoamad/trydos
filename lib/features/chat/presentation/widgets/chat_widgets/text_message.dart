@@ -25,7 +25,6 @@ import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 // ignore: must_be_immutable
 class TextMessage extends StatefulWidget {
@@ -108,10 +107,6 @@ class _TextMessageState extends ThemeState<TextMessage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocConsumer<ChatBloc, ChatState>(
       listenWhen: (p, c) =>
           (p.changeMessageStateFromPusherStatus !=

@@ -10,17 +10,12 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 
 class lableInfoProduct extends StatelessWidget {
   const lableInfoProduct({super.key});
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Padding(
       padding: EdgeInsetsGeometry.only(bottom: 10.h, left: 20.w, right: 20.w),
       child: SizedBox(

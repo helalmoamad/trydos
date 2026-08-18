@@ -7,7 +7,6 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_mes
 
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/voice_message.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import 'document_message.dart';
 import 'video_message.dart';
@@ -84,10 +83,6 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Column(
       children: [
         Stack(

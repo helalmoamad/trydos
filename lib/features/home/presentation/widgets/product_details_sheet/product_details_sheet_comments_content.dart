@@ -13,8 +13,7 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:flutter/material.dart';
 import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
@@ -81,10 +80,6 @@ class _ProductDetailsSheetCommentsContentState
   @override
   Widget build(BuildContext context) {
     LastPagesTracker.push("ProductDetailsSheetCommentsContent Page");
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
 
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
@@ -583,10 +578,6 @@ class CommentCard extends StatelessWidget {
       return result;
     }
 
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Container(
       margin: HWEdgeInsets.symmetric(horizontal: 20.w),
       padding: HWEdgeInsets.only(left: 10.w, top: 20.h, right: 10.w),
@@ -636,7 +627,6 @@ class CommentCard extends StatelessWidget {
                           blurRadius: 6,
                           // ignore: deprecated_member_use
                           color: Colors.white.withOpacity(0.5),
-                          inset: true,
                         ),
                       ],
                     ),

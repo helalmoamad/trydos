@@ -23,7 +23,6 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../app/my_text_widget.dart';
 
 class BuyerSellerPanel extends StatelessWidget {
@@ -41,10 +40,6 @@ class BuyerSellerPanel extends StatelessWidget {
   final String productSlug;
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     String productId = productFirstId;
     List<String> filter = [];
     ScrollController? _currentScrollController;

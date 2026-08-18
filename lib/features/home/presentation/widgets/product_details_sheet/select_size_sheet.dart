@@ -8,8 +8,7 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:flutter/material.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
@@ -17,7 +16,6 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/theme_state.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../data/models/get_product_detail_without_related_products_model.dart'
     show ChoiceOption;
 
@@ -107,10 +105,6 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.changeSizesForEveryProduct !=
@@ -237,7 +231,6 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                     color: colorScheme.white,
                                     offset: const Offset(0, 4),
                                     blurRadius: 6,
-                                    inset: true,
                                   ),
                                 ],
                               ),

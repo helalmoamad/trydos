@@ -9,7 +9,6 @@ import 'package:go_router/go_router.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -63,10 +62,6 @@ class _WelcomeSectionState extends State<WelcomeSection> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Directionality(
       textDirection: ui.TextDirection.ltr,
       child: Column(

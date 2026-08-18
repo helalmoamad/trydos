@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 
 class CloseCircle extends StatelessWidget {
@@ -18,10 +17,6 @@ class CloseCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
     return Container(
       width: width,
       height: height,
