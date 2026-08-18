@@ -8,7 +8,8 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
@@ -231,6 +232,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                     color: colorScheme.white,
                                     offset: const Offset(0, 4),
                                     blurRadius: 6,
+                                    inset: true,
                                   ),
                                 ],
                               ),

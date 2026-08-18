@@ -71,31 +71,41 @@ class ProductDetailsImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double boxHeight = height ?? 464.h;
+    final double boxWidth = width ?? 320.w;
+
+    // كان نفس التعبير مكرّراً في الصندوق والـ ClipRRect
+    final BorderRadiusGeometry effectiveBorderRadius = index == 0
+        ? BorderRadius.only(
+            bottomRight: LanguageService.languageCode != "ar"
+                ? Radius.circular(0.r)
+                : Radius.circular(15.r),
+            topRight: LanguageService.languageCode != "ar"
+                ? Radius.circular(0.r)
+                : Radius.circular(15.r),
+            topLeft: LanguageService.languageCode == "ar"
+                ? Radius.circular(0.r)
+                : Radius.circular(15.r),
+            bottomLeft: LanguageService.languageCode == "ar"
+                ? Radius.circular(0.r)
+                : Radius.circular(15.r),
+          )
+        : borderRadius ?? BorderRadius.circular((radius ?? 30.r));
+
+    // ارتفاع التوهّج الأبيض على الحافة العليا: الإزاحة 3 + نصف قطر الضبابية 6،
+    // وهي المنطقة نفسها التي كان يرسمها الظل الداخلي السابق.
+    final double glowStop = (9 / boxHeight).clamp(0.0, 1.0);
+
     return InteractiveViewer(
       minScale: 0.1,
       maxScale: 4.0,
       child: Stack(
         children: [
           Container(
-            height: (height ?? 464.h),
-            width: (width ?? 320.w),
+            height: boxHeight,
+            width: boxWidth,
             decoration: BoxDecoration(
-              borderRadius: index == 0
-                  ? BorderRadius.only(
-                      bottomRight: LanguageService.languageCode != "ar"
-                          ? Radius.circular(0.r)
-                          : Radius.circular(15.r),
-                      topRight: LanguageService.languageCode != "ar"
-                          ? Radius.circular(0.r)
-                          : Radius.circular(15.r),
-                      topLeft: LanguageService.languageCode == "ar"
-                          ? Radius.circular(0.r)
-                          : Radius.circular(15.r),
-                      bottomLeft: LanguageService.languageCode == "ar"
-                          ? Radius.circular(0.r)
-                          : Radius.circular(15.r),
-                    )
-                  : borderRadius ?? BorderRadius.circular((radius ?? 30.r)),
+              borderRadius: effectiveBorderRadius,
               border: Border.all(
                 width: 0.5,
                 color: borderColor ?? context.colorScheme.white,
@@ -110,23 +120,30 @@ class ProductDetailsImageWidget extends StatelessWidget {
                     ]
                   : null,
             ),
+            // التوهّج الأبيض فوق الصورة. كان صندوقاً ثانياً في الـ Stack يحمل
+            // BoxShadow(inset: true) من flutter_inset_box_shadow، وهي تنفّذه
+            // بـ drawDRRect مع MaskFilter.blur — خارج المسار السريع في Impeller
+            // ⇒ نسيج خارج الشاشة وgaussian بمرورين لكل عنصر في كل إطار داخل
+            // القائمة الأفقية. التدرّج يعطي الشكل نفسه برسمة واحدة بلا ضبابية،
+            // وفي foregroundDecoration فيوفّر أيضاً RenderObject كاملاً.
+            foregroundDecoration: withInnerShadow
+                ? BoxDecoration(
+                    borderRadius: effectiveBorderRadius,
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        context.colorScheme.white,
+                        // withAlpha(0) لا Colors.transparent: الأخير أسود شفاف
+                        // فينتج حافة رمادية عند الاستيفاء
+                        context.colorScheme.white.withAlpha(0),
+                      ],
+                      stops: [0.0, glowStop],
+                    ),
+                  )
+                : null,
             child: ClipRRect(
-              borderRadius: index == 0
-                  ? BorderRadius.only(
-                      bottomRight: LanguageService.languageCode != "ar"
-                          ? Radius.circular(0.r)
-                          : Radius.circular(15.r),
-                      topRight: LanguageService.languageCode != "ar"
-                          ? Radius.circular(0.r)
-                          : Radius.circular(15.r),
-                      topLeft: LanguageService.languageCode == "ar"
-                          ? Radius.circular(0.r)
-                          : Radius.circular(15.r),
-                      bottomLeft: LanguageService.languageCode == "ar"
-                          ? Radius.circular(0.r)
-                          : Radius.circular(15.r),
-                    )
-                  : borderRadius ?? BorderRadius.circular((radius ?? 30.r)),
+              borderRadius: effectiveBorderRadius,
               // رابط فارغ ⇒ لا شيء. كان الشرط `?? true` يعرض صورة العنوان
               // (address2.png) بمساحة الصندوق كاملة — وهو ما يظهر كوميض عريض
               // في الأقسام التي تُبنى قبل وصول بياناتها (الريلز، صور المشترين).
@@ -142,27 +159,10 @@ class ProductDetailsImageWidget extends StatelessWidget {
                       radius: index != -1 ? 0 : 12.r,
                       imageWidth: imageWidth,
                       imageHeight: imageHeight,
-                      height: height ?? 464.h,
-                      width: width ?? 320.w,
+                      height: boxHeight,
+                      width: boxWidth,
                       imageFit: BoxFit.fitWidth,
                     ),
-            ),
-          ),
-          Container(
-            height: (height ?? 464.h),
-            width: (width ?? 320.w),
-            decoration: BoxDecoration(
-              borderRadius:
-                  borderRadius ?? BorderRadius.circular((radius ?? 30.r)),
-              boxShadow: withInnerShadow
-                  ? [
-                      BoxShadow(
-                        color: context.colorScheme.white,
-                        offset: const Offset(0, 3),
-                        blurRadius: 6,
-                      ),
-                    ]
-                  : null,
             ),
           ),
           index != 0

@@ -51,43 +51,47 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () => {},
-            child: Stack(
-              children: [
-                Container(
-                  width: 135.w,
-                  height: 194.h,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: colorScheme.white),
-                    borderRadius: BorderRadius.circular(30.0.r),
-                    boxShadow: [
-                      BoxShadow(
-                        // ignore: deprecated_member_use
-                        color: colorScheme.black.withOpacity(0.1),
-                        offset: const Offset(0, 3),
-                        blurRadius: 6,
-                      ),
-                    ],
+            child: Container(
+              width: 135.w,
+              height: 194.h,
+              decoration: BoxDecoration(
+                border: Border.all(color: colorScheme.white),
+                borderRadius: BorderRadius.circular(30.0.r),
+                boxShadow: [
+                  BoxShadow(
+                    // ignore: deprecated_member_use
+                    color: colorScheme.black.withOpacity(0.1),
+                    offset: const Offset(0, 3),
+                    blurRadius: 6,
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30.0.r),
-                    child: VideoPlayer(_controller!),
-                  ),
+                ],
+              ),
+              // التوهّج الأبيض على الحافة العليا. كان صندوقاً ثانياً في Stack
+              // يحمل BoxShadow(inset: true)، وهي تُرسم بـ drawDRRect مع
+              // MaskFilter.blur — خارج المسار السريع في Impeller. وبما أنه كان
+              // شقيقاً لـ VideoPlayer بلا RepaintBoundary فقد كان يُعاد رسمه
+              // بمعدّل إطارات الفيديو. التدرّج رسمة واحدة بلا ضبابية.
+              // (الصندوق المحذوف كان يستعمل 194 خاماً بدل 194.h فلا يطابق
+              // ارتفاع الفيديو على الشاشات المختلفة.)
+              foregroundDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30.0.r),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    colorScheme.white,
+                    // withAlpha(0) لا Colors.transparent: الأخير أسود شفاف
+                    // فينتج حافة رمادية عند الاستيفاء
+                    colorScheme.white.withAlpha(0),
+                  ],
+                  // الإزاحة 3 + نصف قطر الضبابية 3 = نفس منطقة الظل السابق
+                  stops: [0.0, (6 / 194.h).clamp(0.0, 1.0)],
                 ),
-                Container(
-                  height: 194,
-                  width: 135.w,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30.0.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.white,
-                        offset: const Offset(0, 3),
-                        blurRadius: 3,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30.0.r),
+                child: VideoPlayer(_controller!),
+              ),
             ),
           );
         }

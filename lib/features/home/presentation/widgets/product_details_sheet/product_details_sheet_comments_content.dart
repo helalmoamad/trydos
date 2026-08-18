@@ -13,7 +13,8 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
@@ -627,6 +628,7 @@ class CommentCard extends StatelessWidget {
                           blurRadius: 6,
                           // ignore: deprecated_member_use
                           color: Colors.white.withOpacity(0.5),
+                          inset: true,
                         ),
                       ],
                     ),

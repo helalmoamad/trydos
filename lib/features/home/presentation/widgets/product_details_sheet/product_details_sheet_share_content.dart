@@ -11,7 +11,8 @@ import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/home/presentation/widgets/share_products_with_social_media/build_social_buttons.dart';
 import '../../../../../common/helper/helper_functions.dart';
@@ -352,6 +353,7 @@ class ChatCardForShare extends StatelessWidget {
                                   blurRadius: 6,
                                   // ignore: deprecated_member_use
                                   color: Colors.white.withOpacity(0.5),
+                                  inset: true,
                                 ),
                               ],
                             ),

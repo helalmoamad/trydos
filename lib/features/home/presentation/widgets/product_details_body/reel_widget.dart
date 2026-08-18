@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -101,6 +102,7 @@ class ReelWidget extends StatelessWidget {
                               blurRadius: 6,
                               // ignore: deprecated_member_use
                               color: Colors.white.withOpacity(0.5),
+                              inset: true,
                             ),
                           ],
                         ),
