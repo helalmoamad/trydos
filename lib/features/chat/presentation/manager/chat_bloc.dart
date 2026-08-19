@@ -2725,6 +2725,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     AddUserConntctSatuseEvent event,
     Emitter<ChatState> emit,
   ) async {
+    // Firebase presence (`onValue`) re-fires with the same connect status while
+    // the chat is open, and each duplicate used to emit loading->success —
+    // rebuilding the whole chat continuously even while the user is idle. Skip
+    // when nothing actually changed.
+    if (event.userConnectedStatuse == state.userConnectedStatuse &&
+        event.chatId == state.currentOpenedChatId &&
+        state.currentOpenedChatIdStatus == CurrentOpenedChatIdStatus.success) {
+      return;
+    }
     if (event.userConnectedStatuse.length < 3) {
       emit(
         state.copyWith(

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode, kDebugMode;
 import 'package:flutter/services.dart';
@@ -124,8 +123,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     isLoadDotenvFile = true;
   }
 
-  HttpOverrides.global = MyHttpOverrides();
-
   if (!isDependencyInitialized) {
     await configureDependencies();
     isDependencyInitialized = true;
@@ -235,7 +232,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
             break;
           case Event.actionCallDecline:
             {
-              HttpOverrides.global = MyHttpOverrides();
               if (!declineCallBecauseOfNotificationButton) {
                 GetIt.I<CallsBloc>().add(
                   RejectVideoCallEvent(
@@ -249,7 +245,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
             break;
           case Event.actionCallTimeout:
             {
-              HttpOverrides.global = MyHttpOverrides();
               if (!declineCallBecauseOfNotificationButton) {
                 GetIt.I<CallsBloc>().add(
                   RejectVideoCallEvent(
@@ -450,7 +445,6 @@ void main() async {
   // debugPrint('✅ إزالة كل التدخلات الضارة - اعتماد كامل على Flutter');
   //debugPrint('🎯 إعدادات بسيطة: 50MB image cache، بدون مراقبة أو تنظيف قسري');
 
-  HttpOverrides.global = MyHttpOverrides();
   await Future.wait([
     EasyLocalization.ensureInitialized(),
     dotenv.load(),

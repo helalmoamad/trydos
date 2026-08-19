@@ -201,11 +201,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
   @override
   void initState() {
     LastPagesTracker.push('SinglePageChat');
-    if (kDebugMode) print("%%%%%%%%%${GetIt.I<PrefsRepository>().chatToken}*");
-    if (kDebugMode)
-      print(
-        "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE*/****#${widget.chatId}",
-      );
     rebuildMessage.value = -2;
     if (widget.fromOrder == "true") {
       Eraser.clearAppNotificationsByTag(widget.chatId);
@@ -410,11 +405,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           ? const SizedBox.shrink()
                           : BlocListener<ChatBloc, ChatState>(
                               listenWhen: (p, c) {
-                                if (kDebugMode)
-                                  print(
-                                    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${p.currentOpenedChatIdStatus}//${c.currentOpenedChatIdStatus}",
-                                  );
-
                                 return p.currentOpenedChatIdStatus !=
                                     c.currentOpenedChatIdStatus;
                               },
@@ -435,19 +425,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                               widget.chatId,
                                     ),
                                   );
-                                  if (kDebugMode)
-                                    print(
-                                      "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR///${state.currentOpenedChatIdStatus}",
-                                    );
-                                  if (kDebugMode)
-                                    print(
-                                      "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR***${chat.id}",
-                                    );
-                                  if (kDebugMode)
-                                    print(
-                                      "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR/*/${chat.localId}",
-                                    );
-
                                   member = !chat.channelMembers.isNullOrEmpty
                                       ? chat.channelMembers!.firstWhere(
                                           (element) =>
@@ -1070,10 +1047,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     }
                   },
                   builder: (context, chatState) {
-                    if (kDebugMode)
-                      print(
-                        "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE#///${chatState.sendMessageStatus}/${chatState.receiveMessageStatus}/${chatState.resendMessageStatus}/${chatState.getMessagesBetweenStatus}",
-                      );
                     chat = chatState.chats.firstWhere(
                       (element) =>
                           element.id.toString() == widget.chatId ||
@@ -1129,11 +1102,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                     .reversed
                                                     .toList(),
                                               );
-                                          if (kDebugMode)
-                                            print(
-                                              "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQEEE${currentIndex}111222${messages[1].id}#${messages[0].id}",
-                                            );
-
                                           if (messages[index].isDateMessage!) {
                                             return AutoScrollTag(
                                               key: ValueKey(index),
@@ -1151,15 +1119,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                               ),
                                             );
                                           }
-                                          debugPrint(
-                                            'isForward : ${messages[index].isForward}',
-                                          );
-                                          debugPrint(
-                                            'senderUserId : ${messages[index].senderUserId}',
-                                          );
-                                          debugPrint(
-                                            'myChatId : ${_prefsRepository.myChatId}',
-                                          );
                                           bool isSent =
                                               messages[index].senderUserId ==
                                               _prefsRepository.myChatId;

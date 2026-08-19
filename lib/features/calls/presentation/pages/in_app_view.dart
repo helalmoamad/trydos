@@ -101,6 +101,26 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   }
 
   late ChatBloc chatBloc;
+
+  // Gates the InAppWebView so its platform view is only created after the
+  // camera/mic permission dialog has been handled. See [_ensureCallPermissions].
+  bool _permissionsReady = false;
+
+  Future<void> _ensureCallPermissions() async {
+    // Request camera/mic BEFORE the InAppWebView platform view exists. If Agora
+    // triggers the permission dialog while the hybrid-composition platform view
+    // is live, the dialog pauses the app, Android takes a software snapshot, and
+    // FlutterImageView crashes drawing a hardware bitmap on a software canvas
+    // ("Software rendering doesn't support hardware bitmaps").
+    try {
+      if (widget.type == 'video') {
+        await Permission.camera.request();
+      }
+      await Permission.microphone.request();
+    } catch (_) {}
+    if (mounted) setState(() => _permissionsReady = true);
+  }
+
   @override
   void initState() {
     // Set audio mode based on call type
@@ -153,6 +173,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     //   ..loadRequest(source);
     if (kDebugMode) print("source ://///***/*8888****${source.toString()}");
     log(source.toString());
+    _ensureCallPermissions();
     super.initState();
   }
 
@@ -242,6 +263,12 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
   @override
   Widget build(BuildContext context) {
+    // Do not build the InAppWebView (a platform view) until the camera/mic
+    // permission dialog has been handled — creating it earlier lets the dialog
+    // pause the app over a live platform view and crash on the software snapshot.
+    if (!_permissionsReady) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     return BlocListener<CallsBloc, CallsState>(
       listener: (context, state) {
         timer?.cancel();
@@ -258,6 +285,8 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
               body: Stack(
                 children: [
                   InAppWebView(
+                    // 1. يحل مشكلة الانهيار والخروج من التطبيق على أجهزة Xiaomi/Poco
+
                     onWebViewCreated: (controller) {
                       // --- REGISTER JAVASCRIPT HANDLER ---
                       controller.addJavaScriptHandler(
@@ -365,6 +394,8 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       log('asdhtf${url.toString().contains('end')}');
                     },
                     initialSettings: InAppWebViewSettings(
+                      useHybridComposition: false,
+
                       mediaPlaybackRequiresUserGesture: false,
                       javaScriptCanOpenWindowsAutomatically: true,
                       allowsInlineMediaPlayback: true, // مهم جداً لـ iOS

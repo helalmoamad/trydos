@@ -280,7 +280,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     if (isFrom('WALLET_URL')) {
       _prefsRepository.setWalletToken("");
     }
-    if (isFrom('CHAT_URL')) {
+    if (isFrom('CHAT_NEST_URL')) {
       // Wait for the refresh instead of firing and forgetting, so the caller
       // can send the request again with the token it produces.
       final bool refreshed = await TokenRefreshCoordinator.instance.refresh(

@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:developer' as dev;
 
-import 'dart:io';
 import 'dart:math';
 
 import 'dart:ui' as ui;
@@ -23,7 +22,6 @@ import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 
 import '../../../../base_page.dart';
-import '../../../../core/di/di_container.dart';
 
 import '../../../../features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../features/chat/presentation/manager/chat_event.dart';
@@ -340,7 +338,6 @@ class LocalNotificationService {
   }
 
   static void sendIReceivedTheMessage(String channelId) async {
-    HttpOverrides.global = MyHttpOverrides();
     GetIt.I<ChatBloc>().add(
       NotifyThatIReceivedMessageEvent(channelId: channelId),
     );

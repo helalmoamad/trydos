@@ -22,11 +22,13 @@ class PrefsRepositoryImpl extends PrefsRepository {
     String? initialMarketToken,
     String? initialStoriesToken,
     String? initialTokenForComment,
+    String? initialIdToken,
   }) : _cachedChatToken = initialChatToken,
        _cachedWalletToken = initialWalletToken,
        _cachedMarketToken = initialMarketToken,
        _cachedStoriesToken = initialStoriesToken,
-       _cachedTokenForComment = initialTokenForComment;
+       _cachedTokenForComment = initialTokenForComment,
+       _cachedIdToken = initialIdToken;
 
   final SharedPreferences _preferences;
   final FlutterSecureStorage _secureStorage;
@@ -45,6 +47,10 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   /// In-memory cache for token-for-comment loaded from secure storage at startup.
   String? _cachedTokenForComment;
+
+  /// In-memory cache for the OTP id token loaded from secure storage at startup.
+  /// Kept in memory so the [idToken] getter stays synchronous for its callers.
+  String? _cachedIdToken;
 
   @override
   Future<bool> setChatToken(String token) async {
@@ -262,11 +268,11 @@ class PrefsRepositoryImpl extends PrefsRepository {
     if (!isError) {
       requestAndResponse = {
         'url': url,
-        'request': request,
-        'response': _capFieldForStorage(response),
-        'headers': headers,
-        'query': query,
-        'body': _capFieldForStorage(body),
+        'request': _redactSensitiveString(request),
+        'response': _redactSensitive(_capFieldForStorage(response)),
+        'headers': _redactSensitive(headers),
+        'query': _redactSensitive(query),
+        'body': _redactSensitive(_capFieldForStorage(body)),
         'statusCode': statusCode,
         'response_time': responseTime,
       };
@@ -287,6 +293,62 @@ class PrefsRepositoryImpl extends PrefsRepository {
     } else {
       _scheduleRequestsFlush();
     }
+  }
+
+  // Keys whose values are auth material and must never be persisted to the
+  // plaintext request log (SharedPreferences). Matched case-insensitively as a
+  // substring, so "authorization", "x-refresh-token", "otp_id_token" all hit.
+  static const List<String> _sensitiveKeyMarkers = [
+    'authorization',
+    'token',
+    'refresh',
+    'password',
+    'secret',
+    'cookie',
+    'otp',
+    'bearer',
+    'apikey',
+    'api-key',
+    'api_key',
+  ];
+
+  bool _isSensitiveKey(String key) {
+    final lower = key.toLowerCase();
+    return _sensitiveKeyMarkers.any((marker) => lower.contains(marker));
+  }
+
+  /// Masks any `Bearer x` / bare JWT (`eyJ...`) inside a free-form string so a
+  /// token pasted into a request/response body never lands in the log.
+  dynamic _redactSensitiveString(dynamic value) {
+    if (value is! String) return value;
+    return value
+        .replaceAll(
+          RegExp(r'Bearer\s+[A-Za-z0-9._\-]+', caseSensitive: false),
+          'Bearer ***',
+        )
+        .replaceAll(RegExp(r'eyJ[A-Za-z0-9._\-]{10,}'), '***');
+  }
+
+  /// Recursively removes auth material from the diagnostic request log before it
+  /// is written to plaintext storage. Sensitive keys are dropped; nested
+  /// maps/lists are cleaned; free-form strings have Bearer/JWT masked.
+  dynamic _redactSensitive(dynamic value) {
+    if (value is Map) {
+      final cleaned = <String, dynamic>{};
+      value.forEach((k, v) {
+        final key = k.toString();
+        if (_isSensitiveKey(key)) {
+          cleaned[key] = '***';
+        } else {
+          cleaned[key] = _redactSensitive(v);
+        }
+      });
+      return cleaned;
+    }
+    if (value is List) {
+      return value.map(_redactSensitive).toList();
+    }
+    return _redactSensitiveString(value);
   }
 
   @override
@@ -994,11 +1056,14 @@ class PrefsRepositoryImpl extends PrefsRepository {
     _cachedMarketToken = null;
     _cachedStoriesToken = null;
     _cachedTokenForComment = null;
+    _cachedIdToken = null;
     await _secureStorage.delete(key: PrefsKey.chatToken);
     await _secureStorage.delete(key: PrefsKey.walletToken);
     await _secureStorage.delete(key: PrefsKey.marketToken);
     await _secureStorage.delete(key: PrefsKey.storiesToken);
     await _secureStorage.delete(key: PrefsKey.tokenForComment);
+    // idToken moved to secure storage, so _preferences.clear() no longer wipes it
+    await _secureStorage.delete(key: PrefsKey.idToken);
     return _preferences.clear();
   }
 
@@ -1059,12 +1124,15 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  // TODO: implement idToken
-  String? get idToken => _preferences.getString(PrefsKey.idToken);
+  // Served from the in-memory cache so callers stay synchronous. The value now
+  // lives in secure storage (Keystore-wrapped), not in plaintext SharedPreferences.
+  String? get idToken => _cachedIdToken;
 
   @override
-  Future<bool> setIdToken(String idToken) {
-    return _preferences.setString(PrefsKey.idToken, idToken);
+  Future<bool> setIdToken(String idToken) async {
+    await _secureStorage.write(key: PrefsKey.idToken, value: idToken);
+    _cachedIdToken = idToken;
+    return true;
   }
 
   @override

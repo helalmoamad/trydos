@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' show HttpHeaders;
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
@@ -89,6 +89,12 @@ abstract class AppModule {
       await prefs.remove(PrefsKey.tokenForComment);
     }
 
+    final migratedIdToken = prefs.getString(PrefsKey.idToken);
+    if (migratedIdToken != null && migratedIdToken.isNotEmpty) {
+      await secureStorage.write(key: PrefsKey.idToken, value: migratedIdToken);
+      await prefs.remove(PrefsKey.idToken);
+    }
+
     final initialChatToken = await secureStorage.read(key: PrefsKey.chatToken);
     final initialWalletToken = await secureStorage.read(
       key: PrefsKey.walletToken,
@@ -102,6 +108,7 @@ abstract class AppModule {
     final initialTokenForComment = await secureStorage.read(
       key: PrefsKey.tokenForComment,
     );
+    final initialIdToken = await secureStorage.read(key: PrefsKey.idToken);
     return PrefsRepositoryImpl(
       prefs,
       secureStorage,
@@ -110,6 +117,7 @@ abstract class AppModule {
       initialMarketToken: initialMarketToken,
       initialStoriesToken: initialStoriesToken,
       initialTokenForComment: initialTokenForComment,
+      initialIdToken: initialIdToken,
     );
   }
 
@@ -128,12 +136,3 @@ abstract class AppModule {
 
 // @singleton
 // SessionManager get sessionManager => SessionManager();
-
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
-}

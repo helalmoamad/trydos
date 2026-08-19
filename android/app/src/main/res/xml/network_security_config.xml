@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Network security policy for Trydos.
+
+  base-config: no cleartext (HTTP) traffic is allowed anywhere, and only the
+  system's built-in trusted CAs are used to validate TLS. This replaces the
+  removed global `badCertificateCallback => true`, which had disabled all
+  certificate validation. All Trydos servers present valid publicly-trusted
+  certificates (Google Trust Services), so nothing here needs to be pinned or
+  trusted manually.
+
+  If a developer ever needs to hit a local backend with a self-signed
+  certificate, add a <debug-overrides> block here (applies to debuggable builds
+  only) instead of trusting all certificates app-wide.
+
+  Certificate pinning would be added later as a <pin-set> under a
+  <domain-config> for the core API domains — using SPKI (public-key) pins with a
+  backup pin, never the whole certificate, because the certificates rotate on a
+  ~90 day cycle.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

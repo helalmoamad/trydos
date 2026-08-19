@@ -2122,7 +2122,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   @override
   Map<String, dynamic>? toJson(HomeState state) {
-    return state
+    final map = state
         .copyWith(
           // Heavy, re-fetchable caches are excluded from persistence: they
           // bloat every hydrated write (toJson runs on the main thread on each
@@ -2169,6 +2169,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getChecklistStatus: GetChecklistStatus.init,
         )
         .toJson();
+
+    // Strip the OTP id token from the persisted user. It is auth material and
+    // lives authoritatively in secure storage (prefsRepository.idToken); keeping
+    // it here rewrites the JWT into the plaintext hydrated box on every emit.
+    // The in-memory state keeps its token — only the on-disk copy is scrubbed.
+    final userInfoMap = map['userInfo'];
+    if (userInfoMap is Map) {
+      userInfoMap['last_otp_id_token'] = null;
+    }
+    return map;
   }
 
   /* FutureOr<void> _onGetCommentForProductEvent(

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -130,11 +129,6 @@ class _TextMessageState extends ThemeState<TextMessage> {
         }
       },
       builder: (context, state) {
-        if (kDebugMode)
-          print(
-            "object///////////////////////////////////////${widget.userMessagePhoto}/",
-          );
-        if (kDebugMode) print(state.currentMessage.contains(widget.messageId));
         return Column(
           key: key,
           children: [

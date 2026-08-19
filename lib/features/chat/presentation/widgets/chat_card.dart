@@ -190,10 +190,6 @@ class _ChatCardState extends ThemeState<ChatCard> {
               //     ..pop()
               //     ..pop();
               // }
-              if (kDebugMode)
-                print(
-                  "object///////////////////////////////////////#${_prefsRepository.myChatPhoto}}",
-                );
               chatBloc.add(
                 ChangeGlobalUsedVariablesInBloc(
                   currentOpenedChatId: widget.chat.id,
