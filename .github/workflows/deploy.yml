@@ -48,7 +48,7 @@ jobs:
           CHAT_URL="https://chating_staging_trydos_new.ramaaz.dev"
           CHAT_NEST_URL="https://trydoschatnest.ramaaz.dev"
           ELASTIC_URL="https://recomende_elasticsearch_engin_staging.ramaaz.dev"
-          WEB_CALLS_URL="https://dev.trydos.com"
+          WEB_CALLS_URL="https://trydos-front-git-develop-trydos-front-team.vercel.app"
           WALLET_URL="https://trydos_wallet_develop.ramaaz.dev"
           WEB_CALLS_NEST_URL="https://trydos-front-git-new-chat-nestjs-backend-trydos-front-team.vercel.app"
           WEB_APP="https://trydos-front-git-develop-trydos-front-team.vercel.app"
