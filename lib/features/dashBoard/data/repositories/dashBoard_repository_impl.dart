@@ -3,6 +3,8 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/api.dart';
 import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/features/dashBoard/data/data_source/dashBoard_remote_data_source_model.dart';
+import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
+import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
@@ -88,17 +90,16 @@ class DashBoardRepositoryImpl extends DashBoardRepository
 
   @override
   Future<Either<Failure, NewOrdersResponse>> ChangeOrderDetailStatusToConfirmed(
-    Map<String, dynamic> params 
+    Map<String, dynamic> params,
   ) {
     return handlingExceptionRequest(
-      tryCall: () =>
-          dataSource.ChangeOrderDetailStatusToConfirmed(params),
+      tryCall: () => dataSource.ChangeOrderDetailStatusToConfirmed(params),
     );
   }
 
   @override
   Future<Either<Failure, NewOrdersResponse>> ChangeOrderDetailStatusToPacked(
-    Map<String, dynamic> params
+    Map<String, dynamic> params,
   ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.ChangeOrderDetailStatusToPacked(params),
@@ -180,9 +181,7 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   }
 
   @override
-  Future<Either<Failure, bool>> deleteSellerStory(
-    Map<String, dynamic> params,
-  ) {
+  Future<Either<Failure, bool>> deleteSellerStory(Map<String, dynamic> params) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.deleteSellerStory(params),
     );
@@ -211,6 +210,26 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.updateVendorRequest(vendorRequestId, params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, GetExcelCategoriesModel>> getCategories() {
+    return handlingExceptionRequest(tryCall: () => dataSource.getCategories());
+  }
+
+  @override
+  Future<Either<Failure, String>> downloadexceltemplate(int categoryId) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.downloadExcel(categoryId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, UploadedExcelFilesResponseModel>>
+  getUploadedExcelFiles({int page = 1}) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getUploadedExcelFiles(page: page),
     );
   }
 }

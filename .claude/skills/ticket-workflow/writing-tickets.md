@@ -3,8 +3,9 @@
 Produce a backlog ticket that fully complies with the **Trydos Backlog Ticket Standard**.
 
 > **The format is defined once, canonically, in
-> [`references/Backlog Ticket Standard.md`](references/Backlog%20Ticket%20Standard.md)** —
-> required metadata, the status workflow, the exact 3-section body template
+> [`.claude/docs/backlog-ticket-standard.md`](../../docs/backlog-ticket-standard.md)** —
+> which list to use, required metadata (including which fields really exist in
+> ClickUp), the real status workflow, the exact 3-section body template
 > (User Story → Acceptance Criteria → Test Cases), the "Common Mistakes to Avoid"
 > rules, and the Ticket Quality Checklist. **Follow it verbatim; do not restate it
 > here.** This file only adds the Trydos context and the operational how-to.

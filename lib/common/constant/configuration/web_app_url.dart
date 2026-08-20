@@ -8,6 +8,7 @@ abstract class WebAppEndPoints {
   static const imageSearchEP = "api/image-search";
   static const addLikeCommentEP = "public_comment/likes/like";
   static const addLikeOFProductEP = "products/like";
+  static const getCategoriesEP = "api/v1/shop/excel/categories";
   static const removeLikeOFProductEP = "products/unlike";
   static const removeLikeCommentEP = "public_comment/likes/unlike";
   static String translateCommentsToAppLanEP(String commentId) =>
@@ -39,6 +40,12 @@ abstract class WebAppEndPoints {
 
   static String getDeliveredOrdersResponse(int Product_ID) =>
       "api/v1/web/product/delivery_times/${Product_ID}";
+
+  static String downloadExcel(int categoryId) =>
+      "api/v1/shop/excel/downloadExcel/${categoryId}";
+
+  static String getUploadedExcelFiles({int page = 1}) =>
+      'api/v1/shop/excel/getUploadedExcelFiles?page=$page';
 }
 
 abstract class WebUrls {

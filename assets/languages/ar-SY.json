@@ -883,5 +883,8 @@
   "sellers": "البائعون",
   "you_have_to_choose_a_country": "يجب عليك اختيار بلد",
   "confirm_report_story": "هل أنت متأكد من الإبلاغ عن هذه القصة؟",
-  "report_failed": "فشل إرسال البلاغ. يرجى المحاولة مرة أخرى."
+  "report_failed": "فشل إرسال البلاغ. يرجى المحاولة مرة أخرى.",
+  "customers_comments": "تعليقات الزبائن",
+  "locations": "المواقع",
+  "upload_excel_file": "رفع ملف إكسل"
 }

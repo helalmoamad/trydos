@@ -8,10 +8,17 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
+import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
+import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart'
+    hide Meta;
 import 'package:trydos/features/dashBoard/data/models/seller_story_model.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/GetUploadedExcelFilesUsecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/change_orderDetail_to_packed_useCase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/change_order_detail_status.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/downloadExcelTemplate_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/getExcelCategories_usecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/newGetUserOrders_useCase.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -57,9 +64,12 @@ part 'dashBoard_state.dart';
 class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   final GetUserPermissionUseCase getUserPermissionUseCase;
   final GetUserRolesUseCase getUserRolesUseCase;
+  final GetUploadedExcelFilesUsecase getUploadedExcelFilesUsecase;
   final GetUsersUseCase getUsersUseCase;
   final AddUserUseCase addUserUseCase;
   final GetOrdersUseCase getOrdersUseCase;
+  final GetexcelcategoriesUsecase getexcelcategoriesUsecase;
+  final DownloadexceltemplateUsecase downloadexceltemplateUsecase;
   final NewGetOrdersUseCase newGetOrdersUseCase;
   final GetProductsUseCase getProductsUseCase;
   final GetBoutiquesUseCase getBoutiquesUseCase;
@@ -87,11 +97,13 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     this.getUsersUseCase,
     this.addUserUseCase,
     this.getOrdersUseCase,
+    this.getexcelcategoriesUsecase,
     this.getProductsUseCase,
     this.getBoutiquesUseCase,
     this.changeOrderStatusUseCase,
     this.deleteUserUseCase,
     this.updateUserRoleUseCase,
+    this.getUploadedExcelFilesUsecase,
     this.leaveShopUseCase,
     this.getPresignedUrlUseCase,
     this.uploadFileToS3UseCase,
@@ -105,6 +117,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     this.createSellerStoryUseCase,
     this.deleteSellerStoryUseCase,
     this.uploadFileMediaServerUseCase,
+    this.downloadexceltemplateUsecase,
   ) : super(DashBoardState()) {
     on<GetOrdersEvent>(_onGetOrdersEvent);
     on<NewGetOrdersEvent>(_onNewGetOrdersEvent);
@@ -124,10 +137,13 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     on<GetVendorRequestEvent>(_onGetVendorRequestEvent);
     on<UpdateVendorRequestEvent>(_onUpdateVendorRequestEvent);
     on<ResetVendorRequestStatesEvent>(_onResetVendorRequestStatesEvent);
+    on<GetExcelCategoriesEvent>(_onGetExcelCategoriesEvent);
     on<GetSellerStoriesEvent>(_onGetSellerStoriesEvent);
     on<CreateSellerStoryEvent>(_onCreateSellerStoryEvent);
     on<DeleteSellerStoryEvent>(_onDeleteSellerStoryEvent);
     on<ResetCreateStoryStateEvent>(_onResetCreateStoryStateEvent);
+    on<DownloadExcelTemplateEvent>(_onDownloadExcelTemplateEvent);
+    on<GetUploadedExcelFilesEvent>(_onGetUploadedExcelFilesEvent);
   }
 
   String? ordersStatus;
@@ -198,7 +214,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
         emit(
           (state.copyWith(
             shopRoles: updatedRoles,
-            rolesMeta: r.data?.meta,
+            rolesMeta: r.data!.meta,
             getUserRolesStatus: GetUserRolesStatus.success,
           )),
         );
@@ -755,7 +771,8 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   /// Max accepted video length, enforced by the backend as well.
   static const int _maxStoryVideoSeconds = 60;
 
-  int? get _storiesUserId => int.tryParse(GetIt.I<PrefsRepository>().myMarketId!);
+  int? get _storiesUserId =>
+      int.tryParse(GetIt.I<PrefsRepository>().myMarketId!);
 
   int? get _storiesSellerId =>
       int.tryParse(GetIt.I<PrefsRepository>().getXSellerId ?? '');
@@ -941,6 +958,105 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
         updateVendorRequestStatus: UpdateVendorRequestStatus.init,
         submitVendorRequestStatus: SubmitVendorRequestStatus.init,
       ),
+    );
+  }
+
+  FutureOr<void> _onGetExcelCategoriesEvent(
+    GetExcelCategoriesEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        getExcelCategoriesStatus: GetExcelCategoriesStatus.loading,
+      ),
+    );
+
+    final response = await getexcelcategoriesUsecase(NoParams());
+    response.fold(
+      (l) {
+        emit(
+          (state.copyWith(
+            getExcelCategoriesStatus: GetExcelCategoriesStatus.failure,
+          )),
+        );
+        showMessage(l.message, hasError: true);
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            excelCategoriesModel: r,
+            getExcelCategoriesStatus: GetExcelCategoriesStatus.success,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onDownloadExcelTemplateEvent(
+    DownloadExcelTemplateEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        downloadExcelTemplateStatus: DownloadExcelTemplateStatus.loading,
+      ),
+    );
+
+    final response = await downloadexceltemplateUsecase(
+      DownloadexceltemplateParams(categoryId: event.categoryId),
+    );
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            downloadExcelTemplateStatus: DownloadExcelTemplateStatus.failure,
+          ),
+        );
+        showMessage(l.message, hasError: true);
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            downloadExcelTemplateStatus: DownloadExcelTemplateStatus.success,
+            downloadedTemplatePath: r, // r هو مسار الملف
+          ),
+        );
+        showMessage('تم تحميل القالب بنجاح', hasError: false);
+      },
+    );
+  }
+
+  FutureOr<void> _onGetUploadedExcelFilesEvent(
+    GetUploadedExcelFilesEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        getUploadedExcelFilesStatus: GetUploadedExcelFilesStatus.loading,
+      ),
+    );
+
+    final response = await getUploadedExcelFilesUsecase(
+      GetUploadedExcelFilesParams(page: event.page),
+    );
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            getUploadedExcelFilesStatus: GetUploadedExcelFilesStatus.failure,
+          ),
+        );
+        showMessage(l.message, hasError: true);
+      },
+      (r) {
+        emit(
+          state.copyWith(
+            getUploadedExcelFilesStatus: GetUploadedExcelFilesStatus.success,
+            uploadedExcelFilesModel: r,
+          ),
+        );
+      },
     );
   }
 }

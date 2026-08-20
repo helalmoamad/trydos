@@ -829,7 +829,7 @@
   "update": "گۆڕینی داواکاری",
   "Sellers": "فرۆشکاران",
   "similar_products": "بەرهەمەکانى وەک خۆت",
-    "report_reason": "هۆکاری ڕاپۆرتکردن",
+  "report_reason": "هۆکاری ڕاپۆرتکردن",
   "details_optional": "وردەکاری (ئارەزوومەند)",
   "write_details_here": "وردەکاری لێرە بنووسە...",
   "send_report": "ناردنی ڕاپۆرت",
@@ -877,5 +877,8 @@
   "delete_story": "سڕینەوەی چیرۆک",
   "delete_story_confirmation": "دڵنیایت لە سڕینەوەی ئەم چیرۆکە؟",
   "story_deleted_successfully": "چیرۆکەکە بە سەرکەوتوویی سڕایەوە",
-  "sellers": "فرۆشیارەکان"
+  "sellers": "فرۆشیارەکان",
+  "customers_comments": "بۆچوونەکانی کڕیاران",
+  "locations": "شوێنەکان",
+  "upload_excel_file": "بارکردنی فایلی Excel"
 }

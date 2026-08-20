@@ -2,16 +2,21 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:trydos/common/constant/configuration/dashBoard_url_routes.dart';
 // `show` keeps the `ScopeApi` extension of both url-routes files from clashing.
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart'
     show StoriesEndPoints;
+import 'package:trydos/common/constant/configuration/web_app_url.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/client_config.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/core/api/methods/post.dart';
 import 'package:trydos/core/api/methods/put.dart';
 import 'package:trydos/core/api/methods/delete.dart';
+import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
+import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
@@ -23,6 +28,8 @@ import 'package:trydos/features/dashBoard/data/models/get_presigned_url_model.da
 import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.dart';
 import 'package:trydos/features/dashBoard/data/models/seller_story_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
+import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
+import 'package:trydos/features/home/data/parsers/heavy_response_parsers.dart';
 
 @injectable
 class DashBoardRemoteDataSource {
@@ -301,9 +308,7 @@ class DashBoardRemoteDataSource {
   // and carry the shop in the `seller_id` field — no `X-Seller-ID` header.
   // ---------------------------------------------------------------------
 
-  Future<List<SellerStoryModel>> getSellerStories(
-    Map<String, dynamic> params,
-  ) {
+  Future<List<SellerStoryModel>> getSellerStories(Map<String, dynamic> params) {
     GetClient<List<SellerStoryModel>> getSellerStories =
         GetClient<List<SellerStoryModel>>(
           serverName: ServerName.stories,
@@ -437,4 +442,77 @@ class DashBoardRemoteDataSource {
         );
     return updateVendorRequest();
   }
+
+  // upload excel file //
+
+  Future<GetExcelCategoriesModel> getCategories() {
+    final getExcelCategoriesModel = GetClient<GetExcelCategoriesModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetExcelCategoriesModel>(
+        endpoint: WebAppEndPoints.getCategoriesEP,
+        response: ResponseValue<GetExcelCategoriesModel>(
+          fromJson: (response) => GetExcelCategoriesModel.fromJson(response),
+        ),
+      ),
+    );
+
+    return getExcelCategoriesModel();
+  }
+
+  Future<String> downloadExcel(int categoryId) async {
+    GetClient<List<int>> getExcelClient = GetClient<List<int>>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<List<int>>(
+        endpoint: WebAppEndPoints.downloadExcel(categoryId),
+        responseType: ResponseType.bytes,
+        response: ResponseValue<List<int>>(
+          fromJson: (response) => response as List<int>,
+        ),
+      ),
+    );
+
+    final bytes = await getExcelClient();
+
+    final directory = await getApplicationDocumentsDirectory();
+    final fileName = 'excel_template_$categoryId.xlsx';
+    final filePath = '${directory.path}/$fileName';
+
+    final file = File(filePath);
+    await file.writeAsBytes(bytes);
+
+    return filePath;
+  }
+
+  Future<UploadedExcelFilesResponseModel> getUploadedExcelFiles({
+    int page = 1,
+  }) async {
+    GetClient<UploadedExcelFilesResponseModel> getFiles =
+        GetClient<UploadedExcelFilesResponseModel>(
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<UploadedExcelFilesResponseModel>(
+            endpoint: WebAppEndPoints.getUploadedExcelFiles(page: page),
+            response: ResponseValue<UploadedExcelFilesResponseModel>(
+              fromJson: (response) =>
+                  UploadedExcelFilesResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return await getFiles();
+  }
+
+  // Future<MainCategoriesResponseModel> uploadExcel() async {
+  //   GetClient<dynamic> getMainCategories = GetClient<dynamic>(
+  //     serverName: ServerName.market,
+  //     //ServerName.elastic,
+  //     requestPrams: RequestConfig<dynamic>(
+  //       endpoint: WebAppEndPoints.downloadExcel(),
+  //       //ElasticEndPoints.getMainCategoriesEP,
+  //       // MarketEndPoints.getMainCategoriesRelatedWithBoutiquesEP,
+  //       queryParameters: ,
+  //       response: ResponseValue<dynamic>(fromJson: (response) => response),
+  //     ),
+  //   );
+  //   final raw = await getMainCategories();
+  //   return parseMainCategoriesInBackground(raw);
+  // }
 }

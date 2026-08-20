@@ -859,5 +859,8 @@
   "return_problem_resolved": "İade sorunu çözüldü.",
   "sellers": "Satıcılar",
   "you_have_to_choose_a_country": "Bir ülke seçmelisiniz",
-  "confirm_report_story": "Bu hikayeyi bildirmek istediğinizden emin misiniz?"
+  "confirm_report_story": "Bu hikayeyi bildirmek istediğinizden emin misiniz?",
+   "customers_comments": "Müşteri yorumları",
+  "locations": "Konumlar",
+  "upload_excel_file": "Excel dosyası yükle"
 }

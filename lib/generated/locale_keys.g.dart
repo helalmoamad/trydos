@@ -882,5 +882,8 @@ abstract class  LocaleKeys {
   static const you_have_to_choose_a_country = 'you_have_to_choose_a_country';
   static const confirm_report_story = 'confirm_report_story';
   static const report_failed = 'report_failed';
+  static const locations = 'locations';
+  static const customers_comments = 'customers_comments';
+  static const upload_excel_file = 'upload_excel_file';
 
 }

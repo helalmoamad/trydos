@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
+import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
+import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
@@ -62,4 +64,11 @@ abstract class DashBoardRepository {
     int vendorRequestId,
     Map<String, dynamic> params,
   );
+
+  Future<Either<Failure, GetExcelCategoriesModel>> getCategories();
+  Future<Either<Failure, String>> downloadexceltemplate(int categoryId);
+
+  Future<Either<Failure, UploadedExcelFilesResponseModel>> getUploadedExcelFiles({
+  int page = 1,
+});
 }
