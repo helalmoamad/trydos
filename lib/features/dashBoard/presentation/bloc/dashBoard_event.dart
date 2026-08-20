@@ -133,3 +133,20 @@ class DeleteSellerStoryEvent extends DashBoardEvent {
 class ResetCreateStoryStateEvent extends DashBoardEvent {
   ResetCreateStoryStateEvent();
 }
+
+class GetExcelCategoriesEvent extends DashBoardEvent {
+  GetExcelCategoriesEvent();
+}
+
+class DownloadExcelTemplateEvent extends DashBoardEvent {
+  final int categoryId;
+  DownloadExcelTemplateEvent({required this.categoryId});
+  List<Object?> get props => [categoryId];
+}
+
+class GetUploadedExcelFilesEvent extends DashBoardEvent {
+  final int page;
+  GetUploadedExcelFilesEvent({this.page = 1});
+
+  List<Object?> get props => [page];
+}

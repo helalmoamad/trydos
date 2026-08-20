@@ -903,5 +903,9 @@
   "report_optional": "(İsteğe bağlı)",
   "report_submit": "Raporu Gönder",
   "report_received_title": "Bildiriminizi aldık",
-  "report_received_body": "Görüşleriniz için teşekkürler"
+  "report_received_body": "Görüşleriniz için teşekkürler",
+  "customers_comments": "Müşteri yorumları",
+  "locations": "Konumlar",
+  "upload_excel_file": "Excel dosyası yükle"
+
 }

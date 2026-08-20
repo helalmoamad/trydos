@@ -785,7 +785,7 @@
   "password_must_be_at_least_8_characters": "Password must be at least 8 characters",
   "repeat_password": "Repeat Password",
   "passwords_do_not_match": "Passwords do not match",
-  "shop_information": "SHOP INFORMATION",
+  "shop_information": "Shop Information",
   "shop_address": "Shop Address",
   "location_details": "LOCATION DETAILS",
   "location_name": "Location Name",
@@ -835,7 +835,6 @@
   "similar_products": "You may also like",
   "hide_this_pack": "Hide this pack",
   "hide_this_pack_from_list": "Hide this pack from list",
-
   "report_reason": "Reason for reporting",
   "details_optional": "Notes (Optional)",
   "write_details_here": "Write notes here...",
@@ -921,5 +920,8 @@
   "report_optional": "(Optional)",
   "report_submit": "Submit Report",
   "report_received_title": "We received your report",
-  "report_received_body": "Thanks for your thoughts"
+  "report_received_body": "Thanks for your thoughts",
+  "customers_comments": "Customers comments",
+  "locations": "Locations",
+  "upload_excel_file": "Upload Excel File"
 }

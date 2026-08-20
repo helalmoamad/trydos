@@ -40,8 +40,17 @@ enum CreateSellerStoryStatus { init, uploading, loading, success, failure }
 
 enum DeleteSellerStoryStatus { init, loading, success, failure }
 
+enum GetExcelCategoriesStatus { init, loading, success, failure }
+
+enum DownloadExcelTemplateStatus { init, loading, success, failure }
+
+enum GetUploadedExcelFilesStatus { initial, loading, success, failure }
+
 @immutable
 class DashBoardState extends Equatable {
+  final GetUploadedExcelFilesStatus getUploadedExcelFilesStatus;
+  final UploadedExcelFilesResponseModel? uploadedExcelFilesModel;
+  final GetExcelCategoriesModel? excelCategoriesModel;
   final GetUserPermissionStatus getUserPermissionStatus;
   final GetUserRolesStatus getUserRolesStatus;
   final GetBoutiquesStatus getBoutiquesStatus;
@@ -80,7 +89,14 @@ class DashBoardState extends Equatable {
   final CreateSellerStoryStatus createStoryStatus;
   final DeleteSellerStoryStatus deleteStoryStatus;
   final List<SellerStoryModel>? stories;
+  final GetExcelCategoriesStatus getExcelCategoriesStatus;
+  final DownloadExcelTemplateStatus downloadExcelTemplateStatus;
+  final String? downloadedTemplatePath;
+
   DashBoardState({
+    this.getUploadedExcelFilesStatus = GetUploadedExcelFilesStatus.initial,
+    this.uploadedExcelFilesModel,
+    this.downloadedTemplatePath,
     this.storiesStatus = GetSellerStoriesStatus.init,
     this.createStoryStatus = CreateSellerStoryStatus.init,
     this.deleteStoryStatus = DeleteSellerStoryStatus.init,
@@ -107,6 +123,7 @@ class DashBoardState extends Equatable {
     this.vendorRequest,
     this.shops,
     this.shopRoles,
+    this.excelCategoriesModel,
     this.boutiques,
     this.boutiquesMeta,
     this.orders,
@@ -119,8 +136,15 @@ class DashBoardState extends Equatable {
     this.users,
     this.usersMeta,
     this.rolesMeta,
+    this.getExcelCategoriesStatus = GetExcelCategoriesStatus.init,
+    this.downloadExcelTemplateStatus = DownloadExcelTemplateStatus.init,
   });
   DashBoardState copyWith({
+    GetUploadedExcelFilesStatus? getUploadedExcelFilesStatus,
+    UploadedExcelFilesResponseModel? uploadedExcelFilesModel,
+    String? downloadedTemplatePath,
+    GetExcelCategoriesModel? excelCategoriesModel,
+    GetExcelCategoriesStatus? getExcelCategoriesStatus,
     ChangeOrderDetailStatusStatus? changeOrderDetailStatusStatus,
     newMeta? newOrdersMeta,
     orders_model.Meta? ordersMeta,
@@ -159,8 +183,11 @@ class DashBoardState extends Equatable {
     CreateSellerStoryStatus? createStoryStatus,
     DeleteSellerStoryStatus? deleteStoryStatus,
     List<SellerStoryModel>? stories,
+    DownloadExcelTemplateStatus? downloadExcelTemplateStatus,
   }) {
     return DashBoardState(
+      downloadedTemplatePath:
+          downloadedTemplatePath ?? this.downloadedTemplatePath,
       storiesStatus: storiesStatus ?? this.storiesStatus,
       createStoryStatus: createStoryStatus ?? this.createStoryStatus,
       deleteStoryStatus: deleteStoryStatus ?? this.deleteStoryStatus,
@@ -206,6 +233,15 @@ class DashBoardState extends Equatable {
       productsMeta: productsMeta ?? this.productsMeta,
       users: users ?? this.users,
       usersMeta: usersMeta ?? this.usersMeta,
+      getExcelCategoriesStatus:
+          getExcelCategoriesStatus ?? this.getExcelCategoriesStatus,
+      excelCategoriesModel: excelCategoriesModel ?? this.excelCategoriesModel,
+      downloadExcelTemplateStatus:
+          downloadExcelTemplateStatus ?? this.downloadExcelTemplateStatus,
+      getUploadedExcelFilesStatus:
+          getUploadedExcelFilesStatus ?? this.getUploadedExcelFilesStatus,
+      uploadedExcelFilesModel:
+          uploadedExcelFilesModel ?? this.uploadedExcelFilesModel,
     );
   }
 
@@ -249,5 +285,11 @@ class DashBoardState extends Equatable {
     createStoryStatus,
     deleteStoryStatus,
     stories,
+    getExcelCategoriesStatus,
+    excelCategoriesModel,
+    downloadExcelTemplateStatus,
+    downloadedTemplatePath,
+    getUploadedExcelFilesStatus,
+    uploadedExcelFilesModel,
   ];
 }

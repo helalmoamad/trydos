@@ -1018,6 +1018,11 @@ abstract class LocaleKeys {
   static const add_story = 'add_story';
   static const no_stories_yet = 'no_stories_yet';
   static const failed_to_load_stories = 'failed_to_load_stories';
+
+  static const locations = 'locations';
+  static const customers_comments = 'customers_comments';
+  static const upload_excel_file = 'upload_excel_file';
+
   static const compare_products = 'compare_products';
   static const search_for_product = 'search_for_product';
   static const product_name = 'product_name';

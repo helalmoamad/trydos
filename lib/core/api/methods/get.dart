@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
@@ -21,9 +20,11 @@ class GetClient<T> extends BaseApi<T> {
        _queryParameters = requestPrams.queryParameters,
        _receiveTimeout = requestPrams.receiveTimeout,
        _sendTimeout = requestPrams.sendTimeout,
+       _responseType = requestPrams.responseType, // جديد
        super(serverName);
   final Duration? _receiveTimeout;
   final Duration? _sendTimeout;
+  final ResponseType? _responseType; // جديد
   final Stopwatch stopWatch = Stopwatch();
   RequestConfig<T> requestPrams;
   final ProgressCallback? onReceiveProgress;
@@ -49,15 +50,36 @@ class GetClient<T> extends BaseApi<T> {
         options: options.copyWith(
           receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
           sendTimeout: _sendTimeout ?? options.sendTimeout,
+          responseType:
+              _responseType ??
+              options.responseType, // جديد - هذا هو التعديل الأساسي
         ),
         onReceiveProgress: onReceiveProgress,
       );
 
       stopWatch.stop();
-      if (kDebugMode)
-        print(
-          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${requestPrams.queryParameters}",
-        );
+      // إذا كان الرد bytes (مثل تحميل ملف)، تجاوز كل معالجة JSON
+      // ولا تحاول تخزينه بالـ prefs لأنه غالباً ثقيل وثنائي
+      if (_responseType == ResponseType.bytes) {
+        log('request time: ${stopWatch.elapsed.toString()}');
+        prettyPrinterI(stopWatch.elapsed.toString());
+
+        if (response.statusCode == StatusCode.operationSucceeded.code ||
+            response.statusCode == StatusCode.createdSucceeded.code ||
+            response.statusCode == 204) {
+          if (_fromJson == null) {
+            return await Future.value(_valueOnSuccess);
+          }
+          return _fromJson(response.data); // response.data هون List<int> فعلي
+        } else {
+          final exception = getException(
+            statusCode: response.statusCode!,
+            message: 'Failed to download file',
+          );
+          throw exception;
+        }
+      }
+
       // Prepare data for saving - handle String, null, or empty responses
       dynamic dataToSave = response.data;
       if (dataToSave is String) {

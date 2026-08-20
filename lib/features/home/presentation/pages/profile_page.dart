@@ -182,13 +182,6 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         (!(state.shops?.isNullOrEmpty ?? true))) {
                       return InkWell(
                         onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) =>
-                          //         const SelectShopForOrderPage(),
-                          //   ),
-                          // );
                           Navigator.push(
                             context,
                             MaterialPageRoute(

@@ -843,7 +843,7 @@
   "update": "گۆڕینی داواکاری",
   "Sellers": "فرۆشکاران",
   "similar_products": "بەرهەمەکانى وەک خۆت",
-    "report_reason": "هۆکاری ڕاپۆرتکردن",
+  "report_reason": "هۆکاری ڕاپۆرتکردن",
   "details_optional": "وردەکاری (ئارەزوومەند)",
   "write_details_here": "وردەکاری لێرە بنووسە...",
   "send_report": "ناردنی ڕاپۆرت",
@@ -921,5 +921,9 @@
   "report_optional": "(ئارەزوومەندانە)",
   "report_submit": "ناردنی ڕاپۆرت",
   "report_received_title": "ڕاپۆرتەکەت پێگەیشت",
-  "report_received_body": "سوپاس بۆ بۆچوونەکانت"
+  "report_received_body": "سوپاس بۆ بۆچوونەکانت",
+  "customers_comments": "بۆچوونەکانی کڕیاران",
+  "locations": "شوێنەکان",
+  "upload_excel_file": "بارکردنی فایلی Excel"
 }
+

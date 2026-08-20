@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 typedef FromJson<T> = T Function(dynamic json);
 
 class RequestConfig<T> {
@@ -8,6 +10,8 @@ class RequestConfig<T> {
   late final ResponseValue<T> response;
   final Duration? receiveTimeout;
   final Duration? sendTimeout;
+  final ResponseType responseType; // جديد
+
   RequestConfig({
     required this.endpoint,
     required this.response,
@@ -16,6 +20,7 @@ class RequestConfig<T> {
     this.extraHeaders,
     this.receiveTimeout,
     this.sendTimeout,
+    this.responseType = ResponseType.json, // القيمة الافتراضية، ما تأثر على أي طلب موجود حالياً
   });
 }
 

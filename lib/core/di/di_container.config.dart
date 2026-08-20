@@ -160,6 +160,8 @@ import '../../features/dashBoard/domain/useCase/delete_seller_story_usecase.dart
     as _i725;
 import '../../features/dashBoard/domain/useCase/delete_user_usecase.dart'
     as _i441;
+import '../../features/dashBoard/domain/useCase/downloadExcelTemplate_usecase.dart'
+    as _i921;
 import '../../features/dashBoard/domain/useCase/get_boutiques_usecase.dart'
     as _i412;
 import '../../features/dashBoard/domain/useCase/get_orders_usecase.dart'
@@ -178,6 +180,10 @@ import '../../features/dashBoard/domain/useCase/get_users_usecase.dart'
     as _i900;
 import '../../features/dashBoard/domain/useCase/get_vendor_request_usecase.dart'
     as _i135;
+import '../../features/dashBoard/domain/useCase/getExcelCategories_usecase.dart'
+    as _i939;
+import '../../features/dashBoard/domain/useCase/GetUploadedExcelFilesUsecase.dart'
+    as _i378;
 import '../../features/dashBoard/domain/useCase/leave_shop_usecase.dart'
     as _i858;
 import '../../features/dashBoard/domain/useCase/newGetUserOrders_useCase.dart'
@@ -884,6 +890,9 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i518.GetHomeBoutiqesUseCase>(),
     ),
   );
+  gh.factory<_i378.GetUploadedExcelFilesUsecase>(
+    () => _i378.GetUploadedExcelFilesUsecase(gh<_i70.DashBoardRepository>()),
+  );
   gh.factory<_i602.AddUserUseCase>(
     () => _i602.AddUserUseCase(gh<_i70.DashBoardRepository>()),
   );
@@ -908,6 +917,12 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i441.DeleteUserUseCase>(
     () => _i441.DeleteUserUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i921.DownloadexceltemplateUsecase>(
+    () => _i921.DownloadexceltemplateUsecase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i939.GetexcelcategoriesUsecase>(
+    () => _i939.GetexcelcategoriesUsecase(gh<_i70.DashBoardRepository>()),
   );
   gh.factory<_i412.GetBoutiquesUseCase>(
     () => _i412.GetBoutiquesUseCase(gh<_i70.DashBoardRepository>()),
@@ -1029,11 +1044,13 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i900.GetUsersUseCase>(),
       gh<_i602.AddUserUseCase>(),
       gh<_i919.GetOrdersUseCase>(),
+      gh<_i939.GetexcelcategoriesUsecase>(),
       gh<_i51.GetProductsUseCase>(),
       gh<_i412.GetBoutiquesUseCase>(),
       gh<_i645.ChangeOrderStatusUseCase>(),
       gh<_i441.DeleteUserUseCase>(),
       gh<_i1023.UpdateUserRoleUseCase>(),
+      gh<_i378.GetUploadedExcelFilesUsecase>(),
       gh<_i858.LeaveShopUseCase>(),
       gh<_i781.GetPresignedUrlUseCase>(),
       gh<_i282.UploadFileToS3UseCase>(),
@@ -1047,6 +1064,7 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i976.CreateSellerStoryUseCase>(),
       gh<_i725.DeleteSellerStoryUseCase>(),
       gh<_i318.UploadFileMediaServerUseCase>(),
+      gh<_i921.DownloadexceltemplateUsecase>(),
     ),
   );
   gh.factory<_i661.AnswerCallUseCase>(

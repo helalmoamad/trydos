@@ -927,5 +927,8 @@
   "report_optional": "(اختياري)",
   "report_submit": "إرسال البلاغ",
   "report_received_title": "لقد استلمنا بلاغك",
-  "report_received_body": "شكرًا لملاحظاتك"
+  "report_received_body": "شكرًا لملاحظاتك",
+  "customers_comments": "تعليقات الزبائن",
+  "locations": "المواقع",
+  "upload_excel_file": "رفع ملف إكسل"
 }
