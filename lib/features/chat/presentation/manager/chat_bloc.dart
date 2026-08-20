@@ -2180,35 +2180,67 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   @override
   ChatState? fromJson(Map<String, dynamic> json) {
-    return ChatState.fromJson(json);
+    final ChatState restored = ChatState.fromJson(json);
+
+    // اشتقاق الرسائل الفاشلة عند **القراءة** لا عند الكتابة.
+    //
+    // كان هذا المسح يقع في toJson، أي مع كل انبعاث حالة (٨٨ موضعاً في هذا
+    // البلوك) — حلقة O(محادثات × رسائل) على الخيط الرئيسي. وهو يُحسب مرّة
+    // واحدة عند الإقلاع فحسب، فموضعه الصحيح هنا.
+    //
+    // وكان يُراكم تكراراً عبر التشغيلات: الناتج يُكتب، ثم يُقرأ، ثم تُضاف
+    // عليه المعرّفات نفسها من جديد — فتتضاعف القائمة مع كل إقلاع. المجموعات
+    // هنا تمنع ذلك وتنظّف ما تراكم سابقاً.
+    final Set<String> failed = restored.currentFailedMessage.toSet();
+    final Set<String> failedMedia = restored.currentFailedMediaMessage.toSet();
+    for (final Chat chat in restored.chats) {
+      for (final Message message in chat.messages ?? const <Message>[]) {
+        final String id = message.id.toString();
+        // معرّف غير رقمي = رسالة محلية لم يؤكّدها الخادم.
+        if (int.tryParse(id) != null) continue;
+        if (message.mediaMessageContent.isNullOrEmpty) {
+          failed.add(id);
+        } else {
+          failedMedia.add(id);
+        }
+      }
+    }
+
+    return restored.copyWith(
+      currentFailedMessage: failed.toList(),
+      currentFailedMediaMessage: failedMedia.toList(),
+    );
+  }
+
+  /// أقصى عدد رسائل يُحفظ لكل محادثة — **الأحدث** منها.
+  ///
+  /// كانت المحادثات تُحفظ بكل رسائلها بلا سقف، وتُعاد تسلسلتها كاملةً مع كل
+  /// انبعاث حالة. الرسائل مخزَّنة بترتيب الأقدم أولاً، فذيل القائمة هو الأحدث.
+  static const int _maxPersistedMessagesPerChat = 20;
+
+  List<Chat> _trimPersistedMessages(List<Chat> chats) {
+    return chats.map((Chat chat) {
+      final List<Message>? messages = chat.messages;
+      if (messages == null ||
+          messages.length <= _maxPersistedMessagesPerChat) {
+        return chat;
+      }
+      return chat.copyWith(
+        messages: messages.sublist(
+          messages.length - _maxPersistedMessagesPerChat,
+        ),
+      );
+    }).toList();
   }
 
   @override
   Map<String, dynamic>? toJson(ChatState state) {
-    List<String> failedMessages = List.of(state.currentFailedMessage);
-    List<String> failedMediaMessages = List.of(state.currentFailedMediaMessage);
-    state.chats.forEach((chat) {
-      chat.messages?.forEach((message) {
-        if (int.tryParse(message.id.toString()) == null) {
-          if (message.mediaMessageContent.isNullOrEmpty) {
-            failedMessages.add(message.id.toString());
-          } else {
-            failedMediaMessages.add(message.id.toString());
-          }
-        }
-      });
-    });
-    // List<Chat> chats = List.of(state.chats);
-    // chats.removeWhere((element) => int.tryParse(element.id.toString()) == null);
-    // List<Chat> pinnedChats = List.of(state.pinnedChats);
-    // pinnedChats
-    //     .removeWhere((element) => int.tryParse(element.id.toString()) == null);
+    // لا مسح للرسائل الفاشلة هنا — نُقل إلى fromJson (يُحسب مرّة عند الإقلاع
+    // بدل ٨٨ مرّة في الجلسة، ودون تراكم تكرار عبر التشغيلات).
     return state
         .copyWith(
-          currentFailedMessage: failedMessages,
-          currentFailedMediaMessage: failedMediaMessages,
-          // chats: chats,
-          // pinnedChats: pinnedChats,
+          chats: _trimPersistedMessages(state.chats),
+          pinnedChats: _trimPersistedMessages(state.pinnedChats),
           receiveMessageStatus: ReceiveMessageStatus.init,
           readMessagesStatus: ResetReadMessagesStatus.init,
           firstRequestForGetChats: true,

@@ -189,7 +189,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           GetHomeBoutiqesEvent(
                             getWithPrefetchToStoreInMemory: false,
                             getWithOutPrefetchForEachBoutiques: true,
-                            context: context,
+
                             categorySlug: "Empty",
                             offset: "1",
                           ),
@@ -750,10 +750,6 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                         .setMyChatName("");
                                                     prefsRepository
                                                         .setMyStoriesName("");
-                                                    prefsRepository
-                                                        .setVerifiedPhonePeforeExpiredToken(
-                                                          false,
-                                                        );
 
                                                     prefsRepository
                                                         .setMyProfilePhoto("");

@@ -23,6 +23,7 @@ import 'package:trydos/features/app/my_text_widget.dart';
 
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
+import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -199,6 +200,26 @@ class _ProductDetailsBottomSheetNewState
           previous.currentColorSizeForCart?["choiceOption"] !=
               current.currentColorSizeForCart?["choiceOption"],
       builder: (context, state) {
+        String shippingDays =
+            ((state
+                            .cachedProductWithoutRelatedProductsModel[widget
+                                .productItem
+                                .productId
+                                .toString()]!
+                            .product!
+                            .shippingDays ??
+                        0) +
+                    (state.startingSetting?.shippingDay ?? 0))
+                .toString();
+        String countryName =
+            state.getAllowedCountriesModel?.data?.countries?.firstWhere((
+              element,
+            ) {
+              return element.iso!.toLowerCase().contains(
+                '${GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso?.toLowerCase() : GetIt.I<PrefsRepository>().countryIso?.toLowerCase()}',
+              );
+            }, orElse: () => Country(id: 0, iso: "", name: "")).name ??
+            "";
         Future.delayed(const Duration(milliseconds: 100), () {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (singleChildScrollViewsScrollController.hasClients) {
@@ -461,7 +482,10 @@ class _ProductDetailsBottomSheetNewState
                                         indent: (1.sw - 40.w) / 2,
                                         color: const Color(0xffC4C2C2),
                                       ),
-                                      productInfoWidget(),
+                                      productInfoWidget(
+                                        shippingDays,
+                                        countryName,
+                                      ),
                                       (sizesForEachProduct.length != 0) ||
                                               (colorsForEachProduct.length != 0)
                                           ? const SizedBox.shrink()
@@ -828,7 +852,19 @@ class _ProductDetailsBottomSheetNewState
     );
   }
 
-  Widget productInfoWidget() {
+  Widget productInfoWidget(String shippingDays, String country) {
+    final deliveryDate = DateTime.now().add(
+      Duration(days: int.tryParse(shippingDays) ?? 0),
+    );
+
+    // Get current locale
+    final locale = context.locale.toString();
+
+    // Format day name (EEEE = full weekday name)
+    final dayName = DateFormat('EEEE', locale).format(deliveryDate);
+
+    // Format date (d MMM = day abbreviated month)
+    final formattedDate = DateFormat('d MMM', locale).format(deliveryDate);
     return Padding(
       padding: EdgeInsets.all(12.0.h),
       child: SizedBox(
@@ -946,7 +982,7 @@ class _ProductDetailsBottomSheetNewState
                               ),
                             ),
                             Text(
-                              ' 3 ${LocaleKeys.day.tr()} ',
+                              ' $shippingDays ${LocaleKeys.day.tr()} ',
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -1047,7 +1083,7 @@ class _ProductDetailsBottomSheetNewState
                             ),
                             SizedBox(width: 5.w),
                             Text(
-                              '${LocaleKeys.at_your_address_in.tr()} Lebanon Monday ',
+                              '${LocaleKeys.at_your_address_in.tr()} $country $dayName ',
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -1058,7 +1094,7 @@ class _ProductDetailsBottomSheetNewState
                               ),
                             ),
                             Text(
-                              '2.Jun',
+                              '$formattedDate',
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: context.textTheme.bodyMedium?.bq.copyWith(

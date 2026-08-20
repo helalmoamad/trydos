@@ -135,7 +135,6 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
 
         boutiqueBloc.add(
           GetProductsWithFiltersEvent(
-            context: context,
             limit: 10,
             cashedOrginalBoutique: true,
             boutiqueSlug: "*featured*",

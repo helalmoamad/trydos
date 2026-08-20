@@ -101,18 +101,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
               userInfo['userVerifiedPhone'] == 'true',
         );
       }
-      if (userInfo.containsKey('isVerifiedPhonePeforeExpiredToken')) {
-        prefsRepository.setVerifiedPhonePeforeExpiredToken(
-          userInfo['isVerifiedPhonePeforeExpiredToken'] == true ||
-              userInfo['isVerifiedPhonePeforeExpiredToken'] == 'true',
-        );
-      }
-      if (userInfo.containsKey('isTokenExpired')) {
-        prefsRepository.setTokenExpired(
-          userInfo['isTokenExpired'] == true ||
-              userInfo['isTokenExpired'] == 'true',
-        );
-      }
+
       if (userInfo.containsKey('language')) {
         prefsRepository.setLanguage(userInfo['language']);
       }

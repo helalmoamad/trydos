@@ -914,6 +914,7 @@ class _TabsBarState extends State<TabsBar> {
                           width: 1.sw - 40,
                           height: 80.h,
                           child: ListView.builder(
+                            addRepaintBoundaries: false,
                             //controller: scrollController,
                             padding: EdgeInsets.only(right: 15.w),
                             key: TestVariables.kTestMode
@@ -987,7 +988,6 @@ class _TabsBarState extends State<TabsBar> {
                                                   .data!
                                                   .mainCategories![index]
                                                   .slug!,
-                                              context: context,
                                             ),
                                           );
                                           ////////////////////////////
@@ -1098,7 +1098,7 @@ class _TabsBarState extends State<TabsBar> {
                                                   false,
                                               getWithOutPrefetchForEachBoutiques:
                                                   true,
-                                              context: context,
+
                                               categorySlug: "Empty",
                                               offset: "1",
                                             ),

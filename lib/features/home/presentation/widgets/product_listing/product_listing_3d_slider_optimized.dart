@@ -313,28 +313,30 @@ class _ProductListing3DSliderOptimizedState
       return Container(color: Colors.black12);
     }
 
-    return SizedBox(
-      height: 250.h,
-      child: FutureBuilder<void>(
-        future: _initializeVideoFuture,
-        builder: (context, snapshot) {
-          final bool initialized =
-              videoProductInListingController[widget.productItem.slug ?? ""]!
-                  .value
-                  .isInitialized;
-          final bool buffering =
-              videoProductInListingController[widget.productItem.slug ?? ""]!
-                  .value
-                  .isBuffering;
-          final bool showLoading = !initialized;
+    return RepaintBoundary(
+      child: SizedBox(
+        height: 250.h,
+        child: FutureBuilder<void>(
+          future: _initializeVideoFuture,
+          builder: (context, snapshot) {
+            final bool initialized =
+                videoProductInListingController[widget.productItem.slug ?? ""]!
+                    .value
+                    .isInitialized;
+            final bool buffering =
+                videoProductInListingController[widget.productItem.slug ?? ""]!
+                    .value
+                    .isBuffering;
+            final bool showLoading = !initialized;
 
-          Widget videoChild;
-          if (initialized) {
-            videoChild = FittedBox(
-              fit: BoxFit.cover,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15.r),
-                child: SizedBox(
+            Widget videoChild;
+            if (initialized) {
+              videoChild = FittedBox(
+                fit: BoxFit.cover,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15.r),
+                  ),
                   width: 200.w,
                   height: 250.h,
                   child: VideoPlayer(
@@ -342,20 +344,18 @@ class _ProductListing3DSliderOptimizedState
                         ""]!,
                   ),
                 ),
-              ),
-            );
-          } else {
-            videoChild = const SizedBox.shrink();
-          }
+              );
+            } else {
+              videoChild = const SizedBox.shrink();
+            }
 
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              videoChild,
-              if (showLoading)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(15.r),
-                  child: ProductListingImageWidget(
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                videoChild,
+                if (showLoading)
+                  ProductListingImageWidget(
+                    radius: 15.r,
                     borderColor: isRedeem ? const Color(0xffFF6200) : null,
                     orginalHeight: 250.h,
                     orginalWidth: 200.w,
@@ -365,45 +365,45 @@ class _ProductListing3DSliderOptimizedState
                     circleShape: false,
                     innerShadowYOffset: 3,
                   ),
-                ),
-              buffering
-                  ? TrydosLoader(size: 20.h)
-                  : /* videoProductInListingController[
-                                widget.productItem.slug ?? ""]!
-                            .value
-                            .isPlaying
-                        ? InkWell(
-                            onTap: () {
-                              videoProductInListingController[
-                                      widget.productItem.slug ?? ""]!
-                                  .pause();
-                            },
-                            child: SizedBox(
-                              width: 60,
-                              height: 60,
-                            ),
-                          )
-                        : Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(1, 1, 0, 0.2),
-                                borderRadius: BorderRadius.circular(50),
-                                border: Border.all(color: Colors.white)),
-                            child: InkWell(
+                buffering
+                    ? TrydosLoader(size: 20.h)
+                    : /* videoProductInListingController[
+                                  widget.productItem.slug ?? ""]!
+                              .value
+                              .isPlaying
+                          ? InkWell(
                               onTap: () {
-                                videoProductInListingController
-                                    .forEach((key, value) => value.pause());
                                 videoProductInListingController[
                                         widget.productItem.slug ?? ""]!
-                                    .play();
+                                    .pause();
                               },
-                              child: Icon(Icons.play_arrow,
-                                  size: 30, color: Colors.white),
-                            ))*/ const SizedBox.shrink(),
-            ],
-          );
-        },
+                              child: SizedBox(
+                                width: 60,
+                                height: 60,
+                              ),
+                            )
+                          : Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  color: Color.fromRGBO(1, 1, 0, 0.2),
+                                  borderRadius: BorderRadius.circular(50),
+                                  border: Border.all(color: Colors.white)),
+                              child: InkWell(
+                                onTap: () {
+                                  videoProductInListingController
+                                      .forEach((key, value) => value.pause());
+                                  videoProductInListingController[
+                                          widget.productItem.slug ?? ""]!
+                                      .play();
+                                },
+                                child: Icon(Icons.play_arrow,
+                                    size: 30, color: Colors.white),
+                              ))*/ const SizedBox.shrink(),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

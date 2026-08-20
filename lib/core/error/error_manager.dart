@@ -6,17 +6,28 @@ class ErrorManager {
   /// تحدد هل يجب إعادة المحاولة بناءً على كود الخطأ واسم الحدث
   static bool shouldRetry(String eventName, int statusCode) {
     int maxRetries = 1;
-    if (kDebugMode) print(
-        'statusCode:-----------------------------------------------------------9999---- $statusCode');
+    if (kDebugMode)
+      print(
+        'statusCode:-----------------------------------------------------------9999---- $statusCode',
+      );
 
     if (statusCode == 0 ||
         statusCode == 429 ||
         statusCode == 502 ||
         statusCode == 503 ||
         statusCode == 504) {
-      if (kDebugMode) print(
-          'statusCode:--------------------------------------------------------------- $statusCode');
+      if (kDebugMode)
+        print(
+          'statusCode:--------------------------------------------------------------- $statusCode',
+        );
       maxRetries = 2;
+    }
+    if (statusCode == 401) {
+      if (kDebugMode)
+        print(
+          'statusCode:--------------------------------------------------------------- $statusCode',
+        );
+      maxRetries = 4;
     }
     int currentCount = _retryCounts[eventName] ?? 0;
     bool canRetry = currentCount < maxRetries;

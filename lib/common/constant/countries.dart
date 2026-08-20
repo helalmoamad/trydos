@@ -1,4 +1,3 @@
-
 const List<Country> countries = [
   Country(
     name: "Afghanistan",
@@ -1982,8 +1981,7 @@ const List<Country> countries = [
   ),
 ];
 
-
-const defaultCountry =  Country(
+const defaultCountry = Country(
   name: "Turkey",
   flag: "tr",
   code: "TR",

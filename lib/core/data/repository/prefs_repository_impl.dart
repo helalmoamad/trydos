@@ -775,13 +775,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  // TODO: implement isTokenExpired
-  bool? get isTokenExpired => _preferences.getBool(PrefsKey.tokenExpired);
-
-  @override
-  Future<bool> setTokenExpired(bool tokenExpired) =>
-      _preferences.setBool(PrefsKey.tokenExpired, tokenExpired);
-  @override
   Future<bool> setLogInToChat(bool isLogInToChat) =>
       _preferences.setBool(PrefsKey.isLogInToChat, isLogInToChat);
 
@@ -796,17 +789,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   // TODO: implement isVerifiedPhonePeforeExpiredToken
   bool? get isCreateWallet => _preferences.getBool(PrefsKey.createWallet);
-  @override
-  // TODO: implement isVerifiedPhonePeforeExpiredToken
-  bool? get isVerifiedPhonePeforeExpiredToken =>
-      _preferences.getBool(PrefsKey.verifiedPhonePeforeExpiredToken);
-  @override
-  Future<bool> setVerifiedPhonePeforeExpiredToken(
-    bool verifiedPhonePeforeExpiredToken,
-  ) => _preferences.setBool(
-    PrefsKey.verifiedPhonePeforeExpiredToken,
-    verifiedPhonePeforeExpiredToken,
-  );
 
   @override
   Future<bool> setTopicThatAlreadySubsecribed(String topic) async {

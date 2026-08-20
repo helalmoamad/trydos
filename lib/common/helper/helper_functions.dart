@@ -562,7 +562,8 @@ class HelperFunctions {
                           child: CupertinoButton.filled(
                             onPressed: () {
                               Navigator.pop(context); // إغلاق الحوار
-                              _openWhatsAppGroup();
+                              // كان يفتح مجموعة واتساب — لا صلة لها بالتحديث.
+                              _openStorePage();
                             },
                             child: Text(
                               btnLabel1,
@@ -648,7 +649,7 @@ class HelperFunctions {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context); // إغلاق الحوار
-                              _getFileFromGoogleDrive();
+                              _openStorePage();
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -677,41 +678,27 @@ class HelperFunctions {
     );
   }
 
-  static Future<void> _getFileFromGoogleDrive() async {
-    const String androidPackageId = 'com.trydos.www';
-    const String playStoreUrl =
-        'https://play.google.com/store/apps/details?id=$androidPackageId';
+  static const String _androidPackageId = 'com.trydos.www';
+  static const String _playStoreUrl =
+      'https://play.google.com/store/apps/details?id=$_androidPackageId';
 
+  /// وجهة تحديث iOS.
+  ///
+  /// التطبيق لم يُنشر على App Store بعد، فآيفون يذهب مؤقّتاً إلى نفس رابط
+  /// Google Play. عند النشر: استبدل القيمة برابط App Store الحقيقي — ولا شيء
+  /// آخر يحتاج تعديلاً، فالتفريع بحسب المنصّة قائم في [_openStorePage].
+  static const String _appStoreUrl = _playStoreUrl;
+
+  /// يفتح صفحة المتجر المناسبة للمنصّة (المتجر أولاً، والمتصفّح احتياطاً).
+  static Future<void> _openStorePage() async {
+    final String storeUrl = Platform.isIOS ? _appStoreUrl : _playStoreUrl;
     try {
-      final bool launched = await urlLauncherApplication(playStoreUrl);
+      final bool launched = await urlLauncherApplication(storeUrl);
       if (!launched) {
-        await urlLauncherBrowser(playStoreUrl);
+        await urlLauncherBrowser(storeUrl);
       }
     } catch (e) {
-      await urlLauncherBrowser(playStoreUrl);
-    }
-  }
-
-  static _openWhatsAppGroup() async {
-    try {
-      // رابط مجموعة واتساب - يمكنك تغييره برابط مجموعة الواتساب الخاصة بك
-      String whatsappGroupUrl =
-          'https://chat.whatsapp.com/JVCvHFxKQBM9fQiTAPOsyf?mode=ac_t';
-
-      // محاولة فتح تطبيق واتساب مباشرة مع رابط المجموعة
-      // هذا سيفتح المجموعة مباشرة في التطبيق
-
-      bool launched = await urlLauncherApplication(whatsappGroupUrl);
-
-      // إذا فشل فتح التطبيق، افتح المتصفح
-      if (!launched) {
-        await urlLauncherBrowser(whatsappGroupUrl);
-      }
-    } catch (e) {
-      // في حالة حدوث خطأ، افتح المتصفح مباشرة
-      String whatsappGroupUrl =
-          'https://chat.whatsapp.com/JVCvHFxKQBM9fQiTAPOsyf?mode=ac_t';
-      await urlLauncherBrowser(whatsappGroupUrl);
+      await urlLauncherBrowser(storeUrl);
     }
   }
 

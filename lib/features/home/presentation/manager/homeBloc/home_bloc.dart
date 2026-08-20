@@ -322,6 +322,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //////////////////////////
 
     on<GetFullProductDetailsEvent>(_onGetFullProductDetailsEvent);
+    on<GetProductDetailsForCompareEvent>(_onGetProductDetailsForCompareEvent);
+    on<ClearCompareProductEvent>(_onClearCompareProductEvent);
+    on<ToggleCompareProductEvent>(_onToggleCompareProductEvent);
     on<SendAcceptOfNotificationMarketEvent>(
       _onSendAcceptOfNotificationMarketEvent,
     );
@@ -912,16 +915,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           'UpdateWhatsappNotificationEvent',
           l.statusCode,
         )) {
-          if (prefsRepository.isTokenExpired ?? false) {
-            Future.delayed(
-              const Duration(seconds: 5),
-              () => add(
-                UpdateWhatsappNotificationEvent(whatsapp: event.whatsapp),
-              ),
-            );
-          } else {
-            add(UpdateWhatsappNotificationEvent(whatsapp: event.whatsapp));
-          }
+          add(UpdateWhatsappNotificationEvent(whatsapp: event.whatsapp));
+
           ErrorManager.incrementRetry('UpdateWhatsappNotificationEvent');
         }
         emit(
@@ -964,14 +959,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           'UpdateEmailNotificationEvent',
           l.statusCode,
         )) {
-          if (prefsRepository.isTokenExpired ?? false) {
-            Future.delayed(
-              const Duration(seconds: 5),
-              () => add(UpdateEmailNotificationEvent(email: event.email)),
-            );
-          } else {
-            add(UpdateEmailNotificationEvent(email: event.email));
-          }
+          add(UpdateEmailNotificationEvent(email: event.email));
+
           ErrorManager.incrementRetry('UpdateEmailNotificationEvent');
         }
         emit(
@@ -1021,16 +1010,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           'UpdateFirebaseNotificationEvent',
           l.statusCode,
         )) {
-          if (prefsRepository.isTokenExpired ?? false) {
-            Future.delayed(
-              const Duration(seconds: 5),
-              () => add(
-                UpdateFirebaseNotificationEvent(firebase: event.firebase),
-              ),
-            );
-          } else {
-            add(UpdateFirebaseNotificationEvent(firebase: event.firebase));
-          }
+          add(UpdateFirebaseNotificationEvent(firebase: event.firebase));
+
           ErrorManager.incrementRetry('UpdateFirebaseNotificationEvent');
         }
         emit(
@@ -1075,22 +1056,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           'UpdateNotificationFrequencyEvent',
           l.statusCode,
         )) {
-          if (prefsRepository.isTokenExpired ?? false) {
-            Future.delayed(
-              const Duration(seconds: 5),
-              () => add(
-                UpdateNotificationFrequencyEvent(
-                  notificationFrequency: event.notificationFrequency,
-                ),
-              ),
-            );
-          } else {
-            add(
-              UpdateNotificationFrequencyEvent(
-                notificationFrequency: event.notificationFrequency,
-              ),
-            );
-          }
+          add(
+            UpdateNotificationFrequencyEvent(
+              notificationFrequency: event.notificationFrequency,
+            ),
+          );
+
           ErrorManager.incrementRetry('UpdateNotificationFrequencyEvent');
         }
         emit(
@@ -1136,24 +1107,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           'SubscribeTopicForNotificationEvent',
           l.statusCode,
         )) {
-          if (prefsRepository.isTokenExpired ?? false) {
-            Future.delayed(
-              const Duration(seconds: 5),
-              () => add(
-                SubscribeTopicForNotificationEvent(
-                  topic: event.topic,
-                  variant: event.variant?.replaceAll("_", "-"),
-                ),
-              ),
-            );
-          } else {
-            add(
-              SubscribeTopicForNotificationEvent(
-                topic: event.topic,
-                variant: event.variant?.replaceAll("_", "-"),
-              ),
-            );
-          }
+          add(
+            SubscribeTopicForNotificationEvent(
+              topic: event.topic,
+              variant: event.variant?.replaceAll("_", "-"),
+            ),
+          );
+
           ErrorManager.incrementRetry('SubscribeTopicForNotificationEvent');
         }
         emit(
@@ -1210,14 +1170,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           'GetFirebaseSettingForNotificationEvent',
           l.statusCode,
         )) {
-          if (prefsRepository.isTokenExpired ?? false) {
-            Future.delayed(
-              const Duration(seconds: 5),
-              () => add(const GetFirebaseSettingForNotificationEvent()),
-            );
-          } else {
-            add(const GetFirebaseSettingForNotificationEvent());
-          }
+          add(const GetFirebaseSettingForNotificationEvent());
+
           ErrorManager.incrementRetry('GetFirebaseSettingForNotificationEvent');
         }
         emit(
@@ -1263,24 +1217,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           'UnSubscribeTopicForNotificationEvent',
           l.statusCode,
         )) {
-          if (prefsRepository.isTokenExpired ?? false) {
-            Future.delayed(
-              const Duration(seconds: 5),
-              () => add(
-                UnSubscribeTopicForNotificationEvent(
-                  topic: event.topic,
-                  variant: event.variant?.replaceAll("_", "-"),
-                ),
-              ),
-            );
-          } else {
-            add(
-              UnSubscribeTopicForNotificationEvent(
-                topic: event.topic,
-                variant: event.variant?.replaceAll("_", "-"),
-              ),
-            );
-          }
+          add(
+            UnSubscribeTopicForNotificationEvent(
+              topic: event.topic,
+              variant: event.variant?.replaceAll("_", "-"),
+            ),
+          );
+
           ErrorManager.incrementRetry('UnSubscribeTopicForNotificationEvent');
         }
         emit(
@@ -1326,24 +1269,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           'ChangeCountryLanguageForNotificationEvent',
           l.statusCode,
         )) {
-          if (prefsRepository.isTokenExpired ?? false) {
-            Future.delayed(
-              const Duration(seconds: 5),
-              () => add(
-                ChangeCountryLanguageForNotificationEvent(
-                  country: event.country,
-                  languageCode: event.languageCode,
-                ),
-              ),
-            );
-          } else {
-            add(
-              ChangeCountryLanguageForNotificationEvent(
-                country: event.country,
-                languageCode: event.languageCode,
-              ),
-            );
-          }
+          add(
+            ChangeCountryLanguageForNotificationEvent(
+              country: event.country,
+              languageCode: event.languageCode,
+            ),
+          );
+
           ErrorManager.incrementRetry(
             'ChangeCountryLanguageForNotificationEvent',
           );
@@ -2195,6 +2127,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           // Heavy, re-fetchable caches are excluded from persistence: they
           // bloat every hydrated write (toJson runs on the main thread on each
           // emit) and are cheaply rebuilt from the network after a restart.
+          // حالة صفحة المقارنة عابرة بطبيعتها: لا معنى لاستعادة منتجات
+          // اختارها المستخدم في جلسة سابقة، وحفظها يُثقل كل كتابة مُهدرَتة.
+          compareProducts: {},
+          compareProductDetailsStatus: {},
+          compareSlugs: {},
+          compareOrder: [],
           cachedProductWithoutRelatedProductsModel: {},
           getProductListingPaginationWithoutFiltersModel: {},
           getFqaCommentsPaginationModel: {},
@@ -2643,9 +2581,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         oldCarts?.forEach((element) {
           oldCartCollection.add(element);
         });
-        print(
-          "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${oldCarts = r.data?.oldCart}",
-        );
         state.cartCollection?.forEach((elements) {
           oldCartCollection.removeWhere(
             (element) =>
@@ -2656,9 +2591,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 elements.productId == element.productId,
           );
         });
-        print(
-          "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS**${oldCartCollection}",
-        );
 
         //Map<String, Products> productITemForCart =
         //    Map.of(state.productITemForCart);
@@ -2799,9 +2731,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       "userChatToken": prefsRepository.chatToken ?? "",
       "userStoriesToken": prefsRepository.storiesToken ?? "",
       "userVerifiedPhone": prefsRepository.isVerifiedPhone ?? "",
-      "isVerifiedPhonePeforeExpiredToken":
-          prefsRepository.isVerifiedPhonePeforeExpiredToken ?? "",
-      "isTokenExpired": prefsRepository.isTokenExpired ?? "",
       "language": prefsRepository.language ?? "",
       "urlBackend": event.urlBackend,
       "messageFromeBackend": event.messageFromeBackend,
@@ -2992,54 +2921,28 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry('AddCartItemEvent', l.statusCode)) {
-          if (prefsRepository.isTokenExpired ?? false) {
-            Future.delayed(const Duration(seconds: 5), () {
-              add(
-                AddItemToCartEvent(
-                  fromCartPage: event.fromCartPage,
-                  isRedeem: event.isRedeem,
-                  redeemVariantPrice: event.redeemVariantPrice,
-                  colorName: event.colorName,
-                  sizeName: event.sizeName,
-                  finishAddAllTheItems: event.finishAddAllTheItems,
-                  countOfPieces: event.countOfPieces,
-                  colorOption: event.colorOption,
-                  productSlugForTopic: event.productSlugForTopic,
-                  image: event.image,
-                  products: event.products,
-                  variationId: event.variationId,
-                  choiceOption: event.choiceOption,
-                  maxAllowed: event.maxAllowed,
-                  color: event.color,
-                  quantity: event.quantity,
-                ),
-              );
-              ErrorManager.incrementRetry('AddCartItemEvent');
-              return;
-            });
-          } else {
-            add(
-              AddItemToCartEvent(
-                fromCartPage: event.fromCartPage,
-                isRedeem: event.isRedeem,
-                redeemVariantPrice: event.redeemVariantPrice,
-                colorName: event.colorName,
-                sizeName: event.sizeName,
-                boutiqueIcon: event.boutiqueIcon,
-                boutiqueId: event.boutiqueId,
-                finishAddAllTheItems: event.finishAddAllTheItems,
-                countOfPieces: event.countOfPieces,
-                colorOption: event.colorOption,
-                productSlugForTopic: event.productSlugForTopic,
-                image: event.image,
-                products: event.products,
-                choiceOption: event.choiceOption,
-                maxAllowed: event.maxAllowed,
-                color: event.color,
-                quantity: event.quantity,
-              ),
-            );
-          }
+          add(
+            AddItemToCartEvent(
+              fromCartPage: event.fromCartPage,
+              isRedeem: event.isRedeem,
+              redeemVariantPrice: event.redeemVariantPrice,
+              colorName: event.colorName,
+              sizeName: event.sizeName,
+              boutiqueIcon: event.boutiqueIcon,
+              variationId: event.variationId,
+              boutiqueId: event.boutiqueId,
+              finishAddAllTheItems: event.finishAddAllTheItems,
+              countOfPieces: event.countOfPieces,
+              colorOption: event.colorOption,
+              productSlugForTopic: event.productSlugForTopic,
+              image: event.image,
+              products: event.products,
+              choiceOption: event.choiceOption,
+              maxAllowed: event.maxAllowed,
+              color: event.color,
+              quantity: event.quantity,
+            ),
+          );
 
           ErrorManager.incrementRetry('AddCartItemEvent');
           add(
@@ -6946,6 +6849,164 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           ),
         );
       },
+    );
+  }
+
+  /// تفاصيل منتج لعمود واحد في صفحة المقارنة.
+  ///
+  /// مستقلّ عن [_onGetFullProductDetailsEvent] عمداً: ذاك يُطلق منتجات مرتبطة
+  /// وطلبات مُسلَّمة وحدثاً في ChatBloc ويعيد بناء مزامنة ألوان الصور — وكلّها
+  /// آثار جانبية تخصّ شاشة تفاصيل المنتج ولا محلّ لها هنا، بل تُفسد حالتها.
+  FutureOr<void> _onGetProductDetailsForCompareEvent(
+    GetProductDetailsForCompareEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    // تسجيل المُعرِّف والترتيب هنا أيضاً: هذا الحدث يصل من صفحة المقارنة
+    // مباشرةً (اختيار من البحث) لا من زرّ التفاصيل وحده، ولولاه لبقي الزرّ
+    // في صفحة التفاصيل بلا لون رغم أن المنتج في المقارنة.
+    final Map<int, String> slugs = Map<int, String>.of(state.compareSlugs);
+    slugs[event.side] = event.productSlug;
+    final List<int> order = List<int>.of(state.compareOrder)
+      ..remove(event.side)
+      ..add(event.side);
+    emit(state.copyWith(compareSlugs: slugs, compareOrder: order));
+
+    _emitCompareStatus(
+      emit,
+      event.side,
+      GetCompareProductDetailsStatus.loading,
+    );
+
+    final response = await getFullProductDetailsUseCase(event.productSlug);
+
+    response.fold(
+      (l) => _emitCompareStatus(
+        emit,
+        event.side,
+        GetCompareProductDetailsStatus.failure,
+      ),
+      (r) {
+        final Products? item = r.productItem;
+        if (item == null) {
+          _emitCompareStatus(
+            emit,
+            event.side,
+            GetCompareProductDetailsStatus.failure,
+          );
+          return;
+        }
+        final Map<int, Products> products = Map<int, Products>.of(
+          state.compareProducts,
+        );
+        products[event.side] = item;
+        _emitCompareStatus(
+          emit,
+          event.side,
+          GetCompareProductDetailsStatus.success,
+          products: products,
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onClearCompareProductEvent(
+    ClearCompareProductEvent event,
+    Emitter<HomeState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        compareProducts: Map<int, Products>.of(state.compareProducts)
+          ..remove(event.side),
+        compareProductDetailsStatus:
+            Map<int, GetCompareProductDetailsStatus>.of(
+              state.compareProductDetailsStatus,
+            )..remove(event.side),
+        compareSlugs: Map<int, String>.of(state.compareSlugs)
+          ..remove(event.side),
+        compareOrder: List<int>.of(state.compareOrder)..remove(event.side),
+      ),
+    );
+  }
+
+  /// إضافة/إزالة منتج من المقارنة بضغطة واحدة.
+  ///
+  /// يحجز العمود ويسجّل المُعرِّف **فوراً** ثم يجلب التفاصيل، فيتلوّن الزرّ في
+  /// اللحظة نفسها بدل انتظار الشبكة.
+  FutureOr<void> _onToggleCompareProductEvent(
+    ToggleCompareProductEvent event,
+    Emitter<HomeState> emit,
+  ) {
+    final Map<int, String> slugs = Map<int, String>.of(state.compareSlugs);
+
+    // موجود؟ إزالة.
+    for (final MapEntry<int, String> entry in slugs.entries) {
+      if (entry.value == event.productSlug) {
+        add(ClearCompareProductEvent(entry.key));
+        return null;
+      }
+    }
+
+    final List<int> order = List<int>.of(state.compareOrder);
+    final Map<int, Products> products = Map<int, Products>.of(
+      state.compareProducts,
+    );
+    final Map<int, GetCompareProductDetailsStatus> statuses =
+        Map<int, GetCompareProductDetailsStatus>.of(
+          state.compareProductDetailsStatus,
+        );
+
+    // العمود الهدف: أول فارغ، وإلا الأقدم استعمالاً.
+    final int side;
+    if (!slugs.containsKey(0)) {
+      side = 0;
+    } else if (!slugs.containsKey(1)) {
+      side = 1;
+    } else {
+      side = order.isNotEmpty ? order.first : 0;
+      order.remove(side);
+    }
+
+    slugs[side] = event.productSlug;
+    products.remove(side); // تفاصيل المنتج السابق لم تعد تخصّ هذا العمود
+    statuses[side] = GetCompareProductDetailsStatus.loading;
+    order.add(side);
+
+    emit(
+      state.copyWith(
+        compareSlugs: slugs,
+        compareProducts: products,
+        compareProductDetailsStatus: statuses,
+        compareOrder: order,
+      ),
+    );
+
+    add(
+      GetProductDetailsForCompareEvent(
+        productSlug: event.productSlug,
+        side: side,
+      ),
+    );
+    return null;
+  }
+
+  /// يكتب حالة عمود واحد دون المساس بالآخر. نسخ الخريطة ضروري: تعديلها في
+  /// مكانها يجعل Equatable يرى الحالتين متطابقتين فيُسقط الانبعاث.
+  void _emitCompareStatus(
+    Emitter<HomeState> emit,
+    int side,
+    GetCompareProductDetailsStatus status, {
+    Map<int, Products>? products,
+  }) {
+    final Map<int, GetCompareProductDetailsStatus> statuses =
+        Map<int, GetCompareProductDetailsStatus>.of(
+          state.compareProductDetailsStatus,
+        );
+    statuses[side] = status;
+    emit(
+      state.copyWith(
+        compareProductDetailsStatus: statuses,
+        compareProducts: products ?? state.compareProducts,
+      ),
     );
   }
 }

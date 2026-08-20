@@ -14,7 +14,6 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
     as filters_model;
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
-import 'package:trydos/features/home/data/parsers/heavy_response_parsers.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as product;
 import 'package:get_it/get_it.dart';
@@ -22,6 +21,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/data/parsers/heavy_response_parsers.dart';
 import 'package:trydos/features/home/domain/use_cases/get_featured_products_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
@@ -98,6 +98,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     );
     on<ChangeSortEvent>(_onChangeSortEvent);
     on<ResetSortEvent>(_onResetSortEvent);
+    on<SearchProductsForCompareEvent>(_onSearchProductsForCompareEvent);
+    on<ClearCompareSearchEvent>(_onClearCompareSearchEvent);
   }
   final GetProductsWithFiltersUseCase getProductsWithFiltersUseCase;
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
@@ -1411,7 +1413,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               filtersChoosedByUser: event.filtersChoosedByUser,
               forceUpdate: event.forceUpdate,
               cashedOrginalBoutique: event.cashedOrginalBoutique,
-              context: event.context,
             ),
           );
           return;
@@ -1597,165 +1598,81 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         );
         List<String> cachedLinksOfImages = [];
         String url;
-        if (event.context != null) {
-          for (
-            var i = 0;
-            i <
-                ((r.data?.products?.length ?? 0) > 4
-                    ? 4
-                    : (r.data?.products?.length ?? 0));
-            i++
-          ) {
-            Products product = r.data!.products![i];
-            /* product.syncColorImages?.forEach((image) {
-          if (!image.images.isNullOrEmpty) {
-            image.images?.forEach((image) {
-              url = addSuitableWidthAndHeightToImage(
-                  imageUrl: image.filePath!,
-                  width: 200,
-                  // the width of the image in the ui
-                  height: 290,
-                  // the height of the image in the ui
-                  ordinalWidth: double.tryParse(image.originalWidth.toString()),
-                  ordinalHeight:
-                      double.tryParse(image.originalHeight.toString()));
-              url2 = addSuitableWidthAndHeightToImage(
-                imageUrl: image.filePath!,
-                width: 320,
-                // the width of the image in the ui
-                height: 464,
-              );
-              cachedLinksOfImages.add(url);
-              cachedLinksOfImages.add(url2);
-              prefetchImages(url, event.context);
-              prefetchImages(
-                url2,
-                event.context,
-              );
-            });
-          }
-        });
-*/
-            /*  product.syncColorImages?.forEach((image) async {
-            if (!image.images.isNullOrEmpty) {
-              url = addSuitableWidthAndHeightToImage(
-                imageUrl: image.images![0].filePath!,
-                width: 40,
-                // the width of the image in the ui
-                height: 40,
-                // the height of the image in the ui
-              );
-              prefetchImages(url, event.context!, "syncColorImages", 40, 40);
-            }
-          });*/
-            if ((product.syncColorImages?.length ?? 0) > 0) {
-              if ((product.syncColorImages![0].images?.length ?? 0) > 0) {
-                url = addSuitableWidthAndHeightToImage(
-                  imageUrl:
-                      product.syncColorImages![0].images![0].filePath ?? "",
-                  width: 200.w,
-                  // the width of the image in the ui
-                  height: 290.h,
 
-                  // the height of the image in the ui
-                );
-                if (!cachedLinksOfImages.contains(url)) {
-                  prefetchImages(
-                    url,
-                    event.context!,
-                    "productListingImages",
-                    200.w,
-                    290.h,
-                  );
-                }
-              }
-            }
+        for (
+          var i = 0;
+          i <
+              ((r.data?.products?.length ?? 0) > 4
+                  ? 4
+                  : (r.data?.products?.length ?? 0));
+          i++
+        ) {
+          Products product = r.data!.products![i];
 
-            if ((product.images?.length ?? 0) > 0) {
+          if ((product.syncColorImages?.length ?? 0) > 0) {
+            if ((product.syncColorImages![0].images?.length ?? 0) > 0) {
               url = addSuitableWidthAndHeightToImage(
-                imageUrl: product.images![0].filePath ?? "",
+                imageUrl: product.syncColorImages![0].images![0].filePath ?? "",
                 width: 200.w,
                 // the width of the image in the ui
                 height: 290.h,
+
                 // the height of the image in the ui
               );
-              /*url2 = addSuitableWidthAndHeightToImage(
+              if (!cachedLinksOfImages.contains(url)) {
+                prefetchImages(url, "productListingImages");
+              }
+            }
+          }
+
+          if ((product.images?.length ?? 0) > 0) {
+            url = addSuitableWidthAndHeightToImage(
+              imageUrl: product.images![0].filePath ?? "",
+              width: 200.w,
+              // the width of the image in the ui
+              height: 290.h,
+              // the height of the image in the ui
+            );
+            /*url2 = addSuitableWidthAndHeightToImage(
             imageUrl: image.filePath!,
             width: 200.w,
             // the width of the image in the ui
             height: 350,
           );*/
-              if (!cachedLinksOfImages.contains(url)) {
-                prefetchImages(
-                  url,
-                  event.context!,
-                  "productListingImages",
-                  200.w,
-                  290.h,
-                );
-              }
+            if (!cachedLinksOfImages.contains(url)) {
+              prefetchImages(url, "productListingImages");
             }
-            /*  Future.delayed(Duration(seconds: 5), () {
+          }
+          /*  Future.delayed(Duration(seconds: 5), () {
             if (!cachedLinksOfImages.contains(url2)) {
               prefetchImages(url2, event.context);
             }
           });*/
-          }
-          r.data?.categories?.forEach((category) {
-            url = addSuitableWidthAndHeightToImage(
-              imageUrl: category.mostViewedProductThumbnail?.filePath ?? "",
-              width: 70.w,
-              height: 70.h,
-            );
-            prefetchImages(
-              url,
-              event.context!,
-              "categoryListingImages",
-              70.w,
-              70.h,
-            );
-            category.subCategories?.forEach((sub) {
-              url = addSuitableWidthAndHeightToImage(
-                imageUrl: sub.mostViewedProductThumbnail?.filePath ?? "",
-                width: 50.w,
-                height: 50.h,
-              );
-              prefetchImages(
-                url,
-                event.context!,
-                "categoryListingImages",
-                50.w,
-                50.h,
-              );
-            });
-          });
-          r.data?.brands?.forEach((brand) {
-            prefetchSvgImages(
-              brand.icon!.filePath.toString(),
-              event.context!,
-              "brandListingImages",
-              ordinalWidth: double.tryParse(
-                brand.icon!.originalWidth.toString(),
-              ),
-              ordinalHeight: double.tryParse(
-                brand.icon!.originalHeight.toString(),
-              ),
-            );
-          });
-        } else {
-          if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC");
         }
+        r.data?.categories?.forEach((category) {
+          url = addSuitableWidthAndHeightToImage(
+            imageUrl: category.flatPhotoPath?.filePath ?? "",
+            width: 70.w,
+            height: 70.h,
+          );
+          prefetchImages(url, "categoryListingImages");
+          category.subCategories?.forEach((sub) {
+            url = addSuitableWidthAndHeightToImage(
+              imageUrl: sub.flatPhotoPath?.filePath ?? "",
+              width: 50.w,
+              height: 50.h,
+            );
+            prefetchImages(url, "categoryListingImages");
+          });
+        });
+        r.data?.brands?.forEach((brand) {
+          prefetchImages(brand.icon!.filePath.toString(), "brandListingImages");
+        });
       },
     );
   }
 
-  prefetchImages(
-    String url,
-    BuildContext context,
-    String type,
-    double width,
-    double height,
-  ) async {
+  prefetchImages(String url, String type) async {
     if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC");
     List<String> urlHasPredeched =
         prefsRepository.getImageUrlHasPrefeched ?? [];
@@ -1763,13 +1680,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       return;
     }
     GetIt.I<PreCachingImageBloc>().add(
-      CacheImageEvent(
-        imageUrl: url,
-        context: context,
-        type: type,
-        height: height,
-        width: width,
-      ),
+      CacheImageEvent(imageUrl: url, type: type),
     );
   }
 
@@ -2231,13 +2142,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 height: 464.h,
               );
 
-              prefetchImages(
-                url,
-                event.context!,
-                "productDetailsImages",
-                320.w,
-                464.h,
-              );
+              prefetchImages(url, "productDetailsImages");
               //   });
               //   }
               //   });
@@ -2251,13 +2156,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 height: 464.h,
               );
 
-              prefetchImages(
-                url,
-                event.context!,
-                "productDetailsImages",
-                320.w,
-                464.h,
-              );
+              prefetchImages(url, "productDetailsImages");
               //    });
             }
           });
@@ -3006,13 +2905,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 height: 464.h,
               );
 
-              prefetchImages(
-                url,
-                event.context!,
-                "productDetailsImages",
-                320.w,
-                464.h,
-              );
+              prefetchImages(url, "productDetailsImages");
               //   });
               //   }
               //   });
@@ -3026,13 +2919,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 height: 464.h,
               );
 
-              prefetchImages(
-                url,
-                event.context!,
-                "productDetailsImages",
-                320.w,
-                464.h,
-              );
+              prefetchImages(url, "productDetailsImages");
               //    });
             }
           });
@@ -3231,6 +3118,86 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           ),
         );
       },
+    );
+  }
+
+  /// بحث نصّي مستقلّ لصفحة المقارنة.
+  ///
+  /// يمرّر حقل البحث وحده إلى [GetProductsWithFiltersUseCase] — بلا مرشّحات
+  /// ولا ترقيم ولا بوتيك — ويكتب النتيجة في حقول المقارنة وحدها، فلا تتأثّر
+  /// قوائم المنتجات ولا صفحة البوتيك بأي حال.
+  FutureOr<void> _onSearchProductsForCompareEvent(
+    SearchProductsForCompareEvent event,
+    Emitter<BoutiqueState> emit,
+  ) async {
+    final String query = event.query.trim();
+    if (query.isEmpty) {
+      _emitCompareSearch(
+        emit,
+        event.side,
+        status: SearchProductsForCompareStatus.init,
+        results: const [],
+      );
+      return;
+    }
+
+    _emitCompareSearch(
+      emit,
+      event.side,
+      status: SearchProductsForCompareStatus.loading,
+    );
+
+    final response = await getProductsWithFiltersUseCase(
+      GetProductsWithFiltersParams(searchText: query),
+    );
+
+    response.fold(
+      (l) => _emitCompareSearch(
+        emit,
+        event.side,
+        status: SearchProductsForCompareStatus.failure,
+        results: const [],
+      ),
+      (r) => _emitCompareSearch(
+        emit,
+        event.side,
+        status: SearchProductsForCompareStatus.success,
+        results: r.data?.products ?? const <product.Products>[],
+      ),
+    );
+  }
+
+  FutureOr<void> _onClearCompareSearchEvent(
+    ClearCompareSearchEvent event,
+    Emitter<BoutiqueState> emit,
+  ) {
+    _emitCompareSearch(
+      emit,
+      event.side,
+      status: SearchProductsForCompareStatus.init,
+      results: const [],
+    );
+  }
+
+  /// يكتب حالة/نتيجة عمود واحد دون المساس بالعمود الآخر — نسخ الخريطتين
+  /// ضروري، فتعديلهما في مكانهما يجعل Equatable يرى الحالتين متطابقتين
+  /// فيُسقط الانبعاث.
+  void _emitCompareSearch(
+    Emitter<BoutiqueState> emit,
+    int side, {
+    required SearchProductsForCompareStatus status,
+    List<product.Products>? results,
+  }) {
+    final Map<int, SearchProductsForCompareStatus> statuses =
+        Map<int, SearchProductsForCompareStatus>.of(state.compareSearchStatus);
+    statuses[side] = status;
+
+    final Map<int, List<product.Products>> data =
+        Map<int, List<product.Products>>.of(state.compareSearchResults);
+    if (results != null) data[side] = results;
+
+    emit(
+      state.copyWith(compareSearchStatus: statuses, compareSearchResults: data),
     );
   }
 }

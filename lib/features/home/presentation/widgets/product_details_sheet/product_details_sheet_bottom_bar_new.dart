@@ -1134,14 +1134,14 @@ class _ProductDetailsSheetBottomBarNewState
                                             child:
                                                 !(_productNotAvailableNotifier !=
                                                     null)
-                                                ? (qtyForProductWithoutVariant !=
+                                                ? ((qtyForProductWithoutVariant !=
                                                                   0 &&
                                                               (selectedSizeByUser ==
                                                                   null) &&
                                                               (selectedcolorByUser ==
                                                                   null)) ||
                                                           widget
-                                                              .collectedAfterOrder
+                                                              .collectedAfterOrder)
                                                       ? (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                                     GetProductDetailWithoutSimilarRelatedProductsStatus
                                                                         .failure ||

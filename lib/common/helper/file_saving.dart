@@ -181,21 +181,56 @@ class FileSaving {
 
   /// يرجع ملف الوسائط من القرص إن وُجد، وإلا ينزّله. يرجع `null` عند الفشل
   /// أو الإلغاء — ولا يرجع أبداً ملفاً ناقصاً.
+  /// [priority] لطلب بادره المستخدم بنفسه (ضغط زرّ تشغيل مثلاً).
+  ///
+  /// المسبح ذو الثلاثة مقاعد يتشاركه تحميل صور الدردشة التلقائي، فطلب المستخدم
+  /// كان يقف خلفها — ومع مهلة استقبال ٦٠ ثانية تحجز صورة متعثّرة مقعداً دقيقةً
+  /// كاملة. وأثناء الانتظار لا يصل أي تقدّم فيبدو المؤشّر معلّقاً.
+  /// الطلب الصريح يتخطّى الطابور: المستخدم ينتظر أمام الشاشة، والخلفية لا.
   Future<File?> getOrDownloadMedia(
     String fileUrl,
     String chatId, {
-    void Function(double progress)? onProgress,
+    void Function(double percent, int receivedBytes)? onProgress,
     CancelToken? cancelToken,
+    bool priority = false,
   }) {
     final File? cached = _mediaCache[fileUrl];
     if (cached != null && cached.existsSync()) {
       _rememberMedia(fileUrl, cached); // إصابة = استعمال حديث
       return Future<File?>.value(cached);
     }
+
+    // كل مستدعٍ يُسجَّل مستمعاً للتقدّم.
+    //
+    // إزالة التكرار تشارك **نتيجة** التنزيل، وكانت تُسقط `onProgress` كل
+    // مستدعٍ بعد الأول — فيبقى مؤشّره عند الصفر وإن كان التنزيل يعمل، ويبدو
+    // معلّقاً. القائمة تُبقي الجميع على اطّلاع.
+    if (onProgress != null) {
+      (_progressListeners[fileUrl] ??= <void Function(double, int)>[]).add(
+        onProgress,
+      );
+    }
+
     // طلب واحد لكل رابط: الطلبات المتزامنة تتشارك النتيجة بدل الكتابة فوق بعضها.
     return _mediaInFlight[fileUrl] ??=
-        _fetchMedia(fileUrl, chatId, onProgress, cancelToken)
-            .whenComplete(() => _mediaInFlight.remove(fileUrl));
+        _fetchMedia(fileUrl, chatId, cancelToken, priority).whenComplete(() {
+          _mediaInFlight.remove(fileUrl);
+          _progressListeners.remove(fileUrl);
+        });
+  }
+
+  /// مستمعو التقدّم لكل رابط: (نسبة، بايتات مستلمة). النسبة `-1` حين يتعذّر
+  /// حسابها لغياب `Content-Length`.
+  static final Map<String, List<void Function(double, int)>> _progressListeners =
+      {};
+
+  static void _notifyProgress(String fileUrl, double percent, int received) {
+    final List<void Function(double, int)>? listeners =
+        _progressListeners[fileUrl];
+    if (listeners == null || listeners.isEmpty) return;
+    for (final void Function(double, int) listener in List.of(listeners)) {
+      listener(percent, received);
+    }
   }
 
   /// فحص متزامن للذاكرة وحدها — بلا انتظار إطار. يمنع وميض العنصر البديل
@@ -240,8 +275,8 @@ class FileSaving {
   Future<File?> _fetchMedia(
     String fileUrl,
     String chatId,
-    void Function(double progress)? onProgress,
     CancelToken? cancelToken,
+    bool priority,
   ) async {
     final String finalPath;
     try {
@@ -266,7 +301,8 @@ class FileSaving {
       return null;
     }
 
-    await _acquireSlot();
+    // الطلب الصريح لا يحجز مقعداً ولا ينتظر أحداً.
+    if (!priority) await _acquireSlot();
     final File part = File('$finalPath.part');
     try {
       // التنزيل إلى ملف مؤقّت ثم إعادة تسميته — عملية ذرّية. بدونها يرى
@@ -281,7 +317,15 @@ class FileSaving {
         part.path,
         cancelToken: cancelToken,
         onReceiveProgress: (rec, total) {
-          if (total > 0) onProgress?.call((rec / total) * 100);
+          // `total = -1` حين لا يرسل الخادم Content-Length — وهو شائع في
+          // الفيديو. كان الشرط `if (total > 0)` يعني **صمتاً تاماً** حينها:
+          // لا تقدّم يصل، فيبقى المؤشّر جامداً وإن كانت البايتات تتدفّق.
+          // نبلّغ دائماً: نسبة إن أمكنت، و`-1` مع البايتات إن تعذّرت.
+          _notifyProgress(
+            fileUrl,
+            total > 0 ? (rec / total) * 100 : -1,
+            rec,
+          );
         },
       );
       if (!part.existsSync() || part.lengthSync() == 0) {
@@ -298,7 +342,8 @@ class FileSaving {
       return null;
     } finally {
       if (part.existsSync()) part.deleteSync(); // لا نترك بقايا ناقصة
-      _releaseSlot();
+      // لا تحرير لمقعد لم يُحجز — وإلا زاد سعة المسبح عن حدّه.
+      if (!priority) _releaseSlot();
     }
   }
 

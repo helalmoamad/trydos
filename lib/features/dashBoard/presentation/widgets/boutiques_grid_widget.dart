@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';

@@ -89,7 +89,7 @@ class _SplashPageState extends State<SplashPage> {
         authBloc.add(
             UpdateStoriesUserEvent(name: prefsRepository.myMarketName ?? ""));
       }*/
-      categoryBloc.add(GetMainCategoriesEvent(context: context));
+      categoryBloc.add(const GetMainCategoriesEvent());
       GetIt.I<BoutiqueBloc>().add(
         const GetProductWithFiltersWithoutCancelingPreviousEvents(
           categorySlugs: [],

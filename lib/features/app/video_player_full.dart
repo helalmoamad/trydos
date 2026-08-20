@@ -127,6 +127,18 @@ class _MYVideoPlayerFullState extends State<MYVideoPlayerFull> {
           child: FutureBuilder(
             future: initializeVideo,
             builder: (context, snapShot) {
+              // `done` يشمل الاكتمال بخطأ — انظر التعليق في vedio_player.
+              if (snapShot.hasError ||
+                  (snapShot.connectionState == ConnectionState.done &&
+                      !(_controller?.value.isInitialized ?? false))) {
+                return Center(
+                  child: Icon(
+                    Icons.videocam_off_outlined,
+                    size: 60,
+                    color: Colors.grey.shade400,
+                  ),
+                );
+              }
               if (snapShot.connectionState == ConnectionState.done) {
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
