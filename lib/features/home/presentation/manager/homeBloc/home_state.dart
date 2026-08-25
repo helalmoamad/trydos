@@ -13,6 +13,11 @@ import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
     as oldCart;
 import 'package:geodesy/geodesy.dart' as geod;
+// `json_serializable` emits `LatLng.fromJson(...)` without the `geod.` prefix in
+// `home_state.g.dart`, so the generated part needs the name unprefixed as well.
+// Same library, same type — this only makes the generated call resolve, and it
+// keeps resolving after the next `gen.sh`.
+import 'package:geodesy/geodesy.dart' show LatLng;
 import 'package:trydos/features/home/data/models/get_order_rating_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
     hide BuyersCommentModel;

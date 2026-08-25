@@ -150,3 +150,63 @@ class GetUploadedExcelFilesEvent extends DashBoardEvent {
 
   List<Object?> get props => [page];
 }
+
+class GetGalleryImagesEvent extends DashBoardEvent {
+  final int page;
+  final int perPage;
+  final String? search;
+  GetGalleryImagesEvent({this.page = 1, this.perPage = 20, this.search});
+}
+
+class DeleteGalleryImagesEvent extends DashBoardEvent {
+  final List<int> ids;
+  DeleteGalleryImagesEvent({required this.ids});
+}
+
+// ---------------------------------------------------------------------------
+// Shop Info — ملف المتجر العام
+// ---------------------------------------------------------------------------
+
+/// تحميل ملف المتجر.
+///
+/// [canRead] هو قرار الصلاحية محسوباً في الواجهة، لأن الصلاحيات لا تعيش في
+/// الحالة أصلاً — تصل الشاشة كمعامل بانٍ. حين يكون `false` لا يُرسل أي طلب.
+class GetShopInfoEvent extends DashBoardEvent {
+  final bool canRead;
+  GetShopInfoEvent({required this.canRead});
+}
+
+/// مسح ما هو محمَّل عند تبديل المتجر: الحالة تعود إلى `init` والسجلّ يصير فارغاً.
+/// لا يُسند `null` ولا تُبنى `DashBoardState` جديدة.
+class ClearShopInfoEvent extends DashBoardEvent {
+  ClearShopInfoEvent();
+}
+
+/// رفع شعار المتجر أو غلافه إلى مجلّد `seller` عبر تدفّق التذكرة.
+class UploadShopMediaEvent extends DashBoardEvent {
+  final File file;
+  final bool isBanner;
+  UploadShopMediaEvent({required this.file, required this.isBanner});
+}
+
+/// حفظ الحقول الخمسة كلّها.
+///
+/// [expectedSellerId] هو المتجر الذي حُمّل من أجله السجلّ؛ يُقارَن بالمتجر
+/// المحدَّد حالياً كآخر خطوة متزامنة قبل استدعاء حالة الاستخدام.
+class UpdateShopInfoEvent extends DashBoardEvent {
+  final String name;
+  final String address;
+  final String contact;
+  final String? image;
+  final String? banner;
+  final String? expectedSellerId;
+
+  UpdateShopInfoEvent({
+    required this.name,
+    required this.address,
+    required this.contact,
+    required this.image,
+    required this.banner,
+    required this.expectedSellerId,
+  });
+}

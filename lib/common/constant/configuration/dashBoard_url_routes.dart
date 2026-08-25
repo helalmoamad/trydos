@@ -26,6 +26,11 @@ abstract class DashBoardEndPoints {
   static String deleteUserEP(String userId) => '$userId/delete'.usersScope();
   static final updateUserRoleEP = 'role/update'.usersScope();
   static final leaveShopEP = 'leave'.usersScope();
+  static final String getGalleryImagesEP = '/products/images'.shopScope();
+
+  /// One constant for both verbs: `GET` reads the shop profile,
+  /// `PUT` replaces all five of its fields.
+  static final String shopInfoEP = 'info'.shopScope();
   static final getPresignedUrlEP = 'uploads/presigned-url'.shopScope();
   // Seller stories are served by the stories server — see
   // `StoriesEndPoints.getSellerStoriesEP` / `addSellerStoryEP` /

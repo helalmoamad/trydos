@@ -924,6 +924,25 @@
   "report_received_body": "سوپاس بۆ بۆچوونەکانت",
   "customers_comments": "بۆچوونەکانی کڕیاران",
   "locations": "شوێنەکان",
-  "upload_excel_file": "بارکردنی فایلی Excel"
+  "upload_excel_file": "بارکردنی فایلی Excel",
+  "shop_info_edit_title": "دەستکاریی زانیارییەکانی فرۆشگا",
+  "shop_info_contact": "ژمارەی پەیوەندی",
+  "shop_info_address": "ناونیشان",
+  "shop_info_address_required": "ناونیشان پێویستە",
+  "shop_info_contact_required": "ژمارەی پەیوەندی پێویستە",
+  "shop_info_contact_invalid": "ژمارە تەنیا ژمارە، کۆدی وڵات لە پێشەوە",
+  "shop_info_country_code_hint": "کۆدی وڵات لە پێشەوە، بۆ نموونە AE = 971",
+  "shop_info_logo": "لۆگۆی فرۆشگا",
+  "shop_info_banner": "بەنەری فرۆشگا",
+  "shop_info_banner_ratio": "ڕێژەی 6:1",
+  "shop_info_change": "گۆڕین",
+  "shop_info_change_banner": "گۆڕینی بەنەر",
+  "shop_info_save_changes": "پاشەکەوتنی گۆڕانکارییەکان",
+  "shop_info_saving": "پاشەکەوتن...",
+  "shop_info_saved": "زانیارییەکانی فرۆشگا پاشەکەوت",
+  "shop_info_save_failed": "پاشەکەوتنی زانیارییەکان سەرکەوتوو نەبوو",
+  "shop_info_no_read_permission": "مۆڵەتی بینینی زانیارییەکانی فرۆشگات نییە",
+  "shop_info_no_update_permission": "مۆڵەتی دەستکاریی زانیارییەکانی فرۆشگات نییە",
+  "shop_info_shop_changed": "فرۆشگای دیاریکراو گۆڕا، بۆیە پاشەکەوتن هەڵوەشێنرایەوە",
+  "other_gender": "تر"
 }
-

@@ -1484,6 +1484,9 @@
 //   });
 // }
 
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -1511,6 +1514,9 @@ import '../widgets/products_grid_widget.dart';
 import '../widgets/boutiques_grid_widget.dart';
 import '../widgets/dashboard_permission_checker.dart';
 import '../widgets/seller_stories_widget.dart';
+import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/utils/media_display_url.dart';
+import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 
 /// -----------------------------------------------------------------------
 /// MAIN DASHBOARD PAGE
@@ -1915,11 +1921,11 @@ class _DashboardContentPageState extends State<DashboardContentPage> {
       case 6:
         return const UploadExcelWidget();
       case 7:
-        return const ShopInfoWidget();
+        return ShopInfoWidget(permissions: widget.permissions);
       case 8:
         return const LocationsWidget();
       case 9:
-        return Center(child: Text(LocaleKeys.gallery.tr()));
+        return const GalleryScreen();
       case 10:
         return Center(child: Text(LocaleKeys.customers_comments.tr()));
       default:
@@ -3363,30 +3369,67 @@ class _LocationsWidgetState extends State<LocationsWidget> {
 ///   - `_saveChanges` -> dispatch your real "update shop info" bloc event
 ///     with the controller values + picked images.
 /// -----------------------------------------------------------------------
+/// شاشة "معلومات المتجر": قراءة وتعديل الملف العام للمتجر.
+///
+/// الصلاحيات تصل كمعامل بانٍ لا من الـ bloc: هي لقطة مجمّدة منذ اختيار
+/// المتجر، وتصل هنا عبر `DashboardContentPage.permissions`.
 class ShopInfoWidget extends StatefulWidget {
-  const ShopInfoWidget({Key? key}) : super(key: key);
+  final List<String> permissions;
+
+  const ShopInfoWidget({Key? key, required this.permissions}) : super(key: key);
 
   @override
   State<ShopInfoWidget> createState() => _ShopInfoWidgetState();
 }
 
 class _ShopInfoWidgetState extends State<ShopInfoWidget> {
-  // TODO: prefill these with the real shop data from your bloc/state.
-  final TextEditingController _shopNameController = TextEditingController(
-    text: 'Test',
-  );
-  final TextEditingController _contactController = TextEditingController(
-    text: '963937543498',
-  );
-  final TextEditingController _addressController = TextEditingController(
-    text: 'sss',
-  );
+  final TextEditingController _shopNameController = TextEditingController();
+  final TextEditingController _contactController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
-  // TODO: replace with real network image URLs / picked file previews.
-  String? _logoUrl;
-  String? _bannerUrl;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  bool _isSaving = false;
+  late final DashboardPermissionChecker _permissionChecker =
+      DashboardPermissionChecker(widget.permissions);
+
+  /// معاينة محلية لما اختير قبل الحفظ: لا يُعاد تنزيل ما رُفِع للتوّ.
+  File? _pickedLogo;
+  File? _pickedBanner;
+
+  /// سقف حجم الملف المرفوع. رفضٌ لا تصغير: لا يوجد مسار ضغط في
+  /// المشروع (`flutter_image_compress` مُعطّل في `pubspec.yaml`). الرقم نفسه
+  /// المستعمل للستوري (`_kMaxStoryFileBytes`) فيُعاد استعمال رسالته.
+  static const int _kMaxShopMediaBytes = 10 * 1024 * 1024;
+
+  /// عرض الفكّ للمعاينة المحلية: حجم الملف لا يحدّ حجم الفكّ في
+  /// الذاكرة، فصورة 4 ميغا قد تفكّ إلى عشرات الميغابايت.
+  static const int _kPreviewDecodeWidth = 600;
+
+  /// المتجر الذي فُتِحت الشاشة عليه.
+  String? _sellerIdAtOpen;
+
+  bool get _canRead => _permissionChecker.canReadShopInfo();
+
+  bool get _canUpdate => _permissionChecker.canUpdateShopInfo();
+
+  @override
+  void initState() {
+    super.initState();
+    _sellerIdAtOpen = GetIt.I<PrefsRepository>().getXSellerId;
+
+    // مرّة واحدة عند الفتح — ليس في `build`، وإلا أُطلِق الحدث مع كل إعادة بناء.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final DashboardBloc bloc = context.read<DashboardBloc>();
+      final String? loadedFor = bloc.state.shopInfo.loadedForSellerId;
+
+      // سجلّ يخصّ متجراً آخر: يُمسح قبل أن يُعرض أي شيء.
+      if (loadedFor != null && loadedFor != _sellerIdAtOpen) {
+        bloc.add(ClearShopInfoEvent());
+      }
+      bloc.add(GetShopInfoEvent(canRead: _canRead));
+    });
+  }
 
   @override
   void dispose() {
@@ -3396,30 +3439,70 @@ class _ShopInfoWidgetState extends State<ShopInfoWidget> {
     super.dispose();
   }
 
+  /// التعبئة تتمّ من `BlocListener` عند تغيّر حالة التحميل فقط.
+  /// كتابة `controller.text` داخل `builder` تمسح ما يكتبه المستخدم
+  /// مع كل إصدار من أي تبويب آخر، لأن الحالة مشتركة.
+  void _prefill(GetShopInfoModel info) {
+    _shopNameController.text = info.name ?? '';
+    _contactController.text = info.contact ?? '';
+    _addressController.text = info.address ?? '';
+  }
+
+  Future<File?> _pickImage() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: false,
+      // بلا قراءة البايتات إلى الذاكرة: `size` متاح بدونها،
+      // فيقع فحص الحجم قبل تحميل أي شيء.
+      withData: false,
+    );
+    if (result == null || result.files.isEmpty) return null;
+
+    final PlatformFile picked = result.files.single;
+    if (picked.path == null) return null;
+
+    if (picked.size > _kMaxShopMediaBytes) {
+      showMessage(
+        LocaleKeys.photo_or_video_up_to_10mb.tr(),
+        hasError: true,
+        context: context,
+      );
+      return null;
+    }
+    return File(picked.path!);
+  }
+
   Future<void> _pickLogo() async {
-    // TODO: use file_picker / image_picker to pick an image, e.g.:
-    // final result = await FilePicker.platform.pickFiles(type: FileType.image);
-    // if (result != null) setState(() => _logoFile = result.files.single);
+    final File? file = await _pickImage();
+    if (file == null || !mounted) return;
+    setState(() => _pickedLogo = file);
+    context.read<DashboardBloc>().add(
+      UploadShopMediaEvent(file: file, isBanner: false),
+    );
   }
 
   Future<void> _pickBanner() async {
-    // TODO: same idea as _pickLogo, but for the banner image.
+    final File? file = await _pickImage();
+    if (file == null || !mounted) return;
+    setState(() => _pickedBanner = file);
+    context.read<DashboardBloc>().add(
+      UploadShopMediaEvent(file: file, isBanner: true),
+    );
   }
 
-  Future<void> _saveChanges() async {
-    setState(() => _isSaving = true);
+  void _saveChanges(GetShopInfoModel info) {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    // TODO: dispatch your real "update shop info" bloc event, e.g.:
-    // _dashboardBloc.add(UpdateShopInfoEvent(
-    //   shopName: _shopNameController.text,
-    //   contact: _contactController.text,
-    //   address: _addressController.text,
-    //   logoFile: _logoFile,
-    //   bannerFile: _bannerFile,
-    // ));
-    await Future.delayed(const Duration(seconds: 1)); // placeholder
-
-    setState(() => _isSaving = false);
+    context.read<DashboardBloc>().add(
+      UpdateShopInfoEvent(
+        name: _shopNameController.text.trim(),
+        address: _addressController.text.trim(),
+        contact: _contactController.text.trim(),
+        image: info.image,
+        banner: info.banner,
+        expectedSellerId: info.loadedForSellerId ?? _sellerIdAtOpen,
+      ),
+    );
   }
 
   Widget _fieldLabel(String text) => Padding(
@@ -3441,209 +3524,941 @@ class _ShopInfoWidgetState extends State<ShopInfoWidget> {
     ),
   );
 
-  Widget _imagePlaceholder({
-    String? url,
+  String? _requiredValidator(String? value, String message) {
+    if ((value ?? '').trim().isEmpty) return message;
+    return null;
+  }
+
+  String? _contactValidator(String? value) {
+    final String text = (value ?? '').trim();
+    if (text.isEmpty) return LocaleKeys.shop_info_contact_required.tr();
+    // نفس قاعدة عميل الويب: أرقام مع `+` اختيارية في البداية، بلا فحص طول.
+    if (!RegExp(r'^\+?\d+$').hasMatch(text)) {
+      return LocaleKeys.shop_info_contact_invalid.tr();
+    }
+    return null;
+  }
+
+  /// معاينة محلية لملف مختار، وإلا صورة الخادم عبر المخبأ المشترك.
+  Widget _imageBox({
+    required File? localFile,
+    required String? storedValue,
     double width = 100,
     double height = 100,
   }) {
+    final BorderRadius radius = BorderRadius.circular(10);
+    Widget child = const SizedBox.shrink();
+
+    if (localFile != null) {
+      child = Image.file(
+        localFile,
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        // يحدّ ذاكرة الفكّ، وإلا فُكّت صورة كاملة لمربّع صغير.
+        cacheWidth: _kPreviewDecodeWidth,
+      );
+    } else if (storedValue != null && storedValue.trim().isNotEmpty) {
+      child = MyCachedNetworkImage(
+        imageUrl: mediaDisplayUrl(storedValue, legacyFolder: 'seller'),
+        width: width,
+        height: height,
+        imageFit: BoxFit.cover,
+      );
+    }
+
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
         color: const Color(0xffF3F3F3),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: radius,
       ),
-      child: url != null
-          ? ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: MyCachedNetworkImage(
-                imageUrl: url,
-                width: width,
-                height: height,
-                imageFit: BoxFit.cover,
-              ),
-            )
-          : null,
+      child: ClipRRect(borderRadius: radius, child: child),
     );
   }
 
   Widget _outlinedIconButton({
     required String label,
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
   }) {
     return OutlinedButton.icon(
       onPressed: onTap,
-      icon: const Icon(
+      icon: Icon(
         Icons.upload_outlined,
         size: 16,
-        color: Color(0xff388CFF),
+        color: onTap == null ? Colors.grey : const Color(0xff388CFF),
       ),
-      label: Text(label, style: const TextStyle(color: Color(0xff388CFF))),
+      label: Text(
+        label,
+        style: TextStyle(
+          color: onTap == null ? Colors.grey : const Color(0xff388CFF),
+        ),
+      ),
       style: OutlinedButton.styleFrom(
-        side: const BorderSide(color: Color(0xff388CFF)),
+        side: BorderSide(
+          color: onTap == null ? Colors.grey : const Color(0xff388CFF),
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+  /// رسالة منع الصلاحية: بلا دوّارة وبلا زرّ إعادة محاولة، لأن الإعادة
+  /// لا يمكن أن تنجح.
+  Widget _permissionDenied() => Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Title
-          const Row(
-            children: [
-              Icon(
-                Icons.storefront_outlined,
-                size: 18,
-                color: Color(0xff1D1D1D),
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Edit Shop Info',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xff1D1D1D),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // Two-column row: left = form fields, right = logo
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isWide = constraints.maxWidth > 600;
-              final left = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _fieldLabel('Shop Name'),
-                  TextField(
-                    controller: _shopNameController,
-                    decoration: _fieldDecoration(),
-                  ),
-                  const SizedBox(height: 18),
-                  _fieldLabel('Contact'),
-                  TextField(
-                    controller: _contactController,
-                    decoration: _fieldDecoration(),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Country code must lead, e.g. AE = 971',
-                    style: TextStyle(fontSize: 11, color: Color(0xffE0A45B)),
-                  ),
-                  const SizedBox(height: 18),
-                  _fieldLabel('Address'),
-                  TextField(
-                    controller: _addressController,
-                    maxLines: 3,
-                    decoration: _fieldDecoration(),
-                  ),
-                ],
-              );
-
-              final right = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _fieldLabel('Shop Logo'),
-                  Row(
-                    children: [
-                      _imagePlaceholder(url: _logoUrl),
-                      const SizedBox(width: 12),
-                      _outlinedIconButton(label: 'Change', onTap: _pickLogo),
-                    ],
-                  ),
-                ],
-              );
-
-              if (isWide) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(flex: 2, child: left),
-                    const SizedBox(width: 32),
-                    Expanded(child: right),
-                  ],
-                );
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [left, const SizedBox(height: 24), right],
-              );
-            },
-          ),
-
-          const SizedBox(height: 24),
-
-          // Shop Banner
-          Row(
-            children: [
-              _fieldLabel('Shop Banner'),
-              const SizedBox(width: 6),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 6),
-                child: Text(
-                  'Ratio 6:1',
-                  style: TextStyle(fontSize: 11, color: Color(0xff388CFF)),
-                ),
-              ),
-            ],
-          ),
-          _imagePlaceholder(
-            url: _bannerUrl,
-            width: double.infinity,
-            height: 140,
-          ),
+          const Icon(Icons.lock_outline, size: 40, color: Color(0xff8D8D8D)),
           const SizedBox(height: 12),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: _outlinedIconButton(
-              label: 'Change Banner',
-              onTap: _pickBanner,
-            ),
-          ),
-
-          const SizedBox(height: 24),
-          const Divider(height: 1, color: Color(0xffEDEDED)),
-          const SizedBox(height: 16),
-
-          // Save button
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton.icon(
-              onPressed: _isSaving ? null : _saveChanges,
-              icon: _isSaving
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.check, size: 16),
-              label: Text(_isSaving ? 'Saving...' : 'Save Changes'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff3D3D3D),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
+          Text(
+            LocaleKeys.shop_info_no_read_permission.tr(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 13, color: Color(0xff8D8D8D)),
           ),
         ],
       ),
+    ),
+  );
+
+  Widget _loadFailed(String? message) => Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            message ?? LocaleKeys.something_went_wrong.tr(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 13, color: Color(0xff8D8D8D)),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: () => context.read<DashboardBloc>().add(
+              GetShopInfoEvent(canRead: _canRead),
+            ),
+            child: Text(LocaleKeys.try_again.tr()),
+          ),
+        ],
+      ),
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<DashboardBloc, DashBoardState>(
+      // الحالة مشتركة مع كل التبويبات، فنحدّ الإصغاء وإعادة البناء بحقول هذه
+      // الشاشة وحدها.
+      listenWhen: (previous, current) =>
+          previous.getShopInfoStatus != current.getShopInfoStatus,
+      listener: (context, state) {
+        if (state.getShopInfoStatus == GetShopInfoStatus.success) {
+          _prefill(state.shopInfo);
+        }
+      },
+      buildWhen: (previous, current) =>
+          previous.getShopInfoStatus != current.getShopInfoStatus ||
+          previous.updateShopInfoStatus != current.updateShopInfoStatus ||
+          previous.uploadShopMediaStatus != current.uploadShopMediaStatus ||
+          previous.shopInfo != current.shopInfo ||
+          previous.shopInfoMessage != current.shopInfoMessage,
+      builder: (context, state) {
+        if (state.getShopInfoStatus == GetShopInfoStatus.permissionDenied) {
+          return _permissionDenied();
+        }
+        if (state.getShopInfoStatus == GetShopInfoStatus.loading ||
+            state.getShopInfoStatus == GetShopInfoStatus.init) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state.getShopInfoStatus == GetShopInfoStatus.failure) {
+          return _loadFailed(state.shopInfoMessage);
+        }
+
+        final GetShopInfoModel info = state.shopInfo;
+        final bool isSaving =
+            state.updateShopInfoStatus == UpdateShopInfoStatus.loading;
+        final bool isUploading =
+            state.uploadShopMediaStatus == UploadShopMediaStatus.uploading;
+        // لا حفظ قبل تحميل ناجح للمتجر الحالي: حفظ مبنيّ على تحميل
+        // فاشل يمسح الشعار والغلاف الحيّين (AC-28).
+        final bool canSave =
+            _canUpdate && !isSaving && !isUploading && !info.isEmpty;
+
+        return Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.storefront_outlined,
+                      size: 18,
+                      color: Color(0xff1D1D1D),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      LocaleKeys.shop_info_edit_title.tr(),
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xff1D1D1D),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final bool isWide = constraints.maxWidth > 600;
+                    final Widget left = Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _fieldLabel(LocaleKeys.shop_name.tr()),
+                        TextFormField(
+                          controller: _shopNameController,
+                          enabled: _canUpdate,
+                          decoration: _fieldDecoration(),
+                          validator: (v) => _requiredValidator(
+                            v,
+                            LocaleKeys.shop_name_is_required.tr(),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        _fieldLabel(LocaleKeys.shop_info_contact.tr()),
+                        TextFormField(
+                          controller: _contactController,
+                          enabled: _canUpdate,
+                          keyboardType: TextInputType.phone,
+                          decoration: _fieldDecoration(),
+                          validator: _contactValidator,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          LocaleKeys.shop_info_country_code_hint.tr(),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Color(0xffE0A45B),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        _fieldLabel(LocaleKeys.shop_info_address.tr()),
+                        TextFormField(
+                          controller: _addressController,
+                          enabled: _canUpdate,
+                          maxLines: 3,
+                          decoration: _fieldDecoration(),
+                          validator: (v) => _requiredValidator(
+                            v,
+                            LocaleKeys.shop_info_address_required.tr(),
+                          ),
+                        ),
+                      ],
+                    );
+
+                    final Widget right = Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _fieldLabel(LocaleKeys.shop_info_logo.tr()),
+                        Row(
+                          children: [
+                            _imageBox(
+                              localFile: _pickedLogo,
+                              storedValue: info.image,
+                            ),
+                            const SizedBox(width: 12),
+                            _outlinedIconButton(
+                              label: LocaleKeys.shop_info_change.tr(),
+                              onTap: (_canUpdate && !isUploading)
+                                  ? _pickLogo
+                                  : null,
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+
+                    if (isWide) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(flex: 2, child: left),
+                          const SizedBox(width: 32),
+                          Expanded(child: right),
+                        ],
+                      );
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [left, const SizedBox(height: 24), right],
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 24),
+
+                Row(
+                  children: [
+                    _fieldLabel(LocaleKeys.shop_info_banner.tr()),
+                    const SizedBox(width: 6),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Text(
+                        LocaleKeys.shop_info_banner_ratio.tr(),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xff388CFF),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                _imageBox(
+                  localFile: _pickedBanner,
+                  storedValue: info.banner,
+                  width: double.infinity,
+                  height: 140,
+                ),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: _outlinedIconButton(
+                    label: LocaleKeys.shop_info_change_banner.tr(),
+                    onTap: (_canUpdate && !isUploading) ? _pickBanner : null,
+                  ),
+                ),
+
+                if (isUploading) ...[
+                  const SizedBox(height: 12),
+                  const LinearProgressIndicator(minHeight: 2),
+                ],
+
+                if (!_canUpdate) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    LocaleKeys.shop_info_no_update_permission.tr(),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xff8D8D8D),
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 24),
+                const Divider(height: 1, color: Color(0xffEDEDED)),
+                const SizedBox(height: 16),
+
+                if (_canUpdate)
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: ElevatedButton.icon(
+                      onPressed: canSave ? () => _saveChanges(info) : null,
+                      icon: isSaving
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.check, size: 16),
+                      label: Text(
+                        isSaving
+                            ? LocaleKeys.shop_info_saving.tr()
+                            : LocaleKeys.shop_info_save_changes.tr(),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff3D3D3D),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class GalleryScreen extends StatefulWidget {
+  final int? productId;
+
+  const GalleryScreen({super.key, this.productId});
+
+  @override
+  State<GalleryScreen> createState() => _GalleryScreenState();
+}
+
+class _GalleryScreenState extends State<GalleryScreen> {
+  final List<_GalleryImage> _localUploads = [];
+  bool _isDragging = false;
+
+  bool _selectionMode = false;
+  final Set<int> _selectedIds = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUploadedImages();
+  }
+
+  // ---------------------------------------------------------------------
+  // جلب الصور المرفوعة سابقاً
+  // ---------------------------------------------------------------------
+  void _fetchUploadedImages({int page = 1}) {
+    context.read<DashboardBloc>().add(
+      GetGalleryImagesEvent(page: page, perPage: 20),
+    );
+  }
+
+  // ---------------------------------------------------------------------
+  // اختيار ملفات (صور فردية أو متعددة)
+  // ---------------------------------------------------------------------
+  Future<void> _pickFiles() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: true,
+    );
+
+    if (result == null || result.files.isEmpty) return;
+
+    final paths = result.files
+        .where((f) => f.path != null)
+        .map((f) => f.path!)
+        .toList();
+
+    await _uploadPaths(paths);
+  }
+
+  // ---------------------------------------------------------------------
+  // اختيار مجلد كامل (سطح المكتب / الويب فقط — غير مدعوم على الموبايل)
+  // ---------------------------------------------------------------------
+  Future<void> _pickFolder() async {
+    final dirPath = await FilePicker.platform.getDirectoryPath();
+    if (dirPath == null) return;
+
+    final dir = Directory(dirPath);
+    if (!dir.existsSync()) return;
+
+    const imageExtensions = {'.jpg', '.jpeg', '.png', '.webp', '.gif'};
+
+    final imagePaths = dir
+        .listSync()
+        .whereType<File>()
+        .where((f) {
+          final ext = f.path.split('.').last.toLowerCase();
+          return imageExtensions.contains('.$ext');
+        })
+        .map((f) => f.path)
+        .toList();
+
+    if (imagePaths.isEmpty) {
+      _showSnack('لا توجد صور داخل هذا المجلد');
+      return;
+    }
+
+    await _uploadPaths(imagePaths);
+  }
+
+  // ---------------------------------------------------------------------
+  // منطق الرفع الفعلي — مربوط بـ DashboardBloc الموجود
+  // ---------------------------------------------------------------------
+  Future<void> _uploadPaths(List<String> paths) async {
+    for (final path in paths) {
+      final placeholder = _GalleryImage.local(
+        localPath: path,
+        status: _UploadStatus.uploading,
+      );
+
+      setState(() => _localUploads.insert(0, placeholder));
+
+      final mimeType = _guessMimeType(path);
+
+      context.read<DashboardBloc>().add(
+        UploadDocumentEvent(filePath: path, mimeType: mimeType),
+      );
+    }
+  }
+
+  String _guessMimeType(String path) {
+    final ext = path.split('.').last.toLowerCase();
+    switch (ext) {
+      case 'png':
+        return 'image/png';
+      case 'webp':
+        return 'image/webp';
+      case 'gif':
+        return 'image/gif';
+      case 'jpg':
+      case 'jpeg':
+      default:
+        return 'image/jpeg';
+    }
+  }
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  // ---------------------------------------------------------------------
+  // وضع التحديد والحذف
+  // ---------------------------------------------------------------------
+  void _enterSelectionMode(int id) {
+    setState(() {
+      _selectionMode = true;
+      _selectedIds.add(id);
+    });
+  }
+
+  void _toggleSelection(int id) {
+    setState(() {
+      if (_selectedIds.contains(id)) {
+        _selectedIds.remove(id);
+      } else {
+        _selectedIds.add(id);
+      }
+      if (_selectedIds.isEmpty) _selectionMode = false;
+    });
+  }
+
+  void _cancelSelection() {
+    setState(() {
+      _selectionMode = false;
+      _selectedIds.clear();
+    });
+  }
+
+  Future<void> _confirmDeleteSelected() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('حذف الصور'),
+        content: Text('هل تريد حذف ${_selectedIds.length} صورة؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('حذف', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    context.read<DashboardBloc>().add(
+      DeleteGalleryImagesEvent(ids: _selectedIds.toList()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<DashboardBloc, DashBoardState>(
+      listenWhen: (previous, current) =>
+          previous.uploadDocumentStatus != current.uploadDocumentStatus ||
+          previous.getGalleryImagesStatus != current.getGalleryImagesStatus ||
+          previous.deleteGalleryImagesStatus !=
+              current.deleteGalleryImagesStatus,
+      listener: (context, state) {
+        // ---- رفع صورة جديدة ----
+        if (state.uploadDocumentStatus == UploadDocumentStatus.success) {
+          setState(() {
+            final idx = _localUploads.indexWhere(
+              (img) => img.status == _UploadStatus.uploading,
+            );
+            if (idx != -1) {
+              _localUploads[idx] = _localUploads[idx].copyWith(
+                status: _UploadStatus.done,
+              );
+            }
+          });
+          // بعد نجاح الرفع الفعلي (S3)، يفترض استدعاء Save endpoint
+          // (`POST /shop/products/images`) ثم إعادة الجلب. إذا كان هذا
+          // الاستدعاء غير موجود بعد بالـ Bloc، أخبرني لأضيفه كخطوة تالية.
+          _fetchUploadedImages();
+        } else if (state.uploadDocumentStatus == UploadDocumentStatus.failure) {
+          setState(() {
+            final idx = _localUploads.indexWhere(
+              (img) => img.status == _UploadStatus.uploading,
+            );
+            if (idx != -1) {
+              _localUploads[idx] = _localUploads[idx].copyWith(
+                status: _UploadStatus.failed,
+              );
+            }
+          });
+          _showSnack('فشل رفع إحدى الصور');
+        }
+
+        // ---- جلب الصور ----
+        if (state.getGalleryImagesStatus == GetGalleryImagesStatus.failure) {
+          _showSnack('فشل تحميل الصور');
+        }
+
+        // ---- حذف الصور ----
+        if (state.deleteGalleryImagesStatus ==
+            DeleteGalleryImagesStatus.success) {
+          _showSnack('تم حذف الصور بنجاح');
+          _cancelSelection();
+        } else if (state.deleteGalleryImagesStatus ==
+            DeleteGalleryImagesStatus.failure) {
+          _showSnack('فشل حذف الصور');
+        }
+      },
+      child: Scaffold(
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (!_selectionMode) ...[
+                _buildDropZone(),
+                const SizedBox(height: 24),
+              ],
+              _buildImagesSection(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+ 
+  // ---------------------------------------------------------------------
+  // منطقة السحب والإفلات + الأزرار (حسب التصميم المرسل)
+  // ---------------------------------------------------------------------
+  Widget _buildDropZone() {
+    return DragTarget<Object>(
+      onWillAcceptWithDetails: (_) {
+        setState(() => _isDragging = true);
+        return true;
+      },
+      onLeave: (_) => setState(() => _isDragging = false),
+      onAcceptWithDetails: (_) => setState(() => _isDragging = false),
+      builder: (context, candidateData, rejectedData) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 40),
+          decoration: BoxDecoration(
+            color: _isDragging ? Colors.grey.shade100 : Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.grey.shade300,
+              width: 1.5,
+              style: BorderStyle.solid,
+            ),
+          ),
+          child: Column(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: const Icon(Icons.file_upload_outlined, size: 26),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Drop images here',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'or choose files / folder',
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _pickFiles,
+                    icon: const Icon(Icons.file_upload_outlined, size: 18),
+                    label: const Text('Select Files'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey.shade800,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  OutlinedButton(
+                    onPressed: _pickFolder,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.blue,
+                      side: const BorderSide(color: Colors.blue),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('Select Folder'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------
+  // شبكة عرض الصور (المرفوعة سابقاً من السيرفر + الجاري رفعها محلياً)
+  // ---------------------------------------------------------------------
+  Widget _buildImagesSection() {
+    return BlocBuilder<DashboardBloc, DashBoardState>(
+      buildWhen: (previous, current) =>
+          previous.getGalleryImagesStatus != current.getGalleryImagesStatus ||
+          previous.galleryImages != current.galleryImages,
+      builder: (context, state) {
+        final isLoading =
+            state.getGalleryImagesStatus == GetGalleryImagesStatus.loading &&
+            (state.galleryImages == null || state.galleryImages!.isEmpty);
+
+        if (isLoading) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 60),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final remoteImages = (state.galleryImages ?? [])
+            .map((m) => _GalleryImage.remote(id: m.id, url: m.url))
+            .toList();
+
+        // الجديدة الجاري رفعها تظهر أولاً، ثم الموجودة مسبقاً بالسيرفر
+        final allImages = [..._localUploads, ...remoteImages];
+
+        if (allImages.isEmpty) {
+          return Column(
+            children: [
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.image_outlined,
+                  color: Colors.grey.shade400,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'No images found',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Uploaded product images will appear here.',
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+              ),
+            ],
+          );
+        }
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: allImages.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1,
+          ),
+          itemBuilder: (context, index) => _buildImageTile(allImages[index]),
+        );
+      },
+    );
+  }
+
+  Widget _buildImageTile(_GalleryImage image) {
+    final isSelectable = image.isRemote && image.id != null;
+    final isSelected = isSelectable && _selectedIds.contains(image.id);
+
+    return GestureDetector(
+      onLongPress: isSelectable ? () => _enterSelectionMode(image.id!) : null,
+      onTap: _selectionMode && isSelectable
+          ? () => _toggleSelection(image.id!)
+          : null,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            _buildImageContent(image),
+            if (image.status == _UploadStatus.uploading)
+              Container(
+                color: Colors.black.withOpacity(0.4),
+                child: const Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            if (image.status == _UploadStatus.failed)
+              Container(
+                color: Colors.red.withOpacity(0.4),
+                child: const Center(
+                  child: Icon(Icons.error_outline, color: Colors.white),
+                ),
+              ),
+            if (isSelected)
+              Container(
+                color: Colors.black.withOpacity(0.3),
+                alignment: Alignment.topRight,
+                padding: const EdgeInsets.all(6),
+                child: const CircleAvatar(
+                  radius: 11,
+                  backgroundColor: Colors.blue,
+                  child: Icon(Icons.check, size: 14, color: Colors.white),
+                ),
+              )
+            else if (isSelectable)
+              Container(
+                alignment: Alignment.topRight,
+                padding: const EdgeInsets.all(6),
+                child: CircleAvatar(
+                  radius: 11,
+                  backgroundColor: Colors.white.withOpacity(0.7),
+                  child: Icon(
+                    Icons.circle_outlined,
+                    size: 14,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageContent(_GalleryImage image) {
+    if (image.isRemote) {
+      return Image.network(
+        image.url ?? '',
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, progress) {
+          if (progress == null) return child;
+          return Container(
+            color: Colors.grey.shade100,
+            child: const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        },
+        errorBuilder: (_, __, ___) => Container(
+          color: Colors.grey.shade200,
+          child: const Icon(Icons.broken_image_outlined),
+        ),
+      );
+    }
+
+    return Image.file(
+      File(image.localPath!),
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Container(
+        color: Colors.grey.shade200,
+        child: const Icon(Icons.broken_image_outlined),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------
+// نموذج بيانات موحّد: يمثّل صورة محلية (جاري رفعها) أو صورة بعيدة (موجودة)
+// ---------------------------------------------------------------------
+enum _UploadStatus { none, uploading, done, failed }
+
+class _GalleryImage {
+  final bool isRemote;
+  final int? id; // موجود فقط للصور البعيدة (نحتاجه للحذف)
+  final String? url; // للصور البعيدة
+  final String? localPath; // للصور المحلية الجاري رفعها
+  final _UploadStatus status;
+
+  const _GalleryImage._({
+    required this.isRemote,
+    this.id,
+    this.url,
+    this.localPath,
+    this.status = _UploadStatus.none,
+  });
+
+  factory _GalleryImage.local({
+    required String localPath,
+    required _UploadStatus status,
+  }) {
+    return _GalleryImage._(
+      isRemote: false,
+      localPath: localPath,
+      status: status,
+    );
+  }
+
+  factory _GalleryImage.remote({required int id, String? url}) {
+    return _GalleryImage._(
+      isRemote: true,
+      id: id,
+      url: url,
+      status: _UploadStatus.done,
+    );
+  }
+
+  _GalleryImage copyWith({_UploadStatus? status}) {
+    return _GalleryImage._(
+      isRemote: isRemote,
+      id: id,
+      url: url,
+      localPath: localPath,
+      status: status ?? this.status,
     );
   }
 }

@@ -2,16 +2,23 @@ import 'dart:async';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/features/dashBoard/data/models/GetGalleryImagesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
 import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/seller_story_model.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/DeleteGalleryImagesUseCase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/GetGalleryImagesUseCase.dart';
+import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/GetShopInfoUseCase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/UpdateShopInfoUseCase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/GetUploadedExcelFilesUsecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/change_orderDetail_to_packed_useCase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/change_order_detail_status.dart';
@@ -88,6 +95,10 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   final CreateSellerStoryUseCase createSellerStoryUseCase;
   final DeleteSellerStoryUseCase deleteSellerStoryUseCase;
   final UploadFileMediaServerUseCase uploadFileMediaServerUseCase;
+  final GetGalleryImagesUseCase getGalleryImagesUseCase;
+  final DeleteGalleryImagesUseCase deleteGalleryImagesUseCase;
+  final GetShopInfoUseCase getShopInfoUseCase;
+  final UpdateShopInfoUseCase updateShopInfoUseCase;
 
   DashboardBloc(
     this.getUserPermissionUseCase,
@@ -116,6 +127,10 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     this.deleteSellerStoryUseCase,
     this.uploadFileMediaServerUseCase,
     this.downloadexceltemplateUsecase,
+    this.getGalleryImagesUseCase,
+    this.deleteGalleryImagesUseCase,
+    this.getShopInfoUseCase,
+    this.updateShopInfoUseCase,
   ) : super(DashBoardState()) {
     on<GetOrdersEvent>(_onGetOrdersEvent);
     on<NewGetOrdersEvent>(_onNewGetOrdersEvent);
@@ -142,6 +157,12 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     on<ResetCreateStoryStateEvent>(_onResetCreateStoryStateEvent);
     on<DownloadExcelTemplateEvent>(_onDownloadExcelTemplateEvent);
     on<GetUploadedExcelFilesEvent>(_onGetUploadedExcelFilesEvent);
+    on<GetGalleryImagesEvent>(_onGetGalleryImagesEvent);
+    on<DeleteGalleryImagesEvent>(_onDeleteGalleryImagesEvent);
+    on<GetShopInfoEvent>(_onGetShopInfoEvent);
+    on<ClearShopInfoEvent>(_onClearShopInfoEvent);
+    on<UploadShopMediaEvent>(_onUploadShopMediaEvent);
+    on<UpdateShopInfoEvent>(_onUpdateShopInfoEvent);
   }
 
   String? ordersStatus;
@@ -1054,6 +1075,329 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
             uploadedExcelFilesModel: r,
           ),
         );
+      },
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Shop Info — ملف المتجر العام (GET/PUT /shop/info)
+  // -------------------------------------------------------------------------
+
+  /// اسم الملف المجرّد كما تريده الخلفية: ما بعد آخر `/` فقط.
+  ///
+  /// المجلّد لا يُرسل — الخلفية تستنتجه. صحيح ما دامت وسائط المتجر في
+  /// مجلّد `seller` وحده؛ قيمة عائدة من مجلّد آخر تفقد مجلّدها هنا
+  /// (حدّ معروف ومقبول، AC-16).
+  String? _bareFileName(String? value) {
+    if (value == null) return null;
+    final String trimmed = value.trim();
+    if (trimmed.isEmpty) return null;
+    final int slash = trimmed.lastIndexOf('/');
+    final String name = slash == -1 ? trimmed : trimmed.substring(slash + 1);
+    return name.isEmpty ? null : name;
+  }
+
+  String? get _currentSellerId => GetIt.I<PrefsRepository>().getXSellerId;
+
+  /// سجلّ تشخيصي: النقطة والحالة ومعرّف المتجر فقط.
+  /// لا رمز دخول ولا تذكرة ولا أي قيمة من جسم الطلب (AC-27).
+  void _logShopInfo(String action, String outcome, {String? message}) {
+    if (kDebugMode) {
+      print(
+        'shop-info | $action | $outcome | seller=$_currentSellerId'
+        '${message == null ? '' : ' | message=$message'}',
+      );
+    }
+  }
+
+  FutureOr<void> _onGetShopInfoEvent(
+    GetShopInfoEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    // لا صلاحية قراءة: لا يُرسل الطلب أصلاً — لا دوّارة ولا زرّ إعادة
+    // محاولة، لأن الإعادة لا يمكن أن تنجح.
+    if (!event.canRead) {
+      _logShopInfo('load', 'skipped-no-permission');
+      emit(
+        state.copyWith(
+          getShopInfoStatus: GetShopInfoStatus.permissionDenied,
+          shopInfo: const GetShopInfoModel.empty(),
+        ),
+      );
+      return;
+    }
+
+    emit(state.copyWith(getShopInfoStatus: GetShopInfoStatus.loading));
+
+    final String? sellerIdAtRequest = _currentSellerId;
+    final response = await getShopInfoUseCase(NoParams());
+
+    response.fold(
+      (l) {
+        _logShopInfo('load', 'failure', message: l.message);
+        emit(
+          state.copyWith(
+            getShopInfoStatus: GetShopInfoStatus.failure,
+            shopInfoMessage: l.message,
+          ),
+        );
+      },
+      (r) {
+        // غلاف يحمل `success: false` فشلٌ ولو كان رمز HTTP ناجحاً.
+        if (r.success == false) {
+          _logShopInfo('load', 'failure-envelope', message: r.message);
+          emit(
+            state.copyWith(
+              getShopInfoStatus: GetShopInfoStatus.failure,
+              shopInfoMessage: r.message,
+            ),
+          );
+          return;
+        }
+        _logShopInfo('load', 'success');
+        emit(
+          state.copyWith(
+            getShopInfoStatus: GetShopInfoStatus.success,
+            // المتجر الذي حُمّل من أجله السجلّ يُكتب هنا: لا ترسله الخلفية.
+            shopInfo: r.copyWith(loadedForSellerId: sellerIdAtRequest),
+          ),
+        );
+      },
+    );
+  }
+
+  /// المسح عند تبديل المتجر: الحالة إلى `init` والسجلّ إلى الفارغ.
+  /// `copyWith` لا يستطيع إعادة حقل إلى `null`، ولا تُبنى حالة جديدة لأن
+  /// ذلك يمسح ما خزّنته بقية التبويبات.
+  FutureOr<void> _onClearShopInfoEvent(
+    ClearShopInfoEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        getShopInfoStatus: GetShopInfoStatus.init,
+        updateShopInfoStatus: UpdateShopInfoStatus.init,
+        uploadShopMediaStatus: UploadShopMediaStatus.init,
+        shopInfo: const GetShopInfoModel.empty(),
+      ),
+    );
+  }
+
+  FutureOr<void> _onUploadShopMediaEvent(
+    UploadShopMediaEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(
+      state.copyWith(uploadShopMediaStatus: UploadShopMediaStatus.uploading),
+    );
+
+    // تذكرة جديدة لكل رفع، ومجلّد `seller` — نفس المسار المشترك مع الستوري.
+    final uploadResponse = await uploadFileMediaServerUseCase(
+      UploadFileMediaServerParams(
+        file: event.file,
+        folder: 'seller',
+        isStory: false,
+        usingOnUploadingFinishedFunction: false,
+        usingSendProgressFunction: false,
+      ),
+    );
+
+    uploadResponse.fold(
+      (l) {
+        _logShopInfo('upload', 'failure', message: l.message);
+        showMessage(l.message, hasError: true);
+        // الصورة المعروضة سابقاً تبقى، والقيمة التي ستُحفظ لا تتغيّر.
+        emit(
+          state.copyWith(uploadShopMediaStatus: UploadShopMediaStatus.failure),
+        );
+      },
+      (r) {
+        final String? stored = _bareFileName(r.subPath ?? r.url);
+        if (stored == null) {
+          _logShopInfo('upload', 'failure-empty-path');
+          emit(
+            state.copyWith(
+              uploadShopMediaStatus: UploadShopMediaStatus.failure,
+            ),
+          );
+          return;
+        }
+        _logShopInfo('upload', 'success');
+        emit(
+          state.copyWith(
+            uploadShopMediaStatus: UploadShopMediaStatus.success,
+            shopInfo: event.isBanner
+                ? state.shopInfo.copyWith(banner: stored)
+                : state.shopInfo.copyWith(image: stored),
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onUpdateShopInfoEvent(
+    UpdateShopInfoEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    // آخر فحص متزامن قبل الاستدعاء: هل ما زال المتجر المحدّد هو الذي
+    // حُمّل السجلّ من أجله؟ الترويسة `X-Seller-ID` تُقرأ لاحقاً عند بناء
+    // الطلب، فهذا يضيّق النافذة ولا يغلقها (AC-29، حدّ معروف ومقبول).
+    final String? current = _currentSellerId;
+    if (event.expectedSellerId != null && event.expectedSellerId != current) {
+      _logShopInfo('save', 'abandoned-shop-changed');
+      emit(
+        state.copyWith(
+          updateShopInfoStatus: UpdateShopInfoStatus.init,
+          getShopInfoStatus: GetShopInfoStatus.init,
+          shopInfo: const GetShopInfoModel.empty(),
+        ),
+      );
+      showMessage(
+        LocaleKeys.shop_info_shop_changed.tr(),
+        hasError: true,
+      );
+      return;
+    }
+
+    emit(state.copyWith(updateShopInfoStatus: UpdateShopInfoStatus.loading));
+
+    final response = await updateShopInfoUseCase(
+      UpdateShopInfoParams(
+        name: event.name,
+        address: event.address,
+        contact: event.contact,
+        image: event.image,
+        banner: event.banner,
+      ),
+    );
+
+    response.fold(
+      (l) {
+        _logShopInfo('save', 'failure', message: l.message);
+        showMessage(l.message, hasError: true);
+        emit(
+          state.copyWith(
+            updateShopInfoStatus: UpdateShopInfoStatus.failure,
+            shopInfoMessage: l.message,
+          ),
+        );
+      },
+      (r) {
+        if (!r.isSuccess) {
+          // `HTTP 200` مع `success: false` فشل — تعديلات المستخدم تبقى.
+          _logShopInfo('save', 'failure-envelope', message: r.message);
+          showMessage(
+            r.message ?? LocaleKeys.shop_info_save_failed.tr(),
+            hasError: true,
+          );
+          emit(
+            state.copyWith(
+              updateShopInfoStatus: UpdateShopInfoStatus.failure,
+              shopInfoMessage: r.message,
+            ),
+          );
+          return;
+        }
+        _logShopInfo('save', 'success');
+        // `showInRelease` لازم: `showMessage` يُسكِت رسائل النجاح في نسخة
+        // الإصدار (kDebugMode || showInRelease || hasError).
+        showMessage(
+          r.message ?? LocaleKeys.shop_info_saved.tr(),
+          showInRelease: true,
+        );
+        emit(
+          state.copyWith(
+            updateShopInfoStatus: UpdateShopInfoStatus.success,
+            shopInfo: state.shopInfo.copyWith(
+              name: event.name,
+              address: event.address,
+              contact: event.contact,
+              image: event.image,
+              banner: event.banner,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onGetGalleryImagesEvent(
+    GetGalleryImagesEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(
+      state.copyWith(getGalleryImagesStatus: GetGalleryImagesStatus.loading),
+    );
+
+    final response = await getGalleryImagesUseCase(
+      GetGalleryImagesParams(
+        page: event.page,
+        perPage: event.perPage,
+        search: event.search,
+      ),
+    );
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            getGalleryImagesStatus: GetGalleryImagesStatus.failure,
+          ),
+        );
+        showMessage(l.message, hasError: true);
+      },
+      (r) {
+        final List<GalleryImageModel> updatedImages = event.page == 1
+            ? r.images
+            : [...(state.galleryImages ?? <GalleryImageModel>[]), ...r.images];
+
+        emit(
+          state.copyWith(
+            galleryImages: updatedImages,
+            galleryMeta: r.meta,
+            getGalleryImagesStatus: GetGalleryImagesStatus.success,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onDeleteGalleryImagesEvent(
+    DeleteGalleryImagesEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        deleteGalleryImagesStatus: DeleteGalleryImagesStatus.loading,
+      ),
+    );
+
+    final response = await deleteGalleryImagesUseCase(
+      DeleteGalleryImagesParams(ids: event.ids),
+    );
+
+    response.fold(
+      (l) {
+        emit(
+          state.copyWith(
+            deleteGalleryImagesStatus: DeleteGalleryImagesStatus.failure,
+          ),
+        );
+        showMessage(l.message, hasError: true);
+      },
+      (r) {
+        // احذف الصور محذوفة محلياً فوراً بدون انتظار إعادة الجلب
+        final remainingImages = (state.galleryImages ?? [])
+            .where((img) => !event.ids.contains(img.id))
+            .toList();
+
+        emit(
+          state.copyWith(
+            galleryImages: remainingImages,
+            deleteGalleryImagesStatus: DeleteGalleryImagesStatus.success,
+          ),
+        );
+        showMessage(r.message ?? '');
       },
     );
   }

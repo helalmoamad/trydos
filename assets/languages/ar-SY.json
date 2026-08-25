@@ -435,10 +435,8 @@
   "profile_personal_info": "الملف الشخصي | المعلومات الشخصية",
   "full_name": "الاسم الكامل",
   "enter_full_name": "ادخل الاسم الكامل",
- 
   "enter_phone": "ادخل الهاتف",
   "enter_alternative_phone": "ادخل رقم الهاتف البديل",
-
   "enter_email_address": "أدخل عنوان البريد الإلكتروني",
   "gender": "الجنس",
   "man": "ذكر",
@@ -836,15 +834,11 @@
   "update": "تعديل الطلب",
   "press_here_for_more": "اضغط هنا للمزيد",
   "similar_products": "قد يعجبك أيضاً",
-
-
-
-    "inappropriate_content": "محتوى غير لائق",
+  "inappropriate_content": "محتوى غير لائق",
   "harassment": "مضايقة أو خطاب كراهية",
   "spam": "محتوى غير مرغوب فيه أو احتيال",
   "intellectual_property": "انتهاك الملكية الفكرية",
   "violence": "عنف أو محتوى خطير",
-
   "report_story": "الإبلاغ عن القصة",
   "report_reason": "سبب الإبلاغ",
   "details_optional": "ملاحظات (اختياري)",
@@ -930,5 +924,25 @@
   "report_received_body": "شكرًا لملاحظاتك",
   "customers_comments": "تعليقات الزبائن",
   "locations": "المواقع",
-  "upload_excel_file": "رفع ملف إكسل"
+  "upload_excel_file": "رفع ملف إكسل",
+  "shop_info_edit_title": "تعديل معلومات المتجر",
+  "shop_info_contact": "رقم التواصل",
+  "shop_info_address": "العنوان",
+  "shop_info_address_required": "العنوان مطلوب",
+  "shop_info_contact_required": "رقم التواصل مطلوب",
+  "shop_info_contact_invalid": "الرقم أرقام فقط، ورمز الدولة أولاً",
+  "shop_info_country_code_hint": "رمز الدولة أولاً، مثلاً الإمارات = 971",
+  "shop_info_logo": "شعار المتجر",
+  "shop_info_banner": "غلاف المتجر",
+  "shop_info_banner_ratio": "النسبة 6:1",
+  "shop_info_change": "تغيير",
+  "shop_info_change_banner": "تغيير الغلاف",
+  "shop_info_save_changes": "حفظ التعديلات",
+  "shop_info_saving": "جارٍ الحفظ...",
+  "shop_info_saved": "تمّ حفظ معلومات المتجر",
+  "shop_info_save_failed": "تعذّر حفظ معلومات المتجر",
+  "shop_info_no_read_permission": "لا تملك صلاحية عرض معلومات المتجر",
+  "shop_info_no_update_permission": "لا تملك صلاحية تعديل معلومات المتجر",
+  "shop_info_shop_changed": "تغيّر المتجر المحدّد، فأُلغي الحفظ",
+  "other_gender": "أخرى"
 }

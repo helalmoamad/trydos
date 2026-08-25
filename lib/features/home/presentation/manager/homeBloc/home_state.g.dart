@@ -205,7 +205,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
         ),
   countryCoordinatesBorders:
       (json['countryCoordinatesBorders'] as List<dynamic>?)
-          ?.map((e) => geod.LatLng.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => LatLng.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
   getUserNotificationModel: json['getUserNotificationModel'] == null

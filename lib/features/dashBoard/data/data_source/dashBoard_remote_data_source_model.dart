@@ -14,6 +14,8 @@ import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/core/api/methods/post.dart';
 import 'package:trydos/core/api/methods/put.dart';
 import 'package:trydos/core/api/methods/delete.dart';
+import 'package:trydos/features/dashBoard/data/models/GetGalleryImagesModel.dart';
+import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
 import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
@@ -512,4 +514,83 @@ class DashBoardRemoteDataSource {
   //   final raw = await getMainCategories();
   //   return parseMainCategoriesInBackground(raw);
   // }
+
+   Future<GetGalleryImagesModel> getGalleryImages({
+    int page = 1,
+    int perPage = 20,
+    String? search,
+  }) {
+    Map<String, String> queryParameters = {
+      'page': page.toString(),
+      'per_page': perPage.toString(),
+    };
+    if (search != null && search.isNotEmpty) {
+      queryParameters['search'] = search;
+    }
+
+    GetClient<GetGalleryImagesModel> getGalleryImages =
+        GetClient<GetGalleryImagesModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<GetGalleryImagesModel>(
+            endpoint: DashBoardEndPoints.getGalleryImagesEP,
+            queryParameters: queryParameters,
+            response: ResponseValue<GetGalleryImagesModel>(
+              fromJson: (response) => GetGalleryImagesModel.fromJson(response),
+            ),
+          ),
+        );
+    return getGalleryImages();
+  }
+
+  /// `GET /shop/info` — ملف المتجر العام للمتجر المحدَّد حالياً.
+  ///
+  /// ترويسات `Authorization` و`X-Seller-ID` و`country` و`lang` تُحقن مركزياً في
+  /// `BaseApi`، فلا يضيفها هذا الطلب.
+  Future<GetShopInfoModel> getShopInfo() {
+    GetClient<GetShopInfoModel> getShopInfo = GetClient<GetShopInfoModel>(
+      serverName: ServerName.dashBoard,
+      requestPrams: RequestConfig<GetShopInfoModel>(
+        endpoint: DashBoardEndPoints.shopInfoEP,
+        response: ResponseValue<GetShopInfoModel>(
+          fromJson: (response) => GetShopInfoModel.fromJson(response),
+        ),
+      ),
+    );
+    return getShopInfo();
+  }
+
+  /// `PUT /shop/info` — استبدال كامل: الحقول الخمسة تُرسل كلّها في كل مرة.
+  Future<UpdateShopInfoResponseModel> updateShopInfo(
+    Map<String, dynamic> params,
+  ) {
+    PutClient<UpdateShopInfoResponseModel> updateShopInfo =
+        PutClient<UpdateShopInfoResponseModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<UpdateShopInfoResponseModel>(
+            endpoint: DashBoardEndPoints.shopInfoEP,
+            data: params,
+            response: ResponseValue<UpdateShopInfoResponseModel>(
+              fromJson: (response) =>
+                  UpdateShopInfoResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return updateShopInfo();
+  }
+
+  Future<ReadOnlyMessageFromApiModel> deleteGalleryImages(List<int> ids) {
+    DeleteClient<ReadOnlyMessageFromApiModel> deleteGalleryImages =
+        DeleteClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: DashBoardEndPoints.getGalleryImagesEP, // نفس المسار — DELETE بجسم { ids }
+            data: {'ids': ids},
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return deleteGalleryImages();
+  }
 }

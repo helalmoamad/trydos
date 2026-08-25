@@ -46,8 +46,27 @@ enum DownloadExcelTemplateStatus { init, loading, success, failure }
 
 enum GetUploadedExcelFilesStatus { initial, loading, success, failure }
 
+enum GetGalleryImagesStatus { init, loading, success, failure }
+
+enum DeleteGalleryImagesStatus { init, loading, success, failure }
+
+enum GetShopInfoStatus { init, loading, success, failure, permissionDenied }
+
+enum UpdateShopInfoStatus { init, loading, success, failure }
+
+enum UploadShopMediaStatus { init, uploading, success, failure }
+
 @immutable
 class DashBoardState extends Equatable {
+  final GetShopInfoStatus getShopInfoStatus;
+  final GetShopInfoModel shopInfo;
+  final UpdateShopInfoStatus updateShopInfoStatus;
+  final UploadShopMediaStatus uploadShopMediaStatus;
+  final String? shopInfoMessage;
+  final GetGalleryImagesStatus getGalleryImagesStatus;
+  final List<GalleryImageModel>? galleryImages;
+  final GalleryMeta? galleryMeta;
+  final DeleteGalleryImagesStatus deleteGalleryImagesStatus;
   final GetUploadedExcelFilesStatus getUploadedExcelFilesStatus;
   final UploadedExcelFilesResponseModel? uploadedExcelFilesModel;
   final GetExcelCategoriesModel? excelCategoriesModel;
@@ -94,6 +113,15 @@ class DashBoardState extends Equatable {
   final String? downloadedTemplatePath;
 
   DashBoardState({
+    this.getShopInfoStatus = GetShopInfoStatus.init,
+    this.shopInfo = const GetShopInfoModel.empty(),
+    this.updateShopInfoStatus = UpdateShopInfoStatus.init,
+    this.uploadShopMediaStatus = UploadShopMediaStatus.init,
+    this.shopInfoMessage,
+    this.getGalleryImagesStatus = GetGalleryImagesStatus.init,
+    this.galleryImages,
+    this.galleryMeta,
+    this.deleteGalleryImagesStatus = DeleteGalleryImagesStatus.init,
     this.getUploadedExcelFilesStatus = GetUploadedExcelFilesStatus.initial,
     this.uploadedExcelFilesModel,
     this.downloadedTemplatePath,
@@ -139,7 +167,17 @@ class DashBoardState extends Equatable {
     this.getExcelCategoriesStatus = GetExcelCategoriesStatus.init,
     this.downloadExcelTemplateStatus = DownloadExcelTemplateStatus.init,
   });
+
   DashBoardState copyWith({
+    GetShopInfoStatus? getShopInfoStatus,
+    GetShopInfoModel? shopInfo,
+    UpdateShopInfoStatus? updateShopInfoStatus,
+    UploadShopMediaStatus? uploadShopMediaStatus,
+    String? shopInfoMessage,
+    GetGalleryImagesStatus? getGalleryImagesStatus,
+    List<GalleryImageModel>? galleryImages,
+    GalleryMeta? galleryMeta,
+    DeleteGalleryImagesStatus? deleteGalleryImagesStatus,
     GetUploadedExcelFilesStatus? getUploadedExcelFilesStatus,
     UploadedExcelFilesResponseModel? uploadedExcelFilesModel,
     String? downloadedTemplatePath,
@@ -186,6 +224,18 @@ class DashBoardState extends Equatable {
     DownloadExcelTemplateStatus? downloadExcelTemplateStatus,
   }) {
     return DashBoardState(
+      getShopInfoStatus: getShopInfoStatus ?? this.getShopInfoStatus,
+      shopInfo: shopInfo ?? this.shopInfo,
+      updateShopInfoStatus: updateShopInfoStatus ?? this.updateShopInfoStatus,
+      uploadShopMediaStatus:
+          uploadShopMediaStatus ?? this.uploadShopMediaStatus,
+      shopInfoMessage: shopInfoMessage ?? this.shopInfoMessage,
+      getGalleryImagesStatus:
+          getGalleryImagesStatus ?? this.getGalleryImagesStatus,
+      galleryImages: galleryImages ?? this.galleryImages,
+      galleryMeta: galleryMeta ?? this.galleryMeta,
+      deleteGalleryImagesStatus:
+          deleteGalleryImagesStatus ?? this.deleteGalleryImagesStatus,
       downloadedTemplatePath:
           downloadedTemplatePath ?? this.downloadedTemplatePath,
       storiesStatus: storiesStatus ?? this.storiesStatus,
@@ -291,5 +341,14 @@ class DashBoardState extends Equatable {
     downloadedTemplatePath,
     getUploadedExcelFilesStatus,
     uploadedExcelFilesModel,
+    getShopInfoStatus,
+    shopInfo,
+    updateShopInfoStatus,
+    uploadShopMediaStatus,
+    shopInfoMessage,
+    getGalleryImagesStatus,
+    galleryImages,
+    galleryMeta,
+    deleteGalleryImagesStatus,
   ];
 }
