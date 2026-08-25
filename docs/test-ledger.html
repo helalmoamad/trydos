@@ -1,0 +1,659 @@
+<title>Trydos Test Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style id="css">
+:root{
+  /* The webfonts are a bonus, not a dependency: opened from disk with no network
+     the link simply fails and `display=swap` renders the fallback at once. Every
+     stack below is a real pairing on its own. */
+  --f-display:Archivo,"Segoe UI Semibold","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",Consolas,"SF Mono",ui-monospace,Menlo,"DejaVu Sans Mono",monospace;
+
+  --ground:#EFF3F2; --surface:#FFFFFF; --raise:#E7EDEB; --ink:#0E1917; --dim:#5A6B67;
+  --line:#D4DDDA; --line-soft:#E3EAE8;
+  --accent:#0A6155; --accent-soft:#D9E9E5; --accent-line:#9FC9C0;
+  --p0:#A4382A; --p0-bg:#F6E5E2;
+  --p1:#846013; --p1-bg:#F4EBD8;
+  --p2:#4A6270; --p2-bg:#E3EAEE;
+  --shadow:0 1px 2px rgba(14,25,23,.05), 0 8px 24px -16px rgba(14,25,23,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0A1110; --surface:#131B19; --raise:#1B2523; --ink:#E1E9E6; --dim:#8CA09B;
+    --line:#25312E; --line-soft:#1C2624;
+    --accent:#52C0A7; --accent-soft:#12302A; --accent-line:#28564C;
+    --p0:#E28271; --p0-bg:#331F1B;
+    --p1:#D3A64B; --p1-bg:#2D2716;
+    --p2:#93AAB8; --p2-bg:#1C2830;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0A1110; --surface:#131B19; --raise:#1B2523; --ink:#E1E9E6; --dim:#8CA09B;
+  --line:#25312E; --line-soft:#1C2624;
+  --accent:#52C0A7; --accent-soft:#12302A; --accent-line:#28564C;
+  --p0:#E28271; --p0-bg:#331F1B;
+  --p1:#D3A64B; --p1-bg:#2D2716;
+  --p2:#93AAB8; --p2-bg:#1C2830;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--f-body);
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+code,.mono{font-family:var(--f-mono)}
+.wrap{max-width:1060px; margin:0 auto; padding:0 20px}
+
+/* ── masthead ─────────────────────────────────────────── */
+.mast{border-bottom:1px solid var(--line); background:var(--surface)}
+.mast .wrap{padding-top:38px; padding-bottom:26px}
+.eyebrow{
+  font-family:var(--f-mono); font-size:11px; font-weight:500;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--dim); margin:0 0 10px;
+}
+h1{
+  font-family:var(--f-display); font-weight:800; font-size:clamp(30px,5vw,44px);
+  letter-spacing:-.025em; line-height:1.04; margin:0 0 12px; text-wrap:balance;
+}
+.lede{margin:0; max-width:62ch; color:var(--dim); font-size:15.5px}
+.lede strong{color:var(--ink); font-weight:600}
+
+.headline-stats{display:flex; flex-wrap:wrap; gap:26px; align-items:flex-end; margin-top:26px}
+.bignum{font-family:var(--f-display); font-weight:700; font-size:38px; letter-spacing:-.03em; line-height:1; font-variant-numeric:tabular-nums}
+.bignum small{font-size:17px; font-weight:600; color:var(--dim)}
+.stat-label{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); margin-top:7px}
+.pri-split{display:flex; gap:8px; flex-wrap:wrap}
+
+.meter{height:5px; border-radius:99px; background:var(--raise); overflow:hidden}
+.meter>span{display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .25s ease}
+.mast .meter{margin-top:16px}
+
+/* ── controls ─────────────────────────────────────────── */
+.controls{
+  position:sticky; top:0; z-index:20; background:var(--surface);
+  border-bottom:1px solid var(--line); box-shadow:var(--shadow);
+}
+.controls .wrap{display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding-top:11px; padding-bottom:11px}
+.search{
+  flex:1 1 210px; min-width:170px; background:var(--ground); color:var(--ink);
+  border:1px solid var(--line); border-radius:7px; padding:7px 11px;
+  font-family:inherit; font-size:14px;
+}
+.search::placeholder{color:var(--dim)}
+.search:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{
+  outline:2px solid var(--accent); outline-offset:2px;
+}
+.btn{
+  background:var(--ground); color:var(--ink); border:1px solid var(--line);
+  border-radius:7px; padding:7px 11px; font-family:inherit; font-size:13px; font-weight:500;
+  cursor:pointer; white-space:nowrap;
+}
+.btn:hover{border-color:var(--accent-line)}
+.btn[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent-line); color:var(--accent)}
+.btn.p0[aria-pressed="true"]{background:var(--p0-bg); border-color:var(--p0); color:var(--p0)}
+.btn.p1[aria-pressed="true"]{background:var(--p1-bg); border-color:var(--p1); color:var(--p1)}
+.btn.p2[aria-pressed="true"]{background:var(--p2-bg); border-color:var(--p2); color:var(--p2)}
+.spacer{flex:1 1 0; min-width:0}
+.savepill{
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.05em;
+  color:var(--dim); display:flex; align-items:center; gap:6px; white-space:nowrap;
+}
+.dot{width:7px; height:7px; border-radius:99px; background:var(--accent); flex:none}
+.savepill[data-tone="wait"] .dot{background:var(--p1)}
+.savepill[data-tone="warn"] .dot{background:var(--p0)}
+
+/* ── tiers ────────────────────────────────────────────── */
+main{padding:30px 0 70px}
+.tier{
+  background:var(--surface); border:1px solid var(--line); border-radius:12px;
+  margin-bottom:14px; overflow:hidden;
+}
+.tier-head{
+  display:grid; grid-template-columns:auto 1fr auto; gap:16px; align-items:start;
+  padding:18px 20px; cursor:pointer; list-style:none; user-select:none;
+}
+.tier-head::-webkit-details-marker{display:none}
+.tier-n{
+  font-family:var(--f-display); font-weight:800; font-size:26px; letter-spacing:-.04em;
+  color:var(--accent); line-height:1; padding-top:2px; font-variant-numeric:tabular-nums;
+}
+.tier-title{font-family:var(--f-display); font-weight:700; font-size:19px; letter-spacing:-.015em; margin:0 0 5px}
+.tier-goal{margin:0; color:var(--dim); font-size:14px; max-width:68ch}
+.tier-gate{
+  margin:9px 0 0; font-size:13px; color:var(--dim);
+  border-left:2px solid var(--accent-line); padding-left:10px;
+}
+.tier-gate b{color:var(--ink); font-weight:600}
+.tier-right{text-align:right; min-width:104px}
+.tier-count{font-family:var(--f-mono); font-size:13px; font-weight:500; font-variant-numeric:tabular-nums}
+.tier-count b{color:var(--accent)}
+.tier-right .meter{margin-top:7px; width:104px}
+.chev{color:var(--dim); font-size:12px; margin-top:6px; font-family:var(--f-mono)}
+details[open]>.tier-head .chev::after{content:"collapse"}
+.tier-head .chev::after{content:"expand"}
+
+.tier-body{border-top:1px solid var(--line-soft); padding:6px 20px 18px}
+
+/* ── groups ───────────────────────────────────────────── */
+.group{border-bottom:1px solid var(--line-soft)}
+.group:last-child{border-bottom:0}
+.group-head{
+  display:flex; gap:12px; align-items:center; padding:13px 0; cursor:pointer;
+  list-style:none; user-select:none;
+}
+.group-head::-webkit-details-marker{display:none}
+.group-name{
+  font-weight:600; font-size:14px; flex:1;
+  font-family:var(--f-mono); letter-spacing:-.01em;
+}
+.group-count{font-family:var(--f-mono); font-size:12px; color:var(--dim); font-variant-numeric:tabular-nums}
+.group-body{padding:0 0 14px}
+
+/* ── units ────────────────────────────────────────────── */
+.unit{
+  background:var(--ground); border:1px solid var(--line-soft); border-radius:9px;
+  padding:13px 15px; margin-bottom:9px;
+}
+.unit.is-done{opacity:.55}
+.unit-head{display:flex; flex-wrap:wrap; gap:8px; align-items:baseline; margin-bottom:3px}
+.unit-name{font-weight:600; font-size:14.5px}
+.chip{
+  font-family:var(--f-mono); font-size:10px; font-weight:600; letter-spacing:.08em;
+  padding:2px 6px; border-radius:4px; text-transform:uppercase;
+}
+.chip.P0{background:var(--p0-bg); color:var(--p0)}
+.chip.P1{background:var(--p1-bg); color:var(--p1)}
+.chip.P2{background:var(--p2-bg); color:var(--p2)}
+.unit-path{
+  font-family:var(--f-mono); font-size:11.5px; color:var(--dim);
+  word-break:break-all; margin-bottom:9px;
+}
+.unit-note{
+  font-size:12.5px; color:var(--p1); background:var(--p1-bg);
+  border-radius:6px; padding:6px 9px; margin:0 0 9px;
+}
+.scen{display:flex; flex-direction:column; gap:1px}
+.row{display:flex; gap:9px; align-items:flex-start; padding:4px 6px; border-radius:6px; cursor:pointer}
+.row:hover{background:var(--raise)}
+.row input{
+  appearance:none; -webkit-appearance:none; flex:none; margin:2px 0 0;
+  width:15px; height:15px; border:1.5px solid var(--line); border-radius:4px;
+  background:var(--surface); cursor:pointer; position:relative;
+}
+.row input:checked{background:var(--accent); border-color:var(--accent)}
+.row input:checked::after{
+  content:""; position:absolute; left:4.4px; top:1.2px; width:3.6px; height:7.6px;
+  border:solid #fff; border-width:0 2px 2px 0; transform:rotate(43deg);
+}
+.row span{font-size:13.6px; line-height:1.5}
+.row input:checked+span{color:var(--dim); text-decoration:line-through; text-decoration-color:var(--line)}
+.row code{
+  font-size:12.2px; background:var(--raise); padding:1px 4px; border-radius:3px;
+  word-break:break-word;
+}
+
+.empty{padding:26px 0; color:var(--dim); font-size:14px; text-align:center}
+
+/* ── footer ───────────────────────────────────────────── */
+footer{border-top:1px solid var(--line); background:var(--surface); padding:34px 0 50px}
+footer h2{font-family:var(--f-display); font-weight:700; font-size:17px; letter-spacing:-.015em; margin:0 0 12px}
+.cols{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:26px}
+footer p{margin:0 0 9px; font-size:13.6px; color:var(--dim); max-width:60ch}
+footer ol{margin:0; padding-left:19px; font-size:13.6px; color:var(--dim)}
+footer li{margin-bottom:6px}
+footer code{font-size:12.4px; background:var(--raise); padding:1px 5px; border-radius:3px; color:var(--ink)}
+.pre{
+  font-family:var(--f-mono); font-size:12px; background:var(--ground);
+  border:1px solid var(--line-soft); border-radius:8px; padding:12px 14px;
+  overflow-x:auto; white-space:pre; color:var(--ink); margin:0 0 9px;
+}
+@media (prefers-reduced-motion: reduce){*{transition:none !important; animation:none !important}}
+@media (max-width:640px){
+  .tier-head{grid-template-columns:auto 1fr; gap:12px; padding:15px}
+  .tier-right{grid-column:2; text-align:left}
+  .tier-right .meter{width:100%}
+  .tier-body{padding:6px 15px 15px}
+}
+</style>
+
+<div id="root"></div>
+
+<script id="data" type="application/json">{"tiers":[{"id":"W0","n":0,"title":"Harness and the gate","goal":"The smallest setup that lets everything below be written, plus the CI job that makes a red suite block a merge.","gate":"Done when an empty suite runs green in CI and a failing test blocks a pull request into `dev_new`.","groups":[{"name":"Setup","units":[{"name":"Test dependencies","path":"pubspec.yaml","pri":"P0","s":["add `bloc_test` — it is missing today and every wave below needs it","add `fake_async` — the 20s refresh timeout, the OTP timer and the retry delays cannot be tested with a real wait","keep one mocking library only; `mockito` and `build_runner` are already here","`flutter pub get` and `dart run build_runner build --delete-conflicting-outputs` finish clean"],"id":"W0|pubspec.yaml|Test dependencies"},{"name":"Shared helpers","path":"test/helpers/","pri":"P0","s":["an in-memory `HydratedStorage`, or no hydrated bloc can be constructed at all","`dotenv` loaded with test values — `BaseApi`, `detect_server` and `mediaDisplayUrl` all throw without it","`GetIt` reset between tests so no registration leaks into the next one","a mocked `Dio` through `http_mock_adapter`, with helpers for 200 / 400 / 401 / 500 / non-JSON / timeout","a fixture loader reading real captured responses from `test/fixtures/`","a bloc harness that builds a bloc with mocked use cases and returns the emitted state list"],"id":"W0|test/helpers/|Shared helpers"},{"name":"Test workflow","path":".github/workflows/test.yml","pri":"P0","s":["runs on pull request into `dev_new` and on push to `ticket/**`","`flutter pub get` -> `flutter analyze` -> `flutter test`","writes a `.env` the same way `deploy.yml` does, because the code reads dotenv at import time","Flutter pinned to `3.47.0`, the same value `deploy.yml` uses","a failing test fails the check"],"id":"W0|.github/workflows/test.yml|Test workflow"},{"name":"Deploy waits for the tests","path":".github/workflows/deploy.yml","pri":"P0","s":["the Play Store job gets `needs: test` — today it ships on every push to `dev_new` with no gate at all"],"id":"W0|.github/workflows/deploy.yml|Deploy waits for the tests"}]}],"count":16},{"id":"W1","n":1,"title":"Core runtime","goal":"Every action below runs through this code. A bug here does not look like a bug here — it looks like a random failure somewhere else.","gate":"Done when the 401 refresh-and-replay path is proven end to end against a mocked Dio.","groups":[{"name":"The network contract","units":[{"name":"401 refresh and replay","path":"lib/core/api/log_interceptor.dart","pri":"P0","s":["a 401 by HTTP status starts a refresh","a 401 carried in the body (`code` or `statusCode` = \"401\") with a 200 transport status also starts a refresh — the gated media server answers this way","the refresh request itself is never refreshed, or it loops forever","a request already marked as replayed reports the error instead of refreshing a second time","after a successful refresh the original request is replayed and the caller sees the real answer, never the 401","a multipart body is rebuilt from its sources before the replay — the first stream is already consumed","a failed refresh reports the original 401 unchanged","the right `RefreshScope` is picked per server: market family, chat, stories"],"note":"The single highest-value test in the project. Every logged-in action depends on it.","id":"W1|lib/core/api/log_interceptor.dart|401 refresh and replay"},{"name":"Refresh coordinator","path":"lib/core/api/token_refresh_coordinator.dart","pri":"P0","s":["`refresh` calls `start` once and returns a pending future","a second caller for the same scope joins the running future — ten parallel 401s must share one refresh","`complete(scope, true)` resolves every waiting caller","the 20s timeout resolves `false` — drive it with `fake_async`","`start` throwing resolves `false` instead of hanging the request forever","two scopes are independent: completing `chat` does not resolve `market`"],"id":"W1|lib/core/api/token_refresh_coordinator.dart|Refresh coordinator"},{"name":"Exception mapping","path":"lib/core/api/handling_exception.dart","pri":"P0","s":["`getException` maps 400 -> `OperationFailedException`, 401 -> `Unauth`, 500 -> `ServerExceptionForCode500`, anything else -> `ServerException`","a successful call returns `Right(value)`","each exception becomes its matching `Failure` with the status code preserved","`TryAgainException` keeps `tryCount` through the mapping","an error nobody planned for still returns a `Left` — it must never escape as a throw"],"id":"W1|lib/core/api/handling_exception.dart|Exception mapping"},{"name":"Request headers","path":"lib/core/api/base_api.dart","pri":"P0","s":["sends `Authorization: Bearer \u003ctoken>` when the server has one, and no auth header when the token is null","sends no `country`, `lang` or `User-Agent` for `cloudinary`","sends `userChoosedCountryIso` when `userCountryIsAvailable == 1`, and `countryIso` otherwise","sends `lang: ku` for Kurdish and `lang: ar` for Arabic — they share a language code, so this is easy to break","adds `original-user-id` only for elastic and `X-Seller-ID` only for dashBoard"],"id":"W1|lib/core/api/base_api.dart|Request headers"},{"name":"Server and token resolution","path":"lib/core/api/methods/detect_server.dart","pri":"P0","s":["market, marketGO and dashBoard all read the SAME `marketToken` — the refresh scope depends on this","chat, stories, wallet and comment each read their own token","elastic, location, cloudinary, webApp, gemini and mediaServer return null and must send no bearer","`marketGO` picks `baseUri` when the stored phone is longer than 7 characters, `baseUriGo` otherwise"],"id":"W1|lib/core/api/methods/detect_server.dart|Server and token resolution"},{"name":"Retry policy","path":"lib/core/error/error_manager.dart","pri":"P0","s":["the default budget is 1 retry","0, 429, 502, 503 and 504 raise the budget to 2","401 gets NO extra budget — the interceptor already refreshes and replays","counters are keyed per event name and never mix"],"id":"W1|lib/core/error/error_manager.dart|Retry policy"}]},{"name":"Shared logic every screen uses","units":[{"name":"Media urls","path":"lib/core/utils/media_display_url.dart","pri":"P0","s":["an absolute `http`/`https` value, or one containing `cloudinary`, is returned unchanged","a sub-path (contains `/`) becomes `\u003cbase>/\u003cpath>` with no legacy folder added","a bare file name becomes `\u003cbase>/\u003clegacyFolder>/\u003cname>` — breaking this blanks every old image in the app","an empty value returns empty, and a trailing `/` on the base never produces `//`"],"id":"W1|lib/core/utils/media_display_url.dart|Media urls"},{"name":"Form validators","path":"lib/core/utils/validator.dart","pri":"P0","s":["required rejects empty and, with trim on, whitespace only","email accepts a valid address and rejects one with no `@` or no domain","username: starts with a letter, 4 to 33 characters — a leading digit is rejected","password accepts 8 and 20, rejects 7 and 21","phone accepts exactly min and exactly max, rejects min-1"],"id":"W1|lib/core/utils/validator.dart|Form validators"},{"name":"Upload pipeline","path":"lib/core/domin/usecases/mint_upload_ticket_usecase.dart","pri":"P0","s":["minting a ticket then uploading to the media server sends the ticket, in that order","a rejected ticket stops the upload instead of sending an unauthorised file","the cloudinary path uploads and returns the url the app then stores","a failed upload returns `Left` and the caller stores nothing"],"note":"Product photos, chat files, story media, return-request images and the profile photo all go through here.","id":"W1|lib/core/domin/usecases/mint_upload_ticket_usecase.dart|Upload pipeline"},{"name":"Status codes","path":"lib/enums/status_code_type.dart","pri":"P0","s":["the five values map to 200, 201, 400, 401 and 500 — the exception mapper reads this and nothing else"],"id":"W1|lib/enums/status_code_type.dart|Status codes"}]}],"count":46},{"id":"W2","n":2,"title":"Account and session","goal":"Everything a user does to get in, stay in, and manage who they are. Write these as flow tests: mocked Dio at the bottom, the real repository / use case / bloc chain above it.","gate":"Done when signin proves four tokens land in four distinct keys, and every profile edit is covered.","groups":[{"name":"Getting in","units":[{"name":"Continue as guest","path":"lib/features/authentication/presentation/manager/auth_event.dart","pri":"P0","s":["`RegisterGuestEvent` stores a usable token and a guest id","`VerifyOtpFromGuestEvent` turns the guest into a real account and keeps the cart that was built as a guest","a failed register leaves no partial session — no token, no id"],"id":"W2|lib/features/authentication/presentation/manager/auth_event.dart|Continue as guest"},{"name":"Request an OTP","path":"lib/features/authentication/presentation/manager/auth_event.dart","pri":"P0","s":["`SendOtpEvent` sets the timer flag so the resend button locks","resending while the timer runs is refused, and allowed again once it expires (`fake_async`)","a failed send does not lock the button, so the user can try again"],"id":"W2|lib/features/authentication/presentation/manager/auth_event.dart|Request an OTP"},{"name":"Verify the OTP","path":"lib/features/authentication/presentation/manager/auth_event.dart","pri":"P0","s":["`VerifyOtpSignInEvent` stores the market token","`VerifyOtpSignUpEvent` creates the user first, then stores the token","a wrong code returns `Left` and stores nothing at all","`VerifyOtpInProfileEvent` changes the stored phone number and keeps the session alive"],"id":"W2|lib/features/authentication/presentation/manager/auth_event.dart|Verify the OTP"},{"name":"The four-server login","path":"lib/features/authentication/presentation/manager/auth_event.dart","pri":"P0","s":["`CreateUserEvent` creates the market account before any of the logins below run","`LoginToChatEvent`, `LoginToStoriesEvent` and `LoginToWalletEvent` each store their OWN token — four distinct keys, never overwriting each other","`myMarketId`, `myChatId` and `myStoriesId` are all stored","a chat login failure does not tear down the market session — the user still gets into the app","`CreateWalletEvent` runs once and is not repeated on the next login","`GenerateTokenForCommentEvent` stores the comment token used by the ratings screens"],"note":"Four backends, four tokens. This fan-out is the app’s real entry point.","id":"W2|lib/features/authentication/presentation/manager/auth_event.dart|The four-server login"},{"name":"Staying in","path":"lib/features/authentication/presentation/manager/auth_event.dart","pri":"P0","s":["`RefreshTokenEvent` replaces `marketToken` and leaves the other three untouched","the same for `RefreshChatTokenEvent` and `RefreshStoriesTokenEvent`","a failed refresh reports `false` to the coordinator so the waiting request stops instead of hanging","`ShowSessionExpiredEvent` is emitted once, not once per failed request"],"id":"W2|lib/features/authentication/presentation/manager/auth_event.dart|Staying in"},{"name":"Logging out","path":"lib/core/data/repository/prefs_repository_impl.dart","pri":"P0","s":["logout clears the four tokens and the identity keys","it keeps the language and the chosen country","`DeleteFcmTokenEvent` and `DeleteFcmTokenFromChatEvent` both run, so a logged-out device stops receiving push","each token round-trips under its own key and they never overwrite each other","a payload written by the previous release still reads — the migration guard"],"note":"Protected runtime path. Tests only; no change without an approved plan.","id":"W2|lib/core/data/repository/prefs_repository_impl.dart|Logging out"}]},{"name":"Managing the account","units":[{"name":"Edit the profile","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P0","s":["`UpdateProfileEvent` sends only the fields that changed","`UploadUserPhotoCloudinaryEvent` uploads then stores the returned url, and a failed upload keeps the old photo","`SaveUserInfoFromAuthEvent` fills the profile from the session without a second request","`GetCustomerInfoEvent` refreshes the stored profile"],"id":"W2|lib/features/home/presentation/manager/homeBloc/home_event.dart|Edit the profile"},{"name":"Change the display name everywhere","path":"lib/features/authentication/presentation/manager/auth_event.dart","pri":"P1","s":["`UpdateNameEvent`, `UpdateChatUserNameEvent` and `UpdateStoriesUserEvent` each hit their own backend","a failure on one does not roll back the ones that succeeded, and the UI is told which failed"],"id":"W2|lib/features/authentication/presentation/manager/auth_event.dart|Change the display name everywhere"},{"name":"Country and currency","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P0","s":["`GetUserCountryEvent` resolves the country and stores its ISO","`GetAllowedCountriesEvent` returns only countries the app serves","choosing a country sets `userChoosedCountryIso` and the next request carries it in the `country` header","`GetCurrencyForCountryEvent` drives the price format — assert the symbol and the decimals, not just the call","`GetCoutryBoundaryByIsoEvent` returns the boundary used to validate an address"],"id":"W2|lib/features/home/presentation/manager/homeBloc/home_event.dart|Country and currency"},{"name":"Notification settings","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P1","s":["`GetFirebaseSettingForNotificationEvent` loads the current switches","`UpdateEmailNotificationEvent`, `UpdateFirebaseNotificationEvent` and `UpdateWhatsappNotificationEvent` each toggle only their own channel","`UpdateNotificationFrequencyEvent` stores the chosen frequency","`SubscribeTopicForNotificationEvent` and `UnSubscribeTopicForNotificationEvent` are symmetric — unsubscribing after subscribing leaves no topic behind","`ChangeCountryLanguageForNotificationEvent` sends the language the push should arrive in","`StoreFcmTokenOfMarketEvent`, `StoreFcmTokenInChatEvent` and `StoreFcmTokenInStoryEvent` each register the device on their own backend — a device registered on market but not on chat gets no message push"],"id":"W2|lib/features/home/presentation/manager/homeBloc/home_event.dart|Notification settings"},{"name":"The notification inbox","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P1","s":["`GetUserNotificationEvent` returns the list newest first","`SendAcceptOfNotificationMarketEvent` marks one as accepted and does not re-send for the same id"],"id":"W2|lib/features/home/presentation/manager/homeBloc/home_event.dart|The notification inbox"},{"name":"AuthBloc contract","path":"lib/features/authentication/presentation/manager/auth_event.dart","pri":"P0","s":["the initial state is the documented one","a signin failure emits the error state and does NOT clear an existing session","hydrated `toJson`/`fromJson` round-trips, and an old stored payload still loads instead of crashing on launch"],"note":"Hydrated bloc. A state shape change needs a migration path.","id":"W2|lib/features/authentication/presentation/manager/auth_event.dart|AuthBloc contract"}]}],"count":47},{"id":"W3","n":3,"title":"Browsing, search and the product page","goal":"Everything a user does to find a product and decide on it — including every control on the details page.","gate":"Done when every filter, every sort, every toggle on the product page has a test.","groups":[{"name":"Finding things","units":[{"name":"Opening the app","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P0","s":["`GetStartingSettingsEvent` completes before the first screen is allowed to build","a failed settings call falls back to the cached prefetch instead of a blank home","`ClearAllAppCashEvent` empties the prefetch and the next open refetches"],"id":"W3|lib/features/home/presentation/manager/homeBloc/home_event.dart|Opening the app"},{"name":"The home screen","path":"lib/features/home/presentation/manager/categoryBloc/category_event.dart","pri":"P0","s":["`GetMainCategoriesEvent` returns the categories in server order","`ChangeCurrentIndexForMainCategoryEvent` switches the tab and keeps each tab’s scroll and data","`GetHomeBoutiqesEvent` fills the selected category, and switching back does not refetch","the home sections (`get_home_sections_usecase`) come back in server order and an empty section is not rendered as a blank row"],"id":"W3|lib/features/home/presentation/manager/categoryBloc/category_event.dart|The home screen"},{"name":"Discovery rails","path":"lib/features/home/domain/use_cases/get_featured_products_usecase.dart","pri":"P1","s":["featured products return the server list and an empty list hides the rail instead of showing an empty one","recommended products (`get_recommend_products_usecase`) are requested with the user id so a logged-out user still gets a generic list","brands (`get_brand_usecase`) return the browsable brands, and tapping one opens the listing filtered to that brand","`get_colors_sizes_for_search_usecase` returns the colour and size values the search chips offer"],"id":"W3|lib/features/home/domain/use_cases/get_featured_products_usecase.dart|Discovery rails"},{"name":"Searching by text","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P1","s":["`GetPopularSearchItemEvent` returns the trending terms","`AddSearchTextToHistoryEvent` stores a term once — searching it twice does not duplicate it","`RemoveSearchTextfromHistoryEvent` removes only that term","the history survives an app restart"],"id":"W3|lib/features/home/presentation/manager/homeBloc/home_event.dart|Searching by text"},{"name":"Searching by image","path":"lib/features/home/domain/use_cases/search_by_images_usecase.dart","pri":"P1","s":["the image is uploaded and the returned products are shown","a failed upload shows an error and does not leave a spinner running","the Gemini reply path (`ReplyFromGeminiEvent`) fills the related terms"],"id":"W3|lib/features/home/domain/use_cases/search_by_images_usecase.dart|Searching by image"},{"name":"Filtering a listing","path":"lib/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart","pri":"P0","s":["`GetFiltersEvent` returns the filter groups for the current category","`ChangeSelectedFiltersEvent` only marks a filter; nothing is fetched until it is applied","`ChangeAppliedFiltersEvent` fetches, and the request carries every applied filter","`ResetAllSelectedAppliedFilterEvent` clears both selected and applied, and refetches unfiltered","opening a listing from a deep link applies the link’s filters (`GetFiltersForNavigatorFromLinkToListingPageEvent`)","`GetFiltersWithPaginatioEvent` pages the filter list itself when a group has many values","`AddSizeAndColorFilterinTextToSearchEvent` puts the chosen size and colour into the search text","`AddPrefAppliedFilterForExtendFilterEvent` restores the filters the user had last time","an empty result is an empty list, not an error state"],"id":"W3|lib/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart|Filtering a listing"},{"name":"Sorting and paging","path":"lib/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart","pri":"P0","s":["`ChangeSortEvent` refetches from page 1 — it must not append to the old order","`ResetSortEvent` returns to the default order","`GetProductsWithFiltersEvent` loads page 1, and the paging variants (`GetProductsWithFiltersWithPaginationEvent`, `GetProductsWithFiltersUsingPaginationEvent`) append without repeating a product already on screen","`GetProductWithFiltersWithoutCancelingPreviousEvents` is the ONE path that must not cancel the in-flight request — every other filter change must cancel it, or a late response overwrites the new list","`ClearAllBoutiquesEvent` empties the listing and the next open refetches","`IscashedOreiginBotiqueEvent` marks the listing cached so returning to it does not refetch"],"note":"The cancel-vs-do-not-cancel split here is a real race. Test both sides.","id":"W3|lib/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart|Sorting and paging"},{"name":"Listing layout","path":"lib/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart","pri":"P2","s":["`AddIsExpandedForListingPageEvent` expands and collapses a section and changes no data","`AddIsExpandedForLidtingPageEvent` is a second, misspelled copy of the same event — check which one is still dispatched before writing a test for either","`AddCurrentMainCategoryTapedEvent` records the tapped category so the back path returns to it"],"id":"W3|lib/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart|Listing layout"},{"name":"Comparing products","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P2","s":["`ToggleCompareProductEvent` adds and removes, and respects the maximum count","`SearchProductsForCompareEvent` searches within the compare picker only, and `ClearCompareSearchEvent` clears that search without clearing the compare list","`ClearCompareProductEvent` empties the compare list itself","`GetProductDetailsForCompareEvent` loads the fields the compare table shows"],"id":"W3|lib/features/home/presentation/manager/homeBloc/home_event.dart|Comparing products"}]},{"name":"The product page","units":[{"name":"Loading the details","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P0","s":["`GetFullProductDetailsEvent` maps price, variants and images","`FetchAuthProductDetailsEvent` adds the like state for a logged-in user","`GetProductDatailsWithoutRelatedProductsEvent` renders the page before the related list arrives","`GetRelatedProductsEvent` fills the related rail without re-rendering the page","`GetAndAddCountViewOfProductEvent` counts a view once per product per session"],"id":"W3|lib/features/home/presentation/manager/homeBloc/home_event.dart|Loading the details"},{"name":"Choosing a variant","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P0","s":["`AddCurrentSelectedColorEvent` and `AddCurrentColorSizeEvent` set the chosen variant","`AddSizesForColorsEvent` shows only the sizes that exist for the chosen colour","`IsChangedVariationWhenQtyZeroEvent` switches away from a variant that just went out of stock","the price shown follows the chosen variant, not the base product"],"id":"W3|lib/features/home/presentation/manager/homeBloc/home_event.dart|Choosing a variant"},{"name":"Reacting to a product","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P0","s":["`AddOrRemoveLikeForProductEvent` toggles, and toggling twice returns to the original state","a failed like reverts the optimistic UI instead of leaving a wrong heart","`IncreaseCountShareOfProductEvent` counts a share once per action","`UpdateLikeSocialSharedProductsEvent` updates the like on a product opened from a share link"],"id":"W3|lib/features/home/presentation/manager/homeBloc/home_event.dart|Reacting to a product"},{"name":"Wishlist and reminders","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P1","s":["`CheckChecklistExistEvent` reports whether the product is already saved","`ToggleChecklistEvent` adds and removes it","`GetChecklistEvent` returns the saved list, and `DeleteChecklistItemEvent` removes one entry","`RequestForNotificationWhenProductBecameAvailableEvent` registers the reminder for the chosen variant","`GetNotificationTypeProductEvent` reports which reminder is already set"],"id":"W3|lib/features/home/presentation/manager/homeBloc/home_event.dart|Wishlist and reminders"},{"name":"Offers and timers","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P2","s":["`AddTimerStartedToHurryUpEvent` and `AddProductIdToSaveRedeemTimerEvent` persist the timer so it survives leaving the page","an expired timer is not shown again after a restart"],"id":"W3|lib/features/home/presentation/manager/homeBloc/home_event.dart|Offers and timers"},{"name":"Stories on a product","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P2","s":["`GetStoryForProductEvent` returns the stories attached to the product","`StorySelectedEvent` opens the right story","`ReportAboutStoryEvent` sends the report and does not send twice for the same story"],"id":"W3|lib/features/home/presentation/manager/homeBloc/home_event.dart|Stories on a product"}]},{"name":"Ratings and comments","units":[{"name":"Reading reviews","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P1","s":["`GetBuyersCommentsEvent` returns the buyer reviews paginated","`GetFqaCommentsEvent` returns the question-and-answer list","`GetOrderRatingEvent` returns the rating this user already gave","`TranslateCommentEvent` returns the translation and keeps the original available"],"id":"W3|lib/features/home/presentation/manager/homeBloc/home_event.dart|Reading reviews"},{"name":"Writing a review","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P0","s":["`CreateCommentRatingEvent` sends the text, the stars and the images","`UpdateCommentRatingEvent` edits only the fields that changed","`DeleteCommentRatingEvent` removes only that comment","`UpdateLikeCommentEvent` toggles the like, and toggling twice returns to the start","a review cannot be sent without a rating value — the validator refuses it before the request"],"id":"W3|lib/features/home/presentation/manager/homeBloc/home_event.dart|Writing a review"}]}],"count":72},{"id":"W4","n":4,"title":"Cart, checkout and orders","goal":"The flow where a silent bug costs real money. Assert amounts and counts, never just that the call happened.","gate":"Done when a wrong total, a double order, a wrong debit and a wrong cancellation are each caught by a test.","groups":[{"name":"The cart","units":[{"name":"Putting things in","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P0","s":["`AddItemToCartEvent` stores the item with the right quantity and the right variant","`AddMultiItemsToCartEvent` adds every item and reports the ones that failed","`AddCurrentHeightWhenAddToBagEvent` does not change the cart contents — it is UI only","`UpdateListOfItemForAddToCartEvent` refreshes the badge count to match the server"],"id":"W4|lib/features/home/presentation/manager/homeBloc/home_event.dart|Putting things in"},{"name":"Changing the cart","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P0","s":["`UpdateItemInCartEvent` changes the quantity without changing the line identity","`AddQuantityForCartEvent` increments and stops at the available stock","`RemoveItemFormCartEvent` deletes only the targeted line","`ChangeCurrentIndexForUpdatCartEvent` targets the right line when several share a product id"],"id":"W4|lib/features/home/presentation/manager/homeBloc/home_event.dart|Changing the cart"},{"name":"Checking the cart","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P0","s":["`GetCartItemEvent` and `CheckWithGetCartEvent` agree on the same contents","`CheckAvailabilityProductCartEvent` drops an out-of-stock line before checkout instead of failing at payment","`GetCartOverviewEvent` total equals the sum of the lines plus shipping minus the discount","the currency comes from the country resolver, not from a hardcoded value"],"note":"Money surface. Assert the number.","id":"W4|lib/features/home/presentation/manager/homeBloc/home_event.dart|Checking the cart"},{"name":"Saved for later","path":"lib/features/home/presentation/manager/homeBloc/home_event.dart","pri":"P1","s":["`ConvertItemFromCartToOldCartEvent` moves the line out of the cart and the total drops by exactly that line","`ConvertItemFromOldcartToCartEvent` moves it back and the total returns to what it was","`GetOldCartItemEvent` returns the saved list, and `HideItemInOldCartEvent` hides only that entry"],"id":"W4|lib/features/home/presentation/manager/homeBloc/home_event.dart|Saved for later"}]},{"name":"Addresses","units":[{"name":"Managing addresses","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P0","s":["`GetCustomerAddressesEvent` returns the saved addresses","`AddAddressInfoClassEvent` stores a new one and `EditAdressInfoClassEvent` changes only that one","`DeleteAdressInfoClassEvent` removes only the targeted address","`SetCustomerAddressDefaultEvent` marks one default and clears the flag on the previous default","`SaveLastAddress` and `SetCurrentAddressChoosedEvent` make the next checkout open on the right address"],"id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Managing addresses"},{"name":"Finding an address","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P1","s":["`GetProvincesByIsoEvent` returns the provinces of the chosen country only","`GetAddressByCoordinatesEvent` maps a lat/lng to a readable address","`GetAddressByTextEvent` returns candidates for a typed query, and an empty query sends no request"],"id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Finding an address"}]},{"name":"Checkout","units":[{"name":"Coupons","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P0","s":["`ApplyCouponEvent` lowers the total by exactly the coupon value","the total never goes below zero","an invalid or expired coupon returns `Left` and leaves the total untouched","applying a second coupon replaces the first rather than stacking, unless the server says otherwise"],"note":"Money surface.","id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Coupons"},{"name":"Placing the order","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P0","s":["`PlaceOrderEvent` sends the cart group and returns an order id","the cart is emptied only AFTER the server confirms (`RemoveItemsFromCartAfterOrderSuccessEvent`)","a failed place-order leaves the cart intact so the user can retry","sending the same cart group twice does not create two orders"],"note":"Money surface.","id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Placing the order"},{"name":"Paying from the wallet","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P0","s":["`WalletCheckoutEvent` debits exactly the order total","a balance below the total returns `Left` and moves no money","`GetCustomerWalletEvent` shows the balance the server reports, never a local subtraction","`GetCurrenciesForWalletEvent` returns the currencies the wallet accepts"],"note":"Money surface.","id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Paying from the wallet"}]},{"name":"After the order","units":[{"name":"Seeing the orders","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P0","s":["`GetOrdersEvent` returns the placed order","`GetOrdersByCartGroupIDEvent` and `GetOrdersByOrderGroupIDEvent` each return only their own group","`DeliveredOrdersResponseEvent` returns only delivered orders","`SaveCurrentOrederStatusEvent` and `ChangeOrderByGroupStatus` keep the displayed status in step with the server"],"id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Seeing the orders"},{"name":"Changing an order","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P0","s":["`CancelOrderEvent` cancels the targeted order and no other","`CancelOrderItemEvent` cancels one line and the order total drops by that line","`ChangeOrderAddressEvent` moves the delivery address while the order still allows it","`ChangeOrderItemVariantEvent` swaps the variant and `GetProductColorSizeSyncAttributeEvent` offers only variants that exist","`UpdateOrderCommentEvent` edits the note attached to the order"],"id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Changing an order"},{"name":"Hiding and restoring","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P1","s":["`HideOrderEvent` removes the order from the main list and `GetHiddenOrdersEvent` returns it","`HideOrderDetailEvent` hides one line rather than the whole order","`RestoreOrderEvent` and `RestoreProductEvent` put them back exactly where they were","hiding is display-only — it never changes the order status on the server"],"id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Hiding and restoring"},{"name":"OrderBloc contract","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P0","s":["the place-order event emits loading, then success carrying the order id","a failure emits the error state and keeps the cart","`ResetAllStatusEvent` returns the one-shot statuses to initial so a screen reopened does not replay the last result","hydrated round-trip, and an old stored payload still loads"],"note":"Hydrated bloc.","id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|OrderBloc contract"}]},{"name":"Returns and reports","units":[{"name":"Asking for a return","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P0","s":["`GetReturnReasonsEvent` returns the reasons the server allows","`StoreReturnRequestEvent` stores the request with its reason and its products","`StoreReturnRequestProductEvent` adds one product to an existing request","`UpdateReturnRequestProductEvent` changes the quantity or the reason of one line only","a request cannot be sent with no product selected"],"id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Asking for a return"},{"name":"Return images","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P1","s":["`UploadImagesForReturnProductEvent` and `UploadImagesToCloudinaryEvent` upload before the request is sent","`RemoveImagesForReturnProductEvent` and `RemoveImagesForCommentEvent` remove only the targeted image","`StoreImagesForUpdateReturnEvent` keeps the already-uploaded images when the request is edited","a failed upload blocks the submit instead of sending a request with a missing photo"],"id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Return images"},{"name":"Following a return","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P1","s":["`OrderReturnRequestsViewEvent` lists the user’s requests","`FetchOrderReturnDetailsEvent` returns the detail of one request","`CancelReturnRequestEvent` cancels the whole request and `CancelReturnRequestProductEvent` cancels one line","`ConfirmReturnRequestEvent` confirms and the status changes to the confirmed value"],"id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Following a return"},{"name":"Reporting a problem","path":"lib/features/home/presentation/manager/orderBloc/order_event.dart","pri":"P1","s":["`ReportOrderProductEvent` sends the report for the right order line","`ResetReportOrderProductStatusEvent` clears the one-shot status so reopening the sheet does not show the old result","a report cannot be sent empty"],"id":"W4|lib/features/home/presentation/manager/orderBloc/order_event.dart|Reporting a problem"}]}],"count":68},{"id":"W5","n":5,"title":"Chat and calls","goal":"Every message action and every call action. Real-time paths need a test for the duplicate case — the same event arriving twice is normal here, not exceptional.","gate":"Done when a message that arrives twice is stored once, and every call end path closes the session.","groups":[{"name":"Conversations","units":[{"name":"Getting the chat account ready","path":"lib/features/chat/presentation/manager/chat_event.dart","pri":"P0","s":["`CreateUserEvent` creates the chat account for a user who never chatted before","`LoginEvent` exchanges the session for a chat token, and a failure here leaves the market session alone","`GetDateTimeEvent` stores the server time — message ordering and the \"sent\" timestamps read it, so a wrong value reorders the thread"],"id":"W5|lib/features/chat/presentation/manager/chat_event.dart|Getting the chat account ready"},{"name":"The chat list","path":"lib/features/chat/presentation/manager/chat_event.dart","pri":"P0","s":["`GetChatsEvent` returns the chats newest first","`AddChannelToChannels` and `UpdateChannelObjectFromNotificationEvent` update a chat without duplicating it","`DeleteChatEvent` removes only that chat, and `ClearChatEvent` empties the messages but keeps the chat","`DeleteChatFromNotificationEvent` removes a chat deleted on another device","`GetOrderRecipientIdEvent` opens the right chat from an order"],"id":"W5|lib/features/chat/presentation/manager/chat_event.dart|The chat list"},{"name":"Reading messages","path":"lib/features/chat/presentation/manager/chat_event.dart","pri":"P0","s":["`GetMessagesForChatEvent` paginates without dropping or repeating a message","`GetAllMessagesBetweenEvent` returns the range asked for","`ReadAllMessagesEvent` clears the unread badge and reports the read state to the server","`SearchTextInChatEvent` returns matches inside that chat only","`GetMediaCountEvent` and `AddMediaCountEvent` agree on the same total"],"id":"W5|lib/features/chat/presentation/manager/chat_event.dart|Reading messages"},{"name":"Sending a message","path":"lib/features/chat/presentation/manager/chat_event.dart","pri":"P0","s":["`SendMessageEvent` returns the stored message carrying a server id","a failed send leaves the message in a failed state, not lost","`ResendMessageEvent` reuses the same local id so the message does not appear twice","`AddAMessageToAChannel` places the message in the right chat"],"id":"W5|lib/features/chat/presentation/manager/chat_event.dart|Sending a message"},{"name":"Sending a file","path":"lib/features/chat/presentation/manager/chat_event.dart","pri":"P0","s":["`UploadFileEvent` mints the ticket, uploads, then sends the message — in that order","`LoadWidthAndHeightForImage` stores the dimensions so the bubble does not jump when the image loads","`IncreaseFileImageVideoCounterEvent` counts the file once","a failed upload does not send a message pointing at a file that is not there"],"id":"W5|lib/features/chat/presentation/manager/chat_event.dart|Sending a file"},{"name":"Receiving in real time","path":"lib/features/chat/presentation/manager/chat_event.dart","pri":"P0","s":["`ReceiveMessageEvent` and `ReceiveMessageFromPusherEvent` both store the message","a message whose id is already present is NOT stored a second time","`NotifyThatIReceivedMessageEvent` and `WatchedMessageFromPusherEvent` update the tick state only forward, never back","`DeleteMessageNotificationReceivedInChatsEvent` removes a message deleted by the sender","`AddUserToTypingList` and `RemoveUserFromTypingList` add and remove the same user cleanly"],"id":"W5|lib/features/chat/presentation/manager/chat_event.dart|Receiving in real time"},{"name":"Managing a conversation","path":"lib/features/chat/presentation/manager/chat_event.dart","pri":"P1","s":["`BlockOrDeleteBlockUserEvent` blocks and unblocks symmetrically","`ChangeChatPropertyEvent` changes only the property asked for (mute, pin, archive)","`AddUserConntctSatuseEvent` reports the online state","`UpdateProfileInChatEvent` changes the chat profile without touching the market profile"],"id":"W5|lib/features/chat/presentation/manager/chat_event.dart|Managing a conversation"},{"name":"Contacts and sharing","path":"lib/features/chat/presentation/manager/chat_event.dart","pri":"P1","s":["`GetContactsEvent` returns the matched contacts and `SaveContactsEvent` uploads them once","`ShareProductWithContactsOrChannelsEvent` sends the product to every chosen target","`IncreaseSharedProductCountOnSocialAppEvent` counts a share to an outside app","`ChangeStatusShareProructToInitialEvent` resets the one-shot status"],"id":"W5|lib/features/chat/presentation/manager/chat_event.dart|Contacts and sharing"},{"name":"ChatBloc contract","path":"lib/features/chat/presentation/manager/chat_event.dart","pri":"P0","s":["the initial state is the documented one","hydrated round-trip, and an old stored payload still loads","events queued while the socket is down are applied in order when it returns"],"note":"Hydrated bloc.","id":"W5|lib/features/chat/presentation/manager/chat_event.dart|ChatBloc contract"},{"name":"Video preloading","path":"lib/features/chat/presentation/manager/preload_bloc/preloading_videos_bloc.dart","pri":"P2","s":["`PreloadInitialization` prepares the first video without blocking the thread","`PreloadPreviousOrNext` keeps one video ready on each side and releases the ones further away","scrolling fast does not leave a controller running for a video already off screen"],"id":"W5|lib/features/chat/presentation/manager/preload_bloc/preloading_videos_bloc.dart|Video preloading"}]},{"name":"Calls","units":[{"name":"Making and taking a call","path":"lib/features/calls/presentation/bloc/calls_event.dart","pri":"P0","s":["`MakeCallEvent` creates the session and reports the callee","`AnswerVideoCallEvent` moves the state to connected","`RejectVideoCallEvent` and `EndVideoCallEvent` both close the session","ending a call that already ended is a no-op, not an error","`UpdateCurrentActiveCallIdEvent` keeps exactly one active call id","`ResponseRejectVideoCallEvent` tells the caller the callee refused, and `InitResponseRejectVideoCallEvent` clears it","`ChangeMakeCallStatusToInitEvent` resets the one-shot status so reopening the screen does not redial","`UserInteractWithCall` records that the user answered or dismissed, so the ringing UI is not shown again for the same call"],"id":"W5|lib/features/calls/presentation/bloc/calls_event.dart|Making and taking a call"},{"name":"Call history and missed calls","path":"lib/features/calls/presentation/bloc/calls_event.dart","pri":"P1","s":["`GetMyCallsEvent` returns the call log","`GetMissedCallCountEvent`, `IcreaseMissedCallEvent` and `ResetMissedCallEvent` keep one count that never goes negative","`WatchMissedCallEvent` clears the badge for the calls that were seen","`ReceiveMissCallEvent` adds a missed call arriving while the app is open","`AddDurationToMessageCallEvent` writes the duration onto the call message","`DeleteMessageEvent` and `DeleteMessageNotificationReceivedInCallsEvent` remove a call entry"],"id":"W5|lib/features/calls/presentation/bloc/calls_event.dart|Call history and missed calls"}]}],"count":54},{"id":"W6","n":6,"title":"Stories and the seller dashboard","goal":"What a viewer does with stories, and everything a seller can do from the dashboard.","gate":"Done when every dashboard action has a test, including the permission check that gates it.","groups":[{"name":"Stories","units":[{"name":"Watching stories","path":"lib/features/story/presentation/bloc/story_event.dart","pri":"P1","s":["`GetStoryEvent` returns the stories grouped by author","`StorySelectedEvent` opens the right story","`IncreaseViewersEvent` counts a view once per story per session","`SetStoryLinkEvent` attaches the product link the story points at","`LoadingVideoEvent` and `FailureVideoEvent` move the player state without losing the user’s place"],"id":"W6|lib/features/story/presentation/bloc/story_event.dart|Watching stories"},{"name":"Posting a story","path":"lib/features/story/presentation/bloc/story_event.dart","pri":"P1","s":["`UploadStoryEvent` starts the post and rejects a file the app cannot handle before any upload begins","`UploadStoryCloudinaryEvent` uploads, then `AddStoryToOurServerEvent` registers it — in that order","a failed upload never registers a story pointing at nothing (`ChangeStatusUploadToFailureEvent`)","`DeleteStoryEvent` removes only the targeted story","`UpdateNameForUserInCollectionIfExistEvent` renames the author in place without refetching"],"id":"W6|lib/features/story/presentation/bloc/story_event.dart|Posting a story"},{"name":"StoryBloc contract","path":"lib/features/story/presentation/bloc/story_event.dart","pri":"P2","s":["the initial state is the documented one","hydrated round-trip, and an old stored payload still loads"],"note":"Hydrated bloc.","id":"W6|lib/features/story/presentation/bloc/story_event.dart|StoryBloc contract"}]},{"name":"Selling","units":[{"name":"Becoming a seller","path":"lib/features/dashBoard/presentation/bloc/dashBoard_event.dart","pri":"P1","s":["`SubmitVendorRequestEvent` sends the request with its documents","`UploadDocumentEvent` uploads before the request is submitted, and a failed upload blocks the submit","`GetVendorRequestEvent` returns the current request and its status","`UpdateVendorRequestEvent` edits a rejected request","`ResetVendorRequestStatesEvent` clears the one-shot status"],"id":"W6|lib/features/dashBoard/presentation/bloc/dashBoard_event.dart|Becoming a seller"},{"name":"Permissions","path":"lib/features/dashBoard/presentation/bloc/dashBoard_event.dart","pri":"P0","s":["`GetUserPermissionEvent` returns the permissions for the current shop","an action the permissions do not allow is refused before the request is sent","`GetUserRolesEvent` returns the assignable roles","the `X-Seller-ID` header carries the shop the dashboard is showing"],"id":"W6|lib/features/dashBoard/presentation/bloc/dashBoard_event.dart|Permissions"},{"name":"The shop team","path":"lib/features/dashBoard/presentation/bloc/dashBoard_event.dart","pri":"P1","s":["`GetUsersEvent` lists the team","`AddUserEvent` adds a member with the chosen role","`ChangeUserRoleEvent` changes one member’s role only","`DeleteUserEvent` removes only the targeted member","`LeaveShopEvent` removes the current user and clears the stored seller id"],"id":"W6|lib/features/dashBoard/presentation/bloc/dashBoard_event.dart|The shop team"},{"name":"Shop orders and products","path":"lib/features/dashBoard/presentation/bloc/dashBoard_event.dart","pri":"P1","s":["`GetOrdersEvent` and `NewGetOrdersEvent` return the shop’s orders","`ChangeOrderStatusEvent` and `ChangeOrderDetailStatusEvent` move one order or one line, and refuse a transition the server does not allow","`GetProductsEvent` returns the shop’s products","`GetBoutiquesEvent` returns the shops this user can manage"],"id":"W6|lib/features/dashBoard/presentation/bloc/dashBoard_event.dart|Shop orders and products"},{"name":"Seller stories","path":"lib/features/dashBoard/presentation/bloc/dashBoard_event.dart","pri":"P2","s":["`GetSellerStoriesEvent` returns the shop’s stories","`CreateSellerStoryEvent` uploads then creates, and `ResetCreateStoryStateEvent` clears the one-shot status","`DeleteSellerStoryEvent` removes only the targeted story"],"id":"W6|lib/features/dashBoard/presentation/bloc/dashBoard_event.dart|Seller stories"},{"name":"Bulk upload","path":"lib/features/dashBoard/presentation/bloc/dashBoard_event.dart","pri":"P2","s":["`GetExcelCategoriesEvent` returns the categories the template accepts","`DownloadExcelTemplateEvent` returns a file the app can open","`GetUploadedExcelFilesEvent` lists past uploads with their result"],"id":"W6|lib/features/dashBoard/presentation/bloc/dashBoard_event.dart|Bulk upload"}]}],"count":36},{"id":"W7","n":7,"title":"App shell and cross-cutting","goal":"Navigation, connectivity, and the failures no single test can catch: a broken graph, a key missing in one language, an init order that moved.","gate":"Done when the app can be composed in a test and every key resolves in all four languages.","groups":[{"name":"Whole-app checks","units":[{"name":"Moving around the app","path":"lib/features/app/blocs/app_bloc/app_event.dart","pri":"P1","s":["`ChangeTab` and `ChangeBasePage` switch the screen and keep each tab’s state","`ChangeTabInChat` and `ChangeIndexForSearch` do the same inside their screens","`ShowOrHideBars` and `HideBottomNavigationBar` do not change any data","`IsFromNotificationByForGround` opens the screen the notification points at","`RefreshChatInputField` clears the draft only for the chat that was left"],"id":"W7|lib/features/app/blocs/app_bloc/app_event.dart|Moving around the app"},{"name":"Connectivity","path":"lib/features/app/blocs/sensitive_connectivity/sensitive_connectivity_bloc.dart","pri":"P1","s":["`ChangeConnectivityEvent` going offline emits the offline state once, not once per probe","coming back online emits online and lets the queued work run"],"id":"W7|lib/features/app/blocs/sensitive_connectivity/sensitive_connectivity_bloc.dart|Connectivity"},{"name":"Image prefetch","path":"lib/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart","pri":"P2","s":["`CacheImageEvent` on an already-prefetched url does not fetch again","a failed prefetch does not block the screen"],"id":"W7|lib/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart|Image prefetch"},{"name":"Translation keys","path":"assets/languages/","pri":"P0","s":["every key in `locale_keys.g.dart` exists in ar-SY, en-US, ku-IQ and tr-TR","no file holds a key the others lack","no value is empty or still equal to the key name","placeholders match across the four files for the same key"],"note":"Cheap to write, and it catches a whole class of shipped bugs.","id":"W7|assets/languages/|Translation keys"},{"name":"Dependency graph","path":"lib/core/di/","pri":"P0","s":["`configureDependencies()` resolves every registered type without throwing","app-wide blocs are singletons — resolving twice returns the same instance","`ServiceProvider` provides every app-wide bloc with `BlocProvider.value`, never `create:`, which would close the singleton on dispose"],"note":"Protected runtime path. Tests only.","id":"W7|lib/core/di/|Dependency graph"},{"name":"Startup order","path":"lib/main.dart","pri":"P0","s":["the ordered init runs as documented: hydrated storage -> dotenv -> DI -> notifications -> Sentry -> `runApp`","the background-handler isolate guards are safe to run twice"],"note":"Protected runtime path. Tests only — never reorder anything to make a test pass.","id":"W7|lib/main.dart|Startup order"},{"name":"Hydrated migration","path":"lib/features/","pri":"P0","s":["each hydrated bloc reads a payload written by the previous release","an unreadable payload falls back to the initial state instead of crashing the app on every launch"],"note":"Covers AuthBloc, ChatBloc, HomeBloc, OrderBloc and StoryBloc.","id":"W7|lib/features/|Hydrated migration"},{"name":"Error reporting","path":"lib/core/utils/last_pages_tracker.dart","pri":"P1","s":["the last 5 visited pages are kept, oldest dropped, and a repeat of the top page is ignored","the same error signature inside 30s is reported once, not on every frame — without this guard a build error becomes an endless loop of network calls","a closed `HomeBloc` is skipped without throwing, and the signature is not recorded so the next call still reports","`SendErrorToMobileErrorLogEvent` and `SendErrorChatToServerEvent` carry the page trail and the error type to the backend"],"id":"W7|lib/core/utils/last_pages_tracker.dart|Error reporting"},{"name":"Reviewed and deliberately not tested","path":"lib/features/","pri":"P2","s":["internal bloc plumbing with no user-visible behaviour: `ChangeSlop`, `ChangeGlobalUsedVariablesInBloc`","generic loading and one-shot status resets already covered by the flow that raises them: `LoadFailureEvent` (home and story), `ChangeStatusOFGetProductsDetailsToSuccessEvent`","if any of these grows real logic later, move it out of this list and give it a test"],"note":"All 284 bloc events were reviewed against this plan. These are the only ones left out, and this is why.","id":"W7|lib/features/|Reviewed and deliberately not tested"}]}],"count":27}],"total":366,"seeded":[]}</script>
+<script id="state" type="application/json">{"checked":[],"at":0}</script>
+<script id="app">
+(function () {
+  'use strict';
+
+  var DATA = JSON.parse(document.getElementById('data').textContent);
+  var seed = JSON.parse(document.getElementById('state').textContent);
+  var LS = 'trydos-test-ledger-v1';
+
+  // ── state: newest of (published, local) wins, so an unchecked box stays unchecked
+  var state = { checked: (seed.checked || []).slice(), at: seed.at || 0 };
+  try {
+    var raw = localStorage.getItem(LS);
+    if (raw) {
+      var local = JSON.parse(raw);
+      if ((local.at || 0) > state.at) state = { checked: local.checked || [], at: local.at };
+    }
+  } catch (e) { /* private window, blocked storage: carry on with the published state */ }
+  if (!DATA.seedApplied && state.at === 0 && (DATA.seeded || []).length) {
+    state.checked = (DATA.seeded || []).slice();
+  }
+
+  var done = new Set(state.checked);
+
+  // ── flatten the tiers once; every lookup below reads these
+  var UNITS = [];
+  DATA.tiers.forEach(function (t) {
+    t.groups.forEach(function (g) {
+      g.tier = t;
+      g.units.forEach(function (u) {
+        u.group = g; u.tier = t;
+        // `_`, `-` and `/` become spaces, so searching "token refresh" finds
+        // `token_refresh_coordinator.dart` the way a reader expects it to.
+        u.hay = (t.title + ' ' + g.name + ' ' + u.name + ' ' + u.path + ' ' + u.s.join(' '))
+          .toLowerCase().replace(/[_\-\/.]/g, ' ');
+        UNITS.push(u);
+      });
+    });
+  });
+
+  var filter = { q: '', terms: [], pri: { P0: true, P1: true, P2: true }, hideDone: false };
+
+  function setQuery(text) {
+    filter.q = text;
+    filter.terms = text.toLowerCase().replace(/[_\-\/.]/g, ' ').split(/\s+/).filter(Boolean);
+  }
+
+  function sid(u, i) { return u.id + '#' + i; }
+  function unitDone(u) { var n = 0; for (var i = 0; i < u.s.length; i++) if (done.has(sid(u, i))) n++; return n; }
+
+  function visibleUnits(scope) {
+    var terms = filter.terms;
+    return (scope || UNITS).filter(function (u) {
+      if (!filter.pri[u.pri]) return false;
+      for (var i = 0; i < terms.length; i++) if (u.hay.indexOf(terms[i]) === -1) return false;
+      if (filter.hideDone && unitDone(u) === u.s.length) return false;
+      return true;
+    });
+  }
+
+  function tally(units) {
+    var t = 0, d = 0;
+    units.forEach(function (u) { t += u.s.length; d += unitDone(u); });
+    return { total: t, done: d };
+  }
+
+  // ── rendering ────────────────────────────────────────────
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+  function rich(s) {
+    return esc(s).replace(/`([^`]+)`/g, function (_, c) { return '<code>' + c + '</code>'; });
+  }
+  function pct(d, t) { return t ? Math.round((d / t) * 100) : 0; }
+  function meter(d, t) { return '<div class="meter"><span style="width:' + pct(d, t) + '%"></span></div>'; }
+
+  function unitHtml(u) {
+    var d = unitDone(u);
+    var rows = u.s.map(function (text, i) {
+      var id = sid(u, i);
+      return '<label class="row"><input type="checkbox" data-sid="' + esc(id) + '"' +
+        (done.has(id) ? ' checked' : '') + '><span>' + rich(text) + '</span></label>';
+    }).join('');
+    return '<div class="unit' + (d === u.s.length ? ' is-done' : '') + '">' +
+      '<div class="unit-head"><span class="unit-name">' + esc(u.name) + '</span>' +
+      '<span class="chip ' + u.pri + '">' + u.pri + '</span></div>' +
+      '<div class="unit-path">' + esc(u.path) + '</div>' +
+      (u.note ? '<p class="unit-note">' + rich(u.note) + '</p>' : '') +
+      '<div class="scen">' + rows + '</div></div>';
+  }
+
+  function groupHtml(g) {
+    var units = visibleUnits(g.units);
+    if (!units.length) return '';
+    var s = tally(units);
+    // A search opens what it matched; otherwise the group keeps its own default.
+    var open = filter.q ? true : !g.collapsed;
+    return '<details class="group"' + (open ? ' open' : '') + '>' +
+      '<summary class="group-head"><span class="group-name">' + esc(g.name) + '</span>' +
+      '<span class="group-count" data-count-for="' + esc(g.tier.id + '::' + g.name) + '">' +
+      s.done + '/' + s.total + '</span></summary>' +
+      '<div class="group-body">' + units.map(unitHtml).join('') + '</div></details>';
+  }
+
+  function tierHtml(t) {
+    var units = visibleUnits(t.groups.reduce(function (a, g) { return a.concat(g.units); }, []));
+    if (!units.length) return '';
+    var s = tally(units);
+    var open = filter.q ? true : (t.openByDefault !== false);
+    var body = t.groups.map(groupHtml).join('');
+    return '<details class="tier"' + (open ? ' open' : '') + ' data-tier="' + t.id + '">' +
+      '<summary class="tier-head">' +
+      '<span class="tier-n">' + String(t.n).padStart(2, '0') + '</span>' +
+      '<span><h2 class="tier-title">' + esc(t.title) + '</h2>' +
+      '<p class="tier-goal">' + rich(t.goal) + '</p>' +
+      '<p class="tier-gate"><b>Done when</b> ' + rich(t.gate.replace(/^Done when /, '')) + '</p></span>' +
+      '<span class="tier-right"><span class="tier-count"><b>' + s.done + '</b>/' + s.total + '</span>' +
+      meter(s.done, s.total) + '<div class="chev"></div></span>' +
+      '</summary><div class="tier-body">' + body + '</div></details>';
+  }
+
+  function headHtml() {
+    var all = tally(UNITS);
+    var byPri = ['P0', 'P1', 'P2'].map(function (p) {
+      var s = tally(UNITS.filter(function (u) { return u.pri === p; }));
+      return '<span class="chip ' + p + '">' + p + ' ' + s.done + '/' + s.total + '</span>';
+    }).join('');
+    return '<header class="mast"><div class="wrap">' +
+      '<p class="eyebrow">Trydos · Flutter · branch dev_new</p>' +
+      '<h1>Test Ledger</h1>' +
+      '<p class="lede">The tests that hold this app up — the paths a user actually walks and the code every screen sits on. ' +
+      'Not every file, not every field: ' +
+      '<strong>' + DATA.tiers.length + ' waves</strong>, ' +
+      '<strong>' + UNITS.length + ' units</strong>, ' +
+      '<strong>' + all.total + ' scenarios</strong>. ' +
+      'The waves are ordered by dependency — nothing in a later wave can be written before the one above it is done. ' +
+      'Tick a scenario when its test is written and green.</p>' +
+      '<div class="headline-stats">' +
+      '<div><div class="bignum" id="big">' + all.done + '<small> / ' + all.total + '</small></div>' +
+      '<div class="stat-label">scenarios written</div></div>' +
+      '<div><div class="pri-split">' + byPri + '</div><div class="stat-label">by priority</div></div>' +
+      '</div>' + meter(all.done, all.total) +
+      '</div></header>';
+  }
+
+  function controlsHtml() {
+    return '<div class="controls"><div class="wrap">' +
+      '<input class="search" id="q" type="search" placeholder="Search a unit, a path, a scenario…" value="' + esc(filter.q) + '">' +
+      '<button class="btn p0" data-pri="P0" aria-pressed="' + filter.pri.P0 + '">P0</button>' +
+      '<button class="btn p1" data-pri="P1" aria-pressed="' + filter.pri.P1 + '">P1</button>' +
+      '<button class="btn p2" data-pri="P2" aria-pressed="' + filter.pri.P2 + '">P2</button>' +
+      '<button class="btn" id="hide" aria-pressed="' + filter.hideDone + '">Hide done</button>' +
+      '<span class="spacer"></span>' +
+      '<span class="savepill" id="save"><span class="dot"></span><span id="savetext">ready</span></span>' +
+      '<button class="btn" id="import" title="Load a progress file">Import</button>' +
+      '<button class="btn" id="export" title="Save a progress file">Export</button>' +
+      '<input type="file" id="importfile" accept="application/json,.json" hidden>' +
+      '</div></div>';
+  }
+
+  function footHtml() {
+    return '<footer><div class="wrap"><div class="cols">' +
+      '<div><h2>Running the suite</h2>' +
+      '<div class="pre">flutter pub get\n' +
+      'dart run build_runner build --delete-conflicting-outputs\n' +
+      'flutter analyze\n' +
+      'flutter test --coverage</div>' +
+      '<p>One wave, one ticket, in order. A wave is finished when its <em>Done when</em> line is true — not when its boxes are ticked.</p></div>' +
+      '<div><h2>The gate</h2><ol>' +
+      '<li>A ticket branch pushes; <code>test.yml</code> runs analyze and the full suite.</li>' +
+      '<li>A pull request into <code>dev_new</code> cannot merge while the suite is red.</li>' +
+      '<li>On merge into <code>dev_new</code>, <code>deploy.yml</code> runs <em>after</em> the test job passes — today it runs with no gate at all, and wave 00 fixes that.</li>' +
+      '<li>Coverage is uploaded per run, so a drop is visible before it becomes a habit.</li>' +
+      '</ol></div>' +
+      '<div><h2>Left out on purpose</h2>' +
+      '<p>No <code>toJson</code>/<code>fromJson</code> round-trips for the 118 models, no three-line test per use case, no test per bloc event. That work is real but mechanical, and it would cost months while catching little. It stays available: add it later, one feature at a time, when a bug proves it was needed.</p>' +
+      '<p>This is a plan, not a report — the real answer to “is this tested” is <code>flutter test</code>.</p></div>' +
+      '<div><h2>Working offline</h2>' +
+      '<p>This file needs no network. Open <code>docs/test-ledger.html</code> straight from disk and everything works — the webfonts are the only outside request, and the page is designed to look right without them.</p>' +
+      '<p>Ticks are kept in the browser that opened the file. To make them survive a machine, a browser reset or a teammate, press <strong>Export</strong>, save it as <code>docs/test-ledger-progress.json</code>, and commit it. <strong>Import</strong> reads it back. When the plan is regenerated the import reports how many ticks no longer match instead of dropping them quietly.</p></div>' +
+      '</div></div></footer>';
+  }
+
+  function render() {
+    var root = document.getElementById('root');
+    var body = DATA.tiers.map(tierHtml).join('');
+    root.innerHTML = headHtml() + controlsHtml() +
+      '<main><div class="wrap">' + (body || '<p class="empty">Nothing matches these filters.</p>') + '</div></main>' +
+      footHtml();
+    wire();
+  }
+
+  // ── counters refresh without a full re-render, so ticking stays instant
+  function refreshCounts() {
+    var all = tally(UNITS);
+    var big = document.getElementById('big');
+    if (big) big.innerHTML = all.done + '<small> / ' + all.total + '</small>';
+    var mastMeter = document.querySelector('.mast .meter > span');
+    if (mastMeter) mastMeter.style.width = pct(all.done, all.total) + '%';
+    document.querySelectorAll('.mast .chip').forEach(function (el) {
+      var p = el.className.replace('chip ', '').trim();
+      var s = tally(UNITS.filter(function (u) { return u.pri === p; }));
+      el.textContent = p + ' ' + s.done + '/' + s.total;
+    });
+    DATA.tiers.forEach(function (t) {
+      var el = document.querySelector('[data-tier="' + t.id + '"]');
+      if (!el) return;
+      var units = visibleUnits(t.groups.reduce(function (a, g) { return a.concat(g.units); }, []));
+      var s = tally(units);
+      el.querySelector('.tier-count').innerHTML = '<b>' + s.done + '</b>/' + s.total;
+      el.querySelector('.tier-right .meter > span').style.width = pct(s.done, s.total) + '%';
+      t.groups.forEach(function (g) {
+        var c = el.querySelector('[data-count-for="' + (t.id + '::' + g.name).replace(/"/g, '\\"') + '"]');
+        if (!c) return;
+        var gs = tally(visibleUnits(g.units));
+        c.textContent = gs.done + '/' + gs.total;
+      });
+    });
+  }
+
+  // ── persistence ──────────────────────────────────────────
+  var artifact = null, artifactTried = false, timer = null;
+
+  function setSave(text, tone) {
+    var pill = document.getElementById('save');
+    var t = document.getElementById('savetext');
+    if (t) t.textContent = text;
+    if (pill) pill.setAttribute('data-tone', tone || 'ok');
+  }
+
+  function buildDoc(next) {
+    var css = document.getElementById('css').textContent;
+    var data = document.getElementById('data').textContent.replace(/</g, '\\u003c');
+    var app = document.getElementById('app').textContent;
+    var fonts =
+      '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">';
+    return '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>Trydos Test Ledger<\/title>' + fonts +
+      '<style id="css">' + css + '<\/style></head><body><div id="root"><\/div>' +
+      '<script id="data" type="application/json">' + data + '<\/script>' +
+      '<script id="state" type="application/json">' + JSON.stringify(next).replace(/</g, '\\u003c') + '<\/script>' +
+      '<script id="app">' + app + '<\/script></body></html>';
+  }
+
+  // Returns false when the browser refused to keep it. Never swallow that: a
+  // silent refusal means a day of ticking is gone the moment the tab closes.
+  function saveLocal(next) {
+    try { localStorage.setItem(LS, JSON.stringify(next)); return true; }
+    catch (e) { return false; }
+  }
+
+  // Probe once at start, so the warning is on screen before the first tick
+  // rather than after an hour of work.
+  var STORAGE_OK = (function () {
+    try {
+      localStorage.setItem(LS + '-probe', '1');
+      localStorage.removeItem(LS + '-probe');
+      return true;
+    } catch (e) { return false; }
+  })();
+
+  function schedule() {
+    state = { checked: Array.from(done), at: Date.now() };
+    var kept = saveLocal(state);
+    if (!kept) { setSave('NOT SAVED — press Export', 'warn'); return; }
+    if (LOCAL) { setSave('saved in this browser', 'ok'); return; }
+    setSave('saving…', 'wait');
+    clearTimeout(timer);
+    timer = setTimeout(commit, 1400);
+  }
+
+  async function commit() {
+    var snapshot = state;
+    if (!artifactTried) {
+      artifactTried = true;
+      try { artifact = window.claude && claude.use ? await claude.use('artifact') : null; }
+      catch (e) { artifact = null; }
+    }
+    if (!artifact) { setSave('saved on this device', 'ok'); return; }
+    try {
+      await artifact.publish(buildDoc(snapshot));
+      setSave('saved for everyone', 'ok');
+    } catch (err) {
+      // `conflict` means another view published first and every view reloads to it.
+      var code = err && (err.code || err.name);
+      setSave(code === 'conflict' ? 'someone saved first — reloading' : 'saved on this device', code === 'conflict' ? 'wait' : 'ok');
+    }
+  }
+
+  // ── events ───────────────────────────────────────────────
+  function wire() {
+    var q = document.getElementById('q');
+    var t;
+    q.addEventListener('input', function () {
+      clearTimeout(t);
+      t = setTimeout(function () {
+        var caret = q.selectionStart;
+        setQuery(q.value.trim());
+        render();
+        // render() replaces the input, so put the cursor back where it was
+        var next = document.getElementById('q');
+        next.focus();
+        try { next.setSelectionRange(caret, caret); } catch (e) { /* type=search on some browsers */ }
+      }, 180);
+    });
+    document.querySelectorAll('[data-pri]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var p = b.getAttribute('data-pri');
+        filter.pri[p] = !filter.pri[p];
+        render();
+      });
+    });
+    document.getElementById('hide').addEventListener('click', function () {
+      filter.hideDone = !filter.hideDone; render();
+    });
+    document.getElementById('export').addEventListener('click', exportJson);
+    var picker = document.getElementById('importfile');
+    document.getElementById('import').addEventListener('click', function () { picker.click(); });
+    picker.addEventListener('change', function () {
+      if (picker.files && picker.files[0]) importJson(picker.files[0]);
+      picker.value = ''; // let the same file be picked again
+    });
+
+    document.getElementById('root').addEventListener('change', function (e) {
+      var box = e.target.closest ? e.target.closest('input[data-sid]') : null;
+      if (!box) return;
+      var id = box.getAttribute('data-sid');
+      if (box.checked) done.add(id); else done.delete(id);
+      var unit = box.closest('.unit');
+      if (unit) {
+        var boxes = unit.querySelectorAll('input[data-sid]');
+        var all = Array.prototype.every.call(boxes, function (b) { return b.checked; });
+        unit.classList.toggle('is-done', all);
+      }
+      refreshCounts();
+      schedule();
+    });
+  }
+
+  // Opened from disk there is no shared store to publish to, so the progress file
+  // IS the record: export it next to this page and commit it with the tests.
+  var LOCAL = !(typeof window.claude === 'object' && window.claude !== null);
+
+  var FILENAME = 'test-ledger-progress.json';
+
+  function toClipboard(text) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(
+        function () { setSave('copied to clipboard', 'ok'); },
+        function () { window.prompt('Copy this JSON:', text); }
+      );
+    } else {
+      window.prompt('Copy this JSON:', text);
+    }
+  }
+
+  async function exportJson() {
+    var s = tally(UNITS);
+    var text = JSON.stringify({
+      plan: 'trydos-test-ledger',
+      generated: new Date().toISOString(),
+      total: s.total, done: s.done,
+      checked: Array.from(done).sort(),
+    }, null, 2);
+
+    if (LOCAL) {
+      // Opened from disk the page can hand the file over itself.
+      try {
+        var url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = FILENAME;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+        setSave('exported', 'ok');
+        return;
+      } catch (e) { toClipboard(text); return; }
+    }
+
+    // Published, the viewer decides whether the file is saved.
+    var dl = null;
+    try { dl = claude.use ? await claude.use('downloads') : null; } catch (e) { dl = null; }
+    if (!dl) { toClipboard(text); return; }
+    try {
+      await dl.save({ filename: FILENAME, data: text });
+      setSave('saved ' + FILENAME, 'ok');
+    } catch (err) {
+      var code = err && err.code;
+      if (code === 'declined') setSave('export cancelled', 'wait');
+      else if (code === 'rate_limited') setSave('try the export again in a moment', 'wait');
+      else toClipboard(text);
+    }
+  }
+
+  function importJson(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var parsed;
+      try { parsed = JSON.parse(String(reader.result)); }
+      catch (e) { setSave('not a JSON file', 'warn'); return; }
+      if (!parsed || !Array.isArray(parsed.checked)) { setSave('no `checked` list in that file', 'warn'); return; }
+
+      // Ids change when the plan is regenerated; report what no longer matches
+      // rather than silently dropping it.
+      var known = new Set();
+      UNITS.forEach(function (unit) { unit.s.forEach(function (_, i) { known.add(sid(unit, i)); }); });
+      var kept = parsed.checked.filter(function (id) { return known.has(id); });
+      var lost = parsed.checked.length - kept.length;
+
+      done = new Set(kept);
+      render();
+      schedule();
+      setSave(lost ? 'imported ' + kept.length + ', ' + lost + ' unknown' : 'imported ' + kept.length, lost ? 'wait' : 'ok');
+    };
+    reader.onerror = function () { setSave('could not read that file', 'warn'); };
+    reader.readAsText(file);
+  }
+
+  // Big waves stay shut on open; the small ones are useful straight away.
+  DATA.tiers.forEach(function (t) { t.openByDefault = t.count < 120; });
+
+  render();
+  if (!STORAGE_OK) setSave('this browser will not remember ticks — Export before you close', 'warn');
+  else setSave(LOCAL ? 'ticks kept in this browser' : 'ready', 'ok');
+})();
+</script>

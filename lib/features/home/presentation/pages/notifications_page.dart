@@ -15,6 +15,8 @@ import '../../data/models/get_user_notifications_model.dart';
 import '../manager/homeBloc/home_bloc.dart';
 import '../manager/homeBloc/home_event.dart';
 import '../manager/homeBloc/home_state.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -159,7 +161,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             child: Center(
                               child:
                                   state.getUserNotificationModel!.hasReachedMax
-                                  ? const Text('No More Items')
+                                  ? Text(LocaleKeys.no_more_items.tr())
                                   : const CircularProgressIndicator(),
                             ),
                           );

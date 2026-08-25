@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart';
@@ -21,6 +20,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class PriceFilter extends StatefulWidget {
   const PriceFilter({
@@ -218,7 +218,7 @@ class _PriceFilterState extends State<PriceFilter> {
                       disableAnimation: true,
                     ),
                     onDragging: (handlerIndex, lowerValue, upperValue) {
-                      if (kDebugMode) print('ssssssss');
+                      devLog('ssssssss');
                       widget.lowerAndUpperBound.value = Tuple2(
                         lowerValue,
                         upperValue,

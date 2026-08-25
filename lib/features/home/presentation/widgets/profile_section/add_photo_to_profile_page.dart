@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -28,6 +27,7 @@ import 'package:trydos/features/home/presentation/widgets/profile_section/crope_
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class AddPhotoProfilePage extends StatefulWidget {
   const AddPhotoProfilePage({super.key});
@@ -52,7 +52,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
     if (!(prefsRepository.myProfilePhoto == null ||
         prefsRepository.myProfilePhoto == "")) {
-      if (kDebugMode) print(
+      devLog(
         "22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222",
       );
       visiblePersonPhoto.value = File("initImage");

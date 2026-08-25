@@ -64,6 +64,7 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dar
 import '../widgets/product_listing/product_listing_filter_list.dart';
 import '../widgets/product_listing/product_listing_loading.dart';
 import '../widgets/product_listing/sort_products_sheet.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ProductListingPage extends StatefulWidget {
   final String boutiqueSlug;
@@ -342,11 +343,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
       "Product Listing Page , boutique Name:${widget.boutiqueName ?? widget.boutiqueSlug}",
     );
     if (kDebugMode)
-      print(
+      devLog(
         "%%%%%%%%%*********************************************${widget.boutiqueFirstBanner}0*",
       );
     if (kDebugMode)
-      print("%%%%%%%%%${GetIt.I<PrefsRepository>().storiesToken}*");
+      devLog("%%%%%%%%%${GetIt.I<PrefsRepository>().storiesToken}*");
     // 🔥 FIX: إزالة Timer.periodic الخطير - استخدام WidgetsBinding آمن بدلاً
     /* WidgetsBinding.instance.addPostFrameCallback((_) {
       _setHtmlDescriptionHeight();
@@ -597,14 +598,18 @@ class _ProductListingPageState extends State<ProductListingPage> {
             showShadowForColorImages.value = false;
             return false;
           }
-        } catch (e) {}
+        } catch (e) {
+          devLog('product_listing_page.dart: ignored error', e);
+        }
         prefsRepository.setTagsInUrlToFilter([]);
         try {
           if (panelControllerForCart.isPanelOpen) {
             panelControllerForCart.close();
             return await Future.value(false);
           }
-        } catch (e) {}
+        } catch (e) {
+          devLog('product_listing_page.dart: ignored error', e);
+        }
         if (widget.fromBackground) {
           context.go(GRouter.config.kRootRoute);
 
@@ -906,7 +911,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           .close();
                                                       return;
                                                     }
-                                                  } catch (e) {}
+                                                  } catch (e) {
+                                                    devLog('product_listing_page.dart: ignored error', e);
+                                                  }
                                                   if (widget.fromBackground) {
                                                     context.go(
                                                       GRouter.config.kRootRoute,
@@ -2564,7 +2571,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             state.isExpandedForListingPage ??
                                             false;
                                         if (kDebugMode)
-                                          print(
+                                          devLog(
                                             "///DDDDDDDDDDDDDDDDDDDDDDDDD************//${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                                 '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success)) || (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading && !state.cashedOrginalBoutique)}DDD////**/*//${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                     '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter'
@@ -2978,7 +2985,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 !state
                                                     .isGettingProductListingWithPagination) {
                                           if (kDebugMode)
-                                            print(
+                                            devLog(
                                               "DDDDDDDDDDDDDDDDDDDDDDDDD************//${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                                   '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success)) || (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading && !state.cashedOrginalBoutique)}DDD${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                       '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
@@ -3241,12 +3248,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
       required List<String> sizesForEachColor,
       required productDetail.Product? product,
       required filter_products.Products products}) async {
-    if (kDebugMode) print(
+    devLog(
         "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss${currentVariation?.qty}sssssssssssssss4${currentVariation?.type}");
     changeVariationIfQtyZero = false;
 
     if (currentVariation?.qty != null && currentVariation?.qty == 0) {
-      if (kDebugMode) print(
+      devLog(
           "s223333333333322ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss4${currentVariation?.type}");
 
       currentVariation =
@@ -3280,13 +3287,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 currentSelectedColor: index != -1 ? index : 0,
                 productId: productId)));
       } else {
-        if (kDebugMode) print(
+        devLog(
             "s222ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss4${currentVariation?.type}");
 
         currentSelectedColorAfterChangeVariant = currentSelectedColor;
         currentVariation =
             product?.variation?.firstWhere((element) => (element.qty ?? 0) > 0);
-        if (kDebugMode) print(
+        devLog(
             "s222ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss4${currentVariation?.type}");
 
         await Future.delayed(
@@ -3299,7 +3306,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
         homeBloc.add(AddCurrentColorSizeEvent(
             choice_1: (currentVariation.type!.split("-").toList()[1])));
       } else if (((products.syncColorImages?.length ?? 0) == 0)) {
-        if (kDebugMode) print(
+        devLog(
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaazzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz4${currentVariation.type}");
         await Future.delayed(
             Duration(milliseconds: 600),

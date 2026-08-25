@@ -7,6 +7,8 @@ import '../../../../app/trydos_shimmer_loading.dart';
 import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 class PaymentWebview extends StatefulWidget {
   final String url;
@@ -124,7 +126,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
                     children: [
                       const Icon(Icons.error, color: Colors.red, size: 60),
                       const SizedBox(height: 10),
-                      const Text("Failed to load page. Please try again."),
+                      Text(LocaleKeys.failed_to_load_page_try_again.tr()),
                       const SizedBox(height: 30),
                       ElevatedButton(
                         onPressed: () async {

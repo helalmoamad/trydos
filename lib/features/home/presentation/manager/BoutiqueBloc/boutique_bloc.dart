@@ -37,6 +37,7 @@ import 'package:trydos/service/firebase_analytics_service/firebase_analytics_ser
 
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../core/error/error_manager.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 const throttleDuration = Duration(minutes: 2);
 
@@ -425,8 +426,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 Map.of({event.boutiqueSlug: r.data!.totalSize ?? 0}),
             getProductFiltersWithPrefetchModel: data));
       } catch (e, st) {
-        if (kDebugMode) print(e);
-        if (kDebugMode) print(st);
+        devLog(e);
+        devLog(st);
       }
     });
   }*/
@@ -547,7 +548,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     Emitter<BoutiqueState> emit,
   ) async {
     if (kDebugMode)
-      print(
+      devLog(
         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF#####wwwwwwwwwwwwwwwwwwwwwwwwwwwwt",
       );
     String key = event.boutiqueSlug + (event.category ?? '');
@@ -634,8 +635,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             : [],
       );
     } catch (e, st) {
-      if (kDebugMode) print(e);
-      if (kDebugMode) print(st);
+      devLog(e);
+      devLog(st);
     }
     final response = await getProductFiltersUseCase(
       GetProductsFiltersParams(
@@ -797,8 +798,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               //removeAlreadyChoosedFilters(r, filters),
             ),
           );
-          if (kDebugMode) print(e);
-          if (kDebugMode) print(st);
+          devLog(e);
+          devLog(st);
         }
       },
     );
@@ -944,7 +945,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   ) async {
     String key = event.boutiqueSlug + (event.category ?? '');
     if (kDebugMode)
-      print(
+      devLog(
         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF################################${key}",
       );
     /* if (event.getProductsFilterPreFetch &&
@@ -1031,8 +1032,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             : [],
       );
     } catch (e, st) {
-      if (kDebugMode) print(e);
-      if (kDebugMode) print(st);
+      devLog(e);
+      devLog(st);
     }
     final response = await getProductFiltersUseCase(
       GetProductsFiltersParams(
@@ -1143,8 +1144,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             ),
           );
         } catch (e, st) {
-          if (kDebugMode) print(e);
-          if (kDebugMode) print(st);
+          devLog(e);
+          devLog(st);
         }
       },
     );
@@ -1166,7 +1167,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             event.boutiqueSlug != "*flashDeal*" &&
             event.boutiqueSlug != "*recommended*") &&
         ((responseFromSharedPrefrence.length) > 15)) {
-      if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC/////");
+      devLog("CCCCCCCCCCCCCCCCCCCCCCC/////");
       return;
     }
     if (event.boutiqueSlug == "*featured*") {
@@ -1215,7 +1216,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 getProductListingWithFiltersPaginationModels,
           ),
         );
-      } catch (e) {}
+      } catch (e) {
+        devLog('boutique_bloc.dart: ignored error', e);
+      }
     } else if (event.boutiqueSlug == "*flashDeal*") {
       try {
         Map<String, PaginationModel<product.Products>?>
@@ -1263,7 +1266,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 getProductListingWithFiltersPaginationModels,
           ),
         );
-      } catch (e) {}
+      } catch (e) {
+        devLog('boutique_bloc.dart: ignored error', e);
+      }
     } else if (event.boutiqueSlug == "*recommended*") {
       try {
         Map<String, PaginationModel<product.Products>?>
@@ -1311,7 +1316,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 getProductListingWithFiltersPaginationModels,
           ),
         );
-      } catch (e) {}
+      } catch (e) {
+        devLog('boutique_bloc.dart: ignored error', e);
+      }
     } else {
       Map<String, bool> boutiquesThatDidPrefetch = Map.of(
         state.boutiquesThatDidPrefetch,
@@ -1320,7 +1327,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           (event.boutiqueSlug != "*featured*" &&
               event.boutiqueSlug != "*flashDeal*" &&
               event.boutiqueSlug != "*recommended*")) {
-        if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC**---");
+        devLog("CCCCCCCCCCCCCCCCCCCCCCC**---");
         return;
       }
       if (boutiquesThatDidPrefetch[key] == null) {
@@ -1733,7 +1740,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         '${(event.getWithPagination) ? ((state.cashedOrginalBoutique) ? 'withoutFilter' : "") : ((event.cashedOrginalBoutique) ? 'withoutFilter' : "")}' +
         '${(event.category ?? '')}';
     if (kDebugMode)
-      print(
+      devLog(
         "///DDDDDDDDDDGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${keyWithoutFilter}",
       );
     String key = '${event.boutiqueSlug}' + '${(event.category ?? '')}';
@@ -2143,7 +2150,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               //    });
             }
           });
-        } catch (e) {}
+        } catch (e) {
+          devLog('boutique_bloc.dart: ignored error', e);
+        }
         if (event.cashedOrginalBoutique &&
             !(event.fromSearch ?? false) &&
             !(event.getWithPagination)) {
@@ -2486,7 +2495,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             Map.of(getProductListingWithFiltersForFirstFiveFilter),
       ));*/
       if (kDebugMode)
-        print(
+        devLog(
           "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666699999999999988888888888888888666666666FFFFFFF${event.boutiqueSlug}",
         );
 
@@ -2906,7 +2915,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               //    });
             }
           });
-        } catch (e) {}
+        } catch (e) {
+          devLog('boutique_bloc.dart: ignored error', e);
+        }
         if (event.cashedOrginalBoutique &&
             !(event.fromSearch ?? false) &&
             !(event.getWithPagination)) {

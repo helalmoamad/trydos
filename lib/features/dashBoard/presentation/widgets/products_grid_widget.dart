@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
@@ -6,6 +5,7 @@ import 'package:trydos/features/dashBoard/data/models/get_seller_products_model.
 import 'package:easy_localization/easy_localization.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'pagination_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ProductsGridWidget extends StatelessWidget {
   final List<Product> products;
@@ -84,7 +84,7 @@ class ProductCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           // TODO: Navigate to product details
-          if (kDebugMode) print('Product tapped: ${product.name}');
+          devLog('Product tapped: ${product.name}');
         },
         borderRadius: BorderRadius.circular(12.r),
         child: Ink(

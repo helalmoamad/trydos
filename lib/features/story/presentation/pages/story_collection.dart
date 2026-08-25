@@ -53,7 +53,7 @@ import '../../data/models/get_stories_model.dart';
 import '../bloc/story_state.dart';
 import '../widget/animated_builder.dart';
 import 'dart:ui';
-
+import 'package:trydos/common/helper/dev_log.dart';
 // ignore: must_be_immutable
 class StoryCollection extends StatefulWidget {
   final int collectionIndex;
@@ -252,9 +252,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   _videoController = null;
                   init = null;
                   if (LanguageService.rtl) {
-                    if (kDebugMode) print("rtlfffffffffffffffffffffffffffff ");
+                    devLog("rtlfffffffffffffffffffffffffffff ");
                     if (dx < screenWidth * 1 / 2) {
-                      if (kDebugMode) print("rtlfffffffffff54");
+                      devLog("rtlfffffffffff54");
                       widget.animatedController.stop();
                       widget.animatedController.reset();
                       if ((state.currentStoryInEachCollection[widget
@@ -457,10 +457,10 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               SelectedStoriesStatus.init) {
                         widget.animatedController.forward();
                         if (widget.stopAnimationAndVideo) {
-                          if (kDebugMode) print("111111111111111111111111");
+                          devLog("111111111111111111111111");
                           widget.animatedController.stop();
                         } else {
-                          if (kDebugMode) print("112222222222222211111111111");
+                          devLog("112222222222222211111111111");
                           widget.animatedController.forward();
                         }
                         return Stack(
@@ -687,7 +687,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           },
                           onError: (e) {
                             if (kDebugMode)
-                              print(
+                              devLog(
                                 "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG$e",
                               );
                             GetIt.I<StoryBloc>().add(
@@ -1097,7 +1097,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         title: LocaleKeys.intellectual_property.tr(),
       ),
       ReportReason(key: "violence", title: LocaleKeys.violence.tr()),
-      ReportReason(key: "other", title: LocaleKeys.other.tr()),
+      ReportReason(key: "other", title: LocaleKeys.other_option.tr()),
     ];
 
     final selectedReasons = <String>{};
@@ -1436,11 +1436,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         if (list is List) {
           return list.map((e) => e.toString()).toList();
         } else {
-          if (kDebugMode) print('المعطى ليس قائمة JSON');
+          devLog('المعطى ليس قائمة JSON');
           return [];
         }
       } catch (e) {
-        if (kDebugMode) print('خطأ في تحويل JSON: $e');
+        devLog('خطأ في تحويل JSON: $e');
         return [];
       }
     }
@@ -1471,11 +1471,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     final coupon = _extractSection(uri, 'coupon');
     final tagsNames = _extractSection(uri, 'tags_names');
 
-    if (kDebugMode) print('boutiques: $boutiques');
-    if (kDebugMode) print('sizes: $sizes');
-    if (kDebugMode) print('brands: $brands');
-    if (kDebugMode) print('colors: $colors');
-    if (kDebugMode) print('categories: $categories');
+    devLog('boutiques: $boutiques');
+    devLog('sizes: $sizes');
+    devLog('brands: $brands');
+    devLog('colors: $colors');
+    devLog('categories: $categories');
     if (coupon.isNotEmpty) {
       prefsRepository.setOrderCoupon(coupon.first);
     }
@@ -1631,7 +1631,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         await launchUrl(Uri.parse(uri));
       }
       // Navigator.of(context).pop();
-    } catch (e) {}
+    } catch (e) {
+      devLog('story_collection.dart: ignored error', e);
+    }
   }
 
   Widget _handleWithProductWidget(String productId, String productSlug) {
@@ -1787,7 +1789,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
               height: 35.h,
               child: InkWell(
                 onTap: () {
-                  if (kDebugMode) print("FFFFFFFFFFFFFFFFFFF$url");
+                  devLog("FFFFFFFFFFFFFFFFFFF$url");
                   _videoController?.pause();
                   widget.animatedController.stop();
                   tapOnUrl(url);

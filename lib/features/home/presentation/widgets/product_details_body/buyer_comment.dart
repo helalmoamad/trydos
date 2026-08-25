@@ -36,6 +36,7 @@ import 'package:trydos/features/home/presentation/widgets/product_details_body/s
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../../core/utils/theme_state.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class BuyerComment extends StatefulWidget {
   final String productId;
@@ -96,7 +97,7 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
           previous.translateCommentStatus != current.translateCommentStatus,
       builder: (context, state) {
         if (kDebugMode)
-          print(
+          devLog(
             "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD*******////${state.updateLikeCommentRatingStatus}",
           );
         if (state.getBuyersCommentsPaginationModel?['all'] == null) {

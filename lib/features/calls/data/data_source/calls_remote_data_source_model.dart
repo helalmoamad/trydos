@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:developer';
 
 import 'package:get_it/get_it.dart';
@@ -14,6 +13,7 @@ import 'package:trydos/features/calls/data/models/my_calls.dart';
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../models/agora_token_remote_response_model.dart';
 import '../models/make_call_response_model.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 @injectable
 class CallsRemoteDataSource {
@@ -44,7 +44,7 @@ class CallsRemoteDataSource {
   }
 
   Future<bool> makeAnswerCall(String messageId) {
-    if (kDebugMode) print(
+    devLog(
       "myFcmToken ://///*******${GetIt.I<PrefsRepository>().getFcmTokens[0]}",
     );
     PostClient<bool> AnswerCall = PostClient<bool>(

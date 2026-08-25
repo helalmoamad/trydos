@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +15,7 @@ import 'package:trydos/features/dashBoard/presentation/bloc/dashBoard_bloc.dart'
 import 'package:trydos/features/dashBoard/presentation/pages/order_details_page.dart';
 import 'package:trydos/features/dashBoard/presentation/widgets/order_status.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class MainOrdersPage extends StatefulWidget {
   const MainOrdersPage({super.key});
@@ -97,8 +97,8 @@ class _MainOrdersPageState extends State<MainOrdersPage> {
                       // 🔴 Failure
                       if (state.newGetOrdersStatus ==
                           NewGetOrdersStatus.failure) {
-                        return const Center(
-                          child: Text("Something went wrong"),
+                        return Center(
+                          child: Text(LocaleKeys.something_went_wrong.tr()),
                         );
                       }
 
@@ -108,7 +108,7 @@ class _MainOrdersPageState extends State<MainOrdersPage> {
                         final ordersList = state.new_orders ?? [];
 
                         if (ordersList.isEmpty) {
-                          return const Center(child: Text("No orders found"));
+                          return Center(child: Text(LocaleKeys.no_orders_found.tr()));
                         }
 
                         return Padding(
@@ -384,7 +384,7 @@ class _MainOrdersPageState extends State<MainOrdersPage> {
                     currentStatusOfOrder.value = status;
                     final String statusForApi = status.apiValue;
                     _dashboardBloc.ordersStatus = statusForApi;
-                    if (kDebugMode) print('Selected status: ${_dashboardBloc.ordersStatus}');
+                    devLog('Selected status: ${_dashboardBloc.ordersStatus}');
                     _dashboardBloc.add(NewGetOrdersEvent());
                   },
                   child: Container(

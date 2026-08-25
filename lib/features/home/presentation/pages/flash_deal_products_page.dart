@@ -28,6 +28,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class FlashDealProductsPage extends StatefulWidget {
   const FlashDealProductsPage({Key? key}) : super(key: key);
@@ -188,14 +189,18 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
             showShadowForColorImages.value = false;
             return false;
           }
-        } catch (e) {}
+        } catch (e) {
+          devLog('flash_deal_products_page.dart: ignored error', e);
+        }
         prefsRepository.setTagsInUrlToFilter([]);
         try {
           if (panelControllerForCart.isPanelOpen) {
             panelControllerForCart.close();
             return await Future.value(false);
           }
-        } catch (e) {}
+        } catch (e) {
+          devLog('flash_deal_products_page.dart: ignored error', e);
+        }
         return Future.value(true);
       },
       child: ValueListenableBuilder<int>(

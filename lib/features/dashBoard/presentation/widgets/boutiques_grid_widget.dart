@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'pagination_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class BoutiquesGridWidget extends StatelessWidget {
   final List<Boutique> boutiques;
@@ -78,7 +78,7 @@ class BoutiqueCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           // TODO: Navigate to boutique details
-          if (kDebugMode) print('Boutique tapped: ${boutique.name}');
+          devLog('Boutique tapped: ${boutique.name}');
         },
         borderRadius: BorderRadius.circular(12.r),
         child: Ink(

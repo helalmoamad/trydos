@@ -23,6 +23,7 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ColorsListFilter extends StatefulWidget {
   const ColorsListFilter({
@@ -70,7 +71,9 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
             );
           }
         });
-      } catch (e) {}
+      } catch (e) {
+        devLog('color_list_filter.dart: ignored error', e);
+      }
     });
     key = widget.boutiqueSlug + (widget.category ?? '');
     super.initState();

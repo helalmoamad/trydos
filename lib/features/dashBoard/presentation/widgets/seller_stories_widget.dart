@@ -16,7 +16,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../bloc/dashBoard_bloc.dart';
 import 'empty_state_widget.dart';
-
+import 'package:trydos/common/helper/dev_log.dart';
 // ---------------------------------------------------------------------------
 // Design tokens (picked to match the mockups)
 // ---------------------------------------------------------------------------
@@ -262,7 +262,7 @@ class SellerStoryCard extends StatelessWidget {
     final imageUrl = story.mediaUrl ?? '';
     final isVideo = story.isVideoStory;
 
-    print('imageUrl @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ $imageUrl');
+    devLog('imageUrl @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ $imageUrl');
 
     return Container(
       decoration: BoxDecoration(

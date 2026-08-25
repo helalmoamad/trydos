@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -7,13 +6,15 @@ import 'package:trydos/main.dart';
 import '../../service/language_service.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'handling_exception.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 abstract class BaseApi<T> with HandlingExceptionRequest {
   BaseApi(this.serverName) {
     Map<String, dynamic> headers = client.options.headers;
     final String? token = getServerToken(serverName);
     if (serverName == ServerName.wallet) {
-      if (kDebugMode) print("DDDDDDDDDDDDDDDDDDDDDDDD*/*//*${token}");
+      // nosemgrep: trydos-sec-logs-sensitive-value -- logs only whether a token exists, never the token itself
+      devLog('wallet server: token present = ${token != null}');
     }
 
     if (token != null) {

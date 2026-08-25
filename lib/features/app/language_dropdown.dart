@@ -10,6 +10,7 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class LanguageDropdown extends StatefulWidget {
   final List<Language> language;
@@ -57,7 +58,7 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
               (element) {
                 SubsecribeOrUnSubsecribeToTopic()
                     .UnSubsecribeToOtherTopic(element);
-                print(
+                devLog(
                     "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${element}");
               },
             );*/
@@ -73,7 +74,7 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
             _prefsRepository.setLanguage(newValue);
             context.setLocale(HelperFunctions.getInitLocale());
             if (kDebugMode)
-              print(
+              devLog(
                 "############################################################################################################${HelperFunctions.getInitLocale()}",
               );
           },

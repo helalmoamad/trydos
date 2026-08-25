@@ -924,6 +924,24 @@
   "report_received_body": "سوپاس بۆ بۆچوونەکانت",
   "customers_comments": "بۆچوونەکانی کڕیاران",
   "locations": "شوێنەکان",
-  "upload_excel_file": "بارکردنی فایلی Excel"
+  "upload_excel_file": "بارکردنی فایلی Excel",
+  "select_a_category_first": "سەرەتا جۆرێک هەڵبژێرە",
+  "excel_pick_category_hint": "جۆرێک هەڵبژێرە، نموونەکەی دابەزێنە، پڕی بکەرەوە، پاشان بایبکە.",
+  "failed_to_load_categories": "بارکردنی جۆرەکان سەرکەوتوو نەبوو",
+  "select_a_category": "جۆرێک هەڵبژێرە",
+  "supported_excel_formats": "پشتگیری ‎.xlsx و ‎.xls و ‎.xlsm و ‎.xlsb دەکات",
+  "uploaded_excel_files": "فایلە بارکراوەکانی Excel",
+  "no_files_uploaded_yet": "تا ئێستا هیچ فایلێک بار نەکراوە.",
+  "add_location": "زیادکردنی شوێن",
+  "no_locations_found": "هیچ شوێنێک نەدۆزرایەوە",
+  "edit_shop_info": "دەستکاری زانیاری فرۆشگا",
+  "no_users_found": "هیچ بەکارهێنەرێک نەدۆزرایەوە",
+  "no_more_items": "هیچ بڕگەیەکی تر نییە",
+  "failed_to_load_page_try_again": "بارکردنی پەڕە سەرکەوتوو نەبوو. تکایە دووبارە هەوڵ بدەرەوە.",
+  "wallet_payment": "پارەدان لە جزدان",
+  "select_currency": "دراو هەڵبژێرە",
+  "account_to_pay": "ئەو هەژمارەی پارەی بۆ دەدرێت",
+  "confirm_wallet_payment": "پشتڕاستکردنەوەی پارەدان لە جزدان",
+  "view_details": "بینینی وردەکارییەکان",
+  "other_option": "هیتر"
 }
-

@@ -41,6 +41,7 @@ import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
 import '../my_text_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class TabsBar extends StatefulWidget {
   const TabsBar({
@@ -492,7 +493,7 @@ class _TabsBarState extends State<TabsBar> {
                                               return;
                                             }*/
                                         if (kDebugMode)
-                                          print(
+                                          devLog(
                                             "**************************************//////",
                                           );
 
@@ -689,7 +690,7 @@ class _TabsBarState extends State<TabsBar> {
                           ),
                           onChanged: (String text) {
                             if (kDebugMode)
-                              print(
+                              devLog(
                                 "**111111111111#########111111111111111-------------------------------${text}",
                               );
                             if (debounce?.isActive ?? false) {
@@ -773,7 +774,7 @@ class _TabsBarState extends State<TabsBar> {
                                   ),
                                 );
                                 if (kDebugMode)
-                                  print(
+                                  devLog(
                                     "**222222222222222-------------------------------${text}",
                                   );
 

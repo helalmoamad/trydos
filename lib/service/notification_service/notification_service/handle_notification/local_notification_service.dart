@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:developer' as dev;
 
@@ -30,6 +29,7 @@ import '../../../../features/chat/data/models/my_chats_response_model.dart'
 import 'dart:convert' as convert;
 
 import 'handling_market_notifications.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 @pragma('vm:entry-point')
 class LocalNotificationService {
@@ -61,12 +61,12 @@ class LocalNotificationService {
       final value = await _localNotificationPlugin
           .getNotificationAppLaunchDetails();
       if (value != null) {
-        if (kDebugMode) print("chatNotification//////////////////////////**-----1");
+        devLog("chatNotification//////////////////////////**-----1");
         dev.log(
           "chatNotification//////////////////////////${value.notificationResponse?.payload ?? ""}",
         );
         if (value.notificationResponse?.payload?.contains("###") ?? false) {
-          if (kDebugMode) print("chatNotification//////////////////////////**-----2");
+          devLog("chatNotification//////////////////////////**-----2");
           await GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
             value.notificationResponse?.payload?.split('###')[0] ?? "",
           );
@@ -74,7 +74,7 @@ class LocalNotificationService {
               "#prevMessageId#",
             ) ??
             false) {
-          if (kDebugMode) print("chatNotification//////////////////////////**-----3");
+          devLog("chatNotification//////////////////////////**-----3");
           final payload = value.notificationResponse!.payload!;
           final parts = payload.split('#prevMessageId#');
           final resultValue =
@@ -87,17 +87,17 @@ class LocalNotificationService {
           );
           final storedVal = await GetIt.I<PrefsRepository>()
               .getNotificationTypeFromTerminated();
-          if (kDebugMode) print(
+          devLog(
             "chatNotification//////////////////////////**-----3$resultValue",
           );
-          if (kDebugMode) print(
+          devLog(
             "chatNotification//////////////////////////**-----3--$storedVal",
           );
         }
       }
     } catch (e, st) {
-      if (kDebugMode) print("chatNotification Error in LocalNotificationService: $e");
-      if (kDebugMode) print(st);
+      devLog("chatNotification Error in LocalNotificationService: $e");
+      devLog(st);
       dev.log("chatNotification Error: $e");
     }
     await _localNotificationPlugin
@@ -145,7 +145,7 @@ class LocalNotificationService {
     )) {
       final int notificationId = Random().nextInt(1000000);
       Map? data = convert.jsonDecode(message.data["body"] ?? "") ?? {};
-      if (kDebugMode) print(
+      devLog(
         "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ${data?["type"]}",
       );
       if (data?["type"] ==
@@ -254,7 +254,9 @@ class LocalNotificationService {
           );
           pngImage = byteData!.buffer.asUint8List();
         }
-      } catch (e) {}
+      } catch (e) {
+        devLog('local_notification_service.dart: ignored error', e);
+      }
       String title = "${data?["showed_type"]}";
       String body = "${data?["description"]}";
       await _localNotificationPlugin.show(

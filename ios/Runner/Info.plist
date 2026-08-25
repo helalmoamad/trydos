@@ -18,11 +18,13 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>Trydos</string>
-	<key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <true/>
-    </dict>
+	<!-- App Transport Security is left at the Apple default: HTTPS only.
+	     NSAllowsArbitraryLoads was removed so iOS matches Android, which sets
+	     android:usesCleartextTraffic="false" and allows single hosts through
+	     res/xml/network_security_config.xml. Every backend in .env is https,
+	     so nothing needs an exception. If a dev host ever needs plain HTTP,
+	     add an NSExceptionDomains entry for that one host, never a global
+	     allow. -->
     <key>LSSupportsOpeningDocumentsInPlace</key>
     <true/>
     <key>UIFileSharingEnabled</key>

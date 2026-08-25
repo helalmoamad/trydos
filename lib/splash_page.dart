@@ -21,6 +21,7 @@ import 'features/app/blocs/app_bloc/app_event.dart';
 import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'features/story/presentation/bloc/story_bloc.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -129,7 +130,7 @@ class _SplashPageState extends State<SplashPage> {
       context,
       fromTerminated: true,
       whereToNavigationAfterCheck: () {
-        print(
+        devLog(
           "SSSSSSSSSSSSSSSSSSSSSSS*///*/*/S${prefsRepository.marketToken.isNullOrEmpty}",
         );
         context.go(

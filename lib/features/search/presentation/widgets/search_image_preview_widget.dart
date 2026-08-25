@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'dart:async';
@@ -9,6 +8,7 @@ import 'package:simple_image_cropper/simple_image_cropper.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../../generated/locale_keys.g.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class SearchImagePreviewWidget extends StatefulWidget {
   final File imageFile;
@@ -37,8 +37,8 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
   @override
   void initState() {
     super.initState();
-    if (kDebugMode) print('SearchImagePreviewWidget: initState called');
-    if (kDebugMode) print(
+    devLog('SearchImagePreviewWidget: initState called');
+    devLog(
       'SearchImagePreviewWidget: imageFile path = ${widget.imageFile.path}',
     );
     _image = FileImage(widget.imageFile);
@@ -47,9 +47,9 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
   }
 
   Future<void> _checkFileExists() async {
-    if (kDebugMode) print('SearchImagePreviewWidget: checking if file exists');
+    devLog('SearchImagePreviewWidget: checking if file exists');
     final exists = await widget.imageFile.exists();
-    if (kDebugMode) print('SearchImagePreviewWidget: file exists = $exists');
+    devLog('SearchImagePreviewWidget: file exists = $exists');
     if (mounted) {
       setState(() {
         _fileExists = exists;
@@ -74,7 +74,7 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
         });
       }
     } catch (e) {
-      if (kDebugMode) print('SearchImagePreviewWidget: error preloading image: $e');
+      devLog('SearchImagePreviewWidget: error preloading image: $e');
     }
   }
 
@@ -96,8 +96,18 @@ class _SearchImagePreviewWidgetState extends State<SearchImagePreviewWidget> {
     if (byteData != null) {
       final buffer = byteData.buffer;
       final directory = await getTemporaryDirectory();
-      String fileFormat = widget.imageFile.path.split('.').last;
+      // `split('.').last` returns the whole path when the picked file has no
+      // dot in its name, and that path carries separators — the write would
+      // then land outside the temp directory. Keep it only when it looks like
+      // a real extension.
+      final String rawFormat = widget.imageFile.path.split('.').last;
+      final String fileFormat = RegExp(
+        r'^[A-Za-z0-9]{1,5}$',
+      ).hasMatch(rawFormat)
+          ? rawFormat
+          : 'png';
       int currentUnix = DateTime.now().millisecondsSinceEpoch;
+      // nosemgrep: trydos-sec-path-from-interpolation -- fileFormat is checked against ^[A-Za-z0-9]{1,5}$ above; currentUnix is a timestamp
       final file = File('${directory.path}/$currentUnix.$fileFormat');
       await file.writeAsBytes(buffer.asUint8List());
       return file;

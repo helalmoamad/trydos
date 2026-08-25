@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin notificationsPlugin =
@@ -19,7 +20,7 @@ class NotificationService {
     notificationsPlugin.initialize(initializeSettings,
         onDidReceiveBackgroundNotificationResponse: (details) {
       if (kDebugMode) {
-        if (kDebugMode) print(
+        devLog(
             "111111111111111fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${details.payload}");
       }
     }, onDidReceiveNotificationResponse:
@@ -27,7 +28,7 @@ class NotificationService {
     notificationsPlugin.getNotificationAppLaunchDetails().then(
       (value) {
         if (kDebugMode) {
-          if (kDebugMode) print(
+          devLog(
               "fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${value?.notificationResponse?.payload}");
         }
       },

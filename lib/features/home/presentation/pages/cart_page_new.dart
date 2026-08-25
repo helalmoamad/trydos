@@ -40,6 +40,7 @@ import '../../../../service/firebase_analytics_service/firebase_analytics_servic
 import '../manager/orderBloc/order_bloc.dart';
 import '../manager/orderBloc/order_event.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class CartPage extends StatefulWidget {
   final bool? fromeFilters;
@@ -72,7 +73,7 @@ class _CartPageState extends State<CartPage> {
     LastPagesTracker.push("Cart Page");
     isExpanded.value = false;
     if (kDebugMode)
-      print('Firebase app:Firebase.app//////s${Firebase.apps.length}');
+      devLog('Firebase app:Firebase.app//////s${Firebase.apps.length}');
 
     appBloc = BlocProvider.of<AppBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
@@ -394,7 +395,7 @@ class _CartPageState extends State<CartPage> {
                 ) *
                 state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
             if (kDebugMode)
-              print(
+              devLog(
                 "totlalPriceWithoutShipping ${state.getCartShippingItemsModel?.data?.productsDiscount}",
               );
             totlalPriceWithDiscount =

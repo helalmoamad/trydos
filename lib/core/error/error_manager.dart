@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart' hide Category;
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ErrorManager {
   static final Map<String, int> _retryCounts = {};
@@ -7,7 +8,7 @@ class ErrorManager {
   static bool shouldRetry(String eventName, int statusCode) {
     int maxRetries = 1;
     if (kDebugMode)
-      print(
+      devLog(
         'statusCode:-----------------------------------------------------------9999---- $statusCode',
       );
 
@@ -17,7 +18,7 @@ class ErrorManager {
         statusCode == 503 ||
         statusCode == 504) {
       if (kDebugMode)
-        print(
+        devLog(
           'statusCode:--------------------------------------------------------------- $statusCode',
         );
       maxRetries = 2;

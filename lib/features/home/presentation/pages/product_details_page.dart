@@ -73,7 +73,7 @@ import '../widgets/product_details_body/sliding_up_panel_for_reels.dart';
 import '../widgets/product_stories_section/product_stories_card.dart';
 import '../widgets/product_details_body/buyers_camera_shots.dart';
 import '../widgets/product_stories_section/story/widget/stories_list.dart';
-
+import 'package:trydos/common/helper/dev_log.dart';
 // ignore: must_be_immutable
 class ProductDetailsPage extends StatefulWidget {
   ProductDetailsPage({
@@ -130,7 +130,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   void initState() {
     try {
       videoProductInListingController.forEach((key, value) => value.pause());
-    } catch (e) {}
+    } catch (e) {
+      devLog('product_details_page.dart: ignored error', e);
+    }
     changeVariationIfQtyZero = true;
     if (widget.productItem != null) {
       productItem = widget.productItem!;
@@ -1824,7 +1826,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         return Variation(variantNotifyForUser: false);
                       },
                     );
-                    if (kDebugMode) print(currentVariation?.type);
+                    devLog(currentVariation?.type);
 
                     if ((state
                                 .cachedProductWithoutRelatedProductsModel[
@@ -2497,7 +2499,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 (element) => element.colorOption == (currentVariation!.type)) ??
             -1;
         currentSelectedColorAfterChangeVariant = index;
-        if (kDebugMode) print(
+        devLog(
             "DFDFEDFEWFEFEFEWFEWF++++.........******//////${currentSelectedColorAfterChangeVariant}");
 
       /*  await Future.delayed(

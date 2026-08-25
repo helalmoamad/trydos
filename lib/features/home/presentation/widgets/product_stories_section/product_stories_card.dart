@@ -21,6 +21,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ProductStoriesCard extends StatelessWidget {
   const ProductStoriesCard({super.key});
@@ -100,7 +101,7 @@ class ProductStoriesCard extends StatelessWidget {
                                 scrollDirection: Axis.horizontal,
                                 itemBuilder: (context, index) {
                                   final story = state.storiesForProduct![index];
-                                  if (kDebugMode) print(
+                                  devLog(
                                       "${index} ${story.isPhoto} ${story.photoPath}++++++++++++++");
                                   if (story.isPhoto == 1 &&
                                       (story.photoPath?.isNotEmpty ?? false)) {

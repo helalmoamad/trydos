@@ -49,6 +49,8 @@ import '../../domain/use_cases/get_customer_info_usecase.dart';
 import '../../domain/use_cases/login_to_chat_usecase.dart';
 import '../../domain/use_cases/login_to_stories_usecase.dart';
 import '../../domain/use_cases/verify_otp_signup_usecase.dart';
+import 'package:trydos/common/helper/dev_log.dart';
+
 part 'auth_event.dart';
 
 part 'auth_state.dart';
@@ -561,7 +563,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // the throw happens after the success state was already emitted.
         if (r.data == null) {
           if (kDebugMode) {
-            print("Stories login returned no data — treating it as a failure");
+            devLog("Stories login returned no data — treating it as a failure");
           }
           emit(
             state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.failure),
@@ -1136,7 +1138,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await response.fold(
       (l) async {
         if (kDebugMode) {
-          print(
+          // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+          devLog(
             "Refresh token rejected (${l.statusCode}) -> new guest session",
           );
         }
@@ -1152,7 +1155,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await _prefsRepository.setMarketToken(r.data!.token!);
         await _prefsRepository.setMarketRefreshToken(r.data?.refreshToken);
         refreshed = true;
-        if (kDebugMode) print("Token refreshed successfully");
+        // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+        devLog("Token refreshed successfully");
       },
     );
     // Release every request waiting on this refresh (LoggerInterceptor retries
@@ -1183,7 +1187,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await response.fold(
       (l) async {
         if (kDebugMode) {
-          print(
+          // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+          devLog(
             "Refresh token rejected (${l.statusCode}) -> new guest session",
           );
         }
@@ -1199,7 +1204,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await _prefsRepository.setChatToken(r.data!.accessToken!);
         await _prefsRepository.setChatRefreshToken(r.data?.refreshToken);
         refreshed = true;
-        if (kDebugMode) print("Token refreshed successfully");
+        // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+        devLog("Token refreshed successfully");
       },
     );
     // Release every request waiting on this refresh (LoggerInterceptor retries
@@ -1230,7 +1236,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await response.fold(
       (l) async {
         if (kDebugMode) {
-          print(
+          // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+          devLog(
             "Refresh token rejected (${l.statusCode}) -> new guest session",
           );
         }
@@ -1251,7 +1258,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final String? newAccessToken = r.accessToken;
         if (newAccessToken == null || newAccessToken.isEmpty) {
           if (kDebugMode) {
-            print("Stories refresh returned no access token — keeping tokens");
+            // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+            devLog("Stories refresh returned no access token — keeping tokens");
           }
           return;
         }
@@ -1260,7 +1268,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await _prefsRepository.setStoriesToken(newAccessToken);
         await _prefsRepository.setStoriesRefreshToken(r.refreshToken);
         refreshed = true;
-        if (kDebugMode) print("Token refreshed successfully");
+        // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+        devLog("Token refreshed successfully");
       },
     );
     // Release every request waiting on this refresh (LoggerInterceptor retries
@@ -1403,7 +1412,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (userInfo) async {
         ErrorManager.resetRetry('GetCustomerInfoEvent');
         if (kDebugMode)
-          print(
+          devLog(
             "userInfo.user?.isPhoneVerified ${userInfo.toJson()}------------------",
           );
         await _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);

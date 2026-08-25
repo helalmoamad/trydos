@@ -38,6 +38,7 @@ import 'package:trydos/routes/router.dart';
 
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class CartPage extends StatefulWidget {
   final bool? fromeFilters;
@@ -70,7 +71,7 @@ class _CartPageState extends State<CartPage> {
     homeBloc.add(GetCartItemEvent());
     fromForGroundNotification =
         appBloc.state.isFromForGroundNotification ?? false;
-    if (kDebugMode) print("${widget.fromeNotification}" + "${fromForGroundNotification}");
+    devLog("${widget.fromeNotification}" + "${fromForGroundNotification}");
 
     super.initState();
   }
@@ -142,7 +143,7 @@ class _CartPageState extends State<CartPage> {
                         current.oldcartCollection!.values.length;
               },
               builder: (context, state) {
-                if (kDebugMode) print(state.cartCollection?.keys.toList());
+                devLog(state.cartCollection?.keys.toList());
                 if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
                     (state.getCartShippingItemsModel == null)) {
                   return Padding(
@@ -160,7 +161,7 @@ class _CartPageState extends State<CartPage> {
                     (state.getOldCartModel == null &&
                         state.getOldCartItemsStatus !=
                             GetOLdCartItemsStatus.success)) {
-                  if (kDebugMode) print("${(state.getOldCartModel == null && state.getOldCartItemsStatus != GetOLdCartItemsStatus.success)}" +
+                  devLog("${(state.getOldCartModel == null && state.getOldCartItemsStatus != GetOLdCartItemsStatus.success)}" +
                       "   ////////////////${state.getCartShippingItemsModel == null && state.getCartItemsStatus != GetCartItemsStatus.success}");
                   return Center(
                     child: TrydosLoader(),

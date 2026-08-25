@@ -1,10 +1,10 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 GetProductListingWithoutFiltersModel
 getProductListingWithoutFiltersModelFromJson(String str) =>
@@ -873,7 +873,7 @@ class ProductColor {
       );
 
   factory ProductColor.fromJson(Map<String, dynamic> json) {
-    if (kDebugMode) print("12-----------------------------${json["option"]}");
+    devLog("12-----------------------------${json["option"]}");
     return ProductColor(
       name: json["name"],
       color: json["color"] ?? json["code"],

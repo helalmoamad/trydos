@@ -863,7 +863,7 @@ class _ProductCollectionInCartPage1State
                                                         ),
                                                       ),
                                                     );
-                                                    /* print(
+                                                    /* devLog(
                                                         "2222222222222222222222222222222222222222222222222222");
                                                     int indexess = isOldCart
                                                         ? state
@@ -1614,7 +1614,7 @@ class _ProductCollectionInCartPage1State
                                         ),
                                         InkWell(
                                           onTap: () {
-                                            /*print(state.productITemForCart.keys
+                                            /*devLog(state.productITemForCart.keys
                                                 .toList());
                                             int indexess = isOldCart
                                                 ? state

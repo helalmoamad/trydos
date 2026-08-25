@@ -1511,7 +1511,7 @@ import '../widgets/products_grid_widget.dart';
 import '../widgets/boutiques_grid_widget.dart';
 import '../widgets/dashboard_permission_checker.dart';
 import '../widgets/seller_stories_widget.dart';
-
+import 'package:trydos/common/helper/dev_log.dart';
 /// -----------------------------------------------------------------------
 /// MAIN DASHBOARD PAGE
 /// Now this page ONLY shows the header + the list of filter buttons.
@@ -2054,14 +2054,14 @@ class _DashboardContentPageState extends State<DashboardContentPage> {
               }
 
               if (state.newGetOrdersStatus == NewGetOrdersStatus.failure) {
-                return const Center(child: Text("Something went wrong"));
+                return Center(child: Text(LocaleKeys.something_went_wrong.tr()));
               }
 
               if (state.newGetOrdersStatus == NewGetOrdersStatus.success) {
                 final ordersList = state.new_orders ?? [];
 
                 if (ordersList.isEmpty) {
-                  return const Center(child: Text("No orders found"));
+                  return Center(child: Text(LocaleKeys.no_orders_found.tr()));
                 }
 
                 return Padding(
@@ -2130,7 +2130,7 @@ class _DashboardContentPageState extends State<DashboardContentPage> {
                     final String statusForApi = status.apiValue;
                     _dashboardBloc.ordersStatus = statusForApi;
                     if (kDebugMode) {
-                      print('Selected status: ${_dashboardBloc.ordersStatus}');
+                      devLog('Selected status: ${_dashboardBloc.ordersStatus}');
                     }
                     _dashboardBloc.add(NewGetOrdersEvent());
                   },
@@ -2421,7 +2421,7 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
     if (_selectedCategory == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Select a category first')));
+      ).showSnackBar(SnackBar(content: Text(LocaleKeys.select_a_category_first.tr())));
       return;
     }
     _dashboardBloc.add(
@@ -2502,19 +2502,19 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
                     color: Color(0xff1D1D1D),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Upload Excel File',
-                    style: TextStyle(
+                  Text(
+                    LocaleKeys.upload_excel_file.tr(),
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xff1D1D1D),
+                      color: const Color(0xff1D1D1D),
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'Pick a category, download its template, fill it in, then upload it.',
+                  Text(
+                    LocaleKeys.excel_pick_category_hint.tr(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, color: Color(0xff8D8D8D)),
+                    style: const TextStyle(fontSize: 12, color: const Color(0xff8D8D8D)),
                   ),
                   const SizedBox(height: 20),
                   const Align(
@@ -2539,8 +2539,8 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
 
                       if (state.getExcelCategoriesStatus ==
                           GetExcelCategoriesStatus.failure) {
-                        return const Center(
-                          child: Text('Failed to load categories'),
+                        return Center(
+                          child: Text(LocaleKeys.failed_to_load_categories.tr()),
                         );
                       }
 
@@ -2564,11 +2564,11 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
                                   ? _selectedCategory
                                   : null,
 
-                              hint: const Text(
-                                'Select a category',
-                                style: TextStyle(
+                              hint: Text(
+                                LocaleKeys.select_a_category.tr(),
+                                style: const TextStyle(
                                   fontSize: 13,
-                                  color: Color(0xff8D8D8D),
+                                  color: const Color(0xff8D8D8D),
                                 ),
                               ),
 
@@ -2749,11 +2749,11 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
-                              'Supports .xlsx, .xls, .xlsm, .xlsb',
-                              style: TextStyle(
+                            Text(
+                              LocaleKeys.supported_excel_formats.tr(),
+                              style: const TextStyle(
                                 fontSize: 11,
-                                color: Color(0xffBDBDBD),
+                                color: const Color(0xffBDBDBD),
                               ),
                             ),
                           ],
@@ -2814,13 +2814,13 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
                         color: Color(0xff388CFF),
                       ),
                       const SizedBox(width: 8),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Uploaded Excel Files',
-                          style: TextStyle(
+                          LocaleKeys.uploaded_excel_files.tr(),
+                          style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xff1D1D1D),
+                            color: const Color(0xff1D1D1D),
                           ),
                         ),
                       ),
@@ -2877,11 +2877,11 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            const Text(
-                              'No files uploaded yet.',
-                              style: TextStyle(
+                            Text(
+                              LocaleKeys.no_files_uploaded_yet.tr(),
+                              style: const TextStyle(
                                 fontSize: 13,
-                                color: Color(0xff8D8D8D),
+                                color: const Color(0xff8D8D8D),
                               ),
                             ),
                           ],
@@ -3079,12 +3079,12 @@ class _LocationsWidgetState extends State<LocationsWidget> {
                 color: Color(0xff1D1D1D),
               ),
               const SizedBox(width: 8),
-              const Text(
-                'Locations',
-                style: TextStyle(
+              Text(
+                LocaleKeys.locations.tr(),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xff1D1D1D),
+                  color: const Color(0xff1D1D1D),
                 ),
               ),
               const SizedBox(width: 8),
@@ -3107,7 +3107,7 @@ class _LocationsWidgetState extends State<LocationsWidget> {
               ElevatedButton.icon(
                 onPressed: _onAddLocation,
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text('Add Location'),
+                label: Text(LocaleKeys.add_location.tr()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff3D3D3D),
                   foregroundColor: Colors.white,
@@ -3161,10 +3161,10 @@ class _LocationsWidgetState extends State<LocationsWidget> {
           // Locations list
           Expanded(
             child: _filteredLocations.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
-                      'No locations found',
-                      style: TextStyle(color: Color(0xff8D8D8D)),
+                      LocaleKeys.no_locations_found.tr(),
+                      style: const TextStyle(color: const Color(0xff8D8D8D)),
                     ),
                   )
                 : ListView.separated(
@@ -3495,20 +3495,20 @@ class _ShopInfoWidgetState extends State<ShopInfoWidget> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Title
-          const Row(
+          Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.storefront_outlined,
                 size: 18,
                 color: Color(0xff1D1D1D),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
-                'Edit Shop Info',
-                style: TextStyle(
+                LocaleKeys.edit_shop_info.tr(),
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xff1D1D1D),
+                  color: const Color(0xff1D1D1D),
                 ),
               ),
             ],

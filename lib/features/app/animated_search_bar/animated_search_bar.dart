@@ -8,6 +8,7 @@ import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_state.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class AnimatedSearchBar extends StatefulWidget {
   final double width;
@@ -98,7 +99,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
 
   void _handleFocusChange() {
     if (kDebugMode) {
-      print(
+      devLog(
         'Focus status changed: ${widget.focusNode.hasFocus}, prevFocusStatus: $prevFocusStatus',
       );
     }
@@ -223,7 +224,9 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
                                             .resolve(
                                               Directionality.of(context),
                                             );
-                                      } catch (_) {}
+                                      } catch (e) {
+                                        devLog('animated_search_bar.dart: ignored error', e);
+                                      }
                                     }
 
                                     final bool isRtl =

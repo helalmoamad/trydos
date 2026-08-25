@@ -20,6 +20,7 @@ import 'package:trydos/features/home/presentation/pages/product_listing_page.dar
 import 'package:trydos/main.dart';
 
 import '../../../../features/home/presentation/manager/orderBloc/order_bloc.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 enum TypeOfNotificationForMarketEnum {
   product_cart_expiration,
@@ -103,7 +104,7 @@ class HandlingMarketNotifications {
     }
 
     if (message.data["title"] == "market") {
-      if (kDebugMode) print("data?['type']${data?["type"]}");
+      devLog("data?['type']${data?["type"]}");
       if (data?["type"] ==
               typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                   .product_cart_expiration] ||
@@ -254,7 +255,9 @@ class HandlingMarketNotifications {
 
         //  BlocProvider.of<AppBloc>(navigatorKey.currentState!.context)
         //   .add(ChangeBasePage(1));
-      } catch (e) {}
+      } catch (e) {
+        devLog('handling_market_notifications.dart: ignored error', e);
+      }
     } else {
       if (data["type"] ==
           typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
@@ -287,7 +290,9 @@ class HandlingMarketNotifications {
               ),
             ),
           );
-        } catch (e) {}
+        } catch (e) {
+          devLog('handling_market_notifications.dart: ignored error', e);
+        }
       }
 
       if (data["type"] ==
@@ -321,7 +326,9 @@ class HandlingMarketNotifications {
               ),
             ),
           );
-        } catch (e) {}
+        } catch (e) {
+          devLog('handling_market_notifications.dart: ignored error', e);
+        }
       }
 
       if (data["type"] ==
@@ -358,7 +365,9 @@ class HandlingMarketNotifications {
               ),
             ),
           );
-        } catch (e) {}
+        } catch (e) {
+          devLog('handling_market_notifications.dart: ignored error', e);
+        }
       }
 
       if (data["type"] ==
@@ -392,7 +401,9 @@ class HandlingMarketNotifications {
               ),
             ),
           );
-        } catch (e) {}
+        } catch (e) {
+          devLog('handling_market_notifications.dart: ignored error', e);
+        }
       }
       if (data["type"] ==
               typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
@@ -429,7 +440,9 @@ class HandlingMarketNotifications {
               ),
             ),
           );
-        } catch (e) {}
+        } catch (e) {
+          devLog('handling_market_notifications.dart: ignored error', e);
+        }
       }
       if (data["type"] ==
           typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
@@ -480,7 +493,9 @@ class HandlingMarketNotifications {
               ),
             ),
           );
-        } catch (e) {}
+        } catch (e) {
+          devLog('handling_market_notifications.dart: ignored error', e);
+        }
       }
       if (data["type"] ==
           typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
@@ -492,7 +507,7 @@ class HandlingMarketNotifications {
           );
 
           if (kDebugMode)
-            print(
+            devLog(
               "${data["boutique_slug"]}" +
                   "${data['description']}" +
                   "${boutiqueIcon?["file_path"]}" +
@@ -515,7 +530,9 @@ class HandlingMarketNotifications {
               ),
             ),
           );
-        } catch (e) {}
+        } catch (e) {
+          devLog('handling_market_notifications.dart: ignored error', e);
+        }
       }
     }
   }

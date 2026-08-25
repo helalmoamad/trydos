@@ -16,6 +16,7 @@ import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import '../../enums/status_code_type.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'api.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 enum _StatusType { succeed, failed }
 
@@ -92,7 +93,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     try {
       if (err.response?.statusCode == 400 || err.response?.statusCode == 422) {
         if (kDebugMode)
-          print(
+          devLog(
             "error message: ${jsonDecode(err.response.toString())["message"].toString()}",
           );
         showMessage(
@@ -123,7 +124,9 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
             hasError: true,
             showInRelease: true,
           );
-        } catch (e) {}
+        } catch (e) {
+          devLog('log_interceptor.dart: ignored error', e);
+        }
       }
       if (err.requestOptions.path.contains("order/checkout")) {
         try {
@@ -136,7 +139,9 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
             hasError: true,
             showInRelease: true,
           );
-        } catch (e) {}
+        } catch (e) {
+          devLog('log_interceptor.dart: ignored error', e);
+        }
       }
 
       if ((err.requestOptions.path.toString().contains("register-guest")) &&
@@ -152,7 +157,9 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       }
 
       freshToken = await _handleUnauthorizedError(err);
-    } catch (e) {}
+    } catch (e) {
+      devLog('log_interceptor.dart: ignored error', e);
+    }
 
     // The token was renewed, so replay the request that triggered the refresh —
     // the caller gets the real answer and never sees the 401.
@@ -180,7 +187,9 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
           lastForPageHasBeenVisited: LastPagesTracker.lastPages.join(' > '),
         ),
       );
-    } catch (e) {}
+    } catch (e) {
+      devLog('log_interceptor.dart: ignored error', e);
+    }
 
     if (kDebugMode) {
       prettyPrinterError(
@@ -294,7 +303,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       _prefsRepository.setTokenForComment("");
     }
     if (kDebugMode) {
-      print("Access token rejected — requesting a token refresh...");
+      // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+      devLog("Access token rejected — requesting a token refresh...");
     }
     // Market 401: the access token expired or was rejected -> exchange the
     // stored refresh token for a new access + refresh pair (once per expiry —
@@ -308,7 +318,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         isFrom('MARKET_URL') ||
         isFrom('MEDIA_SERVER_URL'))) {
       if (kDebugMode) {
-        print("Access token rejected — requesting a token refresh...");
+        // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+        devLog("Access token rejected — requesting a token refresh...");
       }
       // All three carry the market access token, so one refresh covers them.
       final bool refreshed = await TokenRefreshCoordinator.instance.refresh(
@@ -351,7 +362,8 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       options.extra = <String, dynamic>{...options.extra, _retriedKey: true};
 
       if (kDebugMode) {
-        print("Token refreshed — replaying ${options.method} ${options.path}");
+        // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+        devLog("Token refreshed — replaying ${options.method} ${options.path}");
       }
       return await GetIt.I<Dio>().fetch(options);
     } catch (_) {

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 
 import 'package:dotted_border/dotted_border.dart';
@@ -31,6 +30,7 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class SizesFiltersList extends StatefulWidget {
   const SizesFiltersList({
@@ -80,7 +80,9 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
             );
           }
         });
-      } catch (e) {}
+      } catch (e) {
+        devLog('sizes_filters_list.dart: ignored error', e);
+      }
     });
     key = widget.boutiqueSlug + (widget.category ?? '');
     currentIndexInSizes = ValueNotifier(
@@ -275,7 +277,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                               ],
                                       );
                             } else {
-                              if (kDebugMode) print('reset size');
+                              devLog('reset size');
                               // FirebaseAnalyticsService.logEventForSession(
                               //   eventName: AnalyticsEventsConst.buttonClicked,
                               //   executedEventName:

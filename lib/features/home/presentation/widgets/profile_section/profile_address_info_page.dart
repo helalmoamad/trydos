@@ -21,6 +21,7 @@ import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ProfileAddressInfoPage extends StatefulWidget {
   const ProfileAddressInfoPage({super.key});
@@ -91,7 +92,9 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                                     .id,
                               ),
                             );
-                          } catch (e) {}
+                          } catch (e) {
+                            devLog('profile_address_info_page.dart: ignored error', e);
+                          }
                           Navigator.pop(context);
                         },
                         child: Container(

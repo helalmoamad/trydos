@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
+import 'package:trydos/common/helper/dev_log.dart';
+
 import 'package:flutter/foundation.dart' show kReleaseMode, kDebugMode;
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
@@ -144,7 +145,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         remoteMessage['type'] == 'VoiceCallEvent') {
       String currentUuid = const Uuid().v4();
       Map<String, dynamic> data = remoteMessage["message"];
-      if (kDebugMode) print("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDDD${data}");
+      devLog("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDDD${data}");
       if (DateTime.now()
               .difference(
                 HelperFunctions.getZonedDate(
@@ -156,7 +157,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         return;
       }
       if (kDebugMode)
-        print("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD//////////D${data}");
+        devLog("FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD//////////D${data}");
       GetIt.I<PrefsRepository>().saveRequestsData(
         null,
         null,
@@ -173,24 +174,24 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       );
 
       FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
-        if (kDebugMode) print("CALLKIT EVENT: ${event?.event.toString()}");
-        if (kDebugMode) print("CALLKIT BODY: ${event?.body.toString()}");
+        devLog("CALLKIT EVENT: ${event?.event.toString()}");
+        devLog("CALLKIT BODY: ${event?.body.toString()}");
 
         switch (event!.event) {
           case Event.actionCallAccept:
             {
               // ✅ معالج قبول المكالمة - فتح التطبيق والانتقال لشاشة المكالمة
               if (kDebugMode)
-                print(
+                devLog(
                   "FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD///*/*** actionCallAccept triggered",
                 );
               try {
-                if (kDebugMode) print("Event body: ${event.body}");
+                devLog("Event body: ${event.body}");
                 if (kDebugMode)
-                  print("Event body type: ${event.body.runtimeType}");
-                if (kDebugMode) print("Extra data: ${event.body['extra']}");
+                  devLog("Event body type: ${event.body.runtimeType}");
+                devLog("Extra data: ${event.body['extra']}");
                 if (kDebugMode)
-                  print("Extra type: ${event.body['extra'].runtimeType}");
+                  devLog("Extra type: ${event.body['extra'].runtimeType}");
 
                 // ✅ الحصول على بيانات المكالمة من extra - تحويل صحيح للنوع
                 final extraData = event.body['extra'];
@@ -198,14 +199,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
                 if (extraData != null) {
                   // تحويل من Map<Object?, Object?> إلى Map<String, dynamic>
                   final callData = Map<String, dynamic>.from(extraData as Map);
-                  if (kDebugMode) print("Call data from extra: $callData");
+                  devLog("Call data from extra: $callData");
 
                   final channelId = callData['channel_id']?.toString() ?? '';
                   final messageId = callData['message_id']?.toString() ?? '';
                   final type = callData['type']?.toString() ?? 'voice';
 
                   if (kDebugMode)
-                    print(
+                    devLog(
                       "Extracted: channel=$channelId, message=$messageId, type=$type",
                     );
 
@@ -215,18 +216,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
                   );
 
                   if (kDebugMode)
-                    print(
+                    devLog(
                       "✅ Call accepted successfully - waiting for app to open",
                     );
                 } else {
                   if (kDebugMode)
-                    print(
+                    devLog(
                       "❌ extraData is null - cannot extract call information",
                     );
                 }
               } catch (e, stackTrace) {
-                if (kDebugMode) print("❌ Error in actionCallAccept: $e");
-                if (kDebugMode) print("Stack trace: $stackTrace");
+                devLog("❌ Error in actionCallAccept: $e");
+                devLog("Stack trace: $stackTrace");
               }
             }
             break;
@@ -393,19 +394,6 @@ Map<String, VideoPlayerController> videoProductInListingController = {};
 }*/
 
 int applicationVersion = 135;
-request() async {
-  final Stopwatch stopWatch = Stopwatch();
-  stopWatch.start();
-  //await http.get(Uri.parse('http://market_under_dev_backend.trydos.dev/api/new_v1/mobile/home/mainCategories'));
-
-  await Dio().getUri(Uri.parse('http://ip-api.com/json')).onError((e, st) {
-    dev.log(e.toString());
-    return Response(requestOptions: RequestOptions());
-  });
-
-  stopWatch.stop();
-  dev.log('request time: ${stopWatch.elapsed.toString()}');
-}
 
 /// Initializes PostHog analytics / session replay from values stored in `.env`.
 /// Native auto-init is disabled (see AndroidManifest.xml / Info.plist) so the
@@ -493,17 +481,14 @@ void main() async {
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
   NotificationProcess().fcmToken(null, null, null, null);
   gemini.Gemini.init(apiKey: dotenv.env['Gemini']!);
-  gemini.Gemini.enableDebugging = true;
-  if (kDebugMode)
-    print('market token : ${(GetIt.I<PrefsRepository>().marketToken)}');
-  debugPrint(
-    'login _prefsRepository.chatToken${GetIt.I<PrefsRepository>().chatToken}',
-  );
-  debugPrint(
-    'login _prefsRepository.marketToken${GetIt.I<PrefsRepository>().marketToken}',
-  );
-  debugPrint(
-    'login _prefsRepository.storiesToken${GetIt.I<PrefsRepository>().storiesToken}',
+  gemini.Gemini.enableDebugging = kDebugMode;
+  // Log only whether a token exists. The value itself must never reach the
+  // device log, because crash reporters and other tools can read it.
+  final prefsForLog = GetIt.I<PrefsRepository>();
+  devLog(
+    'tokens present -> market: ${prefsForLog.marketToken != null}, '
+    'chat: ${prefsForLog.chatToken != null}, '
+    'stories: ${prefsForLog.storiesToken != null}',
   );
   await SentryFlutter.init(
     (options) {

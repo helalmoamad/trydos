@@ -45,8 +45,18 @@ class _CropImageScreenState extends State<CropImageScreen> {
     if (byteData != null) {
       final buffer = byteData.buffer;
       final directory = await getTemporaryDirectory();
-      String fileFormat = widget.imageFile.path.split('.').last;
+      // `split('.').last` returns the whole path when the picked file has no
+      // dot in its name, and that path carries separators — the write would
+      // then land outside the temp directory. Keep it only when it looks like
+      // a real extension.
+      final String rawFormat = widget.imageFile.path.split('.').last;
+      final String fileFormat = RegExp(
+        r'^[A-Za-z0-9]{1,5}$',
+      ).hasMatch(rawFormat)
+          ? rawFormat
+          : 'png';
       int currentUnix = DateTime.now().millisecondsSinceEpoch;
+      // nosemgrep: trydos-sec-path-from-interpolation -- fileFormat is checked against ^[A-Za-z0-9]{1,5}$ above; currentUnix is a timestamp
       final file = File('${directory.path}/$currentUnix.$fileFormat');
       await file.writeAsBytes(buffer.asUint8List());
       return file;

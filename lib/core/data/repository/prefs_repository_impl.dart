@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -12,6 +11,7 @@ import '../../domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
 
 import '../../utils/json_size_cap.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class PrefsRepositoryImpl extends PrefsRepository {
   PrefsRepositoryImpl(
@@ -131,7 +131,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   Future<bool> setWalletToken(String token) async {
-    if (kDebugMode) print("Saving wallet token: $token");
+    // nosemgrep: trydos-sec-logs-sensitive-value -- logs the length only, never the token itself
+    devLog('saving wallet token (length ${token.length})');
     await _secureStorage.write(key: PrefsKey.walletToken, value: token);
     _cachedWalletToken = token;
     return true;
@@ -248,7 +249,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
         'requests_json',
         convert.jsonEncode({'requests_data': _requestsCache ?? []}),
       );
-    } catch (_) {}
+    } catch (e) {
+      devLog('prefs_repository_impl.dart: ignored error', e);
+    }
   }
 
   @override
@@ -1147,7 +1150,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
     photo = (photo.contains("cloudinary") || photo.contains("media_server")
         ? photo
         : ("${dotenv.env['Media_S3_Server']}" + photo));
-    if (kDebugMode) print(photo);
+    devLog(photo);
     return photo;
   }
 
@@ -1247,7 +1250,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
         )).toString(),
       });
     }
-    if (kDebugMode) print(map);
+    devLog(map);
 
     return _preferences.setString(
       PrefsKey.redeemDateForProducts,

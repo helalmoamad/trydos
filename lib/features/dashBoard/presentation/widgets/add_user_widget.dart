@@ -318,7 +318,7 @@ class _AddUserWidgetState extends State<AddUserWidget> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'No users found',
+                      LocaleKeys.no_users_found.tr(),
                       style: TextStyle(
                         fontSize: 14.sp,
                         color: Colors.grey.shade400,

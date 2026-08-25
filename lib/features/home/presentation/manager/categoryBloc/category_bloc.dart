@@ -38,6 +38,7 @@ import '../../../../../core/error/error_manager.dart';
 
 import '../../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../../chat/presentation/manager/chat_event.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 const throttleDuration = Duration(minutes: 2);
 
@@ -73,7 +74,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     GetHomeBoutiqesEvent event,
     Emitter<CategoryState> emit,
   ) async {
-    if (kDebugMode) print(event.categorySlug);
+    devLog(event.categorySlug);
     Map<String, PaginationModel<HomeBoutiques>>
     getHomeBoutiquesPaginationObjectByMainCategory = !event.getWithPagination
         ? {}
@@ -104,7 +105,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           getHomeBoutiquesModel = responseFromSharedPrefrence == {}
               ? GetHomeBoutiquesModel()
               : GetHomeBoutiquesModel.fromJson(responseFromSharedPrefrence);
-        } catch (e) {}
+        } catch (e) {
+          devLog('category_bloc.dart: ignored error', e);
+        }
         getHomeBoutiquesPaginationObjectByMainCategory.addAll({
           event.categorySlug: PaginationModel<HomeBoutiques>(
             hasReachedMax:
@@ -333,7 +336,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   }
 
   prefetchImages(String url, String type, int priority) async {
-    if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC");
+    devLog("CCCCCCCCCCCCCCCCCCCCCCC");
     List<String> urlHasPredeched =
         prefsRepository.getImageUrlHasPrefeched ?? [];
     if (urlHasPredeched.contains(url) || url == "") {
@@ -382,8 +385,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         );
       }
     } catch (e, st) {
-      if (kDebugMode) print(e);
-      if (kDebugMode) print(st);
+      devLog(e);
+      devLog(st);
     }
   }
 
@@ -399,7 +402,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       ),
     );
     if (kDebugMode)
-      print(
+      devLog(
         "###########################################################*****${state.sendRequestToGeminiStatus}",
       );
 
@@ -430,7 +433,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           ),
         );
         if (kDebugMode)
-          print(
+          devLog(
             "###########################################################${state.sendRequestToGeminiStatus}",
           );
       },
@@ -460,7 +463,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       mainCategoriesResponseModel = responseFromSharedPrefrence == {}
           ? MainCategoriesResponseModel()
           : MainCategoriesResponseModel.fromJson(responseFromSharedPrefrence);
-    } catch (e) {}
+    } catch (e) {
+      devLog('category_bloc.dart: ignored error', e);
+    }
 
     emit(
       state.copyWith(

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +20,7 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../common/helper/show_message.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class PaymentMethod extends StatefulWidget {
   final ValueNotifier<List<String>> paymentMethods;
@@ -114,8 +114,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       SizedBox(width: 10.w),
                       InkWell(
                         onTap: () {
-                          if (kDebugMode) print(widget.availablePaymentMethod);
-                          if (kDebugMode) print(_paymentMethods);
+                          devLog(widget.availablePaymentMethod);
+                          devLog(_paymentMethods);
                         },
                         child: Text(
                           "${LocaleKeys.payment_method.tr()} ",
@@ -304,7 +304,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                       'payment_type': PaymentMethods.card,
                                     },
                                   );
-                                } catch (e) {}
+                                } catch (e) {
+                                  devLog('payment_method.dart: ignored error', e);
+                                }
                               }
                             }
                           },

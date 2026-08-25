@@ -23,6 +23,7 @@ import '../models/ImageDetail.dart';
 import '../models/media_count.dart';
 import '../models/my_chats_response_model.dart';
 import '../parsers/heavy_response_parsers.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 @injectable
 class ChatRemoteDataSource {
@@ -333,7 +334,7 @@ class ChatRemoteDataSource {
     Map<String, dynamic> params,
   ) {
     if (kDebugMode)
-      print("/////////////////////////////////////////////////${params["id"]}");
+      devLog("/////////////////////////////////////////////////${params["id"]}");
     GetClient<GetSharedProductCountModel> getSharedProductCount =
         GetClient<GetSharedProductCountModel>(
           serverName: ServerName.chat,

@@ -1,5 +1,4 @@
 //import 'dart:convert';
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:math';
 import 'package:country_flags/country_flags.dart';
@@ -49,6 +48,7 @@ import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../manager/orderBloc/order_bloc.dart';
 import 'Order/orders_page.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ProfileHomePage extends StatefulWidget {
   const ProfileHomePage({super.key});
@@ -139,7 +139,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
         // await TrydosWallet.dispose();
         _isWalletInitialized = false;
       } catch (e) {
-        if (kDebugMode) print('Error cleaning up wallet: $e');
+        devLog('Error cleaning up wallet: $e');
       }
     }
   }

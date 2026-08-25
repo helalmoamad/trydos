@@ -55,6 +55,7 @@ import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../generated/locale_keys.g.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class OrderDetailsNew extends StatefulWidget {
   const OrderDetailsNew({
@@ -3677,7 +3678,7 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                               c.makeCallStatus == MakeCallStatus.loading,
                           listener: (context, state) {
                             if (kDebugMode)
-                              print(
+                              devLog(
                                 "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ////",
                               );
                             callInProgressDialog(context);
@@ -3699,7 +3700,7 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                                   c.makeCallStatus == MakeCallStatus.startCall,
                               listener: (context, state) {
                                 if (kDebugMode)
-                                  print(
+                                  devLog(
                                     "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ",
                                   );
                                 Navigator.of(context).pushReplacement(
@@ -3761,7 +3762,7 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                                     String? recipientUserId =
                                         state.recipientUserId;
                                     if (kDebugMode)
-                                      print("recipientUserId $recipientUserId");
+                                      devLog("recipientUserId $recipientUserId");
                                     if (recipientUserId == null) {
                                       return;
                                     }

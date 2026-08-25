@@ -30,6 +30,7 @@ import '../../manager/homeBloc/home_bloc.dart';
 import '../../manager/homeBloc/home_event.dart';
 import '../../manager/homeBloc/home_state.dart';
 import 'dart:ui' as ui;
+import 'package:trydos/common/helper/dev_log.dart';
 
 class DisplaySizesCard extends StatefulWidget {
   const DisplaySizesCard(
@@ -137,7 +138,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
     sizes = [];
     if (widget.variation != null) {
       widget.variation!.forEach((element) {
-        if (kDebugMode) print(
+        devLog(
             "12-----------------------------#############${element.type!.split("-")[0]}....${widget.productItem.colors?[widget.currentColorForProduct].option}");
 
         if ((homeBloc
@@ -179,7 +180,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
       ...sizes ?? [],
     ];
 
-    if (kDebugMode) print(
+    devLog(
         "12-----------------------------+++++++++++++++++++++++++++++${sizes}--------------4${BlocProvider.of<HomeBloc>(context).state.currentColorSizeForCart?['choiceOption']}");
     widget.scrollController.addListener(changingModeListener);
     gallery3dControllerForCircles = sizes.isNullOrEmpty || sizes!.length < 3
@@ -415,7 +416,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                       builder: (context,
                                                                           currentSelectedSize,
                                                                           _) {
-                                                                        if (kDebugMode) print(
+                                                                        devLog(
                                                                             "12-------------------------------------------${currentSelectedSize}");
                                                                         return Row(
                                                                           mainAxisSize:
@@ -452,7 +453,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                         changingPagesScrollOffset: 0.1,
                                                                         isClip: false,
                                                                         onItemChanged: (index) {
-                                                                          if (kDebugMode) print(
+                                                                          devLog(
                                                                               "################################################3");
                                                                           currentSelectedSizeIndex.value =
                                                                               index;

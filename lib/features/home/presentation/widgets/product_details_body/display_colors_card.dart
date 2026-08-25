@@ -27,6 +27,7 @@ import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import '../../manager/homeBloc/home_bloc.dart';
 import '../product_listing/product_listing_image_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class DisplayColorsCard extends StatefulWidget {
   const DisplayColorsCard(
@@ -154,7 +155,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
 
   @override
   void initState() {
-    if (kDebugMode) print(
+    devLog(
         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${widget.currentColorForProduct}");
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList?.removeWhere((element) => element.images.isNullOrEmpty);
@@ -636,7 +637,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                   itemBuilder: (ctx, index) {
                                                     return GestureDetector(
                                                       onTap: () {
-                                                        if (kDebugMode) print(
+                                                        devLog(
                                                             "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
                                                         displayMode.value = 0;
                                                         currentIndexInSlider =

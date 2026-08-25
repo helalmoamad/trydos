@@ -266,7 +266,9 @@ class Channel {
 
   factory Channel.fromJson(Map<String, dynamic> json) => Channel(
         id: json["id"],
-        channelName: json["channel_name"]!,
+        // `channelName` is String?, so the `!` only turned a missing field into
+        // a crash. Let the null through instead.
+        channelName: json["channel_name"],
         photoPath: json["photo_path"],
         totalUnreadMessageCount: json["total_unread_message_count"],
         createdAt: json["created_at"] == null

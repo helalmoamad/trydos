@@ -906,6 +906,24 @@
   "report_received_body": "Görüşleriniz için teşekkürler",
   "customers_comments": "Müşteri yorumları",
   "locations": "Konumlar",
-  "upload_excel_file": "Excel dosyası yükle"
-
+  "upload_excel_file": "Excel dosyası yükle",
+  "select_a_category_first": "Önce bir kategori seçin",
+  "excel_pick_category_hint": "Bir kategori seçin, şablonunu indirin, doldurun ve yükleyin.",
+  "failed_to_load_categories": "Kategoriler yüklenemedi",
+  "select_a_category": "Bir kategori seçin",
+  "supported_excel_formats": ".xlsx, .xls, .xlsm, .xlsb destekler",
+  "uploaded_excel_files": "Yüklenen Excel Dosyaları",
+  "no_files_uploaded_yet": "Henüz dosya yüklenmedi.",
+  "add_location": "Konum Ekle",
+  "no_locations_found": "Konum bulunamadı",
+  "edit_shop_info": "Mağaza Bilgilerini Düzenle",
+  "no_users_found": "Kullanıcı bulunamadı",
+  "no_more_items": "Başka öğe yok",
+  "failed_to_load_page_try_again": "Sayfa yüklenemedi. Lütfen tekrar deneyin.",
+  "wallet_payment": "Cüzdan Ödemesi",
+  "select_currency": "Para Birimi Seçin",
+  "account_to_pay": "Ödeme Yapılacak Hesap",
+  "confirm_wallet_payment": "Cüzdan Ödemesini Onayla",
+  "view_details": "Ayrıntıları Görüntüle",
+  "other_option": "Diğer"
 }

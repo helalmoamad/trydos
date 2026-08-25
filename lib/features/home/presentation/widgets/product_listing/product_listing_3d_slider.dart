@@ -34,6 +34,7 @@ import '../../../../../core/utils/theme_state.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
 import 'my_gallery3d_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ProductListing3DSlider extends StatefulWidget {
   const ProductListing3DSlider(
@@ -249,7 +250,9 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
             errorPath: error.stack.toString().split("#")[1],
             urlBackend: "Front Error",
             messageFromeBackend: "Front Error")));
-      } catch (e) {}
+      } catch (e) {
+        devLog('product_listing_3d_slider.dart: ignored error', e);
+      }
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());

@@ -17,7 +17,7 @@ import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:vibration/vibration.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
-
+import 'package:trydos/common/helper/dev_log.dart';
 // ignore: must_be_immutable
 class AgoraInAppWebView extends StatefulWidget {
   String type;
@@ -52,7 +52,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   static const platform = MethodChannel('com.trydos.audio/settings');
 
   Future<void> _setCallAudioMode(bool enable) async {
-    if (kDebugMode) print("enable: $enable");
+    devLog("enable: $enable");
     try {
       await platform.invokeMethod('setCallAudioMode', enable);
     } on PlatformException catch (e) {
@@ -71,7 +71,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         volume: 1,
       );
     } catch (e) {
-      if (kDebugMode) print('Error playing incoming call: $e');
+      devLog('Error playing incoming call: $e');
     }
   }
 
@@ -87,12 +87,12 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         volume: 1,
       );
       if (!widget.isReceivingCall && widget.type == 'voice') {
-        if (kDebugMode) print("setCallAudioMode: true");
+        devLog("setCallAudioMode: true");
         await Future.delayed(const Duration(milliseconds: 600));
         await _setCallAudioMode(true);
       }
     } catch (e) {
-      if (kDebugMode) print('Error playing waiting call: $e');
+      devLog('Error playing waiting call: $e');
     }
   }
 
@@ -117,7 +117,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         await Permission.camera.request();
       }
       await Permission.microphone.request();
-    } catch (_) {}
+    } catch (e) {
+      devLog('in_app_view.dart: ignored error', e);
+    }
     if (mounted) setState(() => _permissionsReady = true);
   }
 
@@ -138,7 +140,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
       }
     }
     if (kDebugMode)
-      print(
+      devLog(
         "myFcmToken ://///***/*8888****${GetIt.I<PrefsRepository>().getFcmTokens[0]}",
       );
     LastPagesTracker.push('AgoraInAppWebView');
@@ -171,7 +173,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
     //   ..setBackgroundColor(const Color(0x00000000))
     //   ..loadRequest(source);
-    if (kDebugMode) print("source ://///***/*8888****${source.toString()}");
+    devLog("source ://///***/*8888****${source.toString()}");
     log(source.toString());
     _ensureCallPermissions();
     super.initState();
@@ -208,7 +210,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     if (args.isEmpty) return;
 
     final action = args[0];
-    if (kDebugMode) print("action: $action");
+    devLog("action: $action");
 
     // 1. معالجة إيقاف الرنين
     if (action == 'stop-ring') {
@@ -301,21 +303,21 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       // --- END HANDLER REGISTRATION ---
                     },
                     /*   onLoadStop: (controller, url) {
-                  if (kDebugMode) print(
+                  devLog(
                       "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${url}^^^^^^^^^^99999999999999999}");
                   controller.dispose();
                 },*/
                     onReceivedError: (controller, request, error) {
                       if (kDebugMode) {
                         if (kDebugMode)
-                          print(
+                          devLog(
                             "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${error}",
                           );
                       }
                     },
                     onReceivedHttpError: (controller, webResources, webErrors) {
                       if (kDebugMode)
-                        print(
+                        devLog(
                           "*********************/////////////////////////////////////////////////${webErrors}",
                         );
                       // showMessage('Can\'t lunch call , please try again' , showInRelease: true);
@@ -334,7 +336,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                         _setCallAudioMode(true);
                       }
                       if (kDebugMode)
-                        print(
+                        devLog(
                           "//////////////////////////////////////1111111111111111111111///////////${url?.queryParameters}",
                         );
 
@@ -348,7 +350,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       }
                       if ((url?.path ?? "").toString().contains('callInProg')) {
                         if (kDebugMode)
-                          print(
+                          devLog(
                             "57............................${url?.path.toString()}",
                           );
                         Timer.periodic(const Duration(seconds: 7), (timer) {
@@ -452,7 +454,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
                     onProgressChanged: (controller, progress) {
                       if (kDebugMode)
-                        print(
+                        devLog(
                           "******************---------------------------------------------------------------------------------/////////////////////////////////////////////////${progress}",
                         );
 
@@ -467,7 +469,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     valueListenable: loadingNotifier,
                     builder: (context, progress, child) {
                       if (kDebugMode)
-                        print(
+                        devLog(
                           "///////*111111111111111111111111111111111111****${timer?.isActive ?? false}*****${progress}**4444444444444444*7777777777777777777777777/////////////////////////////////////////*************",
                         );
 
@@ -487,7 +489,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                             t.cancel();
                             return;
                           }
-                          if (kDebugMode) print("*/*/*222222222222111");
+                          devLog("*/*/*222222222222111");
                           // Only play if audio player is not already playing
                           if (_audioPlayer.state != PlayerState.playing) {
                             playWaitingCall();
@@ -497,14 +499,14 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       } else if (!(timer?.isActive ?? false) &&
                           widget.isReceivingCall) {
                         startVibration();
-                        if (kDebugMode) print("*/*/*11111111111111111111");
+                        devLog("*/*/*11111111111111111111");
                         playIncomingCall();
                         timer = Timer.periodic(const Duration(seconds: 4), (t) {
                           if (!mounted) {
                             t.cancel();
                             return;
                           }
-                          if (kDebugMode) print("*/*/*222222222222111");
+                          devLog("*/*/*222222222222111");
                           // Only play if audio player is not already playing
                           if (_audioPlayer.state != PlayerState.playing) {
                             playIncomingCall();

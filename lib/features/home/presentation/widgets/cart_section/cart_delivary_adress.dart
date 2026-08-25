@@ -40,6 +40,7 @@ import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class CartDelivaryAddress extends StatefulWidget {
   final List<Map<String, String>> cartItems;
@@ -88,7 +89,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
     );
     cartImages = widget.cartItems;
     if (kDebugMode)
-      print(
+      devLog(
         "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG----------------${cartImages}",
       );
     // homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -1186,7 +1187,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                       AnalyticsButtonsEventNameConst.AT_YOUR_ADDRESS_BUTTON,
                   extraParams: {'screen_name': GlobalScreenConst.CART_SCREEN},
                 );
-              } catch (e) {}
+              } catch (e) {
+                devLog('cart_delivary_adress.dart: ignored error', e);
+              }
 
               panelController.close();
               HelperFunctions.slidingNavigation(

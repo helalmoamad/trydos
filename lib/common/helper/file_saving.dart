@@ -245,6 +245,7 @@ class FileSaving {
     // متزامناً أيضاً — فتظهر ملفات الجلسات السابقة بلا وميض كذلك.
     final Directory? dir = _mediaDir;
     if (dir == null) return null;
+    // nosemgrep: trydos-sec-path-from-interpolation -- _fileNameFor() replaces every character outside [A-Za-z0-9._-], so no separator survives and the write stays inside dir
     final File file = File('${dir.path}/${_fileNameFor(fileUrl)}');
     if (file.existsSync() && file.lengthSync() > 0) {
       _touchOnDisk(file); // أول قراءة من القرص في الجلسة
@@ -263,6 +264,7 @@ class FileSaving {
       return memory;
     }
     final Directory dir = await _mediaDirectory();
+    // nosemgrep: trydos-sec-path-from-interpolation -- _fileNameFor() replaces every character outside [A-Za-z0-9._-], so no separator survives and the write stays inside dir
     final File file = File('${dir.path}/${_fileNameFor(fileUrl)}');
     if (file.existsSync() && file.lengthSync() > 0) {
       _touchOnDisk(file);
@@ -303,6 +305,7 @@ class FileSaving {
 
     // الطلب الصريح لا يحجز مقعداً ولا ينتظر أحداً.
     if (!priority) await _acquireSlot();
+    // nosemgrep: trydos-sec-path-from-interpolation -- _fileNameFor() replaces every character outside [A-Za-z0-9._-], so no separator survives and the write stays inside dir
     final File part = File('$finalPath.part');
     try {
       // التنزيل إلى ملف مؤقّت ثم إعادة تسميته — عملية ذرّية. بدونها يرى

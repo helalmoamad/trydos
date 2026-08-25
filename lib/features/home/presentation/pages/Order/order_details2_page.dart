@@ -67,6 +67,7 @@ import '../../../../app/my_cached_network_image.dart';
 import '../../../data/models/get_orders_model.dart';
 import '../../manager/homeBloc/home_bloc.dart';
 import '../../manager/homeBloc/home_state.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class OrderDetails2 extends StatefulWidget {
   const OrderDetails2({
@@ -5461,6 +5462,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 alignment: Alignment.center,
                                 width: 150.w,
                                 height: 20.h,
+                                // nosemgrep: trydos-arch-hardcoded-user-facing-string -- TODO: this is a product colour name, not UI text. It must come from the order data; a translation key would be the wrong fix
                                 child: Text(
                                   "Denim Blue",
                                   style:
@@ -5539,6 +5541,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               alignment: Alignment.center,
                                               width: 150.w,
                                               height: 20.h,
+                                              // nosemgrep: trydos-arch-hardcoded-user-facing-string -- TODO: this is a product colour name, not UI text. It must come from the order data; a translation key would be the wrong fix
                                               child: Text(
                                                 "Denim Blue",
                                                 style: index != _colorIndexTap
@@ -7846,7 +7849,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     .color;
 
                 if (kDebugMode)
-                  print(
+                  devLog(
                     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG_____$firstColorOption}",
                   );
                 firstColorName = state.colorSizeForProductModel?.data?.colors

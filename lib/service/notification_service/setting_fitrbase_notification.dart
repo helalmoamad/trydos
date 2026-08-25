@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +6,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/service/notification_service/drop_down_notification_frequency.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class SwitchListForNotification extends StatefulWidget {
   const SwitchListForNotification({super.key});
@@ -117,7 +117,7 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
             current.updateWhatsappNotificationStatus !=
                 previous.updateWhatsappNotificationStatus,
         builder: (context, state) {
-          if (kDebugMode) print(
+          devLog(
               "sxxxxxxxxxxxxxxxxxxxx${state.updateEmailappNotificationStatus}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxssssssssssssssssssssssssssssssssssssssss");
 
           if (state.updateWhatsappNotificationStatus ==
@@ -126,7 +126,7 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
           }
           if (state.updateEmailappNotificationStatus ==
               UpdateEmailappNotificationStatus.failure) {
-            if (kDebugMode) print("sssssssssssssssssssssssssssssssssssssssss");
+            devLog("sssssssssssssssssssssssssssssssssssssssss");
             switchValues[2] = false;
           }
           return Container(
