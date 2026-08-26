@@ -1,21 +1,54 @@
 #!/bin/sh
 #
-# Blocks a commit that carries a secret.
+# Blocks a push to dev_new that carries a secret.
 #
 # Enable it once per clone:
 #
 #     git config core.hooksPath .githooks
 #
-# It scans only the staged changes, so it is fast and it never looks at files
-# git ignores (.env, the keystore, key.properties).
+# It runs only when the branch being pushed is dev_new, and it reads only the
+# commits that this push would add — not the whole history. History already
+# holds secrets from before this check existed (see docs/secret-scanning.md);
+# scanning all of it would fail every push.
 #
-# To commit anyway — only when you have checked the finding and it is wrong:
+# Commits on a ticket branch are not scanned. The secret is caught when that
+# work is pushed to dev_new, before it reaches GitHub.
 #
-#     git commit --no-verify
+# To push anyway — only when you have checked the finding and it is wrong:
 #
-# Please write down why in the commit message when you do that.
+#     git push --no-verify
+#
+# Please say why in the pull request when you do that.
 
-set -e
+PROTECTED_BRANCH="refs/heads/dev_new"
+remote_name="$1"
+zero="0000000000000000000000000000000000000000"
+
+# git feeds one line per ref being pushed:
+#   <local ref> <local sha> <remote ref> <remote sha>
+# Read them all first, because finding gitleaks below would otherwise eat stdin.
+refs=$(cat)
+
+range=""
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ -z "$local_ref" ] && continue
+  [ "$remote_ref" != "$PROTECTED_BRANCH" ] && continue
+  # Branch is being deleted — nothing to read.
+  [ "$local_sha" = "$zero" ] && continue
+
+  if [ "$remote_sha" = "$zero" ]; then
+    # dev_new does not exist on the remote yet. Scan the commits that are not
+    # on any remote branch, so old history is left alone.
+    range="$local_sha --not --remotes=$remote_name"
+  else
+    range="$remote_sha..$local_sha"
+  fi
+done <<EOF
+$refs
+EOF
+
+# Not pushing dev_new — nothing to do.
+[ -z "$range" ] && exit 0
 
 # Find gitleaks.
 #
@@ -58,28 +91,36 @@ if [ -z "$GITLEAKS" ]; then
   echo "   %LOCALAPPDATA%\\Programs\\gitleaks\\"
   echo " (add that folder to the user PATH, then open a new terminal)."
   echo ""
-  echo " CI runs the same scan, so a secret is caught there either way."
+  echo " CI runs the same scan on dev_new, so a secret is caught there"
+  echo " either way — but only after it has reached GitHub."
   echo "──────────────────────────────────────────────────────────────"
   exit 0
 fi
 
 repo_root=$(git rev-parse --show-toplevel)
 
+echo "Scanning the commits being pushed to dev_new for secrets..."
+
 # --redact keeps the value off the terminal; the file and line are enough to
 # find it.
 if ! "$GITLEAKS" git "$repo_root" \
-      --staged \
+      --log-opts "$range" \
       --config "$repo_root/.gitleaks.toml" \
       --redact \
       --no-banner; then
   echo ""
   echo "──────────────────────────────────────────────────────────────"
-  echo " Commit stopped: a secret was found in the staged changes."
+  echo " Push stopped: a secret is in the commits you are pushing."
   echo ""
-  echo " 1. Take the value out of the code."
-  echo " 2. Put it in .env (ignored by git) or in a GitHub secret."
-  echo " 3. Treat the value as burned and rotate it — it was on your"
-  echo "    disk in a file you were about to share."
+  echo " The value is already in your local history, so removing it in"
+  echo " a new commit is not enough. Rewrite the commits that carry it:"
+  echo ""
+  echo "   git rebase -i $range"
+  echo ""
+  echo " Then:"
+  echo "   1. Take the value out of the code."
+  echo "   2. Put it in .env (ignored by git) or in a GitHub secret."
+  echo "   3. Rotate the value. Treat it as burned."
   echo ""
   echo " If this is a false positive, add an entry with a written"
   echo " reason to .gitleaks.toml instead of using --no-verify."
