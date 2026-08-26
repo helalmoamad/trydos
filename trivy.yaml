@@ -1,0 +1,63 @@
+##############################################################################
+# Trydos — Trivy configuration
+#
+#   trivy fs . --config trivy.yaml
+#
+# Trivy answers a different question than the other two scanners:
+#
+#   semgrep   — is OUR code wrong?
+#   gitleaks  — did we commit a credential?
+#   trivy     — do the packages we depend on have known holes (CVEs)?
+#
+# The dependency lists it reads here are pubspec.lock (321 Dart packages) and
+# ios/Podfile.lock (CocoaPods).
+##############################################################################
+
+# `secret` is off on purpose: gitleaks already covers it with project-specific
+# rules (.gitleaks.toml), and running two secret scanners means two lists of
+# findings to reconcile for no extra coverage.
+scan:
+  scanners:
+    - vuln
+    - misconfig
+    - license
+  skip-dirs:
+    - build
+    - .dart_tool
+    - ios/Pods
+    - android/build
+    - android/.gradle
+    - coverage
+    - node_modules
+
+# Report everything, so a MEDIUM that matters is not hidden. Use
+# `--severity HIGH,CRITICAL` on the command line when you only want the
+# ones that block a release.
+severity:
+  - UNKNOWN
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+
+# A vulnerability with no released fix cannot be acted on by upgrading, but it
+# still needs to be known — so it is listed, not hidden.
+vulnerability:
+  ignore-unfixed: false
+
+misconfiguration:
+  include-non-failures: false
+
+license:
+  full: false
+  # Copyleft licences are the ones that can force us to publish our own source.
+  # Trydos ships as a closed-source app, so these need a decision, not a
+  # silent accept.
+  forbidden:
+    - AGPL-3.0
+    - GPL-2.0
+    - GPL-3.0
+    - SSPL-1.0
+
+# Exit non-zero so CI fails on a finding. Set to 0 to only report.
+exit-code: 1

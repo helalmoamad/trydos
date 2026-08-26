@@ -37,11 +37,16 @@ jobs:
         run: flutter pub get
 
       # 🔥 توليد ملف الـ .env بالروابط العادية ومفاتيح السيكرتس بأمان
+      #
+      # Only public URLs are written here as plain text. Every credential comes
+      # from a repository secret (Settings -> Secrets and variables -> Actions).
+      # A value pasted here would be readable by anyone who can see the repo,
+      # and would stay in git history even after it is removed.
       - name: Create .env file dynamically
         run: |
           cat <<'EOF' > .env
-          SENTRY_DNS="https://0640301de79871dbe157593e7ec6a5e0@o4508523067932672.ingest.us.sentry.io/4508523079335936"
-          SMART_LOOK_KEY="bcc47eb08c142a3d766929499a74f11214c38261"
+          SENTRY_DNS="${{ secrets.SENTRY_DNS }}"
+          SMART_LOOK_KEY="${{ secrets.SMART_LOOK_KEY }}"
           MARKET_URL="https://trydos_develop.ramaaz.dev/"
           MARKETGo_URL="https://trydosv2.ramaaz.dev/"
           STORY_URL="https://trydo_story.ramaaz.dev"
@@ -60,7 +65,7 @@ jobs:
           Video_url="https://res.cloudinary.com/dtcmozf4d/video/upload/v1/product/videos/"
           COMMENT_TOKEN_URL="https://trydos_comments_develop.ramaaz.dev/"
           MEDIA_SERVER_URL="https://media_server.ramaaz.dev/"
-          MEDIA_API_KEY="pfxqJTg8PgGf9rKEyvred+odXPgGU4wFtOJnJPUlqngdell@DESKTOP-0DHEE8R"
+          MEDIA_API_KEY="${{ secrets.MEDIA_API_KEY }}"
           Media_S3_Server="https://media_server.ramaaz.dev/image/upload/"
           Vedio_S3_Server="https://media_server.ramaaz.dev/video/upload/"
           Gemini="${{ secrets.GEMINI_KEY }}"

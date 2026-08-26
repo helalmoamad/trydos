@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+# Blocks a commit that carries a secret.
+#
+# Enable it once per clone:
+#
+#     git config core.hooksPath .githooks
+#
+# It scans only the staged changes, so it is fast and it never looks at files
+# git ignores (.env, the keystore, key.properties).
+#
+# To commit anyway — only when you have checked the finding and it is wrong:
+#
+#     git commit --no-verify
+#
+# Please write down why in the commit message when you do that.
+
+set -e
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "──────────────────────────────────────────────────────────────"
+  echo " gitleaks is not installed — the secret scan was SKIPPED."
+  echo ""
+  echo " Install it so this check protects you:"
+  echo "   Windows : winget install gitleaks"
+  echo "   macOS   : brew install gitleaks"
+  echo "   Linux   : https://github.com/gitleaks/gitleaks/releases"
+  echo ""
+  echo " CI runs the same scan, so a secret is caught there either way."
+  echo "──────────────────────────────────────────────────────────────"
+  exit 0
+fi
+
+repo_root=$(git rev-parse --show-toplevel)
+
+# --redact keeps the value off the terminal; the file and line are enough to
+# find it.
+if ! gitleaks git "$repo_root" \
+      --staged \
+      --config "$repo_root/.gitleaks.toml" \
+      --redact \
+      --no-banner; then
+  echo ""
+  echo "──────────────────────────────────────────────────────────────"
+  echo " Commit stopped: a secret was found in the staged changes."
+  echo ""
+  echo " 1. Take the value out of the code."
+  echo " 2. Put it in .env (ignored by git) or in a GitHub secret."
+  echo " 3. Treat the value as burned and rotate it — it was on your"
+  echo "    disk in a file you were about to share."
+  echo ""
+  echo " If this is a false positive, add an entry with a written"
+  echo " reason to .gitleaks.toml instead of using --no-verify."
+  echo "──────────────────────────────────────────────────────────────"
+  exit 1
+fi
