@@ -17,7 +17,33 @@
 
 set -e
 
-if ! command -v gitleaks >/dev/null 2>&1; then
+# Find gitleaks.
+#
+# PATH first. If that fails, look in the usual install folders as well: a
+# terminal — or an editor — started before gitleaks was installed still carries
+# the old PATH, and every process it spawns inherits it. Without this fallback
+# the hook says "not installed" about a tool that is sitting right there, until
+# the editor is restarted.
+GITLEAKS=""
+if command -v gitleaks >/dev/null 2>&1; then
+  GITLEAKS="gitleaks"
+else
+  for candidate in \
+    "$LOCALAPPDATA/Programs/gitleaks/gitleaks.exe" \
+    "$USERPROFILE/scoop/shims/gitleaks.exe" \
+    "/c/ProgramData/chocolatey/bin/gitleaks.exe" \
+    "/opt/homebrew/bin/gitleaks" \
+    "/usr/local/bin/gitleaks" \
+    "/usr/bin/gitleaks"
+  do
+    if [ -x "$candidate" ]; then
+      GITLEAKS="$candidate"
+      break
+    fi
+  done
+fi
+
+if [ -z "$GITLEAKS" ]; then
   echo "──────────────────────────────────────────────────────────────"
   echo " gitleaks is not installed — the secret scan was SKIPPED."
   echo ""
@@ -41,7 +67,7 @@ repo_root=$(git rev-parse --show-toplevel)
 
 # --redact keeps the value off the terminal; the file and line are enough to
 # find it.
-if ! gitleaks git "$repo_root" \
+if ! "$GITLEAKS" git "$repo_root" \
       --staged \
       --config "$repo_root/.gitleaks.toml" \
       --redact \
