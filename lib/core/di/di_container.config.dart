@@ -48,6 +48,8 @@ import '../../features/authentication/domain/use_cases/login_to_wallet_usecase.d
     as _i304;
 import '../../features/authentication/domain/use_cases/refresh_chat_token_usecase.dart'
     as _i685;
+import '../../features/authentication/domain/use_cases/refresh_comment_token_usecase.dart'
+    as _i819;
 import '../../features/authentication/domain/use_cases/refresh_stories_token_usecase.dart'
     as _i246;
 import '../../features/authentication/domain/use_cases/refresh_token_usecase.dart'
@@ -551,6 +553,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i685.RefreshChatTokenUseCase>(
     () => _i685.RefreshChatTokenUseCase(gh<_i742.AuthRepository>()),
+  );
+  gh.factory<_i819.RefreshCommentTokenUseCase>(
+    () => _i819.RefreshCommentTokenUseCase(gh<_i742.AuthRepository>()),
   );
   gh.factory<_i246.RefreshStoriesTokenUseCase>(
     () => _i246.RefreshStoriesTokenUseCase(gh<_i742.AuthRepository>()),
@@ -1115,32 +1120,6 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i290.GetProductFiltersUseCase>(),
     ),
   );
-  gh.lazySingleton<_i561.AuthBloc>(
-    () => _i561.AuthBloc(
-      gh<_i434.UpdateStoriesUserUseCase>(),
-      gh<_i730.UpdateChatUserNameUseCase>(),
-      gh<_i589.CreateUserUseCase>(),
-      gh<_i919.LoginToChatUseCase>(),
-      gh<_i656.LoginToStoriesUseCase>(),
-      gh<_i142.StoreFcmUseCase>(),
-      gh<_i995.VerifyOtpInProfileUseCase>(),
-      gh<_i58.UpdateNameUseCase>(),
-      gh<_i685.RefreshChatTokenUseCase>(),
-      gh<_i49.RegisterGuestUseCase>(),
-      gh<_i650.CreateWalletUseCase>(),
-      gh<_i304.LoginToWalletUseCase>(),
-      gh<_i100.GeneratingTokenForCommentUseCase>(),
-      gh<_i952.SendOtpUseCase>(),
-      gh<_i862.GetCustomerInfoUseCase>(),
-      gh<_i236.VerifyOtpFromGuestUseCase>(),
-      gh<_i574.VerifyOtpSignInUseCase>(),
-      gh<_i644.GetUserCountryUseCase>(),
-      gh<_i231.DeleteFcmFromChatUseCase>(),
-      gh<_i282.VerifyOtpSignUpUseCase>(),
-      gh<_i268.RefreshTokenUseCase>(),
-      gh<_i246.RefreshStoriesTokenUseCase>(),
-    ),
-  );
   gh.lazySingleton<_i536.StoryBloc>(
     () => _i536.StoryBloc(
       gh<_i1043.UploadFileCloudinaryUseCase>(),
@@ -1208,6 +1187,33 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i795.DeleteFromChecklistUseCase>(),
       gh<_i656.CheckChecklistExistUseCase>(),
       gh<_i745.GetChecklistUseCase>(),
+    ),
+  );
+  gh.lazySingleton<_i561.AuthBloc>(
+    () => _i561.AuthBloc(
+      gh<_i434.UpdateStoriesUserUseCase>(),
+      gh<_i730.UpdateChatUserNameUseCase>(),
+      gh<_i589.CreateUserUseCase>(),
+      gh<_i919.LoginToChatUseCase>(),
+      gh<_i656.LoginToStoriesUseCase>(),
+      gh<_i142.StoreFcmUseCase>(),
+      gh<_i995.VerifyOtpInProfileUseCase>(),
+      gh<_i58.UpdateNameUseCase>(),
+      gh<_i685.RefreshChatTokenUseCase>(),
+      gh<_i49.RegisterGuestUseCase>(),
+      gh<_i650.CreateWalletUseCase>(),
+      gh<_i304.LoginToWalletUseCase>(),
+      gh<_i100.GeneratingTokenForCommentUseCase>(),
+      gh<_i952.SendOtpUseCase>(),
+      gh<_i862.GetCustomerInfoUseCase>(),
+      gh<_i236.VerifyOtpFromGuestUseCase>(),
+      gh<_i574.VerifyOtpSignInUseCase>(),
+      gh<_i644.GetUserCountryUseCase>(),
+      gh<_i231.DeleteFcmFromChatUseCase>(),
+      gh<_i282.VerifyOtpSignUpUseCase>(),
+      gh<_i268.RefreshTokenUseCase>(),
+      gh<_i246.RefreshStoriesTokenUseCase>(),
+      gh<_i819.RefreshCommentTokenUseCase>(),
     ),
   );
   gh.lazySingleton<_i279.OrderBloc>(

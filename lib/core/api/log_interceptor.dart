@@ -300,7 +300,18 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     }
 
     if (isFrom('COMMENT_TOKEN_URL')) {
-      _prefsRepository.setTokenForComment("");
+      // لا نمحو رمز الدخول هنا: المحو يجعل كل طلب تعليقات آخر قيد التنفيذ
+      // يُبنى بلا bearer. التحديث يستبدله، ومسار الفشل هو الذي يمحوه.
+      //
+      // هذا الفرع يغطي مضيف خدمة التعليقات وحده (إنشاء/تعديل/حذف التقييم،
+      // الإعجاب، الترجمة، تبديل الرمز). أما قراءات التعليقات الثلاث التي
+      // تُرسَل عبر ServerName.comment فتذهب إلى مضيف WEB_APP ولا يطابقها أي
+      // فرع — وهي خارج نطاق هذا التغيير.
+      final bool refreshed = await TokenRefreshCoordinator.instance.refresh(
+        RefreshScope.comment,
+        () => GetIt.I<AuthBloc>().add(const RefreshCommentTokenEvent()),
+      );
+      return refreshed ? _prefsRepository.tokenForComment : null;
     }
     if (kDebugMode) {
       // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value

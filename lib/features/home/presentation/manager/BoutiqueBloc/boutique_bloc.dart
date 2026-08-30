@@ -288,7 +288,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               ? ['"${event.category}"']
               : null,
       offset: [],
-      limit: 20,
+      limit: 10,
       boutiqueSlugs: ['"${event.boutiqueSlug}"'],
       attributes: event.filterType != "attribute"
           ? null
@@ -392,7 +392,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               paginationStatus: PaginationStatus.success,
               page: 1,
               offset: "${r.data?.offset}",
-              hasReachedMax: (r.data!.products?.length ?? 0) < 20,
+              hasReachedMax: (r.data!.products?.length ?? 0) < 10,
               items: productsResult)
         });
 
@@ -641,7 +641,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = await getProductFiltersUseCase(
       GetProductsFiltersParams(
         offsetFilter: "${(state.filterOffset ?? 1)}",
-        limit: 20,
+        limit: 10,
         searchText: filters.searchText ?? event.searchText,
         brandSlugs: filters.brands
             ?.map((e) => '"${e.slug.toString()}"')
@@ -771,14 +771,14 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             ),
           );
           bool finishGetAllFilter =
-              (r.filters?.boutiques ?? []).length < 20 &&
-              (r.filters?.categories ?? []).length < 20 &&
-              (r.filters?.brands ?? []).length < 20 &&
-              (r.filters?.colors ?? []).length < 20 &&
-              (r.filters?.prices?.priceRanges ?? []).length < 20 &&
+              (r.filters?.boutiques ?? []).length < 10 &&
+              (r.filters?.categories ?? []).length < 10 &&
+              (r.filters?.brands ?? []).length < 10 &&
+              (r.filters?.colors ?? []).length < 10 &&
+              (r.filters?.prices?.priceRanges ?? []).length < 10 &&
               (((r.filters?.attributes?.length ?? 0) == 0)
                   ? true
-                  : (r.filters?.attributes?[0].options ?? []).length < 20);
+                  : (r.filters?.attributes?[0].options ?? []).length < 10);
           emit(
             state.copyWith(
               finishGetAllFilter: finishGetAllFilter,
@@ -821,7 +821,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = await getProductFiltersUseCase(
       GetProductsFiltersParams(
         offsetFilter: "1",
-        limit: 20,
+        limit: 10,
         brandSlugs: event.filtersChoosedByUser?.filters?.brands
             ?.map((e) => '"${e.slug.toString()}"')
             .toList(),
@@ -1038,7 +1038,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = await getProductFiltersUseCase(
       GetProductsFiltersParams(
         offsetFilter: "1",
-        limit: 20,
+        limit: 10,
         searchText: filters.searchText ?? event.searchText,
         brandSlugs: filters.brands
             ?.map((e) => '"${e.slug.toString()}"')
@@ -1190,7 +1190,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               PaginationModel<product.Products>(
                 hasReachedMax:
                     (getProductListingWithFiltersModel.products?.length ?? 0) <
-                    20,
+                    10,
                 items: getProductListingWithFiltersModel.products ?? [],
                 page: 1,
                 paginationStatus: PaginationStatus.loading,
@@ -1200,7 +1200,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             "*featured*withoutFilter": PaginationModel<product.Products>(
               hasReachedMax:
                   (getProductListingWithFiltersModel.products?.length ?? 0) <
-                  20,
+                  10,
               items: getProductListingWithFiltersModel.products ?? [],
               page: 1,
               paginationStatus: PaginationStatus.loading,
@@ -1239,7 +1239,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               PaginationModel<product.Products>(
                 hasReachedMax:
                     (getProductListingWithFiltersModel.products?.length ?? 0) <
-                    20,
+                    10,
                 items: getProductListingWithFiltersModel.products ?? [],
                 page: 1,
                 paginationStatus: PaginationStatus.loading,
@@ -1249,7 +1249,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             "*flashDeal*withoutFilter": PaginationModel<product.Products>(
               hasReachedMax:
                   (getProductListingWithFiltersModel.products?.length ?? 0) <
-                  20,
+                  10,
               items: getProductListingWithFiltersModel.products ?? [],
               page: 1,
               paginationStatus: PaginationStatus.loading,
@@ -1289,7 +1289,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               PaginationModel<product.Products>(
                 hasReachedMax:
                     (getProductListingWithFiltersModel.products?.length ?? 0) <
-                    20,
+                    10,
                 items: getProductListingWithFiltersModel.products ?? [],
                 page: 1,
                 paginationStatus: PaginationStatus.loading,
@@ -1299,7 +1299,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             "*recommended*withoutFilter": PaginationModel<product.Products>(
               hasReachedMax:
                   (getProductListingWithFiltersModel.products?.length ?? 0) <
-                  20,
+                  10,
               items: getProductListingWithFiltersModel.products ?? [],
               page: 1,
               paginationStatus: PaginationStatus.loading,
@@ -1342,7 +1342,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = event.boutiqueSlug == "*featured*"
         ? await getFeaturedProductsUseCase(
             GetFeaturedProductsParams(
-              limit: 20,
+              limit: 10,
               offset: [],
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
@@ -1356,7 +1356,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         ? await getProductsWithFiltersUseCase(
             GetProductsWithFiltersParams(
               offset: [],
-              limit: 20,
+              limit: 10,
               flashDeal: true,
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
@@ -1369,7 +1369,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : event.boutiqueSlug == "*recommended*"
         ? await getRecommendProductsUseCase(
             GetRecommendProductsParams(
-              limit: 20,
+              limit: 10,
               offset: [],
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
@@ -1382,7 +1382,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : await getProductsWithFiltersUseCase(
             GetProductsWithFiltersParams(
               offset: [],
-              limit: 20,
+              limit: 10,
               boutiqueSlugs: ['"${event.boutiqueSlug}"'],
             ),
           );
@@ -1811,7 +1811,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
           PaginationModel<product.Products>(
             hasReachedMax:
-                (getProductListingWithFiltersModel.products?.length ?? 0) < 20,
+                (getProductListingWithFiltersModel.products?.length ?? 0) < 10,
             items: getProductListingWithFiltersModel.products ?? [],
             page: 1,
             paginationStatus: /* (keyWithoutFilter.contains("withoutFilter") &&
@@ -1927,7 +1927,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = event.boutiqueSlug == "*featured*"
         ? await getFeaturedProductsUseCase(
             GetFeaturedProductsParams(
-              limit: 20,
+              limit: 10,
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
                       state.currentMainCategoryTaped == null ||
@@ -1942,7 +1942,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : event.boutiqueSlug == "*recommended*"
         ? await getRecommendProductsUseCase(
             GetRecommendProductsParams(
-              limit: 20,
+              limit: 10,
               offset: !event.getWithPagination
                   ? null
                   : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
@@ -1958,7 +1958,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         ? await getProductsWithFiltersUseCase(
             GetProductsWithFiltersParams(
               flashDeal: true,
-              limit: 20,
+              limit: 10,
               offset: !event.getWithPagination
                   ? null
                   : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
@@ -2011,7 +2011,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               colors: ([
                 ...filters.colors ?? [],
               ]).map((e) => '"${e.toString()}"').toList(),
-              limit: 20,
+              limit: 10,
               prices:
                   (prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice !=
                           null &&
@@ -2283,7 +2283,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 : 2),
             paginationStatus: PaginationStatus.success,
             hasReachedMax:
-                (r.data?.products?.length ?? 0) < 20 ||
+                (r.data?.products?.length ?? 0) < 10 ||
                 r.data?.offset == null ||
                 r.data?.offset == "null",
           );
@@ -2296,7 +2296,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               page: 1,
               offset: "${r.data?.offset}",
               hasReachedMax:
-                  (r.data?.products?.length ?? 0) < 20 ||
+                  (r.data?.products?.length ?? 0) < 10 ||
                   r.data?.offset == null ||
                   r.data?.offset == "null",
               items: event.getWithPagination
@@ -2454,7 +2454,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                     (getProductListingWithFiltersForFirstFiveFilterModel
                                 .products?.length ??
                             0) <
-                        20,
+                        10,
                 items: getProductListingWithFiltersForFirstFiveFilterModel
                         .products ??
                     [],
@@ -2535,7 +2535,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
           PaginationModel<product.Products>(
             hasReachedMax:
-                (getProductListingWithFiltersModel.products?.length ?? 0) < 20,
+                (getProductListingWithFiltersModel.products?.length ?? 0) < 10,
             items: getProductListingWithFiltersModel.products ?? [],
             page: 1,
             paginationStatus:
@@ -2713,7 +2713,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = event.boutiqueSlug == "*featured*"
         ? await getFeaturedProductsUseCase(
             GetFeaturedProductsParams(
-              limit: 20,
+              limit: 10,
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
                       state.currentMainCategoryTaped == null ||
@@ -2728,7 +2728,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : event.boutiqueSlug == "*recommended*"
         ? await getRecommendProductsUseCase(
             GetRecommendProductsParams(
-              limit: 20,
+              limit: 10,
               offset: !event.getWithPagination
                   ? null
                   : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
@@ -2744,7 +2744,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         ? await getProductsWithFiltersUseCase(
             GetProductsWithFiltersParams(
               flashDeal: true,
-              limit: 20,
+              limit: 10,
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
                       state.currentMainCategoryTaped == null ||
@@ -2797,7 +2797,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               colors: ([
                 ...filters.colors ?? [],
               ]).map((e) => '"${e.toString()}"').toList(),
-              limit: 20,
+              limit: 10,
               prices:
                   (prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice !=
                           null &&
@@ -3041,7 +3041,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 : 2),
             paginationStatus: PaginationStatus.success,
             hasReachedMax:
-                (r.data?.products?.length ?? 0) < 20 ||
+                (r.data?.products?.length ?? 0) < 10 ||
                 r.data?.offset == null ||
                 r.data?.offset == "null",
           );
@@ -3054,7 +3054,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               page: 1,
               offset: "${r.data?.offset}",
               hasReachedMax:
-                  (r.data?.products?.length ?? 0) < 20 ||
+                  (r.data?.products?.length ?? 0) < 10 ||
                   r.data?.offset == null ||
                   r.data?.offset == "null",
               items: event.getWithPagination

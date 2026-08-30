@@ -202,10 +202,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
       debounce!.cancel();
     }
     debounce = Timer(Duration(milliseconds: firstOpenPage ? 600 : 300), () {
-      //videoProductInListingController.forEach((key, value) => value.pause());
-      //if (setThisEnabledNotifier.value.item1 != -1) {
-      //  setThisEnabledNotifier.value = Tuple2(-1, -1);
-      // }
       boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
       if ((scrollController.hasClients && scrollController.offset >= 50) &&
@@ -219,19 +215,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
       firstOpenPage = false;
       if (boutiqueBloc.state.isExpandedForListingPage ?? false) return;
-      // if (scrollController.position.pixels <= 80) {
-      //   debugPrint(scrollController.position.pixels.toString());
-      //   appBloc.add(ShowOrHideBars(true));
-      // }
-      // else if(filterPageExpanded.value){
-      //   scrollController.jumpTo(80);
-      // }
-
       if (scrollController.hasClients &&
           scrollController.offset >=
               (scrollController.position.maxScrollExtent * 0.6)) {
         if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
-
         if (boutiqueBloc
             .state
             .getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
@@ -242,6 +229,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
             .hasReachedMax) {
           return;
         }
+
         boutiqueBloc.add(
           GetProductsWithFiltersWithPaginationEvent(
             fromNotification: widget.fromNotificationCategory,
@@ -912,7 +900,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       return;
                                                     }
                                                   } catch (e) {
-                                                    devLog('product_listing_page.dart: ignored error', e);
+                                                    devLog(
+                                                      'product_listing_page.dart: ignored error',
+                                                      e,
+                                                    );
                                                   }
                                                   if (widget.fromBackground) {
                                                     context.go(

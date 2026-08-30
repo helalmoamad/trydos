@@ -166,6 +166,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
     await _secureStorage.delete(key: PrefsKey.marketToken);
     await _secureStorage.delete(key: PrefsKey.storiesToken);
     await _secureStorage.delete(key: PrefsKey.tokenForComment);
+    await _secureStorage.delete(key: PrefsKey.commentRefreshToken);
     _cachedChatToken = null;
     _cachedWalletToken = null;
     _cachedMarketToken = null;
@@ -1065,6 +1066,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
     await _secureStorage.delete(key: PrefsKey.marketToken);
     await _secureStorage.delete(key: PrefsKey.storiesToken);
     await _secureStorage.delete(key: PrefsKey.tokenForComment);
+    await _secureStorage.delete(key: PrefsKey.commentRefreshToken);
     // idToken moved to secure storage, so _preferences.clear() no longer wipes it
     await _secureStorage.delete(key: PrefsKey.idToken);
     return _preferences.clear();
@@ -1316,6 +1318,20 @@ class PrefsRepositoryImpl extends PrefsRepository {
     await _secureStorage.write(key: PrefsKey.tokenForComment, value: token);
     _cachedTokenForComment = token;
     return true;
+  }
+
+  @override
+  Future<bool> setCommentRefreshToken(String? token) async {
+    await _secureStorage.write(
+      key: PrefsKey.commentRefreshToken,
+      value: token ?? "",
+    );
+    return true;
+  }
+
+  @override
+  Future<String?> getCommentRefreshToken() {
+    return _secureStorage.read(key: PrefsKey.commentRefreshToken);
   }
 
   @override

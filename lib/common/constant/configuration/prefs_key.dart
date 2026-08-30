@@ -49,6 +49,8 @@ abstract class PrefsKey {
 
   static const tokenForComment = r'__$__tokenForComment__$__';
 
+  static const commentRefreshToken = r'__$__commentRefreshToken__$__';
+
   static const phoneNumber = r'__$__phoneNumber__$__';
 
   static const verificationId = r'__$__verificationId__$__';

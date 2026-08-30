@@ -19,6 +19,7 @@ import 'package:trydos/features/authentication/domain/use_cases/create_wallet_us
 import 'package:trydos/features/authentication/domain/use_cases/delete_fcm_from_chat_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/generating_token_for_comment.dart';
 import 'package:trydos/features/authentication/domain/use_cases/refresh_chat_token_usecase.dart';
+import 'package:trydos/features/authentication/domain/use_cases/refresh_comment_token_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/refresh_stories_token_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
@@ -89,6 +90,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.verifyOtpSignUpUseCase,
     this.refreshTokenUseCase,
     this.refreshStoriesTokenUseCase,
+    this.refreshCommentTokenUseCase,
   ) : super(const AuthState()) {
     on<AuthEvent>((event, emit) {});
     on<CreateUserEvent>(
@@ -109,6 +111,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     on<RefreshStoriesTokenEvent>(
       _onRefreshStoriesTokenEvent,
+      transformer: throttleDroppable(const Duration(seconds: 10)),
+    );
+    on<RefreshCommentTokenEvent>(
+      _onRefreshCommentTokenEvent,
       transformer: throttleDroppable(const Duration(seconds: 10)),
     );
     on<LoginToChatEvent>(
@@ -190,6 +196,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RefreshTokenUseCase refreshTokenUseCase;
   final RefreshChatTokenUseCase refreshChatTokenUseCase;
   final RefreshStoriesTokenUseCase refreshStoriesTokenUseCase;
+  final RefreshCommentTokenUseCase refreshCommentTokenUseCase;
   final UpdateNameUseCase updateNameUseCase;
   final LoginToWalletUseCase loginToWalletUseCase;
   final DeleteFcmFromChatUseCase deleteFcmFromChatUseCase;
@@ -1277,6 +1284,69 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     TokenRefreshCoordinator.instance.complete(RefreshScope.stories, refreshed);
   }
 
+  FutureOr<void> _onRefreshCommentTokenEvent(
+    RefreshCommentTokenEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    final String? storedRefreshToken = await _prefsRepository
+        .getCommentRefreshToken();
+
+    if (storedRefreshToken == null || storedRefreshToken.isEmpty) {
+      // Nothing to exchange (e.g. first run after the app update) -> new guest.
+      await _fallBackToNewGuestSession();
+      // Tell the network layer there is no new token, so the request that
+      // triggered this refresh fails instead of waiting for the timeout.
+      TokenRefreshCoordinator.instance.complete(RefreshScope.comment, false);
+      return;
+    }
+
+    final response = await refreshCommentTokenUseCase(
+      RefreshCommentTokenParams(refreshToken: storedRefreshToken),
+    );
+    bool refreshed = false;
+    await response.fold(
+      (l) async {
+        if (kDebugMode) {
+          // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+          devLog(
+            "Refresh token rejected (${l.statusCode}) -> new guest session",
+          );
+        }
+        // The presented refresh token is invalid/expired/rotated -> the only
+        // recovery path is a brand-new guest session.
+        if (l.statusCode == 401) {
+          await _fallBackToNewGuestSession();
+        }
+      },
+      (r) async {
+        // 200 with no usable access token: treat it as a failed refresh rather
+        // than storing an empty token. Force-unwrapping here would throw inside
+        // this callback, and the coordinator below would never be told — every
+        // waiting comments request would then hang until its 20s timeout.
+        final String? newAccessToken = r.data?.token;
+        if (newAccessToken == null || newAccessToken.isEmpty) {
+          if (kDebugMode) {
+            // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+            devLog(
+              "Comments refresh returned no access token — keeping tokens",
+            );
+          }
+          return;
+        }
+        // Replace BOTH stored tokens with the returned pair (single-use
+        // rotation: the presented refresh token is now revoked).
+        await _prefsRepository.setTokenForComment(newAccessToken);
+        await _prefsRepository.setCommentRefreshToken(r.data?.refreshToken);
+        refreshed = true;
+        // nosemgrep: trydos-sec-logs-sensitive-value -- the message names a token but never prints its value
+        devLog("Token refreshed successfully");
+      },
+    );
+    // Release every request waiting on this refresh (LoggerInterceptor retries
+    // them when it succeeded).
+    TokenRefreshCoordinator.instance.complete(RefreshScope.comment, refreshed);
+  }
+
   void _onShowSessionExpiredEvent(
     ShowSessionExpiredEvent event,
     Emitter<AuthState> emit,
@@ -1714,7 +1784,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       },
       (r) async {
-        await _prefsRepository.setTokenForComment(r);
+        // The pair sits inside the `data` envelope. The old code read
+        // `comments_token` from the **root**, where it does not exist, so the
+        // stored token was the string "null" and every comments request went
+        // out as `Bearer null`.
+        await _prefsRepository.setTokenForComment(r.data?.token ?? "");
+        // Keep the refresh token that came with the pair, so a later 401 is
+        // renewed instead of forcing a whole new exchange.
+        await _prefsRepository.setCommentRefreshToken(r.data?.refreshToken);
         ErrorManager.resetRetry('GenerateTokenForCommentEvent');
         emit(
           state.copyWith(

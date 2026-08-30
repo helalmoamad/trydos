@@ -138,7 +138,6 @@ class HomePageBoutiqueCard extends StatelessWidget {
               children: [
                 withSlidingImages && banners.length > 1
                     ? CarouselSlider.builder(
-                        key: ValueKey("${boutique.slug}*carousel*"),
                         itemCount: banners.length,
                         itemBuilder: (context, bannerIdx, _) {
                           return MyCachedNetworkImage(

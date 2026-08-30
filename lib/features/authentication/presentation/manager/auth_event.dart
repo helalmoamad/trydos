@@ -205,6 +205,17 @@ class RefreshStoriesTokenEvent extends AuthEvent {
   List<Object?> get props => [];
 }
 
+/// Exchanges the stored comments refresh token for a new access + refresh pair
+/// (dispatched on a comments 401). Falls back to [RegisterGuestEvent] when no
+/// refresh token is stored or the refresh itself is rejected — the same
+/// recovery the market, chat and stories refresh events use.
+class RefreshCommentTokenEvent extends AuthEvent {
+  const RefreshCommentTokenEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 /// Signals base_page to show the "session expired" dialog for a verified user
 /// whose refresh failed. Carries the account's phone to prefill the re-login.
 class ShowSessionExpiredEvent extends AuthEvent {
