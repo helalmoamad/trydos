@@ -5223,10 +5223,26 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
   }
 
+  /// Firebase token ids whose greeting notification has already been confirmed.
+  ///
+  /// The same greeting can arrive more than once — a re-delivery, or the app
+  /// being opened again from the same notification — and each arrival used to
+  /// send another confirmation for a token the server had already validated.
+  ///
+  /// In memory on purpose: a confirmation is per-run work, and putting it in
+  /// `HomeState` would change the shape of the hydrated payload, which needs a
+  /// migration path of its own.
+  final Set<String> _confirmedNotificationTokenIds = <String>{};
+
   FutureOr<void> _onSendAcceptOfNotificationMarketEvent(
     SendAcceptOfNotificationMarketEvent event,
     Emitter<HomeState> emit,
   ) async {
+    // `add` answers false when the id was already in the set, so the second
+    // arrival for the same token stops here.
+    if (!_confirmedNotificationTokenIds.add(event.firebaseTokenId)) {
+      return;
+    }
     final response = await sendAcceptOfNotificationsUseCase(
       SendAcceptOfNotificationsUseCaseParams(
         firebaseTokenId: event.firebaseTokenId,
@@ -5234,6 +5250,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     response.fold(
       (l) {
+        // Nothing was confirmed, so let the id be tried again — otherwise the
+        // retry below would be dropped by the guard above and the token would
+        // stay unvalidated for the rest of the run.
+        _confirmedNotificationTokenIds.remove(event.firebaseTokenId);
         if (ErrorManager.shouldRetry(
           'SendAcceptOfNotificationMarketEvent',
           l.statusCode,

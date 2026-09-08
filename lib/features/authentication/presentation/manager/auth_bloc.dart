@@ -1675,7 +1675,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     response.fold(
       (l) {
         if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
-          add(UpdateStoriesUserEvent(name: event.name));
+          // Retry the flow that failed. This used to re-add
+          // `UpdateStoriesUserEvent`, which starts a different chain — the
+          // stories-first one — so a failed chat-name update ran the wrong
+          // recovery and the chat name was never tried again.
+          add(UpdateChatUserNameEvent(name: event.name));
           ErrorManager.incrementRetry('UpdateChatUserNameEvent');
         }
         emit(
@@ -1695,7 +1699,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     marketResponse.fold(
       (l) {
         if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
-          add(UpdateStoriesUserEvent(name: event.name));
+          // Retry the flow that failed. This used to re-add
+          // `UpdateStoriesUserEvent`, which starts a different chain — the
+          // stories-first one — so a failed chat-name update ran the wrong
+          // recovery and the chat name was never tried again.
+          add(UpdateChatUserNameEvent(name: event.name));
           ErrorManager.incrementRetry('UpdateChatUserNameEvent');
         }
         emit(
@@ -1721,7 +1729,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     storiesResponse.fold(
       (l) {
         if (ErrorManager.shouldRetry('UpdateChatUserNameEvent', l.statusCode)) {
-          add(UpdateStoriesUserEvent(name: event.name));
+          // Retry the flow that failed. This used to re-add
+          // `UpdateStoriesUserEvent`, which starts a different chain — the
+          // stories-first one — so a failed chat-name update ran the wrong
+          // recovery and the chat name was never tried again.
+          add(UpdateChatUserNameEvent(name: event.name));
           ErrorManager.incrementRetry('UpdateChatUserNameEvent');
         }
         emit(

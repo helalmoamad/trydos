@@ -182,6 +182,11 @@ dev_dependencies:
   injectable_generator: ^2.9.1
   build_runner: ^2.4.8
   mockito: ^5.4.4
+  # Drives a bloc through its events and collects what it emitted.
+  bloc_test: ^9.1.7
+  # Lets a test move the clock instead of waiting: the 20s token-refresh
+  # timeout, the OTP resend timer and the retry delays all need this.
+  fake_async: ^1.3.1
 flutter_launcher_icons:
   android: true
   ios: true
