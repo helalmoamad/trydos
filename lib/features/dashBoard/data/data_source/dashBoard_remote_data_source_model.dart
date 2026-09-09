@@ -18,6 +18,7 @@ import 'package:trydos/features/dashBoard/data/models/GetGalleryImagesModel.dart
 import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
 import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
+import 'package:trydos/features/dashBoard/data/models/get_shop_locations_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
@@ -576,6 +577,155 @@ class DashBoardRemoteDataSource {
           ),
         );
     return updateShopInfo();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Locations
+  //
+  // The tenant guard is split by direction. Every **write** carries the shop id
+  // captured when the action started, on the request itself, through
+  // `extraHeaders` — so a shop switch between starting the write and sending it
+  // cannot make it land on another shop (AC-23). Only `post.dart` honours that
+  // field, and every write here is a `POST`, so no shared client is touched.
+  //
+  // The **read** deliberately does not carry it. `get.dart` discards
+  // `extraHeaders` silently, and adding the merge there would touch the shared
+  // `GET` client used by every screen in the app. The bloc re-checks the shop
+  // when the response arrives instead.
+  // ---------------------------------------------------------------------------
+
+  /// `GET /shop/locations` — one request, one page. Paging is a separate work
+  /// item, so no `page` parameter is sent.
+  ///
+  /// `status` is sent only when set. The contract's second trap: `status=0` is
+  /// a real filter value, so this tests for null, never for falsy.
+  Future<GetShopLocationsModel> getShopLocations({int? status}) {
+    final Map<String, String> queryParameters = <String, String>{};
+    if (status != null) {
+      queryParameters['status'] = status.toString();
+    }
+
+    GetClient<GetShopLocationsModel> getShopLocations =
+        GetClient<GetShopLocationsModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<GetShopLocationsModel>(
+            endpoint: DashBoardEndPoints.shopLocationsEP,
+            queryParameters: queryParameters,
+            response: ResponseValue<GetShopLocationsModel>(
+              fromJson: (response) => GetShopLocationsModel.fromJson(response),
+            ),
+          ),
+        );
+    return getShopLocations();
+  }
+
+  /// `GET /shop/locations/lookups` — the create form's country list.
+  Future<LocationFormLookupsModel> getLocationFormCountries() {
+    GetClient<LocationFormLookupsModel> getLocationFormCountries =
+        GetClient<LocationFormLookupsModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<LocationFormLookupsModel>(
+            endpoint: DashBoardEndPoints.shopLocationLookupsEP,
+            response: ResponseValue<LocationFormLookupsModel>(
+              fromJson: (response) =>
+                  LocationFormLookupsModel.fromJson(response),
+            ),
+          ),
+        );
+    return getLocationFormCountries();
+  }
+
+  /// `POST /shop/locations` — create.
+  Future<ShopLocationWriteResponseModel> createShopLocation(
+    Map<String, dynamic> params,
+    String? sellerId,
+  ) {
+    PostClient<ShopLocationWriteResponseModel> createShopLocation =
+        PostClient<ShopLocationWriteResponseModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ShopLocationWriteResponseModel>(
+            endpoint: DashBoardEndPoints.shopLocationsEP,
+            data: params,
+            extraHeaders: _sellerHeader(sellerId),
+            response: ResponseValue<ShopLocationWriteResponseModel>(
+              fromJson: (response) =>
+                  ShopLocationWriteResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return createShopLocation();
+  }
+
+  /// `GET /shop/locations/{id}/edit` — the record and its country list.
+  Future<ShopLocationEditModel> getShopLocationForEdit(int id) {
+    GetClient<ShopLocationEditModel> getShopLocationForEdit =
+        GetClient<ShopLocationEditModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ShopLocationEditModel>(
+            endpoint: DashBoardEndPoints.shopLocationEditEP(id),
+            response: ResponseValue<ShopLocationEditModel>(
+              fromJson: (response) => ShopLocationEditModel.fromJson(response),
+            ),
+          ),
+        );
+    return getShopLocationForEdit();
+  }
+
+  /// `POST /shop/locations/{id}/update` — note the method: POST, not PUT.
+  Future<ShopLocationWriteResponseModel> updateShopLocation(
+    int id,
+    Map<String, dynamic> params,
+    String? sellerId,
+  ) {
+    PostClient<ShopLocationWriteResponseModel> updateShopLocation =
+        PostClient<ShopLocationWriteResponseModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ShopLocationWriteResponseModel>(
+            endpoint: DashBoardEndPoints.shopLocationUpdateEP(id),
+            data: params,
+            extraHeaders: _sellerHeader(sellerId),
+            response: ResponseValue<ShopLocationWriteResponseModel>(
+              fromJson: (response) =>
+                  ShopLocationWriteResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return updateShopLocation();
+  }
+
+  /// `POST /shop/locations/{id}/change-status`.
+  Future<ChangeLocationStatusResponseModel> changeShopLocationStatus(
+    int id,
+    int status,
+    String? sellerId,
+  ) {
+    PostClient<ChangeLocationStatusResponseModel> changeShopLocationStatus =
+        PostClient<ChangeLocationStatusResponseModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<ChangeLocationStatusResponseModel>(
+            endpoint: DashBoardEndPoints.shopLocationChangeStatusEP(id),
+            data: <String, dynamic>{'status': status},
+            extraHeaders: _sellerHeader(sellerId),
+            response: ResponseValue<ChangeLocationStatusResponseModel>(
+              fromJson: (response) =>
+                  ChangeLocationStatusResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return changeShopLocationStatus();
+  }
+
+  /// One `const` key, built at one place. `post.dart` merges the caller's map
+  /// **last**, and Dio normalises header keys case-insensitively — so a caller
+  /// key of `authorization`, `country` or `lang` would replace auth material.
+  /// Building the map here from a single fixed key is what keeps this feature
+  /// unable to exercise that. Hardening `post.dart` is a `lib/core/api/**`
+  /// change and belongs to its own ticket.
+  static const String _kSellerIdHeader = 'X-Seller-ID';
+
+  Map<String, dynamic>? _sellerHeader(String? sellerId) {
+    if (sellerId == null || sellerId.isEmpty) return null;
+    return <String, dynamic>{_kSellerIdHeader: sellerId};
   }
 
   Future<ReadOnlyMessageFromApiModel> deleteGalleryImages(List<int> ids) {

@@ -71,6 +71,45 @@ class DashboardPermissionChecker {
         permissions.contains(DashBoardPermission.UPDATE_SHOP_INFO.value);
   }
 
+  // --- Locations ---------------------------------------------------------
+  //
+  // Four permissions, one per action, each `SUPER_ADMIN`-or-the-named-one. They
+  // are read through these methods, never as a loose string compare at a call
+  // site.
+  //
+  // The gate lives inside the screen only: the Locations tab entry stays
+  // visible to every member (AC-28), and opening it without the read
+  // permission shows a message instead of calling the backend.
+  //
+  // Like `canReadShopInfo`, this list cannot say "unknown". A permission list
+  // that failed to load and one that genuinely grants nothing are the same
+  // empty list here, so the read fails closed and the two cannot be told apart
+  // (AC-18, a recorded limitation).
+
+  /// Open the tab and see the list.
+  bool canReadLocations() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.READ_LOCATIONS.value);
+  }
+
+  /// Show the "add location" control, and open the add form.
+  bool canCreateLocation() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.CREATE_LOCATION.value);
+  }
+
+  /// Show a row's edit control, and open the edit form.
+  bool canUpdateLocation() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.UPDATE_LOCATION.value);
+  }
+
+  /// Show a row's activate / deactivate control.
+  bool canChangeLocationStatus() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.CHANGE_LOCATION_STATUS.value);
+  }
+
   /// Check if user can see Stories tab
   /// The backend does not expose a dedicated stories permission yet, so the tab
   /// is visible to every shop member. Gate it here once the permission exists.

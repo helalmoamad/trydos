@@ -19,6 +19,12 @@ import 'package:trydos/features/dashBoard/domain/useCase/GetGalleryImagesUseCase
 import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/GetShopInfoUseCase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/UpdateShopInfoUseCase.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:trydos/features/dashBoard/data/models/get_shop_locations_model.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/get_shop_locations_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/create_shop_location_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/update_shop_location_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/change_shop_location_status_usecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/GetUploadedExcelFilesUsecase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/change_orderDetail_to_packed_useCase.dart';
 import 'package:trydos/features/dashBoard/domain/useCase/change_order_detail_status.dart';
@@ -99,6 +105,10 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   final DeleteGalleryImagesUseCase deleteGalleryImagesUseCase;
   final GetShopInfoUseCase getShopInfoUseCase;
   final UpdateShopInfoUseCase updateShopInfoUseCase;
+  final GetShopLocationsUseCase getShopLocationsUseCase;
+  final CreateShopLocationUseCase createShopLocationUseCase;
+  final UpdateShopLocationUseCase updateShopLocationUseCase;
+  final ChangeShopLocationStatusUseCase changeShopLocationStatusUseCase;
 
   DashboardBloc(
     this.getUserPermissionUseCase,
@@ -131,6 +141,10 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     this.deleteGalleryImagesUseCase,
     this.getShopInfoUseCase,
     this.updateShopInfoUseCase,
+    this.getShopLocationsUseCase,
+    this.createShopLocationUseCase,
+    this.updateShopLocationUseCase,
+    this.changeShopLocationStatusUseCase,
   ) : super(DashBoardState()) {
     on<GetOrdersEvent>(_onGetOrdersEvent);
     on<NewGetOrdersEvent>(_onNewGetOrdersEvent);
@@ -163,6 +177,39 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     on<ClearShopInfoEvent>(_onClearShopInfoEvent);
     on<UploadShopMediaEvent>(_onUploadShopMediaEvent);
     on<UpdateShopInfoEvent>(_onUpdateShopInfoEvent);
+
+    // Locations. `bloc_concurrency` is already a dependency; `droppable` and
+    // `restartable` come straight from it, so no local helper is copied here
+    // and no throttle duration is introduced.
+    //
+    // | event         | transformer   | why                                    |
+    // |---------------|---------------|----------------------------------------|
+    // | load          | restartable() | only the newest load matters           |
+    // | create        | droppable()   | backs AC-10 at the bloc level          |
+    // | update        | droppable()   | same double-tap guard as create        |
+    // | change status | droppable()   | one status change at a time, which is  |
+    // |               |               | all the shared write enum can express  |
+    // | clear         | none          | it issues no request and awaits        |
+    // |               |               | nothing; a transformer here could      |
+    // |               |               | reorder a clear against the load whose |
+    // |               |               | result it is meant to invalidate       |
+    on<GetShopLocationsEvent>(
+      _onGetShopLocationsEvent,
+      transformer: restartable(),
+    );
+    on<ClearShopLocationsEvent>(_onClearShopLocationsEvent);
+    on<CreateShopLocationEvent>(
+      _onCreateShopLocationEvent,
+      transformer: droppable(),
+    );
+    on<UpdateShopLocationEvent>(
+      _onUpdateShopLocationEvent,
+      transformer: droppable(),
+    );
+    on<ChangeShopLocationStatusEvent>(
+      _onChangeShopLocationStatusEvent,
+      transformer: droppable(),
+    );
   }
 
   String? ordersStatus;
@@ -1398,6 +1445,368 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
           ),
         );
         showMessage(r.message ?? '');
+      },
+    );
+  }
+
+  // ===========================================================================
+  // Locations
+  // ===========================================================================
+
+  /// Counts the clears. A response that started before a clear ran belongs to a
+  /// screen that is gone, or to a shop that is no longer open, and must not be
+  /// written anywhere.
+  ///
+  /// A plain field on the bloc, **not** on `DashBoardState`: nothing renders
+  /// from it, and every mutation of a state field emits to all eleven dashboard
+  /// tabs plus `become_seller_page.dart` and `profile_page.dart`.
+  int _locationsLoadGeneration = 0;
+
+  /// Diagnostic trace: the action, the outcome and the shop id only.
+  /// No request body, no headers, no token (AC-27).
+  void _logLocations(String action, String outcome, {String? message}) {
+    if (kDebugMode) {
+      print(
+        'locations | $action | $outcome | seller=$_currentSellerId'
+        '${message == null ? '' : ' | message=$message'}',
+      );
+    }
+  }
+
+  /// The arrival guard, stated once and used by both handlers that write the
+  /// list.
+  ///
+  /// A response is dropped when the shop changed while it was in flight, or
+  /// when a clear ran after it started. Note what the caller must do on a drop:
+  /// **nothing at all** — do not write the row, do not emit, and do not write a
+  /// terminal write-status value either. The clear already reset that field, so
+  /// writing it again would both re-dirty state the clear had just cleaned and
+  /// emit into a bloc nothing will dispose, which is the exact harm this guard
+  /// exists to prevent.
+  bool _locationsResponseIsStale(String? sellerIdAtRequest, int generation) {
+    return generation != _locationsLoadGeneration ||
+        sellerIdAtRequest != _currentSellerId;
+  }
+
+  FutureOr<void> _onGetShopLocationsEvent(
+    GetShopLocationsEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    // No read permission: no request is sent, no loading state, and no retry
+    // control — a retry could not succeed (AC-17, AC-18).
+    if (!event.canRead) {
+      _logLocations('load', 'skipped-no-permission');
+      emit(
+        state.copyWith(
+          getLocationsStatus: GetLocationsStatus.permissionDenied,
+          locations: const GetShopLocationsModel.empty(),
+          locationWriteStatus: LocationWriteStatus.init,
+        ),
+      );
+      return;
+    }
+
+    emit(state.copyWith(getLocationsStatus: GetLocationsStatus.loading));
+
+    final String? sellerIdAtRequest = _currentSellerId;
+    final int generationAtRequest = _locationsLoadGeneration;
+
+    final response = await getShopLocationsUseCase(
+      const GetShopLocationsParams(),
+    );
+
+    if (_locationsResponseIsStale(sellerIdAtRequest, generationAtRequest)) {
+      _logLocations('load', 'dropped-stale');
+      return;
+    }
+
+    response.fold(
+      (l) {
+        _logLocations('load', 'failure', message: l.message);
+        emit(
+          state.copyWith(
+            getLocationsStatus: GetLocationsStatus.failure,
+            locationsMessage: l.message,
+          ),
+        );
+      },
+      (r) {
+        // An envelope carrying `success: false` is a failure even when the HTTP
+        // status was a success.
+        if (r.success == false) {
+          _logLocations('load', 'failure-envelope', message: r.message);
+          emit(
+            state.copyWith(
+              getLocationsStatus: GetLocationsStatus.failure,
+              locationsMessage: r.message,
+            ),
+          );
+          return;
+        }
+        _logLocations('load', 'success');
+        emit(
+          state.copyWith(
+            getLocationsStatus: GetLocationsStatus.success,
+            // The shop this list was loaded for. The backend does not send it.
+            locations: r.copyWith(loadedForSellerId: sellerIdAtRequest),
+          ),
+        );
+      },
+    );
+  }
+
+  /// The one place everything this feature holds on the shared state is reset.
+  ///
+  /// Incrementing the generation first is what makes every response already in
+  /// flight stale, so none of them can write after this point.
+  FutureOr<void> _onClearShopLocationsEvent(
+    ClearShopLocationsEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    _locationsLoadGeneration++;
+    _logLocations('clear', 'cleared');
+    emit(
+      state.copyWith(
+        getLocationsStatus: GetLocationsStatus.init,
+        // The empty wrapper drops the list, its `meta` (so the header count
+        // cannot outlive it) and the shop stamp together.
+        locations: const GetShopLocationsModel.empty(),
+        locationWriteStatus: LocationWriteStatus.init,
+      ),
+    );
+  }
+
+  /// Shared by create and update: both refetch the list, and neither may do so
+  /// when the screen it would render on is gone.
+  ///
+  /// The refetch cannot be left to guard itself. Its own load captures the
+  /// generation **after** a clear has already incremented it, so it would pass
+  /// its own arrival check and store a full list for a dead screen. The gate
+  /// has to be here, against the generation captured when the *write* started.
+  void _refreshLocationsAfterWrite({
+    required String? sellerIdAtRequest,
+    required int generationAtRequest,
+    required bool canRead,
+  }) {
+    if (_locationsResponseIsStale(sellerIdAtRequest, generationAtRequest)) {
+      _logLocations('refresh', 'skipped-stale');
+      return;
+    }
+    if (!canRead) return;
+    add(GetShopLocationsEvent(canRead: canRead));
+  }
+
+  /// Guards the path where a write would be sent with no shop selected. It
+  /// still writes a terminal value, because a handler that returns leaving the
+  /// enum at `inFlight` disables every row's status control for the lifetime of
+  /// the app.
+  bool _locationWriteCanProceed(
+    String? sellerId,
+    Emitter<DashBoardState> emit,
+  ) {
+    if (sellerId == null || sellerId.isEmpty) {
+      _logLocations('write', 'skipped-no-shop');
+      emit(state.copyWith(locationWriteStatus: LocationWriteStatus.failure));
+      showMessage(LocaleKeys.locations_action_failed.tr(), hasError: true);
+      return false;
+    }
+    return true;
+  }
+
+  FutureOr<void> _onCreateShopLocationEvent(
+    CreateShopLocationEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    final String? sellerIdAtRequest = _currentSellerId;
+    final int generationAtRequest = _locationsLoadGeneration;
+    if (!_locationWriteCanProceed(sellerIdAtRequest, emit)) return;
+
+    emit(state.copyWith(locationWriteStatus: LocationWriteStatus.inFlight));
+
+    final response = await createShopLocationUseCase(
+      SaveShopLocationParams(
+        name: event.name,
+        countryId: event.countryId,
+        address: event.address,
+        latitude: event.latitude,
+        longitude: event.longitude,
+        sellerId: sellerIdAtRequest,
+      ),
+    );
+
+    response.fold(
+      (l) {
+        _logLocations('create', 'failure', message: l.message);
+        emit(
+          state.copyWith(
+            locationWriteStatus: LocationWriteStatus.failure,
+            locationsMessage: l.message,
+          ),
+        );
+        // This screen's own words. The backend's own text reaches the member
+        // only for a 400 or a 422, through the shared error toast, outside the
+        // form — and on a permission refusal there is no backend text at all.
+        showMessage(LocaleKeys.locations_save_failed.tr(), hasError: true);
+      },
+      (r) {
+        if (!r.isSuccess) {
+          _logLocations('create', 'failure-envelope', message: r.message);
+          emit(
+            state.copyWith(
+              locationWriteStatus: LocationWriteStatus.failure,
+              locationsMessage: r.message,
+            ),
+          );
+          return;
+        }
+        _logLocations('create', 'success');
+        emit(state.copyWith(locationWriteStatus: LocationWriteStatus.success));
+        showMessage(r.message ?? LocaleKeys.locations_saved.tr());
+        _refreshLocationsAfterWrite(
+          sellerIdAtRequest: sellerIdAtRequest,
+          generationAtRequest: generationAtRequest,
+          canRead: event.canRead,
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onUpdateShopLocationEvent(
+    UpdateShopLocationEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    final String? sellerIdAtRequest = _currentSellerId;
+    final int generationAtRequest = _locationsLoadGeneration;
+    if (!_locationWriteCanProceed(sellerIdAtRequest, emit)) return;
+
+    emit(state.copyWith(locationWriteStatus: LocationWriteStatus.inFlight));
+
+    final response = await updateShopLocationUseCase(
+      UpdateShopLocationParams(
+        id: event.id,
+        body: SaveShopLocationParams(
+          name: event.name,
+          countryId: event.countryId,
+          address: event.address,
+          latitude: event.latitude,
+          longitude: event.longitude,
+          sellerId: sellerIdAtRequest,
+        ),
+      ),
+    );
+
+    response.fold(
+      (l) {
+        _logLocations('update', 'failure', message: l.message);
+        emit(
+          state.copyWith(
+            locationWriteStatus: LocationWriteStatus.failure,
+            locationsMessage: l.message,
+          ),
+        );
+        showMessage(LocaleKeys.locations_save_failed.tr(), hasError: true);
+      },
+      (r) {
+        if (!r.isSuccess) {
+          _logLocations('update', 'failure-envelope', message: r.message);
+          emit(
+            state.copyWith(
+              locationWriteStatus: LocationWriteStatus.failure,
+              locationsMessage: r.message,
+            ),
+          );
+          return;
+        }
+        _logLocations('update', 'success');
+        emit(state.copyWith(locationWriteStatus: LocationWriteStatus.success));
+        showMessage(r.message ?? LocaleKeys.locations_saved.tr());
+        _refreshLocationsAfterWrite(
+          sellerIdAtRequest: sellerIdAtRequest,
+          generationAtRequest: generationAtRequest,
+          canRead: event.canRead,
+        );
+      },
+    );
+  }
+
+  /// The toggle writes one row in place and issues no reload — the contract
+  /// says the new value comes from the response.
+  ///
+  /// The bloc owns that write, and only the bloc. The widget renders and writes
+  /// nothing.
+  FutureOr<void> _onChangeShopLocationStatusEvent(
+    ChangeShopLocationStatusEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    final String? sellerIdAtRequest = _currentSellerId;
+    final int generationAtRequest = _locationsLoadGeneration;
+    if (!_locationWriteCanProceed(sellerIdAtRequest, emit)) return;
+
+    emit(state.copyWith(locationWriteStatus: LocationWriteStatus.inFlight));
+
+    final response = await changeShopLocationStatusUseCase(
+      ChangeShopLocationStatusParams(
+        id: event.id,
+        status: event.status,
+        sellerId: sellerIdAtRequest,
+      ),
+    );
+
+    // This write touches the list, so it carries the same arrival guard the
+    // load does. On a drop: write nothing and emit nothing — the clear that
+    // caused it has already reset both the list and the write status.
+    if (_locationsResponseIsStale(sellerIdAtRequest, generationAtRequest)) {
+      _logLocations('change-status', 'dropped-stale');
+      return;
+    }
+
+    response.fold(
+      (l) {
+        _logLocations('change-status', 'failure', message: l.message);
+        emit(
+          state.copyWith(
+            locationWriteStatus: LocationWriteStatus.failure,
+            locationsMessage: l.message,
+          ),
+        );
+        showMessage(LocaleKeys.locations_action_failed.tr(), hasError: true);
+      },
+      (r) {
+        if (!r.isSuccess || r.status == null) {
+          _logLocations(
+            'change-status',
+            'failure-envelope',
+            message: r.message,
+          );
+          emit(
+            state.copyWith(
+              locationWriteStatus: LocationWriteStatus.failure,
+              locationsMessage: r.message,
+            ),
+          );
+          showMessage(LocaleKeys.locations_action_failed.tr(), hasError: true);
+          return;
+        }
+
+        // A **new** list, not a mutation in place: mutating the existing one
+        // would leave `props` comparing equal and the emit would be dropped
+        // silently, so the row would never redraw.
+        final List<ShopLocationModel> updated = <ShopLocationModel>[
+          for (final ShopLocationModel row in state.locations.locations)
+            if (row.id == event.id) row.copyWith(status: r.status) else row,
+        ];
+
+        _logLocations('change-status', 'success');
+        emit(
+          state.copyWith(
+            locationWriteStatus: LocationWriteStatus.success,
+            // `copyWith` on the wrapper preserves the stamp rather than
+            // re-reading the shop id — re-reading would re-stamp a stale list
+            // with the current shop, and the first-frame gate would then pass
+            // for the wrong shop.
+            locations: state.locations.copyWith(locations: updated),
+          ),
+        );
       },
     );
   }

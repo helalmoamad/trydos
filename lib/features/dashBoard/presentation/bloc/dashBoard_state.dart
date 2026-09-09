@@ -56,8 +56,40 @@ enum UpdateShopInfoStatus { init, loading, success, failure }
 
 enum UploadShopMediaStatus { init, uploading, success, failure }
 
+/// The Locations list read. `permissionDenied` is written by the **load
+/// handler only** — a write handler must never put it here, or a failed create
+/// or toggle would replace the whole list with AC-17's no-request screen.
+enum GetLocationsStatus { init, loading, success, failure, permissionDenied }
+
+/// One field for all three Locations writes — create, update and change
+/// status.
+///
+/// A `bloc_concurrency` transformer is keyed on the **event type**, so it
+/// guards a second event of the same kind, never a second kind: a save and a
+/// status toggle can be in flight together and both write this one field, last
+/// completion winning. That is accepted because the add/edit form is a sheet
+/// over the list, so while a save is in flight the row controls are not
+/// reachable; the reverse costs at worst a stale disabled state that the next
+/// emission clears.
+///
+/// **Every handler that leaves a write writes a terminal value here** —
+/// `success` or `failure` — including the paths where no request was sent at
+/// all, and the clear resets it to `init`. Without both rules one value left at
+/// `inFlight` disables every row's status control for the lifetime of the app,
+/// on a bloc that is never disposed, with no error and no state change.
+enum LocationWriteStatus { init, inFlight, success, failure }
+
 @immutable
 class DashBoardState extends Equatable {
+  final GetLocationsStatus getLocationsStatus;
+
+  /// The list, its `meta` and the shop stamp all live on this one wrapper, so
+  /// there is only ever one copy of each. In particular the header count reads
+  /// `locations.meta.total` — there is no separate total on the state that
+  /// could drift from it.
+  final GetShopLocationsModel locations;
+  final LocationWriteStatus locationWriteStatus;
+  final String? locationsMessage;
   final GetShopInfoStatus getShopInfoStatus;
   final GetShopInfoModel shopInfo;
   final UpdateShopInfoStatus updateShopInfoStatus;
@@ -113,6 +145,10 @@ class DashBoardState extends Equatable {
   final String? downloadedTemplatePath;
 
   DashBoardState({
+    this.getLocationsStatus = GetLocationsStatus.init,
+    this.locations = const GetShopLocationsModel.empty(),
+    this.locationWriteStatus = LocationWriteStatus.init,
+    this.locationsMessage,
     this.getShopInfoStatus = GetShopInfoStatus.init,
     this.shopInfo = const GetShopInfoModel.empty(),
     this.updateShopInfoStatus = UpdateShopInfoStatus.init,
@@ -169,6 +205,10 @@ class DashBoardState extends Equatable {
   });
 
   DashBoardState copyWith({
+    GetLocationsStatus? getLocationsStatus,
+    GetShopLocationsModel? locations,
+    LocationWriteStatus? locationWriteStatus,
+    String? locationsMessage,
     GetShopInfoStatus? getShopInfoStatus,
     GetShopInfoModel? shopInfo,
     UpdateShopInfoStatus? updateShopInfoStatus,
@@ -224,6 +264,10 @@ class DashBoardState extends Equatable {
     DownloadExcelTemplateStatus? downloadExcelTemplateStatus,
   }) {
     return DashBoardState(
+      getLocationsStatus: getLocationsStatus ?? this.getLocationsStatus,
+      locations: locations ?? this.locations,
+      locationWriteStatus: locationWriteStatus ?? this.locationWriteStatus,
+      locationsMessage: locationsMessage ?? this.locationsMessage,
       getShopInfoStatus: getShopInfoStatus ?? this.getShopInfoStatus,
       shopInfo: shopInfo ?? this.shopInfo,
       updateShopInfoStatus: updateShopInfoStatus ?? this.updateShopInfoStatus,
@@ -350,5 +394,12 @@ class DashBoardState extends Equatable {
     galleryImages,
     galleryMeta,
     deleteGalleryImagesStatus,
+    // A field added to the class and `copyWith` but missing from `props` fails
+    // silently: the state compares equal, the screen never rebuilds, and
+    // nothing errors at compile time.
+    getLocationsStatus,
+    locations,
+    locationWriteStatus,
+    locationsMessage,
   ];
 }

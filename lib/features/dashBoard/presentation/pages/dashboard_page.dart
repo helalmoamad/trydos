@@ -1517,6 +1517,9 @@ import '../widgets/seller_stories_widget.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/utils/media_display_url.dart';
 import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
+import 'package:trydos/features/dashBoard/data/models/get_shop_locations_model.dart';
+import '../widgets/display_text_sanitizer.dart';
+import '../widgets/location_form_sheet.dart';
 
 /// -----------------------------------------------------------------------
 /// MAIN DASHBOARD PAGE
@@ -1695,7 +1698,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       index: 8,
                       icon: Icons.location_on_outlined,
                       title: LocaleKeys.locations.tr(),
-                      subtitle: 'Warehouses and pickup points for this shop',
+                      subtitle: LocaleKeys.locations_subtitle.tr(),
                       count: 0,
                       visible: true,
                     ),
@@ -1923,11 +1926,11 @@ class _DashboardContentPageState extends State<DashboardContentPage> {
       case 7:
         return ShopInfoWidget(permissions: widget.permissions);
       case 8:
-        return const LocationsWidget();
+        return LocationsWidget(permissions: widget.permissions);
       case 9:
         return const GalleryScreen();
       case 10:
-        return Center(child: Text(LocaleKeys.customers_comments.tr()));
+        return CustomerComments();
       default:
         return _buildProductsTab();
     }
@@ -2981,372 +2984,669 @@ class _DashedBorderPainter extends CustomPainter {
 
 /// -----------------------------------------------------------------------
 /// LOCATIONS SCREEN
-/// Matches the requested design:
-///  - Header: pin icon + "Locations" + count badge
-///  - "Add Location" button top-right
-///  - "All statuses" dropdown filter
-///  - List of location cards: icon, name, status badge, subtitle,
-///    country tag, Edit / Deactivate buttons
 ///
-/// NOTE ON WIRING THIS UP:
-///   - `_locations`     -> replace with the real list from your bloc/state
-///                         (e.g. state.locations).
-///   - `_statusFilter`  -> wire to your real status enum / filter logic.
-///   - `_onAddLocation` -> open your real "add location" page/dialog.
-///   - `_onEdit`        -> open your real "edit location" page/dialog.
-///   - `_onDeactivate`  -> dispatch your real deactivate bloc event.
+/// A shop's warehouses and pickup points: list, add, edit, and activate or
+/// deactivate. There is no delete control anywhere, because the backend has no
+/// delete call — and deactivating a location does **not** detach it from
+/// products that already point at it, which this screen must not imply
+/// (AC-32).
+///
+/// Permissions reach this screen as a constructor argument, not from the bloc:
+/// they are a frozen snapshot taken when the shop was chosen. The tab entry
+/// itself stays visible to everyone; the gate lives inside here (AC-28).
 /// -----------------------------------------------------------------------
-class LocationModel {
-  final String id;
-  final String name;
-  final String subtitle;
-  final String country;
-  final bool isActive;
 
-  LocationModel({
-    required this.id,
+/// One row, ready to draw.
+///
+/// The display copy is built **once**, when the list arrives — never inside an
+/// `itemBuilder`, which would re-sanitize every row on every frame. Each item
+/// also carries the raw [record], so the edit tap has the id it needs without a
+/// second lookup and without a parallel list to keep in step.
+class _LocationDisplayItem {
+  final ShopLocationModel record;
+  final String name;
+  final String address;
+  final String country;
+
+  const _LocationDisplayItem({
+    required this.record,
     required this.name,
-    required this.subtitle,
+    required this.address,
     required this.country,
-    required this.isActive,
   });
+
+  factory _LocationDisplayItem.from(ShopLocationModel record) {
+    return _LocationDisplayItem(
+      record: record,
+      name: sanitizeForDisplay(record.name),
+      address: sanitizeForDisplay(record.address),
+      country: sanitizeForDisplay(record.country?.displayName),
+    );
+  }
 }
 
+/// The status filter. `null` means "all".
+///
+/// It narrows the locations already loaded and sends no request (AC-7). Note
+/// that it is compared as "not set", never as falsy: `0` is a real value here,
+/// and a falsy test would make the "inactive" choice silently do nothing.
+enum _LocationStatusFilter { all, active, inactive }
+
 class LocationsWidget extends StatefulWidget {
-  const LocationsWidget({Key? key}) : super(key: key);
+  final List<String> permissions;
+
+  const LocationsWidget({Key? key, required this.permissions})
+    : super(key: key);
 
   @override
   State<LocationsWidget> createState() => _LocationsWidgetState();
 }
 
 class _LocationsWidgetState extends State<LocationsWidget> {
-  // TODO: replace with the real list coming from your bloc/state.
-  final List<LocationModel> _locations = [
-    LocationModel(
-      id: '1',
-      name: 'A',
-      subtitle: 'A',
-      country: 'Syrian Arab Republic',
-      isActive: true,
-    ),
-  ];
+  late final DashboardPermissionChecker _permissionChecker =
+      DashboardPermissionChecker(widget.permissions);
 
-  String _statusFilter = 'All statuses';
-  final List<String> _statusOptions = const [
-    'All statuses',
-    'Active',
-    'Inactive',
-  ];
+  /// Captured in `initState` and used in `dispose`. Reading the bloc from the
+  /// context during dispose is fragile and is not this file's pattern.
+  late final DashboardBloc _bloc;
 
-  List<LocationModel> get _filteredLocations {
-    if (_statusFilter == 'All statuses') return _locations;
-    final wantActive = _statusFilter == 'Active';
-    return _locations.where((l) => l.isActive == wantActive).toList();
-  }
+  /// The shop this screen was opened on.
+  String? _sellerIdAtOpen;
 
-  void _onAddLocation() {
-    // TODO: navigate to / open the real "Add Location" page or dialog.
-  }
+  _LocationStatusFilter _statusFilter = _LocationStatusFilter.all;
 
-  void _onEdit(LocationModel location) {
-    // TODO: navigate to / open the real "Edit Location" page or dialog.
-  }
+  /// Built once per list change, not per frame.
+  List<_LocationDisplayItem> _items = const <_LocationDisplayItem>[];
+  List<_LocationDisplayItem> _filtered = const <_LocationDisplayItem>[];
+  List<ShopLocationModel> _itemsSource = const <ShopLocationModel>[];
 
-  void _onDeactivate(LocationModel location) {
-    // TODO: dispatch your real deactivate/activate bloc event, e.g.:
-    // _dashboardBloc.add(ToggleLocationStatusEvent(id: location.id));
-    setState(() {
-      final index = _locations.indexWhere((l) => l.id == location.id);
-      if (index != -1) {
-        _locations[index] = LocationModel(
-          id: location.id,
-          name: location.name,
-          subtitle: location.subtitle,
-          country: location.country,
-          isActive: !location.isActive,
-        );
+  /// Read once per build and passed down — never called inside `itemBuilder`.
+  /// Each checker method is a list scan and `isSuperAdmin` adds a second, so
+  /// calling them per row would cost rows x permissions scans per frame.
+  bool get _canRead => _permissionChecker.canReadLocations();
+
+  bool get _canCreate => _permissionChecker.canCreateLocation();
+
+  bool get _canUpdate => _permissionChecker.canUpdateLocation();
+
+  bool get _canChangeStatus => _permissionChecker.canChangeLocationStatus();
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = context.read<DashboardBloc>();
+    _sellerIdAtOpen = GetIt.I<PrefsRepository>().getXSellerId;
+
+    // Once, on open — not in `build`, which would fire the event on every
+    // rebuild.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final String? loadedFor = _bloc.state.locations.loadedForSellerId;
+
+      // A list belonging to another shop is cleared before anything is drawn.
+      // The same belt-and-braces `_ShopInfoWidgetState` uses.
+      if (loadedFor != null && loadedFor != _sellerIdAtOpen) {
+        _bloc.add(ClearShopLocationsEvent());
       }
+      _bloc.add(GetShopLocationsEvent(canRead: _canRead));
     });
   }
 
   @override
+  void dispose() {
+    // The bloc is an app-wide singleton that is never disposed, so a list left
+    // on it would outlive this screen. Clearing also bumps the load
+    // generation, which makes every response still in flight stale.
+    _bloc.add(ClearShopLocationsEvent());
+    super.dispose();
+  }
+
+  /// Rebuilds the display copies only when the underlying list actually
+  /// changed, then re-applies the filter.
+  void _syncItems(List<ShopLocationModel> source) {
+    if (identical(source, _itemsSource)) return;
+    _itemsSource = source;
+    _items = source
+        .map(_LocationDisplayItem.from)
+        .toList(growable: false);
+    _applyFilter();
+  }
+
+  void _applyFilter() {
+    switch (_statusFilter) {
+      case _LocationStatusFilter.all:
+        _filtered = _items;
+        break;
+      case _LocationStatusFilter.active:
+        _filtered = _items
+            .where((_LocationDisplayItem i) => i.record.status == 1)
+            .toList(growable: false);
+        break;
+      case _LocationStatusFilter.inactive:
+        _filtered = _items
+            .where((_LocationDisplayItem i) => i.record.status == 0)
+            .toList(growable: false);
+        break;
+    }
+  }
+
+  void _onAddLocation() {
+    LocationFormSheet.show(
+      context: context,
+      bloc: _bloc,
+      canRead: _canRead,
+    );
+  }
+
+  void _onEdit(ShopLocationModel record) {
+    LocationFormSheet.show(
+      context: context,
+      bloc: _bloc,
+      canRead: _canRead,
+      existing: record,
+    );
+  }
+
+  /// The tap dispatches an event; the bloc writes the row. This widget renders
+  /// and writes nothing. The new marker is the value the backend returned, not
+  /// the value asked for, and no list reload is issued.
+  void _onToggleStatus(ShopLocationModel record) {
+    _bloc.add(
+      ChangeShopLocationStatusEvent(
+        id: record.id!,
+        status: record.isActive ? 0 : 1,
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Header row
-          Row(
+    return BlocBuilder<DashboardBloc, DashBoardState>(
+      // Keyed on this feature's fields only, so the other ten tabs' emissions
+      // do not rebuild this screen.
+      buildWhen: (previous, current) =>
+          previous.getLocationsStatus != current.getLocationsStatus ||
+          previous.locations != current.locations ||
+          previous.locationWriteStatus != current.locationWriteStatus,
+      builder: (context, state) {
+        _syncItems(state.locations.locations);
+
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(
-                Icons.location_on_outlined,
-                size: 20,
-                color: Color(0xff1D1D1D),
+              _buildHeader(state),
+              const SizedBox(height: 16),
+              if (state.getLocationsStatus != GetLocationsStatus.permissionDenied)
+                _buildFilter(),
+              if (state.getLocationsStatus != GetLocationsStatus.permissionDenied)
+                const SizedBox(height: 16),
+              Expanded(child: _buildBody(state)),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHeader(DashBoardState state) {
+    // The count beside the heading is the number the **shop** has, from
+    // `meta.total` — not the number drawn on screen. Expected at verify: the
+    // badge can show more than the list below it, because reaching the rest of
+    // the pages is a separate work item.
+    final int? total = state.locations.meta?.total;
+
+    return Row(
+      children: [
+        const Icon(
+          Icons.location_on_outlined,
+          size: 20,
+          color: Color(0xff1D1D1D),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          LocaleKeys.locations.tr(),
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: Color(0xff1D1D1D),
+          ),
+        ),
+        if (total != null) ...[
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: const Color(0xffEFEFEF),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '$total',
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xff505050),
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(width: 8),
-              const Text(
-                'Locations',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xff1D1D1D),
-                ),
+            ),
+          ),
+        ],
+        const Spacer(),
+        // Hidden outright from a member without the create permission (AC-19),
+        // and still usable in the empty state (AC-6).
+        if (_canCreate &&
+            state.getLocationsStatus != GetLocationsStatus.permissionDenied)
+          ElevatedButton.icon(
+            onPressed: _onAddLocation,
+            icon: const Icon(Icons.add, size: 18),
+            label: Text(LocaleKeys.locations_add.tr()),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xff3D3D3D),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
               ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xffEFEFEF),
-                  borderRadius: BorderRadius.circular(20),
-                ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildFilter() {
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xffEDEDED)),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<_LocationStatusFilter>(
+            value: _statusFilter,
+            icon: const Icon(Icons.keyboard_arrow_down),
+            items: <DropdownMenuItem<_LocationStatusFilter>>[
+              DropdownMenuItem<_LocationStatusFilter>(
+                value: _LocationStatusFilter.all,
                 child: Text(
-                  '${_locations.length}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xff505050),
-                    fontWeight: FontWeight.w600,
-                  ),
+                  LocaleKeys.locations_all_statuses.tr(),
+                  style: const TextStyle(color: Color(0xff5B5FEB)),
                 ),
               ),
-              const Spacer(),
-              ElevatedButton.icon(
-                onPressed: _onAddLocation,
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text('Add Location'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff3D3D3D),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+              DropdownMenuItem<_LocationStatusFilter>(
+                value: _LocationStatusFilter.active,
+                child: Text(
+                  LocaleKeys.locations_active.tr(),
+                  style: const TextStyle(color: Color(0xff5B5FEB)),
+                ),
+              ),
+              DropdownMenuItem<_LocationStatusFilter>(
+                value: _LocationStatusFilter.inactive,
+                child: Text(
+                  LocaleKeys.locations_inactive.tr(),
+                  style: const TextStyle(color: Color(0xff5B5FEB)),
+                ),
+              ),
+            ],
+            onChanged: (_LocationStatusFilter? value) {
+              if (value == null) return;
+              setState(() {
+                _statusFilter = value;
+                _applyFilter();
+              });
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(DashBoardState state) {
+    // Permission, failure and empty are all evaluated **before** the stamp
+    // gate, so a failed first load reaches the retry instead of a permanent
+    // spinner.
+    if (state.getLocationsStatus == GetLocationsStatus.permissionDenied) {
+      // No request was sent, no loading state, and no retry control — a retry
+      // could not succeed (AC-17).
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            LocaleKeys.locations_no_permission.tr(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Color(0xff8D8D8D)),
+          ),
+        ),
+      );
+    }
+
+    final bool hasRows = _items.isNotEmpty;
+
+    if (state.getLocationsStatus == GetLocationsStatus.failure) {
+      // A failure with rows already on screen keeps them and shows a banner
+      // over them; the full error state is only for a failure with nothing
+      // loaded (AC-25).
+      if (!hasRows) {
+        return _buildErrorState();
+      }
+      return Column(
+        children: [_buildErrorBanner(), Expanded(child: _buildList())],
+      );
+    }
+
+    // The first frame is gated on the stamp: the loading state stays until the
+    // list on the state was loaded for the shop this screen was opened on.
+    // Clearing in a post-frame callback alone would let one frame draw the
+    // previous shop's rows, and AC-22 says nothing of another shop is *ever*
+    // on screen.
+    final String? loadedFor = state.locations.loadedForSellerId;
+    final bool stampMatches =
+        loadedFor != null && loadedFor == _sellerIdAtOpen;
+
+    if (!stampMatches || state.getLocationsStatus == GetLocationsStatus.loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_items.isEmpty) {
+      return Center(
+        child: Text(
+          LocaleKeys.locations_empty.tr(),
+          style: const TextStyle(color: Color(0xff8D8D8D)),
+        ),
+      );
+    }
+
+    return _buildList();
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            LocaleKeys.locations_load_failed.tr(),
+            style: const TextStyle(color: Color(0xff8D8D8D)),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: () =>
+                _bloc.add(GetShopLocationsEvent(canRead: _canRead)),
+            child: Text(LocaleKeys.locations_retry.tr()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorBanner() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xffFCEAEA),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              LocaleKeys.locations_load_failed.tr(),
+              style: const TextStyle(color: Color(0xffE05B5B), fontSize: 12),
+            ),
+          ),
+          TextButton(
+            onPressed: () =>
+                _bloc.add(GetShopLocationsEvent(canRead: _canRead)),
+            child: Text(LocaleKeys.locations_retry.tr()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildList() {
+    if (_filtered.isEmpty) {
+      // The filter narrows only what is loaded, so choosing "inactive" can show
+      // an empty list while inactive rows sit on a later page. Recorded at
+      // verify as a consequence of paging being a separate work item.
+      return Center(
+        child: Text(
+          LocaleKeys.locations_empty.tr(),
+          style: const TextStyle(color: Color(0xff8D8D8D)),
+        ),
+      );
+    }
+
+    // The permission booleans are read once here and passed into the row.
+    final bool canUpdate = _canUpdate;
+    final bool canChangeStatus = _canChangeStatus;
+
+    return ListView.separated(
+      itemCount: _filtered.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, index) => _buildRow(
+        _filtered[index],
+        canUpdate: canUpdate,
+        canChangeStatus: canChangeStatus,
+      ),
+    );
+  }
+
+  Widget _buildRow(
+    _LocationDisplayItem item, {
+    required bool canUpdate,
+    required bool canChangeStatus,
+  }) {
+    final ShopLocationModel record = item.record;
+    final bool isActive = record.isActive;
+
+    // Each control needs its permission **and** a usable id. A record whose id
+    // is missing, non-numeric or not positive is still rendered — it simply
+    // offers neither control, so an unusable id can never become a path
+    // segment.
+    final bool showEdit = canUpdate && record.hasUsableId;
+    final bool showStatus = canChangeStatus && record.hasUsableId;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xffEDEDED)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: const Color(0xffF3F3F3),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.location_on_outlined,
+                  color: Color(0xff505050),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xff1D1D1D),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isActive
+                                ? const Color(0xffE6F7EC)
+                                : const Color(0xffF3F3F3),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            isActive
+                                ? LocaleKeys.locations_active.tr()
+                                : LocaleKeys.locations_inactive.tr(),
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: isActive
+                                  ? const Color(0xff2E9E5B)
+                                  : const Color(0xff8D8D8D),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (item.address.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        item.address,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xffBDBDBD),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-
-          // Status filter dropdown
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xffEDEDED)),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _statusFilter,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: _statusOptions
-                      .map(
-                        (s) => DropdownMenuItem(
-                          value: s,
-                          child: Text(
-                            s,
-                            style: const TextStyle(color: Color(0xff5B5FEB)),
-                          ),
+          // A row whose country is absent shows no country rather than a wrong
+          // one.
+          if (item.country.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xffEFF4FF),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      size: 12,
+                      color: Color(0xff388CFF),
+                    ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        item.country,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xff388CFF),
                         ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) setState(() => _statusFilter = value);
-                  },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-
-          // Locations list
-          Expanded(
-            child: _filteredLocations.isEmpty
-                ? const Center(
-                    child: Text(
-                      'No locations found',
-                      style: TextStyle(color: Color(0xff8D8D8D)),
+          ],
+          if (showEdit || showStatus) ...[
+            const SizedBox(height: 14),
+            const Divider(height: 1, color: Color(0xffEDEDED)),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (showEdit)
+                  OutlinedButton.icon(
+                    onPressed: () => _onEdit(record),
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      size: 16,
+                      color: Color(0xff388CFF),
                     ),
-                  )
-                : ListView.separated(
-                    itemCount: _filteredLocations.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final location = _filteredLocations[index];
-                      return Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xffEDEDED)),
+                    label: Text(
+                      LocaleKeys.edit.tr(),
+                      style: const TextStyle(color: Color(0xff388CFF)),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xff388CFF)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                if (showEdit && showStatus) const SizedBox(width: 10),
+                if (showStatus)
+                  BlocBuilder<DashboardBloc, DashBoardState>(
+                    buildWhen: (previous, current) =>
+                        previous.locationWriteStatus !=
+                        current.locationWriteStatus,
+                    builder: (context, state) {
+                      // While any status change is in flight every row's
+                      // control is disabled — the consequence of one shared
+                      // write status, stated here because this is where the
+                      // member sees it.
+                      final bool inFlight =
+                          state.locationWriteStatus ==
+                          LocationWriteStatus.inFlight;
+                      return TextButton(
+                        onPressed:
+                            inFlight ? null : () => _onToggleStatus(record),
+                        style: TextButton.styleFrom(
+                          backgroundColor: const Color(0xffFCEAEA),
+                          foregroundColor: const Color(0xffE05B5B),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 42,
-                                  height: 42,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xffF3F3F3),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Icon(
-                                    Icons.location_on_outlined,
-                                    color: Color(0xff505050),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            location.name,
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w700,
-                                              color: Color(0xff1D1D1D),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 2,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: location.isActive
-                                                  ? const Color(0xffE6F7EC)
-                                                  : const Color(0xffF3F3F3),
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            child: Text(
-                                              location.isActive
-                                                  ? 'Active'
-                                                  : 'Inactive',
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w600,
-                                                color: location.isActive
-                                                    ? const Color(0xff2E9E5B)
-                                                    : const Color(0xff8D8D8D),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        location.subtitle,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          color: Color(0xffBDBDBD),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xffEFF4FF),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      Icons.location_on,
-                                      size: 12,
-                                      color: Color(0xff388CFF),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      location.country,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Color(0xff388CFF),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 14),
-                            const Divider(height: 1, color: Color(0xffEDEDED)),
-                            const SizedBox(height: 12),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                OutlinedButton.icon(
-                                  onPressed: () => _onEdit(location),
-                                  icon: const Icon(
-                                    Icons.edit_outlined,
-                                    size: 16,
-                                    color: Color(0xff388CFF),
-                                  ),
-                                  label: const Text(
-                                    'Edit',
-                                    style: TextStyle(color: Color(0xff388CFF)),
-                                  ),
-                                  style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(
-                                      color: Color(0xff388CFF),
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                TextButton(
-                                  onPressed: () => _onDeactivate(location),
-                                  style: TextButton.styleFrom(
-                                    backgroundColor: const Color(0xffFCEAEA),
-                                    foregroundColor: const Color(0xffE05B5B),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 10,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    location.isActive
-                                        ? 'Deactivate'
-                                        : 'Activate',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                        child: Text(
+                          isActive
+                              ? LocaleKeys.locations_deactivate.tr()
+                              : LocaleKeys.locations_activate.tr(),
                         ),
                       );
                     },
                   ),
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -4460,5 +4760,19 @@ class _GalleryImage {
       localPath: localPath,
       status: status ?? this.status,
     );
+  }
+}
+
+class CustomerComments extends StatefulWidget {
+  const CustomerComments({super.key});
+
+  @override
+  State<CustomerComments> createState() => _CustomerCommentsState();
+}
+
+class _CustomerCommentsState extends State<CustomerComments> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

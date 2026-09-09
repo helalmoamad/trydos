@@ -38,6 +38,37 @@ abstract class DashBoardEndPoints {
   static final vendorRequestsEP = 'vendor-requests'.shopScope();
   static String updateVendorRequestEP(int vendorRequestId) =>
       'vendor-requests'.shopScope();
+
+  // ---------------------------------------------------------------------------
+  // Locations — a shop's warehouses and pickup points.
+  //
+  // Six calls, two constants and three per-record functions. There is **no
+  // delete endpoint**: a location can only be deactivated.
+  //
+  // Every write here is a `POST`, update included, so the shop id travels on
+  // the request through `RequestConfig.extraHeaders`, which only `post.dart`
+  // honours. No shared HTTP client is touched by this feature.
+  // ---------------------------------------------------------------------------
+
+  /// The collection. `GET` lists, `POST` creates — one path, two verbs.
+  static final String shopLocationsEP = 'locations'.shopScope();
+
+  /// The create form's country list. This call needs `CREATE_LOCATION`, so it
+  /// runs only when the add form opens. Never build the list's country filter
+  /// from it — a read-only member gets a 403.
+  static final String shopLocationLookupsEP = 'locations/lookups'.shopScope();
+
+  /// The id is an `int`, not a `String`. `deleteUserEP` is the *shape* to copy,
+  /// not the *signature*: a `String` here would undo the model's typing at the
+  /// exact boundary that builds the URL, since anything at all can be
+  /// interpolated into a string path.
+  static String shopLocationEditEP(int id) => 'locations/$id/edit'.shopScope();
+
+  static String shopLocationUpdateEP(int id) =>
+      'locations/$id/update'.shopScope();
+
+  static String shopLocationChangeStatusEP(int id) =>
+      'locations/$id/change-status'.shopScope();
 }
 
 abstract class DashBoardUrls {

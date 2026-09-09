@@ -7,6 +7,7 @@ import 'package:trydos/features/dashBoard/data/models/GetGalleryImagesModel.dart
 import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
 import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
+import 'package:trydos/features/dashBoard/data/models/get_shop_locations_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
@@ -270,6 +271,60 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.deleteGalleryImages(ids),
+    );
+  }
+
+  // --- Locations ---------------------------------------------------------
+
+  @override
+  Future<Either<Failure, GetShopLocationsModel>> getShopLocations({
+    int? status,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getShopLocations(status: status),
+    );
+  }
+
+  @override
+  Future<Either<Failure, LocationFormLookupsModel>> getLocationFormCountries() {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getLocationFormCountries(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ShopLocationWriteResponseModel>> createShopLocation(
+    Map<String, dynamic> params,
+    String? sellerId,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.createShopLocation(params, sellerId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ShopLocationEditModel>> getShopLocationForEdit(int id) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getShopLocationForEdit(id),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ShopLocationWriteResponseModel>> updateShopLocation(
+    int id,
+    Map<String, dynamic> params,
+    String? sellerId,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.updateShopLocation(id, params, sellerId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ChangeLocationStatusResponseModel>>
+  changeShopLocationStatus(int id, int status, String? sellerId) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.changeShopLocationStatus(id, status, sellerId),
     );
   }
 }

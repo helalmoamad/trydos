@@ -949,5 +949,26 @@ abstract class  LocaleKeys {
   static const shop_info_no_update_permission = 'shop_info_no_update_permission';
   static const shop_info_shop_changed = 'shop_info_shop_changed';
   static const other_gender = 'other_gender';
+  static const locations_subtitle = 'locations_subtitle';
+  static const locations_add = 'locations_add';
+  static const locations_edit_title = 'locations_edit_title';
+  static const locations_country = 'locations_country';
+  static const locations_select_country = 'locations_select_country';
+  static const locations_country_is_required = 'locations_country_is_required';
+  static const locations_no_countries = 'locations_no_countries';
+  static const locations_name_too_long = 'locations_name_too_long';
+  static const locations_active = 'locations_active';
+  static const locations_inactive = 'locations_inactive';
+  static const locations_all_statuses = 'locations_all_statuses';
+  static const locations_activate = 'locations_activate';
+  static const locations_deactivate = 'locations_deactivate';
+  static const locations_empty = 'locations_empty';
+  static const locations_no_permission = 'locations_no_permission';
+  static const locations_load_failed = 'locations_load_failed';
+  static const locations_retry = 'locations_retry';
+  static const locations_saved = 'locations_saved';
+  static const locations_save_failed = 'locations_save_failed';
+  static const locations_action_failed = 'locations_action_failed';
+  static const locations_coordinates_kept = 'locations_coordinates_kept';
 
 }
