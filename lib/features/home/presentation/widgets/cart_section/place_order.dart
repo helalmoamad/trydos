@@ -672,7 +672,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   onTap: () {
                     if (_agreeToPolicies) {
                       if (!(prefsRepository.isVerifiedPhone ?? false)) {
-                        GuestPhoneVerificationDialog.show(context);
+                        GuestPhoneVerificationDialog.show(
+                          context,
+                          asBottomSheet: true,
+                        );
                         return;
                       }
                       BlocProvider.of<HomeBloc>(
@@ -1208,7 +1211,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         Future.delayed(const Duration(seconds: 1), () {
                           if (!(prefsRepository.isVerifiedPhone ?? false)) {
                             if (mounted) {
-                              GuestPhoneVerificationDialog.show(context);
+                              GuestPhoneVerificationDialog.show(
+                                context,
+                                asBottomSheet: true,
+                              );
                             }
                           }
                         });

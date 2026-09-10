@@ -27,10 +27,17 @@ class WelcomeSection extends StatefulWidget {
   WelcomeSection({
     required this.goToCreateAccount,
     required this.goToLoginSection,
+    this.onDismiss,
     Key? key,
   }) : super(key: key);
   final void Function() goToCreateAccount;
   final void Function() goToLoginSection;
+
+  /// How "later, take a look" leaves this step. A host that builds this section
+  /// inside its own page — rather than on a route of its own — must pass this,
+  /// because popping would take that whole page with it. Left null, the old
+  /// pop-or-go-home behaviour is unchanged.
+  final void Function()? onDismiss;
 
   @override
   State<WelcomeSection> createState() => _WelcomeSectionState();
@@ -247,7 +254,9 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                   context,
                 ).add(RegisterGuestEvent(deviceId: deviceId!));
                 //   }
-                if (Navigator.of(context).canPop()) {
+                if (widget.onDismiss != null) {
+                  widget.onDismiss!();
+                } else if (Navigator.of(context).canPop()) {
                   devLog(
                     "############################################################3",
                   );

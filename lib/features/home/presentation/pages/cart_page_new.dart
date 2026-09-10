@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/foundation.dart' hide Category;
+import 'dart:async';
 import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -50,7 +51,15 @@ class CartPage extends StatefulWidget {
   State<CartPage> createState() => _CartPageState();
 }
 
-class _CartPageState extends State<CartPage> {
+class _CartPageState extends State<CartPage> with WidgetsBindingObserver {
+  /// Fires on every keyboard metric change, which is what actually drives the
+  /// slide. Waiting for a rebuild to notice the keyboard was unreliable.
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    _keepPanelAboveKeyboard();
+  }
+
   late HomeBloc homeBloc;
   late OrderBloc orderBloc;
   late AppBloc appBloc;
@@ -68,8 +77,134 @@ class _CartPageState extends State<CartPage> {
   final ValueNotifier<bool> animate = ValueNotifier(false);
   Duration animationDuration = const Duration(milliseconds: 500);
 
+  /// A guest tapped Confirm & Continue without a verified phone. The phone flow
+  /// then takes the button's place inside the sliding panel instead of opening
+  /// over the page, so the panel has to grow to the height the current step
+  /// reports.
+  bool _verifyingPhone = false;
+  double _verifyContentHeight = 0;
+
+  /// The page's own scroll view. The panel is the last thing in it and is not
+  /// pinned to the screen, so when the keyboard opens the viewport shrinks and
+  /// the panel drops below the fold — which is what hid the OTP fields. Riding
+  /// the scroll to the end puts the panel back against the keyboard's top edge.
+  final ScrollController _cartScroll = ScrollController();
+  Timer? _keyboardPin;
+
+  /// The keyboard's height, read from the view rather than from `MediaQuery`.
+  ///
+  /// This page sits inside `base_page`'s `Scaffold`, and a `Scaffold` with
+  /// `resizeToAvoidBottomInset` on strips the bottom inset out of the
+  /// `MediaQuery` it hands its body. So `MediaQuery.of(context).viewInsets`
+  /// reads zero here whether or not a keyboard is up — which silently disabled
+  /// both the extra room below and the automatic scroll. The view keeps the
+  /// real value, in physical pixels.
+  double get _keyboardHeight {
+    final view = View.of(context);
+    return view.viewInsets.bottom / view.devicePixelRatio;
+  }
+
+  /// Extra room under the page while the keyboard is up and the flow is
+  /// showing. The panel hangs 15.h past its stack and the app's bottom bar
+  /// covers a little more, so riding the scroll to the end still left the last
+  /// strip of the OTP row under the keyboard. This lengthens the scroll by that
+  /// much, and the ride to the end lifts the panel clear. Raise it if any part
+  /// of the row is still covered.
+  double get _keyboardLift {
+    if (!_verifyingPhone) return 0;
+    return _keyboardHeight > 0 ? 160.h : 0;
+  }
+
+  void _keepPanelAboveKeyboard() {
+    if (!_verifyingPhone) return;
+    // A single post-frame jump was landing before the keyboard had finished
+    // sliding in, on a scroll extent that was still growing, so the page ended
+    // up short and the row stayed covered. Hold the scroll against the end for
+    // the length of that animation instead.
+    //
+    // jumpTo, not animateTo: an animation started on one frame is cancelled by
+    // the next frame's, and never arrives. The keyboard's own slide covers the
+    // jump.
+    _keyboardPin?.cancel();
+    int ticks = 0;
+    _keyboardPin = Timer.periodic(const Duration(milliseconds: 50), (
+      Timer timer,
+    ) {
+      ticks++;
+      if (!mounted || ticks > 14) {
+        timer.cancel();
+        return;
+      }
+      if (!_cartScroll.hasClients) return;
+      if (_keyboardHeight <= 0) return;
+      final double end = _cartScroll.position.maxScrollExtent;
+      if ((_cartScroll.offset - end).abs() < 0.5) return;
+      _cartScroll.jumpTo(end);
+    });
+  }
+
+  /// While verifying, the panel holds only its top gap (10.h), the moving
+  /// header (27.h) and the flow. The totals, the guarantee row and the button
+  /// are not built at all, so they take no space.
+  ///
+  /// 10.h top gap + 27.h header + 15.h for the amount the panel hangs below
+  /// its stack, + the flow itself.
+  ///
+  /// Plus [_panelBorderInset]. The panel is drawn by two nested containers that
+  /// each carry a 1px `Border.all`, and a border eats into the space its child
+  /// is given, top and bottom, in both containers — so the column is handed
+  /// four pixels less than it asks for.
+  ///
+  /// No system inset is added: the app's own bottom navigation bar sits under
+  /// this panel, not the gesture bar, so there is nothing here to keep clear of.
+  static const double _panelBorderInset = 4;
+
+  double get _verifyPanelHeight {
+    final double wanted = 52.h + _panelBorderInset + _verifyContentHeight;
+    final double cap = 1.sh - 160.h;
+    return wanted > cap ? cap : wanted;
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _keyboardPin?.cancel();
+    _cartScroll.dispose();
+    super.dispose();
+  }
+
+  void _stopVerifyingPhone() {
+    if (!_verifyingPhone) return;
+    setState(() {
+      _verifyingPhone = false;
+      _verifyContentHeight = 0;
+    });
+  }
+
+  /// The same flow the dialog shows, built in place of the button.
+  Widget _inlinePhoneVerification() {
+    return Padding(
+      // The panel is anchored 15.h past the bottom of its stack; keep the flow
+      // clear of that much and no more.
+      padding: EdgeInsets.only(bottom: 15.h),
+      child: GuestPhoneVerificationDialog(
+        inline: true,
+        onHeightChanged: (double height) {
+          if (height == _verifyContentHeight) return;
+          setState(() => _verifyContentHeight = height);
+        },
+        onClose: _stopVerifyingPhone,
+        onVerified: () {
+          _stopVerifyingPhone();
+          homeBloc.add(const CheckWithGetCartEvent(isForPlaceOrder: false));
+        },
+      ),
+    );
+  }
+
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     LastPagesTracker.push("Cart Page");
     isExpanded.value = false;
     if (kDebugMode)
@@ -127,6 +262,7 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     List<Map<String, String>> cartImages = [];
+    _keepPanelAboveKeyboard();
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: BlocListener<HomeBloc, HomeState>(
@@ -457,6 +593,8 @@ class _CartPageState extends State<CartPage> {
             //     .exchangeRate!;
 
             return SingleChildScrollView(
+              controller: _cartScroll,
+              padding: EdgeInsets.only(bottom: _keyboardLift),
               child: Column(
                 children: [
                   Container(
@@ -855,12 +993,17 @@ class _CartPageState extends State<CartPage> {
                                                 isMoreInfo
                                             ? false
                                             : true,
-                                        minHeight:
-                                            ((state.cartCollection == null ||
-                                                state.cartCollection!.isEmpty))
+                                        minHeight: _verifyingPhone
+                                            ? _verifyPanelHeight
+                                            : ((state.cartCollection == null ||
+                                                  state
+                                                      .cartCollection!
+                                                      .isEmpty))
                                             ? 100.h
                                             : 275.h,
-                                        maxHeight: isMoreInfo
+                                        maxHeight: _verifyingPhone
+                                            ? _verifyPanelHeight
+                                            : isMoreInfo
                                             ? 1.sh - 250.h
                                             : ((state.cartCollection == null ||
                                                   state
@@ -887,11 +1030,13 @@ class _CartPageState extends State<CartPage> {
                                               topRight: Radius.circular(30.r),
                                             ),
                                           ),
-                                          height:
-                                              ((state.cartCollection == null ||
-                                                  state
-                                                      .cartCollection!
-                                                      .isEmpty))
+                                          height: _verifyingPhone
+                                              ? _verifyPanelHeight
+                                              : ((state.cartCollection ==
+                                                        null ||
+                                                    state
+                                                        .cartCollection!
+                                                        .isEmpty))
                                               ? 100.h
                                               : expanded
                                               ? 485.h
@@ -937,11 +1082,15 @@ class _CartPageState extends State<CartPage> {
                                                             .isEmpty))
                                                     ? const SizedBox.shrink()
                                                     : SizedBox(height: 10.h),
-                                                ((state.cartCollection ==
-                                                            null ||
-                                                        state
-                                                            .cartCollection!
-                                                            .isEmpty))
+                                                // Verifying: the moving header
+                                                // stays, everything else in the
+                                                // panel gives way to the flow.
+                                                (_verifyingPhone ||
+                                                        (state.cartCollection ==
+                                                                null ||
+                                                            state
+                                                                .cartCollection!
+                                                                .isEmpty))
                                                     ? const SizedBox.shrink()
                                                     : InkWell(
                                                         onTap: () {
@@ -970,6 +1119,8 @@ class _CartPageState extends State<CartPage> {
                                                             .cartCollection!
                                                             .isEmpty))
                                                     ? const SizedBox.shrink()
+                                                    : _verifyingPhone
+                                                    ? const SizedBox.shrink()
                                                     : SizedBox(height: 5.h),
                                                 ((state.cartCollection ==
                                                             null ||
@@ -988,153 +1139,71 @@ class _CartPageState extends State<CartPage> {
                                                               0),
                                                         ),
                                                       ),
-                                                !isMoreInfo
+                                                (!isMoreInfo || _verifyingPhone)
                                                     ? const SizedBox.shrink()
                                                     : SizedBox(
                                                         height: 1.sh / 2.1,
                                                       ),
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                      color: const Color(
-                                                        0xffF8F8F8,
-                                                      ),
-                                                    ),
-                                                    color: const Color(
-                                                      0xffF8F8F8,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                          Radius.circular(30.r),
-                                                        ),
-                                                  ),
-                                                  margin: EdgeInsets.symmetric(
-                                                    horizontal: 10.w,
-                                                  ),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      !expanded
-                                                          ? const SizedBox.shrink()
-                                                          : Container(
-                                                              margin:
-                                                                  EdgeInsets.all(
-                                                                    18.h,
-                                                                  ),
-                                                              width: 65.w,
-                                                              height: 18.h,
-                                                              child: Row(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  SvgPicture.asset(
-                                                                    AppAssets
-                                                                        .countItemSvg,
-                                                                    // ignore: deprecated_member_use
-                                                                    color: const Color(
-                                                                      0xff1D1D1D,
-                                                                    ),
-                                                                    height:
-                                                                        12.h,
-                                                                  ),
-                                                                  Text(
-                                                                    " ${LocaleKeys.item.tr()} ",
-                                                                    style: context
-                                                                        .textTheme
-                                                                        .bodyMedium
-                                                                        ?.mq
-                                                                        .copyWith(
-                                                                          fontSize:
-                                                                              13.sp,
-                                                                          color: const Color(
-                                                                            0xff1D1D1D,
-                                                                          ),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          height:
-                                                                              1.33,
-                                                                        ),
-                                                                  ),
-                                                                  Text(
-                                                                    "${totlalQuantity.round()}",
-                                                                    style: context
-                                                                        .textTheme
-                                                                        .bodyMedium
-                                                                        ?.bq
-                                                                        .copyWith(
-                                                                          fontSize:
-                                                                              13.sp,
-                                                                          color: const Color(
-                                                                            0xff1D1D1D,
-                                                                          ),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          height:
-                                                                              1.33,
-                                                                        ),
-                                                                  ),
-                                                                ],
-                                                              ),
+                                                // The totals, the guarantees
+                                                // and the Confirm & Continue
+                                                // button — all of it stands
+                                                // down while the guest verifies
+                                                // a phone number.
+                                                _verifyingPhone
+                                                    ? _inlinePhoneVerification()
+                                                    : Container(
+                                                        decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                            color: const Color(
+                                                              0xffF8F8F8,
                                                             ),
-                                                      !expanded
-                                                          ? const SizedBox.shrink()
-                                                          : Container(
-                                                              width: 400.w,
-                                                              height: 50.h,
-                                                              padding: EdgeInsets.only(
-                                                                right:
-                                                                    LanguageService
-                                                                            .languageCode !=
-                                                                        "ar"
-                                                                    ? 10.w
-                                                                    : 0,
-                                                                left:
-                                                                    LanguageService
-                                                                            .languageCode !=
-                                                                        "ar"
-                                                                    ? 0
-                                                                    : 10.w,
+                                                          ),
+                                                          color: const Color(
+                                                            0xffF8F8F8,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                Radius.circular(
+                                                                  30.r,
+                                                                ),
                                                               ),
-                                                              margin:
-                                                                  EdgeInsets.symmetric(
-                                                                    horizontal:
-                                                                        10.w,
-                                                                  ),
-                                                              child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        height:
-                                                                            17.h,
-                                                                        margin: EdgeInsets.only(
-                                                                          right:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 10.w
-                                                                              : 25.w,
-                                                                          left:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 25.w
-                                                                              : 10.w,
+                                                        ),
+                                                        margin:
+                                                            EdgeInsets.symmetric(
+                                                              horizontal: 10.w,
+                                                            ),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            !expanded
+                                                                ? const SizedBox.shrink()
+                                                                : Container(
+                                                                    margin:
+                                                                        EdgeInsets.all(
+                                                                          18.h,
                                                                         ),
-                                                                        child: Text(
-                                                                          "${LocaleKeys.details.tr()} ",
-                                                                          strutStyle:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? null
-                                                                              : const StrutStyle(
-                                                                                  height: 0.1,
-                                                                                  leading: 0.1,
-                                                                                ),
+                                                                    width: 65.w,
+                                                                    height:
+                                                                        18.h,
+                                                                    child: Row(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        SvgPicture.asset(
+                                                                          AppAssets
+                                                                              .countItemSvg,
+                                                                          // ignore: deprecated_member_use
+                                                                          color: const Color(
+                                                                            0xff1D1D1D,
+                                                                          ),
+                                                                          height:
+                                                                              12.h,
+                                                                        ),
+                                                                        Text(
+                                                                          " ${LocaleKeys.item.tr()} ",
                                                                           style: context.textTheme.bodyMedium?.mq.copyWith(
                                                                             fontSize:
                                                                                 13.sp,
@@ -1144,332 +1213,16 @@ class _CartPageState extends State<CartPage> {
                                                                             letterSpacing:
                                                                                 0.18,
                                                                             height:
-                                                                                LanguageService.languageCode !=
-                                                                                    "ar"
-                                                                                ? 1.33
-                                                                                : 1,
+                                                                                1.33,
                                                                           ),
                                                                         ),
-                                                                      ),
-                                                                      const Spacer(),
-                                                                      Text(
-                                                                        " ${HelperFunctions.formatNumber(numberToFormate: totlalPriceWithoutShipping, isNeedRounding: false)}  ",
-                                                                        style: context.textTheme.bodyMedium?.bq.copyWith(
-                                                                          fontSize:
-                                                                              13.sp,
-                                                                          color: const Color(
-                                                                            0xff1D1D1D,
-                                                                          ),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          height:
-                                                                              1.33,
-                                                                        ),
-                                                                      ),
-                                                                      const SizedBox(
-                                                                        width:
-                                                                            2,
-                                                                      ),
-                                                                      Text(
-                                                                        "${priceSymbol ?? "\$"}",
-                                                                        style: context.textTheme.bodyMedium?.mq.copyWith(
-                                                                          fontSize:
-                                                                              13.sp,
-                                                                          color: const Color(
-                                                                            0xff1D1D1D,
-                                                                          ),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          height:
-                                                                              1.33,
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  Container(
-                                                                    height:
-                                                                        18.h,
-                                                                    margin: EdgeInsets.only(
-                                                                      right:
-                                                                          LanguageService.languageCode !=
-                                                                              "ar"
-                                                                          ? 10.w
-                                                                          : 25.w,
-                                                                      left:
-                                                                          LanguageService.languageCode !=
-                                                                              "ar"
-                                                                          ? 25.w
-                                                                          : 10.w,
-                                                                    ),
-                                                                    child: Text(
-                                                                      "${LocaleKeys.normal_price.tr()} ",
-                                                                      style: context.textTheme.bodyMedium?.rq.copyWith(
-                                                                        fontSize:
-                                                                            11.sp,
-                                                                        color: const Color(
-                                                                          0xff1D1D1D,
-                                                                        ),
-                                                                        letterSpacing:
-                                                                            0.18,
-                                                                        height:
-                                                                            1.33,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                      !expanded
-                                                          ? const SizedBox.shrink()
-                                                          : SizedBox(
-                                                              height: 5.h,
-                                                            ),
-                                                      !expanded
-                                                          ? const SizedBox.shrink()
-                                                          : Container(
-                                                              padding: EdgeInsets.only(
-                                                                right:
-                                                                    LanguageService
-                                                                            .languageCode !=
-                                                                        "ar"
-                                                                    ? 10.w
-                                                                    : 0,
-                                                                left:
-                                                                    LanguageService
-                                                                            .languageCode !=
-                                                                        "ar"
-                                                                    ? 0
-                                                                    : 10.w,
-                                                              ),
-                                                              width: 400.w,
-                                                              height: 50.h,
-                                                              margin:
-                                                                  EdgeInsets.symmetric(
-                                                                    horizontal:
-                                                                        10.w,
-                                                                  ),
-                                                              child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        margin: EdgeInsets.only(
-                                                                          right:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 10.w
-                                                                              : 4.w,
-                                                                          left:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 2.w
-                                                                              : 8.w,
-                                                                        ),
-                                                                        child: SvgPicture.asset(
-                                                                          AppAssets
-                                                                              .totalDiscountCartSvg,
-                                                                          // ignore: deprecated_member_use
-                                                                          color: const Color(
-                                                                            0xffFE0364,
-                                                                          ),
-                                                                          height:
-                                                                              12.h,
-                                                                        ),
-                                                                      ),
-                                                                      Container(
-                                                                        height:
-                                                                            17.h,
-                                                                        margin: EdgeInsets.only(
-                                                                          right:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 10.w
-                                                                              : 2.w,
-                                                                          left:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 2.w
-                                                                              : 10.w,
-                                                                        ),
-                                                                        child: Text(
-                                                                          "${LocaleKeys.total_discount.tr()} ${(totlalPrice == 0 ? 0 : ((totlalDiscount) / totlalPriceWithoutShipping) * 100).toStringAsFixed(0)}% ",
-                                                                          strutStyle:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? null
-                                                                              : const StrutStyle(
-                                                                                  height: 0.1,
-                                                                                  leading: 0.1,
-                                                                                ),
-                                                                          style: context.textTheme.bodyMedium?.mq.copyWith(
+                                                                        Text(
+                                                                          "${totlalQuantity.round()}",
+                                                                          style: context.textTheme.bodyMedium?.bq.copyWith(
                                                                             fontSize:
                                                                                 13.sp,
                                                                             color: const Color(
-                                                                              0xffA28E5B,
-                                                                            ),
-                                                                            letterSpacing:
-                                                                                0.18,
-                                                                            height:
-                                                                                LanguageService.languageCode !=
-                                                                                    "ar"
-                                                                                ? 1.33
-                                                                                : 1,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      const Spacer(),
-                                                                      Text(
-                                                                        "- ${HelperFunctions.formatNumber(numberToFormate: (totlalDiscount), isNeedRounding: false)}  ",
-                                                                        style: context.textTheme.bodyMedium?.bq.copyWith(
-                                                                          fontSize:
-                                                                              13.sp,
-                                                                          color: const Color(
-                                                                            0xffA28E5B,
-                                                                          ),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          height:
-                                                                              1.33,
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            2.w,
-                                                                      ),
-                                                                      Text(
-                                                                        "${priceSymbol ?? "\$"}",
-                                                                        style: context.textTheme.bodyMedium?.mq.copyWith(
-                                                                          fontSize:
-                                                                              13.sp,
-                                                                          color: const Color(
-                                                                            0xffA28E5B,
-                                                                          ),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          height:
-                                                                              1.33,
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  Container(
-                                                                    height:
-                                                                        17.h,
-                                                                    margin: EdgeInsets.only(
-                                                                      right:
-                                                                          LanguageService.languageCode !=
-                                                                              "ar"
-                                                                          ? 10.w
-                                                                          : 25.w,
-                                                                      left:
-                                                                          LanguageService.languageCode !=
-                                                                              "ar"
-                                                                          ? 25.w
-                                                                          : 10.w,
-                                                                    ),
-                                                                    child: Text(
-                                                                      "${LocaleKeys.all_inclusve_without_addition.tr()} ",
-                                                                      style: context.textTheme.bodyMedium?.rq.copyWith(
-                                                                        fontSize:
-                                                                            11.sp,
-                                                                        color: const Color(
-                                                                          0xffA28E5B,
-                                                                        ),
-                                                                        letterSpacing:
-                                                                            0.18,
-                                                                        height:
-                                                                            1.33,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                      !expanded
-                                                          ? const SizedBox.shrink()
-                                                          : SizedBox(
-                                                              height: 5.h,
-                                                            ),
-                                                      !expanded
-                                                          ? const SizedBox.shrink()
-                                                          : Container(
-                                                              padding: EdgeInsets.only(
-                                                                right:
-                                                                    LanguageService
-                                                                            .languageCode !=
-                                                                        "ar"
-                                                                    ? 10.w
-                                                                    : 2.w,
-                                                                left:
-                                                                    LanguageService
-                                                                            .languageCode !=
-                                                                        "ar"
-                                                                    ? 2.w
-                                                                    : 10.w,
-                                                              ),
-                                                              width: 400.w,
-                                                              height: 50.h,
-                                                              margin:
-                                                                  EdgeInsets.symmetric(
-                                                                    horizontal:
-                                                                        10.w,
-                                                                  ),
-                                                              child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        margin: EdgeInsets.only(
-                                                                          right:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 10.w
-                                                                              : 2.w,
-                                                                          left:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 2.w
-                                                                              : 10.w,
-                                                                        ),
-                                                                        child: SvgPicture.asset(
-                                                                          AppAssets
-                                                                              .giftCartSvg,
-                                                                          // ignore: deprecated_member_use
-                                                                          color: const Color(
-                                                                            0xff5BA260,
-                                                                          ),
-                                                                          height:
-                                                                              12.h,
-                                                                        ),
-                                                                      ),
-                                                                      Container(
-                                                                        height:
-                                                                            17.h,
-                                                                        margin: EdgeInsets.only(
-                                                                          right:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 10.w
-                                                                              : 2.w,
-                                                                          left:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 2.w
-                                                                              : 10.w,
-                                                                        ),
-                                                                        child: Text(
-                                                                          "${LocaleKeys.gift.tr()}",
-                                                                          style: context.textTheme.bodyMedium?.mq.copyWith(
-                                                                            fontSize:
-                                                                                13.sp,
-                                                                            color: const Color(
-                                                                              0xff5BA260,
+                                                                              0xff1D1D1D,
                                                                             ),
                                                                             letterSpacing:
                                                                                 0.18,
@@ -1477,323 +1230,258 @@ class _CartPageState extends State<CartPage> {
                                                                                 1.33,
                                                                           ),
                                                                         ),
-                                                                      ),
-                                                                      const Spacer(),
-                                                                      Text(
-                                                                        "- ${0}  ",
-                                                                        style: context.textTheme.bodyMedium?.bq.copyWith(
-                                                                          fontSize:
-                                                                              13.sp,
-                                                                          color: const Color(
-                                                                            0xff5BA260,
-                                                                          ),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          height:
-                                                                              1.33,
-                                                                        ),
-                                                                      ),
-                                                                      const SizedBox(
-                                                                        width:
-                                                                            2,
-                                                                      ),
-                                                                      Text(
-                                                                        "${priceSymbol ?? "\$"}",
-                                                                        style: context.textTheme.bodyMedium?.mq.copyWith(
-                                                                          fontSize:
-                                                                              13.sp,
-                                                                          color: const Color(
-                                                                            0xff5BA260,
-                                                                          ),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          height:
-                                                                              1.33,
-                                                                        ),
-                                                                      ),
-                                                                    ],
+                                                                      ],
+                                                                    ),
                                                                   ),
-                                                                  Container(
+                                                            !expanded
+                                                                ? const SizedBox.shrink()
+                                                                : Container(
+                                                                    width:
+                                                                        400.w,
                                                                     height:
-                                                                        17.h,
-                                                                    margin: EdgeInsets.only(
+                                                                        50.h,
+                                                                    padding: EdgeInsets.only(
                                                                       right:
                                                                           LanguageService.languageCode !=
                                                                               "ar"
                                                                           ? 10.w
-                                                                          : 25.w,
+                                                                          : 0,
                                                                       left:
                                                                           LanguageService.languageCode !=
                                                                               "ar"
-                                                                          ? 25.w
+                                                                          ? 0
                                                                           : 10.w,
                                                                     ),
-                                                                    child: Text(
-                                                                      "${LocaleKeys.first_shopping.tr()} ",
-                                                                      style: context.textTheme.bodyMedium?.rq.copyWith(
-                                                                        fontSize:
-                                                                            11.sp,
-                                                                        color: const Color(
-                                                                          0xff5BA260,
-                                                                        ),
-                                                                        letterSpacing:
-                                                                            0.18,
-                                                                        height:
-                                                                            1.33,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                      SizedBox(height: 5.h),
-                                                      !expanded
-                                                          ? const SizedBox.shrink()
-                                                          : Container(
-                                                              padding: EdgeInsets.only(
-                                                                right:
-                                                                    LanguageService
-                                                                            .languageCode !=
-                                                                        "ar"
-                                                                    ? 10.w
-                                                                    : 2.w,
-                                                                left:
-                                                                    LanguageService
-                                                                            .languageCode !=
-                                                                        "ar"
-                                                                    ? 2.w
-                                                                    : 10.w,
-                                                              ),
-                                                              width: 400.w,
-                                                              height: 50.h,
-                                                              margin:
-                                                                  EdgeInsets.symmetric(
-                                                                    horizontal:
-                                                                        10.w,
-                                                                  ),
-                                                              child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        margin: EdgeInsets.only(
-                                                                          right:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 10.w
-                                                                              : 2.w,
-                                                                          left:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 2.w
-                                                                              : 10.w,
-                                                                        ),
-                                                                        child: SvgPicture.asset(
-                                                                          AppAssets
-                                                                              .shappingCartSvg,
-                                                                          // ignore: deprecated_member_use
-                                                                          color: const Color(
-                                                                            0xffBEF4CD,
-                                                                          ),
-                                                                          height:
-                                                                              12.h,
-                                                                        ),
-                                                                      ),
-                                                                      Container(
-                                                                        height:
-                                                                            17.h,
-                                                                        margin: EdgeInsets.only(
-                                                                          right:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 10.w
-                                                                              : 2.w,
-                                                                          left:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? 2.w
-                                                                              : 10.w,
-                                                                        ),
-                                                                        child: Text(
-                                                                          "${LocaleKeys.shipping.tr()} ",
-                                                                          strutStyle:
-                                                                              LanguageService.languageCode !=
-                                                                                  "ar"
-                                                                              ? null
-                                                                              : const StrutStyle(
-                                                                                  height: 0.1,
-                                                                                  leading: 0.1,
-                                                                                ),
-                                                                          style: context.textTheme.bodyMedium?.mq.copyWith(
-                                                                            fontSize:
-                                                                                13.sp,
-                                                                            color: const Color(
-                                                                              0xff2FA52F,
-                                                                            ),
-                                                                            letterSpacing:
-                                                                                0.18,
-                                                                            height:
-                                                                                LanguageService.languageCode !=
-                                                                                    "ar"
-                                                                                ? 1.33
-                                                                                : 1,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      const Spacer(),
-                                                                      /*    Text(
-                                                                                      "0",
-                                                                                      style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
-                                                                                    ),*/
-                                                                      Text(
-                                                                        " ${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0), state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)}  ",
-                                                                        style: context.textTheme.bodyMedium?.bq.copyWith(
-                                                                          fontSize:
-                                                                              13.sp,
-                                                                          color: const Color(
-                                                                            0xff2FA52F,
-                                                                          ),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          height:
-                                                                              1.33,
-                                                                        ),
-                                                                      ),
-                                                                      const SizedBox(
-                                                                        width:
-                                                                            2,
-                                                                      ),
-                                                                      Text(
-                                                                        "${priceSymbol ?? "\$"}",
-                                                                        style: context.textTheme.bodyMedium?.mq.copyWith(
-                                                                          fontSize:
-                                                                              13.sp,
-                                                                          color: const Color(
-                                                                            0xff2FA52F,
-                                                                          ),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          height:
-                                                                              1.33,
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  Container(
-                                                                    height:
-                                                                        18.h,
-                                                                    margin: EdgeInsets.only(
-                                                                      right:
-                                                                          LanguageService.languageCode !=
-                                                                              "ar"
-                                                                          ? 10.w
-                                                                          : 25.w,
-                                                                      left:
-                                                                          LanguageService.languageCode !=
-                                                                              "ar"
-                                                                          ? 25.w
-                                                                          : 10.w,
-                                                                    ),
-                                                                    child: Text(
-                                                                      (state.getCartShippingItemsModel?.data?.totalShippingCost ??
-                                                                                  0) !=
-                                                                              0
-                                                                          ? ""
-                                                                          : "${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()} ",
-                                                                      style: context.textTheme.bodyMedium?.rq.copyWith(
-                                                                        fontSize:
-                                                                            11.sp,
-                                                                        color: const Color(
-                                                                          0xff2FA52F,
-                                                                        ),
-                                                                        letterSpacing:
-                                                                            0.18,
-                                                                        height:
-                                                                            1.33,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                      SizedBox(
-                                                        height: expanded
-                                                            ? 0
-                                                            : 10.h,
-                                                      ),
-                                                      ((state.cartCollection ==
-                                                                  null ||
-                                                              state
-                                                                  .cartCollection!
-                                                                  .isEmpty))
-                                                          ? const SizedBox.shrink()
-                                                          : InkWell(
-                                                              onTap: () => Future.delayed(
-                                                                const Duration(
-                                                                  microseconds:
-                                                                      500,
-                                                                ),
-                                                                () {
-                                                                  if (isExpanded
-                                                                          .value ||
-                                                                      moreInfo
-                                                                          .value) {
-                                                                    isExpanded
-                                                                            .value =
-                                                                        false;
-                                                                    moreInfo.value =
-                                                                        false;
-                                                                    panelController
-                                                                        .close();
-                                                                  } else {
-                                                                    panelController
-                                                                        .open();
-                                                                  }
-                                                                },
-                                                              ),
-                                                              child: Container(
-                                                                width: 400.w,
-                                                                height: 50.h,
-                                                                decoration: BoxDecoration(
-                                                                  color: const Color(
-                                                                    0xffF8F8F8,
-                                                                  ),
-                                                                  borderRadius:
-                                                                      BorderRadius.all(
-                                                                        Radius.circular(
-                                                                          12.r,
-                                                                        ),
-                                                                      ),
-                                                                ),
-                                                                padding: EdgeInsets.only(
-                                                                  right:
-                                                                      LanguageService
-                                                                              .languageCode !=
-                                                                          "ar"
-                                                                      ? 10.w
-                                                                      : 2.w,
-                                                                  left:
-                                                                      LanguageService
-                                                                              .languageCode !=
-                                                                          "ar"
-                                                                      ? 2.w
-                                                                      : 10.w,
-                                                                ),
-                                                                margin:
-                                                                    EdgeInsets.symmetric(
+                                                                    margin: EdgeInsets.symmetric(
                                                                       horizontal:
                                                                           10.w,
                                                                     ),
-                                                                child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    Row(
+                                                                    child: Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
                                                                       children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Container(
+                                                                              height: 17.h,
+                                                                              margin: EdgeInsets.only(
+                                                                                right:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 10.w
+                                                                                    : 25.w,
+                                                                                left:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 25.w
+                                                                                    : 10.w,
+                                                                              ),
+                                                                              child: Text(
+                                                                                "${LocaleKeys.details.tr()} ",
+                                                                                strutStyle:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? null
+                                                                                    : const StrutStyle(
+                                                                                        height: 0.1,
+                                                                                        leading: 0.1,
+                                                                                      ),
+                                                                                style: context.textTheme.bodyMedium?.mq.copyWith(
+                                                                                  fontSize: 13.sp,
+                                                                                  color: const Color(
+                                                                                    0xff1D1D1D,
+                                                                                  ),
+                                                                                  letterSpacing: 0.18,
+                                                                                  height:
+                                                                                      LanguageService.languageCode !=
+                                                                                          "ar"
+                                                                                      ? 1.33
+                                                                                      : 1,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            const Spacer(),
+                                                                            Text(
+                                                                              " ${HelperFunctions.formatNumber(numberToFormate: totlalPriceWithoutShipping, isNeedRounding: false)}  ",
+                                                                              style: context.textTheme.bodyMedium?.bq.copyWith(
+                                                                                fontSize: 13.sp,
+                                                                                color: const Color(
+                                                                                  0xff1D1D1D,
+                                                                                ),
+                                                                                letterSpacing: 0.18,
+                                                                                height: 1.33,
+                                                                              ),
+                                                                            ),
+                                                                            const SizedBox(
+                                                                              width: 2,
+                                                                            ),
+                                                                            Text(
+                                                                              "${priceSymbol ?? "\$"}",
+                                                                              style: context.textTheme.bodyMedium?.mq.copyWith(
+                                                                                fontSize: 13.sp,
+                                                                                color: const Color(
+                                                                                  0xff1D1D1D,
+                                                                                ),
+                                                                                letterSpacing: 0.18,
+                                                                                height: 1.33,
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                        Container(
+                                                                          height:
+                                                                              18.h,
+                                                                          margin: EdgeInsets.only(
+                                                                            right:
+                                                                                LanguageService.languageCode !=
+                                                                                    "ar"
+                                                                                ? 10.w
+                                                                                : 25.w,
+                                                                            left:
+                                                                                LanguageService.languageCode !=
+                                                                                    "ar"
+                                                                                ? 25.w
+                                                                                : 10.w,
+                                                                          ),
+                                                                          child: Text(
+                                                                            "${LocaleKeys.normal_price.tr()} ",
+                                                                            style: context.textTheme.bodyMedium?.rq.copyWith(
+                                                                              fontSize: 11.sp,
+                                                                              color: const Color(
+                                                                                0xff1D1D1D,
+                                                                              ),
+                                                                              letterSpacing: 0.18,
+                                                                              height: 1.33,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                            !expanded
+                                                                ? const SizedBox.shrink()
+                                                                : SizedBox(
+                                                                    height: 5.h,
+                                                                  ),
+                                                            !expanded
+                                                                ? const SizedBox.shrink()
+                                                                : Container(
+                                                                    padding: EdgeInsets.only(
+                                                                      right:
+                                                                          LanguageService.languageCode !=
+                                                                              "ar"
+                                                                          ? 10.w
+                                                                          : 0,
+                                                                      left:
+                                                                          LanguageService.languageCode !=
+                                                                              "ar"
+                                                                          ? 0
+                                                                          : 10.w,
+                                                                    ),
+                                                                    width:
+                                                                        400.w,
+                                                                    height:
+                                                                        50.h,
+                                                                    margin: EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          10.w,
+                                                                    ),
+                                                                    child: Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Container(
+                                                                              margin: EdgeInsets.only(
+                                                                                right:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 10.w
+                                                                                    : 4.w,
+                                                                                left:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 2.w
+                                                                                    : 8.w,
+                                                                              ),
+                                                                              child: SvgPicture.asset(
+                                                                                AppAssets.totalDiscountCartSvg,
+                                                                                // ignore: deprecated_member_use
+                                                                                color: const Color(
+                                                                                  0xffFE0364,
+                                                                                ),
+                                                                                height: 12.h,
+                                                                              ),
+                                                                            ),
+                                                                            Container(
+                                                                              height: 17.h,
+                                                                              margin: EdgeInsets.only(
+                                                                                right:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 10.w
+                                                                                    : 2.w,
+                                                                                left:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 2.w
+                                                                                    : 10.w,
+                                                                              ),
+                                                                              child: Text(
+                                                                                "${LocaleKeys.total_discount.tr()} ${(totlalPrice == 0 ? 0 : ((totlalDiscount) / totlalPriceWithoutShipping) * 100).toStringAsFixed(0)}% ",
+                                                                                strutStyle:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? null
+                                                                                    : const StrutStyle(
+                                                                                        height: 0.1,
+                                                                                        leading: 0.1,
+                                                                                      ),
+                                                                                style: context.textTheme.bodyMedium?.mq.copyWith(
+                                                                                  fontSize: 13.sp,
+                                                                                  color: const Color(
+                                                                                    0xffA28E5B,
+                                                                                  ),
+                                                                                  letterSpacing: 0.18,
+                                                                                  height:
+                                                                                      LanguageService.languageCode !=
+                                                                                          "ar"
+                                                                                      ? 1.33
+                                                                                      : 1,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            const Spacer(),
+                                                                            Text(
+                                                                              "- ${HelperFunctions.formatNumber(numberToFormate: (totlalDiscount), isNeedRounding: false)}  ",
+                                                                              style: context.textTheme.bodyMedium?.bq.copyWith(
+                                                                                fontSize: 13.sp,
+                                                                                color: const Color(
+                                                                                  0xffA28E5B,
+                                                                                ),
+                                                                                letterSpacing: 0.18,
+                                                                                height: 1.33,
+                                                                              ),
+                                                                            ),
+                                                                            SizedBox(
+                                                                              width: 2.w,
+                                                                            ),
+                                                                            Text(
+                                                                              "${priceSymbol ?? "\$"}",
+                                                                              style: context.textTheme.bodyMedium?.mq.copyWith(
+                                                                                fontSize: 13.sp,
+                                                                                color: const Color(
+                                                                                  0xffA28E5B,
+                                                                                ),
+                                                                                letterSpacing: 0.18,
+                                                                                height: 1.33,
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
                                                                         Container(
                                                                           height:
                                                                               17.h,
@@ -1810,25 +1498,434 @@ class _CartPageState extends State<CartPage> {
                                                                                 : 10.w,
                                                                           ),
                                                                           child: Text(
-                                                                            "${LocaleKeys.total.tr()}",
-                                                                            style: context.textTheme.bodyMedium?.bq.copyWith(
-                                                                              fontSize: 13.sp,
+                                                                            "${LocaleKeys.all_inclusve_without_addition.tr()} ",
+                                                                            style: context.textTheme.bodyMedium?.rq.copyWith(
+                                                                              fontSize: 11.sp,
                                                                               color: const Color(
-                                                                                0xff1D1D1D,
+                                                                                0xffA28E5B,
                                                                               ),
                                                                               letterSpacing: 0.18,
                                                                               height: 1.33,
                                                                             ),
                                                                           ),
                                                                         ),
-                                                                        const Spacer(),
-                                                                        (totlalDiscount ==
-                                                                                0)
-                                                                            ? const SizedBox.shrink()
-                                                                            : Text(
-                                                                                "${HelperFunctions.formatNumber(numberToFormate: totlalPriceWithDiscount, isNeedRounding: false)}  ",
-                                                                                style: context.textTheme.bodyMedium?.rq.copyWith(
-                                                                                  decoration: TextDecoration.lineThrough,
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                            !expanded
+                                                                ? const SizedBox.shrink()
+                                                                : SizedBox(
+                                                                    height: 5.h,
+                                                                  ),
+                                                            !expanded
+                                                                ? const SizedBox.shrink()
+                                                                : Container(
+                                                                    padding: EdgeInsets.only(
+                                                                      right:
+                                                                          LanguageService.languageCode !=
+                                                                              "ar"
+                                                                          ? 10.w
+                                                                          : 2.w,
+                                                                      left:
+                                                                          LanguageService.languageCode !=
+                                                                              "ar"
+                                                                          ? 2.w
+                                                                          : 10.w,
+                                                                    ),
+                                                                    width:
+                                                                        400.w,
+                                                                    height:
+                                                                        50.h,
+                                                                    margin: EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          10.w,
+                                                                    ),
+                                                                    child: Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Container(
+                                                                              margin: EdgeInsets.only(
+                                                                                right:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 10.w
+                                                                                    : 2.w,
+                                                                                left:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 2.w
+                                                                                    : 10.w,
+                                                                              ),
+                                                                              child: SvgPicture.asset(
+                                                                                AppAssets.giftCartSvg,
+                                                                                // ignore: deprecated_member_use
+                                                                                color: const Color(
+                                                                                  0xff5BA260,
+                                                                                ),
+                                                                                height: 12.h,
+                                                                              ),
+                                                                            ),
+                                                                            Container(
+                                                                              height: 17.h,
+                                                                              margin: EdgeInsets.only(
+                                                                                right:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 10.w
+                                                                                    : 2.w,
+                                                                                left:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 2.w
+                                                                                    : 10.w,
+                                                                              ),
+                                                                              child: Text(
+                                                                                "${LocaleKeys.gift.tr()}",
+                                                                                style: context.textTheme.bodyMedium?.mq.copyWith(
+                                                                                  fontSize: 13.sp,
+                                                                                  color: const Color(
+                                                                                    0xff5BA260,
+                                                                                  ),
+                                                                                  letterSpacing: 0.18,
+                                                                                  height: 1.33,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            const Spacer(),
+                                                                            Text(
+                                                                              "- ${0}  ",
+                                                                              style: context.textTheme.bodyMedium?.bq.copyWith(
+                                                                                fontSize: 13.sp,
+                                                                                color: const Color(
+                                                                                  0xff5BA260,
+                                                                                ),
+                                                                                letterSpacing: 0.18,
+                                                                                height: 1.33,
+                                                                              ),
+                                                                            ),
+                                                                            const SizedBox(
+                                                                              width: 2,
+                                                                            ),
+                                                                            Text(
+                                                                              "${priceSymbol ?? "\$"}",
+                                                                              style: context.textTheme.bodyMedium?.mq.copyWith(
+                                                                                fontSize: 13.sp,
+                                                                                color: const Color(
+                                                                                  0xff5BA260,
+                                                                                ),
+                                                                                letterSpacing: 0.18,
+                                                                                height: 1.33,
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                        Container(
+                                                                          height:
+                                                                              17.h,
+                                                                          margin: EdgeInsets.only(
+                                                                            right:
+                                                                                LanguageService.languageCode !=
+                                                                                    "ar"
+                                                                                ? 10.w
+                                                                                : 25.w,
+                                                                            left:
+                                                                                LanguageService.languageCode !=
+                                                                                    "ar"
+                                                                                ? 25.w
+                                                                                : 10.w,
+                                                                          ),
+                                                                          child: Text(
+                                                                            "${LocaleKeys.first_shopping.tr()} ",
+                                                                            style: context.textTheme.bodyMedium?.rq.copyWith(
+                                                                              fontSize: 11.sp,
+                                                                              color: const Color(
+                                                                                0xff5BA260,
+                                                                              ),
+                                                                              letterSpacing: 0.18,
+                                                                              height: 1.33,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                            SizedBox(
+                                                              height: 5.h,
+                                                            ),
+                                                            !expanded
+                                                                ? const SizedBox.shrink()
+                                                                : Container(
+                                                                    padding: EdgeInsets.only(
+                                                                      right:
+                                                                          LanguageService.languageCode !=
+                                                                              "ar"
+                                                                          ? 10.w
+                                                                          : 2.w,
+                                                                      left:
+                                                                          LanguageService.languageCode !=
+                                                                              "ar"
+                                                                          ? 2.w
+                                                                          : 10.w,
+                                                                    ),
+                                                                    width:
+                                                                        400.w,
+                                                                    height:
+                                                                        50.h,
+                                                                    margin: EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          10.w,
+                                                                    ),
+                                                                    child: Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Container(
+                                                                              margin: EdgeInsets.only(
+                                                                                right:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 10.w
+                                                                                    : 2.w,
+                                                                                left:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 2.w
+                                                                                    : 10.w,
+                                                                              ),
+                                                                              child: SvgPicture.asset(
+                                                                                AppAssets.shappingCartSvg,
+                                                                                // ignore: deprecated_member_use
+                                                                                color: const Color(
+                                                                                  0xffBEF4CD,
+                                                                                ),
+                                                                                height: 12.h,
+                                                                              ),
+                                                                            ),
+                                                                            Container(
+                                                                              height: 17.h,
+                                                                              margin: EdgeInsets.only(
+                                                                                right:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 10.w
+                                                                                    : 2.w,
+                                                                                left:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? 2.w
+                                                                                    : 10.w,
+                                                                              ),
+                                                                              child: Text(
+                                                                                "${LocaleKeys.shipping.tr()} ",
+                                                                                strutStyle:
+                                                                                    LanguageService.languageCode !=
+                                                                                        "ar"
+                                                                                    ? null
+                                                                                    : const StrutStyle(
+                                                                                        height: 0.1,
+                                                                                        leading: 0.1,
+                                                                                      ),
+                                                                                style: context.textTheme.bodyMedium?.mq.copyWith(
+                                                                                  fontSize: 13.sp,
+                                                                                  color: const Color(
+                                                                                    0xff2FA52F,
+                                                                                  ),
+                                                                                  letterSpacing: 0.18,
+                                                                                  height:
+                                                                                      LanguageService.languageCode !=
+                                                                                          "ar"
+                                                                                      ? 1.33
+                                                                                      : 1,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            const Spacer(),
+                                                                            /*    Text(
+                                                                                      "0",
+                                                                                      style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
+                                                                                    ),*/
+                                                                            Text(
+                                                                              " ${HelperFunctions.formatNumber(numberToFormate: (HelperFunctions.truncateToDecimalPlaces((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0), state.getCurrencyForCountryModel!.data!.currency!.decimalDigits!) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!), isNeedRounding: false)}  ",
+                                                                              style: context.textTheme.bodyMedium?.bq.copyWith(
+                                                                                fontSize: 13.sp,
+                                                                                color: const Color(
+                                                                                  0xff2FA52F,
+                                                                                ),
+                                                                                letterSpacing: 0.18,
+                                                                                height: 1.33,
+                                                                              ),
+                                                                            ),
+                                                                            const SizedBox(
+                                                                              width: 2,
+                                                                            ),
+                                                                            Text(
+                                                                              "${priceSymbol ?? "\$"}",
+                                                                              style: context.textTheme.bodyMedium?.mq.copyWith(
+                                                                                fontSize: 13.sp,
+                                                                                color: const Color(
+                                                                                  0xff2FA52F,
+                                                                                ),
+                                                                                letterSpacing: 0.18,
+                                                                                height: 1.33,
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                        Container(
+                                                                          height:
+                                                                              18.h,
+                                                                          margin: EdgeInsets.only(
+                                                                            right:
+                                                                                LanguageService.languageCode !=
+                                                                                    "ar"
+                                                                                ? 10.w
+                                                                                : 25.w,
+                                                                            left:
+                                                                                LanguageService.languageCode !=
+                                                                                    "ar"
+                                                                                ? 25.w
+                                                                                : 10.w,
+                                                                          ),
+                                                                          child: Text(
+                                                                            (state.getCartShippingItemsModel?.data?.totalShippingCost ??
+                                                                                        0) !=
+                                                                                    0
+                                                                                ? ""
+                                                                                : "${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()} ",
+                                                                            style: context.textTheme.bodyMedium?.rq.copyWith(
+                                                                              fontSize: 11.sp,
+                                                                              color: const Color(
+                                                                                0xff2FA52F,
+                                                                              ),
+                                                                              letterSpacing: 0.18,
+                                                                              height: 1.33,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                            SizedBox(
+                                                              height: expanded
+                                                                  ? 0
+                                                                  : 10.h,
+                                                            ),
+                                                            ((state.cartCollection ==
+                                                                        null ||
+                                                                    state
+                                                                        .cartCollection!
+                                                                        .isEmpty))
+                                                                ? const SizedBox.shrink()
+                                                                : InkWell(
+                                                                    onTap: () => Future.delayed(
+                                                                      const Duration(
+                                                                        microseconds:
+                                                                            500,
+                                                                      ),
+                                                                      () {
+                                                                        if (isExpanded.value ||
+                                                                            moreInfo.value) {
+                                                                          isExpanded.value =
+                                                                              false;
+                                                                          moreInfo.value =
+                                                                              false;
+                                                                          panelController
+                                                                              .close();
+                                                                        } else {
+                                                                          panelController
+                                                                              .open();
+                                                                        }
+                                                                      },
+                                                                    ),
+                                                                    child: Container(
+                                                                      width:
+                                                                          400.w,
+                                                                      height:
+                                                                          50.h,
+                                                                      decoration: BoxDecoration(
+                                                                        color: const Color(
+                                                                          0xffF8F8F8,
+                                                                        ),
+                                                                        borderRadius: BorderRadius.all(
+                                                                          Radius.circular(
+                                                                            12.r,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      padding: EdgeInsets.only(
+                                                                        right:
+                                                                            LanguageService.languageCode !=
+                                                                                "ar"
+                                                                            ? 10.w
+                                                                            : 2.w,
+                                                                        left:
+                                                                            LanguageService.languageCode !=
+                                                                                "ar"
+                                                                            ? 2.w
+                                                                            : 10.w,
+                                                                      ),
+                                                                      margin: EdgeInsets.symmetric(
+                                                                        horizontal:
+                                                                            10.w,
+                                                                      ),
+                                                                      child: Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Row(
+                                                                            children: [
+                                                                              Container(
+                                                                                height: 17.h,
+                                                                                margin: EdgeInsets.only(
+                                                                                  right:
+                                                                                      LanguageService.languageCode !=
+                                                                                          "ar"
+                                                                                      ? 10.w
+                                                                                      : 25.w,
+                                                                                  left:
+                                                                                      LanguageService.languageCode !=
+                                                                                          "ar"
+                                                                                      ? 25.w
+                                                                                      : 10.w,
+                                                                                ),
+                                                                                child: Text(
+                                                                                  "${LocaleKeys.total.tr()}",
+                                                                                  style: context.textTheme.bodyMedium?.bq.copyWith(
+                                                                                    fontSize: 13.sp,
+                                                                                    color: const Color(
+                                                                                      0xff1D1D1D,
+                                                                                    ),
+                                                                                    letterSpacing: 0.18,
+                                                                                    height: 1.33,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              const Spacer(),
+                                                                              (totlalDiscount ==
+                                                                                      0)
+                                                                                  ? const SizedBox.shrink()
+                                                                                  : Text(
+                                                                                      "${HelperFunctions.formatNumber(numberToFormate: totlalPriceWithDiscount, isNeedRounding: false)}  ",
+                                                                                      style: context.textTheme.bodyMedium?.rq.copyWith(
+                                                                                        decoration: TextDecoration.lineThrough,
+                                                                                        fontSize: 16.sp,
+                                                                                        color: const Color(
+                                                                                          0xff1D1D1D,
+                                                                                        ),
+                                                                                        letterSpacing: 0.18,
+                                                                                        height: 1.33,
+                                                                                      ),
+                                                                                    ),
+                                                                              Text(
+                                                                                "${HelperFunctions.formatNumber(numberToFormate: totlalPrice, isNeedRounding: false)}  ",
+                                                                                style: context.textTheme.bodyMedium?.bq.copyWith(
                                                                                   fontSize: 16.sp,
                                                                                   color: const Color(
                                                                                     0xff1D1D1D,
@@ -1837,40 +1934,22 @@ class _CartPageState extends State<CartPage> {
                                                                                   height: 1.33,
                                                                                 ),
                                                                               ),
-                                                                        Text(
-                                                                          "${HelperFunctions.formatNumber(numberToFormate: totlalPrice, isNeedRounding: false)}  ",
-                                                                          style: context.textTheme.bodyMedium?.bq.copyWith(
-                                                                            fontSize:
-                                                                                16.sp,
-                                                                            color: const Color(
-                                                                              0xff1D1D1D,
-                                                                            ),
-                                                                            letterSpacing:
-                                                                                0.18,
-                                                                            height:
-                                                                                1.33,
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          width:
-                                                                              2.w,
-                                                                        ),
-                                                                        Text(
-                                                                          "${priceSymbol ?? "\$"}",
-                                                                          style: context.textTheme.bodyMedium?.mq.copyWith(
-                                                                            fontSize:
-                                                                                16.sp,
-                                                                            color: const Color(
-                                                                              0xff1D1D1D,
-                                                                            ),
-                                                                            letterSpacing:
-                                                                                0.18,
-                                                                            height:
-                                                                                1.33,
-                                                                          ),
-                                                                        ),
+                                                                              SizedBox(
+                                                                                width: 2.w,
+                                                                              ),
+                                                                              Text(
+                                                                                "${priceSymbol ?? "\$"}",
+                                                                                style: context.textTheme.bodyMedium?.mq.copyWith(
+                                                                                  fontSize: 16.sp,
+                                                                                  color: const Color(
+                                                                                    0xff1D1D1D,
+                                                                                  ),
+                                                                                  letterSpacing: 0.18,
+                                                                                  height: 1.33,
+                                                                                ),
+                                                                              ),
 
-                                                                        /*  Container(
+                                                                              /*  Container(
                                                                                           width: 20,
                                                                                           height: 20,
                                                                                           child: Container(
@@ -1882,100 +1961,96 @@ class _CartPageState extends State<CartPage> {
                                                                                                 height: 14,
                                                                                               ))),
                                                                                               */
-                                                                        SizedBox(
-                                                                          width:
-                                                                              5.w,
-                                                                        ),
-                                                                        ValueListenableBuilder<
-                                                                          bool
-                                                                        >(
-                                                                          valueListenable:
-                                                                              isExpanded,
-                                                                          builder:
-                                                                              (
-                                                                                context,
-                                                                                _expanded,
-                                                                                _,
-                                                                              ) {
-                                                                                return ValueListenableBuilder<
-                                                                                  bool
-                                                                                >(
-                                                                                  valueListenable: moreInfo,
-                                                                                  builder:
-                                                                                      (
-                                                                                        context,
-                                                                                        _MoreInfo,
-                                                                                        _,
-                                                                                      ) {
-                                                                                        return (_expanded ||
-                                                                                                _MoreInfo)
-                                                                                            ? RotatedBox(
-                                                                                                quarterTurns: 2,
-                                                                                                child: Container(
-                                                                                                  width: 20.w,
-                                                                                                  height: 8.h,
-                                                                                                  alignment: Alignment.bottomCenter,
-                                                                                                  child: SvgPicture.asset(
-                                                                                                    AppAssets.expandDetaileSvg,
-                                                                                                    height: 8.h,
-                                                                                                  ),
-                                                                                                ),
-                                                                                              )
-                                                                                            : Container(
-                                                                                                width: 20.w,
-                                                                                                height: 12.h,
-                                                                                                alignment: Alignment.bottomCenter,
-                                                                                                child: SvgPicture.asset(
-                                                                                                  AppAssets.expandDetaileSvg,
-                                                                                                  height: 8.h,
-                                                                                                ),
-                                                                                              );
-                                                                                      },
-                                                                                );
-                                                                              },
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                    Container(
-                                                                      height:
-                                                                          17.h,
-                                                                      margin: EdgeInsets.only(
-                                                                        right:
-                                                                            LanguageService.languageCode !=
-                                                                                "ar"
-                                                                            ? 10.w
-                                                                            : 25.w,
-                                                                        left:
-                                                                            LanguageService.languageCode !=
-                                                                                "ar"
-                                                                            ? 25.w
-                                                                            : 10.w,
-                                                                      ),
-                                                                      child: Text(
-                                                                        "${LocaleKeys.click_to_show_all_discount.tr()} ",
-                                                                        style: context.textTheme.bodyMedium?.rq.copyWith(
-                                                                          fontSize:
-                                                                              11.sp,
-                                                                          color: const Color(
-                                                                            0xff8D8D8D,
+                                                                              SizedBox(
+                                                                                width: 5.w,
+                                                                              ),
+                                                                              ValueListenableBuilder<
+                                                                                bool
+                                                                              >(
+                                                                                valueListenable: isExpanded,
+                                                                                builder:
+                                                                                    (
+                                                                                      context,
+                                                                                      _expanded,
+                                                                                      _,
+                                                                                    ) {
+                                                                                      return ValueListenableBuilder<
+                                                                                        bool
+                                                                                      >(
+                                                                                        valueListenable: moreInfo,
+                                                                                        builder:
+                                                                                            (
+                                                                                              context,
+                                                                                              _MoreInfo,
+                                                                                              _,
+                                                                                            ) {
+                                                                                              return (_expanded ||
+                                                                                                      _MoreInfo)
+                                                                                                  ? RotatedBox(
+                                                                                                      quarterTurns: 2,
+                                                                                                      child: Container(
+                                                                                                        width: 20.w,
+                                                                                                        height: 8.h,
+                                                                                                        alignment: Alignment.bottomCenter,
+                                                                                                        child: SvgPicture.asset(
+                                                                                                          AppAssets.expandDetaileSvg,
+                                                                                                          height: 8.h,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                    )
+                                                                                                  : Container(
+                                                                                                      width: 20.w,
+                                                                                                      height: 12.h,
+                                                                                                      alignment: Alignment.bottomCenter,
+                                                                                                      child: SvgPicture.asset(
+                                                                                                        AppAssets.expandDetaileSvg,
+                                                                                                        height: 8.h,
+                                                                                                      ),
+                                                                                                    );
+                                                                                            },
+                                                                                      );
+                                                                                    },
+                                                                              ),
+                                                                            ],
                                                                           ),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          height:
-                                                                              1.33,
-                                                                        ),
+                                                                          Container(
+                                                                            height:
+                                                                                17.h,
+                                                                            margin: EdgeInsets.only(
+                                                                              right:
+                                                                                  LanguageService.languageCode !=
+                                                                                      "ar"
+                                                                                  ? 10.w
+                                                                                  : 25.w,
+                                                                              left:
+                                                                                  LanguageService.languageCode !=
+                                                                                      "ar"
+                                                                                  ? 25.w
+                                                                                  : 10.w,
+                                                                            ),
+                                                                            child: Text(
+                                                                              "${LocaleKeys.click_to_show_all_discount.tr()} ",
+                                                                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                                                                fontSize: 11.sp,
+                                                                                color: const Color(
+                                                                                  0xff8D8D8D,
+                                                                                ),
+                                                                                letterSpacing: 0.18,
+                                                                                height: 1.33,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ],
                                                                       ),
                                                                     ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                expanded
+                                                                  ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                (expanded && !_verifyingPhone)
                                                     ? const Spacer()
                                                     : const SizedBox.shrink(),
+                                                if (!_verifyingPhone)
                                                 SizedBox(
                                                   height: expanded
                                                       ? 0
@@ -1989,6 +2064,14 @@ class _CartPageState extends State<CartPage> {
                                                       ? 10.h
                                                       : 60.h,
                                                 ),
+                                                // The Confirm & Continue button.
+                                                // It is a sibling of the block
+                                                // above, not part of it, so
+                                                // replacing that block left the
+                                                // button still drawn under the
+                                                // flow — 103 pixels the column
+                                                // had nowhere to put.
+                                                if (!_verifyingPhone)
                                                 Container(
                                                   margin: EdgeInsets.only(
                                                     bottom:
@@ -2244,21 +2327,15 @@ class _CartPageState extends State<CartPage> {
                                                                   if (prefsRepository
                                                                           .isVerifiedPhone !=
                                                                       true) {
-                                                                    GuestPhoneVerificationDialog.show(
-                                                                      context,
-                                                                      onVerified: () {
-                                                                        BlocProvider.of<
-                                                                              HomeBloc
-                                                                            >(
-                                                                              context,
-                                                                            )
-                                                                            .add(
-                                                                              const CheckWithGetCartEvent(
-                                                                                isForPlaceOrder: false,
-                                                                              ),
-                                                                            );
-                                                                      },
-                                                                    );
+                                                                    // The flow
+                                                                    // takes the
+                                                                    // button's
+                                                                    // place in
+                                                                    // the panel.
+                                                                    setState(() {
+                                                                      _verifyingPhone =
+                                                                          true;
+                                                                    });
                                                                   } else {
                                                                     BlocProvider.of<HomeBloc>(
                                                                       context,
@@ -2414,7 +2491,8 @@ class _CartPageState extends State<CartPage> {
                                                     },
                                                   ),
                                                 ),
-                                                const SizedBox(height: 5),
+                                                if (!_verifyingPhone)
+                                                  const SizedBox(height: 5),
                                               ],
                                             ),
                                           ),

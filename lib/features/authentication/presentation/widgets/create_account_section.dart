@@ -22,9 +22,15 @@ import '../manager/auth_bloc.dart';
 import 'package:trydos/common/helper/dev_log.dart';
 
 class CreateAccountSection extends StatefulWidget {
-  CreateAccountSection({Key? key, required this.moveToNextStep})
+  CreateAccountSection({Key? key, required this.moveToNextStep, this.onDismiss})
     : super(key: key);
   final void Function() moveToNextStep;
+
+  /// How this step leaves without agreeing. A host that builds this section
+  /// inside its own page — rather than on a route of its own — must pass this,
+  /// because popping would take that whole page with it. Left null, the old
+  /// pop-or-go-home behaviour is unchanged.
+  final void Function()? onDismiss;
 
   @override
   State<CreateAccountSection> createState() => _CreateAccountSectionState();
@@ -202,7 +208,9 @@ class _CreateAccountSectionState extends State<CreateAccountSection> {
                 context,
               ).add(RegisterGuestEvent(deviceId: deviceId!));
               //}
-              if (Navigator.of(context).canPop()) {
+              if (widget.onDismiss != null) {
+                widget.onDismiss!();
+              } else if (Navigator.of(context).canPop()) {
                 Navigator.of(context).pop();
               } else {
                 context.go(GRouter.config.applicationRoutes.kBasePage);

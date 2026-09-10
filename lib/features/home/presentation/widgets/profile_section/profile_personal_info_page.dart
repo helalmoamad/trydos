@@ -22,7 +22,7 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -58,7 +58,6 @@ class ProfilePersonalInfoPage extends StatefulWidget {
 
 class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     with SingleTickerProviderStateMixin {
-  final ValueNotifier<bool> visibleOtp = ValueNotifier(false);
   final ValueNotifier<bool> validateBox = ValueNotifier(false);
   final ValueNotifier<int> maxLengthForNumber = ValueNotifier(25);
 
@@ -162,10 +161,10 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                     .startsWith("Other")) {
                                   genderIndex = "3";
                                 }
-                                if (widget.phoneController.text.replaceAll(
-                                      " ",
-                                      "",
-                                    ) !=
+                                // The number the account is registered with,
+                                // without its "+", so it can be compared to
+                                // what the field holds.
+                                final String? registeredPhone =
                                     ((((state.userInfo?.phone
                                                         ?.split("+")
                                                         .toList()) ??
@@ -175,38 +174,41 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                         ? (state.userInfo?.phone
                                               ?.split("+")
                                               .toList()[1])
-                                        : state.userInfo?.phone)) {
-                                  visibleOtp.value = true;
+                                        : state.userInfo?.phone);
+                                final bool phoneChanged =
+                                    widget.phoneController.text.replaceAll(
+                                          " ",
+                                          "",
+                                        ) !=
+                                        registeredPhone;
+
+                                if (phoneChanged) {
+                                  // A new number has to be proven before it is
+                                  // saved. The dialog sends the code — that is
+                                  // what choosing WhatsApp or SMS does — and
+                                  // saves the profile once the code checks out.
+                                  _startPhoneChangeVerification();
+                                  return;
                                 }
-                                if (visibleOtp.value == false) {
-                                  homeBloc.add(
-                                    UpdateProfileEvent(
-                                      name: widget.fullNameController.text,
-                                      alternative_phone:
-                                          widget
+                                homeBloc.add(
+                                  UpdateProfileEvent(
+                                    name: widget.fullNameController.text,
+                                    alternative_phone:
+                                        widget
+                                                .alternativePhoneController
+                                                .text
+                                                .length >
+                                            0
+                                        ? "+" +
+                                              widget
                                                   .alternativePhoneController
                                                   .text
-                                                  .length >
-                                              0
-                                          ? "+" +
-                                                widget
-                                                    .alternativePhoneController
-                                                    .text
-                                                    .replaceAll(" ", "")
-                                          : null,
-                                      email: widget.emailController.text,
-                                      gender: genderIndex,
-                                    ),
-                                  );
-                                } else {
-                                  authBloc.add(
-                                    SendOtpEvent(
-                                      phone: widget.phoneController.text
-                                          .replaceAll(" ", ""),
-                                      isViaWhatsApp: 1,
-                                    ),
-                                  );
-                                }
+                                                  .replaceAll(" ", "")
+                                        : null,
+                                    email: widget.emailController.text,
+                                    gender: genderIndex,
+                                  ),
+                                );
                               },
                               child: Container(
                                 alignment: Alignment.center,
@@ -384,36 +386,6 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                           ),
                         ],
                       ),
-                      ValueListenableBuilder<bool>(
-                        valueListenable: visibleOtp,
-                        builder: (context, _visibleOtp, _) {
-                          return !_visibleOtp
-                              ? const SizedBox.shrink()
-                              : Positioned(
-                                  child: Container(
-                                    color: const Color.fromRGBO(0, 0, 0, 0.5),
-                                    width: 1.sw,
-                                    height: 1.sh,
-                                  ),
-                                );
-                        },
-                      ),
-                      ValueListenableBuilder<bool>(
-                        valueListenable: visibleOtp,
-                        builder: (context, _visibleOtp, _) {
-                          return !_visibleOtp
-                              ? const SizedBox.shrink()
-                              : Positioned(
-                                  bottom: 0,
-                                  child: Container(
-                                    color: Colors.white,
-                                    width: 1.sw,
-                                    height: 280,
-                                    child: _verifiedOtp(),
-                                  ),
-                                );
-                        },
-                      ),
                     ],
                   ),
                 ),
@@ -425,7 +397,36 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     );
   }
 
-  Widget _verifiedOtp() {
+  /// Opens the shared verification flow for a number the user just typed.
+  ///
+  /// Same popup every other page uses, and the same two steps it uses — choose
+  /// how to receive the code, then type it — only entered at the second step,
+  /// because the account and the number are both already known here.
+  ///
+  /// The verify request itself is the profile one (`VerifyOtpInProfileEvent`,
+  /// through `fromProfile`), not the guest or sign-in one: it proves a phone
+  /// for a session that already exists rather than starting a new session.
+  void _startPhoneChangeVerification() {
+    final String newPhone = widget.phoneController.text.replaceAll(" ", "");
+    if (newPhone.isEmpty) return;
+    GuestPhoneVerificationDialog.show(
+      context,
+      startAtMethods: true,
+      initialPhone: newPhone,
+      fromProfile: true,
+      // The guest recovery flow is a different verify request. Passing both
+      // flags used to work only because `fromProfile` is tested first.
+      fromExpired: false,
+      onVerified: _saveProfileWithVerifiedPhone,
+    );
+  }
+
+  /// Saves the profile once the new number has been proven.
+  ///
+  /// Runs after the code is accepted, so `prefsRepository.idToken` is the fresh
+  /// one that verification just stored — the market update is authorised with
+  /// it.
+  void _saveProfileWithVerifiedPhone() {
     String? genderIndex;
     if (widget.changeGender.value == "Man") {
       genderIndex = "1";
@@ -434,72 +435,20 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     } else if (widget.changeGender.value!.startsWith("Other")) {
       genderIndex = "3";
     }
-    return Container(
-      height: 150.h,
-      child: Stack(
-        children: [
-          VerifyOtp(
-            fromProfile: true,
-            navigateToProfile: () {
-              GetIt.I<HomeBloc>().add(
-                UpdateProfileEvent(
-                  fromGuest: !(prefsRepository.isVerifiedPhone ?? false),
-                  phone: (widget.phoneController.text.length) > 0
-                      ? "+" + widget.phoneController.text.replaceAll(" ", "")
-                      : null,
-                  idToken: prefsRepository.idToken,
-                  name: widget.fullNameController.text,
-                  alternative_phone:
-                      (widget.alternativePhoneController.text.length) > 0
-                      ? widget.alternativePhoneController.text.replaceAll(
-                          " ",
-                          "",
-                        )
-                      : null,
-                  email: widget.emailController.text,
-                  gender: genderIndex,
-                ),
-              );
-
-              visibleOtp.value = false;
-            },
-            fromExpired: true,
-            isVisWhatsApp: 1,
-            navigateToAddName: () {},
-            navigateTocartOrProfile: () {},
-            fromLogin: false,
-            onLoginFailed: () {
-              //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-            },
-            goBack: () {
-              // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-            },
-            methodIcon: AppAssets.whatsappSvg,
-            phoneNumber: widget.phoneController.text.replaceAll(" ", ""),
-          ),
-          Positioned(
-            top: 0,
-            left: LanguageService.languageCode != "ar" ? null : 0,
-            right: LanguageService.languageCode != "ar" ? 0 : null,
-            child: Container(
-              margin: EdgeInsets.all(10.w),
-              height: 20.h,
-              width: 40.w,
-              child: InkWell(
-                onTap: () {
-                  visibleOtp.value = false;
-                },
-                child: SvgPicture.asset(
-                  AppAssets.closeSvg,
-                  height: 15.h,
-                  width: 30.w,
-                  // ignore: deprecated_member_use
-                  color: const Color(0xffFF5F61),
-                ),
-              ),
-            ),
-          ),
-        ],
+    GetIt.I<HomeBloc>().add(
+      UpdateProfileEvent(
+        fromGuest: !(prefsRepository.isVerifiedPhone ?? false),
+        phone: (widget.phoneController.text.length) > 0
+            ? "+" + widget.phoneController.text.replaceAll(" ", "")
+            : null,
+        idToken: prefsRepository.idToken,
+        name: widget.fullNameController.text,
+        alternative_phone:
+            (widget.alternativePhoneController.text.length) > 0
+            ? widget.alternativePhoneController.text.replaceAll(" ", "")
+            : null,
+        email: widget.emailController.text,
+        gender: genderIndex,
       ),
     );
   }
