@@ -337,6 +337,151 @@ class SessionPrefs extends FakePrefs {
     return true;
   }
 
+  // ------------------------------------------------------ catalogue cache
+  // Wave 03. The home screen paints from a prefetch kept in preferences — the
+  // main categories, each category's boutiques, each boutique's first page —
+  // and only then asks the network. Each cache has its own field here, the way
+  // the real repository gives each its own key, so a test can tell which one
+  // was written and which one was wiped.
+
+  /// The main-category list, as the last successful load stored it.
+  String? mainCategoriesPrefetchValue;
+
+  /// Each main category's boutiques, keyed by category slug.
+  final Map<String, String> boutiquesPrefetch = <String, String>{};
+
+  /// Each boutique's first page of products, keyed by boutique slug + category.
+  final Map<String, String> productsPrefetch = <String, String>{};
+
+  /// The first five filters of each boutique, keyed the same way.
+  final Map<String, String> fiveFiltersPrefetch = <String, String>{};
+
+  /// Image urls already warmed, so they are not fetched twice.
+  final List<String> prefetchedImageUrls = <String>[];
+
+  /// Tags taken from a deep link, which narrow every listing request.
+  List<String>? tagsInUrlToFilterValue;
+
+  /// Which of the "remove on next open" wipes ran, in order.
+  final List<String> cacheWipes = <String>[];
+
+  @override
+  String? getPrefechOfMainCategoryInHomePage() => mainCategoriesPrefetchValue;
+
+  @override
+  Future<bool> setPrefechOfMainCategoryInHomePage(String value) async {
+    mainCategoriesPrefetchValue = value;
+    return true;
+  }
+
+  @override
+  String? getPrefechOfBoutiquesForEachMainCategoryInHomePage(String key) =>
+      boutiquesPrefetch[key];
+
+  @override
+  Future<bool> setPrefechOfBoutiquesForEachMainCategoryInHomePage(
+    String key,
+    String value,
+  ) async {
+    boutiquesPrefetch[key] = value;
+    return true;
+  }
+
+  @override
+  String? getPrefechOfProductsForEachBoutiqueInHomePage(String key) =>
+      productsPrefetch[key];
+
+  @override
+  Future<bool> setPrefechOfProductsForEachBoutiqueInHomePage(
+    String key,
+    String value,
+  ) async {
+    productsPrefetch[key] = value;
+    return true;
+  }
+
+  @override
+  List<String>? getFiveFilterForEachBoutiqueHasPrefechInHomePage() =>
+      fiveFiltersPrefetch.keys.toList();
+
+  @override
+  String? getPrefechForFiveFilterForEachBoutiqueInHomePage(String key) =>
+      fiveFiltersPrefetch[key];
+
+  @override
+  Future<bool> setPrefechForFiveFilterForEachBoutiqueInHomePage(
+    String key,
+    String value,
+  ) async {
+    fiveFiltersPrefetch[key] = value;
+    return true;
+  }
+
+  @override
+  List<String>? get getImageUrlHasPrefeched => prefetchedImageUrls;
+
+  @override
+  Future<bool> setImageUrlHasPrefeched(String? url) async {
+    if (url != null) prefetchedImageUrls.add(url);
+    return true;
+  }
+
+  @override
+  List<String>? get getTagsInUrlToFilter => tagsInUrlToFilterValue;
+
+  @override
+  Future<bool> setMainCategoryHasPerfechedToRemoveItWhenOpenApp(
+    String key,
+  ) async =>
+      true;
+
+  @override
+  Future<bool> setBoutiqueHasPerfechedToRemoveItWhenOpenApp(String key) async =>
+      true;
+
+  @override
+  Future<bool> setFiveFilterHasPerfechedToRemoveItWhenOpenApp(
+    String key,
+  ) async =>
+      true;
+
+  @override
+  Future<bool> removeMainCategoryWhenOpenApp() async {
+    cacheWipes.add('mainCategories');
+    mainCategoriesPrefetchValue = null;
+    return true;
+  }
+
+  @override
+  Future<bool> removeMainCategoryHasPerfechedWhenOpenApp(
+    bool allCategory,
+  ) async {
+    cacheWipes.add('boutiquesOfEachCategory');
+    boutiquesPrefetch.clear();
+    return true;
+  }
+
+  @override
+  Future<bool> removeBoutiqueHasPerfechedWhenOpenApp(bool allBoutique) async {
+    cacheWipes.add('productsOfEachBoutique');
+    productsPrefetch.clear();
+    return true;
+  }
+
+  @override
+  Future<bool> removeFiveFilterHasPerfechedWhenOpenApp() async {
+    cacheWipes.add('fiveFiltersOfEachBoutique');
+    fiveFiltersPrefetch.clear();
+    return true;
+  }
+
+  /// The server-clock offset analytics stamps its events with. Every catalogue
+  /// success fires an analytics event, which reads this; unanswered, the
+  /// service's own `try` swallowed the throw and the test passed *through* a
+  /// caught exception. No offset is the fresh-install value.
+  @override
+  int? get getdurtion => null;
+
   // ------------------------------------------------------------- diagnostics
   /// The request log the error reporter reads to attach "the last call before
   /// the crash". Empty is a valid state — it is what a fresh install has — and

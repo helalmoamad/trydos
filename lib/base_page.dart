@@ -777,8 +777,19 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     final int? iosMin = setting?.iosMinVersion;
     if (androidMin == null || iosMin == null) return;
     if (applicationVersion < androidMin || applicationVersion < iosMin) {
+      // The check above is the same as `applicationVersion < max(android, ios)`,
+      // so that maximum is the version the server really asks for.
+      final int requiredVersion = androidMin > iosMin ? androidMin : iosMin;
+      // Only the hundreds digit decides if the user may skip. A release inside
+      // the same hundred is optional (55 -> 76), a jump to the next hundred is
+      // not (55 -> 120, 250 -> 300).
+      final bool isMandatory =
+          requiredVersion ~/ 100 > applicationVersion ~/ 100;
       _enqueueStartupDialog(() async {
-        await HelperFunctions.showVersionDialog(context);
+        await HelperFunctions.showVersionDialog(
+          context,
+          isMandatory: isMandatory,
+        );
       });
     }
   }

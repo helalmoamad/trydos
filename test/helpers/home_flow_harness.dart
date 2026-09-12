@@ -77,6 +77,7 @@ import 'package:trydos/features/story/domain/useCases/get_width_and_height_useca
 import 'package:trydos/features/story/domain/useCases/report_about_story_usecase.dart';
 
 import 'auth_flow_harness.dart';
+import 'catalogue_flow_harness.dart';
 import 'hydrated_storage_harness.dart';
 import 'network_harness.dart';
 import 'session_prefs.dart';
@@ -160,6 +161,10 @@ HomeFlowHarness buildHomeFlowHarness({
   Map<String, dynamic>? hydratedSeed,
 }) {
   loadTestEnv();
+  // The same two process statics the catalogue harness sets — see
+  // `configureDeviceStatics`. `HomeBloc`'s handlers size images and log
+  // analytics too, and both were failing silently into a `catch`.
+  configureDeviceStatics();
   ErrorManager.clearAllRetries();
 
   final SessionPrefs prefsFake = prefs ?? SessionPrefs();

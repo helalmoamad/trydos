@@ -512,7 +512,13 @@ class HelperFunctions {
     return 'other_os';
   }
 
-  static showVersionDialog(context) async {
+  /// The "a new version is available" dialog.
+  ///
+  /// [isMandatory] turns it into an update the user cannot skip: the "not now"
+  /// button is removed, the back button does nothing, and the dialog stays on
+  /// screen while the store page opens. The caller decides this; see
+  /// `_showVersionDialogIfNeeded` in base_page.dart.
+  static showVersionDialog(context, {bool isMandatory = false}) async {
     if (_versionDialogShown) return;
     _versionDialogShown = true;
     await showDialog<String>(
@@ -525,7 +531,8 @@ class HelperFunctions {
         String btnLabel2 = LocaleKeys.not_now.tr();
         // ignore: deprecated_member_use
         return WillPopScope(
-          onWillPop: () => Future.value(true),
+          // The back button must not be a way around a mandatory update.
+          onWillPop: () => Future.value(!isMandatory),
           child: Platform.isIOS
               ? CupertinoAlertDialog(
                   title: Column(
@@ -563,22 +570,30 @@ class HelperFunctions {
                   actions: <Widget>[
                     Row(
                       children: [
-                        Expanded(
-                          child: CupertinoButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(
-                              btnLabel2,
-                              style: const TextStyle(
-                                color: Color(0xFF6E6E73),
-                                fontSize: 16,
+                        // A mandatory update leaves no second choice, so the
+                        // "not now" button is not built at all.
+                        if (!isMandatory)
+                          Expanded(
+                            child: CupertinoButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                btnLabel2,
+                                style: const TextStyle(
+                                  color: Color(0xFF6E6E73),
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                           ),
-                        ),
                         Expanded(
                           child: CupertinoButton.filled(
                             onPressed: () {
-                              Navigator.pop(context); // إغلاق الحوار
+                              // When it is mandatory the dialog stays open
+                              // behind the store, so coming back does not drop
+                              // the user into the old version.
+                              if (!isMandatory) {
+                                Navigator.pop(context); // إغلاق الحوار
+                              }
                               // كان يفتح مجموعة واتساب — لا صلة لها بالتحديث.
                               _openStorePage();
                             },
@@ -642,30 +657,38 @@ class HelperFunctions {
                   actions: <Widget>[
                     Row(
                       children: [
-                        Expanded(
-                          child: TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                        // Same as the iOS branch: no "not now" when the update
+                        // is mandatory, and no gap left behind it either.
+                        if (!isMandatory) ...[
+                          Expanded(
+                            child: TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
-                            ),
-                            child: Text(
-                              btnLabel2,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF6E6E73),
+                              child: Text(
+                                btnLabel2,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF6E6E73),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
+                          const SizedBox(width: 12),
+                        ],
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.pop(context); // إغلاق الحوار
+                              if (!isMandatory) {
+                                Navigator.pop(context); // إغلاق الحوار
+                              }
                               _openStorePage();
                             },
                             style: ElevatedButton.styleFrom(

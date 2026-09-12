@@ -40,7 +40,8 @@ nobody calls. What is there now:
 | `secure_storage_harness.dart` | the keychain, answered at the method channel so the real `FlutterSecureStorage` runs |
 | `auth_flow_harness.dart` | the real `AuthBloc` over the real use cases and repository, with the four blocs it talks to recorded |
 | `home_flow_harness.dart` | the same for `HomeBloc` and its 54 use cases |
-| `auth_fixtures.dart`, `home_fixtures.dart` | the response bodies, so a test shows only the field it is about |
+| `catalogue_flow_harness.dart` | the same for `BoutiqueBloc` (every listing) and `CategoryBloc` (the home screen), each built with the other one recorded |
+| `auth_fixtures.dart`, `home_fixtures.dart`, `catalogue_fixtures.dart` | the response bodies, so a test shows only the field it is about |
 
 ### Two things about the harnesses that are easy to get wrong
 
@@ -59,6 +60,20 @@ final state cannot tell "went loading, then succeeded" from "jumped straight to
 success", and a handler that stops emitting `loading` leaves every spinner in the
 app running forever. Where the loading emit is part of the contract, assert the
 whole list.
+
+**Two statics the app sets at startup and a test does not.** `ScreenUtil` and
+`LanguageService.isKurdish` are both `late` and both read from inside catalogue
+handlers — to size a prefetched image, to stamp an analytics event. Unset, most
+of those reads were swallowed by a `try` and one was not: the handler that fills
+the home rails threw on the first `.w`. `configureDeviceStatics()` in the
+catalogue harness sets both, with the device the same size as the design so
+`.w` and `.h` scale by exactly one. Both flow harnesses call it.
+
+**One path can answer two questions.** `api/products/searchInCatalog` returns the
+product page *and* the filter facets. Nothing in the path says which; a facet
+request carries `with_products=false`. Use `RoutingAdapter.queryOf` and read the
+query, or a test that means "no products were fetched" will be counting the
+wrong calls.
 
 **Two servers can share a path.** `ChatEndPoints.loginEP` and
 `StoriesEndPoints.loginEP` are both `api/v1/users/login`, and the chat refresh
@@ -140,11 +155,34 @@ repeat:
 | 02 Account and session | Notification settings | 6 | 2 / 2 | green |
 | 02 Account and session | The notification inbox | 2 | 3 / 3 | green |
 | 02 Account and session | AuthBloc contract | 3 | 2 / 2 | green |
+| 03 Browsing and the product page | Opening the app | 3 | 6 / 6 | green |
+| 03 Browsing and the product page | The home screen | 4 | 8 / 8 | green |
+| 03 Browsing and the product page | Filtering a listing | 9 | 11 / 11 | green |
+| 03 Browsing and the product page | Sorting and paging | 6 | 9 / 9 | green |
+| 03 Browsing and the product page | Loading the details | 5 | 6 / 6 | green |
+| 03 Browsing and the product page | Choosing a variant | 4 | 6 / 6 | green |
+| 03 Browsing and the product page | Reacting to a product | 4 | 6 / 6 | green |
+| 03 Browsing and the product page | Writing a review | 5 | 7 / 7 | green |
 
-**Wave 01 is complete: 46 / 46. Wave 02 is complete: 47 / 47.** 100 of 366
-overall, counting the wave 00 setup already in place (`bloc_test`, `fake_async`,
+**Wave 01 is complete: 46 / 46. Wave 02 is complete: 47 / 47. Wave 03's P0 is
+complete: 40 / 40** — its P1 and P2 units (discovery rails, search by text and
+by image, the wishlist, reading reviews, listing layout, compare, offer timers,
+stories on a product: 32 scenarios) are not written yet. 140 of 366 overall,
+counting the wave 00 setup already in place (`bloc_test`, `fake_async`,
 dotenv test values, `GetIt` reset between tests, and now the in-memory
 `HydratedStorage` and the bloc harness that hands back the emitted state list).
+
+Wave 03 needed two more additions, both written because a test asked for them:
+`ScriptedReply` takes an optional `delay`, without which no test can ask what
+happens when an **old** request answers after a newer one; and `SessionPrefs`
+grew the catalogue caches (main categories, each category's boutiques, each
+boutique's first page and first five filters), because the home screen paints
+from them before it paints from the network.
+
+**One test is deliberately slow.** Liking is registered
+`throttleDroppable(3s)`, so seeing a like and its undo takes a real three-second
+wait — twice, in `reacting_to_a_product_test.dart`. Roughly seven seconds of the
+suite is that door.
 
 The bloc-harness scenario asks for "mocked use cases". The flow harnesses build
 the bloc over the **real** use cases and repository with only the transport
@@ -161,8 +199,8 @@ needs them, per the rule above.
 ## Defects
 
 Three wave-02 defects were fixed, under **Fixed here** below — two in
-`home_bloc.dart`, one in `auth_bloc.dart` — and every one of them is
-mutation-checked. Everything else in this section is *pinned*: held in place by a
+`home_bloc.dart`, one in `auth_bloc.dart` — and all five wave-03 defects were
+fixed too, under **Found in wave 03**. Every one of them is mutation-checked. Everything else in this section is *pinned*: held in place by a
 test that says so in a comment, and written so it fails the moment the defect is
 fixed — which is what stops any of them being fixed quietly.
 
@@ -191,6 +229,55 @@ fixed — which is what stops any of them being fixed quietly.
   a handler would mean calling a path nobody has confirmed exists, which ships a
   404 dressed as a fix. **This needs a backend endpoint first.** Pinned by
   `test/features/authentication/logging_out_test.dart`.
+### Found in wave 03 — all five fixed
+
+Each was pinned first — held by a test that failed the moment it was fixed —
+then fixed, and the pin rewritten to assert the corrected behaviour. Every fix
+is mutation-checked in reverse: the bug was put back and the new test went red.
+
+- **A deep link opened from a cold start left the listing loading forever.**
+  `_onGetFiltersForNavigatorFromLinkToListingPageEvent` wrote into
+  `state.appliedFiltersByUser` itself rather than a copy, and `BoutiqueState`
+  starts that map as `const {}`. `addAll` threw between the loading emit and the
+  success one, so the spinner never stopped. It hid in any session that browsed
+  first, because every other filter handler replaces the map with a fresh one.
+  Fixed with `Map.of(...)`. Covered by `filtering_a_listing_test.dart`.
+- **Paging the filter facets dropped every page after the first, for any
+  boutique with no size attribute.** `_onGetFiltersWithPaginatioEvent` tested
+  `(data[key]?.filters?.attributes ?? 0) == 0` for "no attributes yet", but
+  `Filter.fromJson` turns a missing or empty `attributes` into `[]`, never
+  null — so the test was `[] == 0`, always false, and the next line read
+  `attributes[0]` on an empty list. The `RangeError` landed in the handler's own
+  `catch`, which emitted the status and dropped the page. Fixed with
+  `?.isEmpty ?? true`, in all three places. Covered by
+  `filtering_a_listing_test.dart`.
+- **One boutique with no banner took down the whole home tab.** The success
+  branch of `_onGetHomeBoutiquesEvent` warmed each card's banner with
+  `element.banners?.first.filePath`. `?.` guards a null list;
+  `GetHomeBoutiquesModel` never makes one — a missing `banners` parses to `[]`,
+  and `[].first` throws. Nothing caught it, so the emit that stores the
+  boutiques never ran and the tab kept its loading state, dropping the
+  boutiques that *did* have banners. Fixed by skipping a card with nothing to
+  warm. Covered by `home_screen_test.dart`.
+- **A like the server refused never went back.** The failure branch of
+  `_onAddOrRemoveLikeForProductEvent` did reverse the heart and the count, but
+  it was unreachable on a first failure: `ErrorManager.shouldRetry` allows one
+  retry, the handler returned early to schedule it, and the retry — dispatched
+  into the same handler, the one registered `throttleDroppable(3s)` — was
+  dropped milliseconds later. The second failure never arrived, so the heart
+  stayed filled over a rejected like and the status stayed `loading` for good.
+  Fixed by dropping the retry: it could never run, and a like is a user action
+  worth reporting rather than repeating silently. Covered by
+  `reacting_to_a_product_test.dart`.
+- **A review written while a filtered tab was open was accepted and never
+  reported.** The success branch of `_onCreateCommentRatingEvent` reached for
+  `getFqaCommentsPaginationModel["all"]!` — the questions tab, under the default
+  filter, hard-coded and null-asserted. On any other review filter that entry
+  does not exist, so the `!` threw *after* the server had accepted the review:
+  it existed, and the form kept spinning. The same happened on a product page
+  whose questions tab was never opened. Fixed by defaulting the entry instead of
+  asserting it. Covered by `writing_a_review_test.dart`.
+
 ### Fixed here
 
 - **`SendAcceptOfNotificationMarketEvent` had no dedupe.** The handler kept no
@@ -244,6 +331,12 @@ These have no test yet, for the reason given.
   recovery start. Pinning it costs twenty real seconds per suite run, so it is
   written up here instead; see the note in
   `test/features/authentication/staying_in_test.dart`.
+- **`getFullProductDetailsStatus` is written but never read.** Nothing outside
+  `HomeState` looks at it, and on a successful product load it is only set to
+  `success` inside the `if (r.productItem?.productId == null)` branch — the one
+  taken when the product is empty. The product page keys its readiness off
+  `productStatus[productId]` instead, which is what the wave-03 tests assert.
+  Harmless today; worth knowing before anyone starts trusting the field.
 - **`Country.fromJson` casts `phonecode` straight into an `int?`.** A server that
   sent it as a string would throw inside the list build and take the whole
   allowed-countries answer down, leaving the country picker empty with no error
@@ -261,3 +354,18 @@ test file:
 | "`SendOtpEvent` sets the timer flag so the resend button locks" | The flag is written by the OTP screen (`verify_otp.dart:74`) and only drives the countdown label. What stops a second request is the bloc's `throttleDroppable(10s)` on `SendOtpEvent`. |
 | "`CreateUserEvent` creates the market account" | It creates the **chat** account — its use case is the only one in `AuthBloc` that takes a `ChatRepository`. The market account is created by the sign-up endpoint. |
 | "hydrated `toJson`/`fromJson` round-trips" under **AuthBloc contract** | `AuthBloc` is a plain `Bloc` and persists nothing. The round-trip is written against `HomeBloc`, which is the bloc that does — `test/features/home/home_state_hydration_test.dart`. |
+
+Wave 03 adds nine more. Each is covered by a test of what the code actually
+does, with the divergence written into the test file:
+
+| Ledger says | The code does |
+|-------------|---------------|
+| "`GetStartingSettingsEvent` completes before the first screen is allowed to build" | It is dispatched by `CategoryBloc.requestAPIAfterHome()`, which runs **after** the home categories answer. The home is already on screen, painting with the settings the previous session persisted — the fallback is the hydrated state, not a "cached prefetch". |
+| "`ChangeAppliedFiltersEvent` fetches" | It records what was applied and returns. The listing then dispatches `GetProductsWithFiltersEvent`, which reads the applied filters back out of the state. |
+| "`ResetAllSelectedAppliedFilterEvent` … refetches unfiltered" | It clears and fetches nothing — it runs on the way *out* of a listing (a tab switch, the bottom bar, the cart), when there is nothing on screen to reload. |
+| "`ChangeSelectedFiltersEvent` … nothing is fetched" | Nothing **of the product list**. The facets are refetched, narrowed by the tick, so the counts beside every other filter follow the selection. |
+| "`GetProductsWithFiltersUsingPaginationEvent`" is a paging variant to test | Dead: declared in `boutique_event.dart`, registered by no bloc, and dispatched only from a commented-out block. The live paging path is `GetProductsWithFiltersWithPaginationEvent`. |
+| "switching back does not refetch" (the home tabs) | Every tab switch re-requests — the tab bar sends `getWithOutPrefetchForEachBoutiques: true`, which skips the once-only guard. What the user is promised is weaker and more useful: the tab is painted from its cached copy in the same frame, so it is never blank. |
+| "the home sections (`get_home_sections_usecase`) come back in server order" | There are no home sections. The use case has no caller, its repository method is commented out, and so is its `HomeBloc` constructor slot. The home screen renders boutiques per category, which is what the test covers instead. |
+| "`FetchAuthProductDetailsEvent` adds the like state" | It fetches `product/qty/<slug>` — the available quantity and the per-variation stock. The like arrives with the main details payload as `is_liked`, which is why that request carries `user_id`. |
+| "`GetAndAddCountViewOfProductEvent` counts a view once per product per session" | No view is counted at all: both dispatches are commented out and no widget sends it. Driven by hand it counts once per dispatch — there is no guard — and its success branch is commented out too, so a counted view never leaves `loading`. |

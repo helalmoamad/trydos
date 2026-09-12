@@ -728,14 +728,14 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             filters: filters_model.Filter(
               attributes: [
                 filters_model.Attribute(
-                  id: ((data[key]?.filters?.attributes ?? 0) == 0)
+                  id: (data[key]?.filters?.attributes?.isEmpty ?? true)
                       ? 0
                       : data[key]?.filters?.attributes?[0].id,
-                  name: ((data[key]?.filters?.attributes ?? 0) == 0)
+                  name: (data[key]?.filters?.attributes?.isEmpty ?? true)
                       ? "size"
                       : data[key]?.filters?.attributes?[0].name,
                   options: [
-                    ...(((data[key]?.filters?.attributes ?? 0) == 0)
+                    ...((data[key]?.filters?.attributes?.isEmpty ?? true)
                         ? []
                         : data[key]?.filters?.attributes?[0].options ?? []),
                     ...(((r.filters?.attributes?.length ?? 0) == 0)
@@ -897,8 +897,10 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         ) {
           boutiques.add(r.filters!.boutiques![i]);
         }
+        // A copy, not the state's own map: on a cold start that map is still
+        // the initial `const {}`, and writing into it throws.
         final Map<String, filters_model.GetProductFiltersModel?>
-        appliedFiltersByUser = state.appliedFiltersByUser;
+        appliedFiltersByUser = Map.of(state.appliedFiltersByUser);
         if (appliedFiltersByUser["link"] == null) {
           appliedFiltersByUser.addAll({
             "link": filters_model.GetProductFiltersModel(

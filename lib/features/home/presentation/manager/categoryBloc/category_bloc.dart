@@ -257,8 +257,13 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       },
       (r) {
         r.data?.boutiques?.forEach((element) {
+          // `?.` only guards a null list, and a missing `banners` parses to an
+          // empty one — `[].first` threw and took the whole tab's answer with
+          // it, including the boutiques that did have a banner. Nothing to warm
+          // is a normal card, not a failure.
+          if (element.banners?.isEmpty ?? true) return;
           String url = addSuitableWidthAndHeightToImage(
-            imageUrl: element.banners?.first.filePath ?? "",
+            imageUrl: element.banners!.first.filePath ?? "",
             fromBoutique: true,
 
             width: 1.sw,

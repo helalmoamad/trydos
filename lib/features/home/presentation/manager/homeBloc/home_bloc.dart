@@ -4685,21 +4685,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     response.fold(
       (l) {
-        if (ErrorManager.shouldRetry(
-          'AddOrRemoveLikeForProductEvent',
-          l.statusCode,
-        )) {
-          ErrorManager.incrementRetry('AddOrRemoveLikeForProductEvent');
-          add(
-            AddOrRemoveLikeForProductEvent(
-              productId: event.productId,
-              isFavourite: event.isFavourite,
-              productSlugForTopic: event.productSlugForTopic,
-              productSlug: event.productSlug,
-            ),
-          );
-          return;
-        }
+        // No retry here, and no early return. The heart was filled before the
+        // server was asked, so a refusal owes the user the reversal below —
+        // and the retry this branch used to schedule could never run: it was
+        // dispatched back into this handler, which is registered
+        // `throttleDroppable(3s)`, and was dropped milliseconds later. The
+        // reversal waited on a second failure that never came, so a refused
+        // like stayed on screen for good.
+        ErrorManager.resetRetry('AddOrRemoveLikeForProductEvent');
         Map<String, GetProductDetailWithoutRelatedProductsModel>
         cachedProductWithoutRelatedProductsModel = Map.of(
           state.cachedProductWithoutRelatedProductsModel,
@@ -6252,8 +6245,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         showMessage(r.message ?? "");
         Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
             Map.of(state.getFqaCommentsPaginationModel ?? {});
+        // The list is only there once that tab has been opened, and only under
+        // the filter it was opened with. It used to be null-asserted, so
+        // writing a review from a filtered tab — or from a page whose questions
+        // tab was never opened — threw *after* the server had accepted it: the
+        // review existed and the form span for ever. Nothing to prepend to is
+        // fine; the tab loads the review with everything else when it opens.
         getFqaCommentsPaginationModel["all"] =
-            getFqaCommentsPaginationModel["all"]!.copyWith(
+            (getFqaCommentsPaginationModel["all"] ??
+                    const PaginationModel<FqaComment>.init())
+                .copyWith(
               total: (getFqaCommentsPaginationModel["all"]?.total ?? 0) + 1,
               paginationStatus: PaginationStatus.success,
               items: [

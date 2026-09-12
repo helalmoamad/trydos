@@ -28,6 +28,12 @@ class TestServers {
   static const String marketGo = 'https://marketgo.test';
   static const String media = 'https://media.test';
   static const String elastic = 'https://elastic.test';
+
+  /// The catalogue: listings, filters, product pages. Wave 03 is the first to
+  /// call it — `WebUrls` reads `WEB_APP` with a `!`, so without this key every
+  /// catalogue request threw before it reached the wire and came back as a
+  /// generic 400.
+  static const String webApp = 'https://webapp.test';
 }
 
 /// `BaseApi`, `detect_server` and the interceptor all read dotenv at call time
@@ -43,20 +49,31 @@ MARKET_URL=${TestServers.market}
 MARKETGo_URL=${TestServers.marketGo}
 MEDIA_SERVER_URL=${TestServers.media}
 ELASTIC_URL=${TestServers.elastic}
+WEB_APP=${TestServers.webApp}
 ''',
   );
 }
 
 /// One canned HTTP answer.
 class ScriptedReply {
-  const ScriptedReply(this.statusCode, [this.body]);
+  const ScriptedReply(this.statusCode, [this.body, this.delay = Duration.zero]);
 
   const ScriptedReply.unauthorized()
       : statusCode = 401,
-        body = const <String, dynamic>{'error': 'Unauthorized'};
+        body = const <String, dynamic>{'error': 'Unauthorized'},
+        delay = Duration.zero;
 
   final int statusCode;
   final Object? body;
+
+  /// How long the server takes to answer.
+  ///
+  /// Zero for almost every test. It exists for the one question a reply that
+  /// arrives at once cannot ask: what happens when an **old** request answers
+  /// *after* a newer one — a listing whose filters changed while the first
+  /// search was still in flight. Written for wave 03's "a late response must
+  /// not overwrite the new list".
+  final Duration delay;
 }
 
 /// Answers requests from a fixed script and records what it was actually sent.
@@ -164,6 +181,16 @@ class RoutingAdapter implements HttpClientAdapter {
   String? urlOf(String route, {int index = 0}) =>
       _pick(sentPaths, route, index) as String?;
 
+  /// The query string of the [index]-th request to [route], decoded.
+  ///
+  /// The catalogue is all GETs: `searchInCatalog` answers both the product list
+  /// and the filter facets, from the same path. What a request *asked for* —
+  /// which brands, which sort, which page — lives only here.
+  Map<String, String>? queryOf(String route, {int index = 0}) {
+    final String? url = urlOf(route, index: index);
+    return url == null ? null : Uri.parse(url).queryParameters;
+  }
+
   Object? _pick(List<Object?> from, String route, int index) {
     int seen = 0;
     for (int i = 0; i < matchedRoutes.length; i++) {
@@ -205,6 +232,10 @@ class RoutingAdapter implements HttpClientAdapter {
       // end of the script and start answering 404 for no stated reason.
       reply = queue[cursor < queue.length ? cursor : queue.length - 1];
       _cursors[matched] = cursor + 1;
+    }
+
+    if (reply.delay > Duration.zero) {
+      await Future<void>.delayed(reply.delay);
     }
 
     return ResponseBody.fromString(
