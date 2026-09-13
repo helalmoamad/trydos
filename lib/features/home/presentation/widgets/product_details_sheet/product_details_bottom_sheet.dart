@@ -40,6 +40,7 @@ import '../product_details_body/product_details_image_widget.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import '../product_listing/product_listing_image_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ProductDetailsBottomSheet extends StatefulWidget {
   final productListingModel.Products productItem;
@@ -208,7 +209,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               try {
                 gallery3dControllerForCircles?.animateTo(
                     widget.currentColor, true);
-              } catch (e) {}
+              } catch (e) {
+                devLog('product_details_bottom_sheet.dart: ignored error', e);
+              }
 
               sizeIsNotAvailableNotifier.value = null;
               colorIsNotAvailableNotifier.value = null;
@@ -279,7 +282,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                     widget.productItem.slug.toString()] ??
                 0;
           }
-          if (kDebugMode) print(
+          devLog(
               "DDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE${state.isChangedvariationWhenQtyZero}${widget.currentSelectedColorAfterChangeVariant}${!(widget.fromListingPage ?? false)}");
 
           if (state.isChangedvariationWhenQtyZero &&

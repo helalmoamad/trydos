@@ -10,6 +10,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../features/app/my_text_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 import '../../main.dart'; // لاستخدام navigatorKey
 
 FToast fToast = FToast();
@@ -43,7 +44,7 @@ showMessage(
           showSuccessMessage(currentContext, message);
         }
       } catch (e) {
-        if (kDebugMode) print("Error in showMessage: $e");
+        devLog("Error in showMessage: $e");
         try {
           _showCustomToast(currentContext, message, isSuccess: !hasError);
         } catch (e2) {

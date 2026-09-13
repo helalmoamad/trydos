@@ -433,7 +433,7 @@ class HomeRemoteDatasource {
         endpoint: MarketEndPoints.getCommentForProductEP(productId),
         response:
             ResponseValue<GetCommentForProductModel>(fromJson: (response) {
-          if (kDebugMode) print('ddddddddddd ${response.toString()}');
+          devLog('ddddddddddd ${response.toString()}');
           return GetCommentForProductModel.fromJson(response);
         }),
       ),

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -45,6 +44,7 @@ import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
 import '../manager/chat_state.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ChatPages extends StatefulWidget {
   const ChatPages({
@@ -91,7 +91,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
     callsBloc.add(GetMissedCallCountEvent());
     callsBloc.add(GetMyCallsEvent());
-    if (kDebugMode) print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!2");
+    devLog("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!2");
     chatBloc.add(const GetChatsEvent(limit: 10));
     chatBloc.add(const SaveContactsEvent());
     chatPages.insert(
@@ -174,7 +174,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
             p.makeCallStatus == MakeCallStatus.init &&
             c.makeCallStatus == MakeCallStatus.loading,
         listener: (context, state) {
-          if (kDebugMode) print(
+          devLog(
             "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ////",
           );
           callInProgressDialog(context);
@@ -195,7 +195,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                 p.makeCallStatus != c.makeCallStatus &&
                 c.makeCallStatus == MakeCallStatus.startCall,
             listener: (context, state) {
-              if (kDebugMode) print(
+              devLog(
                 "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ",
               );
               Navigator.of(context).pushReplacement(

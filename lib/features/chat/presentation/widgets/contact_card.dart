@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -20,6 +19,7 @@ import '../../../../service/language_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../data/models/my_chats_response_model.dart';
 import 'chat_widgets/no_image_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ContactCard extends StatelessWidget {
   const ContactCard({Key? key, required this.index, required this.contact})
@@ -65,7 +65,7 @@ class ContactCard extends StatelessWidget {
                 ),
               );
               final preferences = GetIt.I<PrefsRepository>();
-              if (kDebugMode) print(
+              devLog(
                 "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${chat.id}",
               );
               receiver = chat.channelMembers

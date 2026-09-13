@@ -33,6 +33,10 @@ features:
 # behavior. Local execution only — no GitHub/CI-CD/MCP/external runner.
 # Validation: VP-1..VP-5 in rules/validation-model.md. Decision: ADR-006.
 # ---------------------------------------------------------------------------
+# No test-runner check by decision: tests are not run as part of a workflow
+# stage in this project. A plan therefore records `none - <reason>` for every
+# AC-n under `plan.md > Tests`; declaring a test with no profile to execute it is
+# an error at /plan (PL-13).
 validation_checks:
   flutter-analyze:
     description: Static analysis and lints pass across the whole package.

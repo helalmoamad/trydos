@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
@@ -66,6 +65,7 @@ import '../widgets/chat_widgets/no_image_widget.dart';
 import '../widgets/chat_widgets/text_message.dart';
 import '../widgets/chat_widgets/voice_message.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class SinglePageChat extends StatefulWidget {
   const SinglePageChat({
@@ -194,7 +194,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         volume: 1,
       );
     } catch (e) {
-      if (kDebugMode) print('Error playing sound: $e');
+      devLog('Error playing sound: $e');
     }
   }
 
@@ -325,7 +325,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
           controller.clear();
           try {
             _scrollToBottom();
-          } catch (e) {}
+          } catch (e) {
+            devLog('single_page_chat.dart: ignored error', e);
+          }
           return Future.value(false);
         }
         BlocProvider.of<AppBloc>(
@@ -811,8 +813,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               openAppSettings();
                             }
                           } catch (e, st) {
-                            if (kDebugMode) print(e);
-                            if (kDebugMode) print(st);
+                            devLog(e);
+                            devLog(st);
                           }
                         },
                         child: SvgPicture.asset(
@@ -1036,8 +1038,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         _scrollToBottom();
                       });
                     }
-                    if (kDebugMode) print(widget.chatId);
-                    if (kDebugMode) print(state.currentChannelReceivedMessage);
+                    devLog(widget.chatId);
+                    devLog(state.currentChannelReceivedMessage);
                     if (state.receiveMessageStatus ==
                             ReceiveMessageStatus.success &&
                         (widget.chatId == state.currentChannelReceivedMessage ||

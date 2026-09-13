@@ -1,0 +1,19 @@
+# Build output and vendored code — never scanned.
+build/
+.dart_tool/
+.idea/
+.gradle/
+android/build/
+android/.gradle/
+android/app/build/
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/ephemeral/
+macos/Pods/
+windows/flutter/ephemeral/
+linux/flutter/ephemeral/
+web/canvaskit/
+coverage/
+node_modules/
+*.lock
+*.freezed.dart

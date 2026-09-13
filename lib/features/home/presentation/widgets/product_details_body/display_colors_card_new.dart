@@ -27,6 +27,7 @@ import '../../../../../core/utils/theme_state.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import '../../manager/homeBloc/home_bloc.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class DisplayColorsCardNew extends StatefulWidget {
   const DisplayColorsCardNew({
@@ -79,7 +80,7 @@ class _DisplayColorsCardNewState extends ThemeState<DisplayColorsCardNew> {
           currentIndexInSlider = 0;
         }
         if (kDebugMode)
-          print(
+          devLog(
             "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS4/////////////${state.currentSelectedColorForEveryProduct[widget.productItem.slug.toString()]} ${widget.productItem.slug.toString()} ${currentIndexInSlider}",
           );
         return Container(

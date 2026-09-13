@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +21,7 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class MethodsLogin extends StatefulWidget {
   MethodsLogin({
@@ -97,7 +97,7 @@ class _MethodsLoginState extends State<MethodsLogin> {
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () async {
-              if (kDebugMode) print(
+              devLog(
                 "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%lattttttter",
               );
               clickButton.value = 0;
@@ -238,7 +238,7 @@ class _MethodsLoginState extends State<MethodsLogin> {
                 ).add(RegisterGuestEvent(deviceId: deviceId!));
                 //   }
                 if (Navigator.of(context).canPop()) {
-                  if (kDebugMode) print(
+                  devLog(
                     "############################################################3",
                   );
                   Navigator.of(context).pop();

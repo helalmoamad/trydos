@@ -494,7 +494,7 @@ class _ProductDetailsSheetBottomBarState
                                                                               .addToBagButtonShapeNotifier
                                                                               .value = 0;
                                 
-                                                                          if (kDebugMode) print(
+                                                                          devLog(
                                                                               '33333333333333');
                                                                           //////////////////////////////
                                                                           FirebaseAnalyticsService

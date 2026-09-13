@@ -33,6 +33,7 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'dart:io';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class RecommendProductsPage extends StatefulWidget {
   const RecommendProductsPage({Key? key}) : super(key: key);
@@ -191,14 +192,18 @@ class _RecommendProductsPageState extends State<RecommendProductsPage> {
             showShadowForColorImages.value = false;
             return false;
           }
-        } catch (e) {}
+        } catch (e) {
+          devLog('recommend_products_page.dart: ignored error', e);
+        }
         prefsRepository.setTagsInUrlToFilter([]);
         try {
           if (panelControllerForCart.isPanelOpen) {
             panelControllerForCart.close();
             return await Future.value(false);
           }
-        } catch (e) {}
+        } catch (e) {
+          devLog('recommend_products_page.dart: ignored error', e);
+        }
         return Future.value(true);
       },
       child: Scaffold(
@@ -251,7 +256,7 @@ class _RecommendProductsPageState extends State<RecommendProductsPage> {
                                       return*/ LayoutBuilder(
                                 builder: (context, constraints) {
                                   if (kDebugMode)
-                                    print(
+                                    devLog(
                                       "DDDDDDDDDDDDDD................${products.length}",
                                     );
                                   // حساب عرض العنصر مع مراعاة المسافات (مثلاً 16 بكسل)

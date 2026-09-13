@@ -36,7 +36,14 @@ class InsertPhoneTab extends StatefulWidget {
   State<InsertPhoneTab> createState() => _InsertPhoneTabState();
 }
 
-class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
+class _InsertPhoneTabState extends State<InsertPhoneTab>
+    with FormStateMinxin, AutomaticKeepAliveClientMixin {
+  // The hosts mount this tab inside a PageView. Without this the page is
+  // disposed once the flow moves on, so coming back through the edit-pen on
+  // VerificationMethods rebuilt the form empty and lost the typed number.
+  @override
+  bool get wantKeepAlive => true;
+
   final ValueNotifier<Country> countryChanged = ValueNotifier(
     const Country(
       name: '',
@@ -88,6 +95,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     debugPrint('yes rebuilt');
     return Scaffold(
       resizeToAvoidBottomInset: true,

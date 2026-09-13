@@ -33,6 +33,7 @@ import '../../../app/my_text_widget.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_event.dart';
 import '../manager/chat_state.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ChatCard extends StatefulWidget {
   const ChatCard({
@@ -78,7 +79,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
   @override
   Widget build(BuildContext context) {
     chatTime = null;
-    if (kDebugMode) print('dwwdw ${widget.chat.messages}');
+    devLog('dwwdw ${widget.chat.messages}');
     if (!(widget.chat.messages.isNullOrEmpty)) {
       chatTime = widget.chat.messages!
           .firstWhere(
@@ -122,11 +123,11 @@ class _ChatCardState extends ThemeState<ChatCard> {
     String senderName = HelperFunctions.getTheFirstTwoLettersOfName(
       _prefsRepository.myChatName ?? LocaleKeys.no_channal_name.tr(),
     );
-    if (kDebugMode) print('meesges ${widget.chat.messages?.length}');
-    if (kDebugMode) print('meesges ${widget.chat.channelMembers?.length}');
-    if (kDebugMode) print('meesges ${widget.chat.channelName}');
+    devLog('meesges ${widget.chat.messages?.length}');
+    devLog('meesges ${widget.chat.channelMembers?.length}');
+    devLog('meesges ${widget.chat.channelName}');
     if (kDebugMode)
-      print('_prefsRepository.myChatId ${_prefsRepository.myChatId}');
+      devLog('_prefsRepository.myChatId ${_prefsRepository.myChatId}');
 
     ChannelMember? me = !widget.chat.channelMembers.isNullOrEmpty
         ? widget.chat.channelMembers?.firstWhere(

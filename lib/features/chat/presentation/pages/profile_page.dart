@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +36,7 @@ import '../../../calls/presentation/bloc/calls_bloc.dart';
 import '../../../calls/presentation/utils/caller_info.dart';
 import '../widgets/chat_widgets/no_image_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({
@@ -77,7 +77,7 @@ class _ProfilePageState extends State<ProfilePage> {
     LastPagesTracker.push('ProfilePage');
     images = _prefsRepository.getTheLocalPathForChannel(widget.chatId) ?? [];
     chatBloc = BlocProvider.of<ChatBloc>(context);
-    if (kDebugMode) print(images);
+    devLog(images);
     images!.forEach((element) {
       final MediaRegistryEntry? entry = MediaRegistryEntry.tryParse(element);
       if (entry == null) return;
@@ -240,8 +240,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 openAppSettings();
                               }
                             } catch (e, st) {
-                              if (kDebugMode) print(e);
-                              if (kDebugMode) print(st);
+                              devLog(e);
+                              devLog(st);
                             }
                           },
                           child: Column(

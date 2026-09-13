@@ -161,6 +161,13 @@ abstract class PrefsRepository {
 
   Future<bool> setMyStoriesName(String name);
   Future<bool> setTokenForComment(String token);
+
+  /// Stores the single-use comments refresh token (rotated on every refresh).
+  Future<bool> setCommentRefreshToken(String? token);
+
+  /// Reads the stored comments refresh token from secure storage.
+  Future<String?> getCommentRefreshToken();
+
   Future<bool> setMyProfilePhoto(String? photo);
   Future<bool> setMyChatPhoto(String? photo);
 

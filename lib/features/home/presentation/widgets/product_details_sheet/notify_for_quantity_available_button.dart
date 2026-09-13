@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -22,6 +21,7 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../app/my_text_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class NotifyWhenQuantityAvailableButton extends StatefulWidget {
   const NotifyWhenQuantityAvailableButton({
@@ -83,7 +83,7 @@ class _NotifyWhenQuantityAvailableButtonState
               ? ""
               : widget.selectedColorName;
         }
-        if (kDebugMode) print("GGGGGGGGGGGGGGGGGGGGGGGGGGG${variant}");
+        devLog("GGGGGGGGGGGGGGGGGGGGGGGGGGG${variant}");
 
         state
             .firebaseSettingForNotificationModel

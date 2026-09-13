@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +22,7 @@ import 'package:trydos/service/language_service.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class SuccessfullOrder extends StatefulWidget {
   final List<Map<String, String>> cartImages;
@@ -63,7 +63,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
   void initState() {
     LastPagesTracker.push("SuccessfullOrder Page");
     appBloc = BlocProvider.of<AppBloc>(context);
-    if (kDebugMode) print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${widget.cartImages}");
+    devLog("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${widget.cartImages}");
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(const RemoveItemsFromCartAfterOrderSuccessEvent());
     homeBloc.add(const GetCartItemEvent());

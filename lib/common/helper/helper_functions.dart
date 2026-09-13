@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:io';
 import 'dart:math';
 
@@ -34,6 +33,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../constant/design/assets_provider.dart';
 import 'show_message.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
@@ -68,7 +68,7 @@ class HelperFunctions {
       final Duration duration = controller.value.duration;
       return duration > Duration.zero ? duration : null;
     } catch (e) {
-      if (kDebugMode) print('failed to read video duration: $e');
+      devLog('failed to read video duration: $e');
       return null;
     } finally {
       await controller.dispose();
@@ -113,6 +113,19 @@ class HelperFunctions {
     }
   }
 
+  /// Turns any string into a name that is safe to use as a file name.
+  ///
+  /// Every character outside `A-Z a-z 0-9 . _ -` becomes `_`, so a path
+  /// separator can never survive. A name made only of dots (`.` or `..`) points
+  /// at a directory instead of a file, so it is replaced too.
+  static String safeFileName(String value) {
+    final cleaned = value.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
+    if (cleaned.isEmpty || RegExp(r'^\.+$').hasMatch(cleaned)) return 'file';
+    return cleaned.length <= 120
+        ? cleaned
+        : cleaned.substring(cleaned.length - 120);
+  }
+
   static Future<File> urlToFile(String imageUrl) async {
     // تحميل الصورة من الإنترنت
     final response = await http.get(Uri.parse(imageUrl));
@@ -120,8 +133,12 @@ class HelperFunctions {
     // الحصول على مسار التخزين المؤقت
     final documentDirectory = await getTemporaryDirectory();
 
-    // إنشاء ملف مؤقت باسم فريد
-    final file = File('${documentDirectory.path}/${imageUrl.split("/").last}');
+    // إنشاء ملف مؤقت باسم فريد.
+    // اسم الملف يأتي من رابط خارجي، لذلك يُنظَّف قبل الاستخدام حتى لا يخرج
+    // المسار من مجلد التطبيق.
+    final safeName = safeFileName(imageUrl.split('/').last);
+    // nosemgrep: trydos-sec-path-from-interpolation -- safeFileName() strips separators and rejects dot-only names
+    final file = File('${documentDirectory.path}/$safeName');
 
     // كتابة بيانات الصورة إلى الملف
     file.writeAsBytesSync(response.bodyBytes);
@@ -217,24 +234,24 @@ class HelperFunctions {
       contacts = await FastContacts.getAllContacts();
     }
 
-    if (kDebugMode) print("🔍 إجمالي جهات الاتصال: ${contacts.length}");
+    devLog("🔍 إجمالي جهات الاتصال: ${contacts.length}");
     int i = 0;
     List<Contact> myContacts = [];
     for (Contact contact in contacts) {
       i = i + 1;
 
       if (contact.phones.isNotEmpty) {
-        if (kDebugMode) print("📞 ${contact.displayName}: ${contact.phones.length} رقم");
+        devLog("📞 ${contact.displayName}: ${contact.phones.length} رقم");
         contact.phones.forEach((element) {
-          if (kDebugMode) print("   - ${element.number}");
+          devLog("   - ${element.number}");
           myContacts.add(contact);
         });
       } else {
-        if (kDebugMode) print("❌ ${contact.displayName}: بدون أرقام هواتف");
+        devLog("❌ ${contact.displayName}: بدون أرقام هواتف");
       }
     }
 
-    if (kDebugMode) print(
+    devLog(
       "📱 جهات الاتصال مع أرقام: ${myContacts.length}   ${contacts.length}",
     );
 
@@ -242,8 +259,8 @@ class HelperFunctions {
     if (!(myPhoneNumber.startsWith("+"))) {
       myPhoneNumber = "+" + myPhoneNumber;
     }
-    if (kDebugMode) print("📞 رقم المستخدم: $myPhoneNumber");
-    if (kDebugMode) print("📏 طول رقم المستخدم: ${myPhoneNumber.length}");
+    devLog("📞 رقم المستخدم: $myPhoneNumber");
+    devLog("📏 طول رقم المستخدم: ${myPhoneNumber.length}");
 
     String dialCode = countries
         .firstWhere(
@@ -252,8 +269,8 @@ class HelperFunctions {
         )
         .dialCode;
 
-    if (kDebugMode) print("🏳️ رمز الدولة: $dialCode");
-    if (kDebugMode) print("📏 طول رمز الدولة: ${dialCode.length}");
+    devLog("🏳️ رمز الدولة: $dialCode");
+    devLog("📏 طول رمز الدولة: ${dialCode.length}");
 
     String myPhoneNumberWithoutDial;
     if (myPhoneNumber.contains('+') && myPhoneNumber.length > dialCode.length) {
@@ -275,7 +292,7 @@ class HelperFunctions {
         .replaceAll(')', '')
         .replaceAll('.', '');
 
-    if (kDebugMode) print("📱 رقم المستخدم بدون رمز: $myPhoneNumberWithoutDial");
+    devLog("📱 رقم المستخدم بدون رمز: $myPhoneNumberWithoutDial");
 
     var result = myContacts.map((e) {
       String formattedNumber;
@@ -302,7 +319,7 @@ class HelperFunctions {
         cleanNumber = dialCode + cleanNumber;
       }
 
-      if (kDebugMode) print("🧹 تنظيف الرقم: ${e.phones.first.number} -> $cleanNumber");
+      devLog("🧹 تنظيف الرقم: ${e.phones.first.number} -> $cleanNumber");
 
       if (!cleanNumber.contains('+')) {
         int countryIndex = countries.indexWhere(
@@ -312,14 +329,14 @@ class HelperFunctions {
         );
         if (countryIndex == -1) {
           formattedNumber = dialCode + cleanNumber;
-          if (kDebugMode) print("➕ إضافة رمز الدولة: $cleanNumber -> $formattedNumber");
+          devLog("➕ إضافة رمز الدولة: $cleanNumber -> $formattedNumber");
         } else {
           formattedNumber = '+$cleanNumber';
-          if (kDebugMode) print("✅ رقم مع رمز: $cleanNumber -> $formattedNumber");
+          devLog("✅ رقم مع رمز: $cleanNumber -> $formattedNumber");
         }
       } else {
         formattedNumber = cleanNumber;
-        if (kDebugMode) print("✅ رقم موجود: $formattedNumber");
+        devLog("✅ رقم موجود: $formattedNumber");
       }
 
       return {
@@ -328,19 +345,19 @@ class HelperFunctions {
       };
     }).toList();
 
-    if (kDebugMode) print("📋 قبل الاستبعاد: ${result.length}");
+    devLog("📋 قبل الاستبعاد: ${result.length}");
 
     result.removeWhere((element) {
       bool shouldRemove =
           element['mobile_phone']?.endsWith(myPhoneNumberWithoutDial) ?? false;
       if (shouldRemove) {
-        if (kDebugMode) print("🚫 استبعاد: ${element['name']} - ${element['mobile_phone']}");
+        devLog("🚫 استبعاد: ${element['name']} - ${element['mobile_phone']}");
       }
       return shouldRemove;
     });
     String contactDetails =
         "🔍 إجمالي جهات الاتصال: ${contacts.length}  ✅ النتيجة النهائية: ${result.length} 📱 جهات الاتصال مع أرقام: ${myContacts.length}";
-    if (kDebugMode) print("✅ النتيجة النهائية: ${result.length}");
+    devLog("✅ النتيجة النهائية: ${result.length}");
     GetIt.I<PrefsRepository>().setContactDetails(contactDetails);
     return result;
   }
@@ -374,7 +391,7 @@ class HelperFunctions {
         ),
       );
     } catch (e) {
-      if (kDebugMode) print('AssetPicker.pickAssets failed: $e');
+      devLog('AssetPicker.pickAssets failed: $e');
       if (context.mounted) {
         showWarningMessage(context, LocaleKeys.error_picking_file.tr());
       }
@@ -495,7 +512,13 @@ class HelperFunctions {
     return 'other_os';
   }
 
-  static showVersionDialog(context) async {
+  /// The "a new version is available" dialog.
+  ///
+  /// [isMandatory] turns it into an update the user cannot skip: the "not now"
+  /// button is removed, the back button does nothing, and the dialog stays on
+  /// screen while the store page opens. The caller decides this; see
+  /// `_showVersionDialogIfNeeded` in base_page.dart.
+  static showVersionDialog(context, {bool isMandatory = false}) async {
     if (_versionDialogShown) return;
     _versionDialogShown = true;
     await showDialog<String>(
@@ -508,7 +531,8 @@ class HelperFunctions {
         String btnLabel2 = LocaleKeys.not_now.tr();
         // ignore: deprecated_member_use
         return WillPopScope(
-          onWillPop: () => Future.value(true),
+          // The back button must not be a way around a mandatory update.
+          onWillPop: () => Future.value(!isMandatory),
           child: Platform.isIOS
               ? CupertinoAlertDialog(
                   title: Column(
@@ -546,22 +570,30 @@ class HelperFunctions {
                   actions: <Widget>[
                     Row(
                       children: [
-                        Expanded(
-                          child: CupertinoButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(
-                              btnLabel2,
-                              style: const TextStyle(
-                                color: Color(0xFF6E6E73),
-                                fontSize: 16,
+                        // A mandatory update leaves no second choice, so the
+                        // "not now" button is not built at all.
+                        if (!isMandatory)
+                          Expanded(
+                            child: CupertinoButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                btnLabel2,
+                                style: const TextStyle(
+                                  color: Color(0xFF6E6E73),
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                           ),
-                        ),
                         Expanded(
                           child: CupertinoButton.filled(
                             onPressed: () {
-                              Navigator.pop(context); // إغلاق الحوار
+                              // When it is mandatory the dialog stays open
+                              // behind the store, so coming back does not drop
+                              // the user into the old version.
+                              if (!isMandatory) {
+                                Navigator.pop(context); // إغلاق الحوار
+                              }
                               // كان يفتح مجموعة واتساب — لا صلة لها بالتحديث.
                               _openStorePage();
                             },
@@ -625,30 +657,38 @@ class HelperFunctions {
                   actions: <Widget>[
                     Row(
                       children: [
-                        Expanded(
-                          child: TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                        // Same as the iOS branch: no "not now" when the update
+                        // is mandatory, and no gap left behind it either.
+                        if (!isMandatory) ...[
+                          Expanded(
+                            child: TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
-                            ),
-                            child: Text(
-                              btnLabel2,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF6E6E73),
+                              child: Text(
+                                btnLabel2,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF6E6E73),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
+                          const SizedBox(width: 12),
+                        ],
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.pop(context); // إغلاق الحوار
+                              if (!isMandatory) {
+                                Navigator.pop(context); // إغلاق الحوار
+                              }
                               _openStorePage();
                             },
                             style: ElevatedButton.styleFrom(

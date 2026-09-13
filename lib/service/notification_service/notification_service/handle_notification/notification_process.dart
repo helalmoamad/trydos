@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,6 +26,7 @@ import 'notification_type.dart';
 import '../notification_utils/payload_model.dart';
 import 'notificaton_factory_impl.dart';
 import 'dart:convert' as convert;
+import 'package:trydos/common/helper/dev_log.dart';
 
 class NotificationProcess {
   static NotificationProcess? _instance;
@@ -78,7 +78,7 @@ class NotificationProcess {
       );
       return;
     }
-    if (kDebugMode) print("myFcmToken : ${myFcmToken}");
+    devLog("myFcmToken : ${myFcmToken}");
     if (myFcmToken != null) {
       /*  GetIt.I<AuthBloc>().add(
         StoreFcmTokenEvent(
@@ -94,7 +94,7 @@ class NotificationProcess {
           serverName: ServerName.chat,
         ),
       );
-      if (kDebugMode) print("myFcmToken :///////////////// ${myFcmToken}");
+      devLog("myFcmToken :///////////////// ${myFcmToken}");
       GetIt.I<PrefsRepository>().addFcmToken(myFcmToken!);
       if (GetIt.I<PrefsRepository>().myMarketId != null) {
         GetIt.I<HomeBloc>().add(
@@ -163,7 +163,7 @@ class NotificationProcess {
             details.notificationResponse!.payload!.split('##')[0],
           ),
         );
-        if (kDebugMode) print(myMessage.messageContent?.content);
+        devLog(myMessage.messageContent?.content);
         GetIt.I<ChatBloc>().add(
           GetChatsEvent(
             chatToNavigateFromTerminated: myMessage.channel,

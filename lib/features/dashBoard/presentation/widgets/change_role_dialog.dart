@@ -185,7 +185,7 @@ class _ChangeRoleDialogState extends State<ChangeRoleDialog> {
                                     ),
                                   )
                                 : Text(
-                                    'Load more',
+                                    LocaleKeys.load_more.tr(),
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       color: Colors.black87,

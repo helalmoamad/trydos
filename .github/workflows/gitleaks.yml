@@ -1,0 +1,69 @@
+name: Secret scan
+
+# Fails the build when a credential is added to the code.
+#
+# It scans the checked-out files, not the whole history. History already holds
+# secrets from before this check existed (see docs/secret-scanning.md); scanning
+# it here would fail every run and teach everyone to ignore this job. Those old
+# secrets are handled by rotating them, which is a separate task.
+#
+# The binary is downloaded from the pinned release instead of using
+# gitleaks-action, because that action asks for a paid licence key on private
+# organisation repositories.
+
+on:
+  # `dev_new` only — the base branch everything lands on. Ticket branches are
+  # covered by the pre-commit hook on the developer's machine
+  # (see docs/secret-scanning.md).
+  push:
+    branches:
+      - dev_new
+  workflow_dispatch:
+
+# Several pushes in a row would otherwise start the same scan several times.
+# Keep the newest run and drop the older one.
+concurrency:
+  group: gitleaks-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GITLEAKS_VERSION: 8.30.1
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install gitleaks
+        run: |
+          set -euo pipefail
+          url="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSL "$url" -o /tmp/gitleaks.tar.gz
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          sudo install -m 0755 /tmp/gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
+      # --redact keeps the secret value out of the build log. A public log would
+      # otherwise leak it a second time.
+      - name: Scan for secrets
+        run: |
+          gitleaks dir . \
+            --config .gitleaks.toml \
+            --redact \
+            --no-banner \
+            --report-format sarif \
+            --report-path gitleaks.sarif
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: gitleaks.sarif
+          if-no-files-found: ignore
+          retention-days: 30

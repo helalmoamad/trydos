@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../data/models/get_orders_model.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 class OrderWidget extends StatelessWidget {
   final List<OrderListModel> orders;
@@ -145,7 +146,7 @@ class OrderWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'View Details',
+                    LocaleKeys.view_details.tr(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.start,

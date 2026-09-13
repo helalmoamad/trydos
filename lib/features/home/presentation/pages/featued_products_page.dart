@@ -27,6 +27,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class FeaturedProductsPage extends StatefulWidget {
   const FeaturedProductsPage({Key? key}) : super(key: key);
@@ -185,14 +186,18 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
             showShadowForColorImages.value = false;
             return false;
           }
-        } catch (e) {}
+        } catch (e) {
+          devLog('featued_products_page.dart: ignored error', e);
+        }
         prefsRepository.setTagsInUrlToFilter([]);
         try {
           if (panelControllerForCart.isPanelOpen) {
             panelControllerForCart.close();
             return await Future.value(false);
           }
-        } catch (e) {}
+        } catch (e) {
+          devLog('featued_products_page.dart: ignored error', e);
+        }
         return Future.value(true);
       },
       child: Scaffold(
@@ -245,7 +250,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                       return*/ LayoutBuilder(
                                 builder: (context, constraints) {
                                   if (kDebugMode)
-                                    print(
+                                    devLog(
                                       "DDDDDDDDDDDDDD................${products.length}",
                                     );
                                   // حساب عرض العنصر مع مراعاة المسافات (مثلاً 16 بكسل)

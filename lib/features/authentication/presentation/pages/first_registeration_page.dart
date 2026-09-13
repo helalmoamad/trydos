@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +28,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../widgets/adding_name.dart';
 import '../widgets/verification_methods.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class RegistrationPage extends StatefulWidget {
   final bool? fromLogOut;
@@ -193,7 +193,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                               );
                               return;
                             }
-                            if (kDebugMode) print(
+                            devLog(
                               "#######################################!!!!!!!!!!!!!!!!!!!!!!!!!!!${index}",
                             );
                           });

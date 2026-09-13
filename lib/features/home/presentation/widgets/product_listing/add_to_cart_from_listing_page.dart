@@ -317,7 +317,7 @@ class _FiltersLoadingListPageState extends State<FiltersLoadingListPage> {
                                     current
                                         .getProductDetailWithoutSimilarRelatedProductsStatus,
                             builder: (context, state) {
-                              if (kDebugMode) print(
+                              devLog(
                                   "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${widget.productItem.price!}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!}");
                               return ProductDetailsSheetHeader(
                                 decimalPoint: state

@@ -84,7 +84,7 @@ import '../widgets/product_details_body/sliding_up_panel_for_reels.dart';
 import '../widgets/product_stories_section/story/widget/stories_list.dart';
 
 import 'dart:async';
-
+import 'package:trydos/common/helper/dev_log.dart';
 // ignore: must_be_immutable
 class ProductDetailsPageNew extends StatefulWidget {
   ProductDetailsPageNew({
@@ -163,7 +163,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
             productSlugToOnVoideo.add(key);
           }
         });
-      } catch (e) {} // Ø¢Ù…Ù† Ù‡Ù†Ø§
+      } catch (e) {
+        devLog('product_details_page_new.dart: ignored error', e);
+      } // Ø¢Ù…Ù† Ù‡Ù†Ø§
     });
 
     changeVariationIfQtyZero = true;
@@ -284,13 +286,19 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
     super.dispose();
     try {
       tapIndexToAddProductToCart.dispose();
-    } catch (e) {}
+    } catch (e) {
+      devLog('product_details_page_new.dart: ignored error', e);
+    }
     try {
       finishRedeem.dispose();
-    } catch (e) {}
+    } catch (e) {
+      devLog('product_details_page_new.dart: ignored error', e);
+    }
     try {
       productIsRecommend.dispose();
-    } catch (e) {}
+    } catch (e) {
+      devLog('product_details_page_new.dart: ignored error', e);
+    }
   }
 
   @override
@@ -338,7 +346,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
 
             return Future.value(false);
           }
-        } catch (e) {}
+        } catch (e) {
+          devLog('product_details_page_new.dart: ignored error', e);
+        }
 
         try {
           productSlugToOnVoideo.forEach((key) {
@@ -347,7 +357,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
               () => videoProductInListingController[key]?.play(),
             );
           });
-        } catch (e) {}
+        } catch (e) {
+          devLog('product_details_page_new.dart: ignored error', e);
+        }
         if (Navigator.of(context).canPop()) {
           if (widget.productItem != null && initialColor != -1) {
             homeBloc.add(
@@ -381,7 +393,9 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                           () => videoProductInListingController[key]?.play(),
                         );
                       });
-                    } catch (e) {}
+                    } catch (e) {
+                      devLog('product_details_page_new.dart: ignored error', e);
+                    }
 
                     if (widget.productItem != null && initialColor != -1) {
                       homeBloc.add(
@@ -2375,7 +2389,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                             }
 
                             if (kDebugMode)
-                              print(
+                              devLog(
                                 "############${state.authProductDetailsModel?.data?.variation}",
                               );
                             return ProductDetailsBottomSheetNew(
@@ -3521,7 +3535,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                         valueListenable: visibleRedeem,
                         builder: (context, _visibleRedeem, _) {
                           if (kDebugMode)
-                            print(
+                            devLog(
                               "GGGGGGGFFFFRRRProductDetailsImageWidget${productItem.productId}////${productItem.syncColorImages.isNullOrEmpty ? productItem.images![index].filePath! : productItem.syncColorImages![currentSelectedColor].images![index].filePath}",
                             );
                           // بلا مفتاح: Flutter يطابق العناصر بالموضع والنوع،

@@ -47,6 +47,7 @@ import 'chat_event.dart';
 import 'chat_state.dart';
 import 'helper_function_for_chat_bloc/group_received_message_on_days.dart';
 import 'helper_function_for_chat_bloc/merge_chats_from_pagination.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 const throttleDuration = Duration(minutes: 2);
 
@@ -271,10 +272,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     String? parentMessageId;
     if (kDebugMode)
       if (kDebugMode)
-        print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD******///${chats[0].id}");
+        devLog("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD******///${chats[0].id}");
     if (kDebugMode)
       if (kDebugMode)
-        print(
+        devLog(
           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD****////${event.channelId}",
         );
 
@@ -508,7 +509,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         );
         if (kDebugMode)
           if (kDebugMode)
-            print(
+            devLog(
               "222222222222222222222222ddddddddddddddddddddddddddddddddd${state.currentMessage}",
             );
 
@@ -764,7 +765,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   ) async {
     if (kDebugMode)
       if (kDebugMode)
-        print(
+        devLog(
           "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH8${state.getChatsStatus}${(_prefsRepository.chatToken?.length ?? 0) < 10}${event.getWithPagination ?? false}888",
         );
     if (state.getChatsStatus == GetChatsStatus.loading ||
@@ -774,7 +775,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
     if (kDebugMode)
       if (kDebugMode)
-        print(
+        devLog(
           "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH822",
         );
     emit(
@@ -809,7 +810,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         try {
           if (kDebugMode)
             if (kDebugMode)
-              print(
+              devLog(
                 "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH866622${state.sendMessageStatus}${state.receiveMessageStatus}",
               );
           if (state.sendMessageStatus == SendMessageStatus.loading ||
@@ -819,7 +820,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           }
           if (kDebugMode)
             if (kDebugMode)
-              print(
+              devLog(
                 "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH82772",
               );
           enableRequestGetChats = false;
@@ -890,12 +891,12 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           );
           if (kDebugMode)
             if (kDebugMode)
-              print(
+              devLog(
                 "FFFFFFFFFFFFFFFFFFFFFFFFFFFFF/////////****${state.getAllChat}",
               );
         } catch (e, st) {
-          if (kDebugMode) print(e);
-          if (kDebugMode) print(st);
+          devLog(e);
+          devLog(st);
         }
         getContactsAfterSavingItAndGettingChannels();
       },
@@ -1324,7 +1325,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   ) async {
     if (kDebugMode)
       if (kDebugMode)
-        print(
+        devLog(
           '_onReceiveMessageEvent_onReceiveMessageEvent${event.prevMessageId}  ${event.message.id}',
         );
 
@@ -1392,7 +1393,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       if (index == -1 && event.prevMessageId != null) {
         if (kDebugMode)
           if (kDebugMode)
-            print(
+            devLog(
               'get all messages between ${event.prevMessageId} and ${event.message.id}',
             );
         add(
@@ -1467,7 +1468,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           )
           .id
           .toString();
-    } catch (e) {}
+    } catch (e) {
+      devLog('chat_bloc.dart: ignored error', e);
+    }
     if (int.tryParse(id ?? "") == null) return;
     emit(state.copyWith(readMessagesStatus: ResetReadMessagesStatus.loading));
     final response = await readAllMessagesUseCase(
@@ -2637,7 +2640,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           event.channelId,
         );
       }
-    } catch (e) {}
+    } catch (e) {
+      devLog('chat_bloc.dart: ignored error', e);
+    }
     emit(
       state.copyWith(
         deleteMessageStatus: DeleteMessageStatus.success,
@@ -2782,7 +2787,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       (l) {
         if (kDebugMode) {
           if (kDebugMode)
-            print(
+            devLog(
               "${event.error.toString().substring(1, 40)}" +
                   "failed to send error to back end" +
                   "544444444444444444444444444444444444444",
@@ -2792,7 +2797,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       (r) {
         if (kDebugMode)
           if (kDebugMode)
-            print(
+            devLog(
               "${event.error.toString().substring(1, 40)}" +
                   "success to send error to back end" +
                   "2222222222222222222222222222222222222222222222222222222222222222",
@@ -2872,7 +2877,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
     if (kDebugMode)
       if (kDebugMode)
-        print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${resultOfSearch.items}");
+        devLog("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${resultOfSearch.items}");
     if (event.getWithPagination &&
         (resultOfSearch.hasReachedMax || resultOfSearch.offset == null)) {
       return;
@@ -2895,7 +2900,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
     if (kDebugMode)
       if (kDebugMode)
-        print(
+        devLog(
           "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%111111111111111111111111111111${resultOfSearch.items}",
         );
 
@@ -2910,7 +2915,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     );
     if (kDebugMode)
       if (kDebugMode)
-        print(
+        devLog(
           "%1112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}",
         );
     final response = await searchForMessageTextInChatUseCase(
@@ -2971,7 +2976,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         );
         if (kDebugMode)
           if (kDebugMode)
-            print(
+            devLog(
               "%3333333333333333333333333333333331112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}",
             );
       },

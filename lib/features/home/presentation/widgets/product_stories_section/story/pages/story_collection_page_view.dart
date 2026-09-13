@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -10,6 +9,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.da
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/pages/story_collection.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class StoryCollectionPageView extends StatefulWidget {
   const StoryCollectionPageView({super.key, required this.initialPage});
@@ -279,7 +279,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                 state.storiesCollections.length;
                           }
                           if (currentPage != prevPageNumber) {
-                            if (kDebugMode) print("page:************************");
+                            devLog("page:************************");
                             GetIt.I<HomeBloc>().add(StorySelectedEvent(
                                 collectionIndex: currentPage,
                                 currentPage: currentPage,

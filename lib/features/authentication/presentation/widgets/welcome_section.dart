@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -22,15 +21,23 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class WelcomeSection extends StatefulWidget {
   WelcomeSection({
     required this.goToCreateAccount,
     required this.goToLoginSection,
+    this.onDismiss,
     Key? key,
   }) : super(key: key);
   final void Function() goToCreateAccount;
   final void Function() goToLoginSection;
+
+  /// How "later, take a look" leaves this step. A host that builds this section
+  /// inside its own page — rather than on a route of its own — must pass this,
+  /// because popping would take that whole page with it. Left null, the old
+  /// pop-or-go-home behaviour is unchanged.
+  final void Function()? onDismiss;
 
   @override
   State<WelcomeSection> createState() => _WelcomeSectionState();
@@ -97,7 +104,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () async {
-              if (kDebugMode) print(
+              devLog(
                 "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%lattttttter",
               );
               clickButton.value = 0;
@@ -247,8 +254,10 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                   context,
                 ).add(RegisterGuestEvent(deviceId: deviceId!));
                 //   }
-                if (Navigator.of(context).canPop()) {
-                  if (kDebugMode) print(
+                if (widget.onDismiss != null) {
+                  widget.onDismiss!();
+                } else if (Navigator.of(context).canPop()) {
+                  devLog(
                     "############################################################3",
                   );
                   Navigator.of(context).pop();

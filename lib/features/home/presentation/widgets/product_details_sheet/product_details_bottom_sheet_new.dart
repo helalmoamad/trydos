@@ -47,6 +47,7 @@ import '../../manager/homeBloc/home_bloc.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class ProductDetailsBottomSheetNew extends StatefulWidget {
   final productListingModel.Products productItem;
@@ -1385,7 +1386,7 @@ class _ProductDetailsBottomSheetNewState
 
   Widget _availableColorWidget({required HomeState state}) {
     if (kDebugMode)
-      print(
+      devLog(
         "___${widget.productItem.syncColorImages?[0].colorOption}${(state.currentColorSizeForCart?["choiceOption"] ?? "") == "" ? "" : "-"}${state.currentColorSizeForCart?["choiceOption"] ?? ""}____",
       );
     int tapIndex =
@@ -1457,7 +1458,7 @@ class _ProductDetailsBottomSheetNewState
                                 .slug
                                 .toString()]) {
                           if (kDebugMode)
-                            print(
+                            devLog(
                               "_/__${(widget.productItem.variation?.length)}____",
                             );
                           return;
@@ -1688,7 +1689,7 @@ class _ProductDetailsBottomSheetNewState
           );
 
           if (kDebugMode)
-            print("sizesQuantities: ${sizesQuantities[tappedIndex]}");
+            devLog("sizesQuantities: ${sizesQuantities[tappedIndex]}");
           if (sizesQuantities[tappedIndex] == 0 &&
               !widget.collectedAfterOrdering) {
             Future.delayed(const Duration(milliseconds: 300), () {

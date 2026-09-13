@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -25,6 +24,7 @@ import '../../../data/models/ImageDetail.dart';
 import '../../manager/chat_event.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 // ignore: must_be_immutable
 class SharedProductMessage extends StatefulWidget {
@@ -89,7 +89,7 @@ class _SharedProductMessageState extends State<SharedProductMessage>
 
   @override
   void initState() {
-    if (kDebugMode) print(
+    devLog(
       "####################################################################3eee3",
     );
     chatBloc = BlocProvider.of<ChatBloc>(context);
@@ -242,7 +242,7 @@ class _SharedProductMessageState extends State<SharedProductMessage>
                                                           '?width=${1.sw - 100}&height=464',
                                                       widget.channelId,
                                                       action: (File? file) {
-                                                if (kDebugMode) print(
+                                                devLog(
                                                     "fgggggggggggggggggggggggg${widget.imageUrl!}");
                                                 // _loadingImage.value = 2;
                                                 if (file != null) {

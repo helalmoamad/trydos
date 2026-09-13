@@ -110,6 +110,7 @@ import 'home_event.dart';
 import '../../../domain/use_cases/get_fqa_comments_usecase.dart';
 import '../../../domain/use_cases/get_buyer_comments_usecase.dart';
 import 'home_state.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 const throttleDuration = Duration(minutes: 2);
 
@@ -520,17 +521,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         getRelatedProductsStatus: GetRelatedProductsStatus.loading,
       ),
     );
-    if (kDebugMode) print("_onGetRelatedProductsEvent in bloc ");
+    devLog("_onGetRelatedProductsEvent in bloc ");
     final response = await getRelatedProductsUseCase(
       GetRelatedProductsParams(
         productSlug: event.productSlug ?? 0,
         color: event.color ?? "",
       ),
     );
-    if (kDebugMode) print("response in bloc");
+    devLog("response in bloc");
     response.fold(
       (failure) {
-        if (kDebugMode) print("response in failure ${failure.message}");
+        devLog("response in failure ${failure.message}");
         emit(
           state.copyWith(
             getRelatedProductsStatus: GetRelatedProductsStatus.failure,
@@ -539,7 +540,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       },
       (relatedProducts) {
         if (kDebugMode)
-          print("relatedProducts in ${relatedProducts.data.products}");
+          devLog("relatedProducts in ${relatedProducts.data.products}");
         emit(
           state.copyWith(
             getRelatedProductsStatus: GetRelatedProductsStatus.success,
@@ -823,7 +824,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           'price': event.product.price.toString(),
         },
       );
-    } catch (e) {}
+    } catch (e) {
+      devLog('home_bloc.dart: ignored error', e);
+    }
     showMessage(
       LocaleKeys.product_shared_successfully.tr(),
       foreGroundColor: Colors.white,
@@ -1306,7 +1309,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) {
     if (kDebugMode)
-      print(
+      devLog(
         "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${event.currentSelectedColor}  ${event.productSlug}",
       );
     emit(
@@ -1327,7 +1330,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           event.currentSelectedColor;
     }
     if (kDebugMode)
-      print(
+      devLog(
         "888888888888888888888///////////////////////////////////****${currentSelectedColorForEveryProduct}",
       );
 
@@ -1568,7 +1571,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             filters_model.GetProductFiltersModel(filters: filters);
       }
     }
-    if (kDebugMode) print('9999999999999 ${state.hashCode}');
+    devLog('9999999999999 ${state.hashCode}');
     emit(state.copyWith(
       cashedOrginalBoutique: event.cashedOrginalBoutique,
       isGettingProductListingWithPagination: true,
@@ -1579,7 +1582,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       choosedFiltersByUser: Map.of(choosedFilters),
       appliedFiltersByUser: Map.of(appliedFilters),
     ));
-    if (kDebugMode) print('66666666666666666666 ${state.hashCode}');
+    devLog('66666666666666666666 ${state.hashCode}');
 
     if (state.appliedFiltersByUser[key] == null) {}
 
@@ -1694,9 +1697,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       /* getProductListingWithFiltersPaginationModels.removeWhere((key,
                   value) =>
               !(key.contains(idForRequest) || key.contains('withoutFilter')));*/
-      if (kDebugMode) print(
+      devLog(
           'kkkkkkkkkkk ${getProductListingWithFiltersPaginationModels['women-section-67withoutFilter']?.paginationStatus}');
-      if (kDebugMode) print('sssssssssss ${state.hashCode}');
+      devLog('sssssssssss ${state.hashCode}');
       emit(state.copyWith(
         getProductListingWithFiltersPaginationModels:
             getProductListingWithFiltersPaginationModels,
@@ -1827,7 +1830,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             sizes.add(size);
             sizesQuantities.add((element.qty ?? 0).round());
             // if (element.variantNotifyForUser) {}
-          } catch (e) {}
+          } catch (e) {
+            devLog('home_bloc.dart: ignored error', e);
+          }
         }
       });
     } else {}
@@ -1872,7 +1877,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           }
         }
         if (kDebugMode)
-          print(
+          devLog(
             "888888888888888888888///////////////////////////////////${currentSelectedColorForEveryProduct}",
           );
         emit(
@@ -2430,7 +2435,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               },
               executedEventName: AnalyticsButtonsEventNameConst.CART_ICON,
             );
-          } catch (e) {}
+          } catch (e) {
+            devLog('home_bloc.dart: ignored error', e);
+          }
         });
 
         //////////////////////////////////
@@ -3489,7 +3496,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               'price': cart.price.toString(),
             },
           );
-        } catch (e) {}
+        } catch (e) {
+          devLog('home_bloc.dart: ignored error', e);
+        }
 
         showMessage(
           "${LocaleKeys.item_was_hidden_successfuly.tr()}",
@@ -3703,7 +3712,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
         ;
       }
-      if (kDebugMode) print(
+      devLog(
           "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO${addImagesToProductIdForCart[oldCartt.productId.toString()]?.values.toList()}");
       add(AddQuantityForCartEvent(
           currentSize: oldCartt.variations![0].size ?? "",
@@ -3843,7 +3852,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
 
         if (kDebugMode)
-          print(
+          devLog(
             "SSSSSSSSSSSSSSSSAAAAAAAAAAAAAAAAAA${index} ${event.colorOption}${event.colorOption != "" ? "-" : ""}${event.currentSize}",
           );
         if ((r.data == null || r.data == "") || (r.data?.status ?? 0) != 1) {
@@ -4474,7 +4483,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               ].toString(),
             },
           );
-        } catch (e) {}
+        } catch (e) {
+          devLog('home_bloc.dart: ignored error', e);
+        }
       });
     }
 
@@ -4674,21 +4685,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     response.fold(
       (l) {
-        if (ErrorManager.shouldRetry(
-          'AddOrRemoveLikeForProductEvent',
-          l.statusCode,
-        )) {
-          ErrorManager.incrementRetry('AddOrRemoveLikeForProductEvent');
-          add(
-            AddOrRemoveLikeForProductEvent(
-              productId: event.productId,
-              isFavourite: event.isFavourite,
-              productSlugForTopic: event.productSlugForTopic,
-              productSlug: event.productSlug,
-            ),
-          );
-          return;
-        }
+        // No retry here, and no early return. The heart was filled before the
+        // server was asked, so a refusal owes the user the reversal below —
+        // and the retry this branch used to schedule could never run: it was
+        // dispatched back into this handler, which is registered
+        // `throttleDroppable(3s)`, and was dropped milliseconds later. The
+        // reversal waited on a second failure that never came, so a refused
+        // like stayed on screen for good.
+        ErrorManager.resetRetry('AddOrRemoveLikeForProductEvent');
         Map<String, GetProductDetailWithoutRelatedProductsModel>
         cachedProductWithoutRelatedProductsModel = Map.of(
           state.cachedProductWithoutRelatedProductsModel,
@@ -4899,7 +4903,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           cachedProductWithoutRelatedProductsModel[event.productId] =
               cachedProductWithoutRelatedProductsModel[event.productId]!
                   .copyWith(data: product);
-        } catch (e) {}
+        } catch (e) {
+          devLog('home_bloc.dart: ignored error', e);
+        }
 
         emit(
           state.copyWith(
@@ -5203,17 +5209,33 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       },
       (firebaseTokenId) {
         if (kDebugMode)
-          print("StoreFcmTokenOfMarketEvent success${firebaseTokenId}");
+          devLog("StoreFcmTokenOfMarketEvent success${firebaseTokenId}");
         ErrorManager.resetRetry('StoreFcmTokenOfMarketEvent');
         prefsRepository.setFcmMarketTokenId(firebaseTokenId);
       },
     );
   }
 
+  /// Firebase token ids whose greeting notification has already been confirmed.
+  ///
+  /// The same greeting can arrive more than once — a re-delivery, or the app
+  /// being opened again from the same notification — and each arrival used to
+  /// send another confirmation for a token the server had already validated.
+  ///
+  /// In memory on purpose: a confirmation is per-run work, and putting it in
+  /// `HomeState` would change the shape of the hydrated payload, which needs a
+  /// migration path of its own.
+  final Set<String> _confirmedNotificationTokenIds = <String>{};
+
   FutureOr<void> _onSendAcceptOfNotificationMarketEvent(
     SendAcceptOfNotificationMarketEvent event,
     Emitter<HomeState> emit,
   ) async {
+    // `add` answers false when the id was already in the set, so the second
+    // arrival for the same token stops here.
+    if (!_confirmedNotificationTokenIds.add(event.firebaseTokenId)) {
+      return;
+    }
     final response = await sendAcceptOfNotificationsUseCase(
       SendAcceptOfNotificationsUseCaseParams(
         firebaseTokenId: event.firebaseTokenId,
@@ -5221,6 +5243,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     response.fold(
       (l) {
+        // Nothing was confirmed, so let the id be tried again — otherwise the
+        // retry below would be dropped by the guard above and the token would
+        // stay unvalidated for the rest of the run.
+        _confirmedNotificationTokenIds.remove(event.firebaseTokenId);
         if (ErrorManager.shouldRetry(
           'SendAcceptOfNotificationMarketEvent',
           l.statusCode,
@@ -6219,8 +6245,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         showMessage(r.message ?? "");
         Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =
             Map.of(state.getFqaCommentsPaginationModel ?? {});
+        // The list is only there once that tab has been opened, and only under
+        // the filter it was opened with. It used to be null-asserted, so
+        // writing a review from a filtered tab — or from a page whose questions
+        // tab was never opened — threw *after* the server had accepted it: the
+        // review existed and the form span for ever. Nothing to prepend to is
+        // fine; the tab loads the review with everything else when it opens.
         getFqaCommentsPaginationModel["all"] =
-            getFqaCommentsPaginationModel["all"]!.copyWith(
+            (getFqaCommentsPaginationModel["all"] ??
+                    const PaginationModel<FqaComment>.init())
+                .copyWith(
               total: (getFqaCommentsPaginationModel["all"]?.total ?? 0) + 1,
               paginationStatus: PaginationStatus.success,
               items: [
@@ -6723,7 +6757,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       (r) {
         ErrorManager.resetRetry('TranslateCommentEvent');
         if (kDebugMode)
-          print(
+          devLog(
             "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${event.fromSellerComments}           ${r.translatedText}",
           );
         Map<String, PaginationModel<FqaComment>> getFqaCommentsPaginationModel =

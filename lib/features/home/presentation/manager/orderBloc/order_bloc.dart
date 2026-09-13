@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +52,7 @@ import '../../../domain/use_cases/cancel_return_request_usecase.dart';
 import '../../../domain/use_cases/cancel_return_request_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/order_return_details_usecase.dart';
 import '../../../data/models/get_order_details_return_model.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 @LazySingleton()
 class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
@@ -229,7 +229,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
     response.fold(
       (l) {
-        if (kDebugMode) print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${l.statusCode}");
+        devLog("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${l.statusCode}");
         if (l.statusCode == 401) {
           emit(
             state.copyWith(walletCheckoutStatus: WalletCheckoutStatus.unAuth),
@@ -427,7 +427,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             LocalNotificationService.localNotificationPlugin.cancel(
               int.tryParse(element) ?? 0,
             );
-          } catch (e) {}
+          } catch (e) {
+            devLog('order_bloc.dart: ignored error', e);
+          }
         });
         prefsRepository.removeNotificationIdsToRemoveAfterplaceOrder();
         emit(

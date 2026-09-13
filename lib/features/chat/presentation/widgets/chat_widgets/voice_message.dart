@@ -25,7 +25,7 @@ import '../../manager/chat_event.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 import 'text_message.dart';
-
+import 'package:trydos/common/helper/dev_log.dart';
 // ignore: must_be_immutable
 class VoiceMessage extends StatefulWidget {
   VoiceMessage({
@@ -159,7 +159,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
       },
       builder: (context, state) {
         if (kDebugMode)
-          print(
+          devLog(
             "FFFFFFFFFFFFFFFFFF${widget.createAt}FFDD${widget.createAt!.isUtc}",
           );
         return Padding(

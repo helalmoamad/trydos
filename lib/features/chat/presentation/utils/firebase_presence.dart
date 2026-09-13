@@ -132,6 +132,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../../../../service/language_service.dart';
 import '../../data/models/my_chats_response_model.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class FirebasePresence {
   static StreamSubscription? typingSubscription;
@@ -224,7 +225,7 @@ class FirebasePresence {
     String? description,
   }) async {
     if (kDebugMode)
-      if (kDebugMode) print(
+      devLog(
         [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
             .firstWhere(
               (element) =>
@@ -239,7 +240,7 @@ class FirebasePresence {
         )
         .channelMembers
         ?.forEach((element) {
-          if (kDebugMode) print(element.user.toString());
+          devLog(element.user.toString());
         });
     String friendId = [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
         .firstWhere(

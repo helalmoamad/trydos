@@ -27,6 +27,12 @@ abstract class WebAppEndPoints {
   static const getFqaCommentsEP = "api/products/comments/fqa_comments";
   static const getBuyersCommentsEP = "api/products/comments/buyers_comments";
   static const generateTokenForCommentEP = "public_comment/auth/exchange_token";
+
+  /// Exchanges the stored (single-use) comments refresh token for a new
+  /// access + refresh pair. Sent to the comments service
+  /// (`ServerName.get_comment_token`, base `COMMENT_TOKEN_URL`) — **not** to the
+  /// web app host that `ServerName.comment` uses.
+  static const refreshCommentTokenEP = "public_comment/auth/refresh-token";
   static const getOrderRatingEP = "api/products/comments/order_rating";
   static const getCommentsFromAnalyticsEP = "api/products/comments/comments";
   static const productRecommendedEP = "api/products/recomended";

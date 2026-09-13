@@ -25,6 +25,7 @@ import '../../manager/chat_event.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 import 'text_message.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 // ignore: must_be_immutable
 class DocumentMessage extends StatefulWidget {
@@ -200,7 +201,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                               // ignore: body_might_complete_normally_catch_error
                               OpenFile.open(
                                 widget.documentFile!.path,
-                              ).then((value) => {print("access")})
+                              ).then((value) => {devLog("access")})
                               // ignore: body_might_complete_normally_catch_error
                               .catchError((onError) {
                                 showDialog(

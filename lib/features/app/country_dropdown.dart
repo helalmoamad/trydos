@@ -9,6 +9,7 @@ import 'package:trydos/features/home/data/models/get_allowed_country_model.dart'
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/service/language_service.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class CountryDropdown extends StatefulWidget {
   final List<Country> countries;
@@ -57,7 +58,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
             if (widget.fromHomepage) {
               _prefsRepository.setUserCountryIsAvailable(1);
               if (kDebugMode)
-                print(
+                devLog(
                   "@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!${newValue}!!!!!!111111111111111",
                 );
               BlocProvider.of<HomeBloc>(
@@ -74,7 +75,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
                 (element) {
                   SubsecribeOrUnSubsecribeToTopic()
                       .UnSubsecribeToOtherTopic(element);
-                  print(
+                  devLog(
                       "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${element}");
                 },
               );*/

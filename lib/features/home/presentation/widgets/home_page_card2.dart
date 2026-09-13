@@ -34,6 +34,7 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class HomePageCard2 extends cupertino.StatelessWidget {
   HomePageCard2({
@@ -182,8 +183,8 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                     child: ValueListenableBuilder<int>(
                         valueListenable: changeBackgroundBlurImage,
                         builder: (context, index, _) {
-                          print(index);
-                          print((widget.boutique.banners?.length ?? 0) > 0);
+                          devLog(index);
+                          devLog((widget.boutique.banners?.length ?? 0) > 0);
                           return ((widget.boutique.banners?.length ?? 0) > 0)
                               ? MyCachedNetworkImage(
                                   imageFit: cupertino.BoxFit.cover,
@@ -283,7 +284,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                   // 🔧 إضافة lazy loading للصور
 
                                   if (kDebugMode)
-                                    print(
+                                    devLog(
                                       "🖼️ Banner $index URL: ${boutique.banners?[index].filePath ?? 'null'}",
                                     );
                                   return Padding(

@@ -51,8 +51,11 @@ class ChangeChatPropertyModel {
         code: json["code"],
         message: json["message"],
         detailedError: json["detailed_error"],
-        data: Map.from(json["data"]!)
-            .map((k, v) => MapEntry<String, dynamic>(k, v)),
+        data: json["data"] == null
+            ? null
+            : Map.from(
+                json["data"],
+              ).map((k, v) => MapEntry<String, dynamic>(k, v)),
       );
 
   Map<String, dynamic> toJson() => {

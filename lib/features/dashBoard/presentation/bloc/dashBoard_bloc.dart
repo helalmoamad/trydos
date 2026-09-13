@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -1196,7 +1195,6 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
       UploadFileMediaServerParams(
         file: event.file,
         folder: 'seller',
-        isStory: false,
         usingOnUploadingFinishedFunction: false,
         usingSendProgressFunction: false,
       ),
@@ -1252,10 +1250,7 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
           shopInfo: const GetShopInfoModel.empty(),
         ),
       );
-      showMessage(
-        LocaleKeys.shop_info_shop_changed.tr(),
-        hasError: true,
-      );
+      showMessage(LocaleKeys.shop_info_shop_changed.tr(), hasError: true);
       return;
     }
 

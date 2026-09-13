@@ -7,6 +7,10 @@ import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../core/domin/repositories/prefs_repository.dart';
 
+/// Seeded from the platform entropy source. `Random()` is predictable, so two
+/// devices starting at the same moment can produce the same session id.
+final Random _secureRandom = Random.secure();
+
 class FirebaseAnalyticsService {
   ////////////////////////////////////////
   // static Future<void> logScreen({
@@ -44,13 +48,13 @@ class FirebaseAnalyticsService {
     bool isForApi = false,
     required String executedEventName,
   }) async {
-    final sessionId = Random().nextInt(1000000).toString();
+    final sessionId = _secureRandom.nextInt(1000000).toString();
 
     try {
       final prefs = GetIt.I<PrefsRepository>();
 
       final baseProperties = <String, dynamic>{
-        'event_id': Random().nextInt(1000000).toString(),
+        'event_id': _secureRandom.nextInt(1000000).toString(),
         'timestamp_now': DateTime.now()
             .toUtc()
             .add(Duration(minutes: prefs.getdurtion ?? 0))

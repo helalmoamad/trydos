@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import 'dart:ui' as ui;
+import 'package:trydos/common/helper/dev_log.dart';
 
 class FlashDealCountdownTimerWidget extends StatefulWidget {
   final DateTime endDateTime;
@@ -60,7 +60,7 @@ class _FlashDealCountdownTimerWidgetState
       endDate = widget.endDateTime;
     } catch (e) {
       endDate = DateTime.now();
-      if (kDebugMode) print('Error parsing date: $e');
+      devLog('Error parsing date: $e');
     }
     final Duration remaining = endDate.difference(DateTime.now());
     _duration.value = remaining.isNegative ? Duration.zero : remaining;

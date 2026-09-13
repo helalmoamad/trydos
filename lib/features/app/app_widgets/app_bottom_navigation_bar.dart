@@ -47,6 +47,7 @@ import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
 import '../my_text_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class AppBottomNavBar extends StatefulWidget {
   const AppBottomNavBar({Key? key}) : super(key: key);
@@ -182,7 +183,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         if (Navigator.of(context).canPop()) {
                           try {
                             Navigator.of(context).pop();
-                          } catch (e) {}
+                          } catch (e) {
+                            devLog('app_bottom_navigation_bar.dart: ignored error', e);
+                          }
                         }
 
                         categoryBloc.add(
@@ -238,7 +241,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     if (context.canPop()) {
                       try {
                         Navigator.of(context).pop();
-                      } catch (e) {}
+                      } catch (e) {
+                        devLog('app_bottom_navigation_bar.dart: ignored error', e);
+                      }
                     }
                     appBloc.add(ChangeBasePage(1));
                     /////////////////////////

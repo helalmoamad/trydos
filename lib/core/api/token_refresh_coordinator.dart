@@ -4,7 +4,7 @@ import 'dart:async';
 ///
 /// `market` covers every server that carries the market access token — market,
 /// marketGO, dashBoard and the media server.
-enum RefreshScope { market, chat, stories }
+enum RefreshScope { market, chat, stories, comment }
 
 /// Lets the network layer wait for a token refresh that `AuthBloc` performs.
 ///

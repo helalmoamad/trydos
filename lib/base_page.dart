@@ -76,6 +76,7 @@ import 'features/home/presentation/manager/homeBloc/home_state.dart';
 
 import 'service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:trydos/service/language_service.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 Widget get logo {
   return Stack(
@@ -202,7 +203,7 @@ handleOpenChatPageFromNotificationInBackground(
     // إضافة الرسالة إلى الـ bloc قبل الانتقال حتى تظهر في الدردشة عند فتحها من الإشعار
 
     if (kDebugMode)
-      print("chatNotification//////////////////////////333333333");
+      devLog("chatNotification//////////////////////////333333333");
     Future.delayed(
       const Duration(milliseconds: 600),
       () => navigationToSinglePageChat(message.channel!, message.senderUser!),
@@ -600,7 +601,7 @@ void DealWithMessagesStoredFromBackground() async {
       return idA.compareTo(idB);
     });
     for (int i = 0; i < msgList.length; i++) {
-      if (kDebugMode) print(msgList[i].messageContent?.content);
+      devLog(msgList[i].messageContent?.content);
       await Future.delayed(const Duration(milliseconds: 50), () {
         GetIt.I<ChatBloc>().add(AddChannelToChannels(message: msgList[i]));
         GetIt.I<ChatBloc>().add(ReceiveMessageEvent(message: msgList[i]));
@@ -776,8 +777,19 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     final int? iosMin = setting?.iosMinVersion;
     if (androidMin == null || iosMin == null) return;
     if (applicationVersion < androidMin || applicationVersion < iosMin) {
+      // The check above is the same as `applicationVersion < max(android, ios)`,
+      // so that maximum is the version the server really asks for.
+      final int requiredVersion = androidMin > iosMin ? androidMin : iosMin;
+      // Only the hundreds digit decides if the user may skip. A release inside
+      // the same hundred is optional (55 -> 76), a jump to the next hundred is
+      // not (55 -> 120, 250 -> 300).
+      final bool isMandatory =
+          requiredVersion ~/ 100 > applicationVersion ~/ 100;
       _enqueueStartupDialog(() async {
-        await HelperFunctions.showVersionDialog(context);
+        await HelperFunctions.showVersionDialog(
+          context,
+          isMandatory: isMandatory,
+        );
       });
     }
   }
@@ -976,6 +988,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     prefsRepository.setWalletToken("");
     prefsRepository.setStoriesToken("");
     prefsRepository.setStoriesRefreshToken("");
+    prefsRepository.setTokenForComment("");
+    prefsRepository.setCommentRefreshToken("");
     prefsRepository.setMarketToken(null);
     prefsRepository.setMyMarketName("");
     prefsRepository.setMyChatName("");
@@ -999,7 +1013,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
       if (kDebugMode)
-        print(
+        devLog(
           "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ////",
         );
 
@@ -1007,7 +1021,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         event,
       )) {
         if (kDebugMode)
-          print(
+          devLog(
             "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQcheckIfTheNotifiatedToCha",
           );
 
@@ -1021,7 +1035,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         event.data['data'],
       );
       if (kDebugMode)
-        print(
+        devLog(
           "DDDDDDDDDDDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFQQQQQQQQQQQQQQQQQQQQQQQQ///....../${remoteMessage}",
         );
       dev.log("......${remoteMessage}...........");
@@ -1119,7 +1133,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         );
       } else if (remoteMessage['type'] == 'VoiceCallEvent') {
         if (kDebugMode)
-          print(
+          devLog(
             "VoiceCallEvent ForeGround Message${remoteMessage['is_private']}",
           );
         dev.log("VoiceCallEvent ForeGround Message${remoteMessage}");
@@ -1255,15 +1269,15 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         Message message = Message.fromJson(remoteMessage['message']);
         String prevMessageId = remoteMessage['prev_message_id'].toString();
         if (kDebugMode)
-          print(
+          devLog(
             "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(0, 100)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
           );
         if (kDebugMode)
-          print(
+          devLog(
             "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(100, 200)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
           );
         if (kDebugMode)
-          print(
+          devLog(
             "######222222222222222222222222222222222222222#######${event.data['data'].toString().substring(200, 300)}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}",
           );
         chatBloc.add(

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -44,7 +43,7 @@ import 'package:flutter/material.dart' as positioned;
 
 import '../widget/animated_builder.dart';
 import 'dart:ui';
-
+import 'package:trydos/common/helper/dev_log.dart';
 // ignore: must_be_immutable
 class StoryCollection extends StatefulWidget {
   final int collectionIndex;
@@ -383,10 +382,10 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               SelectedStoriesStatus.init) {
                         widget.animatedController.forward();
                         if (widget.stopAnimationAndVideo) {
-                          if (kDebugMode) print("111111111111111111111111");
+                          devLog("111111111111111111111111");
                           widget.animatedController.stop();
                         } else {
-                          if (kDebugMode) print("112222222222222211111111111");
+                          devLog("112222222222222211111111111");
                           widget.animatedController.forward();
                         }
                         return Stack(
@@ -831,7 +830,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       try {
         return Uri.decodeComponent(Uri.decodeComponent(param));
       } catch (e) {
-        if (kDebugMode) print('خطأ في فك التشفير: $e');
+        devLog('خطأ في فك التشفير: $e');
         return null;
       }
     }
@@ -845,11 +844,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         if (list is List) {
           return list.map((e) => e.toString()).toList();
         } else {
-          if (kDebugMode) print('المعطى ليس قائمة JSON');
+          devLog('المعطى ليس قائمة JSON');
           return [];
         }
       } catch (e) {
-        if (kDebugMode) print('خطأ في تحويل JSON: $e');
+        devLog('خطأ في تحويل JSON: $e');
         return [];
       }
     }
@@ -882,12 +881,12 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         filter.Category(id: 0, name: "null", slug: element),
       ),
     );
-    if (kDebugMode) print('الفئات: $categories');
-    if (kDebugMode) print('العلامات: $brands');
-    if (kDebugMode) print('المقاسات: $sizes');
-    if (kDebugMode) print('تاغات: $tagsNames');
-    if (kDebugMode) print('الألوان: $colors');
-    if (kDebugMode) print('البوتيكات: $boutiques');
+    devLog('الفئات: $categories');
+    devLog('العلامات: $brands');
+    devLog('المقاسات: $sizes');
+    devLog('تاغات: $tagsNames');
+    devLog('الألوان: $colors');
+    devLog('البوتيكات: $boutiques');
     prefsRepository.setTagsInUrlToFilter(tagsNames);
     if (!(url.contains("boutique/listing")) && (url.contains("boutique"))) {
       String boutiueSlug = "";
@@ -1004,7 +1003,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         await launchUrl(Uri.parse(uri));
       }
       // Navigator.of(context).pop();
-    } catch (e) {}
+    } catch (e) {
+      devLog('story_collection.dart: ignored error', e);
+    }
   }
 
   Widget _handleWithUrlWidget(String url) {

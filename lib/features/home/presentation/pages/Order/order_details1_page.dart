@@ -61,6 +61,7 @@ import '../../manager/homeBloc/home_state.dart';
 import 'order_details2_page.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class OrderDetails1 extends StatefulWidget {
   const OrderDetails1({
@@ -137,7 +138,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
         widget.orderIdFormNotification != null &&
         widget.orderIdFormNotification != "") {
       if (kDebugMode)
-        print(
+        devLog(
           "FDDDDDDDDDDDDDDDDDDDDDDDddddd${widget.parentOrderIdFormNotification}  //${widget.orderIdFormNotification}",
         );
       requestReturnApiFromNotification = true;
@@ -283,7 +284,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
         listenWhen: (p, c) =>
             p.getOrdersByOrderGroupIDStatus != c.getOrdersByOrderGroupIDStatus,
         listener: (context, state) {
-          print("GGGGGGGGGGGGGGGGGG/*/*/");
+          devLog("GGGGGGGGGGGGGGGGGG/*/*/");
           if (state.getOrdersByOrderGroupIDStatus ==
               GetOrdersByOrderGroupIDStatus.success) {
             final List<OrderListModel> groupOrders =
@@ -292,16 +293,16 @@ class _OrderDetails1State extends State<OrderDetails1> {
             // Post-hide navigation — only the page that initiated the hide
             // (its own _pendingHide is set) navigates, so OrderDetails1 and
             // OrderDetails2 never both pop on the same re-fetch.
-            print("GGGGGGGGGGGGGGGGGG/*/*/${groupOrders}");
+            devLog("GGGGGGGGGGGGGGGGGG/*/*/${groupOrders}");
             if (_pendingHide) {
-              print("GGGGGGGGGGGGGGGGGG/*/*//////${groupOrders}");
+              devLog("GGGGGGGGGGGGGGGGGG/*/*//////${groupOrders}");
               _pendingHide = false;
               if (groupOrders.isEmpty) {
-                print("GGGGGGGGGGGGGGGGGG/*/*/*****${groupOrders}");
+                devLog("GGGGGGGGGGGGGGGGGG/*/*/*****${groupOrders}");
                 // Group fully hidden -> back to the Orders page. The main
                 // list is refreshed by the bloc after the hide.
                 if (Navigator.of(context).canPop()) {
-                  print("GGGGGGGGGGGGGGGGGG/*/*----/${groupOrders}");
+                  devLog("GGGGGGGGGGGGGGGGGG/*/*----/${groupOrders}");
                   Navigator.of(context).pop();
                 }
                 return;
@@ -386,7 +387,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   orders[_indexTapPackage].shippingAddressData?.street,
                   orders[_indexTapPackage].shippingAddressData?.building,
                 ];
-                if (kDebugMode) print(addressParts);
+                devLog(addressParts);
                 final addressString = addressParts
                     .where(
                       (part) =>
@@ -886,7 +887,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                           onTapUp: (details) {
                                             final double dx =
                                                 details.localPosition.dx;
-                                            if (kDebugMode) print(dx);
+                                            devLog(dx);
 
                                             if ((dx > (1.sw - 75) &&
                                                 (orders[_indexTapPackage]
@@ -4452,7 +4453,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                             MakeCallStatus.loading,
                                     listener: (context, state) {
                                       if (kDebugMode)
-                                        print(
+                                        devLog(
                                           "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ////",
                                         );
                                       callInProgressDialog(context);
@@ -4478,7 +4479,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                                 MakeCallStatus.startCall,
                                         listener: (context, state) {
                                           if (kDebugMode)
-                                            print(
+                                            devLog(
                                               "GGGGGGFFFFFFFFFFFFFDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSQ",
                                             );
                                           Navigator.of(context).pushReplacement(
@@ -4551,7 +4552,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                                               String? recipientUserId =
                                                   state.recipientUserId;
                                               if (kDebugMode)
-                                                print(
+                                                devLog(
                                                   "recipientUserId $recipientUserId",
                                                 );
                                               if (recipientUserId == null) {

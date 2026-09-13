@@ -41,6 +41,7 @@ import 'categories_filter_list.dart';
 import 'color_list_filter.dart';
 import 'filters_loding_list.dart';
 import 'filters_normal_list.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class StackedFiltersList extends StatefulWidget {
   const StackedFiltersList({
@@ -121,7 +122,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             );
           }
         });
-      } catch (e) {}
+      } catch (e) {
+        devLog('product_listing_filter_list.dart: ignored error', e);
+      }
     });
     super.initState();
   }
@@ -148,7 +151,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             errorPath: error.stack.toString().split("#")[1],
             urlBackend: "Front Error",
             messageFromeBackend: "Front Error")));
-      } catch (e) {}
+      } catch (e) {
+        devLog('product_listing_filter_list.dart: ignored error', e);
+      }
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());

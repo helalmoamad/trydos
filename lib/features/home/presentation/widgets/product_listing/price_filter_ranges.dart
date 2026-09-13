@@ -18,6 +18,7 @@ import 'package:trydos/service/language_service.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../data/models/get_product_filters_model.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class PriceFiltersRangesList extends StatefulWidget {
   const PriceFiltersRangesList({
@@ -130,7 +131,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                       prevChoosedOrAppliedFilterToAddToIt.prices!.maxPrice !=
                           widget.priceRanges[index].minPrice) {
                     if (kDebugMode)
-                      print(
+                      devLog(
                         "*********************************************************************",
                       );
                     prevChoosedOrAppliedFilterToAddToIt =
@@ -146,7 +147,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                             );
                   } else {
                     if (kDebugMode)
-                      print(
+                      devLog(
                         "*********************************************************************",
                       );
                     prevChoosedOrAppliedFilterToAddToIt =

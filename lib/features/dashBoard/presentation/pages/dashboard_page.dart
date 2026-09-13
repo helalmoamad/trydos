@@ -1514,6 +1514,7 @@ import '../widgets/products_grid_widget.dart';
 import '../widgets/boutiques_grid_widget.dart';
 import '../widgets/dashboard_permission_checker.dart';
 import '../widgets/seller_stories_widget.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/utils/media_display_url.dart';
 import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
@@ -2060,14 +2061,16 @@ class _DashboardContentPageState extends State<DashboardContentPage> {
               }
 
               if (state.newGetOrdersStatus == NewGetOrdersStatus.failure) {
-                return const Center(child: Text("Something went wrong"));
+                return Center(
+                  child: Text(LocaleKeys.something_went_wrong.tr()),
+                );
               }
 
               if (state.newGetOrdersStatus == NewGetOrdersStatus.success) {
                 final ordersList = state.new_orders ?? [];
 
                 if (ordersList.isEmpty) {
-                  return const Center(child: Text("No orders found"));
+                  return Center(child: Text(LocaleKeys.no_orders_found.tr()));
                 }
 
                 return Padding(
@@ -2136,7 +2139,7 @@ class _DashboardContentPageState extends State<DashboardContentPage> {
                     final String statusForApi = status.apiValue;
                     _dashboardBloc.ordersStatus = statusForApi;
                     if (kDebugMode) {
-                      print('Selected status: ${_dashboardBloc.ordersStatus}');
+                      devLog('Selected status: ${_dashboardBloc.ordersStatus}');
                     }
                     _dashboardBloc.add(NewGetOrdersEvent());
                   },
@@ -2425,9 +2428,9 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
 
   void _downloadTemplate() {
     if (_selectedCategory == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Select a category first')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(LocaleKeys.select_a_category_first.tr())),
+      );
       return;
     }
     _dashboardBloc.add(
@@ -2508,19 +2511,22 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
                     color: Color(0xff1D1D1D),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Upload Excel File',
-                    style: TextStyle(
+                  Text(
+                    LocaleKeys.upload_excel_file.tr(),
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xff1D1D1D),
+                      color: const Color(0xff1D1D1D),
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'Pick a category, download its template, fill it in, then upload it.',
+                  Text(
+                    LocaleKeys.excel_pick_category_hint.tr(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, color: Color(0xff8D8D8D)),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: const Color(0xff8D8D8D),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   const Align(
@@ -2545,8 +2551,10 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
 
                       if (state.getExcelCategoriesStatus ==
                           GetExcelCategoriesStatus.failure) {
-                        return const Center(
-                          child: Text('Failed to load categories'),
+                        return Center(
+                          child: Text(
+                            LocaleKeys.failed_to_load_categories.tr(),
+                          ),
                         );
                       }
 
@@ -2570,11 +2578,11 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
                                   ? _selectedCategory
                                   : null,
 
-                              hint: const Text(
-                                'Select a category',
-                                style: TextStyle(
+                              hint: Text(
+                                LocaleKeys.select_a_category.tr(),
+                                style: const TextStyle(
                                   fontSize: 13,
-                                  color: Color(0xff8D8D8D),
+                                  color: const Color(0xff8D8D8D),
                                 ),
                               ),
 
@@ -2755,11 +2763,11 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
-                              'Supports .xlsx, .xls, .xlsm, .xlsb',
-                              style: TextStyle(
+                            Text(
+                              LocaleKeys.supported_excel_formats.tr(),
+                              style: const TextStyle(
                                 fontSize: 11,
-                                color: Color(0xffBDBDBD),
+                                color: const Color(0xffBDBDBD),
                               ),
                             ),
                           ],
@@ -2820,13 +2828,13 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
                         color: Color(0xff388CFF),
                       ),
                       const SizedBox(width: 8),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Uploaded Excel Files',
-                          style: TextStyle(
+                          LocaleKeys.uploaded_excel_files.tr(),
+                          style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xff1D1D1D),
+                            color: const Color(0xff1D1D1D),
                           ),
                         ),
                       ),
@@ -2883,11 +2891,11 @@ class _UploadExcelWidgetState extends State<UploadExcelWidget> {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            const Text(
-                              'No files uploaded yet.',
-                              style: TextStyle(
+                            Text(
+                              LocaleKeys.no_files_uploaded_yet.tr(),
+                              style: const TextStyle(
                                 fontSize: 13,
-                                color: Color(0xff8D8D8D),
+                                color: const Color(0xff8D8D8D),
                               ),
                             ),
                           ],
@@ -3085,12 +3093,12 @@ class _LocationsWidgetState extends State<LocationsWidget> {
                 color: Color(0xff1D1D1D),
               ),
               const SizedBox(width: 8),
-              const Text(
-                'Locations',
-                style: TextStyle(
+              Text(
+                LocaleKeys.locations.tr(),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xff1D1D1D),
+                  color: const Color(0xff1D1D1D),
                 ),
               ),
               const SizedBox(width: 8),
@@ -3113,7 +3121,7 @@ class _LocationsWidgetState extends State<LocationsWidget> {
               ElevatedButton.icon(
                 onPressed: _onAddLocation,
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text('Add Location'),
+                label: Text(LocaleKeys.add_location.tr()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff3D3D3D),
                   foregroundColor: Colors.white,
@@ -3167,10 +3175,10 @@ class _LocationsWidgetState extends State<LocationsWidget> {
           // Locations list
           Expanded(
             child: _filteredLocations.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
-                      'No locations found',
-                      style: TextStyle(color: Color(0xff8D8D8D)),
+                      LocaleKeys.no_locations_found.tr(),
+                      style: const TextStyle(color: const Color(0xff8D8D8D)),
                     ),
                   )
                 : ListView.separated(
@@ -3451,10 +3459,8 @@ class _ShopInfoWidgetState extends State<ShopInfoWidget> {
   Future<File?> _pickImage() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.image,
-      allowMultiple: false,
       // بلا قراءة البايتات إلى الذاكرة: `size` متاح بدونها،
       // فيقع فحص الحجم قبل تحميل أي شيء.
-      withData: false,
     );
     if (result == null || result.files.isEmpty) return null;
 
@@ -3923,9 +3929,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
   // جلب الصور المرفوعة سابقاً
   // ---------------------------------------------------------------------
   void _fetchUploadedImages({int page = 1}) {
-    context.read<DashboardBloc>().add(
-      GetGalleryImagesEvent(page: page, perPage: 20),
-    );
+    context.read<DashboardBloc>().add(GetGalleryImagesEvent(page: page));
   }
 
   // ---------------------------------------------------------------------
@@ -4047,7 +4051,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
     });
   }
 
-  Future<void> _confirmDeleteSelected() async {
+  /*Future<void> _confirmDeleteSelected() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -4071,7 +4075,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
     context.read<DashboardBloc>().add(
       DeleteGalleryImagesEvent(ids: _selectedIds.toList()),
     );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -4145,7 +4149,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
     );
   }
 
- 
   // ---------------------------------------------------------------------
   // منطقة السحب والإفلات + الأزرار (حسب التصميم المرسل)
   // ---------------------------------------------------------------------
@@ -4163,11 +4166,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           decoration: BoxDecoration(
             color: _isDragging ? Colors.grey.shade100 : Colors.grey.shade50,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.grey.shade300,
-              width: 1.5,
-              style: BorderStyle.solid,
-            ),
+            border: Border.all(color: Colors.grey.shade300, width: 1.5),
           ),
           child: Column(
             children: [
@@ -4301,7 +4300,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
             crossAxisCount: 3,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio: 1,
           ),
           itemBuilder: (context, index) => _buildImageTile(allImages[index]),
         );
@@ -4326,7 +4324,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
             _buildImageContent(image),
             if (image.status == _UploadStatus.uploading)
               Container(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withValues(alpha: 0.4),
                 child: const Center(
                   child: SizedBox(
                     width: 24,
@@ -4340,14 +4338,14 @@ class _GalleryScreenState extends State<GalleryScreen> {
               ),
             if (image.status == _UploadStatus.failed)
               Container(
-                color: Colors.red.withOpacity(0.4),
+                color: Colors.red.withValues(alpha: 0.4),
                 child: const Center(
                   child: Icon(Icons.error_outline, color: Colors.white),
                 ),
               ),
             if (isSelected)
               Container(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 alignment: Alignment.topRight,
                 padding: const EdgeInsets.all(6),
                 child: const CircleAvatar(
@@ -4362,7 +4360,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 padding: const EdgeInsets.all(6),
                 child: CircleAvatar(
                   radius: 11,
-                  backgroundColor: Colors.white.withOpacity(0.7),
+                  backgroundColor: Colors.white.withValues(alpha: 0.7),
                   child: Icon(
                     Icons.circle_outlined,
                     size: 14,

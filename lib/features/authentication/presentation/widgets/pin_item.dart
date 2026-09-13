@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'dart:math';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../manager/auth_bloc.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 List<FocusNode> focusNodes = List.generate(6, (index) => FocusNode());
 int currentToType = 0;
@@ -179,7 +179,7 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                               widget.pasteOtpCode!.call(text!);
                             }
                             if ((text?.length ?? 0) > 1) {
-                              if (kDebugMode) print('sssssssssssssssss');
+                              devLog('sssssssssssssssss');
                               widget.controller.text = text![0];
                               text = text[0];
                             }
@@ -191,7 +191,7 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                                 currentToType = min(5, widget.index + 1);
                                 withBorder = widget.index == 5;
                                 if (widget.index == 5) {
-                                  if (kDebugMode) print('dddddd');
+                                  devLog('dddddd');
                                   checkingOtp = true;
                                   widget.checkOtp!.call();
                                 }

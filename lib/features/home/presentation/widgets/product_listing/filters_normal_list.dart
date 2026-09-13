@@ -24,6 +24,7 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class FiltersNormalList<T> extends StatefulWidget {
   const FiltersNormalList({
@@ -58,7 +59,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
   @override
   void initState() {
     scrollController.addListener(() {
-      if (kDebugMode) print("FFFFFFFFFFFFF");
+      devLog("FFFFFFFFFFFFF");
       try {
         if (debounce?.isActive ?? false) {
           debounce!.cancel();
@@ -76,7 +77,9 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
             );
           }
         });
-      } catch (e) {}
+      } catch (e) {
+        devLog('filters_normal_list.dart: ignored error', e);
+      }
     });
     key = widget.boutiqueSlug + (widget.category ?? '');
     super.initState();
@@ -283,7 +286,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                           );
                         } else {
                           if (kDebugMode)
-                            print(
+                            devLog(
                               'dwwdwdwqe32e23e ${boutiqueBloc.state.prefAppliedFilterForExtendFilter?.brands}',
                             );
                           boutiqueBloc.add(

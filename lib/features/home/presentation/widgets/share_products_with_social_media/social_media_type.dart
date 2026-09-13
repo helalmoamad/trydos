@@ -1,10 +1,10 @@
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:get_it/get_it.dart';
 import 'package:html/parser.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 enum SocialMediaType {
   facebook,
@@ -26,12 +26,12 @@ Future share(
   text = parseFragment(text).text ?? "";
 
   final urlShares = Uri.encodeComponent(urlShare);
-  if (kDebugMode) print("$urlShares" + "000000000000000000000000000000000000");
+  devLog("$urlShares" + "000000000000000000000000000000000000");
 
   final urls = {
     SocialMediaType.facebook:
         "https://www.facebook.com/sharer/sharer.php?u=$urlShares",
-    SocialMediaType.messanger: 'http://m.me/?$text',
+    SocialMediaType.messanger: 'https://m.me/?$text',
     SocialMediaType.whatsapp: "https://api.whatsapp.com/send/?text=$urlShares",
     SocialMediaType.telegram: "https://t.me/share/url?url=$text \n $urlShares",
     SocialMediaType.instagram: 'https://instagram.com/share?text=$text',
@@ -49,11 +49,11 @@ Future share(
             productId: productId,
             product: product,
             sharedCount: 1));
-        if (kDebugMode) print(
+        devLog(
             "___________________________________________________________________${value}");
       },
     ).catchError((value) {
-      if (kDebugMode) print(
+      devLog(
           "___________________________________________________________________${value}");
     });
   }

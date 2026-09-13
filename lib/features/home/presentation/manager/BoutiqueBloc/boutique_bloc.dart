@@ -37,6 +37,7 @@ import 'package:trydos/service/firebase_analytics_service/firebase_analytics_ser
 
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../core/error/error_manager.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 const throttleDuration = Duration(minutes: 2);
 
@@ -287,7 +288,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               ? ['"${event.category}"']
               : null,
       offset: [],
-      limit: 20,
+      limit: 10,
       boutiqueSlugs: ['"${event.boutiqueSlug}"'],
       attributes: event.filterType != "attribute"
           ? null
@@ -391,7 +392,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               paginationStatus: PaginationStatus.success,
               page: 1,
               offset: "${r.data?.offset}",
-              hasReachedMax: (r.data!.products?.length ?? 0) < 20,
+              hasReachedMax: (r.data!.products?.length ?? 0) < 10,
               items: productsResult)
         });
 
@@ -425,8 +426,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 Map.of({event.boutiqueSlug: r.data!.totalSize ?? 0}),
             getProductFiltersWithPrefetchModel: data));
       } catch (e, st) {
-        if (kDebugMode) print(e);
-        if (kDebugMode) print(st);
+        devLog(e);
+        devLog(st);
       }
     });
   }*/
@@ -547,7 +548,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     Emitter<BoutiqueState> emit,
   ) async {
     if (kDebugMode)
-      print(
+      devLog(
         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF#####wwwwwwwwwwwwwwwwwwwwwwwwwwwwt",
       );
     String key = event.boutiqueSlug + (event.category ?? '');
@@ -634,13 +635,13 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             : [],
       );
     } catch (e, st) {
-      if (kDebugMode) print(e);
-      if (kDebugMode) print(st);
+      devLog(e);
+      devLog(st);
     }
     final response = await getProductFiltersUseCase(
       GetProductsFiltersParams(
         offsetFilter: "${(state.filterOffset ?? 1)}",
-        limit: 20,
+        limit: 10,
         searchText: filters.searchText ?? event.searchText,
         brandSlugs: filters.brands
             ?.map((e) => '"${e.slug.toString()}"')
@@ -727,14 +728,14 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             filters: filters_model.Filter(
               attributes: [
                 filters_model.Attribute(
-                  id: ((data[key]?.filters?.attributes ?? 0) == 0)
+                  id: (data[key]?.filters?.attributes?.isEmpty ?? true)
                       ? 0
                       : data[key]?.filters?.attributes?[0].id,
-                  name: ((data[key]?.filters?.attributes ?? 0) == 0)
+                  name: (data[key]?.filters?.attributes?.isEmpty ?? true)
                       ? "size"
                       : data[key]?.filters?.attributes?[0].name,
                   options: [
-                    ...(((data[key]?.filters?.attributes ?? 0) == 0)
+                    ...((data[key]?.filters?.attributes?.isEmpty ?? true)
                         ? []
                         : data[key]?.filters?.attributes?[0].options ?? []),
                     ...(((r.filters?.attributes?.length ?? 0) == 0)
@@ -770,14 +771,14 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             ),
           );
           bool finishGetAllFilter =
-              (r.filters?.boutiques ?? []).length < 20 &&
-              (r.filters?.categories ?? []).length < 20 &&
-              (r.filters?.brands ?? []).length < 20 &&
-              (r.filters?.colors ?? []).length < 20 &&
-              (r.filters?.prices?.priceRanges ?? []).length < 20 &&
+              (r.filters?.boutiques ?? []).length < 10 &&
+              (r.filters?.categories ?? []).length < 10 &&
+              (r.filters?.brands ?? []).length < 10 &&
+              (r.filters?.colors ?? []).length < 10 &&
+              (r.filters?.prices?.priceRanges ?? []).length < 10 &&
               (((r.filters?.attributes?.length ?? 0) == 0)
                   ? true
-                  : (r.filters?.attributes?[0].options ?? []).length < 20);
+                  : (r.filters?.attributes?[0].options ?? []).length < 10);
           emit(
             state.copyWith(
               finishGetAllFilter: finishGetAllFilter,
@@ -797,8 +798,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               //removeAlreadyChoosedFilters(r, filters),
             ),
           );
-          if (kDebugMode) print(e);
-          if (kDebugMode) print(st);
+          devLog(e);
+          devLog(st);
         }
       },
     );
@@ -820,7 +821,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = await getProductFiltersUseCase(
       GetProductsFiltersParams(
         offsetFilter: "1",
-        limit: 20,
+        limit: 10,
         brandSlugs: event.filtersChoosedByUser?.filters?.brands
             ?.map((e) => '"${e.slug.toString()}"')
             .toList(),
@@ -896,8 +897,10 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         ) {
           boutiques.add(r.filters!.boutiques![i]);
         }
+        // A copy, not the state's own map: on a cold start that map is still
+        // the initial `const {}`, and writing into it throws.
         final Map<String, filters_model.GetProductFiltersModel?>
-        appliedFiltersByUser = state.appliedFiltersByUser;
+        appliedFiltersByUser = Map.of(state.appliedFiltersByUser);
         if (appliedFiltersByUser["link"] == null) {
           appliedFiltersByUser.addAll({
             "link": filters_model.GetProductFiltersModel(
@@ -944,7 +947,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   ) async {
     String key = event.boutiqueSlug + (event.category ?? '');
     if (kDebugMode)
-      print(
+      devLog(
         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF################################${key}",
       );
     /* if (event.getProductsFilterPreFetch &&
@@ -1031,13 +1034,13 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             : [],
       );
     } catch (e, st) {
-      if (kDebugMode) print(e);
-      if (kDebugMode) print(st);
+      devLog(e);
+      devLog(st);
     }
     final response = await getProductFiltersUseCase(
       GetProductsFiltersParams(
         offsetFilter: "1",
-        limit: 20,
+        limit: 10,
         searchText: filters.searchText ?? event.searchText,
         brandSlugs: filters.brands
             ?.map((e) => '"${e.slug.toString()}"')
@@ -1143,8 +1146,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             ),
           );
         } catch (e, st) {
-          if (kDebugMode) print(e);
-          if (kDebugMode) print(st);
+          devLog(e);
+          devLog(st);
         }
       },
     );
@@ -1166,7 +1169,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             event.boutiqueSlug != "*flashDeal*" &&
             event.boutiqueSlug != "*recommended*") &&
         ((responseFromSharedPrefrence.length) > 15)) {
-      if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC/////");
+      devLog("CCCCCCCCCCCCCCCCCCCCCCC/////");
       return;
     }
     if (event.boutiqueSlug == "*featured*") {
@@ -1189,7 +1192,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               PaginationModel<product.Products>(
                 hasReachedMax:
                     (getProductListingWithFiltersModel.products?.length ?? 0) <
-                    20,
+                    10,
                 items: getProductListingWithFiltersModel.products ?? [],
                 page: 1,
                 paginationStatus: PaginationStatus.loading,
@@ -1199,7 +1202,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             "*featured*withoutFilter": PaginationModel<product.Products>(
               hasReachedMax:
                   (getProductListingWithFiltersModel.products?.length ?? 0) <
-                  20,
+                  10,
               items: getProductListingWithFiltersModel.products ?? [],
               page: 1,
               paginationStatus: PaginationStatus.loading,
@@ -1215,7 +1218,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 getProductListingWithFiltersPaginationModels,
           ),
         );
-      } catch (e) {}
+      } catch (e) {
+        devLog('boutique_bloc.dart: ignored error', e);
+      }
     } else if (event.boutiqueSlug == "*flashDeal*") {
       try {
         Map<String, PaginationModel<product.Products>?>
@@ -1236,7 +1241,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               PaginationModel<product.Products>(
                 hasReachedMax:
                     (getProductListingWithFiltersModel.products?.length ?? 0) <
-                    20,
+                    10,
                 items: getProductListingWithFiltersModel.products ?? [],
                 page: 1,
                 paginationStatus: PaginationStatus.loading,
@@ -1246,7 +1251,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             "*flashDeal*withoutFilter": PaginationModel<product.Products>(
               hasReachedMax:
                   (getProductListingWithFiltersModel.products?.length ?? 0) <
-                  20,
+                  10,
               items: getProductListingWithFiltersModel.products ?? [],
               page: 1,
               paginationStatus: PaginationStatus.loading,
@@ -1263,7 +1268,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 getProductListingWithFiltersPaginationModels,
           ),
         );
-      } catch (e) {}
+      } catch (e) {
+        devLog('boutique_bloc.dart: ignored error', e);
+      }
     } else if (event.boutiqueSlug == "*recommended*") {
       try {
         Map<String, PaginationModel<product.Products>?>
@@ -1284,7 +1291,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               PaginationModel<product.Products>(
                 hasReachedMax:
                     (getProductListingWithFiltersModel.products?.length ?? 0) <
-                    20,
+                    10,
                 items: getProductListingWithFiltersModel.products ?? [],
                 page: 1,
                 paginationStatus: PaginationStatus.loading,
@@ -1294,7 +1301,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             "*recommended*withoutFilter": PaginationModel<product.Products>(
               hasReachedMax:
                   (getProductListingWithFiltersModel.products?.length ?? 0) <
-                  20,
+                  10,
               items: getProductListingWithFiltersModel.products ?? [],
               page: 1,
               paginationStatus: PaginationStatus.loading,
@@ -1311,7 +1318,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 getProductListingWithFiltersPaginationModels,
           ),
         );
-      } catch (e) {}
+      } catch (e) {
+        devLog('boutique_bloc.dart: ignored error', e);
+      }
     } else {
       Map<String, bool> boutiquesThatDidPrefetch = Map.of(
         state.boutiquesThatDidPrefetch,
@@ -1320,7 +1329,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           (event.boutiqueSlug != "*featured*" &&
               event.boutiqueSlug != "*flashDeal*" &&
               event.boutiqueSlug != "*recommended*")) {
-        if (kDebugMode) print("CCCCCCCCCCCCCCCCCCCCCCC**---");
+        devLog("CCCCCCCCCCCCCCCCCCCCCCC**---");
         return;
       }
       if (boutiquesThatDidPrefetch[key] == null) {
@@ -1335,7 +1344,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = event.boutiqueSlug == "*featured*"
         ? await getFeaturedProductsUseCase(
             GetFeaturedProductsParams(
-              limit: 20,
+              limit: 10,
               offset: [],
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
@@ -1349,7 +1358,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         ? await getProductsWithFiltersUseCase(
             GetProductsWithFiltersParams(
               offset: [],
-              limit: 20,
+              limit: 10,
               flashDeal: true,
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
@@ -1362,7 +1371,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : event.boutiqueSlug == "*recommended*"
         ? await getRecommendProductsUseCase(
             GetRecommendProductsParams(
-              limit: 20,
+              limit: 10,
               offset: [],
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
@@ -1375,7 +1384,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : await getProductsWithFiltersUseCase(
             GetProductsWithFiltersParams(
               offset: [],
-              limit: 20,
+              limit: 10,
               boutiqueSlugs: ['"${event.boutiqueSlug}"'],
             ),
           );
@@ -1733,7 +1742,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         '${(event.getWithPagination) ? ((state.cashedOrginalBoutique) ? 'withoutFilter' : "") : ((event.cashedOrginalBoutique) ? 'withoutFilter' : "")}' +
         '${(event.category ?? '')}';
     if (kDebugMode)
-      print(
+      devLog(
         "///DDDDDDDDDDGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${keyWithoutFilter}",
       );
     String key = '${event.boutiqueSlug}' + '${(event.category ?? '')}';
@@ -1804,7 +1813,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
           PaginationModel<product.Products>(
             hasReachedMax:
-                (getProductListingWithFiltersModel.products?.length ?? 0) < 20,
+                (getProductListingWithFiltersModel.products?.length ?? 0) < 10,
             items: getProductListingWithFiltersModel.products ?? [],
             page: 1,
             paginationStatus: /* (keyWithoutFilter.contains("withoutFilter") &&
@@ -1920,7 +1929,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = event.boutiqueSlug == "*featured*"
         ? await getFeaturedProductsUseCase(
             GetFeaturedProductsParams(
-              limit: 20,
+              limit: 10,
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
                       state.currentMainCategoryTaped == null ||
@@ -1935,7 +1944,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : event.boutiqueSlug == "*recommended*"
         ? await getRecommendProductsUseCase(
             GetRecommendProductsParams(
-              limit: 20,
+              limit: 10,
               offset: !event.getWithPagination
                   ? null
                   : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
@@ -1951,7 +1960,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         ? await getProductsWithFiltersUseCase(
             GetProductsWithFiltersParams(
               flashDeal: true,
-              limit: 20,
+              limit: 10,
               offset: !event.getWithPagination
                   ? null
                   : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
@@ -2004,7 +2013,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               colors: ([
                 ...filters.colors ?? [],
               ]).map((e) => '"${e.toString()}"').toList(),
-              limit: 20,
+              limit: 10,
               prices:
                   (prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice !=
                           null &&
@@ -2143,7 +2152,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               //    });
             }
           });
-        } catch (e) {}
+        } catch (e) {
+          devLog('boutique_bloc.dart: ignored error', e);
+        }
         if (event.cashedOrginalBoutique &&
             !(event.fromSearch ?? false) &&
             !(event.getWithPagination)) {
@@ -2274,7 +2285,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 : 2),
             paginationStatus: PaginationStatus.success,
             hasReachedMax:
-                (r.data?.products?.length ?? 0) < 20 ||
+                (r.data?.products?.length ?? 0) < 10 ||
                 r.data?.offset == null ||
                 r.data?.offset == "null",
           );
@@ -2287,7 +2298,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               page: 1,
               offset: "${r.data?.offset}",
               hasReachedMax:
-                  (r.data?.products?.length ?? 0) < 20 ||
+                  (r.data?.products?.length ?? 0) < 10 ||
                   r.data?.offset == null ||
                   r.data?.offset == "null",
               items: event.getWithPagination
@@ -2445,7 +2456,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                     (getProductListingWithFiltersForFirstFiveFilterModel
                                 .products?.length ??
                             0) <
-                        20,
+                        10,
                 items: getProductListingWithFiltersForFirstFiveFilterModel
                         .products ??
                     [],
@@ -2486,7 +2497,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             Map.of(getProductListingWithFiltersForFirstFiveFilter),
       ));*/
       if (kDebugMode)
-        print(
+        devLog(
           "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666699999999999988888888888888888666666666FFFFFFF${event.boutiqueSlug}",
         );
 
@@ -2526,7 +2537,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
           PaginationModel<product.Products>(
             hasReachedMax:
-                (getProductListingWithFiltersModel.products?.length ?? 0) < 20,
+                (getProductListingWithFiltersModel.products?.length ?? 0) < 10,
             items: getProductListingWithFiltersModel.products ?? [],
             page: 1,
             paginationStatus:
@@ -2704,7 +2715,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     final response = event.boutiqueSlug == "*featured*"
         ? await getFeaturedProductsUseCase(
             GetFeaturedProductsParams(
-              limit: 20,
+              limit: 10,
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
                       state.currentMainCategoryTaped == null ||
@@ -2719,7 +2730,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : event.boutiqueSlug == "*recommended*"
         ? await getRecommendProductsUseCase(
             GetRecommendProductsParams(
-              limit: 20,
+              limit: 10,
               offset: !event.getWithPagination
                   ? null
                   : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
@@ -2735,7 +2746,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         ? await getProductsWithFiltersUseCase(
             GetProductsWithFiltersParams(
               flashDeal: true,
-              limit: 20,
+              limit: 10,
               categorySlugs:
                   (state.currentMainCategoryTaped == "" ||
                       state.currentMainCategoryTaped == null ||
@@ -2788,7 +2799,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               colors: ([
                 ...filters.colors ?? [],
               ]).map((e) => '"${e.toString()}"').toList(),
-              limit: 20,
+              limit: 10,
               prices:
                   (prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice !=
                           null &&
@@ -2906,7 +2917,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               //    });
             }
           });
-        } catch (e) {}
+        } catch (e) {
+          devLog('boutique_bloc.dart: ignored error', e);
+        }
         if (event.cashedOrginalBoutique &&
             !(event.fromSearch ?? false) &&
             !(event.getWithPagination)) {
@@ -3030,7 +3043,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 : 2),
             paginationStatus: PaginationStatus.success,
             hasReachedMax:
-                (r.data?.products?.length ?? 0) < 20 ||
+                (r.data?.products?.length ?? 0) < 10 ||
                 r.data?.offset == null ||
                 r.data?.offset == "null",
           );
@@ -3043,7 +3056,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               page: 1,
               offset: "${r.data?.offset}",
               hasReachedMax:
-                  (r.data?.products?.length ?? 0) < 20 ||
+                  (r.data?.products?.length ?? 0) < 10 ||
                   r.data?.offset == null ||
                   r.data?.offset == "null",
               items: event.getWithPagination

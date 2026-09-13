@@ -16,6 +16,8 @@ import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 
 import '../../../data/models/get_product_filters_model.dart';
+import 'package:trydos/common/helper/dev_log.dart';
+
 import '../../../data/models/get_product_listing_with_filters_model.dart'
     hide Color;
 
@@ -48,7 +50,7 @@ class CategoriesFilterList extends StatelessWidget {
 
     String key = boutiqueSlug + (category ?? '');
     if (kDebugMode)
-      print(
+      devLog(
         "##############################################################${key}",
       );
     if (fromSearch) {
@@ -72,7 +74,7 @@ class CategoriesFilterList extends StatelessWidget {
             (appliedFilters?.categories?.length ?? 0) == 0) {
           expandingFiltersStack.value = -1;
         }
-        if (kDebugMode) print("eeee<${filters.categories?.length ?? 0}");
+        devLog("eeee<${filters.categories?.length ?? 0}");
 
         return ListView.builder(
           scrollDirection: Axis.horizontal,
@@ -157,9 +159,9 @@ class CategoriesFilterList extends StatelessWidget {
               return ValueListenableBuilder<int>(
                 valueListenable: expandingFiltersStack,
                 builder: (context, currentExpandedIndex, child) {
-                  if (kDebugMode) print("${(currentExpandedIndex == index)}");
-                  if (kDebugMode) print("///////////////");
-                  if (kDebugMode) print("${isChildCategorySlug}");
+                  devLog("${(currentExpandedIndex == index)}");
+                  devLog("///////////////");
+                  devLog("${isChildCategorySlug}");
                   return AnimatedContainer(
                     curve: Curves.fastEaseInToSlowEaseOut,
                     duration: const Duration(milliseconds: 300),
@@ -506,7 +508,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                 )))),
                                     addOrRemoveSpecificFilter: (bool add) {
                                       if (kDebugMode)
-                                        print(
+                                        devLog(
                                           "addOrRemoveSpecificFilter${add}",
                                         );
                                       if (appliedFilters?.categories == null &&
@@ -538,7 +540,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                             .id,
                                                   ))) {
                                         if (kDebugMode)
-                                          print(
+                                          devLog(
                                             "111111111111111111111111111111qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
                                           );
                                         expandingFiltersStack.value = index;
@@ -651,7 +653,7 @@ class CategoriesFilterList extends StatelessWidget {
                                       }
                                       if (!workWithChoosedFilter) {
                                         if (kDebugMode)
-                                          print(
+                                          devLog(
                                             "dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                                           );
 

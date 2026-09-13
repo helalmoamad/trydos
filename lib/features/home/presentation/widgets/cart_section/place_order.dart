@@ -43,6 +43,7 @@ import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_state.dart';
 import 'payment_webview.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/common/helper/dev_log.dart';
 
 class PlaceOrder extends StatefulWidget {
   final List<Map<String, String>> cartImages;
@@ -86,7 +87,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
   @override
   void initState() {
     if (kDebugMode)
-      print("PlaceOrder PageRRRRRRRRRRRRRRRRRRRRRRRRRRR${widget.cartImages}");
+      devLog("PlaceOrder PageRRRRRRRRRRRRRRRRRRRRRRRRRRR${widget.cartImages}");
     LastPagesTracker.push("PlaceOrder Page");
     super.initState();
   }
@@ -140,7 +141,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 if (widget.paymentMethods.value.length == 1) {
                   paymentMethod = widget.paymentMethods.value[0];
                   if (kDebugMode)
-                    print(
+                    devLog(
                       "paymentMethod:  -------------------------------------${paymentMethod}",
                     );
                   //////////////
@@ -671,7 +672,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   onTap: () {
                     if (_agreeToPolicies) {
                       if (!(prefsRepository.isVerifiedPhone ?? false)) {
-                        GuestPhoneVerificationDialog.show(context);
+                        GuestPhoneVerificationDialog.show(
+                          context,
+                          asBottomSheet: true,
+                        );
                         return;
                       }
                       BlocProvider.of<HomeBloc>(
@@ -1097,7 +1101,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 children: [
                   // Header
                   Text(
-                    'Wallet Payment',
+                    LocaleKeys.wallet_payment.tr(),
                     style: context.textTheme.headlineSmall?.copyWith(
                       color: const Color(0xff1D1D1D),
                       fontWeight: FontWeight.bold,
@@ -1110,7 +1114,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Select Currency',
+                      LocaleKeys.select_currency.tr(),
                       style: context.textTheme.bodyMedium?.copyWith(
                         color: const Color(0xff999999),
                         fontSize: 12.sp,
@@ -1168,7 +1172,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Account to Pay',
+                        LocaleKeys.account_to_pay.tr(),
                         style: context.textTheme.bodyMedium?.copyWith(
                           color: const Color(0xff999999),
                           fontSize: 12.sp,
@@ -1207,7 +1211,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         Future.delayed(const Duration(seconds: 1), () {
                           if (!(prefsRepository.isVerifiedPhone ?? false)) {
                             if (mounted) {
-                              GuestPhoneVerificationDialog.show(context);
+                              GuestPhoneVerificationDialog.show(
+                                context,
+                                asBottomSheet: true,
+                              );
                             }
                           }
                         });
@@ -1248,7 +1255,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                   ),
                                   child: Center(
                                     child: Text(
-                                      'Confirm Wallet Payment',
+                                      LocaleKeys.confirm_wallet_payment.tr(),
                                       style: context.textTheme.bodyMedium
                                           ?.copyWith(
                                             color: Colors.white,
