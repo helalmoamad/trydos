@@ -47,6 +47,30 @@ class DashboardPermissionChecker {
     return isSuperAdmin;
   }
 
+  /// Check if user can read the shop's public profile (Shop Info screen)
+  /// Returns true if user has SUPER_ADMIN or READ_SHOP_INFO permission
+  ///
+  /// Note: this list cannot say "unknown". It arrives as a non-null
+  /// `List<String>` built with `shop.permissions ?? []` at shop selection, so a
+  /// permission list that failed to load and one that grants nothing are the
+  /// same empty list here. See `_specs/connect-shop-info-widget-to-shop-info-api`
+  /// (AC-7, accepted as unmet).
+  bool canReadShopInfo() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.READ_SHOP_INFO.value);
+  }
+
+  /// Check if user can edit the shop's public profile
+  /// Returns true if user has SUPER_ADMIN or UPDATE_SHOP_INFO permission
+  ///
+  /// The write gate fails closed: anything other than an explicit grant means
+  /// the save and image controls stay unavailable, because the save replaces the
+  /// whole profile.
+  bool canUpdateShopInfo() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.UPDATE_SHOP_INFO.value);
+  }
+
   /// Check if user can see Stories tab
   /// The backend does not expose a dedicated stories permission yet, so the tab
   /// is visible to every shop member. Gate it here once the permission exists.

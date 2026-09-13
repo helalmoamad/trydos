@@ -3,6 +3,8 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/api.dart';
 import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/features/dashBoard/data/data_source/dashBoard_remote_data_source_model.dart';
+import 'package:trydos/features/dashBoard/data/models/GetGalleryImagesModel.dart';
+import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
 import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
@@ -230,6 +232,44 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   getUploadedExcelFiles({int page = 1}) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getUploadedExcelFiles(page: page),
+    );
+  }
+
+  @override
+  Future<Either<Failure, GetGalleryImagesModel>> getGalleryImages({
+    int page = 1,
+    int perPage = 20,
+    String? search,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getGalleryImages(
+        page: page,
+        perPage: perPage,
+        search: search,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, GetShopInfoModel>> getShopInfo() {
+    return handlingExceptionRequest(tryCall: () => dataSource.getShopInfo());
+  }
+
+  @override
+  Future<Either<Failure, UpdateShopInfoResponseModel>> updateShopInfo(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.updateShopInfo(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> deleteGalleryImages(
+    List<int> ids,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.deleteGalleryImages(ids),
     );
   }
 }

@@ -54,6 +54,7 @@ import '../bloc/story_state.dart';
 import '../widget/animated_builder.dart';
 import 'dart:ui';
 import 'package:trydos/common/helper/dev_log.dart';
+
 // ignore: must_be_immutable
 class StoryCollection extends StatefulWidget {
   final int collectionIndex;
@@ -135,7 +136,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
   @override
   Widget build(BuildContext context) {
-
     return Hero(
       tag: widget.collectionIndex,
       createRectTween: HeroAnimationAsset.customTweenRect,
@@ -1097,7 +1097,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         title: LocaleKeys.intellectual_property.tr(),
       ),
       ReportReason(key: "violence", title: LocaleKeys.violence.tr()),
-      ReportReason(key: "other", title: LocaleKeys.other_option.tr()),
+      ReportReason(key: "other", title: LocaleKeys.other_gender.tr()),
     ];
 
     final selectedReasons = <String>{};

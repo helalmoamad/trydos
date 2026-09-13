@@ -162,6 +162,8 @@ import '../../features/dashBoard/domain/useCase/delete_seller_story_usecase.dart
     as _i725;
 import '../../features/dashBoard/domain/useCase/delete_user_usecase.dart'
     as _i441;
+import '../../features/dashBoard/domain/useCase/DeleteGalleryImagesUseCase.dart'
+    as _i249;
 import '../../features/dashBoard/domain/useCase/downloadExcelTemplate_usecase.dart'
     as _i921;
 import '../../features/dashBoard/domain/useCase/get_boutiques_usecase.dart'
@@ -184,6 +186,10 @@ import '../../features/dashBoard/domain/useCase/get_vendor_request_usecase.dart'
     as _i135;
 import '../../features/dashBoard/domain/useCase/getExcelCategories_usecase.dart'
     as _i939;
+import '../../features/dashBoard/domain/useCase/GetGalleryImagesUseCase.dart'
+    as _i914;
+import '../../features/dashBoard/domain/useCase/GetShopInfoUseCase.dart'
+    as _i853;
 import '../../features/dashBoard/domain/useCase/GetUploadedExcelFilesUsecase.dart'
     as _i378;
 import '../../features/dashBoard/domain/useCase/leave_shop_usecase.dart'
@@ -196,6 +202,8 @@ import '../../features/dashBoard/domain/useCase/update_user_role_usecase.dart'
     as _i1023;
 import '../../features/dashBoard/domain/useCase/update_vendor_request_usecase.dart'
     as _i388;
+import '../../features/dashBoard/domain/useCase/UpdateShopInfoUseCase.dart'
+    as _i25;
 import '../../features/dashBoard/domain/useCase/upload_file_to_s3_usecase.dart'
     as _i282;
 import '../../features/dashBoard/presentation/bloc/dashBoard_bloc.dart'
@@ -895,8 +903,20 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i518.GetHomeBoutiqesUseCase>(),
     ),
   );
+  gh.factory<_i249.DeleteGalleryImagesUseCase>(
+    () => _i249.DeleteGalleryImagesUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i914.GetGalleryImagesUseCase>(
+    () => _i914.GetGalleryImagesUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i853.GetShopInfoUseCase>(
+    () => _i853.GetShopInfoUseCase(gh<_i70.DashBoardRepository>()),
+  );
   gh.factory<_i378.GetUploadedExcelFilesUsecase>(
     () => _i378.GetUploadedExcelFilesUsecase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i25.UpdateShopInfoUseCase>(
+    () => _i25.UpdateShopInfoUseCase(gh<_i70.DashBoardRepository>()),
   );
   gh.factory<_i602.AddUserUseCase>(
     () => _i602.AddUserUseCase(gh<_i70.DashBoardRepository>()),
@@ -1042,36 +1062,6 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i750.UpdateProfileInChatUseCase>(
     () => _i750.UpdateProfileInChatUseCase(gh<_i420.ChatRepository>()),
   );
-  gh.lazySingleton<_i976.DashboardBloc>(
-    () => _i976.DashboardBloc(
-      gh<_i652.GetUserPermissionUseCase>(),
-      gh<_i246.GetUserRolesUseCase>(),
-      gh<_i900.GetUsersUseCase>(),
-      gh<_i602.AddUserUseCase>(),
-      gh<_i919.GetOrdersUseCase>(),
-      gh<_i939.GetexcelcategoriesUsecase>(),
-      gh<_i51.GetProductsUseCase>(),
-      gh<_i412.GetBoutiquesUseCase>(),
-      gh<_i645.ChangeOrderStatusUseCase>(),
-      gh<_i441.DeleteUserUseCase>(),
-      gh<_i1023.UpdateUserRoleUseCase>(),
-      gh<_i378.GetUploadedExcelFilesUsecase>(),
-      gh<_i858.LeaveShopUseCase>(),
-      gh<_i781.GetPresignedUrlUseCase>(),
-      gh<_i282.UploadFileToS3UseCase>(),
-      gh<_i976.SubmitVendorRequestUseCase>(),
-      gh<_i135.GetVendorRequestUseCase>(),
-      gh<_i388.UpdateVendorRequestUseCase>(),
-      gh<_i129.NewGetOrdersUseCase>(),
-      gh<_i553.ChangeOrderDetailStatusToConfirmedUseCase>(),
-      gh<_i288.ChangeOrderDetailStatusToPackedUseCase>(),
-      gh<_i824.GetSellerStoriesUseCase>(),
-      gh<_i976.CreateSellerStoryUseCase>(),
-      gh<_i725.DeleteSellerStoryUseCase>(),
-      gh<_i318.UploadFileMediaServerUseCase>(),
-      gh<_i921.DownloadexceltemplateUsecase>(),
-    ),
-  );
   gh.factory<_i661.AnswerCallUseCase>(
     () => _i661.AnswerCallUseCase(gh<_i1032.CallsRepository>()),
   );
@@ -1118,6 +1108,40 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i955.GetProductsWithFiltersUseCase>(),
       gh<_i889.GetRecommendProductsUseCase>(),
       gh<_i290.GetProductFiltersUseCase>(),
+    ),
+  );
+  gh.lazySingleton<_i976.DashboardBloc>(
+    () => _i976.DashboardBloc(
+      gh<_i652.GetUserPermissionUseCase>(),
+      gh<_i246.GetUserRolesUseCase>(),
+      gh<_i900.GetUsersUseCase>(),
+      gh<_i602.AddUserUseCase>(),
+      gh<_i919.GetOrdersUseCase>(),
+      gh<_i939.GetexcelcategoriesUsecase>(),
+      gh<_i51.GetProductsUseCase>(),
+      gh<_i412.GetBoutiquesUseCase>(),
+      gh<_i645.ChangeOrderStatusUseCase>(),
+      gh<_i441.DeleteUserUseCase>(),
+      gh<_i1023.UpdateUserRoleUseCase>(),
+      gh<_i378.GetUploadedExcelFilesUsecase>(),
+      gh<_i858.LeaveShopUseCase>(),
+      gh<_i781.GetPresignedUrlUseCase>(),
+      gh<_i282.UploadFileToS3UseCase>(),
+      gh<_i976.SubmitVendorRequestUseCase>(),
+      gh<_i135.GetVendorRequestUseCase>(),
+      gh<_i388.UpdateVendorRequestUseCase>(),
+      gh<_i129.NewGetOrdersUseCase>(),
+      gh<_i553.ChangeOrderDetailStatusToConfirmedUseCase>(),
+      gh<_i288.ChangeOrderDetailStatusToPackedUseCase>(),
+      gh<_i824.GetSellerStoriesUseCase>(),
+      gh<_i976.CreateSellerStoryUseCase>(),
+      gh<_i725.DeleteSellerStoryUseCase>(),
+      gh<_i318.UploadFileMediaServerUseCase>(),
+      gh<_i921.DownloadexceltemplateUsecase>(),
+      gh<_i914.GetGalleryImagesUseCase>(),
+      gh<_i249.DeleteGalleryImagesUseCase>(),
+      gh<_i853.GetShopInfoUseCase>(),
+      gh<_i25.UpdateShopInfoUseCase>(),
     ),
   );
   gh.lazySingleton<_i536.StoryBloc>(
