@@ -526,7 +526,11 @@ class HelperFunctions {
       barrierDismissible: false,
       builder: (BuildContext context) {
         String title = LocaleKeys.new_update_available.tr();
-        String message = LocaleKeys.newer_version_available_message.tr();
+        // A mandatory update means this version has stopped working, and the
+        // message says so. An optional one keeps the softer wording.
+        String message = isMandatory
+            ? LocaleKeys.current_version_no_longer_works_message.tr()
+            : LocaleKeys.newer_version_available_message.tr();
         String btnLabel1 = LocaleKeys.update_now.tr();
         String btnLabel2 = LocaleKeys.not_now.tr();
         // ignore: deprecated_member_use
