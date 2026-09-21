@@ -968,5 +968,25 @@ abstract class  LocaleKeys {
   static const shop_info_no_update_permission = 'shop_info_no_update_permission';
   static const shop_info_shop_changed = 'shop_info_shop_changed';
   static const other_gender = 'other_gender';
+  static const rdb_payment_title = 'rdb_payment_title';
+  static const rdb_payment_instructions = 'rdb_payment_instructions';
+  static const rdb_payment_someone_else = 'rdb_payment_someone_else';
+  static const rdb_payment_code = 'rdb_payment_code';
+  static const rdb_code_copied = 'rdb_code_copied';
+  static const rdb_amount_to_pay = 'rdb_amount_to_pay';
+  static const rdb_time_left = 'rdb_time_left';
+  static const rdb_waiting_payment = 'rdb_waiting_payment';
+  static const rdb_payment_received = 'rdb_payment_received';
+  static const rdb_payment_expired = 'rdb_payment_expired';
+  static const rdb_payment_cancelled = 'rdb_payment_cancelled';
+  static const rdb_payment_failed = 'rdb_payment_failed';
+  static const rdb_cancel_payment = 'rdb_cancel_payment';
+  static const rdb_continue_payment = 'rdb_continue_payment';
+  static const rdb_payment_in_progress = 'rdb_payment_in_progress';
+  static const rdb_open_payment_page = 'rdb_open_payment_page';
+  static const rdb_scan_code = 'rdb_scan_code';
+  static const rdb_cart_locked_message = 'rdb_cart_locked_message';
+  static const rdb_close = 'rdb_close';
+  static const rdb_open_wallet_app = 'rdb_open_wallet_app';
 
 }

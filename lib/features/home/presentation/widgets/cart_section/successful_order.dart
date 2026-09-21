@@ -129,7 +129,8 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                         availablePaymentMethod: widget.availablePaymentMethod,
                         totalPrice: widget.totalPrice,
                         amount: widget.orderAmount,
-                        partialPaymentByWallet: widget.partialPaymentByWallet,
+                        // لا دفع جزئي من المحفظة بعد الآن.
+                        // partialPaymentByWallet: widget.partialPaymentByWallet,
                         decimalPointSetting: widget.decimalPointSetting,
                         currencySymbol: widget.currencySymbol,
                       ),

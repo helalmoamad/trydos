@@ -75,6 +75,10 @@ abstract class PrefsKey {
 
   static const fcmToken = r'__$__fcmToken__$__';
   static const createWallet = r'__$__createWallet__$__';
+
+  /// دفعة RDB المعلّقة: مرجع الطلب ووقت انتهائه، لنعرف بعد إغلاق التطبيق أن
+  /// السلة ما زالت مقفلة بانتظار الدفع.
+  static const rdbPendingPayment = r'__$__rdbPendingPayment__$__';
   static const marketUrl = r'__$__marketUrl__$__';
   static const storyUrl = r'__$__storyUrl__$__';
   static const chatUrl = r'__$__chatUrl__$__';

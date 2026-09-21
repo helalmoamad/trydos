@@ -29,6 +29,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/cart_delivary_adress.dart';
+import 'package:trydos/common/helper/rdb_pending_payment.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/cart_sheet_header.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/product_collection_in_cart_page1.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
@@ -222,13 +223,19 @@ class _CartPageState extends State<CartPage> with WidgetsBindingObserver {
 
     fromForGroundNotification =
         appBloc.state.isFromForGroundNotification ?? false;
-    homeBloc.add(
+    // دفعة RDB معلّقة: لا شيء يظهر في السلة حتى يحاول الزبون تعديلها، فيردّ
+    // الباك 409 ويعرض معترض الشبكة الرسالة فوق أي صفحة. هنا نستعيد المرجع
+    // المحفوظ فقط، ليعرف زرّ "متابعة الدفع" أيّ دفعة يفتح.
+    RdbPendingPayment.restore();
+    // رصيد المحفظة كان يُطلب هنا من سيرفر المحفظة (RDB). لم يعد له داعٍ: لا
+    // محفظة للمستخدم، ولا قاعدة في السلة تعتمد على الرصيد.
+    /* homeBloc.add(
       GetCurrenciesForWalletEvent(
         currencySymbol:
             homeBloc.state.getCurrencyForCountryModel?.data?.currency?.code ??
             "",
       ),
-    );
+    );*/
     super.initState();
   }
 

@@ -41,6 +41,11 @@ abstract class PrefsRepository {
   bool? get isRequestNotificationPermission;
   bool? get isCreateWallet;
 
+  /// دفعة RDB المعلّقة، مخزّنة JSON: `{"reference": "...", "expires_at": "..."}`.
+  String? get rdbPendingPayment;
+
+  Future<bool> setRdbPendingPayment(String? value);
+
   String? get myStoriesName;
 
   String? get myChatName;

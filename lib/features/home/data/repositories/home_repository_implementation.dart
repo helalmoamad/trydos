@@ -10,8 +10,9 @@ import 'package:trydos/features/home/data/models/checklist_exist_model.dart';
 import 'package:trydos/features/home/data/models/get_checklist_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
-import 'package:trydos/features/home/data/models/currencies_response_model.dart';
-import 'package:trydos/features/home/data/models/customer_wallet_model.dart';
+// import 'package:trydos/features/home/data/models/currencies_response_model.dart';
+// import 'package:trydos/features/home/data/models/customer_wallet_model.dart';
+import 'package:trydos/features/home/data/models/rdb_payment_request_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/getRelatedProducts.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
@@ -481,6 +482,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     );
   }
 
+  // الدفع من المحفظة على سيرفر RDB — معطّل مع باقي ما يخصّ المحفظة.
+  /*
   @override
   Future<Either<Failure, bool>> walletCheckout(
     Map<String, dynamic> params,
@@ -497,6 +500,7 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       ),
     );
   }
+  */
 
   @override
   Future<Either<Failure, GetProductFiltersModel>> getProductFilters(
@@ -643,6 +647,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     );
   }
 
+  // رصيد المحفظة — معطّل.
+  /*
   @override
   Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
     required String assetId,
@@ -651,6 +657,7 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       tryCall: () => dataSource.getCustomerWallet(assetId: assetId),
     );
   }
+  */
 
   @override
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>
@@ -660,6 +667,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     );
   }
 
+  // عملات المحفظة — معطّل.
+  /*
   @override
   Future<Either<Failure, CurrenciesForWalletResponseModel>>
   getCurrenciesForWallet() {
@@ -667,6 +676,7 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       tryCall: () => dataSource.getCurrenciesForWallet(),
     );
   }
+  */
 
   @override
   Future<Either<Failure, OrdersGroupModel>> placeOrder({
@@ -676,6 +686,33 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
       tryCall: () =>
           dataSource.placeOrder(params: params, paymentMethod: paymentMethod),
+    );
+  }
+
+  @override
+  Future<Either<Failure, RdbPaymentRequestResponseModel>> checkoutRdb(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(tryCall: () => dataSource.checkoutRdb(params));
+  }
+
+  @override
+  Future<Either<Failure, RdbPaymentRequestResponseModel>> getRdbPaymentRequest({
+    required String requestReference,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () =>
+          dataSource.getRdbPaymentRequest(requestReference: requestReference),
+    );
+  }
+
+  @override
+  Future<Either<Failure, RdbPaymentRequestResponseModel>>
+  cancelRdbPaymentRequest({required String requestReference}) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.cancelRdbPaymentRequest(
+        requestReference: requestReference,
+      ),
     );
   }
 

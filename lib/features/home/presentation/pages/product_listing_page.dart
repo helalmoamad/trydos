@@ -3512,9 +3512,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
       finishRedeem: finishRedeem,
       displayImageColors: true,
       tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-      key: TestVariables.kTestMode
-          ? Key('${WidgetsKeys.productInBoutiqueListKey}$index')
-          : null,
+      key: ProductItem.keyFor(
+        products[index],
+        testKey: Key('${WidgetsKeys.productInBoutiqueListKey}$index'),
+      ),
       /*  slidingModeItem: slidingMode,
       productItem: products[index],
       itemIndex: index,

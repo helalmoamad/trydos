@@ -79,13 +79,15 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     dashboardBloc = BlocProvider.of<dashboard.DashboardBloc>(context);
     //authBloc.add(CreateWalletEvent());
     orderBloc = BlocProvider.of<OrderBloc>(context);
-    homeBloc.add(
+    // طلب عملات المحفظة ثم رصيدها من سيرفر المحفظة (RDB). لا محفظة للمستخدم
+    // في هذا التطبيق ولا رصيد يُعرض، فالطلب ألغي.
+    /* homeBloc.add(
       GetCurrenciesForWalletEvent(
         currencySymbol:
             homeBloc.state.getCurrencyForCountryModel?.data?.currency?.code ??
             "",
       ),
-    );
+    );*/
     authBloc.add(GetCustomerInfoEvent());
     dashboardBloc.add(dashboard.GetUserPermissionEvent());
     orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
@@ -412,13 +414,14 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   /// Refresh after a guest verifies their phone through
   /// [GuestPhoneVerificationDialog].
   void _onGuestVerified() {
-    homeBloc.add(
+    // لا طلب لرصيد المحفظة بعد الآن (سيرفر RDB معطّل من جهتنا).
+    /* homeBloc.add(
       GetCurrenciesForWalletEvent(
         currencySymbol:
             homeBloc.state.getCurrencyForCountryModel?.data?.currency?.code ??
             "",
       ),
-    );
+    );*/
     orderBloc.add(GetOrdersEvent(status: "", getWithPagination: false));
     dashboardBloc.add(dashboard.GetUserPermissionEvent());
   }
@@ -721,67 +724,39 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   }
 
   Widget _trydosWalletWidget() {
-    return BlocBuilder<OrderBloc, OrderState>(
-      buildWhen: (previous, current) =>
-          previous.getCustomerWalletStatus != current.getCustomerWalletStatus,
-      builder: (context, state) {
-        double walletBalance = state.customerWalletModel == null
-            ? 0
-            : state.customerWalletModel!.available ?? 0;
-        String symbole = state.customerWalletModel == null
-            ? ''
-            : state.customerWalletModel?.assetSymbol ?? "";
-        return Container(
-          padding: EdgeInsets.all(10.h),
-          width: 200.w,
-          decoration: BoxDecoration(
-            color: const Color(0xffF8F8F8),
-            borderRadius: BorderRadius.circular(15.r),
-          ),
-          child: InkWell(
-            onTap: () {
-              _initializeAndOpenWallet();
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SvgPicture.asset(
-                  AppAssets.trydosWalletSvg,
-                  // ignore: deprecated_member_use
-                  color: const Color(0xff3C3C3C),
-                  width: 25.w,
-                ),
-                Text(
-                  LocaleKeys.wallet.tr(),
-                  style: context.textTheme.bodyMedium?.mq.copyWith(
-                    color: const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 11.sp,
-                    height: 1.3,
-                  ),
-                ),
-                state.getCustomerWalletStatus == GetCustomerWalletStatus.loading
-                    ? Container(
-                        alignment: Alignment.center,
-                        width: 40.w,
-                        height: 20.h,
-                        child: TrydosLoader(size: 20.h),
-                      )
-                    : Text(
-                        '${LocaleKeys.your_balance.tr()} ${(walletBalance).toStringAsFixed((GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2).round())} ${symbole}',
-                        style: context.textTheme.bodyMedium?.rq.copyWith(
-                          color: const Color(0xff8D8D8D),
-                          letterSpacing: 0.18,
-                          fontSize: 12.sp,
-                          height: 1.3,
-                        ),
-                      ),
-              ],
+    return Container(
+      padding: EdgeInsets.all(10.h),
+      width: 200.w,
+      decoration: BoxDecoration(
+        color: const Color(0xffF8F8F8),
+        borderRadius: BorderRadius.circular(15.r),
+      ),
+      child: InkWell(
+        onTap: () {
+          //   _initializeAndOpenWallet();
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            SvgPicture.asset(
+              AppAssets.trydosWalletSvg,
+              // ignore: deprecated_member_use
+              color: const Color(0xff3C3C3C),
+              width: 25.w,
             ),
-          ),
-        );
-      },
+            Text(
+              LocaleKeys.wallet.tr(),
+              style: context.textTheme.bodyMedium?.mq.copyWith(
+                color: const Color(0xff1D1D1D),
+                letterSpacing: 0.18,
+                fontSize: 11.sp,
+                height: 1.3,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1124,6 +1099,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   }*/
 
   /// فتح المحفظة بشكل آمن مع ضمان الإغلاق
+  // فتح شاشة المحفظة الخارجية. معطّلة مع باقي ما يخصّ المحفظة.
+  /*
   Future<void> _initializeAndOpenWallet() async {
     if (!mounted) return;
 
@@ -1165,4 +1142,5 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     //   }
     // }
   }
+  */
 }

@@ -16,6 +16,8 @@ class GetCurrenciesForWalletUseCase
   Future<Either<Failure, CurrenciesForWalletResponseModel>> call(
     NoParams params,
   ) async {
-    return repository.getCurrenciesForWallet();
+    // طلب عملات المحفظة إلى سيرفر RDB معطّل، ودالة الـ repository معلّقة معه.
+    throw UnimplementedError('wallet requests are disabled');
+    // return repository.getCurrenciesForWallet();
   }
 }

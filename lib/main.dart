@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:trydos/common/helper/dev_log.dart';
-
 import 'package:flutter/foundation.dart' show kReleaseMode, kDebugMode;
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;

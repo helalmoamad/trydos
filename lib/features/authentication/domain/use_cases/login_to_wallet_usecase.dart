@@ -16,7 +16,9 @@ class LoginToWalletUseCase
   Future<Either<Failure, LoginToWalletModel>> call(
     LoginToWalletParams params,
   ) async {
-    return repository.loginToWallet(params.map);
+    // تسجيل الدخول إلى سيرفر المحفظة (RDB) معطّل، ودالة الـ repository معلّقة.
+    throw UnimplementedError('wallet requests are disabled');
+    // return repository.loginToWallet(params.map);
   }
 }
 

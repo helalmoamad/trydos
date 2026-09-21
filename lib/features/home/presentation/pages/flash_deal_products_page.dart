@@ -19,7 +19,6 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:get_it/get_it.dart';
-import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter;
 
@@ -367,13 +366,12 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                       fromFlashDeal: true,
                                                       tapIndexToAddProductToCart:
                                                           tapIndexToAddProductToCart,
-                                                      key:
-                                                          TestVariables
-                                                              .kTestMode
-                                                          ? Key(
-                                                              '"featuresPtoduct"$index',
-                                                            )
-                                                          : null,
+                                                      key: ProductItem.keyFor(
+                                                        products[index],
+                                                        testKey: Key(
+                                                          '"featuresPtoduct"$index',
+                                                        ),
+                                                      ),
                                                       productItem:
                                                           products[index],
                                                     ),

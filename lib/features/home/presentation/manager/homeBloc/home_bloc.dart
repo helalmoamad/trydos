@@ -81,8 +81,9 @@ import 'package:trydos/features/home/domain/use_cases/update_whatsapp_notificati
 import 'package:trydos/features/home/domain/use_cases/upload_user_photo_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
-import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
+// مستخدمان فقط في معالج عملات/رصيد المحفظة المعطّل.
+// import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
+// import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/features/story/domain/useCases/report_about_story_usecase.dart';
@@ -196,7 +197,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<UpdateLikeSocialSharedProductsEvent>(
       _onUpdateLikeSocialSharedProductsEvent,
     );
-    on<GetCurrenciesForWalletEvent>(_onGetCurrenciesForWalletEvent);
+    // عملات المحفظة من سيرفر المحفظة (RDB) — الطلب معطّل.
+    // on<GetCurrenciesForWalletEvent>(_onGetCurrenciesForWalletEvent);
 
     on<ReportAboutStoryEvent>(_onReportAboutStoryEvent);
 
@@ -454,6 +456,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetCurrenciesForWalletUseCase getCurrenciesForWalletUseCase;
 
   ////////////////////////////////////////////////////////////////
+  // يجلب عملات المحفظة ثم يطلب رصيد المستخدم من سيرفر المحفظة (RDB).
+  // معطّل بالكامل: لا محفظة للمستخدم في هذا التطبيق ولا رصيد يمكن معرفته.
+  /*
   FutureOr<void> _onGetCurrenciesForWalletEvent(
     GetCurrenciesForWalletEvent event,
     Emitter<HomeState> emit,
@@ -511,6 +516,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       },
     );
   }
+  */
 
   FutureOr<void> _onGetRelatedProductsEvent(
     GetRelatedProductsEvent event,

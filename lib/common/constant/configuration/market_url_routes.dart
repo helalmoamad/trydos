@@ -100,6 +100,16 @@ abstract class MarketEndPoints {
   static String placeOrderEP(String paymentMethod) =>
       "order/checkout/$paymentMethod".customerScope();
 
+  /// الدفع عبر RDB: التطبيق لا يتصل بـ RDB إطلاقاً. الباك ينشئ طلب الدفع
+  /// ويعيد كوداً من عشرة أرقام يدخله الزبون في تطبيق RDB، ثم نسأل عن حالته.
+  static final rdbCheckoutEP = "order/checkout/rdb".customerScope();
+
+  static String rdbRequestEP(String requestReference) =>
+      "order/rdb-request/$requestReference".customerScope();
+
+  static String rdbRequestCancelEP(String requestReference) =>
+      "order/rdb-request/$requestReference/cancel".customerScope();
+
   static final unsubscribeTopicEP = "unsubscribe_topic".firebaseTokensScope();
   static final subscribeTopicEP = "subscribe_topic".firebaseTokensScope();
   static final updateWhatsappEP = "update_whatsapp".firebaseTokensScope();

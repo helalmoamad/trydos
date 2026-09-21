@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -9,17 +8,12 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
-import '../../../../../common/helper/show_message.dart';
 import 'package:trydos/common/helper/dev_log.dart';
 
 class PaymentMethod extends StatefulWidget {
@@ -54,7 +48,10 @@ PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 class _PaymentMethodState extends State<PaymentMethod> {
   @override
   void initState() {
-    if ((widget.amount > 0 &&
+    // كان يختار المحفظة تلقائياً متى كان الرصيد يغطّي المبلغ. الرصيد لم يعد
+    // معروفاً (لا محفظة للمستخدم في هذا التطبيق)، ولم يعد هناك إجبار بطريقة،
+    // فالمستخدم هو من يختار.
+    /* if ((widget.amount > 0 &&
             !widget.fromSuccessOrder &&
             (widget.amount >= widget.totalPrice)) &&
         !widget.paymentMethods.value.contains(PaymentMethods.trydosWallet)) {
@@ -62,27 +59,22 @@ class _PaymentMethodState extends State<PaymentMethod> {
         widget.paymentMethods,
         PaymentMethods.trydosWallet,
       );
-    }
+    }*/
 
     super.initState();
   }
 
-  void _addItemToPaymentMethods(
-    ValueNotifier<List<String>> paymentMethods,
-    String item,
-  ) {
-    Future.delayed(const Duration(milliseconds: 300), () {
-      paymentMethods.value = List.from([item]);
-      // List.from(paymentMethods.value)..add(item);
-    });
-  }
-
-  void _removeItemFromPaymentMethods(
-    ValueNotifier<List<String>> paymentMethods,
-    String item,
-  ) {
-    paymentMethods.value = List.from(paymentMethods.value)
-      ..removeWhere((element) => element == item);
+  /// اختيار طريقة دفع واحدة.
+  ///
+  /// لم يعد هناك دفع جزئي، فالقائمة تحمل عنصراً واحداً دائماً. الضغط على
+  /// الطريقة المختارة نفسها لا يلغيها، كي لا يبقى الطلب بلا طريقة دفع.
+  void _selectPaymentMethod(String method) {
+    if (widget.fromPalceOrder || widget.fromSuccessOrder) return;
+    if (widget.paymentMethods.value.length == 1 &&
+        widget.paymentMethods.value.first == method) {
+      return;
+    }
+    widget.paymentMethods.value = List<String>.from([method]);
   }
 
   @override
@@ -145,6 +137,36 @@ class _PaymentMethodState extends State<PaymentMethod> {
                     ),
                   ),
                   SizedBox(height: 10.h),
+                  /////////////////////
+                  // المحفظة: أوّل خيار، ويمكن اختيارها كأي طريقة أخرى. لا رصيد
+                  // يُعرض ولا طلب يُرسل إلى سيرفر المحفظة (RDB) — إلى أن يُربط
+                  // السيناريو الجديد. لا تُخفى بحسب قائمة الباك لأنها طريقة
+                  // دفع معتمدة في التطبيق.
+                  (!PaymentMethods.listHasRdb(_paymentMethods) &&
+                          widget.fromPalceOrder)
+                      ? const SizedBox.shrink()
+                      : InkWell(
+                          onTap: () =>
+                              _selectPaymentMethod(PaymentMethods.trydosWallet),
+                          child: PaymentMethodCard(
+                            paymentMethod: _paymentMethods,
+                            fromPalceOrder: widget.fromPalceOrder,
+                            fromSuccessOrder: widget.fromSuccessOrder,
+                            currentPaymentMethod: PaymentMethods.trydosWallet,
+                            svg: AppAssets.trydosWalletSvg,
+                            title: LocaleKeys.wallet.tr(),
+                            cardWidgets: buildTrydosWalletWidget(
+                              context: context,
+                              fromSuccessOrder: widget.fromSuccessOrder,
+                            ),
+                          ),
+                        ),
+                  /////////////////////
+                  (!PaymentMethods.listHasRdb(_paymentMethods) &&
+                          widget.fromPalceOrder)
+                      ? const SizedBox.shrink()
+                      : const SizedBox(height: 8),
+                  /////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.cod)) &&
                               (widget.fromPalceOrder)) ||
                           !widget.availablePaymentMethod.contains(
@@ -152,42 +174,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           )
                       ? const SizedBox.shrink()
                       : InkWell(
-                          onTap: () {
-                            if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder) {
-                              return;
-                            }
-                            if (widget.amount >= widget.totalPrice) {
-                              showWarningMessage(
-                                context,
-                                "${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
-                              );
-                              return;
-                            }
-                            if (widget.amount < widget.totalPrice) {
-                              if (_paymentMethods.contains(
-                                PaymentMethods.cod,
-                              )) {
-                                _removeItemFromPaymentMethods(
-                                  widget.paymentMethods,
-                                  PaymentMethods.cod,
-                                );
-                              } else {
-                                widget.paymentMethods.value =
-                                    List.from(widget.paymentMethods.value)
-                                      ..removeWhere(
-                                        (element) =>
-                                            element !=
-                                            PaymentMethods.trydosWallet,
-                                      );
-                                ///////////////
-                                _addItemToPaymentMethods(
-                                  widget.paymentMethods,
-                                  PaymentMethods.cod,
-                                );
-                              }
-                            }
-                          },
+                          onTap: () =>
+                              _selectPaymentMethod(PaymentMethods.cod),
                           child: PaymentMethodCard(
                             fromPalceOrder: widget.fromPalceOrder,
                             paymentMethod: _paymentMethods,
@@ -208,49 +196,6 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           )
                       ? const SizedBox.shrink()
                       : const SizedBox(height: 8),
-                  /////////////////////
-                  (!(_paymentMethods.contains(PaymentMethods.trydosWallet)) &&
-                              widget.fromPalceOrder) ||
-                          !widget.availablePaymentMethod.contains(
-                            PaymentMethods.trydosWallet,
-                          )
-                      ? const SizedBox.shrink()
-                      : InkWell(
-                          onTap: () {
-                            if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder) {
-                              return;
-                            }
-                            if ((widget.amount == 0) ||
-                                (widget.amount < widget.totalPrice)) {
-                              showWarningMessage(
-                                context,
-                                "${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()}",
-                              );
-                              return;
-                            }
-                          },
-                          child: PaymentMethodCard(
-                            paymentMethod: _paymentMethods,
-                            fromPalceOrder: widget.fromPalceOrder,
-                            fromSuccessOrder: widget.fromSuccessOrder,
-                            currentPaymentMethod: PaymentMethods.trydosWallet,
-                            svg: AppAssets.trydosWalletSvg,
-                            title: LocaleKeys.wallet.tr(),
-                            cardWidgets: buildTrydosWalletWidget(
-                              context: context,
-                              fromSuccessOrder: widget.fromSuccessOrder,
-                            ),
-                          ),
-                        ),
-                  /////////////////////
-                  (!(_paymentMethods.contains(PaymentMethods.trydosWallet)) &&
-                              widget.fromPalceOrder) ||
-                          !widget.availablePaymentMethod.contains(
-                            PaymentMethods.trydosWallet,
-                          )
-                      ? const SizedBox.shrink()
-                      : const SizedBox(height: 8),
                   ////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.card)) &&
                               widget.fromPalceOrder) ||
@@ -264,50 +209,20 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                 widget.fromSuccessOrder) {
                               return;
                             }
-                            if (widget.amount >= widget.totalPrice) {
-                              showWarningMessage(
-                                context,
-                                "${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
-                              );
-                              return;
-                            }
-                            if (widget.amount < widget.totalPrice) {
-                              if (_paymentMethods.contains(
-                                PaymentMethods.card,
-                              )) {
-                                _removeItemFromPaymentMethods(
-                                  widget.paymentMethods,
-                                  PaymentMethods.card,
-                                );
-                              } else {
-                                widget.paymentMethods.value =
-                                    List.from(widget.paymentMethods.value)
-                                      ..removeWhere(
-                                        (element) =>
-                                            element !=
-                                            PaymentMethods.trydosWallet,
-                                      );
-                                ///////////////
-                                _addItemToPaymentMethods(
-                                  widget.paymentMethods,
-                                  PaymentMethods.card,
-                                );
+                            _selectPaymentMethod(PaymentMethods.card);
 
-                                // Log add payment event
-                                try {
-                                  FirebaseAnalyticsService.logEventForSession(
-                                    eventName: AnalyticsEventsConst.ADD_PAYMENT,
-                                    executedEventName:
-                                        AnalyticsButtonsEventNameConst
-                                            .CONFIRM_SHIPPING_AND_PAYMENT_BUTTON,
-                                    extraParams: {
-                                      'payment_type': PaymentMethods.card,
-                                    },
-                                  );
-                                } catch (e) {
-                                  devLog('payment_method.dart: ignored error', e);
-                                }
-                              }
+                            // Log add payment event
+                            try {
+                              FirebaseAnalyticsService.logEventForSession(
+                                eventName: AnalyticsEventsConst.ADD_PAYMENT,
+                                executedEventName: AnalyticsButtonsEventNameConst
+                                    .CONFIRM_SHIPPING_AND_PAYMENT_BUTTON,
+                                extraParams: {
+                                  'payment_type': PaymentMethods.card,
+                                },
+                              );
+                            } catch (e) {
+                              devLog('payment_method.dart: ignored error', e);
                             }
                           },
                           child: PaymentMethodCard(
@@ -338,42 +253,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           )
                       ? const SizedBox.shrink()
                       : InkWell(
-                          onTap: () {
-                            if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder) {
-                              return;
-                            }
-                            if (widget.amount >= widget.totalPrice) {
-                              showWarningMessage(
-                                context,
-                                "${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
-                              );
-                              return;
-                            }
-                            if (widget.amount < widget.totalPrice) {
-                              if (_paymentMethods.contains(
-                                PaymentMethods.crypto,
-                              )) {
-                                _removeItemFromPaymentMethods(
-                                  widget.paymentMethods,
-                                  PaymentMethods.crypto,
-                                );
-                              } else {
-                                widget.paymentMethods.value =
-                                    List.from(widget.paymentMethods.value)
-                                      ..removeWhere(
-                                        (element) =>
-                                            element !=
-                                            PaymentMethods.trydosWallet,
-                                      );
-                                ///////////////
-                                _addItemToPaymentMethods(
-                                  widget.paymentMethods,
-                                  PaymentMethods.crypto,
-                                );
-                              }
-                            }
-                          },
+                          onTap: () =>
+                              _selectPaymentMethod(PaymentMethods.crypto),
                           child: PaymentMethodCard(
                             fromPalceOrder: widget.fromPalceOrder,
                             paymentMethod: _paymentMethods,
@@ -419,9 +300,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
           ),
         ),
         Text(
-          widget.partialPaymentByWallet > 0
-              ? '${HelperFunctions.formatNumber(numberToFormate: (widget.amount - widget.partialPaymentByWallet), isNeedRounding: false)} ${widget.currencySymbol}'
-              : '${HelperFunctions.formatNumber(numberToFormate: widget.amount, isNeedRounding: false)} ${widget.currencySymbol}',
+          // لم يعد هناك دفع جزئي من المحفظة يُطرح من المجموع.
+          '${HelperFunctions.formatNumber(numberToFormate: widget.amount, isNeedRounding: false)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,
@@ -502,68 +382,10 @@ class _PaymentMethodState extends State<PaymentMethod> {
     required bool fromSuccessOrder,
     required BuildContext context,
   }) {
-    return Row(
-      children: [
-        Text(
-          fromSuccessOrder
-              ? "${LocaleKeys.total.tr()}  "
-              : "${LocaleKeys.your_balance.tr()}  ",
-          style: context.textTheme.bodyMedium?.rq.copyWith(
-            color: const Color(0xffD3D3D3),
-            letterSpacing: 0.18,
-            fontSize: 12.sp,
-            height: 1.33,
-          ),
-        ),
-        Text(
-          widget.partialPaymentByWallet > 0
-              ? '${HelperFunctions.formatNumber(numberToFormate: widget.partialPaymentByWallet, isNeedRounding: false)} ${widget.currencySymbol}'
-              : '${HelperFunctions.formatNumber(numberToFormate: widget.amount, isNeedRounding: false)} ${widget.currencySymbol}',
-          style: context.textTheme.bodyMedium?.sbt.copyWith(
-            color: const Color(0xff1D1D1D),
-            letterSpacing: 0.18,
-            fontSize: 12.sp,
-            height: 1.33,
-          ),
-        ),
-        (fromSuccessOrder)
-            ? const SizedBox.shrink()
-            : BlocBuilder<OrderBloc, OrderState>(
-                buildWhen: (previous, current) =>
-                    previous.getCustomerWalletStatus !=
-                    current.getCustomerWalletStatus,
-                builder: (context, state) =>
-                    state.getCustomerWalletStatus ==
-                        GetCustomerWalletStatus.init
-                    ? SizedBox(
-                        width: 30.w,
-                        height: 40.h,
-                        child: TrydosLoader(size: 17.h),
-                      )
-                    : InkWell(
-                        onTap: () {
-                          BlocProvider.of<HomeBloc>(context).add(
-                            GetCurrenciesForWalletEvent(
-                              currencySymbol:
-                                  GetIt.I<HomeBloc>()
-                                      .state
-                                      .getCurrencyForCountryModel!
-                                      .data!
-                                      .currency!
-                                      .code ??
-                                  "",
-                            ),
-                          );
-                        },
-                        child: SizedBox(
-                          width: 30.w,
-                          height: 40.h,
-                          child: Icon(Icons.refresh_sharp, size: 17.h),
-                        ),
-                      ),
-              ),
-      ],
-    );
+    // كان هنا رصيد المحفظة وزرّ تحديثه من سيرفر المحفظة (RDB). لا محفظة
+    // للمستخدم في هذا التطبيق ولا سبيل لمعرفة الرصيد، فلم يبقَ إلا المجموع
+    // في شاشة نجاح الطلب.
+    return fromSuccessOrder ? buildOrderTotal() : const SizedBox.shrink();
   }
 }
 
@@ -587,6 +409,12 @@ class PaymentMethodCard extends StatelessWidget {
   final List<String> paymentMethod;
   final Widget cardWidgets;
 
+  /// بطاقة Ramaaz Digital Bank واحدة، والباك قد يسمّيها `rdb` أو
+  /// `trydos_wallet`، فالاسمان يختاران البطاقة نفسها.
+  bool get _isSelected => PaymentMethods.isRdb(currentPaymentMethod)
+      ? PaymentMethods.listHasRdb(paymentMethod)
+      : paymentMethod.contains(currentPaymentMethod);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -598,7 +426,7 @@ class PaymentMethodCard extends StatelessWidget {
               ? const Color.fromARGB(255, 255, 255, 255)
               : fromPalceOrder
               ? const Color(0xffC4C2C2)
-              : paymentMethod.contains(currentPaymentMethod)
+              : _isSelected
               ? const Color(0xff388CFF)
               : const Color(0xffF8F8F8),
         ),
@@ -615,9 +443,7 @@ class PaymentMethodCard extends StatelessWidget {
               svg,
               height: 16.h,
               // ignore: deprecated_member_use
-              color:
-                  paymentMethod.contains(currentPaymentMethod) &&
-                      !fromSuccessOrder
+              color: _isSelected && !fromSuccessOrder
                   ? const Color(0xff1D1D1D)
                   : null,
             ),
@@ -625,7 +451,7 @@ class PaymentMethodCard extends StatelessWidget {
             Text(
               title,
               style: context.textTheme.bodyMedium?.rq.copyWith(
-                color: paymentMethod.contains(currentPaymentMethod)
+                color: _isSelected
                     ? const Color(0xff1D1D1D)
                     : const Color(0xffC4C2C2),
                 letterSpacing: 0.18,

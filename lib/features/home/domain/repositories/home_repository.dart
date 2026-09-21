@@ -5,7 +5,7 @@ import 'package:trydos/features/home/data/models/checklist_exist_model.dart';
 import 'package:trydos/features/home/data/models/get_checklist_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
-import 'package:trydos/features/home/data/models/currencies_response_model.dart';
+// import 'package:trydos/features/home/data/models/currencies_response_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/getRelatedProducts.dart';
 import 'package:trydos/features/home/data/models/get_hidden_orders_model.dart';
@@ -42,7 +42,8 @@ import 'package:trydos/features/home/data/models/update_return_request_model.dar
 import '../../../../core/error/failures.dart';
 import '../../data/models/apply_coupon_model.dart';
 import '../../data/models/check_availability_product_cart_model.dart';
-import '../../data/models/customer_wallet_model.dart';
+// import '../../data/models/customer_wallet_model.dart';
+import '../../data/models/rdb_payment_request_model.dart';
 import '../../data/models/get_order_rating_model.dart' as order_rating;
 import '../../data/models/get_full_product_details_model.dart';
 import '../../data/models/get_orders_model.dart';
@@ -227,18 +228,32 @@ abstract class HomeRepository {
     Map<String, dynamic> params,
   );
 
-  Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
+  // رصيد المحفظة من سيرفر RDB — معطّل.
+  /* Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
     required String assetId,
-  });
+  });*/
 
   Future<Either<Failure, OrdersGroupModel>> placeOrder({
     required Map<String, dynamic> params,
     required String paymentMethod,
   });
+
+  /// الدفع عبر RDB: إنشاء طلب الدفع، ثم سؤال حالته، ثم إلغاؤه إن أراد الزبون.
+  Future<Either<Failure, RdbPaymentRequestResponseModel>> checkoutRdb(
+    Map<String, dynamic> params,
+  );
+
+  Future<Either<Failure, RdbPaymentRequestResponseModel>> getRdbPaymentRequest({
+    required String requestReference,
+  });
+
+  Future<Either<Failure, RdbPaymentRequestResponseModel>>
+  cancelRdbPaymentRequest({required String requestReference});
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>
   sendAcceptOfNotificationMarket(Map<String, dynamic> params);
-  Future<Either<Failure, CurrenciesForWalletResponseModel>>
-  getCurrenciesForWallet();
+  // عملات المحفظة من سيرفر RDB — معطّل.
+  /* Future<Either<Failure, CurrenciesForWalletResponseModel>>
+  getCurrenciesForWallet();*/
   Future<Either<Failure, OrdersGroupModel>> getOrdersByOrderGroupID({
     required String orderGroupID,
   });
@@ -324,13 +339,13 @@ abstract class HomeRepository {
     String productSlug,
   );
 
-  /// Wallet Payment
-  Future<Either<Failure, bool>> walletCheckout(
+  /// Wallet Payment — معطّل مع باقي ما يخصّ المحفظة (سيرفر RDB).
+  /* Future<Either<Failure, bool>> walletCheckout(
     Map<String, dynamic> params,
     String signature,
     String timestamp,
     String idempotencyKey,
-  );
+  );*/
 
   Future<Either<Failure, RelatedProductsResponse>> getRelatedProducts({
     required int productSlug,

@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/helper/rdb_pending_payment.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/features/home/data/models/rdb_payment_request_model.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_section/rdb_cart_locked_dialog.dart';
 import 'package:trydos/core/api/token_refresh_coordinator.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
@@ -91,6 +94,34 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     String? freshToken;
     try {
+      // السلة مقفلة بانتظار دفعة RDB: الباك يردّ 409 ومعه مرجع الطلب. نلتقطه
+      // هنا لأنه يأتي من أي طلب يعدّل السلة، فتعرف الواجهة أيّ دفعة تتابع أو
+      // تلغي بدل أن تعرض خطأً غامضاً. لا رسالة هنا: الشاشة هي التي تتصرّف.
+      if (err.response?.statusCode == 409) {
+        try {
+          final RdbCartLockModel? lock = RdbCartLockModel.tryParse(
+            err.response?.data is Map
+                ? err.response?.data
+                : jsonDecode(err.response.toString()),
+          );
+          if (lock == null) {
+            // جسم بلا مرجع (رفض checkout مثلاً): نسجّل الرفض ونستعيد المرجع
+            // المحفوظ، فتتصرّف الشاشة كما لو وصل المرجع في الجسم.
+            RdbPendingPayment.rememberRejectionWithoutReference();
+          }
+          if (lock != null) {
+            RdbPendingPayment.rememberRejection(lock);
+            // الرفض قد يأتي من أي مكان فيه زرّ يعدّل السلة: السلة نفسها،
+            // تفاصيل المنتج، قوائم المنتجات، الرئيسية. لذلك تُعرض الرسالة
+            // عالمياً فوق الصفحة الحالية، لا من صفحة بعينها.
+            showRdbCartLockedDialogGlobally(
+              requestReference: lock.requestReference,
+            );
+          }
+        } catch (e) {
+          devLog('log_interceptor.dart: ignored error', e);
+        }
+      }
       if (err.response?.statusCode == 400 || err.response?.statusCode == 422) {
         if (kDebugMode)
           devLog(
@@ -128,7 +159,10 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
           devLog('log_interceptor.dart: ignored error', e);
         }
       }
-      if (err.requestOptions.path.contains("order/checkout")) {
+      // 409 على الـ checkout يعني دفعة معلّقة، ولها نافذتها بأزرارها، فلا نسبقها
+      // برسالة عابرة تقول الشيء نفسه.
+      if (err.requestOptions.path.contains("order/checkout") &&
+          err.response?.statusCode != 409) {
         try {
           String massageJson = jsonDecode(err.response.toString())["message"];
           // Map<String, dynamic> messageDecode = jsonDecode(massageJson);

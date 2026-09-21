@@ -12,12 +12,14 @@ class WalletCheckoutUseCase extends UseCase<bool, WalletCheckoutParams> {
 
   @override
   Future<Either<Failure, bool>> call(WalletCheckoutParams params) {
-    return repository.walletCheckout(
+    // الدفع من المحفظة على سيرفر RDB معطّل، ودالة الـ repository معلّقة معه.
+    throw UnimplementedError('wallet requests are disabled');
+    /* return repository.walletCheckout(
       params.payloadMap,
       params.signature,
       params.timestamp,
       params.idempotencyKey,
-    );
+    );*/
   }
 }
 
