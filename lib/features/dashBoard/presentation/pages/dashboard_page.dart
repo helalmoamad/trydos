@@ -23,6 +23,7 @@
 // // import '../widgets/products_grid_widget.dart';
 // // import '../widgets/boutiques_grid_widget.dart';
 // // import '../widgets/dashboard_permission_checker.dart';
+import '../widgets/customer_comments_widget.dart';
 // // import '../widgets/seller_stories_widget.dart';
 
 // // class DashboardPage extends StatefulWidget {
@@ -1716,7 +1717,11 @@ class _DashboardPageState extends State<DashboardPage> {
                       title: LocaleKeys.customers_comments.tr(),
                       subtitle: 'Reply to reviews and FAQ',
                       count: 0,
-                      visible: true,
+                      // Hidden entirely without READ_COMMENTS (AC-19). The
+                      // list filters on `visible` while `_openTab` passes the
+                      // literal index, so hiding this entry shifts no other
+                      // tab's `case`.
+                      visible: _permissionChecker.canReadComments(),
                     ),
                   ].where((i) => i.visible).toList();
 
@@ -1930,7 +1935,7 @@ class _DashboardContentPageState extends State<DashboardContentPage> {
       case 9:
         return const GalleryScreen();
       case 10:
-        return CustomerComments();
+        return CustomerComments(permissions: widget.permissions);
       default:
         return _buildProductsTab();
     }
@@ -4446,9 +4451,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
   }
 
  
-  // ---------------------------------------------------------------------
-  // منطقة السحب والإفلات + الأزرار (حسب التصميم المرسل)
-  // ---------------------------------------------------------------------
   Widget _buildDropZone() {
     return DragTarget<Object>(
       onWillAcceptWithDetails: (_) {
@@ -4760,19 +4762,5 @@ class _GalleryImage {
       localPath: localPath,
       status: status ?? this.status,
     );
-  }
-}
-
-class CustomerComments extends StatefulWidget {
-  const CustomerComments({super.key});
-
-  @override
-  State<CustomerComments> createState() => _CustomerCommentsState();
-}
-
-class _CustomerCommentsState extends State<CustomerComments> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }

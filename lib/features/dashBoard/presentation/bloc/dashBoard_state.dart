@@ -79,8 +79,49 @@ enum GetLocationsStatus { init, loading, success, failure, permissionDenied }
 /// on a bloc that is never disposed, with no error and no state change.
 enum LocationWriteStatus { init, inFlight, success, failure }
 
+/// One tab's read status.
+///
+/// `loadingMore` is a separate value from `loading` on purpose: a first load
+/// may replace the tab with a spinner, but appending page n+1 must leave every
+/// loaded row on screen and keep the reading position (AC-13). One shared
+/// `loading` would make the list jump to the top on every "load more".
+///
+/// `permissionDenied` is written by the load handler only — a failed write must
+/// never put it here, or a refused reply would look like a lost read
+/// permission.
+enum GetCommentsStatus {
+  init,
+  loading,
+  loadingMore,
+  success,
+  failure,
+  permissionDenied,
+}
+
+/// The reply create / edit / delete status, shared by all three because only
+/// one dialog is open at a time. `inFlight` is what disables the submit control
+/// and stops a double submission (AC-29).
+enum CommentReplyWriteStatus { init, inFlight, success, failure }
+
 @immutable
 class DashBoardState extends Equatable {
+  // --- Customer comments -------------------------------------------------
+  //
+  // Two tabs, each with its own list wrapper and its own status, so switching
+  // tabs leaves the other one exactly as it was (AC-6). **Neither tab keeps a
+  // page counter**: the next page number is read from its own `meta`, which is
+  // the server's own count, so the two cannot drift apart.
+  final GetSellerCommentsModel faqComments;
+  final GetSellerCommentsModel reviewComments;
+  final GetCommentsStatus faqCommentsStatus;
+  final GetCommentsStatus reviewCommentsStatus;
+  final CommentReplyWriteStatus commentReplyWriteStatus;
+
+  /// The server's own message for the last comments failure. `AC-24`, `AC-26`
+  /// and `AC-30` all require showing what the backend said, and there is
+  /// nowhere else on the state to put it.
+  final String? commentsMessage;
+
   final GetLocationsStatus getLocationsStatus;
 
   /// The list, its `meta` and the shop stamp all live on this one wrapper, so
@@ -145,6 +186,12 @@ class DashBoardState extends Equatable {
   final String? downloadedTemplatePath;
 
   DashBoardState({
+    this.faqComments = const GetSellerCommentsModel.empty(),
+    this.reviewComments = const GetSellerCommentsModel.empty(),
+    this.faqCommentsStatus = GetCommentsStatus.init,
+    this.reviewCommentsStatus = GetCommentsStatus.init,
+    this.commentReplyWriteStatus = CommentReplyWriteStatus.init,
+    this.commentsMessage,
     this.getLocationsStatus = GetLocationsStatus.init,
     this.locations = const GetShopLocationsModel.empty(),
     this.locationWriteStatus = LocationWriteStatus.init,
@@ -205,6 +252,13 @@ class DashBoardState extends Equatable {
   });
 
   DashBoardState copyWith({
+    GetSellerCommentsModel? faqComments,
+    GetSellerCommentsModel? reviewComments,
+    GetCommentsStatus? faqCommentsStatus,
+    GetCommentsStatus? reviewCommentsStatus,
+    CommentReplyWriteStatus? commentReplyWriteStatus,
+    String? commentsMessage,
+    bool clearCommentsMessage = false,
     GetLocationsStatus? getLocationsStatus,
     GetShopLocationsModel? locations,
     LocationWriteStatus? locationWriteStatus,
@@ -264,6 +318,17 @@ class DashBoardState extends Equatable {
     DownloadExcelTemplateStatus? downloadExcelTemplateStatus,
   }) {
     return DashBoardState(
+      faqComments: faqComments ?? this.faqComments,
+      reviewComments: reviewComments ?? this.reviewComments,
+      faqCommentsStatus: faqCommentsStatus ?? this.faqCommentsStatus,
+      reviewCommentsStatus: reviewCommentsStatus ?? this.reviewCommentsStatus,
+      commentReplyWriteStatus:
+          commentReplyWriteStatus ?? this.commentReplyWriteStatus,
+      // `??` alone can only set a message, never clear one. Clearing needs its
+      // own flag, or a stale error would outlive the failure that caused it.
+      commentsMessage: clearCommentsMessage
+          ? null
+          : (commentsMessage ?? this.commentsMessage),
       getLocationsStatus: getLocationsStatus ?? this.getLocationsStatus,
       locations: locations ?? this.locations,
       locationWriteStatus: locationWriteStatus ?? this.locationWriteStatus,
@@ -401,5 +466,11 @@ class DashBoardState extends Equatable {
     locations,
     locationWriteStatus,
     locationsMessage,
+    faqComments,
+    reviewComments,
+    faqCommentsStatus,
+    reviewCommentsStatus,
+    commentReplyWriteStatus,
+    commentsMessage,
   ];
 }

@@ -2790,7 +2790,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       if (quantity > (double.tryParse(event.maxAllowed ?? "0") ?? 0) &&
           (double.tryParse(event.maxAllowed ?? "0") ?? 0) != 0) {
         showMessage(
-          "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()} \n ${LocaleKeys.you_can_add_only.tr()} ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (currentQuantity.isEmpty ? 0 : currentQuantity[key]![0])).round()} ${LocaleKeys.item.tr()}",
+          "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()}",
+          //  \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()} \n ${LocaleKeys.you_can_add_only.tr()} ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (currentQuantity.isEmpty ? 0 : currentQuantity[key]![0])).round()} ${LocaleKeys.item.tr()}
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           hasError: true,
@@ -2825,7 +2826,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               (double.tryParse(event.maxAllowed ?? "0") ?? 0) &&
           (double.tryParse(event.maxAllowed ?? "0") ?? 0) != 0) {
         showMessage(
-          "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()} \n ${LocaleKeys.you_can_add_only.tr()} ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (currentQuantity.isEmpty ? 0 : currentQuantity[key]![0])).round()} ${LocaleKeys.item.tr()}",
+          "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()}}",
+          //  \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()} \n ${LocaleKeys.you_can_add_only.tr()} ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (currentQuantity.isEmpty ? 0 : currentQuantity[key]![0])).round()} ${LocaleKeys.item.tr()}
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           hasError: true,
@@ -3747,7 +3749,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     if (event.totalQuantity > (event.maxAllowed ?? 0) &&
         event.maxAllowed != 0) {
       showMessage(
-        "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} \n (${(event.maxAllowed ?? 0.0).round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()}",
+        "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} }",
+        // \n (${(event.maxAllowed ?? 0.0).round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()
         foreGroundColor: Colors.white,
         backGroundColor: Colors.black,
         showInRelease: true,

@@ -970,5 +970,32 @@ abstract class  LocaleKeys {
   static const locations_save_failed = 'locations_save_failed';
   static const locations_action_failed = 'locations_action_failed';
   static const locations_coordinates_kept = 'locations_coordinates_kept';
+  static const comments_faq_tab = 'comments_faq_tab';
+  static const comments_reviewing_tab = 'comments_reviewing_tab';
+  static const comments_waiting_seller_reply = 'comments_waiting_seller_reply';
+  static const comments_reply = 'comments_reply';
+  static const comments_edit_reply = 'comments_edit_reply';
+  static const comments_delete_reply = 'comments_delete_reply';
+  static const comments_load_more = 'comments_load_more';
+  static const comments_empty_title = 'comments_empty_title';
+  static const comments_empty_subtitle = 'comments_empty_subtitle';
+  static const comments_reply_dialog_title = 'comments_reply_dialog_title';
+  static const comments_reply_text_label = 'comments_reply_text_label';
+  static const comments_reply_hint = 'comments_reply_hint';
+  static const comments_cancel = 'comments_cancel';
+  static const comments_submit_reply = 'comments_submit_reply';
+  static const comments_delete_reply_title = 'comments_delete_reply_title';
+  static const comments_delete_reply_confirm = 'comments_delete_reply_confirm';
+  static const comments_reply_created = 'comments_reply_created';
+  static const comments_reply_updated = 'comments_reply_updated';
+  static const comments_reply_deleted = 'comments_reply_deleted';
+  static const comments_permission_denied = 'comments_permission_denied';
+  static const comments_read_permission_denied = 'comments_read_permission_denied';
+  static const comments_comment_not_found = 'comments_comment_not_found';
+  static const comments_too_many_requests = 'comments_too_many_requests';
+  static const comments_session_expired = 'comments_session_expired';
+  static const comments_generic_error = 'comments_generic_error';
+  static const comments_reply_invalid = 'comments_reply_invalid';
+  static const comments_retry = 'comments_retry';
 
 }

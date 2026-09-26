@@ -67,6 +67,12 @@ export 'package:trydos/features/dashBoard/domain/useCase/create_seller_story_use
 import 'package:trydos/features/dashBoard/domain/useCase/delete_seller_story_usecase.dart';
 import 'package:trydos/core/domin/usecases/upload_file_media_server_usecase.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:trydos/core/error/failures.dart';
+import 'package:trydos/features/dashBoard/data/models/get_seller_comments_model.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/get_seller_comments_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/reply_to_comment_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/edit_comment_reply_usecase.dart';
+import 'package:trydos/features/dashBoard/domain/useCase/delete_comment_reply_usecase.dart';
 import 'package:equatable/equatable.dart';
 part 'dashBoard_event.dart';
 part 'dashBoard_state.dart';
@@ -109,6 +115,10 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
   final CreateShopLocationUseCase createShopLocationUseCase;
   final UpdateShopLocationUseCase updateShopLocationUseCase;
   final ChangeShopLocationStatusUseCase changeShopLocationStatusUseCase;
+  final GetSellerCommentsUseCase getSellerCommentsUseCase;
+  final ReplyToCommentUseCase replyToCommentUseCase;
+  final EditCommentReplyUseCase editCommentReplyUseCase;
+  final DeleteCommentReplyUseCase deleteCommentReplyUseCase;
 
   DashboardBloc(
     this.getUserPermissionUseCase,
@@ -145,6 +155,10 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     this.createShopLocationUseCase,
     this.updateShopLocationUseCase,
     this.changeShopLocationStatusUseCase,
+    this.getSellerCommentsUseCase,
+    this.replyToCommentUseCase,
+    this.editCommentReplyUseCase,
+    this.deleteCommentReplyUseCase,
   ) : super(DashBoardState()) {
     on<GetOrdersEvent>(_onGetOrdersEvent);
     on<NewGetOrdersEvent>(_onNewGetOrdersEvent);
@@ -208,6 +222,36 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     );
     on<ChangeShopLocationStatusEvent>(
       _onChangeShopLocationStatusEvent,
+      transformer: droppable(),
+    );
+
+    // Customer comments. Same transformer reasoning as Locations above.
+    //
+    // | event        | transformer   | why                                     |
+    // |--------------|---------------|-----------------------------------------|
+    // | load a tab   | restartable() | only the newest first-page load matters |
+    // | load more    | droppable()   | a second tap must not fetch the page    |
+    // |              |               | twice and append it twice               |
+    // | submit reply | droppable()   | the double-submit guard behind AC-29    |
+    // | delete reply | droppable()   | same                                    |
+    // | clear        | none          | issues no request and awaits nothing; a |
+    // |              |               | transformer could reorder it against    |
+    // |              |               | the load it exists to invalidate        |
+    on<GetSellerCommentsEvent>(
+      _onGetSellerCommentsEvent,
+      transformer: restartable(),
+    );
+    on<LoadMoreSellerCommentsEvent>(
+      _onLoadMoreSellerCommentsEvent,
+      transformer: droppable(),
+    );
+    on<ClearSellerCommentsEvent>(_onClearSellerCommentsEvent);
+    on<SubmitCommentReplyEvent>(
+      _onSubmitCommentReplyEvent,
+      transformer: droppable(),
+    );
+    on<DeleteCommentReplyEvent>(
+      _onDeleteCommentReplyEvent,
       transformer: droppable(),
     );
   }
@@ -1805,6 +1849,453 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
             // with the current shop, and the first-frame gate would then pass
             // for the wrong shop.
             locations: state.locations.copyWith(locations: updated),
+          ),
+        );
+      },
+    );
+  }
+  // ===========================================================================
+  // Customer comments
+  // ===========================================================================
+
+  /// Bumped only by [ClearSellerCommentsEvent]. Every request captures this
+  /// value plus the shop id when it starts, and drops its own answer if either
+  /// has moved by the time it arrives (AC-3, AC-4).
+  int _commentsLoadGeneration = 0;
+
+  /// Diagnostic line: the action, the outcome, and the shop id. Nothing else.
+  ///
+  /// No token, no request body, no reply text, no customer name, no avatar
+  /// address (AC-28). The `kDebugMode` test wraps the whole call, so the
+  /// argument strings are not even built in a release build (AC-27).
+  ///
+  /// **Scope note.** This covers the lines *this feature* writes.
+  /// `LoggerInterceptor` and `GetClient` separately persist request and
+  /// response bodies through `saveRequestsData` outside any debug guard, which
+  /// is pre-existing and outside this work item — see `implement.md > Findings`.
+  void _logComments(String action, String outcome, {String? message}) {
+    if (kDebugMode) {
+      print(
+        'comments | $action | $outcome | seller=$_currentSellerId'
+        '${message == null ? '' : ' | message=$message'}',
+      );
+    }
+  }
+
+  bool _commentsResponseIsStale(String? sellerIdAtRequest, int generation) {
+    return generation != _commentsLoadGeneration ||
+        sellerIdAtRequest != _currentSellerId;
+  }
+
+  GetSellerCommentsModel _commentsFor(SellerCommentType type) =>
+      type == SellerCommentType.faq ? state.faqComments : state.reviewComments;
+
+  /// One place that turns a tab into the right pair of state fields, so no
+  /// handler has to repeat the same test on four fields at once.
+  DashBoardState _withTab(
+    SellerCommentType type, {
+    GetSellerCommentsModel? comments,
+    GetCommentsStatus? status,
+    CommentReplyWriteStatus? writeStatus,
+    String? message,
+    bool clearMessage = false,
+  }) {
+    final bool isFaq = type == SellerCommentType.faq;
+    return state.copyWith(
+      faqComments: isFaq ? comments : null,
+      reviewComments: isFaq ? null : comments,
+      faqCommentsStatus: isFaq ? status : null,
+      reviewCommentsStatus: isFaq ? null : status,
+      commentReplyWriteStatus: writeStatus,
+      commentsMessage: message,
+      clearCommentsMessage: clearMessage,
+    );
+  }
+
+  /// What the member is shown for a failed comments call (AC-24, AC-26, AC-30).
+  ///
+  /// **Read this before trusting the 403 / 404 / 429 branches.** Dio's error
+  /// never reaches here as an error: `LoggerInterceptor.onError` resolves every
+  /// non-2xx into a normal `Response` whose body is
+  /// `{error_code, error_message, error_type, original_data}`. The client then
+  /// takes its else-branch and calls `getException` with
+  /// `response.data['message']` — and `message` is not a key of that synthetic
+  /// body, so it is null, and `getException` funnels 403, 404 and 429 alike
+  /// into a bare `ServerException`, which `handlingExceptionRequest` turns into
+  /// `ServerFailure(statusCode: 400)`.
+  ///
+  /// So today all three arrive as **400 with no message**. The branches below
+  /// are written correctly and are what runs once the code survives; until then
+  /// `AC-24` and `AC-26` cannot tell those three apart. That is recorded as
+  /// `FINDING-1` in `implement.md` and carried to `/verify` rather than papered
+  /// over here.
+  String _commentsFailureMessage(Failure failure) {
+    final String serverMessage = failure.message.trim();
+    final bool hasServerMessage =
+        serverMessage.isNotEmpty &&
+        serverMessage != 'ServerException' &&
+        serverMessage != 'ServerFailure' &&
+        serverMessage != 'DioFailure';
+
+    switch (failure.statusCode) {
+      case 401:
+        return LocaleKeys.comments_session_expired.tr();
+      case 403:
+        return LocaleKeys.comments_permission_denied.tr();
+      case 404:
+        return LocaleKeys.comments_comment_not_found.tr();
+      case 429:
+        return LocaleKeys.comments_too_many_requests.tr();
+      default:
+        return hasServerMessage
+            ? serverMessage
+            : LocaleKeys.comments_generic_error.tr();
+    }
+  }
+
+  FutureOr<void> _onGetSellerCommentsEvent(
+    GetSellerCommentsEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    // No read permission: no request, no loading state, no retry control — a
+    // retry could not succeed (AC-19).
+    if (!event.canRead) {
+      _logComments('load-${event.type.value}', 'skipped-no-permission');
+      emit(
+        _withTab(
+          event.type,
+          comments: const GetSellerCommentsModel.empty(),
+          status: GetCommentsStatus.permissionDenied,
+          clearMessage: true,
+        ),
+      );
+      return;
+    }
+
+    final String? sellerIdAtRequest = _currentSellerId;
+    if (sellerIdAtRequest == null || sellerIdAtRequest.isEmpty) {
+      _logComments('load-${event.type.value}', 'skipped-no-shop');
+      emit(
+        _withTab(
+          event.type,
+          status: GetCommentsStatus.failure,
+          message: LocaleKeys.comments_generic_error.tr(),
+        ),
+      );
+      return;
+    }
+
+    emit(
+      _withTab(
+        event.type,
+        status: GetCommentsStatus.loading,
+        clearMessage: true,
+      ),
+    );
+
+    final int generationAtRequest = _commentsLoadGeneration;
+
+    final response = await getSellerCommentsUseCase(
+      // `page` is left at its default of 1 — this handler only ever loads the
+      // first page; appending is `LoadMoreSellerCommentsEvent`.
+      GetSellerCommentsParams(sellerId: sellerIdAtRequest, type: event.type),
+    );
+
+    // A stale answer writes nothing at all — not the rows, not a status. The
+    // clear that made it stale already reset both, and writing here would
+    // re-dirty what it had just cleaned.
+    if (_commentsResponseIsStale(sellerIdAtRequest, generationAtRequest)) {
+      _logComments('load-${event.type.value}', 'dropped-stale');
+      return;
+    }
+
+    response.fold(
+      (failure) {
+        _logComments('load-${event.type.value}', 'failed');
+        emit(
+          _withTab(
+            event.type,
+            status: failure.statusCode == 403
+                ? GetCommentsStatus.permissionDenied
+                : GetCommentsStatus.failure,
+            message: _commentsFailureMessage(failure),
+          ),
+        );
+      },
+      (page) {
+        _logComments('load-${event.type.value}', 'loaded');
+        emit(
+          _withTab(
+            event.type,
+            comments: page,
+            status: GetCommentsStatus.success,
+            clearMessage: true,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onLoadMoreSellerCommentsEvent(
+    LoadMoreSellerCommentsEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    final GetSellerCommentsModel current = _commentsFor(event.type);
+    if (!current.meta.hasMorePages) return;
+
+    final String? sellerIdAtRequest = _currentSellerId;
+    if (sellerIdAtRequest == null || sellerIdAtRequest.isEmpty) return;
+
+    // `loadingMore`, never `loading`: the rows already on screen stay drawn and
+    // the reading position is kept (AC-13).
+    emit(
+      _withTab(
+        event.type,
+        status: GetCommentsStatus.loadingMore,
+        clearMessage: true,
+      ),
+    );
+
+    final int generationAtRequest = _commentsLoadGeneration;
+
+    final response = await getSellerCommentsUseCase(
+      GetSellerCommentsParams(
+        sellerId: sellerIdAtRequest,
+        type: event.type,
+        page: current.meta.currentPage + 1,
+      ),
+    );
+
+    if (_commentsResponseIsStale(sellerIdAtRequest, generationAtRequest)) {
+      _logComments('load-more-${event.type.value}', 'dropped-stale');
+      return;
+    }
+
+    response.fold(
+      (failure) {
+        _logComments('load-more-${event.type.value}', 'failed');
+        // The already-loaded rows stay; only the status and message change.
+        emit(
+          _withTab(
+            event.type,
+            status: GetCommentsStatus.success,
+            message: _commentsFailureMessage(failure),
+          ),
+        );
+      },
+      (next) {
+        _logComments('load-more-${event.type.value}', 'appended');
+        emit(
+          _withTab(
+            event.type,
+            // Appends, de-duplicating by comment id — a page boundary can
+            // shift under a concurrent write on the backend (AC-13).
+            comments: _commentsFor(event.type).appendPage(next),
+            status: GetCommentsStatus.success,
+            clearMessage: true,
+          ),
+        );
+      },
+    );
+  }
+
+  /// Empty both tabs and invalidate every request in flight.
+  ///
+  /// The only place `_commentsLoadGeneration` moves. Dispatched when the screen
+  /// opens and when it is disposed, so a shop switch — which pops this screen —
+  /// cannot leave the previous shop's comments to render on the next open
+  /// (AC-4). The bloc is a `@LazySingleton`; without this the lists would live
+  /// for the lifetime of the app.
+  FutureOr<void> _onClearSellerCommentsEvent(
+    ClearSellerCommentsEvent event,
+    Emitter<DashBoardState> emit,
+  ) {
+    _commentsLoadGeneration++;
+    _logComments('clear', 'cleared');
+    emit(
+      state.copyWith(
+        faqComments: const GetSellerCommentsModel.empty(),
+        reviewComments: const GetSellerCommentsModel.empty(),
+        faqCommentsStatus: GetCommentsStatus.init,
+        reviewCommentsStatus: GetCommentsStatus.init,
+        commentReplyWriteStatus: CommentReplyWriteStatus.init,
+        clearCommentsMessage: true,
+      ),
+    );
+  }
+
+  FutureOr<void> _onSubmitCommentReplyEvent(
+    SubmitCommentReplyEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    final String? sellerIdAtRequest = _currentSellerId;
+    if (sellerIdAtRequest == null || sellerIdAtRequest.isEmpty) return;
+
+    final String replyText = event.replyText.trim();
+    // The client refuses empty and over-long before any request is sent
+    // (AC-25). The field caps at the same number, so this is the second of two
+    // gates, not the only one.
+    if (replyText.isEmpty || replyText.length > kSellerReplyMaxLength) {
+      _logComments('reply', 'rejected-client-validation');
+      emit(
+        state.copyWith(
+          commentReplyWriteStatus: CommentReplyWriteStatus.failure,
+          commentsMessage: LocaleKeys.comments_reply_invalid.tr(),
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        commentReplyWriteStatus: CommentReplyWriteStatus.inFlight,
+        clearCommentsMessage: true,
+      ),
+    );
+
+    final int generationAtRequest = _commentsLoadGeneration;
+
+    // Create versus edit is read from the comment's own flag, never from
+    // anything the member chose (AC-22).
+    final response = event.hasReply
+        ? await editCommentReplyUseCase(
+            EditCommentReplyParams(
+              sellerId: sellerIdAtRequest,
+              commentId: event.commentId,
+              replyText: replyText,
+            ),
+          )
+        : await replyToCommentUseCase(
+            ReplyToCommentParams(
+              sellerId: sellerIdAtRequest,
+              commentId: event.commentId,
+              replyText: replyText,
+            ),
+          );
+
+    if (_commentsResponseIsStale(sellerIdAtRequest, generationAtRequest)) {
+      _logComments('reply', 'dropped-stale');
+      return;
+    }
+
+    response.fold(
+      (failure) {
+        _logComments('reply', 'failed');
+        // A comment the server no longer knows is dropped from the list, and
+        // the rest of the list is untouched (AC-26, EC-5).
+        final bool gone = failure.statusCode == 404;
+        emit(
+          _withTab(
+            event.type,
+            comments: gone
+                ? _commentsFor(event.type).removeComment(event.commentId)
+                : null,
+            writeStatus: CommentReplyWriteStatus.failure,
+            message: _commentsFailureMessage(failure),
+          ),
+        );
+      },
+      (_) {
+        _logComments('reply', event.hasReply ? 'edited' : 'created');
+        // **Patch the one row in place.** No refetch: refetching would discard
+        // every appended page and send the member back to the top, which AC-21
+        // forbids.
+        final GetSellerCommentsModel current = _commentsFor(event.type);
+        final int index = current.comments.indexWhere(
+          (SellerCommentModel c) => c.commentId == event.commentId,
+        );
+        emit(
+          _withTab(
+            event.type,
+            comments: index < 0
+                ? null
+                : current.replaceComment(
+                    current.comments[index].copyWith(
+                      hasReply: true,
+                      sellerReply: replyText,
+                      // An edit keeps the original reply time (EC-12); a brand
+                      // new reply has none to keep, and the next read fills it
+                      // in from the server.
+                      replyCreatedAt: event.hasReply
+                          ? current.comments[index].replyCreatedAt
+                          : null,
+                    ),
+                  ),
+            writeStatus: CommentReplyWriteStatus.success,
+            clearMessage: true,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onDeleteCommentReplyEvent(
+    DeleteCommentReplyEvent event,
+    Emitter<DashBoardState> emit,
+  ) async {
+    final String? sellerIdAtRequest = _currentSellerId;
+    if (sellerIdAtRequest == null || sellerIdAtRequest.isEmpty) return;
+
+    emit(
+      state.copyWith(
+        commentReplyWriteStatus: CommentReplyWriteStatus.inFlight,
+        clearCommentsMessage: true,
+      ),
+    );
+
+    final int generationAtRequest = _commentsLoadGeneration;
+
+    final response = await deleteCommentReplyUseCase(
+      DeleteCommentReplyParams(
+        sellerId: sellerIdAtRequest,
+        commentId: event.commentId,
+      ),
+    );
+
+    if (_commentsResponseIsStale(sellerIdAtRequest, generationAtRequest)) {
+      _logComments('delete-reply', 'dropped-stale');
+      return;
+    }
+
+    response.fold(
+      (failure) {
+        _logComments('delete-reply', 'failed');
+        final bool gone = failure.statusCode == 404;
+        emit(
+          _withTab(
+            event.type,
+            comments: gone
+                ? _commentsFor(event.type).removeComment(event.commentId)
+                : null,
+            writeStatus: CommentReplyWriteStatus.failure,
+            message: _commentsFailureMessage(failure),
+          ),
+        );
+      },
+      (_) {
+        _logComments('delete-reply', 'deleted');
+        // The reply is cleared; the comment stays and goes back to its
+        // unanswered form (AC-23). Patched in place, not refetched.
+        final GetSellerCommentsModel current = _commentsFor(event.type);
+        final int index = current.comments.indexWhere(
+          (SellerCommentModel c) => c.commentId == event.commentId,
+        );
+        emit(
+          _withTab(
+            event.type,
+            comments: index < 0
+                ? null
+                : current.replaceComment(
+                    current.comments[index].copyWith(
+                      hasReply: false,
+                      sellerReply: '',
+                      sellerName: '',
+                      clearReplyCreatedAt: true,
+                      replyTotalLikes: 0,
+                    ),
+                  ),
+            writeStatus: CommentReplyWriteStatus.success,
+            clearMessage: true,
           ),
         );
       },

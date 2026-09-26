@@ -110,6 +110,43 @@ class DashboardPermissionChecker {
         permissions.contains(DashBoardPermission.CHANGE_LOCATION_STATUS.value);
   }
 
+  // --- Customer comments -------------------------------------------------
+  //
+  // Four permissions, one per action, each `SUPER_ADMIN`-or-the-named-one.
+  //
+  // Unlike Locations, the gate here is on the **tab itself**: without
+  // `canReadComments()` the dashboard entry is not drawn at all (AC-19). That
+  // is the owner's decision of 2026-09-09, recorded against `OQ-4`.
+  //
+  // These four names were absent from `DashBoardPermission` until this work
+  // item added them, and `fromString` drops an unknown string silently — so if
+  // the backend never sends them, every check below is false and the tab stays
+  // hidden. That is a defined outcome, and it fails closed like the rest.
+
+  /// See the Customers Comments tab at all, and read both lists.
+  bool canReadComments() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.READ_COMMENTS.value);
+  }
+
+  /// Show the reply action on a FAQ comment that has no reply yet.
+  bool canReplyToComment() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.REPLY_COMMENT.value);
+  }
+
+  /// Show the edit action on a reply that already exists.
+  bool canEditCommentReply() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.EDIT_REPLY.value);
+  }
+
+  /// Show the delete action on a reply that already exists.
+  bool canDeleteCommentReply() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.DELETE_REPLY.value);
+  }
+
   /// Check if user can see Stories tab
   /// The backend does not expose a dedicated stories permission yet, so the tab
   /// is visible to every shop member. Gate it here once the permission exists.

@@ -160,6 +160,8 @@ import '../../features/dashBoard/domain/useCase/create_seller_story_usecase.dart
     as _i129;
 import '../../features/dashBoard/domain/useCase/create_shop_location_usecase.dart'
     as _i258;
+import '../../features/dashBoard/domain/useCase/delete_comment_reply_usecase.dart'
+    as _i10;
 import '../../features/dashBoard/domain/useCase/delete_seller_story_usecase.dart'
     as _i725;
 import '../../features/dashBoard/domain/useCase/delete_user_usecase.dart'
@@ -168,6 +170,8 @@ import '../../features/dashBoard/domain/useCase/DeleteGalleryImagesUseCase.dart'
     as _i249;
 import '../../features/dashBoard/domain/useCase/downloadExcelTemplate_usecase.dart'
     as _i921;
+import '../../features/dashBoard/domain/useCase/edit_comment_reply_usecase.dart'
+    as _i679;
 import '../../features/dashBoard/domain/useCase/get_boutiques_usecase.dart'
     as _i412;
 import '../../features/dashBoard/domain/useCase/get_location_form_countries_usecase.dart'
@@ -178,6 +182,8 @@ import '../../features/dashBoard/domain/useCase/get_presigned_url_usecase.dart'
     as _i781;
 import '../../features/dashBoard/domain/useCase/get_products_usecase.dart'
     as _i51;
+import '../../features/dashBoard/domain/useCase/get_seller_comments_usecase.dart'
+    as _i861;
 import '../../features/dashBoard/domain/useCase/get_seller_stories_usecase.dart'
     as _i824;
 import '../../features/dashBoard/domain/useCase/get_shop_location_for_edit_usecase.dart'
@@ -204,6 +210,8 @@ import '../../features/dashBoard/domain/useCase/leave_shop_usecase.dart'
     as _i858;
 import '../../features/dashBoard/domain/useCase/newGetUserOrders_useCase.dart'
     as _i129;
+import '../../features/dashBoard/domain/useCase/reply_to_comment_usecase.dart'
+    as _i439;
 import '../../features/dashBoard/domain/useCase/submit_vendor_request_usecase.dart'
     as _i916;
 import '../../features/dashBoard/domain/useCase/update_shop_location_usecase.dart'
@@ -950,6 +958,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i258.CreateShopLocationUseCase>(
     () => _i258.CreateShopLocationUseCase(gh<_i70.DashBoardRepository>()),
   );
+  gh.factory<_i10.DeleteCommentReplyUseCase>(
+    () => _i10.DeleteCommentReplyUseCase(gh<_i70.DashBoardRepository>()),
+  );
   gh.factory<_i725.DeleteSellerStoryUseCase>(
     () => _i725.DeleteSellerStoryUseCase(gh<_i70.DashBoardRepository>()),
   );
@@ -958,6 +969,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i921.DownloadexceltemplateUsecase>(
     () => _i921.DownloadexceltemplateUsecase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i679.EditCommentReplyUseCase>(
+    () => _i679.EditCommentReplyUseCase(gh<_i70.DashBoardRepository>()),
   );
   gh.factory<_i939.GetexcelcategoriesUsecase>(
     () => _i939.GetexcelcategoriesUsecase(gh<_i70.DashBoardRepository>()),
@@ -977,6 +991,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i51.GetProductsUseCase>(
     () => _i51.GetProductsUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i861.GetSellerCommentsUseCase>(
+    () => _i861.GetSellerCommentsUseCase(gh<_i70.DashBoardRepository>()),
   );
   gh.factory<_i824.GetSellerStoriesUseCase>(
     () => _i824.GetSellerStoriesUseCase(gh<_i70.DashBoardRepository>()),
@@ -1005,6 +1022,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i129.NewGetOrdersUseCase>(
     () => _i129.NewGetOrdersUseCase(gh<_i70.DashBoardRepository>()),
   );
+  gh.factory<_i439.ReplyToCommentUseCase>(
+    () => _i439.ReplyToCommentUseCase(gh<_i70.DashBoardRepository>()),
+  );
   gh.factory<_i916.SubmitVendorRequestUseCase>(
     () => _i916.SubmitVendorRequestUseCase(gh<_i70.DashBoardRepository>()),
   );
@@ -1019,44 +1039,6 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i282.UploadFileToS3UseCase>(
     () => _i282.UploadFileToS3UseCase(gh<_i70.DashBoardRepository>()),
-  );
-  gh.lazySingleton<_i976.DashboardBloc>(
-    () => _i976.DashboardBloc(
-      gh<_i652.GetUserPermissionUseCase>(),
-      gh<_i246.GetUserRolesUseCase>(),
-      gh<_i900.GetUsersUseCase>(),
-      gh<_i602.AddUserUseCase>(),
-      gh<_i919.GetOrdersUseCase>(),
-      gh<_i939.GetexcelcategoriesUsecase>(),
-      gh<_i51.GetProductsUseCase>(),
-      gh<_i412.GetBoutiquesUseCase>(),
-      gh<_i645.ChangeOrderStatusUseCase>(),
-      gh<_i441.DeleteUserUseCase>(),
-      gh<_i1023.UpdateUserRoleUseCase>(),
-      gh<_i378.GetUploadedExcelFilesUsecase>(),
-      gh<_i858.LeaveShopUseCase>(),
-      gh<_i781.GetPresignedUrlUseCase>(),
-      gh<_i282.UploadFileToS3UseCase>(),
-      gh<_i976.SubmitVendorRequestUseCase>(),
-      gh<_i135.GetVendorRequestUseCase>(),
-      gh<_i388.UpdateVendorRequestUseCase>(),
-      gh<_i129.NewGetOrdersUseCase>(),
-      gh<_i553.ChangeOrderDetailStatusToConfirmedUseCase>(),
-      gh<_i288.ChangeOrderDetailStatusToPackedUseCase>(),
-      gh<_i824.GetSellerStoriesUseCase>(),
-      gh<_i976.CreateSellerStoryUseCase>(),
-      gh<_i725.DeleteSellerStoryUseCase>(),
-      gh<_i318.UploadFileMediaServerUseCase>(),
-      gh<_i921.DownloadexceltemplateUsecase>(),
-      gh<_i914.GetGalleryImagesUseCase>(),
-      gh<_i249.DeleteGalleryImagesUseCase>(),
-      gh<_i853.GetShopInfoUseCase>(),
-      gh<_i25.UpdateShopInfoUseCase>(),
-      gh<_i417.GetShopLocationsUseCase>(),
-      gh<_i258.CreateShopLocationUseCase>(),
-      gh<_i750.UpdateShopLocationUseCase>(),
-      gh<_i4.ChangeShopLocationStatusUseCase>(),
-    ),
   );
   gh.factory<_i589.CreateUserUseCase>(
     () => _i589.CreateUserUseCase(gh<_i420.ChatRepository>()),
@@ -1125,6 +1107,48 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i750.UpdateProfileInChatUseCase>(
     () => _i750.UpdateProfileInChatUseCase(gh<_i420.ChatRepository>()),
+  );
+  gh.lazySingleton<_i976.DashboardBloc>(
+    () => _i976.DashboardBloc(
+      gh<_i652.GetUserPermissionUseCase>(),
+      gh<_i246.GetUserRolesUseCase>(),
+      gh<_i900.GetUsersUseCase>(),
+      gh<_i602.AddUserUseCase>(),
+      gh<_i919.GetOrdersUseCase>(),
+      gh<_i939.GetexcelcategoriesUsecase>(),
+      gh<_i51.GetProductsUseCase>(),
+      gh<_i412.GetBoutiquesUseCase>(),
+      gh<_i645.ChangeOrderStatusUseCase>(),
+      gh<_i441.DeleteUserUseCase>(),
+      gh<_i1023.UpdateUserRoleUseCase>(),
+      gh<_i378.GetUploadedExcelFilesUsecase>(),
+      gh<_i858.LeaveShopUseCase>(),
+      gh<_i781.GetPresignedUrlUseCase>(),
+      gh<_i282.UploadFileToS3UseCase>(),
+      gh<_i976.SubmitVendorRequestUseCase>(),
+      gh<_i135.GetVendorRequestUseCase>(),
+      gh<_i388.UpdateVendorRequestUseCase>(),
+      gh<_i129.NewGetOrdersUseCase>(),
+      gh<_i553.ChangeOrderDetailStatusToConfirmedUseCase>(),
+      gh<_i288.ChangeOrderDetailStatusToPackedUseCase>(),
+      gh<_i824.GetSellerStoriesUseCase>(),
+      gh<_i976.CreateSellerStoryUseCase>(),
+      gh<_i725.DeleteSellerStoryUseCase>(),
+      gh<_i318.UploadFileMediaServerUseCase>(),
+      gh<_i921.DownloadexceltemplateUsecase>(),
+      gh<_i914.GetGalleryImagesUseCase>(),
+      gh<_i249.DeleteGalleryImagesUseCase>(),
+      gh<_i853.GetShopInfoUseCase>(),
+      gh<_i25.UpdateShopInfoUseCase>(),
+      gh<_i417.GetShopLocationsUseCase>(),
+      gh<_i258.CreateShopLocationUseCase>(),
+      gh<_i750.UpdateShopLocationUseCase>(),
+      gh<_i4.ChangeShopLocationStatusUseCase>(),
+      gh<_i861.GetSellerCommentsUseCase>(),
+      gh<_i439.ReplyToCommentUseCase>(),
+      gh<_i679.EditCommentReplyUseCase>(),
+      gh<_i10.DeleteCommentReplyUseCase>(),
+    ),
   );
   gh.factory<_i661.AnswerCallUseCase>(
     () => _i661.AnswerCallUseCase(gh<_i1032.CallsRepository>()),

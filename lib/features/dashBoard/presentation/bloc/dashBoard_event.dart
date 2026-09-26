@@ -294,3 +294,67 @@ class ChangeShopLocationStatusEvent extends DashBoardEvent {
 
   ChangeShopLocationStatusEvent({required this.id, required this.status});
 }
+
+// ---------------------------------------------------------------------------
+// Customer comments
+// ---------------------------------------------------------------------------
+
+/// Load the first page of one tab, replacing whatever that tab held.
+///
+/// [canRead] travels with the event so the handler can refuse without asking
+/// the widget tree for a permission checker it does not own.
+class GetSellerCommentsEvent extends DashBoardEvent {
+  final SellerCommentType type;
+  final bool canRead;
+
+  GetSellerCommentsEvent({required this.type, required this.canRead});
+}
+
+/// Append the next page of one tab.
+///
+/// Separate from [GetSellerCommentsEvent] because the two must look different
+/// on screen: a first load may show a full-tab spinner, a "load more" must
+/// leave the rows in place (AC-13). The page number is not carried here — it
+/// comes from the tab's own `meta`, which is the server's own count.
+class LoadMoreSellerCommentsEvent extends DashBoardEvent {
+  final SellerCommentType type;
+
+  LoadMoreSellerCommentsEvent({required this.type});
+}
+
+/// Empty both tabs, on a shop switch or when the screen is disposed.
+///
+/// **This is the only event that increments the comments load generation**, and
+/// it is what makes `AC-4` real: without it the generation never changes, a
+/// response from the previous shop passes the staleness check, and — because
+/// the bloc is a `@LazySingleton` that outlives the screen — the old shop's
+/// comments render on the next open.
+class ClearSellerCommentsEvent extends DashBoardEvent {
+  ClearSellerCommentsEvent();
+}
+
+/// Create or edit a reply, decided by [hasReply].
+///
+/// One event for both verbs, because the screen must not be able to choose:
+/// `has_reply` is the whole of the decision (AC-22).
+class SubmitCommentReplyEvent extends DashBoardEvent {
+  final String commentId;
+  final String replyText;
+  final bool hasReply;
+  final SellerCommentType type;
+
+  SubmitCommentReplyEvent({
+    required this.commentId,
+    required this.replyText,
+    required this.hasReply,
+    required this.type,
+  });
+}
+
+/// Remove a reply. The comment itself stays in the list.
+class DeleteCommentReplyEvent extends DashBoardEvent {
+  final String commentId;
+  final SellerCommentType type;
+
+  DeleteCommentReplyEvent({required this.commentId, required this.type});
+}

@@ -19,6 +19,7 @@ import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
 import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/get_shop_locations_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_seller_comments_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
@@ -721,6 +722,136 @@ class DashBoardRemoteDataSource {
   /// Building the map here from a single fixed key is what keeps this feature
   /// unable to exercise that. Hardening `post.dart` is a `lib/core/api/**`
   /// change and belongs to its own ticket.
+  // ---------------------------------------------------------------------------
+  // Customer comments — FAQ questions and purchase reviews.
+  //
+  // These four are the only calls in this file that do NOT go to the market
+  // server. They use `ServerName.sellerCommentsWeb`: the `{WEB_API}` base with
+  // the market token. See the comment on that enum value before adding a fifth.
+  //
+  // The shop travels as `seller_id` in the query or the body, captured by the
+  // caller when the action started — not as the `X-Seller-ID` header, which
+  // `BaseApi` adds for `ServerName.dashBoard` only.
+  //
+  // No `extraHeaders` anywhere below: only `post.dart` reads that field, so a
+  // value set on the GET, PUT or DELETE here would be silently dropped and
+  // would read like a tenant guard that is not there.
+  // ---------------------------------------------------------------------------
+
+  /// `GET /api/seller/comments` — one page of one tab.
+  ///
+  /// `pageSize` is clamped to the server's maximum of 50 (AC-17) rather than
+  /// trusted, so no caller can widen the read by passing a larger number.
+  Future<GetSellerCommentsModel> getSellerComments({
+    required String sellerId,
+    required SellerCommentType type,
+    required int page,
+    required int pageSize,
+  }) {
+    final int safePageSize = pageSize < 1
+        ? 1
+        : (pageSize > kSellerCommentsMaxPageSize
+              ? kSellerCommentsMaxPageSize
+              : pageSize);
+
+    GetClient<GetSellerCommentsModel> getSellerComments =
+        GetClient<GetSellerCommentsModel>(
+          serverName: ServerName.sellerCommentsWeb,
+          requestPrams: RequestConfig<GetSellerCommentsModel>(
+            endpoint: WebAppEndPoints.sellerCommentsEP,
+            queryParameters: <String, String>{
+              'seller_id': sellerId,
+              'type': type.value,
+              'page': page.toString(),
+              'page_size': safePageSize.toString(),
+            },
+            response: ResponseValue<GetSellerCommentsModel>(
+              fromJson: (response) => GetSellerCommentsModel.fromJson(response),
+            ),
+          ),
+        );
+    return getSellerComments();
+  }
+
+  /// `POST /api/seller/comments/reply` — create a reply.
+  Future<ReadOnlyMessageFromApiModel> replyToSellerComment({
+    required String sellerId,
+    required String commentId,
+    required String replyText,
+  }) {
+    PostClient<ReadOnlyMessageFromApiModel> replyToSellerComment =
+        PostClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.sellerCommentsWeb,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: WebAppEndPoints.sellerCommentReplyEP,
+            data: <String, dynamic>{
+              'seller_id': sellerId,
+              'comment_id': commentId,
+              'reply_text': replyText,
+            },
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return replyToSellerComment();
+  }
+
+  /// `PUT /api/seller/comments/reply` — edit an existing reply.
+  ///
+  /// Same path and same body as the create; the verb is the whole difference,
+  /// and which verb is right is decided by `has_reply` (AC-22).
+  Future<ReadOnlyMessageFromApiModel> editSellerCommentReply({
+    required String sellerId,
+    required String commentId,
+    required String replyText,
+  }) {
+    PutClient<ReadOnlyMessageFromApiModel> editSellerCommentReply =
+        PutClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.sellerCommentsWeb,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: WebAppEndPoints.sellerCommentReplyEP,
+            data: <String, dynamic>{
+              'seller_id': sellerId,
+              'comment_id': commentId,
+              'reply_text': replyText,
+            },
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return editSellerCommentReply();
+  }
+
+  /// `DELETE /api/seller/comments/reply` — remove a reply, keeping the comment.
+  ///
+  /// A `DELETE` with a body, like `deleteGalleryImages` above; `DeleteClient`
+  /// passes `data` through.
+  Future<ReadOnlyMessageFromApiModel> deleteSellerCommentReply({
+    required String sellerId,
+    required String commentId,
+  }) {
+    DeleteClient<ReadOnlyMessageFromApiModel> deleteSellerCommentReply =
+        DeleteClient<ReadOnlyMessageFromApiModel>(
+          serverName: ServerName.sellerCommentsWeb,
+          requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
+            endpoint: WebAppEndPoints.sellerCommentReplyEP,
+            data: <String, dynamic>{
+              'seller_id': sellerId,
+              'comment_id': commentId,
+            },
+            response: ResponseValue<ReadOnlyMessageFromApiModel>(
+              fromJson: (response) =>
+                  ReadOnlyMessageFromApiModel.fromJson(response),
+            ),
+          ),
+        );
+    return deleteSellerCommentReply();
+  }
+
   static const String _kSellerIdHeader = 'X-Seller-ID';
 
   Map<String, dynamic>? _sellerHeader(String? sellerId) {

@@ -25,6 +25,21 @@ enum ServerName {
   webApp,
   comment,
   get_comment_token,
+
+  /// The seller dashboard's Customers Comments screen.
+  ///
+  /// **Read the pairing before using this value.** It is the `{WEB_API}` base
+  /// (`WEB_APP`) carrying the **market** token — a pair no other value sends.
+  /// `ServerName.comment` sits on the same base but sends `tokenForComment`,
+  /// and `get_comment_token` is the call that mints that other token; picking
+  /// either of them here fails silently with an empty list rather than an
+  /// error, because the server answers a request it cannot attribute with
+  /// nothing at all.
+  ///
+  /// Used only by the four `/api/seller/comments…` calls in the dashboard data
+  /// source. Adding a caller means checking that the caller really wants the
+  /// market token on the web server.
+  sellerCommentsWeb,
   wallet,
   mediaServer,
 }
@@ -57,6 +72,9 @@ Uri getBaseUriForSpecificServer(ServerName serverName) {
       return WebUrls.baseUri;
     case ServerName.comment:
       return WebUrls.baseUri;
+    case ServerName.sellerCommentsWeb:
+      // Same base as `webApp` and `comment`; the token is what differs.
+      return WebUrls.baseUri;
     case ServerName.gemini:
       return Uri.parse("https://api.gemini.com");
     case ServerName.get_comment_token:
@@ -87,6 +105,10 @@ String? getServerToken(ServerName serverName) {
       return prefsRepository.walletToken;
     case ServerName.comment:
       return prefsRepository.tokenForComment;
+    case ServerName.sellerCommentsWeb:
+      // The market token, on the web base. Not `tokenForComment` — that one
+      // belongs to the buyer-side public comment routes.
+      return prefsRepository.marketToken;
     case ServerName.elastic:
       return null;
     case ServerName.location:

@@ -8,6 +8,7 @@ import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
 import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/get_shop_locations_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_seller_comments_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
@@ -325,6 +326,68 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   changeShopLocationStatus(int id, int status, String? sellerId) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.changeShopLocationStatus(id, status, sellerId),
+    );
+  }
+
+  // --- Customer comments -------------------------------------------------
+
+  @override
+  Future<Either<Failure, GetSellerCommentsModel>> getSellerComments({
+    required String sellerId,
+    required SellerCommentType type,
+    required int page,
+    required int pageSize,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getSellerComments(
+        sellerId: sellerId,
+        type: type,
+        page: page,
+        pageSize: pageSize,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> replyToSellerComment({
+    required String sellerId,
+    required String commentId,
+    required String replyText,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.replyToSellerComment(
+        sellerId: sellerId,
+        commentId: commentId,
+        replyText: replyText,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> editSellerCommentReply({
+    required String sellerId,
+    required String commentId,
+    required String replyText,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.editSellerCommentReply(
+        sellerId: sellerId,
+        commentId: commentId,
+        replyText: replyText,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> deleteSellerCommentReply({
+    required String sellerId,
+    required String commentId,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.deleteSellerCommentReply(
+        sellerId: sellerId,
+        commentId: commentId,
+      ),
     );
   }
 }

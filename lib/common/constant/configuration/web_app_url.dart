@@ -24,6 +24,26 @@ abstract class WebAppEndPoints {
       "public_comment/comments/$commentId/update";
   static String deleteOrderRatingEP(String commentId) =>
       "public_comment/comments/$commentId/delete";
+  // ---------------------------------------------------------------------------
+  // Seller comments — the dashboard's Customers Comments screen.
+  //
+  // Two paths serve four calls: the collection is read with `GET`, and the one
+  // reply path answers `POST` (create), `PUT` (edit) and `DELETE` (remove).
+  // They live here, with the other `{WEB_API}` routes, because that is the
+  // server they belong to — `DashBoardEndPoints` is the market server.
+  //
+  // The shop travels as a `seller_id` query parameter or body field, never as
+  // the `X-Seller-ID` header the market server uses.
+  // ---------------------------------------------------------------------------
+
+  /// `GET` — one page of comments for one `type` (`faq` or `review`).
+  static const sellerCommentsEP = "api/seller/comments";
+
+  /// `POST` creates a reply, `PUT` edits it, `DELETE` removes it. Which verb is
+  /// correct is decided by the comment's own `has_reply` flag, never by the
+  /// member.
+  static const sellerCommentReplyEP = "api/seller/comments/reply";
+
   static const getFqaCommentsEP = "api/products/comments/fqa_comments";
   static const getBuyersCommentsEP = "api/products/comments/buyers_comments";
   static const generateTokenForCommentEP = "public_comment/auth/exchange_token";

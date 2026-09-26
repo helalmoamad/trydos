@@ -135,7 +135,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
   @override
   Widget build(BuildContext context) {
-
     return Hero(
       tag: widget.collectionIndex,
       createRectTween: HeroAnimationAsset.customTweenRect,
@@ -968,6 +967,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                           .userId ==
                                       prefsRepository.myStoriesId
                                   ? const SizedBox.shrink()
+                                  : !prefsRepository.isVerifiedPhone!
+                                  ? const SizedBox.shrink()
                                   : Material(
                                       color: Colors.transparent,
                                       child: InkWell(
@@ -993,9 +994,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                           );
                                         },
                                         child: Icon(
-                                          Icons.error,
+                                          Icons.flag,
                                           size: 26.h,
-                                          color: Colors.red,
+                                          color: const Color.fromARGB(
+                                            255,
+                                            187,
+                                            184,
+                                            184,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -1115,7 +1121,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             final enableButton =
                 selectedReasons.isNotEmpty &&
                 (!hasOther || controller.text.trim().isNotEmpty);
-
             return Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -1165,7 +1170,9 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                     SizedBox(height: 8.h),
 
                     Align(
-                      alignment: Alignment.centerRight,
+                      alignment: LanguageService.rtl
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
                       child: Text(
                         LocaleKeys.report_reason.tr(),
                         style: TextStyle(color: Colors.grey, fontSize: 13.sp),
@@ -1194,22 +1201,29 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             duration: const Duration(milliseconds: 200),
                             height: 52.h,
                             decoration: BoxDecoration(
-                              color: selected
-                                  ? const Color(0xffFFF2F2)
-                                  : const Color(0xffF5F5F5),
+                              color:selected
+                                    ? Colors.grey.shade300 :const Color.fromARGB(255, 254, 253, 253)
+                                    ,
                               borderRadius: BorderRadius.circular(16.r),
                               border: Border.all(
                                 color: selected
-                                    ? Colors.red
+                                    ? const Color.fromARGB(255, 57, 99, 236)
                                     : Colors.grey.shade300,
                               ),
                             ),
-                            child: Center(
-                              child: Text(
-                                reason.title,
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w600,
+                            child: Align(
+                              alignment: LanguageService.rtl
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                child: Text(
+                                  reason.title,
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
@@ -1239,7 +1253,15 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                         controller: controller,
                         maxLength: 500,
                         maxLines: 5,
-                        onChanged: (_) => setState(() {}),
+                        onChanged: (_) => setState(() {
+                          if (controller.text.isNotEmpty) {
+                            if (!selectedReasons.contains("other")) {
+                              selectedReasons.add("other");
+                            }
+                          }else{
+                            selectedReasons.remove("other");
+                          }
+                        }),
                         decoration: InputDecoration(
                           hintText: LocaleKeys.write_details_here.tr(),
                           counterText: "",
@@ -1342,46 +1364,47 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   ReportingAboutStory.loading;
 
                               return ElevatedButton(
-                                onPressed: () {
-                                  // منع الضغط أثناء التحميل أو إذا كان الزر معطل
-                                  if (!enableButton || loading) return;
-
-                                  // المستخدم موثق
-                                  if (prefsRepository.isVerifiedPhone ??
-                                      false) {
-                                    homeBloc.add(
-                                      homeEvent.ReportAboutStoryEvent(
-                                        userId: prefsRepository.myMarketId
-                                            .toString(),
-                                        storyId: storyId,
-                                        reasons: selectedReasons.toList(),
-                                        notes: controller.text.trim(),
-                                      ),
-                                    );
-                                  } else {
-                                    GuestPhoneVerificationDialog.show(
-                                      context,
-                                      onVerified: () {
-                                        homeBloc.add(
-                                          homeEvent.ReportAboutStoryEvent(
-                                            userId: prefsRepository.myMarketId
-                                                .toString(),
-                                            storyId: storyId,
-                                            reasons: selectedReasons.toList(),
-                                            notes: controller.text.trim(),
-                                          ),
-                                        );
+                                onPressed: (!enableButton || loading)
+                                    ? null
+                                    : () {
+                                        // المستخدم موثق
+                                        if (prefsRepository.isVerifiedPhone ??
+                                            false) {
+                                          homeBloc.add(
+                                            homeEvent.ReportAboutStoryEvent(
+                                              userId: prefsRepository.myMarketId
+                                                  .toString(),
+                                              storyId: storyId,
+                                              reasons: selectedReasons.toList(),
+                                              notes: controller.text.trim(),
+                                            ),
+                                          );
+                                        } else {
+                                          GuestPhoneVerificationDialog.show(
+                                            context,
+                                            onVerified: () {
+                                              homeBloc.add(
+                                                homeEvent.ReportAboutStoryEvent(
+                                                  userId: prefsRepository
+                                                      .myMarketId
+                                                      .toString(),
+                                                  storyId: storyId,
+                                                  reasons: selectedReasons
+                                                      .toList(),
+                                                  notes: controller.text.trim(),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        }
                                       },
-                                    );
-                                  }
-                                },
 
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
                                   disabledBackgroundColor: const Color(
                                     0xffD9D9DF,
                                   ),
-                                  backgroundColor: Colors.red,
+                                  backgroundColor: const Color.fromARGB(255, 57, 99, 236),
                                   minimumSize: Size.fromHeight(52.h),
                                   shape: const StadiumBorder(),
                                 ),
@@ -1390,7 +1413,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                         size: 24,
                                         color: Colors.white,
                                       )
-                                    : Text(LocaleKeys.send_report.tr()),
+                                    : Text(LocaleKeys.send_report.tr(), style: TextStyle(color: Colors.white),),
                               );
                             },
                           ),
@@ -1812,15 +1835,28 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             borderRadius: BorderRadius.circular(15.r),
                           ),
                           child: Center(
-                            child: Text(
-                              LocaleKeys.press_here_for_more.tr(),
-                              textAlign: TextAlign.center,
-                              maxLines: 1,
-                              style: context.textTheme.bodyMedium?.rq.copyWith(
-                                color: const Color(0xff1D1D1D),
-                                fontSize: 10.sp,
-                                letterSpacing: 0.18,
-                              ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.link_off_outlined,
+                                  size: 16.sp,
+                                  color: const Color(0xff1D1D1D),
+                                ),
+                                SizedBox(width: 3.w),
+                                Text(
+                                  LocaleKeys.press_here_for_more.tr(),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  style: context.textTheme.bodyMedium?.rq
+                                      .copyWith(
+                                        color: const Color(0xff1D1D1D),
+                                        fontSize: 10.sp,
+                                        letterSpacing: 0.18,
+                                      ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
