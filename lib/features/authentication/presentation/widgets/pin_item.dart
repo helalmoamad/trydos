@@ -19,6 +19,10 @@ class PinItem extends StatefulWidget {
   final TextEditingController controller;
   bool isExpired;
   final bool autoFocus;
+
+  /// نفدت محاولات إدخال الرمز في هذه النافذة الزمنية: الحقل يُقفل حتى ينتهي
+  /// المؤقّت ويُعاد إرسال رمز جديد.
+  final bool locked;
   bool wrongCode;
   final Color borderColor;
   final Color contentColor;
@@ -31,6 +35,7 @@ class PinItem extends StatefulWidget {
     this.checkOtp,
     required this.contentColor,
     required this.isExpired,
+    this.locked = false,
     this.wrongCode = false,
     this.pasteOtpCode,
     required this.onChange,
@@ -155,14 +160,15 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                         child: TextFormField(
                           controller: widget.controller,
                           enabled:
+                              !widget.locked &&
                               (state.verifyOtpSignInStatus !=
-                                  VerifyOtpSignInStatus.loading &&
-                              state.verifyOtpInProfileStatus !=
-                                  VerifyOtpInProfileStatus.loading &&
-                              state.verifyOtpSignUpStatus !=
-                                  VerifyOtpSignUpStatus.loading &&
-                              state.verifyOtpFromGuestStatus !=
-                                  VerifyOtpFromGuestStatus.loading),
+                                      VerifyOtpSignInStatus.loading &&
+                                  state.verifyOtpInProfileStatus !=
+                                      VerifyOtpInProfileStatus.loading &&
+                                  state.verifyOtpSignUpStatus !=
+                                      VerifyOtpSignUpStatus.loading &&
+                                  state.verifyOtpFromGuestStatus !=
+                                      VerifyOtpFromGuestStatus.loading),
                           focusNode: focusNodes[widget.index],
                           onTap: () {
                             if (widget.index != currentToType) {

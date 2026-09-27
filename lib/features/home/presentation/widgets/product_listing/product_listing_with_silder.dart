@@ -16,6 +16,7 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_image_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/static_circle_carousel.dart';
@@ -119,6 +120,49 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
     productCategory = productCategoryList.join(' | ');
     price = widget.productItem.price ?? 0;
     offerPrice = widget.productItem.offerPrice ?? 0;
+    _applyCurrency();
+    endDate = widget.productItem.flashDealEndDateTime;
+    // محاولة الحصول على الصورة من syncColorImages أولاً
+    if (widget.productItem.syncColorImages?.isNotEmpty == true) {
+      final firstColorImage = widget.productItem.syncColorImages!.first;
+      if (firstColorImage.images?.isNotEmpty == true) {
+        imageUrl = firstColorImage.images!.first.filePath;
+      }
+    }
+    if (imageUrl == null && widget.productItem.images?.isNotEmpty == true) {
+      final firstImage = widget.productItem.images!.first;
+      imageUrl = firstImage.filePath;
+    }
+    if (widget.videoSource != null && widget.videoSource!.isNotEmpty) {
+      final String slug = widget.productItem.slug ?? "";
+      videoProductInListingController[slug]?.dispose();
+      videoProductInListingController.remove(slug);
+
+      final controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.videoSource!),
+        videoPlayerOptions: VideoPlayerOptions(),
+      )..setLooping(true);
+      _videoController = controller;
+      videoProductInListingController[slug] = controller;
+
+      _initializeVideoFuture = controller.initialize().then((_) {
+        if (!mounted) return;
+        setState(() {});
+        controller.setVolume(0);
+        controller.play();
+      });
+
+      controller.addListener(_onVideoTick);
+    }
+    _homeBloc = BlocProvider.of<HomeBloc>(context);
+  }
+
+  /// يحسب العملة وسعر الصرف والأسعار المكتوبة بهما.
+  ///
+  /// يُستدعى من `build` أيضاً لا من `initState` وحده: أوّل تثبيت يبني البطاقات
+  /// قبل أن تصل عملة البلد، فكانت تحتفظ برمز فارغ إلى الأبد. وكذلك يُحدّث
+  /// الأسعار فور تغيير البلد.
+  void _applyCurrency() {
     decimalDigits =
         GetIt.I<HomeBloc>()
             .state
@@ -172,40 +216,6 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
           )) *
           exchangeRate),
     );
-    endDate = widget.productItem.flashDealEndDateTime;
-    // محاولة الحصول على الصورة من syncColorImages أولاً
-    if (widget.productItem.syncColorImages?.isNotEmpty == true) {
-      final firstColorImage = widget.productItem.syncColorImages!.first;
-      if (firstColorImage.images?.isNotEmpty == true) {
-        imageUrl = firstColorImage.images!.first.filePath;
-      }
-    }
-    if (imageUrl == null && widget.productItem.images?.isNotEmpty == true) {
-      final firstImage = widget.productItem.images!.first;
-      imageUrl = firstImage.filePath;
-    }
-    if (widget.videoSource != null && widget.videoSource!.isNotEmpty) {
-      final String slug = widget.productItem.slug ?? "";
-      videoProductInListingController[slug]?.dispose();
-      videoProductInListingController.remove(slug);
-
-      final controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.videoSource!),
-        videoPlayerOptions: VideoPlayerOptions(),
-      )..setLooping(true);
-      _videoController = controller;
-      videoProductInListingController[slug] = controller;
-
-      _initializeVideoFuture = controller.initialize().then((_) {
-        if (!mounted) return;
-        setState(() {});
-        controller.setVolume(0);
-        controller.play();
-      });
-
-      controller.addListener(_onVideoTick);
-    }
-    _homeBloc = BlocProvider.of<HomeBloc>(context);
   }
 
   void _onVideoTick() {
@@ -232,9 +242,19 @@ class _ProductListingWithSliderState extends State<ProductListingWithSlider> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: _buildSimpleProductCard(),
+    // عملة البلد قد تصل بعد بناء البطاقة (أوّل تثبيت) أو تتغيّر (تغيير البلد)،
+    // فنعيد حساب الأسعار ونبني من جديد بدل أن تبقى بلا رمز عملة.
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          previous.getCurrencyForCountryModel !=
+          current.getCurrencyForCountryModel,
+      builder: (context, _) {
+        _applyCurrency();
+        return Directionality(
+          textDirection: TextDirection.ltr,
+          child: _buildSimpleProductCard(),
+        );
+      },
     );
   }
 

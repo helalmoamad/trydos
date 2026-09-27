@@ -21,6 +21,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/chat/presentation/pages/media_in_profile.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
+import 'package:trydos/features/chat/presentation/widgets/delete_chat_confirm_dialog.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
@@ -689,7 +690,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                         DeleteChatStatus.loading
                                     ? Center(child: TrydosLoader(size: 20))
                                     : InkWell(
-                                        onTap: () {
+                                        onTap: () async {
+                                          // الحذف يمسح الدردشة من السيرفر ولا
+                                          // رجعة فيه، فنسأل قبله.
+                                          if (!await confirmDeleteChat(
+                                            context,
+                                          )) {
+                                            return;
+                                          }
                                           chatBloc.add(
                                             DeleteChatEvent(
                                               channelId: widget.chatId,

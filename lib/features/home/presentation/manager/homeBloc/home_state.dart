@@ -43,6 +43,9 @@ part 'home_state.g.dart';
 
 enum GetStartingSettingsStatus { init, loading, success, failure }
 
+/// حالة طلب عملة البلد وسعر صرفها.
+enum GetCurrencyForCountryStatus { init, loading, success, failure }
+
 /// Covers the three per-product checklist calls (exist check / add / delete).
 /// Tracked per product id — see [HomeState.checklistItemStatus].
 enum ChecklistItemStatus { init, loading, success, failure }
@@ -242,6 +245,8 @@ class HomeState extends Equatable {
     //this.getListOfProductsFoundedInCartStatus =
     //    GetListOfProductsFoundedInCartStatus.init,
     this.getCurrencyForCountryModel,
+    this.getCurrencyForCountryStatus = GetCurrencyForCountryStatus.init,
+    this.awaitingCountryCurrency = false,
     this.storiesCollections = const [],
     this.selectedVideoStatus = SelectedVideoStatus.init,
     this.storyLink,
@@ -408,6 +413,19 @@ class HomeState extends Equatable {
 
   final GetCurrencyForCountryModel? getCurrencyForCountryModel;
 
+  /// حالتان عابرتان لا تُحفظان مع الحالة: الحفظ يعيدهما بعد إعادة التشغيل
+  /// فتظهر نافذة انتظار بلا طلب جارٍ.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final GetCurrencyForCountryStatus getCurrencyForCountryStatus;
+
+  /// البلد تغيّر وننتظر عملته الجديدة.
+  ///
+  /// ما دامت `true` فالعملة القديمة لم تعد تصلح لعرضها بجانب المنتجات، فتُحجب
+  /// الشاشة بنافذة انتظار ويُعاد الطلب حتى ينجح. تبقى `false` في كل الحالات
+  /// الأخرى، فلا يوقف فشلُ الطلب التطبيقَ في وضع عدم الاتصال.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final bool awaitingCountryCurrency;
+
   final AddItemInCartStatus? addItemInCartStatus;
   final UpdateItemInCartStatus? updateItemInCartStatus;
   final DeleteItemInCartStatus? deleteItemInCartStatus;
@@ -503,6 +521,8 @@ class HomeState extends Equatable {
     userInfo,
     popularSearchTerm,
     getCurrencyForCountryModel,
+    getCurrencyForCountryStatus,
+    awaitingCountryCurrency,
     enableAddToCardAfterChangeVariantZero,
     cartIdsHurryUPTimerStarted,
     createCommentRatingStatus,
@@ -740,6 +760,10 @@ class HomeState extends Equatable {
     final Map<String, bool>? reRequestProductWithFilters,
     final StartingSetting? startingSetting,
     final GetCurrencyForCountryModel? getCurrencyForCountryModel,
+    final GetCurrencyForCountryStatus? getCurrencyForCountryStatus,
+    final bool? awaitingCountryCurrency,
+    /// تفريغ عملة البلد السابق: `copyWith` العادي لا يستطيع كتابة null.
+    final bool clearCurrencyForCountryModel = false,
     final Map<String, GetProductDetailWithoutRelatedProductsModel>?
     cachedProductWithoutRelatedProductsModel,
     GetStoriesForProductStatus? getStoriesForProductStatus,
@@ -948,8 +972,13 @@ class HomeState extends Equatable {
 
       addItemInCartStatus: addItemInCartStatus ?? this.addItemInCartStatus,
 
-      getCurrencyForCountryModel:
-          getCurrencyForCountryModel ?? this.getCurrencyForCountryModel,
+      getCurrencyForCountryModel: clearCurrencyForCountryModel
+          ? null
+          : (getCurrencyForCountryModel ?? this.getCurrencyForCountryModel),
+      getCurrencyForCountryStatus:
+          getCurrencyForCountryStatus ?? this.getCurrencyForCountryStatus,
+      awaitingCountryCurrency:
+          awaitingCountryCurrency ?? this.awaitingCountryCurrency,
 
       currentQuantityForCart:
           currentQuantityForCart ?? this.currentQuantityForCart,

@@ -1985,6 +1985,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
+  root_check_flutter:
+    dependency: "direct main"
+    description:
+      name: root_check_flutter
+      sha256: "76904cbf1b404cd00eefa643ec5bef1b0d8e00805757929ade4015984ef47dbb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.5"
   rxdart:
     dependency: transitive
     description:

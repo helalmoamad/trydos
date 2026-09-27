@@ -120,6 +120,10 @@ abstract class PrefsRepository {
   int? get otpTimerEndTime;
   Future<bool> setOtpTimerEndTime(int endTime);
   Future<bool> removeOtpTimerEndTime();
+
+  /// المحاولات المتبقّية لإدخال رمز التحقّق في نافذة المؤقّت الحالية.
+  int? get otpAttemptsLeft;
+  Future<bool> setOtpAttemptsLeft(int attempts);
   Future<bool> setDuration(int duration);
   Future<bool> setLanguage(String? language);
   Future<bool> setNotificationTypesFromTerminated(

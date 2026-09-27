@@ -12,6 +12,7 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/app_lifecycle_manager.dart';
 import 'package:trydos/features/app/blocs/sensitive_connectivity/connectivity_observer.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
+import 'package:trydos/features/security/presentation/root_security_issue_page.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/ku_fallback_localizations.dart';
@@ -21,8 +22,17 @@ import 'package:trydos/service/service_provider.dart';
 import 'features/chat/presentation/manager/chat_bloc.dart';
 
 class TrydosApplication extends StatefulWidget {
-  const TrydosApplication({Key? key, required this.navKey}) : super(key: key);
+  const TrydosApplication({
+    Key? key,
+    required this.navKey,
+    required this.isSecurityIssueFound,
+  }) : super(key: key);
   final GlobalKey<NavigatorState> navKey;
+
+  /// True when the device is rooted or jailbroken (see `_checkDeviceRooted` in
+  /// main.dart). When true the app builds a dead-end warning screen instead of
+  /// the real app, and starts none of the session services.
+  final bool isSecurityIssueFound;
 
   @override
   State<TrydosApplication> createState() => _TrydosApplicationState();
@@ -49,7 +59,11 @@ class _TrydosApplicationState extends State<TrydosApplication>
   final botToastBuilder = BotToastInit();
   @override
   void initState() {
-    GetIt.I<ChatBloc>().add(GetDateTimeEvent());
+    // On a blocked device the user never reaches any screen, so nothing that
+    // touches the session is started.
+    if (!widget.isSecurityIssueFound) {
+      GetIt.I<ChatBloc>().add(GetDateTimeEvent());
+    }
     WidgetsBinding.instance.addObserver(this);
     /////////////////////
     // FirebaseAnalyticsService.startAnalyticsSession();
@@ -75,6 +89,7 @@ class _TrydosApplicationState extends State<TrydosApplication>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+    if (widget.isSecurityIssueFound) return;
 
     // استخدام AppLifecycleManager لمعالجة الحالة
     AppLifecycleManager().handleLifecycleChange(state);
@@ -116,6 +131,32 @@ class _TrydosApplicationState extends State<TrydosApplication>
       designSize: kDesignSize,
       minTextAdapt: true,
       builder: (context, child) {
+        // Rooted or jailbroken device: a completely different widget tree. No
+        // router, no app-wide blocs, no BotToast, no connectivity or language
+        // observers — nothing that could carry the user into the real app.
+        if (widget.isSecurityIssueFound) {
+          return LocalizationService(
+            child: Builder(
+              builder: (context) {
+                return MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: context.locale,
+                  theme: AppTheme.light,
+                  darkTheme: AppTheme.light,
+                  themeMode: ThemeMode.light,
+                  supportedLocales: context.supportedLocales,
+                  localizationsDelegates: [
+                    ...context.localizationDelegates,
+                    const KuMaterialLocalizationsDelegate(),
+                    const KuWidgetsLocalizationsDelegate(),
+                    const KuCupertinoLocalizationsDelegate(),
+                  ],
+                  home: const RootSecurityIssuePage(),
+                );
+              },
+            ),
+          );
+        }
         return LocalizationService(
           child: SafeArea(
             top: false,

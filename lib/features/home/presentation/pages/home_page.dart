@@ -34,7 +34,7 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/features/home/presentation/widgets/recommend_products_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
-import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_screen_refresh.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
@@ -209,33 +209,8 @@ class _HomePageState extends State<HomePage> {
 
   /// Ø¬Ù„Ø¨ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø¹Ù†Ø¯ Ø§Ù„Ø³Ø­Ø¨ Ù„Ù„ØªØ­Ø¯ÙŠØ« (Ø®Ø§Ø±Ø¬ build Ù„ØªØ­Ø³ÙŠÙ† Ø§Ù„Ø£Ø¯Ø§Ø¡)
   Future<void> _refreshData() async {
-    GetIt.I<BoutiqueBloc>().add(
-      const GetProductWithFiltersWithoutCancelingPreviousEvents(
-        categorySlugs: [],
-        cashedOrginalBoutique: true,
-        boutiqueSlug: "*featured*",
-      ),
-    );
-    GetIt.I<BoutiqueBloc>().add(
-      const GetProductWithFiltersWithoutCancelingPreviousEvents(
-        categorySlugs: [],
-        cashedOrginalBoutique: true,
-        boutiqueSlug: "*recommended*",
-      ),
-    );
-    GetIt.I<BoutiqueBloc>().add(
-      const GetProductWithFiltersWithoutCancelingPreviousEvents(
-        categorySlugs: [],
-        cashedOrginalBoutique: true,
-        boutiqueSlug: "*flashDeal*",
-      ),
-    );
-    if (mounted) {
-      BlocProvider.of<StoryBloc>(
-        context,
-      ).add(const GetStoryEvent(withPaginition: false));
-      categoryBloc.add(const GetMainCategoriesEvent(getWithPrefech: false));
-    }
+    // تعريف واحد للتحديث يشترك فيه السحب وتغيير اللغة وتغيير البلد.
+    refreshHomeScreenData();
   }
 
   /// ðŸš€ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø¹Ù…Ù„ÙŠØ§Øª ÙÙŠ Ø§Ù„Ø®Ù„ÙÙŠØ© Ø¯ÙˆÙ† ØªØ£Ø«ÙŠØ± Ø¹Ù„Ù‰ Ø§Ù„Ø¹Ø±Ø¶

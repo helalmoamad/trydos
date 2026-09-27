@@ -90,7 +90,7 @@
   "enter_correct_code": "Please Enter The Correct Code Sent To Your Phone",
   "please_enter_the_verification_cod": "Please Enter  The verification Code Sent To Your",
   "didnt_receive_code": "Didn't You Receive A Code?",
-  "cancel": "Cancel &",
+  "cancel": "Cancel",
   "you_can_login_now": "You Can Log In Now",
   "this_numbber_already": "This Number Already Registered With Us !",
   "today": "Today",
@@ -982,5 +982,13 @@
   "rdb_scan_code": "Or scan this code with the Ramaaz Digital Bank app",
   "rdb_cart_locked_message": "You have a payment that has not been paid yet, so the cart cannot be changed now.",
   "rdb_close": "Close",
-  "rdb_open_wallet_app": "Open the wallet app"
+  "rdb_open_wallet_app": "Open the wallet app",
+  "getting_country_currency": "Getting your country currency, please wait",
+  "delete_chat_confirm_message": "Are you sure you want to delete this chat? This cannot be undone.",
+  "otp_attempts_finished": "You have used all your attempts. Wait for the timer to end, then ask for a new code.",
+  "copy_invite_link": "Copy invite link",
+  "invite_link_copied": "Invite link copied",
+  "security_issues_found_title": "Security Issues Found",
+  "security_issues_found_message": "This app cannot be opened because your device appears to be rooted or compromised.",
+  "security_issues_found_details": "For your safety and to protect your account and transactions, please remove root access and try again."
 }

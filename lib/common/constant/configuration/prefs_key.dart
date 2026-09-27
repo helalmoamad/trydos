@@ -22,6 +22,9 @@ abstract class PrefsKey {
   static const userStoriesId = r'__$__userStoriesId__$__';
   static const isTimerRunningId = r'__$__isTimerRunning__$__';
   static const otpTimerEndTime = r'__$__otpTimerEndTime__$__';
+
+  /// المحاولات المتبقّية لإدخال رمز التحقّق داخل نافذة المؤقّت الحالية.
+  static const otpAttemptsLeft = r'__$__otpAttemptsLeft__$__';
   static const userCountryIsAvailable = r'__$__UserCountryIsAvailable__$__';
   static const language = r'__$__language__$__';
 

@@ -764,6 +764,13 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.setInt(PrefsKey.otpTimerEndTime, endTime);
 
   @override
+  int? get otpAttemptsLeft => _preferences.getInt(PrefsKey.otpAttemptsLeft);
+
+  @override
+  Future<bool> setOtpAttemptsLeft(int attempts) =>
+      _preferences.setInt(PrefsKey.otpAttemptsLeft, attempts);
+
+  @override
   Future<bool> removeOtpTimerEndTime() =>
       _preferences.remove(PrefsKey.otpTimerEndTime);
 

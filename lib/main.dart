@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:trydos/common/helper/dev_log.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode, kDebugMode;
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_gemini/flutter_gemini.dart' as gemini;
 import 'package:get_it/get_it.dart';
 import 'package:posthog_flutter/posthog_flutter.dart';
+import 'package:root_check_flutter/root_check_flutter.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
@@ -413,6 +415,37 @@ Future<void> _initPostHog() async {
   await Posthog().setup(config);
 }
 
+/// Asks the platform once whether the device is rooted.
+///
+/// Two deliberate limits, both of them narrowing where the block applies:
+///
+/// * **Release builds only.** The plugin reports a device as rooted when
+///   `Build.TAGS` carries `test-keys`, which is true on every Android
+///   emulator. Blocking in debug and profile would lock the team and the
+///   integration tests out of the app. Real users always run a release build
+///   (APK or AAB), so the protection is still there where it matters.
+/// * **Android only.** The iOS side is on hold. The plugin's jailbreak check
+///   reports "jailbroken" when a `sysctl` call *succeeds*, which is the normal
+///   case on a healthy iPhone, so it would very likely block every iOS user.
+///   Turn iOS on only after testing on a real, non-jailbroken device.
+///
+/// On failure this returns `false` (fail-open): a broken plugin call on a
+/// healthy device must never lock out a real user. If this app ever decides
+/// that safety beats availability, change it to `true` and accept that some
+/// legitimate users will be blocked.
+///
+/// To see the block screen while developing, make this return `true` for a
+/// moment — the `kReleaseMode` guard below hides it otherwise.
+Future<bool> _checkDeviceRooted() async {
+  if (!kReleaseMode || !Platform.isAndroid) return false;
+  try {
+    return await RootCheckFlutter.isDeviceRooted;
+  } catch (e, st) {
+    dev.log('Root check failed: $e', stackTrace: st);
+    return false;
+  }
+}
+
 void main() async {
   // debugPrintRebuildDirtyWidgets = true;
   WidgetsFlutterBinding.ensureInitialized();
@@ -489,6 +522,13 @@ void main() async {
     'chat: ${prefsForLog.chatToken != null}, '
     'stories: ${prefsForLog.storiesToken != null}',
   );
+  // Device integrity check. It runs once, after the init above (localization is
+  // already loaded, so the block screen can read its translations) and before
+  // any real UI is shown. The result only travels as one bool to the root
+  // widget, which then builds a different widget tree. It is always `false` in
+  // debug and profile builds and on iOS — see `_checkDeviceRooted`.
+  final isDeviceRooted = await _checkDeviceRooted();
+
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];
@@ -521,7 +561,10 @@ void main() async {
       runApp(
         DefaultAssetBundle(
           bundle: SentryAssetBundle(),
-          child: TrydosApplication(navKey: navigatorKey),
+          child: TrydosApplication(
+            navKey: navigatorKey,
+            isSecurityIssueFound: isDeviceRooted,
+          ),
         ),
       );
     },

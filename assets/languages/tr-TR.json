@@ -965,5 +965,13 @@
   "rdb_scan_code": "Veya bu kodu Ramaaz Digital Bank uygulamasıyla tarayın",
   "rdb_cart_locked_message": "Henüz ödenmemiş bir talebiniz var, bu yüzden şu anda sepette değişiklik yapamazsınız.",
   "rdb_close": "Kapat",
-  "rdb_open_wallet_app": "Cüzdan uygulamasını aç"
+  "rdb_open_wallet_app": "Cüzdan uygulamasını aç",
+  "getting_country_currency": "Ülkenizin para birimi belirleniyor, lütfen bekleyin",
+  "delete_chat_confirm_message": "Bu sohbeti silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+  "otp_attempts_finished": "Tüm denemelerinizi kullandınız. Sürenin bitmesini bekleyin, sonra yeni bir kod isteyin.",
+  "copy_invite_link": "Davet bağlantısını kopyala",
+  "invite_link_copied": "Davet bağlantısı kopyalandı",
+  "security_issues_found_title": "Güvenlik Sorunları Bulundu",
+  "security_issues_found_message": "Cihazınız rootlu veya güvenliği ihlal edilmiş göründüğü için bu uygulama açılamaz.",
+  "security_issues_found_details": "Güvenliğiniz ve hesap işlemlerinizin korunması için lütfen root erişimini kaldırıp tekrar deneyin."
 }

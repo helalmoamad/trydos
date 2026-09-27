@@ -983,5 +983,13 @@
   "rdb_scan_code": "أو امسح هذا الرمز من تطبيق Ramaaz Digital Bank",
   "rdb_cart_locked_message": "لديك طلب لم يتم دفعه بعد، لذلك لا يمكنك إجراء أي تعديل على السلة الآن.",
   "rdb_close": "إغلاق",
-  "rdb_open_wallet_app": "فتح تطبيق المحفظة"
+  "rdb_open_wallet_app": "فتح تطبيق المحفظة",
+  "getting_country_currency": "جارٍ تحديد عملة بلدك، يرجى الانتظار",
+  "delete_chat_confirm_message": "هل أنت متأكد من حذف هذه الدردشة؟ لا يمكن التراجع عن ذلك.",
+  "otp_attempts_finished": "انتهى عدد المحاولات، يرجى الانتظار حتى انتهاء الوقت ثم طلب رمز جديد.",
+  "copy_invite_link": "نسخ رابط الدعوة",
+  "invite_link_copied": "تم نسخ رابط الدعوة",
+  "security_issues_found_title": "تم اكتشاف مشاكل أمنية",
+  "security_issues_found_message": "لا يمكن فتح التطبيق لأن جهازك يبدو أنه مروّت أو غير آمن.",
+  "security_issues_found_details": "لحمايتك ولحماية حسابك وعملياتك، يرجى إزالة صلاحيات الروت ثم إعادة المحاولة."
 }

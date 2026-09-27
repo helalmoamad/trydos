@@ -22,6 +22,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/no_image_widget.dart';
+import 'package:trydos/features/chat/presentation/widgets/delete_chat_confirm_dialog.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/helper_functions.dart';
@@ -238,7 +239,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                           )
                         : null,
                     text: LocaleKeys.delete.tr(),
-                    onTap: () {
+                    onTap: () async {
                       if (double.tryParse(widget.chat.id!) == null) {
                         showWarningMessage(
                           context,
@@ -246,6 +247,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                         );
                         return;
                       }
+                      // الحذف يمسح الدردشة من السيرفر ولا رجعة فيه.
+                      if (!await confirmDeleteChat(context)) return;
                       chatBloc.add(DeleteChatEvent(channelId: widget.chat.id!));
                     },
                     backgroundColor: const Color(0xffFFE8E8),

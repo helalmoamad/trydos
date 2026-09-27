@@ -988,5 +988,13 @@ abstract class  LocaleKeys {
   static const rdb_cart_locked_message = 'rdb_cart_locked_message';
   static const rdb_close = 'rdb_close';
   static const rdb_open_wallet_app = 'rdb_open_wallet_app';
+  static const getting_country_currency = 'getting_country_currency';
+  static const delete_chat_confirm_message = 'delete_chat_confirm_message';
+  static const otp_attempts_finished = 'otp_attempts_finished';
+  static const copy_invite_link = 'copy_invite_link';
+  static const invite_link_copied = 'invite_link_copied';
+  static const security_issues_found_title = 'security_issues_found_title';
+  static const security_issues_found_message = 'security_issues_found_message';
+  static const security_issues_found_details = 'security_issues_found_details';
 
 }

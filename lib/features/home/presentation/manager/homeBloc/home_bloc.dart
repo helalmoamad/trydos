@@ -80,6 +80,7 @@ import 'package:trydos/features/home/domain/use_cases/update_profile_usecase.dar
 import 'package:trydos/features/home/domain/use_cases/update_whatsapp_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/upload_user_photo_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_screen_refresh.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 // مستخدمان فقط في معالج عملات/رصيد المحفظة المعطّل.
 // import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
@@ -229,7 +230,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     on<GetCurrencyForCountryEvent>(
       _onGetCurrencyForCountryEvent,
-      transformer: throttleDroppable(const Duration(seconds: 5)),
+      // كان throttleDroppable(5s): أي طلب عملة سابق خلال خمس ثوانٍ يُسقط
+      // الطلب التالي بصمت — ومنه طلب "تغيّر البلد" وإعادات المحاولة، فتبقى
+      // الشاشة بلا عملة. restartable يُبقي الأحدث دائماً ويلغي ما قبله.
+      transformer: restartable(),
     );
     on<AddCurrentColorSizeEvent>(_onAddCurrentSizeColorEvent);
     on<AddCurrentSelectedColorEvent>(_onAddCurrentSelectedColorEvent);
@@ -1357,6 +1361,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     prefsRepository.removeFiveFilterHasPerfechedWhenOpenApp();
     GetIt.I<BoutiqueBloc>().add(ClearAllBoutiquesEvent());
+
+    // مسح الكاش يمحو ما تعرضه الرئيسية من الحالة. كان لا أحد يطلبه من جديد:
+    // الطلب الأول محروس بـ isFoundDataCashed في splash و base_page، فتبقى
+    // الرئيسية فارغة حتى يسحب المستخدم للتحديث. ويُستدعى هذا عند تغيير اللغة
+    // أو البلد، وهو بالضبط ما يوجب إعادة جلب كل شيء.
+    refreshHomeScreenData();
 
     prefsRepository.removeMainCategoryWhenOpenApp();
     emit(
@@ -4143,13 +4153,47 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
   }
 
+  /// مهلة بين محاولات جلب عملة البلد بعد تغييره.
+  static const Duration _currencyRetryDelay = Duration(seconds: 3);
+
   Future<void> _onGetCurrencyForCountryEvent(
     GetCurrencyForCountryEvent event,
     Emitter<HomeState> emit,
   ) async {
+    // تغيّر البلد: عملته السابقة لم تعد تصلح لعرضها بجانب المنتجات، فتُمسح،
+    // وتُرفع العلامة التي تحجب الشاشة وتُبقي المحاولة قائمة حتى تنجح.
+    //
+    // ونحجب كذلك متى لم تكن هناك عملة أصلاً (أوّل تثبيت مثلاً)، فعرض المنتجات
+    // بلا أي عملة أسوأ من الانتظار. أما وجود عملة محفوظة فيعني أن الفشل لا
+    // يوقف شيئاً، ويبقى التطبيق يعمل بلا اتصال.
+    final bool awaiting =
+        event.afterCountryChange ||
+        state.awaitingCountryCurrency ||
+        state.getCurrencyForCountryModel == null;
+    emit(
+      state.copyWith(
+        getCurrencyForCountryStatus: GetCurrencyForCountryStatus.loading,
+        awaitingCountryCurrency: awaiting,
+        clearCurrencyForCountryModel: event.afterCountryChange,
+      ),
+    );
+
     final response = await getCurrencyForCountryUseCase(NoParams());
-    response.fold(
-      (l) {
+    await response.fold(
+      (l) async {
+        emit(
+          state.copyWith(
+            getCurrencyForCountryStatus: GetCurrencyForCountryStatus.failure,
+          ),
+        );
+        // بعد تغيير البلد الطلب أساسي: نعيد المحاولة بلا سقف حتى ينجح.
+        // في غير ذلك نترك السلوك القديم كما هو، فالتطبيق يعمل بلا اتصال
+        // وبالعملة المحفوظة، ولا يصحّ أن يوقفه فشل عابر.
+        if (awaiting) {
+          await Future<void>.delayed(_currencyRetryDelay);
+          if (!isClosed) add(GetCurrencyForCountryEvent());
+          return;
+        }
         if (ErrorManager.shouldRetry(
           'GetCurrencyForCountryEvent',
           l.statusCode,
@@ -4159,9 +4203,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           return;
         }
       },
-      (r) {
+      (r) async {
         ErrorManager.resetRetry('GetCurrencyForCountryEvent');
-        emit(state.copyWith(getCurrencyForCountryModel: r));
+        emit(
+          state.copyWith(
+            getCurrencyForCountryModel: r,
+            getCurrencyForCountryStatus: GetCurrencyForCountryStatus.success,
+            awaitingCountryCurrency: false,
+          ),
+        );
       },
     );
   }

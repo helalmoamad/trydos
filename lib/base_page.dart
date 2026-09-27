@@ -26,6 +26,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/widgets/country_currency_loading_dialog.dart';
 import 'package:trydos/features/home/presentation/pages/Order/orders_page.dart';
 
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
@@ -528,6 +529,11 @@ extension _CountryRestrictionUI on _BasePageState {
     if (_prefsRepository.userChoosedCountryIso != null) {
       visibleCountries.value = !visible;
       _prefsRepository.setUserCountryIsAvailable(1);
+      // اختيار البلد أوّل مرّة: العملة وسعر الصرف يُطلبان فوراً، وتُحجب الشاشة
+      // حتى يصلا لأن كل الأسعار مبنيّة عليهما.
+      BlocProvider.of<HomeBloc>(
+        context,
+      ).add(GetCurrencyForCountryEvent(afterCountryChange: true));
       FirebaseAnalyticsService.logEventForSession(
         executedEventName:
             AnalyticsButtonsEventNameConst.chooseCountryAndContinueButton,
@@ -739,7 +745,14 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   ///
   /// بمقارنة العدّاد بهذا الحقل نصالح الإشارة عند التركيب أيضاً، ويبقى العرض
   /// مرّة واحدة لأن كلا المسارين يمرّان من [_showSessionExpiredIfPending].
-  int _lastShownSessionExpiredTick = 0;
+  ///
+  /// `static` لأن العدّاد يسكن AuthBloc وهو `lazySingleton` — عمره عمر العملية،
+  /// ولا شيء يصفّره (لا تسجيل الدخول ولا تسجيل الضيف). فلو كان هذا الحقل حقل
+  /// نسخة لعاد إلى الصفر مع كل State جديد، وتغيير اللغة أو البلد ينفّذ
+  /// `context.go("/")` فيمرّ بـ SplashPage ثم يبني BasePage من جديد — فيظهر
+  /// الحوار في كل مرّة لمستخدم مسجَّل دخوله أصلاً. عمر الحارس يجب أن يساوي
+  /// عمر الإشارة التي يحرسها.
+  static int _lastShownSessionExpiredTick = 0;
 
   /// طابور حوارات الإقلاع.
   ///
@@ -766,6 +779,36 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   /// المستمع بشيء. لذا نفحص الحالة الراهنة عند التركيب أيضاً.
   ///
   /// العرض المزدوج غير ممكن: showVersionDialog تحرس نفسها بعلم داخلي.
+  /// نافذة انتظار عملة البلد الجديد. تُعرض مرّة واحدة وتغلق نفسها عند وصول
+  /// العملة، فلا حاجة إلى تتبّع إغلاقها هنا سوى منع تكرارها.
+  bool _countryCurrencyDialogOpen = false;
+
+  /// لا عملة تعني أسعاراً بلا معنى.
+  ///
+  /// إن وصلنا إلى الصفحة الرئيسية بلا عملة (أوّل تثبيت، أو طلب سابق سقط)
+  /// نطلبها ونحجب الشاشة حتى تصل. لا شيء من هذا قبل اختيار البلد، فشاشة
+  /// اختيار البلد يجب أن تبقى ظاهرة بلا حجب.
+  void _ensureCountryCurrency() {
+    if (!mounted) return;
+    final bool countryChosen =
+        (_prefsRepository.userChoosedCountryIso?.isNotEmpty ?? false) ||
+        _prefsRepository.userCountryIsAvailable == 1;
+    if (!countryChosen) return;
+
+    final HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+    if (homeBloc.state.getCurrencyForCountryModel == null) {
+      homeBloc.add(GetCurrencyForCountryEvent());
+    }
+    if (homeBloc.state.awaitingCountryCurrency) _showCountryCurrencyDialog();
+  }
+
+  Future<void> _showCountryCurrencyDialog() async {
+    if (!mounted || _countryCurrencyDialogOpen) return;
+    _countryCurrencyDialogOpen = true;
+    await showCountryCurrencyLoadingDialog(context);
+    _countryCurrencyDialogOpen = false;
+  }
+
   void _showVersionDialogIfNeeded(HomeState state) {
     if (state.getStartingSettingsStatus != GetStartingSettingsStatus.success) {
       return;
@@ -867,6 +910,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       // بتسجيل الدخول في نسخة يجب أن يغادرها أصلاً.
       _showVersionDialogIfNeeded(BlocProvider.of<HomeBloc>(context).state);
       _showSessionExpiredIfPending(BlocProvider.of<AuthBloc>(context).state);
+      _ensureCountryCurrency();
     });
 
     chatBloc = BlocProvider.of<ChatBloc>(context);
@@ -1347,6 +1391,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               c.sessionExpiredTick > 0,
           listener: (context, state) => _showSessionExpiredIfPending(state),
           child: BlocListener<HomeBloc, HomeState>(
+            // البلد تغيّر وننتظر عملته: تُحجب الشاشة حتى تصل، فالأسعار تُضرب
+            // بسعر الصرف ولا يصحّ عرضها بعملة البلد السابق.
+            listenWhen: (p, c) =>
+                p.awaitingCountryCurrency != c.awaitingCountryCurrency &&
+                c.awaitingCountryCurrency,
+            listener: (context, _) => _showCountryCurrencyDialog(),
+            child: BlocListener<HomeBloc, HomeState>(
             listenWhen: (p, c) =>
                 p.getStartingSettingsStatus != c.getStartingSettingsStatus &&
                 c.getStartingSettingsStatus ==
@@ -1667,6 +1718,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                 ),
           ),
         ),
+      ),
       ),
     );
   }
