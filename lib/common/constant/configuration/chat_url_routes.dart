@@ -90,6 +90,23 @@ abstract class ChatEndPoints {
   ///! ----< messages >----
   ///
   static final sendMessageEP = 'send'.messagesScope();
+
+  /// تعديل نص رسالة نصية. المُرسِل وحده يملك التعديل (يفرضه الخادم).
+  /// الجسم `{id, content}` فقط — أي حقل زائد يعيد 400.
+  static final updateMessageEP = 'update'.messagesScope();
+
+  ///! ----< reminders >----
+  ///
+  /// إنشاء تذكير أو تحديث وقته. الجسم `{remind_at}` بصيغة ISO8601.
+  static String createReminderEP(String messageId) =>
+      '$messageId/reminders'.messagesScope();
+
+  /// تذكيراتي التي لم يحن وقتها بعد، الأقرب أولاً.
+  static final myRemindersEP = 'reminders'.messagesScope();
+
+  /// إلغاء تذكير. يأخذ **معرّف التذكير** لا معرّف الرسالة.
+  static String deleteReminderEP(String reminderId) =>
+      'reminders/$reminderId'.messagesScope();
   static final getMessagesBetweenEP = 'get_all_messages_between_two_messages'
       .messagesScope();
   static final shareProductWithChannelsOrContacts = 'share_product'

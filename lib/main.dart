@@ -313,6 +313,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       GetIt.I<PrefsRepository>().setMessageWatchStatusFromBackground(
         message.data['data'],
       );
+    } else if (remoteMessage['type'] == 'MessageReminderEvent') {
+      // تذكير حان وقته والتطبيق في الخلفية. الحدث بلا نصّ مرئي، فنعرضه نحن.
+      // لا مصالحة للقائمة هنا: `GetMyRemindersEvent` تُنفَّذ عند فتح صفحة
+      // المحادثات، ولا طلبات شبكة في عزلة الإشعارات.
+      LocalNotificationService().showReminderNotification(remoteMessage);
     } else if (remoteMessage['type'] == 'UpdatingMessageEvent') {
       GetIt.I<PrefsRepository>().setRemovedMessageFromBackground(
         message.data['data'],

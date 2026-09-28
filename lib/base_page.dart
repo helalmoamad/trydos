@@ -69,6 +69,7 @@ import 'features/authentication/data/models/verify_otp_sign_up_and_in_response_m
 import 'features/calls/presentation/pages/in_app_view.dart';
 import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'features/chat/data/models/my_chats_response_model.dart';
+import 'features/chat/domain/use_cases/get_messages_between_usecase.dart';
 import 'features/chat/presentation/manager/chat_bloc.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
 import 'features/chat/presentation/manager/chat_state.dart';
@@ -645,6 +646,157 @@ void DealWithChatsToEditStoredFromBackground() async {
   }
 }
 
+/// هل وصلت النسخة المضغوطة من `UpdatingMessageEvent`؟
+///
+/// حين تتجاوز الحمولة 4KB يرسل الخادم بديلاً مبتوراً عليه `compact: true`، و
+/// `message` فيه ثلاثة حقول فقط (`id`, `channel_id`, `sender_user_id`) بلا نص
+/// ولا نوع ولا حالة.
+///
+/// تجاهله **ضروري**: بناء `Message` منه واستبدال المحفوظ به يمحو الرسالة من
+/// الشاشة، ومسار الحذف يرمي خطأً على `message_type["name"]` وهو غير موجود
+/// أصلاً. والثمن أن التعديل النادر الكبير لا يظهر إلا عند تحميل المحادثة من
+/// جديد — وإغلاق هذه الفجوة يحتاج نقطة «اجلب رسالة واحدة» من الباك، وليست في
+/// المواصفة بعد.
+bool isCompactUpdatePayload(Map payload) => payload["compact"] == true;
+
+/// نتيجة معالجة حمولة `UpdatingMessageEvent`.
+enum UpdatingMessageResult {
+  /// انتهى أمرها: طُبّقت، أو لا شيء يمكن عمله بها (حمولة ناقصة، أو رسالة لم
+  /// يعرفها الخادم). تُحذف من التخزين.
+  done,
+
+  /// فشل **عابر** (شبكة أو خادم): تستحقّ محاولة أخرى لاحقاً.
+  retry,
+}
+
+/// أقصى عدد محاولات لحمولة مضغوطة فشل جلبها.
+///
+/// بلا سقف تبقى الحمولة في التخزين إلى الأبد وتُحاوَل مع كل عودة للتطبيق.
+const int kMaxCompactFetchRetries = 3;
+
+/// مفتاح عدّاد المحاولات داخل الحمولة المخزَّنة. لا يأتي من الخادم — نضيفه نحن
+/// قبل إعادة التخزين، ووجوده لا يؤثّر على المعالجة.
+const String kRetryCountKey = '_retry_count';
+
+/// يجلب الرسالة كاملة حين تصل النسخة المضغوطة من `UpdatingMessageEvent`.
+///
+/// لا توجد نقطة «اجلب رسالة واحدة» في الـ API، فنستعمل مدى الرسائل بين رسالتين
+/// ونجعل طرفَي المدى المعرّف نفسه — وهذا ما أقرّه فريق الباك.
+///
+/// يفرّق بين فشلين: `transientFailure` يعني أن الطلب نفسه لم ينجح (شبكة أو
+/// خادم) فتستحقّ الحمولة محاولة أخرى؛ أما نقص المعرّفات أو غياب الرسالة من ردٍّ
+/// **ناجح** فنهائي، لأن إعادة المحاولة لن تغيّر شيئاً.
+///
+/// في الحالتين لا تُلمس الحالة: ترك الرسالة كما هي أسلم من استبدالها بنصف
+/// معلومة.
+Future<({Message? message, bool transientFailure})>
+fetchMessageForCompactUpdate(Map payload) async {
+  final Map? stub = payload['message'] is Map ? payload['message'] as Map : null;
+  final String messageId = (payload['message_id'] ?? stub?['id']).toString();
+  final String channelId = (payload['channel_id'] ?? stub?['channel_id'])
+      .toString();
+  if (messageId.isEmpty ||
+      messageId == 'null' ||
+      channelId.isEmpty ||
+      channelId == 'null') {
+    dev.log('UpdatingMessageEvent: compact payload without ids, dropped');
+    return (message: null, transientFailure: false);
+  }
+
+  final result = await GetIt.I<GetMessagesBetweenUseCase>()(
+    GetMessagesBetweenParams(
+      channelId: channelId,
+      firstMessageId: messageId,
+      secondMessageId: messageId,
+    ),
+  );
+
+  return result.fold(
+    (failure) {
+      dev.log('UpdatingMessageEvent: fetching the compact message failed');
+      return (message: null, transientFailure: true);
+    },
+    (messages) {
+      for (final Message message in messages) {
+        if (message.id.toString() == messageId) {
+          return (message: message, transientFailure: false);
+        }
+      }
+      dev.log('UpdatingMessageEvent: message $messageId not in the response');
+      return (message: null, transientFailure: false);
+    },
+  );
+}
+
+/// يعالج `UpdatingMessageEvent` من أيّ مصدر: المقدّمة أو المخزَّن من الخلفية.
+///
+/// الخادم يستعمل الحدث نفسه لثلاثة أمور: حذف للجميع، وتعديل نص، وتغيير وسم.
+/// والحذف وحده يرفع `auth_message_status.is_deleted` إلى 1، فكل ما عداه تحديثٌ
+/// تُستبدل به الرسالة. ولولا هذا التفريق لعاملنا التعديل كحذف «لي فقط»
+/// (`delete_for_all == false`) فتختفي الرسالة عند المستقبِل بدل أن تتغيّر.
+///
+/// النسخة المضغوطة (حمولة تتجاوز 4KB) تُجلب أولاً ثم تتابع نفس المعالجة، فلا
+/// يوجد مسار ثانٍ يُصان على حدة.
+///
+/// كل القراءات تتمّ من كائن `Message` لا من الخريطة الخام: النسخة المضغوطة
+/// تنقصها `message_type` و`auth_message_status`، والتنقيب المباشر فيها يرمي.
+Future<UpdatingMessageResult> handleUpdatingMessageEvent(Map payload) async {
+  Message? message;
+  if (isCompactUpdatePayload(payload)) {
+    final result = await fetchMessageForCompactUpdate(payload);
+    if (result.transientFailure) return UpdatingMessageResult.retry;
+    message = result.message;
+  } else if (payload['message'] is Map) {
+    message = Message.fromJson(
+      Map<String, dynamic>.from(payload['message'] as Map),
+    );
+  }
+  if (message == null || message.id == null || message.channelId == null) {
+    return UpdatingMessageResult.done;
+  }
+
+  final bool isDeleted = message.authMessageStatus?.isDeleted == 1;
+  if (!isDeleted) {
+    GetIt.I<ChatBloc>().add(
+      MessageUpdatedFromNotificationEvent(message: message),
+    );
+    return UpdatingMessageResult.done;
+  }
+
+  GetIt.I<CallsBloc>().add(
+    DeleteMessageNotificationReceivedInCallsEvent(
+      channelId: message.channelId!,
+      messageId: message.id!,
+      deleteFromBoth: (message.authMessageStatus?.deleteForAll ?? false)
+          ? 1
+          : 0,
+      type: !(message.messageType?.name ?? '').contains('Call')
+          ? "message"
+          : "call",
+      deleteFromId: message.deletedByUserId ?? 0,
+    ),
+  );
+  return UpdatingMessageResult.done;
+}
+
+/// يحفظ حمولة فشل جلبها لتُحاول مرّة أخرى عند العودة التالية للتطبيق.
+///
+/// يستعمل نفس تخزين إشعارات الخلفية، فلا حاجة إلى مفتاح جديد ولا إلى تعديل
+/// `PrefsRepository`. ويُسقطها بعد [kMaxCompactFetchRetries] محاولات حتى لا
+/// تبقى إلى الأبد.
+Future<void> keepUpdatingMessagePayloadForRetry(Map payload) async {
+  final int attempts = (int.tryParse('${payload[kRetryCountKey]}') ?? 0) + 1;
+  if (attempts > kMaxCompactFetchRetries) {
+    dev.log('UpdatingMessageEvent: dropped after $kMaxCompactFetchRetries tries');
+    return;
+  }
+  final Map<String, dynamic> next = Map<String, dynamic>.from(payload)
+    ..[kRetryCountKey] = attempts;
+  await GetIt.I<PrefsRepository>().setRemovedMessageFromBackground(
+    convert.jsonEncode(next),
+  );
+}
+
 void DealWithRemovedMessageStoredFromBackground() async {
   await GetIt.I<SharedPreferences>().reload();
 
@@ -652,27 +804,21 @@ void DealWithRemovedMessageStoredFromBackground() async {
   if ((removedMessages =
           GetIt.I<PrefsRepository>().getTheRemovedMessageFromBackground) !=
       null) {
+    // نفس معالج المقدّمة: المخزَّن من الخلفية يشمل الحذف والتعديل والمضغوط
+    // معاً. و`await` هنا مقصود — المسح أدناه يجب ألّا يسبق جلب المضغوطة.
+    final List<Map> failed = [];
     for (int i = 0; i < (removedMessages?.length ?? 0); i++) {
-      GetIt.I<CallsBloc>().add(
-        DeleteMessageNotificationReceivedInCallsEvent(
-          channelId: removedMessages![i]['message']["channel_id"],
-          messageId: removedMessages[i]['message']["id"],
-          deleteFromBoth:
-              removedMessages[i]['message']["auth_message_status"]["delete_for_all"]
-              ? 1
-              : 0,
-          type:
-              !removedMessages[i]['message']["message_type"]["name"]
-                  .toString()
-                  .contains('Call')
-              ? "message"
-              : "call",
-          deleteFromId:
-              removedMessages[i]['message']["deleted_by_user_id"] ?? 0,
-        ),
+      final UpdatingMessageResult result = await handleUpdatingMessageEvent(
+        removedMessages![i],
       );
+      if (result == UpdatingMessageResult.retry) failed.add(removedMessages[i]);
     }
-    GetIt.I<PrefsRepository>().removeRemovedMessageFromBackground();
+    // المسح أوّلاً ثم إعادة الفاشل: `set` تُلحق بالقائمة الموجودة، فلو عكسنا
+    // الترتيب لمسحنا ما أعدناه للتوّ.
+    await GetIt.I<PrefsRepository>().removeRemovedMessageFromBackground();
+    for (final Map payload in failed) {
+      await keepUpdatingMessagePayloadForRetry(payload);
+    }
   }
 }
 
@@ -1265,23 +1411,23 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           DeleteChatFromNotificationEvent(channelId: data['channelId']),
         );
       } else if (remoteMessage['type'] == 'UpdatingMessageEvent') {
-        Map<String, dynamic> data = remoteMessage['message'];
-        dev.log("****** ${data} llll");
-        GetIt.I<CallsBloc>().add(
-          DeleteMessageNotificationReceivedInCallsEvent(
-            channelId: data["channel_id"],
-            messageId: data["id"],
-            deleteFromBoth: data["auth_message_status"]["delete_for_all"]
-                ? 1
-                : 0,
-            type: !data["message_type"]["name"].toString().contains('Call')
-                ? "message"
-                : "call",
-            deleteFromId:
-                int.tryParse((data["deleted_by_user_id"] ?? "0").toString()) ??
-                0,
-          ),
-        );
+        dev.log("****** ${remoteMessage['message']} llll");
+        // بلا `await`: مستمع الإشعارات متزامن. والمعالجة داخل هذا الفرع لا في
+        // شرط `else if` — إخراجها منه يجعل الحمولة تتابع نزولاً في السلسلة حتى
+        // `else` الأخير، فتُعامَل كرسالة **جديدة** واردة.
+        //
+        // وفشل الجلب هنا يُحفظ أيضاً: يُعاد من تخزين الخلفية عند العودة التالية
+        // للتطبيق، بدل أن يضيع التعديل نهائياً.
+        handleUpdatingMessageEvent(remoteMessage).then((result) {
+          if (result == UpdatingMessageResult.retry) {
+            keepUpdatingMessagePayloadForRetry(remoteMessage);
+          }
+        });
+      } else if (remoteMessage['type'] == 'MessageReminderEvent') {
+        // الحدث بلا نصّ مرئي، فنعرض الإشعار بأنفسنا. ثم نصالح القائمة مع
+        // الخادم: التذكير الذي انطلق لم يعد «قادماً» فيجب أن يغادرها.
+        LocalNotificationService().showReminderNotification(remoteMessage);
+        GetIt.I<ChatBloc>().add(const GetMyRemindersEvent());
       } else if (remoteMessage['type'] == 'ChannelUpdatedEvent') {
         Map<String, dynamic> data = remoteMessage;
         GetIt.I<ChatBloc>().add(

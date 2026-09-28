@@ -32,6 +32,8 @@ import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/profile_page.dart';
 import 'package:trydos/features/chat/presentation/utils/firebase_presence.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_input_field.dart';
+import 'package:trydos/features/chat/presentation/widgets/edit_message_dialog.dart';
+import 'package:trydos/features/chat/presentation/widgets/message_reminder_dialog.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/document_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_messge.dart';
@@ -102,6 +104,53 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   final ValueNotifier<int> rebuildMessage = ValueNotifier(-1);
   final ValueNotifier<int> currentFocusedIcon = ValueNotifier(-2);
+
+  /// شريط خيارات الرسالة المفتوح حالياً.
+  ///
+  /// واحد فقط يكون في الشجرة في أي لحظة (`currentIndex == index`)، فمفتاح عام
+  /// واحد يكفي. نحتاجه لنسأل الشريط عن إحداثياته بدل تقديرها — انظر
+  /// [_focusedActionIndex].
+  final GlobalKey _actionStripKey = GlobalKey();
+
+  /// يحوّل موضع الإصبع إلى رقم الأيقونة في شريط خيارات الرسالة.
+  ///
+  /// الحساب السابق كان **يقدّر** أين يقع الشريط: عرض الشاشة ناقص حشوات ثابتة
+  /// (60) ناقص عرض محسوب (maxIndex*30+45)، ثم يعتبر أوّل أيقونة على بعد 40 من
+  /// بداية الشريط. وهذه التقديرات تعتمد على اتجاه ثلاثة صفوف متداخلة وعلى
+  /// مقاسات مكتوبة يدوياً، فكانت النتيجة مزاحة بأيقونة كاملة: الإصبع على
+  /// «حذف» والفعل «تعديل».
+  ///
+  /// هنا نسأل الشريط نفسه عن إحداثياته عبر [_actionStripKey]، فلا يبقى أي
+  /// تقدير: لا اتجاه، ولا حشوة خارجية، ولا عرض شاشة.
+  ///
+  /// الترتيب الفيزيائي (من اليسار) يساوي `myIndex` في اللغتين: في RTL يُقلب
+  /// ترتيب الأبناء ويُقلب معه توزيع `myIndex`، فيتطابقان.
+  int _focusedActionIndex(
+    Offset globalPosition, {
+    required bool isText,
+    required bool isSent,
+  }) {
+    final int maxIndex = isText ? (isSent ? 5 : 4) : 3;
+    final RenderBox? box =
+        _actionStripKey.currentContext?.findRenderObject() as RenderBox?;
+    // الشريط لم يُركَّب بعد: لا تركيز على شيء.
+    if (box == null || !box.hasSize) return -2;
+
+    final double localX = box.globalToLocal(globalPosition).dx;
+    // يسار الشريط كلّه = ردّ على الرسالة.
+    if (localX < 0) return -1;
+
+    final double horizontalPadding = 10.w;
+    final double inner = box.size.width - horizontalPadding * 2;
+    if (inner <= 0) return -1;
+
+    // الأيقونات موزّعة بـ spaceBetween داخل عرض ثابت، فنصيب كل واحدة متساوٍ.
+    final double slot = inner / (maxIndex + 1);
+    final int index = ((localX - horizontalPadding) / slot).floor();
+    if (index < 0) return -1;
+    if (index > maxIndex) return maxIndex;
+    return index;
+  }
 
   final ValueNotifier<Map<String, int>> currentIndextForEachMessage =
       ValueNotifier({});
@@ -1352,74 +1401,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                             ),
                                                         child: GestureDetector(
                                                           onPanDown: (details) {
-                                                            bool isText =
-                                                                messages[index]
-                                                                    .messageType
-                                                                    ?.name ==
-                                                                "TextMessage";
-                                                            double dx = details
-                                                                .localPosition
-                                                                .dx;
-                                                            double iconWidth =
-                                                                30.w;
-
-                                                            double screenWidth =
-                                                                MediaQuery.of(
-                                                                  context,
-                                                                ).size.width;
-                                                            int maxIndex =
-                                                                isText
-                                                                ? (isSent
-                                                                      ? 5
-                                                                      : 4)
-                                                                : 3;
-                                                            double
-                                                            contentWidth =
-                                                                (maxIndex * 30 +
-                                                                        45)
-                                                                    .w;
-                                                            double padding =
-                                                                60.w;
-                                                            double gap = isSent
-                                                                ? (screenWidth -
-                                                                      padding -
-                                                                      contentWidth)
-                                                                : 0;
-                                                            if (gap < 0)
-                                                              gap = 0;
-
-                                                            double effectiveX =
-                                                                dx - gap;
-
-                                                            if (effectiveX <
-                                                                40) {
-                                                              currentFocusedIcon
-                                                                      .value =
-                                                                  -1;
-                                                            } else if (effectiveX >
-                                                                (contentWidth -
-                                                                    5.w)) {
-                                                              currentFocusedIcon
-                                                                      .value =
-                                                                  maxIndex;
-                                                            } else {
-                                                              int
-                                                              calculatedIndex =
-                                                                  ((effectiveX -
-                                                                      40) ~/
-                                                                  iconWidth);
-                                                              if (calculatedIndex <
-                                                                  0)
-                                                                calculatedIndex =
-                                                                    -1;
-                                                              if (calculatedIndex >
-                                                                  maxIndex)
-                                                                calculatedIndex =
-                                                                    maxIndex;
-                                                              currentFocusedIcon
-                                                                      .value =
-                                                                  calculatedIndex;
-                                                            }
+                                                            currentFocusedIcon
+                                                                .value = _focusedActionIndex(
+                                                              details
+                                                                  .globalPosition,
+                                                              isText:
+                                                                  messages[index]
+                                                                      .messageType
+                                                                      ?.name ==
+                                                                  "TextMessage",
+                                                              isSent: isSent,
+                                                            );
                                                           },
                                                           onPanEnd: (details) {
                                                             debugPrint('end');
@@ -1433,74 +1425,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                             );
                                                           },
                                                           onPanUpdate: (details) {
-                                                            bool isText =
-                                                                messages[index]
-                                                                    .messageType
-                                                                    ?.name ==
-                                                                "TextMessage";
-                                                            double dx = details
-                                                                .localPosition
-                                                                .dx;
-                                                            double iconWidth =
-                                                                30.w;
-
-                                                            double screenWidth =
-                                                                MediaQuery.of(
-                                                                  context,
-                                                                ).size.width;
-                                                            int maxIndex =
-                                                                isText
-                                                                ? (isSent
-                                                                      ? 5
-                                                                      : 4)
-                                                                : 3;
-                                                            double
-                                                            contentWidth =
-                                                                (maxIndex * 30 +
-                                                                        45)
-                                                                    .w;
-                                                            double padding =
-                                                                60.w;
-                                                            double gap = isSent
-                                                                ? (screenWidth -
-                                                                      padding -
-                                                                      contentWidth)
-                                                                : 0;
-                                                            if (gap < 0)
-                                                              gap = 0;
-
-                                                            double effectiveX =
-                                                                dx - gap;
-
-                                                            if (effectiveX <
-                                                                40) {
-                                                              currentFocusedIcon
-                                                                      .value =
-                                                                  -1;
-                                                            } else if (effectiveX >
-                                                                (contentWidth -
-                                                                    5.w)) {
-                                                              currentFocusedIcon
-                                                                      .value =
-                                                                  maxIndex;
-                                                            } else {
-                                                              int
-                                                              calculatedIndex =
-                                                                  ((effectiveX -
-                                                                      40) ~/
-                                                                  iconWidth);
-                                                              if (calculatedIndex <
-                                                                  0)
-                                                                calculatedIndex =
-                                                                    -1;
-                                                              if (calculatedIndex >
-                                                                  maxIndex)
-                                                                calculatedIndex =
-                                                                    maxIndex;
-                                                              currentFocusedIcon
-                                                                      .value =
-                                                                  calculatedIndex;
-                                                            }
+                                                            currentFocusedIcon
+                                                                .value = _focusedActionIndex(
+                                                              details
+                                                                  .globalPosition,
+                                                              isText:
+                                                                  messages[index]
+                                                                      .messageType
+                                                                      ?.name ==
+                                                                  "TextMessage",
+                                                              isSent: isSent,
+                                                            );
                                                           },
                                                           child: Row(
                                                             mainAxisAlignment:
@@ -1533,6 +1468,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                               : MainAxisAlignment.start,
                                                                           children: [
                                                                             Container(
+                                                                              key: _actionStripKey,
                                                                               width:
                                                                                   (messages[index].messageType?.name ==
                                                                                               "TextMessage"
@@ -1756,7 +1692,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                       messages[index].messageType?.name ==
                                                                                           "TextMessage")
                                                                                     MessageActionWidget(
-                                                                                      onTap: () {},
+                                                                                      // زرّ حقيقي كجيرانه (تحويل/نسخ/حذف). كان فارغاً،
+                                                                                      // فكان التعديل يصل فقط عبر مسار السحب.
+                                                                                      onTap: () {
+                                                                                        rebuildMessage.value = -1;
+                                                                                        _editMessageDialog(
+                                                                                          messages[index],
+                                                                                        );
+                                                                                      },
                                                                                       iconUrl: AppAssets.editIconSvg,
                                                                                       myIndex: lan
                                                                                           ? 4
@@ -1764,7 +1707,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                       focusedIndex: focusedIndex,
                                                                                     ),
                                                                                   MessageActionWidget(
-                                                                                    onTap: () {},
+                                                                                    onTap: () {
+                                                                                      rebuildMessage.value = -1;
+                                                                                      _reminderDialog(
+                                                                                        messages[index],
+                                                                                      );
+                                                                                    },
                                                                                     iconUrl: AppAssets.notificationIconSvg,
                                                                                     myIndex: lan
                                                                                         ? (messages[index].messageType?.name ==
@@ -1910,6 +1858,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                               : MainAxisAlignment.start,
                                                                           children: [
                                                                             Container(
+                                                                              key: _actionStripKey,
                                                                               width:
                                                                                   (isSent
                                                                                           ? 185
@@ -2116,7 +2065,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                       messages[index].messageType?.name ==
                                                                                           "TextMessage")
                                                                                     MessageActionWidget(
-                                                                                      onTap: () {},
+                                                                                      // زرّ حقيقي كجيرانه (تحويل/نسخ/حذف). كان فارغاً،
+                                                                                      // فكان التعديل يصل فقط عبر مسار السحب.
+                                                                                      onTap: () {
+                                                                                        rebuildMessage.value = -1;
+                                                                                        _editMessageDialog(
+                                                                                          messages[index],
+                                                                                        );
+                                                                                      },
                                                                                       iconUrl: AppAssets.editIconSvg,
                                                                                       myIndex: lan
                                                                                           ? 4
@@ -2124,7 +2080,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                       focusedIndex: focusedIndex,
                                                                                     ),
                                                                                   MessageActionWidget(
-                                                                                    onTap: () {},
+                                                                                    onTap: () {
+                                                                                      rebuildMessage.value = -1;
+                                                                                      _reminderDialog(
+                                                                                        messages[index],
+                                                                                      );
+                                                                                    },
                                                                                     iconUrl: AppAssets.notificationIconSvg,
                                                                                     myIndex: lan
                                                                                         ? (messages[index].messageType?.name ==
@@ -2487,19 +2448,19 @@ class _SinglePageChatState extends State<SinglePageChat> {
           _deleteMessageDialog(message);
           break;
         case 4:
-          // Edit
+          _editMessageDialog(message);
           break;
         case 5:
-          // Remind
+          _reminderDialog(message);
           break;
       }
     } else {
       switch (adjustedIndex) {
         case 0:
-          // Remind
+          _reminderDialog(message);
           break;
         case 1:
-          // Edit
+          _editMessageDialog(message);
           break;
         case 2:
           _deleteMessageDialog(message);
@@ -2533,6 +2494,45 @@ class _SinglePageChatState extends State<SinglePageChat> {
           duration: const Duration(seconds: 1),
         ),
       );
+  }
+
+  /// يفتح نافذة التذكير.
+  ///
+  /// التذكير يعمل على أي نوع رسالة (بعكس التعديل)، لكنه يحتاج معرّفاً يعرفه
+  /// الخادم — فرسالة لم تُؤكَّد بعد لا تذكير لها.
+  void _reminderDialog(Message message) {
+    final String? id = message.id?.toString();
+    if (id == null || int.tryParse(id) == null) return;
+    showMessageReminderDialog(
+      context,
+      messageId: id,
+      channelId: widget.chatId,
+    );
+  }
+
+  /// يفتح نافذة تعديل النص.
+  ///
+  /// التعديل للنصّ فقط ولرسائلي أنا. الخادم يفرض الشرط الثاني، لكن فتح نافذة
+  /// سترجع بخطأ حتماً سلوك سيّئ، فنمنعه هنا أيضاً. ورسالة لم يؤكّدها الخادم بعد
+  /// (معرّف محلي غير رقمي) لا يعرفها الخادم أصلاً فلا تُعدَّل.
+  void _editMessageDialog(Message message) {
+    final bool isMine = message.senderUserId == _prefsRepository.myChatId;
+    final bool isText = message.messageType?.name == "TextMessage";
+    final String? id = message.id?.toString();
+    final String? content = message.messageContent?.content?.toString();
+    if (!isMine ||
+        !isText ||
+        id == null ||
+        int.tryParse(id) == null ||
+        content == null) {
+      return;
+    }
+    showEditMessageDialog(
+      context,
+      messageId: id,
+      channelId: widget.chatId,
+      initialContent: content,
+    );
   }
 
   void _deleteMessageDialog(Message message) {
@@ -2874,6 +2874,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
               : parentMessage.messageContent!.content.toString(),
           receivedAt: messageStatus?.receivedAt,
           messageAnswerId: message.id!,
+          isAnswerEdited: message.isEdited == 1,
           channalId: message.channelId!,
         );
       } else {
@@ -2922,6 +2923,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     : LocaleKeys.voice.tr()
               : parentMessage.messageContent!.content.toString(),
           messageAnswerId: message.id!,
+          isAnswerEdited: message.isEdited == 1,
           channalId: message.channelId!,
         );
       }
@@ -2947,6 +2949,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 message.isFirstMessage! || message.isFirstMessageForThisDay!,
             watchedAt: messageStatus?.watchedAt,
             isForwarded: message.isForward == 1,
+            isEdited: message.isEdited == 1,
+            hasReminder: message.reminder != null,
             channalId: message.channelId!,
           );
         case 'ImageMessage':

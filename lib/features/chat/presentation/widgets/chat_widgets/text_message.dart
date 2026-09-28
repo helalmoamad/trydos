@@ -32,6 +32,8 @@ class TextMessage extends StatefulWidget {
     this.withShadow = true,
     this.withImageShadow = true,
     this.isForwarded = false,
+    this.isEdited = false,
+    this.hasReminder = false,
     this.sendColor,
     this.receivedColor,
     this.userMessagePhoto,
@@ -57,6 +59,14 @@ class TextMessage extends StatefulWidget {
   final bool isSent;
   final bool isFirstMessage;
   final bool isForwarded;
+
+  /// عُدِّل نصّ هذه الرسالة بعد إرسالها (`is_edited == 1`)، فتظهر أيقونة قلم
+  /// بجوار الوقت.
+  final bool isEdited;
+
+  /// على هذه الرسالة تذكير لم يحن وقته، فيظهر جرس بجوار الوقت. شخصي — لا
+  /// يراه بقية الأعضاء.
+  final bool hasReminder;
   final String channalId;
   bool isreplay;
   final Color? sendColor;
@@ -422,6 +432,22 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                       )
                                                     : null,
                                                 AppAssets.forwardedSvg,
+                                                width: 10.sp,
+                                                height: 10.sp,
+                                              ),
+                                            },
+                                            if (widget.isEdited) ...{
+                                              6.horizontalSpace,
+                                              SvgPicture.asset(
+                                                AppAssets.editIconSvg,
+                                                width: 10.sp,
+                                                height: 10.sp,
+                                              ),
+                                            },
+                                            if (widget.hasReminder) ...{
+                                              6.horizontalSpace,
+                                              SvgPicture.asset(
+                                                AppAssets.notificationIconSvg,
                                                 width: 10.sp,
                                                 height: 10.sp,
                                               ),

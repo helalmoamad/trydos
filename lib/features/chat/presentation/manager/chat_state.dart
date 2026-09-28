@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 
+import '../../data/models/message_reminder_model.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../../data/models/my_contacts_response_model.dart';
 part 'chat_state.g.dart';
@@ -24,6 +25,12 @@ enum SendMessageStatus { init, loading, success, failure }
 enum GetSharedProductCountStatus { init, loading, success, failure }
 
 enum DeleteMessageStatus { init, loading, success, failure }
+
+enum UpdateMessageStatus { init, loading, success, failure }
+
+enum SetMessageReminderStatus { init, loading, success, failure }
+
+enum GetMyRemindersStatus { init, loading, success, failure }
 
 enum ReceiveMessageStatus { init, loading, success, failure }
 
@@ -73,6 +80,18 @@ class ChatState {
   final ChangeChatPropertyStatus changeChatPropertyStatus;
   final DeleteChatStatus deleteChatStatus;
   final DeleteMessageStatus deleteMessageStatus;
+
+  /// حالة تعديل نص رسالة. لا تُحفظ: `toJson` يعيدها إلى `init` مثل بقية
+  /// الحالات العابرة، والحمولات القديمة لا تحوي المفتاح فيؤخذ الافتراضي.
+  final UpdateMessageStatus updateMessageStatus;
+
+  /// حالة ضبط/إلغاء تذكير. عابرة مثل أخواتها.
+  final SetMessageReminderStatus setMessageReminderStatus;
+  final GetMyRemindersStatus getMyRemindersStatus;
+
+  /// تذكيراتي التي لم يحن وقتها، الأقرب أولاً. تُحفظ مع الحالة فتظهر القائمة
+  /// وعدّادها فوراً عند الإقلاع قبل أن يردّ الخادم.
+  final List<MessageReminderItem> reminders;
   final List<Contact> contacts;
   final String? currentOpenedChatId;
   final ResendMessageStatus resendMessageStatus;
@@ -114,6 +133,10 @@ class ChatState {
     this.slopMessageId = "",
     this.isSlpoing = false,
     this.deleteMessageStatus = DeleteMessageStatus.init,
+    this.updateMessageStatus = UpdateMessageStatus.init,
+    this.setMessageReminderStatus = SetMessageReminderStatus.init,
+    this.getMyRemindersStatus = GetMyRemindersStatus.init,
+    this.reminders = const [],
     this.currentOpenedChatIdStatus = CurrentOpenedChatIdStatus.init,
     this.chatOrderParticipantId,
     this.firstRequestForGetChats = true,
@@ -176,6 +199,10 @@ class ChatState {
     LoadImageWidthAndHeight? loadImageWidthAndHeight,
     Map<String, List<Message>>? newSortedChatsByDate,
     final DeleteMessageStatus? deleteMessageStatus,
+    final UpdateMessageStatus? updateMessageStatus,
+    final SetMessageReminderStatus? setMessageReminderStatus,
+    final GetMyRemindersStatus? getMyRemindersStatus,
+    final List<MessageReminderItem>? reminders,
     final GetChatsStatus? getChatsStatus,
     final Duration? duration,
     final GetOrderRecipientIdStatus? getOrderRecipientIdStatus,
@@ -245,6 +272,11 @@ class ChatState {
           getSharedProductCountStatus ?? this.getSharedProductCountStatus,
       fileCountInEachChat: fileCountInEachChat ?? this.fileCountInEachChat,
       deleteMessageStatus: deleteMessageStatus ?? this.deleteMessageStatus,
+      updateMessageStatus: updateMessageStatus ?? this.updateMessageStatus,
+      setMessageReminderStatus:
+          setMessageReminderStatus ?? this.setMessageReminderStatus,
+      getMyRemindersStatus: getMyRemindersStatus ?? this.getMyRemindersStatus,
+      reminders: reminders ?? this.reminders,
       senderInfo: senderInfo ?? this.senderInfo,
       videoCountInEachChat: videoCountInEachChat ?? this.videoCountInEachChat,
       loadImageWidthAndHeight:

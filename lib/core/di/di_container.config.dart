@@ -121,6 +121,8 @@ import '../../features/chat/domain/use_cases/get_order_recipient_id_usecase.dart
     as _i1039;
 import '../../features/chat/domain/use_cases/get_shared_product_count_usecase.dart'
     as _i538;
+import '../../features/chat/domain/use_cases/message_reminder_usecases.dart'
+    as _i397;
 import '../../features/chat/domain/use_cases/read_all_messages_usecase.dart'
     as _i314;
 import '../../features/chat/domain/use_cases/receive_message_usecase.dart'
@@ -137,6 +139,8 @@ import '../../features/chat/domain/use_cases/share_product_on_social_app_count_u
     as _i710;
 import '../../features/chat/domain/use_cases/share_product_with_contacts_or_channels_usecase.dart'
     as _i139;
+import '../../features/chat/domain/use_cases/update_message_usecase.dart'
+    as _i487;
 import '../../features/chat/domain/use_cases/update_profile_chat_usecase.dart'
     as _i750;
 import '../../features/chat/domain/use_cases/upload_file_usecase.dart' as _i897;
@@ -1033,6 +1037,15 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i538.GetSharedProductCountUseCase>(
     () => _i538.GetSharedProductCountUseCase(gh<_i420.ChatRepository>()),
   );
+  gh.factory<_i397.CreateMessageReminderUseCase>(
+    () => _i397.CreateMessageReminderUseCase(gh<_i420.ChatRepository>()),
+  );
+  gh.factory<_i397.GetMyRemindersUseCase>(
+    () => _i397.GetMyRemindersUseCase(gh<_i420.ChatRepository>()),
+  );
+  gh.factory<_i397.DeleteMessageReminderUseCase>(
+    () => _i397.DeleteMessageReminderUseCase(gh<_i420.ChatRepository>()),
+  );
   gh.factory<_i314.ReadAllMessagesUseCase>(
     () => _i314.ReadAllMessagesUseCase(gh<_i420.ChatRepository>()),
   );
@@ -1058,6 +1071,9 @@ Future<_i174.GetIt> $initGetIt(
     () => _i139.ShareProductWithContactsOrChannelsUsecase(
       gh<_i420.ChatRepository>(),
     ),
+  );
+  gh.factory<_i487.UpdateMessageUseCase>(
+    () => _i487.UpdateMessageUseCase(gh<_i420.ChatRepository>()),
   );
   gh.factory<_i750.UpdateProfileInChatUseCase>(
     () => _i750.UpdateProfileInChatUseCase(gh<_i420.ChatRepository>()),
@@ -1142,6 +1158,36 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i249.DeleteGalleryImagesUseCase>(),
       gh<_i853.GetShopInfoUseCase>(),
       gh<_i25.UpdateShopInfoUseCase>(),
+    ),
+  );
+  gh.lazySingleton<_i243.ChatBloc>(
+    () => _i243.ChatBloc(
+      gh<_i418.GetContactsUseCase>(),
+      gh<_i675.GetMyChatsUseCase>(),
+      gh<_i710.ShareProductOnAppsUseCase>(),
+      gh<_i777.SaveContactsUseCase>(),
+      gh<_i703.SendMessageUseCase>(),
+      gh<_i538.GetSharedProductCountUseCase>(),
+      gh<_i912.GetMessagesBetweenUseCase>(),
+      gh<_i1039.GetOrderRecipientIdUseCase>(),
+      gh<_i1043.UploadFileCloudinaryUseCase>(),
+      gh<_i304.GetMessagesForChatUseCase>(),
+      gh<_i361.DeleteChatUseCase>(),
+      gh<_i925.SearchForMessageTextInChatUseCase>(),
+      gh<_i142.ChangeChatPropertyUseCase>(),
+      gh<_i897.UploadFileUseCase>(),
+      gh<_i314.ReadAllMessagesUseCase>(),
+      gh<_i40.ReceiveMessageUseCase>(),
+      gh<_i750.UpdateProfileInChatUseCase>(),
+      gh<_i139.ShareProductWithContactsOrChannelsUsecase>(),
+      gh<_i109.GetMediaCountUseCase>(),
+      gh<_i668.GetDateTimeUseCase>(),
+      gh<_i900.BlockOrDeleteBlockUserUseCase>(),
+      gh<_i677.SendErrorToServerUseCase>(),
+      gh<_i487.UpdateMessageUseCase>(),
+      gh<_i397.CreateMessageReminderUseCase>(),
+      gh<_i397.GetMyRemindersUseCase>(),
+      gh<_i397.DeleteMessageReminderUseCase>(),
     ),
   );
   gh.lazySingleton<_i536.StoryBloc>(
@@ -1276,32 +1322,6 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i600.SetOrderVisibilityUseCase>(),
       gh<_i600.SetOrderDetailVisibilityUseCase>(),
       gh<_i415.GetHiddenOrdersUseCase>(),
-    ),
-  );
-  gh.lazySingleton<_i243.ChatBloc>(
-    () => _i243.ChatBloc(
-      gh<_i418.GetContactsUseCase>(),
-      gh<_i675.GetMyChatsUseCase>(),
-      gh<_i710.ShareProductOnAppsUseCase>(),
-      gh<_i777.SaveContactsUseCase>(),
-      gh<_i703.SendMessageUseCase>(),
-      gh<_i538.GetSharedProductCountUseCase>(),
-      gh<_i912.GetMessagesBetweenUseCase>(),
-      gh<_i1039.GetOrderRecipientIdUseCase>(),
-      gh<_i1043.UploadFileCloudinaryUseCase>(),
-      gh<_i304.GetMessagesForChatUseCase>(),
-      gh<_i361.DeleteChatUseCase>(),
-      gh<_i925.SearchForMessageTextInChatUseCase>(),
-      gh<_i142.ChangeChatPropertyUseCase>(),
-      gh<_i897.UploadFileUseCase>(),
-      gh<_i314.ReadAllMessagesUseCase>(),
-      gh<_i40.ReceiveMessageUseCase>(),
-      gh<_i750.UpdateProfileInChatUseCase>(),
-      gh<_i139.ShareProductWithContactsOrChannelsUsecase>(),
-      gh<_i109.GetMediaCountUseCase>(),
-      gh<_i668.GetDateTimeUseCase>(),
-      gh<_i900.BlockOrDeleteBlockUserUseCase>(),
-      gh<_i677.SendErrorToServerUseCase>(),
     ),
   );
   return getIt;

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:developer' as dev;
 
 import 'dart:math';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 import 'dart:ui' as ui;
 
@@ -336,6 +338,59 @@ class LocalNotificationService {
       ),
       payload:
           '${convert.jsonEncode(RemoteMessage['message'])}#prevMessageId#${prevMessageId}#orderId#${orderId}#groupeOrderId#${orderGroupId}#parentOrderId#${parentOrderId}',
+    );
+  }
+
+  /// إشعار محلي لتذكير حان وقته (`MessageReminderEvent`).
+  ///
+  /// الخادم يرسل الحدث **بلا نصّ مرئي**، فالتطبيق هو من يعرض الإشعار.
+  ///
+  /// الحمولة مبنية بنفس شكل حمولة إشعار الرسالة العادية — كائن `Message` ثم
+  /// `#prevMessageId#…` — حتى يسلك الضغط عليها نفس مسار [_onSelectNotification]
+  /// فيفتح المحادثة، بلا فرع ثانٍ يُصان على حدة. ومعرّفا الطلب فارغان ليأخذ
+  /// المسار فرع الدردشة لا فرع الطلبات.
+  ///
+  /// و`channel` و`sender_user` موجودان لأن `navigationToSinglePageChat` تقرأ
+  /// منهما المعرّف والاسم.
+  @pragma('vm:entry-point')
+  Future<void> showReminderNotification(Map<String, dynamic> event) async {
+    final Map payload = event['payload'] is Map ? event['payload'] as Map : {};
+    final String channelId = (event['channel_id'] ?? '').toString();
+    final String messageId = (event['message_id'] ?? '').toString();
+    if (channelId.isEmpty || channelId == 'null') return;
+
+    final String senderName = (payload['sender_name'] ?? '').toString();
+    final String content = (payload['message_content'] ?? '').toString();
+    final String body = (content.isEmpty || content == 'null')
+        ? LocaleKeys.message.tr()
+        : content;
+    final String title = (senderName.isEmpty || senderName == 'null')
+        ? LocaleKeys.remind_me.tr()
+        : '${LocaleKeys.remind_me.tr()} · $senderName';
+
+    final Map<String, dynamic> messageJson = {
+      'id': messageId,
+      'channel_id': channelId,
+      'channel': {'id': channelId},
+      'sender_user': {'name': senderName},
+      'message_content': {'content': content},
+      'message_type': {'name': payload['message_type']},
+    };
+
+    // معرّف ثابت لكل تذكير: إعادة إرسال الحدث تُحدّث الإشعار نفسه بدل أن
+    // تكدّس نسخاً، ولا يصطدم بإشعارات رسائل القناة لأنه مشتقّ من معرّف التذكير.
+    final int notificationId =
+        (payload['reminder_id']?.toString() ?? messageId).hashCode &
+        0x7fffffff;
+
+    await _localNotificationPlugin.show(
+      notificationId,
+      title,
+      body,
+      _notificationDetails(null, channelId, body),
+      payload:
+          '${convert.jsonEncode(messageJson)}#prevMessageId#$messageId'
+          '#orderId##groupeOrderId##parentOrderId#-1',
     );
   }
 

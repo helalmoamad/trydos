@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../../../../core/data/model/pagination_model.dart';
+import 'message_reminder_model.dart';
 
 MyChatsResponseModel myChatsResponseModelFromJson(String str) =>
     MyChatsResponseModel.fromJson(json.decode(str));
@@ -110,6 +111,17 @@ class Message {
   final MessageType? messageType;
   final String? parentMessageId;
   final int? isForward;
+
+  /// `1` إذا عُدِّل نصّ الرسالة بعد إرسالها. يضعه الخادم في `is_edited`.
+  /// الحمولات المحفوظة قبل هذه الميزة لا تحويه، فيصل `null` ويُعامَل كغير
+  /// معدَّلة.
+  final int? isEdited;
+
+  /// تذكير المستخدم الحالي على هذه الرسالة، إن وُجد. شخصي — لا يراه غيره.
+  ///
+  /// لا يصل في إشعار `UpdatingMessageEvent`، فعند استبدال رسالة من إشعار
+  /// يُحتفظ بالقيمة المحلية بدل مسحها.
+  final MessageReminderInfo? reminder;
   final MessageContent? messageContent;
   final ShareProductContent? shareProductContent;
   final List<MediaMessageContent>? mediaMessageContent;
@@ -147,6 +159,8 @@ class Message {
     this.localId,
     this.parentMessageId,
     this.isForward,
+    this.isEdited,
+    this.reminder,
     this.shareProductContent,
     this.messageContent,
     this.messageStatus,
@@ -171,6 +185,8 @@ class Message {
     final MessageType? messageType,
     final String? parentMessageId,
     final int? isForward,
+    final int? isEdited,
+    final MessageReminderInfo? reminder,
     final int? durationInSeconds,
     int? deletedByUserId,
     final MessageContent? messageContent,
@@ -198,6 +214,8 @@ class Message {
       deletedByUserId: deletedByUserId ?? this.deletedByUserId,
       parentMessageId: parentMessageId ?? this.parentMessageId,
       isForward: isForward ?? this.isForward,
+      isEdited: isEdited ?? this.isEdited,
+      reminder: reminder ?? this.reminder,
       messageContent: messageContent ?? this.messageContent,
       isFirstMessageForThisDay:
           isFirstMessageForThisDay ?? this.isFirstMessageForThisDay,
@@ -209,6 +227,42 @@ class Message {
       parentMessage: parentMessage ?? this.parentMessage,
     );
   }
+
+  /// يضبط التذكير أو **يزيله** بتمرير `null`.
+  ///
+  /// [copyWith] تستعمل `??` فلا تستطيع إعادة حقل إلى `null` — تمرير `null`
+  /// فيها يعني «لا تغيّر». وإلغاء التذكير يحتاج الإزالة فعلاً، فلا بدّ من
+  /// طريق ثانٍ.
+  Message copyWithReminder(MessageReminderInfo? value) => Message(
+    id: id,
+    localId: localId,
+    localParentMessageId: localParentMessageId,
+    senderUserId: senderUserId,
+    receiverUserId: receiverUserId,
+    channelId: channelId,
+    authMessageStatus: authMessageStatus,
+    createdAt: createdAt,
+    messageType: messageType,
+    parentMessageId: parentMessageId,
+    isForward: isForward,
+    isEdited: isEdited,
+    reminder: value,
+    messageContent: messageContent,
+    shareProductContent: shareProductContent,
+    mediaMessageContent: mediaMessageContent,
+    messageStatus: messageStatus,
+    channel: channel,
+    senderUser: senderUser,
+    parentMessage: parentMessage,
+    deletedByUserId: deletedByUserId,
+    durationInSeconds: durationInSeconds,
+    file: file,
+    isFirstMessageForThisDay: isFirstMessageForThisDay,
+    isFirstMessage: isFirstMessage,
+    isPrivate: isPrivate,
+    isDateMessage: isDateMessage,
+    dateValue: dateValue,
+  );
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
@@ -253,6 +307,11 @@ class Message {
       isForward: (json["is_forward"] is bool)
           ? (json["is_forward"] ? 1 : 0)
           : json["is_forward"],
+      // يصل رقماً عادةً، وقد يصل منطقياً أو نصّاً — نفس تساهل `is_forward`.
+      isEdited: (json["is_edited"] is bool)
+          ? (json["is_edited"] ? 1 : 0)
+          : int.tryParse(json["is_edited"].toString()),
+      reminder: MessageReminderInfo.tryFromJson(json["reminder"]),
       mediaMessageContent:
           json['auth_message_status'] != null &&
               json['auth_message_status']['is_deleted'] == 1
@@ -325,6 +384,8 @@ class Message {
     "message_type": messageType?.toJson(),
     "parent_message_id": parentMessageId,
     "is_forward": isForward,
+    "is_edited": isEdited,
+    "reminder": reminder?.toJson(),
     "message_content": messageType == null ? null : messageContent?.toJson(),
     "message_status": messageStatus == null
         ? []

@@ -43,6 +43,7 @@ import '../../../calls/presentation/pages/in_app_view.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
 import '../manager/chat_state.dart';
+import '../widgets/reminders_section.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/common/helper/dev_log.dart';
 
@@ -94,6 +95,9 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     devLog("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!2");
     chatBloc.add(const GetChatsEvent(limit: 10));
     chatBloc.add(const SaveContactsEvent());
+    // التذكيرات تُحفظ مع الحالة فتظهر فوراً، وهذا الطلب يصالحها مع الخادم
+    // (ما حان وقته يختفي، وما ضُبط من جهاز آخر يظهر).
+    chatBloc.add(const GetMyRemindersEvent());
     chatPages.insert(
       0,
       ChatPageContent(onSendForwardMessage: widget.onSendForwardMessage),
@@ -379,6 +383,8 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                         ),
                       ),
                     },
+                    // فوق القائمة مباشرةً، ويختفي حين لا تذكيرات.
+                    const RemindersSection(),
                     BlocBuilder<AppBloc, AppState>(
                       buildWhen: (p, c) => p.tabIndexInChat != c.tabIndexInChat,
                       builder: (context, state) {

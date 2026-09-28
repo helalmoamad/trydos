@@ -46,6 +46,29 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
         json['deleteMessageStatus'],
       ) ??
       DeleteMessageStatus.init,
+  updateMessageStatus:
+      $enumDecodeNullable(
+        _$UpdateMessageStatusEnumMap,
+        json['updateMessageStatus'],
+      ) ??
+      UpdateMessageStatus.init,
+  setMessageReminderStatus:
+      $enumDecodeNullable(
+        _$SetMessageReminderStatusEnumMap,
+        json['setMessageReminderStatus'],
+      ) ??
+      SetMessageReminderStatus.init,
+  getMyRemindersStatus:
+      $enumDecodeNullable(
+        _$GetMyRemindersStatusEnumMap,
+        json['getMyRemindersStatus'],
+      ) ??
+      GetMyRemindersStatus.init,
+  reminders:
+      (json['reminders'] as List<dynamic>?)
+          ?.map((e) => MessageReminderItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
   currentOpenedChatIdStatus:
       $enumDecodeNullable(
         _$CurrentOpenedChatIdStatusEnumMap,
@@ -244,6 +267,13 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
   'deleteChatStatus': _$DeleteChatStatusEnumMap[instance.deleteChatStatus]!,
   'deleteMessageStatus':
       _$DeleteMessageStatusEnumMap[instance.deleteMessageStatus]!,
+  'updateMessageStatus':
+      _$UpdateMessageStatusEnumMap[instance.updateMessageStatus]!,
+  'setMessageReminderStatus':
+      _$SetMessageReminderStatusEnumMap[instance.setMessageReminderStatus]!,
+  'getMyRemindersStatus':
+      _$GetMyRemindersStatusEnumMap[instance.getMyRemindersStatus]!,
+  'reminders': instance.reminders.map((e) => e.toJson()).toList(),
   'contacts': instance.contacts.map((e) => e.toJson()).toList(),
   'currentOpenedChatId': instance.currentOpenedChatId,
   'resendMessageStatus':
@@ -303,6 +333,27 @@ const _$DeleteMessageStatusEnumMap = {
   DeleteMessageStatus.loading: 'loading',
   DeleteMessageStatus.success: 'success',
   DeleteMessageStatus.failure: 'failure',
+};
+
+const _$UpdateMessageStatusEnumMap = {
+  UpdateMessageStatus.init: 'init',
+  UpdateMessageStatus.loading: 'loading',
+  UpdateMessageStatus.success: 'success',
+  UpdateMessageStatus.failure: 'failure',
+};
+
+const _$SetMessageReminderStatusEnumMap = {
+  SetMessageReminderStatus.init: 'init',
+  SetMessageReminderStatus.loading: 'loading',
+  SetMessageReminderStatus.success: 'success',
+  SetMessageReminderStatus.failure: 'failure',
+};
+
+const _$GetMyRemindersStatusEnumMap = {
+  GetMyRemindersStatus.init: 'init',
+  GetMyRemindersStatus.loading: 'loading',
+  GetMyRemindersStatus.success: 'success',
+  GetMyRemindersStatus.failure: 'failure',
 };
 
 const _$CurrentOpenedChatIdStatusEnumMap = {
