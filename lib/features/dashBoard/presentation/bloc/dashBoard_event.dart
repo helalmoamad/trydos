@@ -210,3 +210,151 @@ class UpdateShopInfoEvent extends DashBoardEvent {
     required this.expectedSellerId,
   });
 }
+
+
+// ---------------------------------------------------------------------------
+// Locations — a shop's warehouses and pickup points
+//
+// Five events. The add/edit form owns the other two calls (the create form's
+// country list, and load-for-edit) in its own state and calls those use cases
+// directly: both results belong to one open sheet, nothing else renders from
+// them, and putting them on the shared state would leave a location record and
+// a country list sitting on a bloc that is never disposed.
+// ---------------------------------------------------------------------------
+
+/// Load the list for the open shop.
+///
+/// [canRead] is the permission decision computed in the widget, because
+/// permissions do not live in the state — they reach the screen as a
+/// constructor argument. When it is `false` no request is sent at all.
+class GetShopLocationsEvent extends DashBoardEvent {
+  final bool canRead;
+  GetShopLocationsEvent({required this.canRead});
+}
+
+/// Clear what is loaded, on a shop switch or when the screen is disposed.
+///
+/// This is the only event that increments the load generation. Everything the
+/// Locations feature puts on the shared state is reset here, in one place:
+/// the status, the list wrapper (which carries `meta` and the shop stamp with
+/// it) and the write status.
+class ClearShopLocationsEvent extends DashBoardEvent {
+  ClearShopLocationsEvent();
+}
+
+/// Create a location. [canRead] travels with it so the handler can refresh the
+/// list afterwards without the widget having to dispatch a second event.
+class CreateShopLocationEvent extends DashBoardEvent {
+  final String name;
+  final int countryId;
+  final String? address;
+  final double? latitude;
+  final double? longitude;
+  final bool canRead;
+
+  CreateShopLocationEvent({
+    required this.name,
+    required this.countryId,
+    required this.address,
+    required this.latitude,
+    required this.longitude,
+    required this.canRead,
+  });
+}
+
+/// Update a location. The coordinates a record already had travel through
+/// untouched, so an edit never drops them (AC-34).
+class UpdateShopLocationEvent extends DashBoardEvent {
+  final int id;
+  final String name;
+  final int countryId;
+  final String? address;
+  final double? latitude;
+  final double? longitude;
+  final bool canRead;
+
+  UpdateShopLocationEvent({
+    required this.id,
+    required this.name,
+    required this.countryId,
+    required this.address,
+    required this.latitude,
+    required this.longitude,
+    required this.canRead,
+  });
+}
+
+/// Take a location out of service, or put it back.
+///
+/// [status] is what is being asked for; the row's new marker is whatever the
+/// response returns.
+class ChangeShopLocationStatusEvent extends DashBoardEvent {
+  final int id;
+  final int status;
+
+  ChangeShopLocationStatusEvent({required this.id, required this.status});
+}
+
+// ---------------------------------------------------------------------------
+// Customer comments
+// ---------------------------------------------------------------------------
+
+/// Load the first page of one tab, replacing whatever that tab held.
+///
+/// [canRead] travels with the event so the handler can refuse without asking
+/// the widget tree for a permission checker it does not own.
+class GetSellerCommentsEvent extends DashBoardEvent {
+  final SellerCommentType type;
+  final bool canRead;
+
+  GetSellerCommentsEvent({required this.type, required this.canRead});
+}
+
+/// Append the next page of one tab.
+///
+/// Separate from [GetSellerCommentsEvent] because the two must look different
+/// on screen: a first load may show a full-tab spinner, a "load more" must
+/// leave the rows in place (AC-13). The page number is not carried here — it
+/// comes from the tab's own `meta`, which is the server's own count.
+class LoadMoreSellerCommentsEvent extends DashBoardEvent {
+  final SellerCommentType type;
+
+  LoadMoreSellerCommentsEvent({required this.type});
+}
+
+/// Empty both tabs, on a shop switch or when the screen is disposed.
+///
+/// **This is the only event that increments the comments load generation**, and
+/// it is what makes `AC-4` real: without it the generation never changes, a
+/// response from the previous shop passes the staleness check, and — because
+/// the bloc is a `@LazySingleton` that outlives the screen — the old shop's
+/// comments render on the next open.
+class ClearSellerCommentsEvent extends DashBoardEvent {
+  ClearSellerCommentsEvent();
+}
+
+/// Create or edit a reply, decided by [hasReply].
+///
+/// One event for both verbs, because the screen must not be able to choose:
+/// `has_reply` is the whole of the decision (AC-22).
+class SubmitCommentReplyEvent extends DashBoardEvent {
+  final String commentId;
+  final String replyText;
+  final bool hasReply;
+  final SellerCommentType type;
+
+  SubmitCommentReplyEvent({
+    required this.commentId,
+    required this.replyText,
+    required this.hasReply,
+    required this.type,
+  });
+}
+
+/// Remove a reply. The comment itself stays in the list.
+class DeleteCommentReplyEvent extends DashBoardEvent {
+  final String commentId;
+  final SellerCommentType type;
+
+  DeleteCommentReplyEvent({required this.commentId, required this.type});
+}

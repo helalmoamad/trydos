@@ -316,7 +316,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         : (state.getUserPermissionStatus ==
                                   dashboard.GetUserPermissionStatus.success &&
                               ((state.shops?.isNullOrEmpty ?? true) ||
-                                  (((state.shops?.length ?? 0) > 0) &&
+                                  (!((state.shops?.length ?? 0) > 0) &&
                                       (state.shops?.first.isMaster ?? false))))
                         ? InkWell(
                             onTap: () {

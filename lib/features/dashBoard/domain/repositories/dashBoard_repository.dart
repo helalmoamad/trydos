@@ -4,6 +4,8 @@ import 'package:trydos/features/dashBoard/data/models/GetGalleryImagesModel.dart
 import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
 import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.dart';
+import 'package:trydos/features/dashBoard/data/models/get_shop_locations_model.dart';
+import 'package:trydos/features/dashBoard/data/models/get_seller_comments_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_new_ordersToDashboard.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_orders_model.dart';
@@ -95,4 +97,57 @@ abstract class DashBoardRepository {
   Future<Either<Failure, UpdateShopInfoResponseModel>> updateShopInfo(
     Map<String, dynamic> params,
   );
+
+  // --- Locations ---------------------------------------------------------
+  // The writes take the shop id captured when the action started; it travels
+  // on the request itself. The read does not — the bloc re-checks on arrival.
+
+  Future<Either<Failure, GetShopLocationsModel>> getShopLocations({int? status});
+
+  Future<Either<Failure, LocationFormLookupsModel>> getLocationFormCountries();
+
+  Future<Either<Failure, ShopLocationWriteResponseModel>> createShopLocation(
+    Map<String, dynamic> params,
+    String? sellerId,
+  );
+
+  Future<Either<Failure, ShopLocationEditModel>> getShopLocationForEdit(int id);
+
+  Future<Either<Failure, ShopLocationWriteResponseModel>> updateShopLocation(
+    int id,
+    Map<String, dynamic> params,
+    String? sellerId,
+  );
+
+  Future<Either<Failure, ChangeLocationStatusResponseModel>>
+  changeShopLocationStatus(int id, int status, String? sellerId);
+
+  // --- Customer comments -------------------------------------------------
+  // Four calls on the web server with the market token. The shop id is passed
+  // explicitly by the caller, captured when the action started, so a shop
+  // switch mid-flight cannot redirect a write.
+
+  Future<Either<Failure, GetSellerCommentsModel>> getSellerComments({
+    required String sellerId,
+    required SellerCommentType type,
+    required int page,
+    required int pageSize,
+  });
+
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> replyToSellerComment({
+    required String sellerId,
+    required String commentId,
+    required String replyText,
+  });
+
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> editSellerCommentReply({
+    required String sellerId,
+    required String commentId,
+    required String replyText,
+  });
+
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> deleteSellerCommentReply({
+    required String sellerId,
+    required String commentId,
+  });
 }
