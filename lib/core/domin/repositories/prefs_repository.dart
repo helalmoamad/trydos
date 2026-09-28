@@ -41,6 +41,11 @@ abstract class PrefsRepository {
   bool? get isRequestNotificationPermission;
   bool? get isCreateWallet;
 
+  /// دفعة RDB المعلّقة، مخزّنة JSON: `{"reference": "...", "expires_at": "..."}`.
+  String? get rdbPendingPayment;
+
+  Future<bool> setRdbPendingPayment(String? value);
+
   String? get myStoriesName;
 
   String? get myChatName;
@@ -115,6 +120,10 @@ abstract class PrefsRepository {
   int? get otpTimerEndTime;
   Future<bool> setOtpTimerEndTime(int endTime);
   Future<bool> removeOtpTimerEndTime();
+
+  /// المحاولات المتبقّية لإدخال رمز التحقّق في نافذة المؤقّت الحالية.
+  int? get otpAttemptsLeft;
+  Future<bool> setOtpAttemptsLeft(int attempts);
   Future<bool> setDuration(int duration);
   Future<bool> setLanguage(String? language);
   Future<bool> setNotificationTypesFromTerminated(

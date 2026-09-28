@@ -12,6 +12,8 @@ class CreateWalletUseCase implements UseCase<bool, NoParams> {
 
   @override
   Future<Either<Failure, bool>> call(NoParams params) async {
-    return repository.createWallet();
+    // إنشاء محفظة على سيرفر RDB معطّل، ودالة الـ repository معلّقة معه.
+    throw UnimplementedError('wallet requests are disabled');
+    // return repository.createWallet();
   }
 }

@@ -52,3 +52,7 @@ app.*.map.json
 # Android signing secrets (do not commit)
 android/key.properties
 android/app/upload-keystore.jks
+
+# Unit-test outputs (flutter test --coverage / the CI summary)
+coverage/
+test-results.json

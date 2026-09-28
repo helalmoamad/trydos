@@ -16,7 +16,11 @@ class GetCustomerWalletUseCase
   Future<Either<Failure, CustomerWalletModel>> call(
     CustomerWalletParams params,
   ) async {
-    return repository.getCustomerWallet(assetId: params.map['assetId']);
+    // طلب رصيد المحفظة إلى سيرفر RDB معطّل، ودالة الـ repository معلّقة معه.
+    // الصنف باقٍ لأن تسجيله في الـ DI مولَّد ولا يُعدَّل يدوياً، ولا يستدعيه
+    // أحد الآن.
+    throw UnimplementedError('wallet requests are disabled');
+    // return repository.getCustomerWallet(assetId: params.map['assetId']);
   }
 }
 

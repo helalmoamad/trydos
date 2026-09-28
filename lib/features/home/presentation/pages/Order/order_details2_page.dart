@@ -8901,7 +8901,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                   element.type == newVariant,
                                             )
                                             .qty;
-                                        double? newVariantPrice = state
+                                        // كان يُستعمل فقط في مقارنة فرق السعر
+                                        // برصيد المحفظة المعطّلة أدناه.
+                                        /* double? newVariantPrice = state
                                             .colorSizeForProductModel
                                             ?.data
                                             ?.variation
@@ -8909,7 +8911,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               (element) =>
                                                   element.type == newVariant,
                                             )
-                                            .offerPrice;
+                                            .offerPrice;*/
                                         if ((order!
                                                         .details?[indexTap
                                                             .value]
@@ -8929,7 +8931,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           );
                                           return;
                                         }
-                                        if (((order!
+                                        // كان تغيير المتغيّر يُمنع إذا كان فرق
+                                        // السعر أكبر من رصيد المحفظة. الرصيد
+                                        // لم يعد يُجلب وقيمته صفر دائماً، فلو
+                                        // بقي الشرط لمنع أي تغيير.
+                                        /* if (((order!
                                                         .details?[indexTap
                                                             .value]
                                                         .priceAfterDiscount ??
@@ -8973,7 +8979,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             );
                                             return;
                                           }
-                                        }
+                                        } */
 
                                         if (_colorIndexTap == index) {
                                           colorIndexTap.value = null;
@@ -9084,7 +9090,9 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                   element.type == newVariant,
                                             )
                                             .qty;
-                                        double? newVariantPrice = state
+                                        // كان يُستعمل فقط في مقارنة فرق السعر
+                                        // برصيد المحفظة المعطّلة أدناه.
+                                        /* double? newVariantPrice = state
                                             .colorSizeForProductModel
                                             ?.data
                                             ?.variation
@@ -9092,7 +9100,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               (element) =>
                                                   element.type == newVariant,
                                             )
-                                            .offerPrice;
+                                            .offerPrice;*/
 
                                         if ((order!
                                                         .details?[indexTap
@@ -9113,7 +9121,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                           );
                                           return;
                                         }
-                                        if (((order!
+                                        // كان تغيير المتغيّر يُمنع إذا كان فرق
+                                        // السعر أكبر من رصيد المحفظة. الرصيد
+                                        // لم يعد يُجلب وقيمته صفر دائماً، فلو
+                                        // بقي الشرط لمنع أي تغيير.
+                                        /* if (((order!
                                                         .details?[indexTap
                                                             .value]
                                                         .priceAfterDiscount ??
@@ -9157,7 +9169,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                             );
                                             return;
                                           }
-                                        }
+                                        } */
                                         if (_sizeIndexTap == index) {
                                           sizeIndexTap.value = null;
                                           return;

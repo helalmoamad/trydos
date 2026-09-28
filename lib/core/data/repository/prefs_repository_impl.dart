@@ -764,6 +764,13 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.setInt(PrefsKey.otpTimerEndTime, endTime);
 
   @override
+  int? get otpAttemptsLeft => _preferences.getInt(PrefsKey.otpAttemptsLeft);
+
+  @override
+  Future<bool> setOtpAttemptsLeft(int attempts) =>
+      _preferences.setInt(PrefsKey.otpAttemptsLeft, attempts);
+
+  @override
   Future<bool> removeOtpTimerEndTime() =>
       _preferences.remove(PrefsKey.otpTimerEndTime);
 
@@ -883,6 +890,15 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   // TODO: implement isVerifiedPhonePeforeExpiredToken
   bool? get isCreateWallet => _preferences.getBool(PrefsKey.createWallet);
+
+  @override
+  String? get rdbPendingPayment =>
+      _preferences.getString(PrefsKey.rdbPendingPayment);
+
+  @override
+  Future<bool> setRdbPendingPayment(String? value) => value == null
+      ? _preferences.remove(PrefsKey.rdbPendingPayment)
+      : _preferences.setString(PrefsKey.rdbPendingPayment, value);
 
   @override
   Future<bool> setTopicThatAlreadySubsecribed(String topic) async {

@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -57,6 +58,22 @@ class ProductItem extends StatefulWidget {
 
   final productListingModel.Products productItem;
   final int itemIndex;
+
+  /// The key every list must give a product card.
+  ///
+  /// The card copies its product (image, name, price, video) into its State
+  /// once, in initState. Without a key, when the list changes under it (a
+  /// product removed on the backend, a new order after a refresh) Flutter
+  /// keeps the old State for that slot, and the card goes on showing the old
+  /// product until it scrolls out of the cache. Keying by the product makes
+  /// Flutter build a fresh card instead. [testKey] keeps the keys the
+  /// integration tests look for.
+  static Key keyFor(productListingModel.Products product, {Key? testKey}) {
+    if (TestVariables.kTestMode && testKey != null) return testKey;
+    return ValueKey<String>(
+      'product-card-${product.slug ?? product.productId}',
+    );
+  }
 
   @override
   State<ProductItem> createState() => _ProductItemState();

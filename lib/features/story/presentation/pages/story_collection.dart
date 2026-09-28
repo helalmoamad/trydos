@@ -968,6 +968,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                           .userId ==
                                       prefsRepository.myStoriesId
                                   ? const SizedBox.shrink()
+                                  : !prefsRepository.isVerifiedPhone!
+                                  ? const SizedBox.shrink()
                                   : Material(
                                       color: Colors.transparent,
                                       child: InkWell(
@@ -993,9 +995,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                           );
                                         },
                                         child: Icon(
-                                          Icons.error,
+                                          Icons.flag,
                                           size: 26.h,
-                                          color: Colors.red,
+                                          color: const Color.fromARGB(
+                                            255,
+                                            187,
+                                            184,
+                                            184,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -1085,6 +1092,12 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     // `context` here is the story page context; keep a reference to it because
     // inside the bottom-sheet builder `context` refers to the sheet itself.
 
+    // Colors from the web design (.claude/web_design/reportstory.html).
+    const primary = Color(0xff5B3FE0);
+    const textDark = Color(0xff3C3C3C);
+    const textMuted = Color(0xff707070);
+    const borderColor = Color(0xffE6E6E6);
+
     final reasons = <ReportReason>[
       ReportReason(
         key: "inappropriate_content",
@@ -1115,303 +1128,413 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             final enableButton =
                 selectedReasons.isNotEmpty &&
                 (!hasOther || controller.text.trim().isNotEmpty);
-
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-              ),
+            final fieldBorder = OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15.r),
+              borderSide: const BorderSide(color: borderColor),
+            );
+            return Padding(
               padding: EdgeInsets.only(
-                left: 24.w,
-                right: 24.w,
-                top: 18.h,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
+                bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    /// Header
-                    Row(
-                      children: [
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            Navigator.pop(context);
-                            _videoController?.play();
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            size: 24.sp,
-                            color: Colors.grey.shade700,
-                          ),
+              child: Container(
+                height: MediaQuery.of(context).size.height, 
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20.r),
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x1A000000),
+                      offset: Offset(0, 3),
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      /// Header
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24.w,
+                          vertical: 12.h,
                         ),
-                        Expanded(
-                          child: Center(
-                            child: Text(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          clipBehavior: Clip.none,
+                          children: [
+                            Text(
                               LocaleKeys.report_story.tr(),
                               style: TextStyle(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w700,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w500,
+                                color: textDark,
                               ),
                             ),
-                          ),
-                        ),
-                        SizedBox(width: 48.w),
-                      ],
-                    ),
-
-                    SizedBox(height: 8.h),
-
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        LocaleKeys.report_reason.tr(),
-                        style: TextStyle(color: Colors.grey, fontSize: 13.sp),
-                      ),
-                    ),
-
-                    SizedBox(height: 14.h),
-
-                    ...reasons.map((reason) {
-                      final selected = selectedReasons.contains(reason.key);
-
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 12.h),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16.r),
-                          onTap: () {
-                            setState(() {
-                              if (selected) {
-                                selectedReasons.remove(reason.key);
-                              } else {
-                                selectedReasons.add(reason.key);
-                              }
-                            });
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            height: 52.h,
-                            decoration: BoxDecoration(
-                              color: selected
-                                  ? const Color(0xffFFF2F2)
-                                  : const Color(0xffF5F5F5),
-                              borderRadius: BorderRadius.circular(16.r),
-                              border: Border.all(
-                                color: selected
-                                    ? Colors.red
-                                    : Colors.grey.shade300,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                reason.title,
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w600,
+                            PositionedDirectional(
+                              end: -150.w,
+                              child: Material(
+                                color: Colors.transparent,
+                                shape: const CircleBorder(),
+                                clipBehavior: Clip.antiAlias,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    _videoController?.play();
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.all(6.r),
+                                    child: Icon(
+                                      Icons.close,
+                                      size: 20.r,
+                                      color: textMuted,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+
+                      /// Body
+                      Flexible(
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.only(
+                            left: 24.w,
+                            right: 24.w,
+                            bottom: 8.h,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                LocaleKeys.report_reason.tr(),
+                                style: TextStyle(
+                                  color: textMuted,
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                              SizedBox(height: 12.h),
+                              ...reasons.map((reason) {
+                                final selected = selectedReasons.contains(
+                                  reason.key,
+                                );
+
+                                return Padding(
+                                  padding: EdgeInsets.only(bottom: 8.h),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(15.r),
+                                    onTap: () {
+                                      setState(() {
+                                        if (selected) {
+                                          selectedReasons.remove(reason.key);
+                                        } else {
+                                          selectedReasons.add(reason.key);
+                                        }
+                                      });
+                                    },
+                                    child: AnimatedContainer(
+                                      duration: const Duration(
+                                        milliseconds: 150,
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 16.w,
+                                        vertical: 12.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: selected
+                                            ? primary.withValues(alpha: 0.06)
+                                            : const Color(0xffF2F2F2),
+                                        borderRadius: BorderRadius.circular(
+                                          15.r,
+                                        ),
+                                        border: Border.all(
+                                          color: selected
+                                              ? primary
+                                              : borderColor,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        reason.title,
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          color: textDark,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
+                              SizedBox(height: 8.h),
+                              Text(
+                                LocaleKeys.details_optional.tr(),
+                                style: TextStyle(
+                                  color: const Color(0xff505050),
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                              SizedBox(
+                                height: 150.h,
+                                child: TextField(
+                                  controller: controller,
+                                  maxLength: 500,
+                                  maxLines: null,
+                                  expands: true,
+                                  textAlignVertical: TextAlignVertical.top,
+                                  cursorColor: primary,
+                                  style: TextStyle(
+                                    color: textDark,
+                                    fontSize: 14.sp,
+                                  ),
+                                  onChanged: (_) => setState(() {
+                                    if (controller.text.isNotEmpty) {
+                                      if (!selectedReasons.contains("other")) {
+                                        selectedReasons.add("other");
+                                      }
+                                    } else {
+                                      selectedReasons.remove("other");
+                                    }
+                                  }),
+                                  decoration: InputDecoration(
+                                    hintText: LocaleKeys.write_details_here
+                                        .tr(),
+                                    hintStyle: TextStyle(
+                                      color: const Color(0xff929191),
+                                      fontSize: 14.sp,
+                                    ),
+                                    counterText: "",
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.all(12.r),
+                                    border: fieldBorder,
+                                    enabledBorder: fieldBorder,
+                                    focusedBorder: fieldBorder.copyWith(
+                                      borderSide: const BorderSide(
+                                        color: primary,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                "${controller.text.length}/500",
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                  color: const Color(0xff929191),
+                                  fontSize: 11.sp,
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                            ],
                           ),
                         ),
-                      );
-                    }),
-
-                    SizedBox(height: 8.h),
-
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        LocaleKeys.details_optional.tr(),
-                        style: TextStyle(color: Colors.grey, fontSize: 13.sp),
                       ),
-                    ),
 
-                    SizedBox(height: 10.h),
-
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(18.r),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: TextField(
-                        controller: controller,
-                        maxLength: 500,
-                        maxLines: 5,
-                        onChanged: (_) => setState(() {}),
-                        decoration: InputDecoration(
-                          hintText: LocaleKeys.write_details_here.tr(),
-                          counterText: "",
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(18.w),
+                      /// Footer
+                      Container(
+                        decoration: const BoxDecoration(
+                          border: Border(top: BorderSide(color: borderColor)),
                         ),
-                      ),
-                    ),
-
-                    Text(
-                      "${controller.text.length}/500",
-                      style: TextStyle(color: Colors.grey, fontSize: 12.sp),
-                    ),
-
-                    SizedBox(height: 18.h),
-
-                    const Divider(height: 1),
-
-                    SizedBox(height: 18.h),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: BlocConsumer<HomeBloc, HomeState>(
-                            bloc: homeBloc,
-                            listenWhen: (previous, current) =>
-                                previous.reportingAboutStory !=
-                                current.reportingAboutStory,
-                            listener: (context, homeState) {
-                              if (homeState.reportingAboutStory ==
-                                  ReportingAboutStory.success) {
-                                final storyBloc = GetIt.I<StoryBloc>();
-                                final int collectionIndex =
-                                    widget.collectionIndex;
-                                final stories =
-                                    storyBloc
-                                        .state
-                                        .storiesCollections[collectionIndex]
-                                        .stories ??
-                                    const [];
-                                final int currentIndex =
-                                    storyBloc
-                                        .state
-                                        .currentStoryInEachCollection[collectionIndex] ??
-                                    0;
-                                // Is there another story after the reported one
-                                // in this same collection?
-                                final bool hasNextInCollection =
-                                    currentIndex < stories.length - 1;
-
-                                // Close the report sheet.
-                                Navigator.pop(context);
-                                // Drop the reported story from the collection.
-
-                                // The old video belongs to the removed story.
-                                _videoController?.dispose();
-                                _videoController = null;
-                                init = null;
-
-                                if (hasNextInCollection) {
-                                  // After removal the next story now sits at the
-                                  // same index -> (re)select it so its content
-                                  // (image dimensions / video) gets loaded.
-                                  storyBloc.add(
-                                    StorySelectedEvent(
-                                      collectionIndex: collectionIndex,
-                                      selectedStoryIndexInCollection:
-                                          currentIndex,
-                                      currentPage: -1,
-                                    ),
-                                  );
-                                  widget.animatedController.reset();
-                                  widget.animatedController.forward();
-                                } else {
-                                  // No next story in this collection -> close the
-                                  // viewer (or advance to the next collection via
-                                  // onReachStoryAtEdge if you prefer).
-                                  Navigator.of(context).pop();
-                                }
-
-                                showMessage(
-                                  LocaleKeys.report_sent_successfully.tr(),
-                                  context: context,
-                                );
-                              } else if (homeState.reportingAboutStory ==
-                                  ReportingAboutStory.failure) {
-                                showMessage(
-                                  LocaleKeys.report_failed.tr(),
-                                  context: context,
-                                  hasError: true,
-                                );
-                              }
-                            },
-                            buildWhen: (previous, current) =>
-                                previous.reportingAboutStory !=
-                                current.reportingAboutStory,
-                            builder: (context, homeState) {
-                              final loading =
-                                  homeState.reportingAboutStory ==
-                                  ReportingAboutStory.loading;
-
-                              return ElevatedButton(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24.w,
+                          vertical: 16.h,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
                                 onPressed: () {
-                                  // منع الضغط أثناء التحميل أو إذا كان الزر معطل
-                                  if (!enableButton || loading) return;
+                                  _videoController?.play();
+                                  Navigator.pop(context);
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: textDark,
+                                  side: const BorderSide(color: borderColor),
+                                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                                  minimumSize: Size.fromHeight(40.h),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  shape: const StadiumBorder(),
+                                ),
+                                child: Text(
+                                  LocaleKeys.cancel.tr(),
+                                  style: TextStyle(
+                                    color: textDark,
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: BlocConsumer<HomeBloc, HomeState>(
+                                bloc: homeBloc,
+                                listenWhen: (previous, current) =>
+                                    previous.reportingAboutStory !=
+                                    current.reportingAboutStory,
+                                listener: (context, homeState) {
+                                  if (homeState.reportingAboutStory ==
+                                      ReportingAboutStory.success) {
+                                    final storyBloc = GetIt.I<StoryBloc>();
+                                    final int collectionIndex =
+                                        widget.collectionIndex;
+                                    final stories =
+                                        storyBloc
+                                            .state
+                                            .storiesCollections[collectionIndex]
+                                            .stories ??
+                                        const [];
+                                    final int currentIndex =
+                                        storyBloc
+                                            .state
+                                            .currentStoryInEachCollection[collectionIndex] ??
+                                        0;
+                                    // Is there another story after the reported one
+                                    // in this same collection?
+                                    final bool hasNextInCollection =
+                                        currentIndex < stories.length - 1;
 
-                                  // المستخدم موثق
-                                  if (prefsRepository.isVerifiedPhone ??
-                                      false) {
-                                    homeBloc.add(
-                                      homeEvent.ReportAboutStoryEvent(
-                                        userId: prefsRepository.myMarketId
-                                            .toString(),
-                                        storyId: storyId,
-                                        reasons: selectedReasons.toList(),
-                                        notes: controller.text.trim(),
-                                      ),
+                                    // Close the report sheet.
+                                    Navigator.pop(context);
+                                    // Drop the reported story from the collection.
+
+                                    // The old video belongs to the removed story.
+                                    _videoController?.dispose();
+                                    _videoController = null;
+                                    init = null;
+
+                                    if (hasNextInCollection) {
+                                      // After removal the next story now sits at the
+                                      // same index -> (re)select it so its content
+                                      // (image dimensions / video) gets loaded.
+                                      storyBloc.add(
+                                        StorySelectedEvent(
+                                          collectionIndex: collectionIndex,
+                                          selectedStoryIndexInCollection:
+                                              currentIndex,
+                                          currentPage: -1,
+                                        ),
+                                      );
+                                      widget.animatedController.reset();
+                                      widget.animatedController.forward();
+                                    } else {
+                                      // No next story in this collection -> close the
+                                      // viewer (or advance to the next collection via
+                                      // onReachStoryAtEdge if you prefer).
+                                      Navigator.of(context).pop();
+                                    }
+
+                                    showMessage(
+                                      LocaleKeys.report_sent_successfully.tr(),
+                                      context: context,
                                     );
-                                  } else {
-                                    GuestPhoneVerificationDialog.show(
-                                      context,
-                                      onVerified: () {
-                                        homeBloc.add(
-                                          homeEvent.ReportAboutStoryEvent(
-                                            userId: prefsRepository.myMarketId
-                                                .toString(),
-                                            storyId: storyId,
-                                            reasons: selectedReasons.toList(),
-                                            notes: controller.text.trim(),
-                                          ),
-                                        );
-                                      },
+                                  } else if (homeState.reportingAboutStory ==
+                                      ReportingAboutStory.failure) {
+                                    showMessage(
+                                      LocaleKeys.report_failed.tr(),
+                                      context: context,
+                                      hasError: true,
                                     );
                                   }
                                 },
+                                buildWhen: (previous, current) =>
+                                    previous.reportingAboutStory !=
+                                    current.reportingAboutStory,
+                                builder: (context, homeState) {
+                                  final loading =
+                                      homeState.reportingAboutStory ==
+                                      ReportingAboutStory.loading;
 
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 0,
-                                  disabledBackgroundColor: const Color(
-                                    0xffD9D9DF,
-                                  ),
-                                  backgroundColor: Colors.red,
-                                  minimumSize: Size.fromHeight(52.h),
-                                  shape: const StadiumBorder(),
-                                ),
-                                child: loading
-                                    ? TrydosLoader(
-                                        size: 24,
-                                        color: Colors.white,
-                                      )
-                                    : Text(LocaleKeys.send_report.tr()),
-                              );
-                            },
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              _videoController?.play();
-                              Navigator.pop(context);
-                            },
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: Size.fromHeight(52.h),
-                              shape: const StadiumBorder(),
+                                  return ElevatedButton(
+                                    onPressed: (!enableButton || loading)
+                                        ? null
+                                        : () {
+                                            // المستخدم موثق
+                                            if (prefsRepository
+                                                    .isVerifiedPhone ??
+                                                false) {
+                                              homeBloc.add(
+                                                homeEvent.ReportAboutStoryEvent(
+                                                  userId: prefsRepository
+                                                      .myMarketId
+                                                      .toString(),
+                                                  storyId: storyId,
+                                                  reasons: selectedReasons
+                                                      .toList(),
+                                                  notes: controller.text.trim(),
+                                                ),
+                                              );
+                                            } else {
+                                              GuestPhoneVerificationDialog.show(
+                                                context,
+                                                onVerified: () {
+                                                  homeBloc.add(
+                                                    homeEvent.ReportAboutStoryEvent(
+                                                      userId: prefsRepository
+                                                          .myMarketId
+                                                          .toString(),
+                                                      storyId: storyId,
+                                                      reasons: selectedReasons
+                                                          .toList(),
+                                                      notes: controller.text
+                                                          .trim(),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            }
+                                          },
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 0,
+                                      backgroundColor: primary,
+                                      foregroundColor: Colors.white,
+                                      disabledBackgroundColor: const Color(
+                                        0xffD9D9DE,
+                                      ),
+                                      disabledForegroundColor: Colors.white,
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 10.h,
+                                      ),
+                                      minimumSize: Size.fromHeight(40.h),
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      shape: const StadiumBorder(),
+                                    ),
+                                    child: loading
+                                        ? TrydosLoader(
+                                            size: 20,
+                                            color: Colors.white,
+                                          )
+                                        : Text(
+                                            LocaleKeys.send_report.tr(),
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                  );
+                                },
+                              ),
                             ),
-                            child: Text(LocaleKeys.cancel.tr()),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -1814,15 +1937,28 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             borderRadius: BorderRadius.circular(15.r),
                           ),
                           child: Center(
-                            child: Text(
-                              LocaleKeys.press_here_for_more.tr(),
-                              textAlign: TextAlign.center,
-                              maxLines: 1,
-                              style: context.textTheme.bodyMedium?.rq.copyWith(
-                                color: const Color(0xff1D1D1D),
-                                fontSize: 10.sp,
-                                letterSpacing: 0.18,
-                              ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.link_off_outlined,
+                                  size: 16.sp,
+                                  color: const Color(0xff1D1D1D),
+                                ),
+                                SizedBox(width: 3.w),
+                                Text(
+                                  LocaleKeys.press_here_for_more.tr(),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  style: context.textTheme.bodyMedium?.rq
+                                      .copyWith(
+                                        color: const Color(0xff1D1D1D),
+                                        fontSize: 10.sp,
+                                        letterSpacing: 0.18,
+                                      ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

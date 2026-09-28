@@ -8,6 +8,7 @@ import 'package:trydos/features/chat/data/data_sources/chat_remote_datasource.da
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
 import 'package:trydos/features/chat/data/models/get_order_recipient_id_model.dart';
+import 'package:trydos/features/chat/data/models/message_reminder_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
@@ -126,6 +127,36 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   Future<Either<Failure, Message>> sendMessage(Map<String, dynamic> params) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.sendMessage(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Message>> updateMessage(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.updateMessage(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, MessageReminderItem>> createMessageReminder(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.createMessageReminder(params),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<MessageReminderItem>>> getMyReminders() {
+    return handlingExceptionRequest(tryCall: dataSource.getMyReminders);
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteMessageReminder(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.deleteMessageReminder(params),
     );
   }
 

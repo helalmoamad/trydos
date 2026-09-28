@@ -998,9 +998,14 @@ class ConvertItemFromOldcartToCartEvent extends HomeEvent {
 }
 
 class GetCurrencyForCountryEvent extends HomeEvent {
-  GetCurrencyForCountryEvent();
+  /// [afterCountryChange] يعني أن البلد تغيّر للتوّ: تُمسح العملة السابقة،
+  /// وتُحجب الشاشة بنافذة انتظار، ويُعاد الطلب حتى ينجح.
+  GetCurrencyForCountryEvent({this.afterCountryChange = false});
+
+  final bool afterCountryChange;
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [afterCountryChange];
 }
 
 class ChangeCurrentIndexForUpdatCartEvent extends HomeEvent {

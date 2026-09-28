@@ -1170,9 +1170,13 @@ class _ProductCollectionInCartPage1State
                                                                       .sizeOption ??
                                                                   ""
                                                             : "",
+                                                        // الشرط كان مقلوباً:
+                                                        // يقرأ `variations!`
+                                                        // حين تكون null، فيرمي
+                                                        // خطأ عند كل ضغطة على +
                                                         colorOption:
                                                             cartCollection[index]
-                                                                    .variations ==
+                                                                    .variations !=
                                                                 null
                                                             ? cartCollection[index]
                                                                       .variations!

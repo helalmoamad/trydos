@@ -580,7 +580,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     }
     GetIt.I<HomeBloc>().add(const GetStartingSettingsEvent());
     GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-    GetIt.I<HomeBloc>().add(GetCurrenciesForWalletEvent());
+    // عملات المحفظة (سيرفر RDB) كانت تُطلب مع كل إقلاع. أُلغي الطلب.
+    // GetIt.I<HomeBloc>().add(GetCurrenciesForWalletEvent());
     if (GetIt.I<ChatBloc>().state.firstRequestForGetChats) {
       if (prefsRepository.chatToken != null) {
         GetIt.I<ChatBloc>().add(const GetChatsEvent(limit: 10));

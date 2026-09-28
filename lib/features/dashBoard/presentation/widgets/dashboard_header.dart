@@ -41,14 +41,14 @@ class DashboardHeader extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: const Color.fromARGB(255, 254, 255, 255),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   LocaleKeys.seller_dashboard.tr(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
-                    color: Colors.blue.shade700,
+                    color: Color.fromARGB(255, 56, 57, 58),
                     fontWeight: FontWeight.w500,
                   ),
                 ),

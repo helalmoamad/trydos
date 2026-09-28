@@ -17,9 +17,11 @@ import 'package:trydos/features/home/data/models/get_only_message_from_api_model
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../core/api/client_config.dart';
+import '../../../../core/api/methods/delete.dart';
 import '../../../../core/api/methods/get.dart';
 import '../../../../core/api/methods/post.dart';
 import '../models/ImageDetail.dart';
+import '../models/message_reminder_model.dart';
 import '../models/media_count.dart';
 import '../models/my_chats_response_model.dart';
 import '../parsers/heavy_response_parsers.dart';
@@ -234,6 +236,69 @@ class ChatRemoteDataSource {
       ),
     );
     return sendMessage();
+  }
+
+  Future<Message> updateMessage(Map<String, dynamic> params) {
+    PostClient<Message> updateMessage = PostClient<Message>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<Message>(
+        endpoint: ChatEndPoints.updateMessageEP,
+        data: params,
+        response: ResponseValue<Message>(
+          fromJson: (response) => Message.fromJson(response['data']),
+        ),
+      ),
+    );
+    return updateMessage();
+  }
+
+  /// ينشئ تذكيراً على رسالة، أو يحدّث وقت تذكير قائم (الخادم يبقي `id` نفسه).
+  Future<MessageReminderItem> createMessageReminder(
+    Map<String, dynamic> params,
+  ) {
+    PostClient<MessageReminderItem> createReminder =
+        PostClient<MessageReminderItem>(
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<MessageReminderItem>(
+            endpoint: ChatEndPoints.createReminderEP(
+              params["message_id"].toString(),
+            ),
+            data: {"remind_at": params["remind_at"]},
+            response: ResponseValue<MessageReminderItem>(
+              fromJson: (response) =>
+                  MessageReminderItem.fromJson(response['data']),
+            ),
+          ),
+        );
+    return createReminder();
+  }
+
+  Future<List<MessageReminderItem>> getMyReminders() {
+    GetClient<List<MessageReminderItem>> getMyReminders =
+        GetClient<List<MessageReminderItem>>(
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<List<MessageReminderItem>>(
+            endpoint: ChatEndPoints.myRemindersEP,
+            response: ResponseValue<List<MessageReminderItem>>(
+              fromJson: (response) =>
+                  MessageReminderItem.listFromJson(response['data']),
+            ),
+          ),
+        );
+    return getMyReminders();
+  }
+
+  Future<bool> deleteMessageReminder(Map<String, dynamic> params) {
+    DeleteClient<bool> deleteReminder = DeleteClient<bool>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<bool>(
+        endpoint: ChatEndPoints.deleteReminderEP(
+          params["reminder_id"].toString(),
+        ),
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return deleteReminder();
   }
 
   Future<Message> shareProductWithContactsOrChannels(

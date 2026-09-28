@@ -9,7 +9,7 @@ import 'package:trydos/features/authentication/data/models/refresh_stories_token
 import 'package:trydos/features/authentication/data/models/send_otp_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_guest_phone_response_model.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
-import 'package:trydos/features/authentication/data/models/login_to_wallet_model.dart';
+// import 'package:trydos/features/authentication/data/models/login_to_wallet_model.dart';
 import '../../../../core/api/handling_exception.dart';
 import '../../../../core/error/failures.dart';
 import '../models/create_user_response_model.dart';
@@ -51,6 +51,8 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
     );
   }
 
+  // تسجيل الدخول إلى المحفظة وإنشاؤها على سيرفر RDB — معطّلان.
+  /*
   @override
   Future<Either<Failure, LoginToWalletModel>> loginToWallet(
     Map<String, dynamic> params,
@@ -64,6 +66,7 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
   Future<Either<Failure, bool>> createWallet() {
     return handlingExceptionRequest(tryCall: () => dataSource.createWallet());
   }
+  */
 
   @override
   Future<Either<Failure, RefreshCommentTokenResponseModel>>

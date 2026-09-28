@@ -138,6 +138,14 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                     BlocProvider.of<HomeBloc>(
                                       context,
                                     ).add(const ClearAllAppCashEvent());
+                                    // البلد تغيّر: تُطلب عملته وسعر صرفه فوراً،
+                                    // وتُحجب الشاشة حتى يصلا لأن كل الأسعار
+                                    // مبنيّة عليهما.
+                                    BlocProvider.of<HomeBloc>(context).add(
+                                      GetCurrencyForCountryEvent(
+                                        afterCountryChange: true,
+                                      ),
+                                    );
                                     clearCustomCashe();
                                     prefsRepository.setIsFoundDataCashed(false);
                                     BlocProvider.of<HomeBloc>(context).add(

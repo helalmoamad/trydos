@@ -29,6 +29,9 @@ import 'package:trydos/features/chat/domain/use_cases/save_contacts_usecase.dart
 import 'package:trydos/features/chat/domain/use_cases/search_For_message_text_in_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_error_to_server_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
+import 'package:trydos/features/chat/domain/use_cases/update_message_usecase.dart';
+import 'package:trydos/features/chat/domain/use_cases/message_reminder_usecases.dart';
+import 'package:trydos/features/chat/data/models/message_reminder_model.dart';
 import 'package:trydos/features/chat/domain/use_cases/share_product_on_social_app_count_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/update_profile_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/upload_file_usecase.dart';
@@ -82,6 +85,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     this.getDateTimeUseCase,
     this.blockOrDeleteBlockUserUseCase,
     this.sendErrorToServerUseCase,
+    this.updateMessageUseCase,
+    this.createMessageReminderUseCase,
+    this.getMyRemindersUseCase,
+    this.deleteMessageReminderUseCase,
   ) : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
     on<UpdateChannelObjectFromNotificationEvent>(
@@ -101,6 +108,13 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<AddChannelToChannels>(_onAddChannelToChannels);
     on<AddUserConntctSatuseEvent>(_onAddUserConntctSatuseEvent);
     on<SendMessageEvent>(_onSendMessageEvent);
+    on<UpdateMessageEvent>(_onUpdateMessageEvent);
+    on<MessageUpdatedFromNotificationEvent>(
+      _onMessageUpdatedFromNotificationEvent,
+    );
+    on<SetMessageReminderEvent>(_onSetMessageReminderEvent);
+    on<CancelMessageReminderEvent>(_onCancelMessageReminderEvent);
+    on<GetMyRemindersEvent>(_onGetMyRemindersEvent);
     on<BlockOrDeleteBlockUserEvent>(_onBlockOrDeleteBlockUserEvent);
     on<ShareProductWithContactsOrChannelsEvent>(
       _onShareProductWithContactsOrChannelsEvent,
@@ -150,6 +164,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   }
 
   final SendMessageUseCase sendMessageUseCase;
+  final UpdateMessageUseCase updateMessageUseCase;
+  final CreateMessageReminderUseCase createMessageReminderUseCase;
+  final GetMyRemindersUseCase getMyRemindersUseCase;
+  final DeleteMessageReminderUseCase deleteMessageReminderUseCase;
   final GetMediaCountUseCase getMediaCountUseCase;
   final SaveContactsUseCase saveContactsUseCase;
   final GetContactsUseCase getContactsUseCase;
@@ -254,6 +272,304 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           ),
         );
         showMessage(r.message ?? "");
+      },
+    );
+  }
+
+  /// يضبط تذكيراً على رسالة (أو يغيّر وقت تذكير قائم).
+  ///
+  /// لا عرض متفائل: النافذة تنتظر ردّ الخادم لأنه هو من يولّد `id` التذكير،
+  /// وبدونه لا يمكن إلغاؤه لاحقاً. عند النجاح نعلّق التذكير على الرسالة في
+  /// الحالة، فيظهر الجرس، ونضيفه إلى قائمة التذكيرات مرتّبةً بالأقرب.
+  FutureOr<void> _onSetMessageReminderEvent(
+    SetMessageReminderEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    emit(
+      state.copyWith(setMessageReminderStatus: SetMessageReminderStatus.loading),
+    );
+
+    final response = await createMessageReminderUseCase(
+      CreateMessageReminderParams(
+        messageId: event.messageId,
+        remindAt: event.remindAt,
+      ),
+    );
+
+    response.fold(
+      (l) => emit(
+        state.copyWith(
+          setMessageReminderStatus: SetMessageReminderStatus.failure,
+        ),
+      ),
+      (r) {
+        final List<Chat> chats = _chatsWithReminder(
+          state.chats,
+          channelId: event.channelId,
+          messageId: event.messageId,
+          reminder: r.reminder,
+        );
+        final List<Chat> pinnedChats = _chatsWithReminder(
+          state.pinnedChats,
+          channelId: event.channelId,
+          messageId: event.messageId,
+          reminder: r.reminder,
+        );
+
+        // تذكير الرسالة نفسها يُستبدل لا يُكرَّر: الخادم يحدّث القائم ويبقي
+        // معرّفه، فقد يعود بنفس الـ id أو بواحد جديد لنفس الرسالة.
+        final List<MessageReminderItem> reminders = List.of(state.reminders)
+          ..removeWhere(
+            (e) => e.messageId == r.messageId || e.reminder.id == r.reminder.id,
+          )
+          ..add(r)
+          ..sort(_byRemindAt);
+
+        emit(
+          state.copyWith(
+            chats: chats,
+            pinnedChats: pinnedChats,
+            reminders: reminders,
+            newSortedChatsByDate: groupReceivedMessageOnDays(
+              chats: [...chats, ...pinnedChats],
+            ),
+            setMessageReminderStatus: SetMessageReminderStatus.success,
+          ),
+        );
+      },
+    );
+  }
+
+  /// يلغي تذكيراً.
+  ///
+  /// هنا **عرض متفائل**: الجرس يختفي والسطر يُزال فوراً، ويُعادان إن فشل
+  /// الطلب. الإلغاء فعل يتوقّع المستخدم أثره في الحال، بعكس الضبط الذي ينتظر
+  /// معرّفاً من الخادم.
+  FutureOr<void> _onCancelMessageReminderEvent(
+    CancelMessageReminderEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final List<MessageReminderItem> previous = List.of(state.reminders);
+    final List<Chat> previousChats = state.chats;
+    final List<Chat> previousPinned = state.pinnedChats;
+
+    final List<Chat> chats = _chatsWithReminder(
+      state.chats,
+      channelId: event.channelId,
+      messageId: event.messageId,
+      reminder: null,
+    );
+    final List<Chat> pinnedChats = _chatsWithReminder(
+      state.pinnedChats,
+      channelId: event.channelId,
+      messageId: event.messageId,
+      reminder: null,
+    );
+
+    emit(
+      state.copyWith(
+        chats: chats,
+        pinnedChats: pinnedChats,
+        reminders: previous
+            .where((e) => e.reminder.id != event.reminderId)
+            .toList(),
+        newSortedChatsByDate: groupReceivedMessageOnDays(
+          chats: [...chats, ...pinnedChats],
+        ),
+        setMessageReminderStatus: SetMessageReminderStatus.loading,
+      ),
+    );
+
+    final response = await deleteMessageReminderUseCase(
+      DeleteMessageReminderParams(reminderId: event.reminderId),
+    );
+
+    response.fold(
+      (l) => emit(
+        state.copyWith(
+          chats: previousChats,
+          pinnedChats: previousPinned,
+          reminders: previous,
+          newSortedChatsByDate: groupReceivedMessageOnDays(
+            chats: [...previousChats, ...previousPinned],
+          ),
+          setMessageReminderStatus: SetMessageReminderStatus.failure,
+        ),
+      ),
+      (r) => emit(
+        state.copyWith(
+          setMessageReminderStatus: SetMessageReminderStatus.success,
+        ),
+      ),
+    );
+  }
+
+  FutureOr<void> _onGetMyRemindersEvent(
+    GetMyRemindersEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    emit(state.copyWith(getMyRemindersStatus: GetMyRemindersStatus.loading));
+
+    final response = await getMyRemindersUseCase(NoParams());
+
+    response.fold(
+      (l) => emit(
+        state.copyWith(getMyRemindersStatus: GetMyRemindersStatus.failure),
+      ),
+      (r) => emit(
+        state.copyWith(
+          reminders: List.of(r)..sort(_byRemindAt),
+          getMyRemindersStatus: GetMyRemindersStatus.success,
+        ),
+      ),
+    );
+  }
+
+  /// الأقرب موعداً أولاً. تذكير بلا وقت يُدفع إلى الآخر بدل أن يتصدّر.
+  static int _byRemindAt(MessageReminderItem a, MessageReminderItem b) {
+    final DateTime? x = a.reminder.remindAt;
+    final DateTime? y = b.reminder.remindAt;
+    if (x == null) return 1;
+    if (y == null) return -1;
+    return x.compareTo(y);
+  }
+
+  /// يعلّق تذكيراً على رسالة أو يزيله عنها ([reminder] بـ `null`).
+  ///
+  /// لا يستعمل [_chatsWithMessageReplaced] لأن `copyWith` لا تستطيع إعادة حقل
+  /// إلى `null` — فالإزالة تحتاج بناء الرسالة من جديد.
+  List<Chat> _chatsWithReminder(
+    List<Chat> source, {
+    required String? channelId,
+    required String? messageId,
+    required MessageReminderInfo? reminder,
+  }) {
+    if (channelId == null || messageId == null) return source;
+    return source.map((chat) {
+      if (chat.id != channelId) return chat;
+      final List<Message> messages = List.of(chat.messages ?? []);
+      final int index = messages.indexWhere(
+        (element) => element.id == messageId || element.localId == messageId,
+      );
+      if (index == -1) return chat;
+      messages[index] = messages[index].copyWithReminder(reminder);
+      return chat.copyWith(messages: messages);
+    }).toList();
+  }
+
+  /// يستبدل رسالة داخل قناتها بنسخة جديدة، ويعيد القائمة بعد الاستبدال.
+  ///
+  /// المطابقة بـ `id` و`localId` معاً: رسالة أُرسلت في هذه الجلسة تحمل معرّف
+  /// الخادم في `id` ومعرّفها المحلي في `localId`. ويُحتفظ بـ `localId` القديم
+  /// لأن الواجهة تتعرّف به على الرسالة وردّ الخادم لا يحمله.
+  ///
+  /// تخدم مسارين: تعديلي أنا ([_onUpdateMessageEvent])، وتعديل الطرف الآخر
+  /// الواصل بإشعار ([_onMessageUpdatedFromNotificationEvent]).
+  List<Chat> _chatsWithMessageReplaced(
+    List<Chat> source, {
+    required String? channelId,
+    required String? messageId,
+    required Message replacement,
+  }) {
+    if (channelId == null || messageId == null) return source;
+    return source.map((chat) {
+      if (chat.id != channelId) return chat;
+      final List<Message> messages = List.of(chat.messages ?? []);
+      final int index = messages.indexWhere(
+        (element) => element.id == messageId || element.localId == messageId,
+      );
+      if (index == -1) return chat;
+      // `reminder` شخصي ولا يصل في إشعار التحديث، فتُحفظ القيمة المحلية —
+      // وإلّا لاختفى الجرس عن رسالة عدّلها الطرف الآخر. و`copyWith` تفضّل
+      // المُمرَّر، فتمرير القديم يعني الإبقاء عليه.
+      messages[index] = replacement.copyWith(
+        localId: messages[index].localId,
+        reminder: messages[index].reminder,
+      );
+      return chat.copyWith(messages: messages);
+    }).toList();
+  }
+
+  /// رسالة عدّلها الطرف الآخر ووصلنا بها إشعار `UpdatingMessageEvent`.
+  ///
+  /// صامت بلا إشعار مرئي — تماماً كإشعار الحذف: نستبدل النسخة المحفوظة بما
+  /// أرسله الخادم، فيتغيّر النص وتظهر علامة التعديل عند المستقبِل.
+  FutureOr<void> _onMessageUpdatedFromNotificationEvent(
+    MessageUpdatedFromNotificationEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    final List<Chat> chats = _chatsWithMessageReplaced(
+      state.chats,
+      channelId: event.message.channelId,
+      messageId: event.message.id,
+      replacement: event.message,
+    );
+    final List<Chat> pinnedChats = _chatsWithMessageReplaced(
+      state.pinnedChats,
+      channelId: event.message.channelId,
+      messageId: event.message.id,
+      replacement: event.message,
+    );
+
+    emit(
+      state.copyWith(
+        chats: chats,
+        pinnedChats: pinnedChats,
+        newSortedChatsByDate: groupReceivedMessageOnDays(
+          chats: [...chats, ...pinnedChats],
+        ),
+      ),
+    );
+  }
+
+  /// تعديل نص رسالة نصية.
+  ///
+  /// بعكس الإرسال والحذف لا يوجد هنا عرض متفائل: النافذة تبقى مفتوحة وزرّها
+  /// يعرض shimmer حتى يردّ الخادم، فلا معنى لتغيير النص في المحادثة ثم التراجع
+  /// عنه أمام المستخدم. عند النجاح نستبدل الرسالة **بما أعاده الخادم** كاملاً،
+  /// فتصل معها الحقول التي يضيفها (`updated_at`، `is_edited`) بلا عمل إضافي.
+  ///
+  /// المطابقة تتم بـ `id` و`localId` معاً: رسالة أُرسلت في هذه الجلسة تحمل
+  /// معرّف الخادم في `id` ومعرّفها المحلي في `localId`، ولا يجوز أن يفلت
+  /// استبدالها.
+  FutureOr<void> _onUpdateMessageEvent(
+    UpdateMessageEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    emit(state.copyWith(updateMessageStatus: UpdateMessageStatus.loading));
+
+    final response = await updateMessageUseCase(
+      UpdateMessageParams(messageId: event.messageId, content: event.content),
+    );
+
+    response.fold(
+      (l) {
+        emit(state.copyWith(updateMessageStatus: UpdateMessageStatus.failure));
+      },
+      (r) {
+        final List<Chat> chats = _chatsWithMessageReplaced(
+          state.chats,
+          channelId: event.channelId,
+          messageId: event.messageId,
+          replacement: r,
+        );
+        final List<Chat> pinnedChats = _chatsWithMessageReplaced(
+          state.pinnedChats,
+          channelId: event.channelId,
+          messageId: event.messageId,
+          replacement: r,
+        );
+
+        emit(
+          state.copyWith(
+            chats: chats,
+            pinnedChats: pinnedChats,
+            newSortedChatsByDate: groupReceivedMessageOnDays(
+              chats: [...chats, ...pinnedChats],
+            ),
+            updateMessageStatus: UpdateMessageStatus.success,
+          ),
+        );
       },
     );
   }
@@ -2276,6 +2592,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               NotifyThatIReceivedMessageStatus.init,
           saveContactsStatus: SaveContactsStatus.init,
           sendMessageStatus: SendMessageStatus.init,
+          updateMessageStatus: UpdateMessageStatus.init,
+          setMessageReminderStatus: SetMessageReminderStatus.init,
+          getMyRemindersStatus: GetMyRemindersStatus.init,
         )
         .toJson();
   }

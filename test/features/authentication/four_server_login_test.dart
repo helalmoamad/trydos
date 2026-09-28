@@ -76,8 +76,11 @@ void main() {
     expect(prefs.marketTokenValue, isNull);
   });
 
+  // The wallet leg of this scenario is gone: the RDB wallet is disabled, so no
+  // wallet login runs and no wallet token is ever stored. What still matters is
+  // that the remaining sessions keep their own keys.
   test(
-      'the chat, stories and wallet logins each store their OWN token — four '
+      'the chat and stories logins each store their OWN token — three '
       'distinct keys, never overwriting each other', () async {
     final SessionPrefs prefs = SessionPrefs()
       // The market session is already in place; the other three log in on top.
@@ -98,14 +101,6 @@ void main() {
             200,
             storiesLoginEnvelope(id: 88),
           ),
-        ],
-        WalletEndPoints.loginWithIdTokenEP: <ScriptedReply>[
-          const ScriptedReply(200, <String, dynamic>{
-            'accessToken': <String, dynamic>{'token': 'wallet-access-token'},
-          }),
-        ],
-        WalletEndPoints.createWalletEP: <ScriptedReply>[
-          const ScriptedReply(201, <String, dynamic>{'id': 'wallet-1'}),
         ],
         ChatEndPoints.storeFcmEP: <ScriptedReply>[
           const ScriptedReply(200, <String, dynamic>{
@@ -136,28 +131,22 @@ void main() {
     );
     await pumpEventQueue();
 
-    harness.bloc.add(
-      LoginToWalletEvent(
-        otpIdToken: 'otp-id-token',
-        phone: '+963931234567',
-        name: 'Yaser',
-      ),
-    );
-    await pumpEventQueue();
-
-    // The gate: four values, four keys, none of them equal to another.
+    // The gate: three values, three keys, none of them equal to another.
     expect(prefs.marketTokenValue, 'market-access-token');
     expect(prefs.chatTokenValue, 'chat-access-token');
     expect(prefs.storiesTokenValue, 'stories-access-token');
-    expect(prefs.walletTokenValue, 'wallet-access-token');
+    expect(
+      prefs.walletTokenValue,
+      isNull,
+      reason: 'the wallet is disabled, so no login may store a wallet token',
+    );
     expect(
       <String?>{
         prefs.marketTokenValue,
         prefs.chatTokenValue,
         prefs.storiesTokenValue,
-        prefs.walletTokenValue,
       },
-      hasLength(4),
+      hasLength(3),
       reason: 'two servers sharing a value means one login wrote the other slot',
     );
 
@@ -299,7 +288,10 @@ void main() {
       hasLength(2),
       reason: 'both runs still hand the wallet screen its currencies',
     );
-  });
+  },
+      skip: 'The RDB wallet is disabled: CreateWalletEvent is no longer '
+          'registered and no wallet request leaves the app. Re-enable this '
+          'test with the new payment scenario.');
 
   test('GenerateTokenForCommentEvent stores the comment token used by the '
       'ratings screens', () async {

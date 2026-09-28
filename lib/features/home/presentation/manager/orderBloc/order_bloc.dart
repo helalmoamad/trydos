@@ -134,7 +134,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   ) : super(const OrderState()) {
     on<PlaceOrderEvent>(_onPlaceOrderEvent);
     on<GetOrdersByOrderGroupIDEvent>(_onGetOrdersByOrderGroupIDEvent);
-    on<WalletCheckoutEvent>(_onWalletCheckoutEvent);
+    // الدفع من المحفظة عبر سيرفر المحفظة (RDB) — معطّل.
+    // on<WalletCheckoutEvent>(_onWalletCheckoutEvent);
     on<SaveLastAddress>(_onSaveLastAddress);
     on<UploadImagesToCloudinaryEvent>(_onUploadImagesToCloudinaryEvent);
     on<ResetAllStatusEvent>(_onResetAllStatusEvent);
@@ -145,7 +146,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     on<OrderReturnRequestsViewEvent>(_onOrderReturnRequestsViewEvent);
     on<ConfirmReturnRequestEvent>(_onConfirmReturnRequestEvent);
     on<SaveCurrentOrederStatusEvent>(_onSaveCurrentOrederStatusEvent);
-    on<GetCustomerWalletEvent>(_onGetCustomerWalletEvent);
+    // جلب رصيد محفظة المستخدم — معطّل.
+    // on<GetCustomerWalletEvent>(_onGetCustomerWalletEvent);
     on<UpdateReturnRequestProductEvent>(_onUpdateReturnRequestProductEvent);
     on<GetProvincesByIsoEvent>(_onGetProvincesByIsoEvent);
     on<StoreReturnRequestEvent>(_onStoreReturnRequestEvent);
@@ -219,6 +221,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     );
   }
 
+  // دفع الطلب من رصيد المحفظة (merchant/checkout على سيرفر RDB). معطّل.
+  /*
   FutureOr<void> _onWalletCheckoutEvent(
     WalletCheckoutEvent event,
     Emitter<OrderState> emit,
@@ -253,6 +257,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       },
     );
   }
+  */
 
   FutureOr<void> _onRemoveImagesForCommentEvent(
     RemoveImagesForCommentEvent event,
@@ -720,6 +725,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     );
   }
 
+  // جلب رصيد محفظة المستخدم من سيرفر المحفظة (RDB). معطّل: لا محفظة للمستخدم
+  // في هذا التطبيق ولا سبيل لمعرفة الرصيد.
+  /*
   FutureOr<void> _onGetCustomerWalletEvent(
     GetCustomerWalletEvent event,
     Emitter<OrderState> emit,
@@ -804,6 +812,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       },
     );
   }
+  */
 
   FutureOr<void> _onSaveLastAddress(
     SaveLastAddress event,

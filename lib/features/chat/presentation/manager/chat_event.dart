@@ -579,6 +579,81 @@ class ResendMessageEvent extends ChatEvent {
   List<Object?> get props => [messageId, channelId];
 }
 
+/// تعديل نص رسالة نصية سبق إرسالها.
+///
+/// [messageId] هو معرّف الخادم لا المعرّف المحلي — رسالة لم يؤكّدها الخادم بعد
+/// لا يمكن تعديلها.
+class UpdateMessageEvent extends ChatEvent {
+  final String messageId;
+  final String channelId;
+  final String content;
+
+  const UpdateMessageEvent({
+    required this.messageId,
+    required this.channelId,
+    required this.content,
+  });
+
+  @override
+  List<Object?> get props => [messageId, channelId, content];
+}
+
+/// يضبط تذكيراً على رسالة، أو يغيّر وقت تذكير قائم عليها.
+class SetMessageReminderEvent extends ChatEvent {
+  final String messageId;
+  final String channelId;
+  final DateTime remindAt;
+
+  const SetMessageReminderEvent({
+    required this.messageId,
+    required this.channelId,
+    required this.remindAt,
+  });
+
+  @override
+  List<Object?> get props => [messageId, channelId, remindAt];
+}
+
+/// يلغي تذكيراً.
+///
+/// [messageId] و[channelId] ليسا للخادم — هو يكتفي بـ [reminderId] — بل
+/// لإزالة جرس التذكير عن الرسالة في الحالة المحلية.
+class CancelMessageReminderEvent extends ChatEvent {
+  final String reminderId;
+  final String? messageId;
+  final String? channelId;
+
+  const CancelMessageReminderEvent({
+    required this.reminderId,
+    this.messageId,
+    this.channelId,
+  });
+
+  @override
+  List<Object?> get props => [reminderId, messageId, channelId];
+}
+
+/// يجلب قائمة تذكيراتي التي لم يحن وقتها.
+class GetMyRemindersEvent extends ChatEvent {
+  const GetMyRemindersEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+/// وصل إشعار `UpdatingMessageEvent` بتعديل رسالة من الطرف الآخر.
+///
+/// الخادم يرسل الرسالة كاملة بعد التعديل، فنستبدل بها المحفوظة بدل تركيب
+/// التغيير يدوياً. نفس الحدث يصل أيضاً عند تغيير وسم، وكلاهما «استبدل الرسالة».
+class MessageUpdatedFromNotificationEvent extends ChatEvent {
+  final Message message;
+
+  const MessageUpdatedFromNotificationEvent({required this.message});
+
+  @override
+  List<Object?> get props => [message.id, message.channelId];
+}
+
 class DeleteMessageNotificationReceivedInChatsEvent extends ChatEvent {
   final String messageId;
   final String channelId;

@@ -19,6 +19,7 @@ import '../../../../service/language_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../data/models/my_chats_response_model.dart';
 import 'chat_widgets/no_image_widget.dart';
+import 'invite_options_sheet.dart';
 import 'package:trydos/common/helper/dev_log.dart';
 
 class ContactCard extends StatelessWidget {
@@ -137,7 +138,11 @@ class ContactCard extends StatelessWidget {
                                   const Spacer(),
                                   if (contact.contactUserId == null) ...{
                                     InkWell(
-                                      onTap: () => shareAppLink(),
+                                      onTap: () => showInviteOptions(
+                                        context,
+                                        inviteLink: inviteLink,
+                                        onShare: shareAppLink,
+                                      ),
                                       child: MyTextWidget(
                                         LocaleKeys.invite.tr(),
                                         maxLines: 1,
@@ -168,10 +173,15 @@ class ContactCard extends StatelessWidget {
     );
   }
 
+  /// رابط الدعوة وحده، بلا نص مصاحب.
+  ///
+  /// أُخرج من [shareAppLink] كما هو حرفياً ليستخدمه المساران معاً: المشاركة
+  /// (التي تضيف النص قبله) والنسخ إلى الحافظة (الذي يحتاجه نظيفاً ليُلصق وحده).
+  String get inviteLink =>
+      '${dotenv.env['WEB_APP']}/${(GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso : GetIt.I<PrefsRepository>().countryIso)?.toLowerCase()}-${LanguageService.isKurdish ? "ku" : LanguageService.languageCode}';
+
   void shareAppLink() {
-    final String appLink =
-        '${dotenv.env['WEB_APP']}/${(GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso : GetIt.I<PrefsRepository>().countryIso)?.toLowerCase()}-${LanguageService.isKurdish ? "ku" : LanguageService.languageCode}'; // رابط التطبيق الخاص بك
     // ignore: deprecated_member_use
-    Share.share('${LocaleKeys.download_the_app_here.tr()}:$appLink');
+    Share.share('${LocaleKeys.download_the_app_here.tr()}:$inviteLink');
   }
 }

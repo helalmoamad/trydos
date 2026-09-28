@@ -6,7 +6,66 @@ on:
       - dev_new
 
 jobs:
+  # Runs every unit test before anything is built. The deploy job below `needs`
+  # this one, so a single failing scenario stops the release: nothing is built,
+  # nothing is signed, nothing reaches Google Play.
+  unit_tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Same pinned version as the deploy job — tests must run on the Flutter
+      # the release is built with.
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      # `.env` is declared as an asset in pubspec.yaml, so `flutter test` will
+      # not start without the file. The tests never read it — they load their
+      # own values with `dotenv.testLoad` — so an empty file is enough, and no
+      # secret is needed in this job.
+      - name: Create placeholder .env
+        run: touch .env
+
+      # The exit code is kept rather than failing here, so the summary below is
+      # still written when a test fails; the last step fails the job with it.
+      - name: Run unit tests with coverage
+        id: tests
+        run: |
+          set +e
+          flutter test --coverage --file-reporter json:test-results.json
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Write test summary
+        if: always()
+        run: python3 .github/scripts/test_summary.py --lcov coverage/lcov.info --results test-results.json --ledger docs/test-ledger.html
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
+          if-no-files-found: ignore
+
+      - name: Stop the release if any test failed
+        if: steps.tests.outputs.exit_code != '0'
+        run: |
+          echo "::error::Unit tests failed (exit code ${{ steps.tests.outputs.exit_code }}). Deployment stopped."
+          exit 1
+
   build_and_deploy:
+    # Only runs once every unit test has passed.
+    needs: unit_tests
     runs-on: ubuntu-latest
 
     steps:

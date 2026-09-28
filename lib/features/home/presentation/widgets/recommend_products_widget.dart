@@ -25,7 +25,6 @@ import 'package:trydos/features/home/presentation/pages/recommend_products_page.
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import 'package:get_it/get_it.dart';
-import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter;
 
@@ -204,9 +203,10 @@ class RecommendProductsWidget extends StatelessWidget {
 
             //  displayImageColors: true,
             tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-            key: TestVariables.kTestMode
-                ? Key('*recommend*Product${products[index].slug}')
-                : null,
+            key: ProductItem.keyFor(
+              products[index],
+              testKey: Key('*recommend*Product${products[index].slug}'),
+            ),
             //  slidingModeItem: slidingMode,
             productItem: products[index],
             itemIndex: index,
@@ -331,9 +331,10 @@ class RecommendProductsWidget extends StatelessWidget {
 
         //  displayImageColors: true,
         tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-        key: TestVariables.kTestMode
-            ? Key('*recommend*Product${products[index].slug}')
-            : null,
+        key: ProductItem.keyFor(
+          products[index],
+          testKey: Key('*recommend*Product${products[index].slug}'),
+        ),
         //  slidingModeItem: slidingMode,
         productItem: products[index],
         itemIndex: index,

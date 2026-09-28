@@ -11,6 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.trydos.audio/settings"
+    private val APPS_CHANNEL = "com.trydos.apps/installed"
     private val TAG = "MainActivity"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -25,6 +26,32 @@ class MainActivity: FlutterActivity() {
             } else {
                 result.notImplemented()
             }
+        }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, APPS_CHANNEL).setMethodCallHandler { call, result ->
+            if (call.method == "isAppInstalled") {
+                val packageId = call.argument<String>("packageId")
+                if (packageId.isNullOrEmpty()) {
+                    result.success(false)
+                } else {
+                    result.success(isAppInstalled(packageId))
+                }
+            } else {
+                result.notImplemented()
+            }
+        }
+    }
+
+    /// هل الحزمة مثبّتة على الجهاز؟
+    ///
+    /// تحتاج إلى إدراج الحزمة في <queries> في AndroidManifest، وإلا أعادت
+    /// false دائماً على أندرويد 11 فما فوق بسبب حجب رؤية الحزم.
+    private fun isAppInstalled(packageId: String): Boolean {
+        return try {
+            packageManager.getLaunchIntentForPackage(packageId) != null
+        } catch (e: Exception) {
+            Log.e(TAG, "isAppInstalled failed for $packageId: ${e.message}")
+            false
         }
     }
 

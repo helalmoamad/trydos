@@ -125,10 +125,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _onLoginToStoriesEvent,
       transformer: throttleDroppable(const Duration(seconds: 10)),
     );
-    on<LoginToWalletEvent>(
+    // تسجيل الدخول إلى سيرفر المحفظة (RDB) بعد التحقق من الرقم — معطّل.
+    /* on<LoginToWalletEvent>(
       _onLoginToWalletEvent,
       transformer: throttleDroppable(const Duration(seconds: 10)),
-    );
+    );*/
     on<StoreFcmTokenInStoryEvent>(
       _onStoreFcmTokenInStoryEvent,
       transformer: throttleDroppable(const Duration(seconds: 10)),
@@ -176,7 +177,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _onGetUserCountryEvent,
       //transformer: throttleDroppable(throttleDuration)
     );
-    on<CreateWalletEvent>(_onCreateWalletEvent);
+    // إنشاء محفظة للمستخدم على سيرفر RDB — معطّل.
+    // on<CreateWalletEvent>(_onCreateWalletEvent);
 
     on<GenerateTokenForCommentEvent>(_onGenerateTokenForCommentEvent);
   }
@@ -601,6 +603,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
+  // تسجيل الدخول إلى المحفظة ثم إنشاؤها وجلب عملاتها. كل ذلك على سيرفر
+  // المحفظة (RDB) وقد ألغيت طلباته، فالمعالجان معطّلان.
+  /*
   FutureOr<void> _onLoginToWalletEvent(
     LoginToWalletEvent event,
     Emitter<AuthState> emit,
@@ -664,6 +669,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
     );
   }
+  */
 
   FutureOr<void> _onVerifyOtpInProfileEvent(
     VerifyOtpInProfileEvent event,

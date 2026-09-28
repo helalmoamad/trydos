@@ -20,7 +20,6 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_colors_panel.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:get_it/get_it.dart';
-import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter;
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
@@ -329,11 +328,12 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                 finishRedeem: finishRedeem,
                                                 tapIndexToAddProductToCart:
                                                     tapIndexToAddProductToCart,
-                                                key: TestVariables.kTestMode
-                                                    ? Key(
-                                                        '"featuresPtoduct"$index',
-                                                      )
-                                                    : null,
+                                                key: ProductItem.keyFor(
+                                                  products[index],
+                                                  testKey: Key(
+                                                    '"featuresPtoduct"$index',
+                                                  ),
+                                                ),
                                                 productItem: products[index],
                                                 itemIndex: index,
                                                 /*   slidingModeItem:

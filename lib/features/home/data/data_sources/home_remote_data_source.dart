@@ -1,8 +1,9 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// مستخدم فقط في طلب الدفع من المحفظة المعطّل.
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/elastic_url_routes.dart';
-import 'package:trydos/common/constant/configuration/wallet_url_routes.dart';
+// import 'package:trydos/common/constant/configuration/wallet_url_routes.dart';
 import 'package:trydos/common/constant/configuration/web_app_url.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/delete.dart';
@@ -18,7 +19,8 @@ import 'package:trydos/features/home/data/models/get_checklist_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/create_comment_model.dart';
 import 'package:trydos/features/home/data/models/create_return_request_model.dart';
-import 'package:trydos/features/home/data/models/currencies_response_model.dart';
+// import 'package:trydos/features/home/data/models/currencies_response_model.dart';
+import 'package:trydos/features/home/data/models/rdb_payment_request_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/getRelatedProducts.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
@@ -57,7 +59,7 @@ import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/api/methods/post.dart';
 import '../models/apply_coupon_model.dart';
 import '../models/check_availability_product_cart_model.dart';
-import '../models/customer_wallet_model.dart';
+// import '../models/customer_wallet_model.dart';
 import '../models/get_orders_model.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
 import '../models/get_product_filters_model.dart';
@@ -1274,6 +1276,9 @@ class HomeRemoteDatasource {
 
     return getCustomerWallet();
   }*/
+  // طلبا رصيد المحفظة وعملاتها إلى سيرفر المحفظة (RDB). لا محفظة للمستخدم في
+  // هذا التطبيق، والطلبات ألغيت، فالدالتان معطّلتان.
+  /*
   Future<CustomerWalletModel> getCustomerWallet({required String assetId}) {
     GetClient<CustomerWalletModel> getCustomerWallet =
         GetClient<CustomerWalletModel>(
@@ -1306,6 +1311,63 @@ class HomeRemoteDatasource {
           ),
         );
     return getCurrencies();
+  }
+  */
+
+  /// ينشئ طلب دفع RDB. لا يُنشأ طلب شراء هنا: الطلبات تُنشأ بعد أن يدفع الزبون.
+  Future<RdbPaymentRequestResponseModel> checkoutRdb(
+    Map<String, dynamic> params,
+  ) {
+    PostClient<RdbPaymentRequestResponseModel> checkout =
+        PostClient<RdbPaymentRequestResponseModel>(
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<RdbPaymentRequestResponseModel>(
+            endpoint: MarketEndPoints.rdbCheckoutEP,
+            data: params,
+            response: ResponseValue<RdbPaymentRequestResponseModel>(
+              fromJson: (response) =>
+                  RdbPaymentRequestResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return checkout();
+  }
+
+  /// حالة طلب الدفع. تُسأل كل بضع ثوانٍ حتى `paid` أو تنتهي المهلة.
+  Future<RdbPaymentRequestResponseModel> getRdbPaymentRequest({
+    required String requestReference,
+  }) {
+    GetClient<RdbPaymentRequestResponseModel> getRequest =
+        GetClient<RdbPaymentRequestResponseModel>(
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<RdbPaymentRequestResponseModel>(
+            endpoint: MarketEndPoints.rdbRequestEP(requestReference),
+            response: ResponseValue<RdbPaymentRequestResponseModel>(
+              fromJson: (response) =>
+                  RdbPaymentRequestResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return getRequest();
+  }
+
+  /// يلغي طلب دفع معلّقاً ويفكّ قفل السلة.
+  Future<RdbPaymentRequestResponseModel> cancelRdbPaymentRequest({
+    required String requestReference,
+  }) {
+    PostClient<RdbPaymentRequestResponseModel> cancelRequest =
+        PostClient<RdbPaymentRequestResponseModel>(
+          serverName: ServerName.market,
+          requestPrams: RequestConfig<RdbPaymentRequestResponseModel>(
+            endpoint: MarketEndPoints.rdbRequestCancelEP(requestReference),
+            data: const <String, dynamic>{},
+            response: ResponseValue<RdbPaymentRequestResponseModel>(
+              fromJson: (response) =>
+                  RdbPaymentRequestResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return cancelRequest();
   }
 
   Future<OrdersGroupModel> placeOrder({
@@ -1792,6 +1854,8 @@ class HomeRemoteDatasource {
 
   /// Wallet Checkout API Call
   /// Process wallet payment with HMAC signature authentication
+  // دفع الطلب من رصيد المحفظة (merchant/checkout على سيرفر RDB) — معطّل.
+  /*
   Future<bool> walletCheckout(
     Map<String, dynamic> params,
     String signature,
@@ -1813,6 +1877,7 @@ class HomeRemoteDatasource {
     );
     return walletCheckoutClient();
   }
+  */
 
   Future<RelatedProductsResponse> getRelatedProducts({
     required int productSlug,

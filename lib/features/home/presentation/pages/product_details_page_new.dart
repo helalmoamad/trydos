@@ -1614,6 +1614,7 @@ class _ProductDetailsPageNewState extends State<ProductDetailsPageNew> {
                                               return SizedBox(
                                                 width: 200.w,
                                                 child: ProductItem(
+                                                  key: ProductItem.keyFor(prod),
                                                   itemIndex: i,
                                                   finishRedeem: finishRedeem,
                                                   tapIndexToAddProductToCart:

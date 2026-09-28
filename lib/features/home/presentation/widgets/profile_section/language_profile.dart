@@ -92,7 +92,28 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                 !_visibleSave
                     ? const SizedBox.shrink()
                     : InkWell(
-                        onTap: () {
+                        onTap: () async {
+                          final String languageCode =
+                              language[changeLanguage.value].code ?? "";
+
+                          // اللغة أولاً، ثم مسح الكاش وإعادة الطلب.
+                          //
+                          // كان الترتيب معكوساً: تُمسح البيانات وتُطلب من جديد
+                          // قبل تبديل اللغة، وترويسة `lang` تُبنى من اللغة
+                          // الحالية لحظة إنشاء الطلب، فتعود القوائم باللغة
+                          // القديمة ولا تتغيّر حتى يسحب المستخدم الشاشة.
+                          await GetIt.I<PrefsRepository>().setLanguage(
+                            languageCode,
+                          );
+                          if (!context.mounted) return;
+                          await context.setLocale(
+                            HelperFunctions.getInitLocale(),
+                          );
+                          // إطار واحد كي يلتقط LanguageService اللغة الجديدة
+                          // من `context.locale`، فهو مصدر ترويسة `lang`.
+                          await WidgetsBinding.instance.endOfFrame;
+                          if (!context.mounted) return;
+
                           BlocProvider.of<HomeBloc>(
                             context,
                           ).add(const ClearAllAppCashEvent());
@@ -102,18 +123,13 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                             ChangeCountryLanguageForNotificationEvent(
                               country: GetIt.I<PrefsRepository>().countryIso!
                                   .toLowerCase(),
-                              languageCode:
-                                  language[changeLanguage.value].code ?? "",
+                              languageCode: languageCode,
                             ),
                           );
                           Future.delayed(const Duration(microseconds: 500), () {
                             appBloc.add(ChangeBasePage(0));
-                            context.go("/");
+                            if (context.mounted) context.go("/");
                           });
-                          GetIt.I<PrefsRepository>().setLanguage(
-                            language[changeLanguage.value].code ?? "",
-                          );
-                          context.setLocale(HelperFunctions.getInitLocale());
                         },
                         child: Container(
                           alignment: Alignment.center,

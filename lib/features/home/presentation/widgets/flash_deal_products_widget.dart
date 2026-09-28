@@ -25,7 +25,6 @@ import 'package:trydos/features/home/presentation/pages/product_details_page_new
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import 'package:get_it/get_it.dart';
-import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter;
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
@@ -269,9 +268,10 @@ class _FlashDealProductsWidgetState extends State<FlashDealProductsWidget> {
             imageSource: 'flash_deal_products_widget',
             productIsFlashDeal: productIsFlashDeal,
             tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-            key: TestVariables.kTestMode
-                ? Key('*flashDeal*Product${products[index].slug}')
-                : null,
+            key: ProductItem.keyFor(
+              products[index],
+              testKey: Key('*flashDeal*Product${products[index].slug}'),
+            ),
             productItem: products[index],
             itemIndex: index,
           ),
@@ -350,9 +350,10 @@ class _FlashDealProductsWidgetState extends State<FlashDealProductsWidget> {
         imageSource: 'flash_deal_products_widget',
         productIsFlashDeal: productIsFlashDeal,
         tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-        key: TestVariables.kTestMode
-            ? Key('*flashDeal*Product${products[index].slug}')
-            : null,
+        key: ProductItem.keyFor(
+          products[index],
+          testKey: Key('*flashDeal*Product${products[index].slug}'),
+        ),
         productItem: products[index],
         itemIndex: index,
       ),

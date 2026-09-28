@@ -22,6 +22,9 @@ abstract class PrefsKey {
   static const userStoriesId = r'__$__userStoriesId__$__';
   static const isTimerRunningId = r'__$__isTimerRunning__$__';
   static const otpTimerEndTime = r'__$__otpTimerEndTime__$__';
+
+  /// المحاولات المتبقّية لإدخال رمز التحقّق داخل نافذة المؤقّت الحالية.
+  static const otpAttemptsLeft = r'__$__otpAttemptsLeft__$__';
   static const userCountryIsAvailable = r'__$__UserCountryIsAvailable__$__';
   static const language = r'__$__language__$__';
 
@@ -75,6 +78,10 @@ abstract class PrefsKey {
 
   static const fcmToken = r'__$__fcmToken__$__';
   static const createWallet = r'__$__createWallet__$__';
+
+  /// دفعة RDB المعلّقة: مرجع الطلب ووقت انتهائه، لنعرف بعد إغلاق التطبيق أن
+  /// السلة ما زالت مقفلة بانتظار الدفع.
+  static const rdbPendingPayment = r'__$__rdbPendingPayment__$__';
   static const marketUrl = r'__$__marketUrl__$__';
   static const storyUrl = r'__$__storyUrl__$__';
   static const chatUrl = r'__$__chatUrl__$__';

@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'dart:math';
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
+// مستخدمة فقط في كتلة الدفع بالمحفظة المعطّلة في آخر الملف.
+// import 'dart:convert';
+// import 'package:crypto/crypto.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
@@ -13,8 +14,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/authentication/presentation/widgets/guest_phone_verification_dialog.dart';
-import 'package:trydos/features/home/domain/use_cases/wallet_checkout_usecase.dart';
-import 'package:uuid/uuid.dart';
+// import 'package:trydos/features/home/domain/use_cases/wallet_checkout_usecase.dart';
+// import 'package:uuid/uuid.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -24,6 +25,7 @@ import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_section/rdb_payment_dialog.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/cart_delivary_adress.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/successful_order.dart';
@@ -129,14 +131,29 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     element.isCountryRestricted == true ||
                     element.checkAvailability == false),
               )) {
-                if (widget.paymentMethods.value.contains(
-                  PaymentMethods.trydosWallet,
-                )) {
-                  _showWalletPaymentDialog(context);
+                // الدفع عبر Ramaaz Digital Bank لا ينشئ طلباً هنا: الباك ينشئ
+                // طلب دفع ويعطينا كوداً يدخله الزبون في تطبيق RDB، ولا تُنشأ
+                // الطلبات إلا بعد أن يدفع. لذلك ننتقل إلى شاشة الدفع.
+                if (PaymentMethods.listHasRdb(widget.paymentMethods.value)) {
+                  showRdbPaymentDialog(
+                    context,
+                    addressId: widget.customerAddressesInfo.id!,
+                    // تحتاجها شاشة نجاح الطلب بعد أن يدفع الزبون.
+                    successArgs: RdbCheckoutSuccessArgs(
+                      cartImages: widget.cartImages,
+                      totalPrice: widget.totalPrice,
+                      paymentMethods: widget.paymentMethods,
+                      availablePaymentMethod: widget.availablePaymentMethod,
+                      currencySymbol: widget.currencySympole,
+                      customerAddressesInfo: widget.customerAddressesInfo,
+                      decimalPointSetting: widget.decimalPointSetting,
+                    ),
+                  );
                   return;
                 }
                 String paymentMethod = '';
-                int payByWallet = 0;
+                // لم يعد هناك دفع جزئي من المحفظة، فالقيمة صفر دائماً.
+                const int payByWallet = 0;
 
                 if (widget.paymentMethods.value.length == 1) {
                   paymentMethod = widget.paymentMethods.value[0];
@@ -144,18 +161,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     devLog(
                       "paymentMethod:  -------------------------------------${paymentMethod}",
                     );
-                  //////////////
-                  payByWallet = 0;
-                } else {
-                  if (widget.paymentMethods.value.contains(
-                        PaymentMethods.trydosWallet,
-                      ) &&
-                      widget.paymentMethods.value.length == 2) {
-                    paymentMethod = widget.paymentMethods.value.firstWhere(
-                      (element) => element != PaymentMethods.trydosWallet,
-                    );
-                    payByWallet = 1;
-                  }
                 }
 
                 PlaceOrderParams placeOrderParams = PlaceOrderParams(
@@ -318,11 +323,12 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     widget.paymentMethods.value,
                   )..add(paymentMethod);
 
-                  if (partialPaymentByWallet > 0) {
+                  // لا دفع جزئي بعد الآن، فلا تُضاف المحفظة كطريقة ثانية.
+                  /* if (partialPaymentByWallet > 0) {
                     widget.paymentMethods.value = List.from(
                       widget.paymentMethods.value,
                     )..add(PaymentMethods.trydosWallet);
-                  }
+                  }*/
 
                   /////////////////////////
                   Future.delayed(const Duration(milliseconds: 300), () {
@@ -470,11 +476,12 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     widget.paymentMethods.value,
                   )..add(paymentMethod);
 
-                  if (partialPaymentByWallet > 0) {
+                  // لا دفع جزئي بعد الآن، فلا تُضاف المحفظة كطريقة ثانية.
+                  /* if (partialPaymentByWallet > 0) {
                     widget.paymentMethods.value = List.from(
                       widget.paymentMethods.value,
                     )..add(PaymentMethods.trydosWallet);
-                  }
+                  }*/
                   /////////////////////////
                   HelperFunctions.slidingNavigation(
                     context,
@@ -1070,6 +1077,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
     );
   }
 
+  // حوار الدفع من المحفظة وطلب الـ checkout إلى سيرفر المحفظة (RDB).
+  // الطلبات الخاصة بـ RDB ألغيت ولا محفظة للمستخدم، فالكتلة كاملة معطّلة هنا
+  // إلى أن يُربط السيناريو الجديد للدفع.
+  /*
   void _showWalletPaymentDialog(BuildContext context) {
     const uuid = Uuid();
     String idempotencyKey = uuid.v4();
@@ -1331,4 +1342,5 @@ class _PlaceOrderState extends State<PlaceOrder> {
       ),
     );
   }
+  */
 }

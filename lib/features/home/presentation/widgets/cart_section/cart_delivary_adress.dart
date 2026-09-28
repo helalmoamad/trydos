@@ -188,8 +188,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                     current.addAddressToOrderStatus ||
                 previous.removeAddressToOrderStatus !=
                     current.removeAddressToOrderStatus ||
-                previous.getCustomerWalletStatus !=
-                    current.getCustomerWalletStatus ||
+                // حالة جلب رصيد المحفظة (RDB) لم تعد تُطلب ولا تُعرض.
+                /* previous.getCustomerWalletStatus !=
+                    current.getCustomerWalletStatus || */
                 previous.applyCouponStatus != current.applyCouponStatus,
             builder: (context, orderState) {
               if ((orderState.listOfAddressInfoClassToSave?.length ?? 0) <
@@ -285,11 +286,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                   return ValueListenableBuilder<bool>(
                     valueListenable: showDeleteAddress,
                     builder: (context, _showDeleteAddress, _) {
-                      double walletBalance =
-                          orderState.customerWalletModel?.available ?? 0;
-                      // *
-                      //     state.getCurrencyForCountryModel!.data!.currency!
-                      //         .exchangeRate!;
+                      // رصيد المحفظة كان يأتي من سيرفر المحفظة (RDB). لا محفظة
+                      // للمستخدم في هذا التطبيق، فالرصيد صفر دائماً ولم يعد
+                      // يتحكّم بشيء: لا إخفاء طرق دفع ولا تعطيل زر التأكيد.
+                      /* double walletBalance =
+                          orderState.customerWalletModel?.available ?? 0; */
+                      const double walletBalance = 0;
                       return ValueListenableBuilder<int>(
                         valueListenable: indexTap,
                         builder: (context, _indexTap, _) {
@@ -349,52 +351,27 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
                                                         .isNullOrEmpty)
                                                     ? SizedBox.shrink()
                                                     :*/
-                                              orderState.getCustomerWalletStatus ==
-                                                      GetCustomerWalletStatus
-                                                          .failure
-                                                  ? TryAgainWidget(
-                                                      tryAgain: () {
-                                                        homeBloc.add(
-                                                          GetCurrenciesForWalletEvent(
-                                                            currencySymbol:
-                                                                homeBloc
-                                                                    .state
-                                                                    .getCurrencyForCountryModel
-                                                                    ?.data
-                                                                    ?.currency
-                                                                    ?.code ??
-                                                                "",
-                                                          ),
-                                                        );
-                                                      },
-                                                    )
-                                                  : orderState
-                                                            .getCustomerWalletStatus ==
-                                                        GetCustomerWalletStatus
-                                                            .loading
-                                                  ? TrydosShimmerLoading(
-                                                      width: 1.sw,
-                                                      logoTextWidth: 15.w,
-                                                      height: 70.h,
-                                                      logoTextHeight: 15.h,
-                                                    )
-                                                  : PaymentMethod(
-                                                      fromSuccessOrder: false,
-                                                      amount: walletBalance,
-                                                      fromPalceOrder: false,
-                                                      availablePaymentMethod:
-                                                          availablePaymentMethod,
-                                                      currencySymbol: widget
-                                                          .currencySympole,
-                                                      paymentMethods:
-                                                          paymentMethods,
-                                                      totalPrice: totalPrice,
-                                                      decimalPointSetting:
-                                                          homeState
-                                                              .startingSetting
-                                                              ?.decimalPointSettings ??
-                                                          2,
-                                                    ),
+                                              // كان قسم الدفع كلّه محجوباً خلف
+                                              // نتيجة طلب رصيد المحفظة: خطأ
+                                              // يعني "أعد المحاولة"، وانتظار
+                                              // يعني shimmer. الطلب ألغي،
+                                              // فطرق الدفع تظهر مباشرة.
+                                              PaymentMethod(
+                                                fromSuccessOrder: false,
+                                                amount: walletBalance,
+                                                fromPalceOrder: false,
+                                                availablePaymentMethod:
+                                                    availablePaymentMethod,
+                                                currencySymbol:
+                                                    widget.currencySympole,
+                                                paymentMethods: paymentMethods,
+                                                totalPrice: totalPrice,
+                                                decimalPointSetting:
+                                                    homeState
+                                                        .startingSetting
+                                                        ?.decimalPointSettings ??
+                                                    2,
+                                              ),
                                               ////////////
                                               SizedBox(height: 25.h),
                                               ////////////
@@ -578,21 +555,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress>
       child: ValueListenableBuilder<List<String>>(
         valueListenable: paymentMethods,
         builder: (context, _paymentMethod, _) {
-          bool check = false;
-          if (_paymentMethod.isNotEmpty) {
-            if (totalPrice > walletBalance) {
-              if (_paymentMethod.length == 1 &&
-                  _paymentMethod.contains(PaymentMethods.trydosWallet)) {
-                check = false;
-              } else {
-                check = true;
-              }
-            } else {
-              check = true;
-            }
-          } else {
-            check = false;
-          }
+          // كان الزر يُعطَّل إذا كانت المحفظة هي الطريقة الوحيدة ورصيدها لا
+          // يغطّي المبلغ. الرصيد لم يعد معروفاً، والمحفظة صارت طريقة كبقيّة
+          // الطرق، فيكفي أن يختار المستخدم طريقة واحدة وأن يكون له عنوان.
+          bool check = _paymentMethod.isNotEmpty;
           if ((orderState.listOfAddressInfoClassToSave.isNullOrEmpty)) {
             check = false;
           }
