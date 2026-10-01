@@ -217,14 +217,19 @@ class _ChatCardState extends ThemeState<ChatCard> {
                 motion: const ScrollMotion(),
                 children: [
                   SlidableActionWidget(
-                    text: me?.archived == 0
-                        ? LocaleKeys.archive.tr()
-                        : LocaleKeys.un_archive.tr(),
+                    text:
+                        widget.chat.isArchivedForMe(
+                          _prefsRepository.myChatId,
+                        )
+                        ? LocaleKeys.un_archive.tr()
+                        : LocaleKeys.archive.tr(),
                     onTap: () {
                       chatBloc.add(
-                        ChangeChatPropertyEvent(
+                        ArchiveChatEvent(
                           channelId: widget.chat.id!,
-                          archive: 1 - (me?.archived ?? 0),
+                          archived: !widget.chat.isArchivedForMe(
+                            _prefsRepository.myChatId,
+                          ),
                         ),
                       );
                     },
@@ -281,12 +286,21 @@ class _ChatCardState extends ThemeState<ChatCard> {
                 extentRatio: 0.43,
                 motion: const ScrollMotion(),
                 children: [
+                  // زرّ واحد يقلب الحالتين، كجيرانه (تثبيت/كتم/أرشفة): محادثة
+                  // فيها غير مقروء تُقرأ، ومقروءة تُعلَّم كغير مقروءة.
                   SlidableActionWidget(
-                    text: LocaleKeys.read.tr(),
+                    text: (widget.chat.totalUnreadMessageCount ?? 0) > 0
+                        ? LocaleKeys.read.tr()
+                        : LocaleKeys.mark_as_unread.tr(),
                     onTap: () {
-                      chatBloc.add(
-                        ReadAllMessagesEvent(widget.chat.id!.toString()),
-                      );
+                      final String channelId = widget.chat.id!.toString();
+                      if ((widget.chat.totalUnreadMessageCount ?? 0) > 0) {
+                        chatBloc.add(ReadAllMessagesEvent(channelId));
+                      } else {
+                        chatBloc.add(
+                          MarkChatUnreadEvent(channelId: channelId),
+                        );
+                      }
                     },
                     backgroundColor: const Color(0xffFCF6EF),
                     foregroundColor: colorScheme.grey200,

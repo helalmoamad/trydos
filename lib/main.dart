@@ -142,6 +142,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     Map<String, dynamic> remoteMessage = convert.jsonDecode(
       message.data['data'],
     );
+    // نوعه في المظروف الخارجي لا في الجسم — انظر `isMessageReminderNotification`.
+    // يُفحص قبل السلسلة لئلّا يسقط إلى `else` الأخير فيُعامَل كرسالة جديدة.
+    if (isMessageReminderNotification(message.data, remoteMessage)) {
+      LocalNotificationService().showReminderNotification(remoteMessage);
+      return;
+    }
     if (remoteMessage['type'] == 'VideoCallEvent' ||
         remoteMessage['type'] == 'VoiceCallEvent') {
       String currentUuid = const Uuid().v4();
@@ -313,11 +319,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       GetIt.I<PrefsRepository>().setMessageWatchStatusFromBackground(
         message.data['data'],
       );
-    } else if (remoteMessage['type'] == 'MessageReminderEvent') {
-      // تذكير حان وقته والتطبيق في الخلفية. الحدث بلا نصّ مرئي، فنعرضه نحن.
-      // لا مصالحة للقائمة هنا: `GetMyRemindersEvent` تُنفَّذ عند فتح صفحة
-      // المحادثات، ولا طلبات شبكة في عزلة الإشعارات.
-      LocalNotificationService().showReminderNotification(remoteMessage);
     } else if (remoteMessage['type'] == 'UpdatingMessageEvent') {
       GetIt.I<PrefsRepository>().setRemovedMessageFromBackground(
         message.data['data'],

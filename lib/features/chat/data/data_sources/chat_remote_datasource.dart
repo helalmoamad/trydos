@@ -21,6 +21,8 @@ import '../../../../core/api/methods/delete.dart';
 import '../../../../core/api/methods/get.dart';
 import '../../../../core/api/methods/post.dart';
 import '../models/ImageDetail.dart';
+import '../models/channel_archive_model.dart';
+import '../models/channel_unread_model.dart';
 import '../models/message_reminder_model.dart';
 import '../models/media_count.dart';
 import '../models/my_chats_response_model.dart';
@@ -250,6 +252,41 @@ class ChatRemoteDataSource {
       ),
     );
     return updateMessage();
+  }
+
+  Future<ChannelUnreadModel> markChatUnread(Map<String, dynamic> params) {
+    PostClient<ChannelUnreadModel> markUnread = PostClient<ChannelUnreadModel>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<ChannelUnreadModel>(
+        endpoint: ChatEndPoints.markChatUnreadEP(
+          params["channel_id"].toString(),
+        ),
+        // بلا جسم — أي حقل زائد يعيد 400.
+        response: ResponseValue<ChannelUnreadModel>(
+          fromJson: (response) => ChannelUnreadModel.fromJson(response['data']),
+        ),
+      ),
+    );
+    return markUnread();
+  }
+
+  Future<ChannelArchiveModel> archiveChannel(Map<String, dynamic> params) {
+    PostClient<ChannelArchiveModel> archiveChannel =
+        PostClient<ChannelArchiveModel>(
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<ChannelArchiveModel>(
+            endpoint: ChatEndPoints.archiveChannelEP(
+              params["channel_id"].toString(),
+            ),
+            // رقماً لا منطقياً ولا نصّاً — الخادم يرفض ما عداه بـ400.
+            data: {"archived": params["archived"]},
+            response: ResponseValue<ChannelArchiveModel>(
+              fromJson: (response) =>
+                  ChannelArchiveModel.fromJson(response['data']),
+            ),
+          ),
+        );
+    return archiveChannel();
   }
 
   /// ينشئ تذكيراً على رسالة، أو يحدّث وقت تذكير قائم (الخادم يبقي `id` نفسه).

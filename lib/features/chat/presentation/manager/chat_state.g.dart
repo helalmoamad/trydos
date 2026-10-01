@@ -69,6 +69,12 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
           ?.map((e) => MessageReminderItem.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  archiveChatStatus:
+      $enumDecodeNullable(
+        _$ArchiveChatStatusEnumMap,
+        json['archiveChatStatus'],
+      ) ??
+      ArchiveChatStatus.init,
   currentOpenedChatIdStatus:
       $enumDecodeNullable(
         _$CurrentOpenedChatIdStatusEnumMap,
@@ -274,6 +280,7 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
   'getMyRemindersStatus':
       _$GetMyRemindersStatusEnumMap[instance.getMyRemindersStatus]!,
   'reminders': instance.reminders.map((e) => e.toJson()).toList(),
+  'archiveChatStatus': _$ArchiveChatStatusEnumMap[instance.archiveChatStatus]!,
   'contacts': instance.contacts.map((e) => e.toJson()).toList(),
   'currentOpenedChatId': instance.currentOpenedChatId,
   'resendMessageStatus':
@@ -354,6 +361,13 @@ const _$GetMyRemindersStatusEnumMap = {
   GetMyRemindersStatus.loading: 'loading',
   GetMyRemindersStatus.success: 'success',
   GetMyRemindersStatus.failure: 'failure',
+};
+
+const _$ArchiveChatStatusEnumMap = {
+  ArchiveChatStatus.init: 'init',
+  ArchiveChatStatus.loading: 'loading',
+  ArchiveChatStatus.success: 'success',
+  ArchiveChatStatus.failure: 'failure',
 };
 
 const _$CurrentOpenedChatIdStatusEnumMap = {

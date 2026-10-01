@@ -986,6 +986,8 @@
   "getting_country_currency": "Getting your country currency, please wait",
   "delete_chat_confirm_message": "Are you sure you want to delete this chat? This cannot be undone.",
   "otp_attempts_finished": "You have used all your attempts. Wait for the timer to end, then ask for a new code.",
+  "archived": "Archived",
+  "mark_as_unread": "Mark as unread",
   "remind_me": "Remind me",
   "after_20_minutes": "In 20 minutes",
   "after_an_hour": "In an hour",

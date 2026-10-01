@@ -111,6 +111,9 @@ class ChatPageContentState extends State<ChatPageContent> {
           (p.changeChatPropertyStatus != c.changeChatPropertyStatus &&
               c.changeChatPropertyStatus != ChangeChatPropertyStatus.success) ||
           p.deleteChatStatus != c.deleteChatStatus ||
+          // بدونها لا تُرشَّح المحادثة المؤرشفة من القائمة إلّا حين يصادف أن
+          // يعيد بناءَها سببٌ آخر — فتبقى ظاهرة بعد الأرشفة.
+          p.archiveChatStatus != c.archiveChatStatus ||
           c.createAnewChat ||
           c.sendMessageStatus == SendMessageStatus.loading ||
           p.receiveMessageStatus != c.receiveMessageStatus ||
@@ -154,6 +157,8 @@ class ChatPageContentState extends State<ChatPageContent> {
               (element.messages.isNullOrEmpty),
         );
 
+        // البحث يبقى على القائمة الكاملة — المؤرشفة تُخفى من العرض لا من
+        // البحث، فمن يبحث عن محادثة أرشفها يجدها.
         initialChats = chats;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           searchChats.value = [...chats];
@@ -195,6 +200,14 @@ class ChatPageContentState extends State<ChatPageContent> {
                                 )
                               : false;
                           if (searchedChats[index].isPrivate == true) {
+                            return const SizedBox.shrink();
+                          }
+                          // المؤرشفة تُخفى هنا فقط — تبقى في الحالة فيعمل
+                          // فتحها ووصول رسائلها كما لو لم تُؤرشف. نفس معاملة
+                          // `isPrivate` أعلاه.
+                          if (searchedChats[index].isArchivedForMe(
+                            GetIt.I<PrefsRepository>().myChatId,
+                          )) {
                             return const SizedBox.shrink();
                           }
                           return ChatCard(

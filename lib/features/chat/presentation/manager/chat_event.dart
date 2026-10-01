@@ -598,6 +598,43 @@ class UpdateMessageEvent extends ChatEvent {
   List<Object?> get props => [messageId, channelId, content];
 }
 
+/// يعلّم محادثة كغير مقروءة.
+///
+/// عكسه `ReadAllMessagesEvent` القائم — الزرّ نفسه يقلب بينهما.
+class MarkChatUnreadEvent extends ChatEvent {
+  final String channelId;
+
+  const MarkChatUnreadEvent({required this.channelId});
+
+  @override
+  List<Object?> get props => [channelId];
+}
+
+/// يؤرشف محادثة أو يلغي أرشفتها.
+///
+/// المحادثة المؤرشفة **تبقى في `state.chats`** بعلم `isArchived` وتُخفى في
+/// طبقة العرض فقط — تماماً كما يُخفى `isPrivate`. لو وُضعت في قائمة ثالثة
+/// لانكسر كل ما يبحث عنها: فتح المحادثة، البحث، ووصول رسالة جديدة إليها.
+class ArchiveChatEvent extends ChatEvent {
+  final String channelId;
+  final bool archived;
+
+  const ArchiveChatEvent({required this.channelId, required this.archived});
+
+  @override
+  List<Object?> get props => [channelId, archived];
+}
+
+/// يجلب المحادثات المؤرشفة ويدمجها في نفس قوائم الحالة.
+///
+/// طلب منفصل لأن `my_channels` يستثني المؤرشفة افتراضياً.
+class GetArchivedChatsEvent extends ChatEvent {
+  const GetArchivedChatsEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 /// يضبط تذكيراً على رسالة، أو يغيّر وقت تذكير قائم عليها.
 class SetMessageReminderEvent extends ChatEvent {
   final String messageId;

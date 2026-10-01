@@ -84,6 +84,16 @@ abstract class ChatEndPoints {
   ///! ----< channel Members  >----
   ///
   static final setChatPropertyEP = 'update'.channelsScope();
+
+  /// أرشفة محادثة أو إلغاء أرشفتها. شخصية للمستخدم الحالي وحده، وبلا إشعار.
+  /// الجسم `{archived: 0|1}` — **رقماً**، وإرسال `"false"` نصّاً يعيد 400.
+  static String archiveChannelEP(String channelId) =>
+      '$channelId/archive'.channelsScope();
+
+  /// تعليم محادثة كغير مقروءة. **بلا جسم**، ويرفع العدّاد إلى واحد على الأقل.
+  /// وللعودة إلى «مقروءة» تُستعمل `readAllMessagesEP` القائمة.
+  static String markChatUnreadEP(String channelId) =>
+      '$channelId/unread'.channelsScope();
   //static final setChatPropertyEP = 'set'.channelMembersScope();
   static final shareProductOnAppsEP = 'share_product_on_apps'.elasticScope();
 

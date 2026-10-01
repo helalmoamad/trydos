@@ -411,12 +411,22 @@ class Chat {
 
   final bool hasReachedMax;
   final bool? isPrivate;
+
+  /// `1` إذا أرشف المستخدم الحالي هذه المحادثة. شخصي — لا يراه بقيّة الأعضاء.
+  ///
+  /// يصل من `is_archived` على مستوى القناة. الحمولات المحفوظة قبل هذه الميزة
+  /// لا تحويه، فيصل `null` ويُقرأ كـ«غير مؤرشفة».
+  ///
+  /// المصدر الثاني `channelMembers[me].archived` ما زال موجوداً ويُقرأ عند
+  /// غياب هذا — انظر [isArchivedForMe].
+  final int? isArchived;
   Chat({
     this.id,
     this.localId,
     this.photoPath,
     this.channelName,
     this.isPrivate = false,
+    this.isArchived,
     this.totalUnreadMessageCount,
     this.channelMembers,
     this.messages,
@@ -433,6 +443,7 @@ class Chat {
     final PaginationStatus? paginationStatus,
     final bool? hasReachedMax,
     final bool? isPrivate,
+    final int? isArchived,
     int? totalUnreadMessageCount,
     final DateTime? updatedAt,
     List<ChannelMember>? channelMembers,
@@ -442,6 +453,7 @@ class Chat {
     localId: localId ?? this.localId,
     photoPath: photoPath ?? this.photoPath,
     isPrivate: isPrivate ?? this.isPrivate,
+    isArchived: isArchived ?? this.isArchived,
     channelName: channelName ?? this.channelName,
     totalUnreadMessageCount:
         totalUnreadMessageCount ?? this.totalUnreadMessageCount,
@@ -458,10 +470,26 @@ class Chat {
 
   bool get isSuccess => paginationStatus == PaginationStatus.success;
 
+  /// هل هذه المحادثة مؤرشفة عندي؟
+  ///
+  /// مصدران: `is_archived` على القناة (الأحدث)، و`archived` على عضويّتي
+  /// (الأقدم، وما زال الخادم يرسله). نقرأ الأوّل ونرجع للثاني عند غيابه —
+  /// فالرسائل المحفوظة قبل هذه الميزة لا تحوي إلّا الثاني.
+  bool isArchivedForMe(int? myChatId) {
+    if (isArchived != null) return isArchived == 1;
+    final ChannelMember? me = channelMembers
+        ?.where((e) => e.userId == myChatId)
+        .firstOrNull;
+    return me?.archived == 1;
+  }
+
   factory Chat.fromJson(Map<String, dynamic> json) => Chat(
     id: json["id"].toString(),
     photoPath: json["photo_path"],
     channelName: json["channel_name"],
+    isArchived: (json["is_archived"] is bool)
+        ? (json["is_archived"] ? 1 : 0)
+        : int.tryParse(json["is_archived"].toString()),
     totalUnreadMessageCount: json["total_unread_message_count"],
     updatedAt: DateTime.tryParse(json['updated_at'].toString()),
     channelMembers: json["channel_members"] == null
@@ -482,6 +510,7 @@ class Chat {
     "id": id,
     "channel_name": channelName,
     "photo_path": photoPath,
+    "is_archived": isArchived,
     "total_unread_message_count": totalUnreadMessageCount,
     'updated_at': updatedAt?.toIso8601String(),
     "channel_members": channelMembers == null

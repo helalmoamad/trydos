@@ -32,6 +32,8 @@ enum SetMessageReminderStatus { init, loading, success, failure }
 
 enum GetMyRemindersStatus { init, loading, success, failure }
 
+enum ArchiveChatStatus { init, loading, success, failure }
+
 enum ReceiveMessageStatus { init, loading, success, failure }
 
 enum GetMessagesBetweenStatus { init, loading, success, failure }
@@ -92,6 +94,9 @@ class ChatState {
   /// تذكيراتي التي لم يحن وقتها، الأقرب أولاً. تُحفظ مع الحالة فتظهر القائمة
   /// وعدّادها فوراً عند الإقلاع قبل أن يردّ الخادم.
   final List<MessageReminderItem> reminders;
+
+  /// حالة أرشفة محادثة أو إلغائها. عابرة مثل أخواتها.
+  final ArchiveChatStatus archiveChatStatus;
   final List<Contact> contacts;
   final String? currentOpenedChatId;
   final ResendMessageStatus resendMessageStatus;
@@ -137,6 +142,7 @@ class ChatState {
     this.setMessageReminderStatus = SetMessageReminderStatus.init,
     this.getMyRemindersStatus = GetMyRemindersStatus.init,
     this.reminders = const [],
+    this.archiveChatStatus = ArchiveChatStatus.init,
     this.currentOpenedChatIdStatus = CurrentOpenedChatIdStatus.init,
     this.chatOrderParticipantId,
     this.firstRequestForGetChats = true,
@@ -203,6 +209,7 @@ class ChatState {
     final SetMessageReminderStatus? setMessageReminderStatus,
     final GetMyRemindersStatus? getMyRemindersStatus,
     final List<MessageReminderItem>? reminders,
+    final ArchiveChatStatus? archiveChatStatus,
     final GetChatsStatus? getChatsStatus,
     final Duration? duration,
     final GetOrderRecipientIdStatus? getOrderRecipientIdStatus,
@@ -277,6 +284,7 @@ class ChatState {
           setMessageReminderStatus ?? this.setMessageReminderStatus,
       getMyRemindersStatus: getMyRemindersStatus ?? this.getMyRemindersStatus,
       reminders: reminders ?? this.reminders,
+      archiveChatStatus: archiveChatStatus ?? this.archiveChatStatus,
       senderInfo: senderInfo ?? this.senderInfo,
       videoCountInEachChat: videoCountInEachChat ?? this.videoCountInEachChat,
       loadImageWidthAndHeight:

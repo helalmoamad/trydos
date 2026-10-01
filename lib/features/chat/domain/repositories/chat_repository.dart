@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/get_order_recipient_id_model.dart';
+import 'package:trydos/features/chat/data/models/channel_archive_model.dart';
+import 'package:trydos/features/chat/data/models/channel_unread_model.dart';
 import 'package:trydos/features/chat/data/models/message_reminder_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
@@ -50,6 +52,12 @@ abstract class ChatRepository {
     Map<String, dynamic> params,
   );
   Future<Either<Failure, List<MessageReminderItem>>> getMyReminders();
+  Future<Either<Failure, ChannelArchiveModel>> archiveChannel(
+    Map<String, dynamic> params,
+  );
+  Future<Either<Failure, ChannelUnreadModel>> markChatUnread(
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, bool>> deleteMessageReminder(
     Map<String, dynamic> params,
   );

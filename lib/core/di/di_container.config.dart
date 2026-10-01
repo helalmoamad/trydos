@@ -99,6 +99,8 @@ import '../../features/chat/data/data_sources/chat_remote_datasource.dart'
 import '../../features/chat/data/repositories/chat_repository_impl.dart'
     as _i504;
 import '../../features/chat/domain/repositories/chat_repository.dart' as _i420;
+import '../../features/chat/domain/use_cases/archive_channel_usecase.dart'
+    as _i1007;
 import '../../features/chat/domain/use_cases/block_user_id_usecase.dart'
     as _i900;
 import '../../features/chat/domain/use_cases/change_chat_property_usecase.dart'
@@ -121,6 +123,8 @@ import '../../features/chat/domain/use_cases/get_order_recipient_id_usecase.dart
     as _i1039;
 import '../../features/chat/domain/use_cases/get_shared_product_count_usecase.dart'
     as _i538;
+import '../../features/chat/domain/use_cases/mark_chat_unread_usecase.dart'
+    as _i118;
 import '../../features/chat/domain/use_cases/message_reminder_usecases.dart'
     as _i397;
 import '../../features/chat/domain/use_cases/read_all_messages_usecase.dart'
@@ -1052,6 +1056,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i589.CreateUserUseCase>(
     () => _i589.CreateUserUseCase(gh<_i420.ChatRepository>()),
   );
+  gh.factory<_i1007.ArchiveChannelUseCase>(
+    () => _i1007.ArchiveChannelUseCase(gh<_i420.ChatRepository>()),
+  );
   gh.factory<_i900.BlockOrDeleteBlockUserUseCase>(
     () => _i900.BlockOrDeleteBlockUserUseCase(gh<_i420.ChatRepository>()),
   );
@@ -1087,6 +1094,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i538.GetSharedProductCountUseCase>(
     () => _i538.GetSharedProductCountUseCase(gh<_i420.ChatRepository>()),
+  );
+  gh.factory<_i118.MarkChatUnreadUseCase>(
+    () => _i118.MarkChatUnreadUseCase(gh<_i420.ChatRepository>()),
   );
   gh.factory<_i397.CreateMessageReminderUseCase>(
     () => _i397.CreateMessageReminderUseCase(gh<_i420.ChatRepository>()),
@@ -1247,6 +1257,8 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i397.CreateMessageReminderUseCase>(),
       gh<_i397.GetMyRemindersUseCase>(),
       gh<_i397.DeleteMessageReminderUseCase>(),
+      gh<_i1007.ArchiveChannelUseCase>(),
+      gh<_i118.MarkChatUnreadUseCase>(),
     ),
   );
   gh.lazySingleton<_i536.StoryBloc>(

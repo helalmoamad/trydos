@@ -987,6 +987,8 @@
   "getting_country_currency": "جارٍ تحديد عملة بلدك، يرجى الانتظار",
   "delete_chat_confirm_message": "هل أنت متأكد من حذف هذه الدردشة؟ لا يمكن التراجع عن ذلك.",
   "otp_attempts_finished": "انتهى عدد المحاولات، يرجى الانتظار حتى انتهاء الوقت ثم طلب رمز جديد.",
+  "archived": "المؤرشفة",
+  "mark_as_unread": "تحديد كغير مقروء",
   "remind_me": "ذكّرني",
   "after_20_minutes": "بعد 20 دقيقة",
   "after_an_hour": "بعد ساعة",

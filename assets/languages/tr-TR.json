@@ -969,6 +969,8 @@
   "getting_country_currency": "Ülkenizin para birimi belirleniyor, lütfen bekleyin",
   "delete_chat_confirm_message": "Bu sohbeti silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
   "otp_attempts_finished": "Tüm denemelerinizi kullandınız. Sürenin bitmesini bekleyin, sonra yeni bir kod isteyin.",
+  "archived": "Arşivlenenler",
+  "mark_as_unread": "Okunmadı olarak işaretle",
   "remind_me": "Bana hatırlat",
   "after_20_minutes": "20 dakika sonra",
   "after_an_hour": "1 saat sonra",
