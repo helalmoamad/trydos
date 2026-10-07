@@ -14,6 +14,7 @@ import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/core/api/methods/post.dart';
 import 'package:trydos/core/api/methods/put.dart';
 import 'package:trydos/core/api/methods/delete.dart';
+import 'package:trydos/features/dashBoard/data/models/boutique_edit_model.dart';
 import 'package:trydos/features/dashBoard/data/models/GetGalleryImagesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
@@ -714,6 +715,136 @@ class DashBoardRemoteDataSource {
           ),
         );
     return changeShopLocationStatus();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Boutiques — the editor's six calls (the list stays on `getBoutiques`).
+  //
+  // Same tenant split as Locations: every **write** carries the shop id
+  // captured when the page opened, through `extraHeaders`, so a shop switch
+  // cannot make it land on another shop. The use cases refuse to send a write
+  // with no shop id at all (review finding S-3), because `_sellerHeader`
+  // returns `null` then and the request would fall back to whatever shop
+  // `BaseApi` reads from prefs.
+  //
+  // The **reads** carry no `extraHeaders` (`get.dart` discards them); the
+  // editor bloc drops a read answer when the shop changed while it was in
+  // flight.
+  // ---------------------------------------------------------------------------
+
+  /// `GET /languages` — the editor's language tabs.
+  Future<BoutiqueLanguagesResponseModel> getBoutiqueLanguages() {
+    GetClient<BoutiqueLanguagesResponseModel> getBoutiqueLanguages =
+        GetClient<BoutiqueLanguagesResponseModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<BoutiqueLanguagesResponseModel>(
+            endpoint: DashBoardEndPoints.languagesEP,
+            response: ResponseValue<BoutiqueLanguagesResponseModel>(
+              fromJson: (response) =>
+                  BoutiqueLanguagesResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return getBoutiqueLanguages();
+  }
+
+  /// `GET /shop/boutiques/lookups` — countries and availabilities for create.
+  Future<BoutiqueLookupsResponseModel> getBoutiqueLookups() {
+    GetClient<BoutiqueLookupsResponseModel> getBoutiqueLookups =
+        GetClient<BoutiqueLookupsResponseModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<BoutiqueLookupsResponseModel>(
+            endpoint: DashBoardEndPoints.shopBoutiqueLookupsEP,
+            response: ResponseValue<BoutiqueLookupsResponseModel>(
+              fromJson: (response) =>
+                  BoutiqueLookupsResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return getBoutiqueLookups();
+  }
+
+  /// `POST /shop/boutiques` — create. The body's per-language key is
+  /// `boutique_custom_data`; the form layer builds it.
+  Future<BoutiqueWriteResponseModel> createBoutique(
+    Map<String, dynamic> params,
+    String sellerId,
+  ) {
+    PostClient<BoutiqueWriteResponseModel> createBoutique =
+        PostClient<BoutiqueWriteResponseModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<BoutiqueWriteResponseModel>(
+            endpoint: DashBoardEndPoints.shopBoutiquesEP,
+            data: params,
+            extraHeaders: _sellerHeader(sellerId),
+            response: ResponseValue<BoutiqueWriteResponseModel>(
+              fromJson: (response) =>
+                  BoutiqueWriteResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return createBoutique();
+  }
+
+  /// `GET /shop/boutiques/{id}/edit` — the record and its lookups.
+  Future<BoutiqueEditResponseModel> getBoutiqueForEdit(int id) {
+    GetClient<BoutiqueEditResponseModel> getBoutiqueForEdit =
+        GetClient<BoutiqueEditResponseModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<BoutiqueEditResponseModel>(
+            endpoint: DashBoardEndPoints.shopBoutiqueEditEP(id),
+            response: ResponseValue<BoutiqueEditResponseModel>(
+              fromJson: (response) =>
+                  BoutiqueEditResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return getBoutiqueForEdit();
+  }
+
+  /// `POST /shop/boutiques/{id}/update` — POST, not PUT. The body's
+  /// per-language key is `custom_data`.
+  Future<BoutiqueWriteResponseModel> updateBoutique(
+    int id,
+    Map<String, dynamic> params,
+    String sellerId,
+  ) {
+    PostClient<BoutiqueWriteResponseModel> updateBoutique =
+        PostClient<BoutiqueWriteResponseModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<BoutiqueWriteResponseModel>(
+            endpoint: DashBoardEndPoints.shopBoutiqueUpdateEP(id),
+            data: params,
+            extraHeaders: _sellerHeader(sellerId),
+            response: ResponseValue<BoutiqueWriteResponseModel>(
+              fromJson: (response) =>
+                  BoutiqueWriteResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return updateBoutique();
+  }
+
+  /// `POST /shop/boutiques/{id}/change-status`.
+  Future<BoutiqueStatusResponseModel> changeBoutiqueStatus(
+    int id,
+    int status,
+    String sellerId,
+  ) {
+    PostClient<BoutiqueStatusResponseModel> changeBoutiqueStatus =
+        PostClient<BoutiqueStatusResponseModel>(
+          serverName: ServerName.dashBoard,
+          requestPrams: RequestConfig<BoutiqueStatusResponseModel>(
+            endpoint: DashBoardEndPoints.shopBoutiqueChangeStatusEP(id),
+            data: <String, dynamic>{'status': status},
+            extraHeaders: _sellerHeader(sellerId),
+            response: ResponseValue<BoutiqueStatusResponseModel>(
+              fromJson: (response) =>
+                  BoutiqueStatusResponseModel.fromJson(response),
+            ),
+          ),
+        );
+    return changeBoutiqueStatus();
   }
 
   /// One `const` key, built at one place. `post.dart` merges the caller's map
