@@ -389,20 +389,24 @@ class ReceiveMissCallEvent extends ChatEvent {
 
 class ChangeChatPropertyEvent extends ChatEvent {
   final String channelId;
+  final int memberId;
+  final int userId;
   final int? mute;
   final int? pin;
   final int? archive;
 
   const ChangeChatPropertyEvent({
     required this.channelId,
+    required this.userId,
     this.archive,
     this.mute,
     this.pin,
+    required this.memberId,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [channelId, archive, mute, pin];
+  List<Object?> get props => [channelId, memberId, userId, archive, mute, pin];
 }
 
 class GetMessagesForChatEvent extends ChatEvent {

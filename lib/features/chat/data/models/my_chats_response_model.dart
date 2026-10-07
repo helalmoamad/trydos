@@ -730,6 +730,7 @@ class MessageType {
 
 class ChannelMember {
   final String? channelId;
+  final int? id;
   final int? userId;
   final int? pin;
   final int? archived;
@@ -740,6 +741,7 @@ class ChannelMember {
   ChannelMember({
     this.channelId,
     this.userId,
+    this.id,
     this.pin,
     this.archived,
     this.isBlocked,
@@ -750,6 +752,7 @@ class ChannelMember {
   ChannelMember copyWith({
     String? channelId,
     int? userId,
+    int? id,
     int? pin,
     int? archived,
     int? mute,
@@ -759,6 +762,7 @@ class ChannelMember {
     channelId: channelId ?? this.channelId,
     userId: userId ?? this.userId,
     pin: pin ?? this.pin,
+    id: id ?? this.id,
     archived: archived ?? this.archived,
     mute: mute ?? this.mute,
     user: user ?? this.user,
@@ -769,6 +773,7 @@ class ChannelMember {
     channelId: json["channel_id"].toString(),
     userId: int.tryParse(json["user_id"].toString()),
     pin: json["pin"],
+    id: json["id"],
     archived: json["archived"],
     mute: json["mute"],
     isBlocked: json["is_blocked"],
@@ -779,6 +784,7 @@ class ChannelMember {
     "channel_id": channelId,
     "user_id": userId,
     "pin": pin,
+    "id": id,
     "archived": archived,
     "is_blocked": isBlocked,
     "mute": mute,

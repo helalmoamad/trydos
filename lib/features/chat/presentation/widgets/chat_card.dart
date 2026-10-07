@@ -217,10 +217,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                 motion: const ScrollMotion(),
                 children: [
                   SlidableActionWidget(
-                    text:
-                        widget.chat.isArchivedForMe(
-                          _prefsRepository.myChatId,
-                        )
+                    text: widget.chat.isArchivedForMe(_prefsRepository.myChatId)
                         ? LocaleKeys.un_archive.tr()
                         : LocaleKeys.archive.tr(),
                     onTap: () {
@@ -268,7 +265,9 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       chatBloc.add(
                         ChangeChatPropertyEvent(
                           channelId: widget.chat.id!,
-                          mute: 1 - (me?.mute ?? 0),
+                          memberId: me!.id!,
+                          userId: _prefsRepository.myChatId!,
+                          mute: 1 - (me.mute ?? 0),
                         ),
                       );
                     },
@@ -297,9 +296,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       if ((widget.chat.totalUnreadMessageCount ?? 0) > 0) {
                         chatBloc.add(ReadAllMessagesEvent(channelId));
                       } else {
-                        chatBloc.add(
-                          MarkChatUnreadEvent(channelId: channelId),
-                        );
+                        chatBloc.add(MarkChatUnreadEvent(channelId: channelId));
                       }
                     },
                     backgroundColor: const Color(0xffFCF6EF),
@@ -323,6 +320,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                         ChangeChatPropertyEvent(
                           channelId: widget.chat.id!,
                           pin: 1 - (me?.pin ?? 0),
+                          userId: _prefsRepository.myChatId!,
+                          memberId: me!.id!,
                         ),
                       );
                     },

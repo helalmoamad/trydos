@@ -63,7 +63,7 @@ abstract class ChatEndPoints {
   ///! ----< channels ( chats )  >----
   ///
   static final getMyChatsEP = 'my_channels'.channelsScope();
-  static final searchForMessageTextInChatEP = 'channelSearch'.elasticScope();
+  static final searchForMessageTextInChatEP = 'channelSearch'.channelsScope();
 
   static final deleteChatEP = 'destroy'.channelsScope();
   static final deleteMessage = 'destroy'.messagesScope();

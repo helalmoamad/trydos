@@ -3,6 +3,10 @@
 /// التطبيق لا يتصل بـ RDB ولا يحمل مفتاحاً ولا توقيعاً: الباك ينشئ طلب الدفع
 /// ويعيد كوداً من عشرة أرقام (`short_code`) يدخله الزبون في تطبيق RDB ويؤكّد.
 /// ثم نسأل الباك عن حالة الطلب حتى تصبح `paid` أو تنتهي.
+library;
+
+import 'dart:convert';
+
 enum RdbPaymentStatus {
   awaitingPayment,
   paid,
@@ -180,15 +184,31 @@ class RdbCartLockModel {
   const RdbCartLockModel({required this.requestReference, this.expiresAt});
 
   /// يقرأ القفل من جسم أي استجابة 409. يعيد `null` إن لم يكن الجسم قفل سلة.
+  ///
+  /// متساهل في شكل الجسم عن قصد: فشلُه هنا لا يُظهر خطأً، بل يجعل التطبيق
+  /// يستعيد **مرجعاً قديماً** من التخزين فيتابع دفعةً غير التي رفضها الخادم.
+  /// لذا يقبل الجسم نصّاً غير مفكَّك، ويقبل المرجع في `data` أو في الجذر.
   static RdbCartLockModel? tryParse(dynamic body) {
-    if (body is! Map) return null;
-    final dynamic data = body["data"];
-    if (data is! Map) return null;
-    final String? reference = data["rdb_request_reference"]?.toString();
-    if (reference == null || reference.isEmpty) return null;
+    dynamic parsed = body;
+    if (parsed is String) {
+      try {
+        parsed = jsonDecode(parsed);
+      } catch (_) {
+        return null;
+      }
+    }
+    if (parsed is! Map) return null;
+
+    final dynamic data = parsed["data"];
+    final Map source = data is Map ? data : parsed;
+
+    final String? reference = source["rdb_request_reference"]?.toString();
+    if (reference == null || reference.isEmpty || reference == 'null') {
+      return null;
+    }
     return RdbCartLockModel(
       requestReference: reference,
-      expiresAt: DateTime.tryParse(data["expires_at"]?.toString() ?? ''),
+      expiresAt: DateTime.tryParse(source["expires_at"]?.toString() ?? ''),
     );
   }
 }

@@ -115,9 +115,18 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
             // الرفض قد يأتي من أي مكان فيه زرّ يعدّل السلة: السلة نفسها،
             // تفاصيل المنتج، قوائم المنتجات، الرئيسية. لذلك تُعرض الرسالة
             // عالمياً فوق الصفحة الحالية، لا من صفحة بعينها.
-            showRdbCartLockedDialogGlobally(
-              requestReference: lock.requestReference,
-            );
+            //
+            // **إلّا على مسار الـ checkout**: هناك نافذة الدفع مفتوحة وهي
+            // صاحبة السياق — تغلق نفسها أوّلاً ثم تفتح نافذة القفل. وفتحُها
+            // من هنا أيضاً كان يُنتج عطلاً مركّباً: نافذتان، ثم `pop` في
+            // نافذة الدفع يُغلق **نافذة القفل** لأنها صارت أعلى المكدّس، ثم
+            // حارس `_globalDialogOpen` يمنع إعادة فتحها — فتبقى نافذة الدفع
+            // معلّقة في `loading` بلا شيء يظهر.
+            if (!err.requestOptions.path.contains('order/checkout')) {
+              showRdbCartLockedDialogGlobally(
+                requestReference: lock.requestReference,
+              );
+            }
           }
         } catch (e) {
           devLog('log_interceptor.dart: ignored error', e);
