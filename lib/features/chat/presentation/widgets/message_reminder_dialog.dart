@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/features/chat/data/models/message_reminder_model.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
@@ -63,6 +64,31 @@ class _MessageReminderDialogState extends State<_MessageReminderDialog> {
   /// موعد اختاره المستخدم من المنتقي ولم يضبطه بعد.
   DateTime? _picked;
 
+  /// وسم العنصر الذي ينتظر ردّ الخادم: `quick-0`… أو `custom` أو `cancel`.
+  ///
+  /// لا يكفي أن نعرف «هناك طلب جارٍ» — يجب أن نعرف **أيّ عنصر** أطلقه، وإلّا
+  /// وُضع المؤشّر على الجميع. وبدونه كان المستخدم يضغط «بعد ساعة» فلا يرى
+  /// شيئاً يتغيّر، فيظنّ أن ضغطته لم تصل.
+  String? _pendingTag;
+
+  /// الخيارات السريعة: نصّها وموعدها. قائمةٌ لا أسطرٌ مكرّرة، لأن كلّ واحد
+  /// يحتاج وسماً بالفهرس ليعرض مؤشّره وحده.
+  List<({String label, DateTime Function() when})> get _quickOptions => [
+    (
+      label: LocaleKeys.after_20_minutes.tr(),
+      when: () => DateTime.now().add(const Duration(minutes: 20)),
+    ),
+    (
+      label: LocaleKeys.after_an_hour.tr(),
+      when: () => DateTime.now().add(const Duration(hours: 1)),
+    ),
+    (
+      label: LocaleKeys.after_3_hours.tr(),
+      when: () => DateTime.now().add(const Duration(hours: 3)),
+    ),
+    (label: LocaleKeys.tomorrow_morning.tr(), when: () => _tomorrowMorning),
+  ];
+
   /// تذكير هذه الرسالة كما هو في الحالة الآن — يتغيّر مع كل ضبط أو إلغاء.
   MessageReminderInfo? _reminderOf(ChatState state) {
     for (final Chat chat in [...state.chats, ...state.pinnedChats]) {
@@ -77,12 +103,24 @@ class _MessageReminderDialogState extends State<_MessageReminderDialog> {
     return null;
   }
 
-  void _setAt(DateTime moment) {
+  void _setAt(DateTime moment, String tag) {
+    setState(() => _pendingTag = tag);
     BlocProvider.of<ChatBloc>(context).add(
       SetMessageReminderEvent(
         messageId: widget.messageId,
         channelId: widget.channelId,
         remindAt: moment,
+      ),
+    );
+  }
+
+  void _cancel(String reminderId) {
+    setState(() => _pendingTag = 'cancel');
+    BlocProvider.of<ChatBloc>(context).add(
+      CancelMessageReminderEvent(
+        reminderId: reminderId,
+        messageId: widget.messageId,
+        channelId: widget.channelId,
       ),
     );
   }
@@ -109,6 +147,29 @@ class _MessageReminderDialogState extends State<_MessageReminderDialog> {
       initialTime: TimeOfDay.fromDateTime(
         _picked ?? now.add(const Duration(minutes: 20)),
       ),
+      // أرقام الساعة والدقيقة في المنتقي الافتراضي ضخمة (57 نقطة) فتُقصّ
+      // حوافها العليا والسفلى. علاجان معاً:
+      //
+      // * `hourMinuteTextStyle` يصغّر **هذه الأرقام وحدها**، فلا تتأثّر بقيّة
+      //   عناصر المنتقي كما يفعل تصغير مقياس النص العام.
+      // * تثبيت `textScaler` على 1 يمنع إعدادَ خطٍّ كبير في نظام المستخدم من
+      //   إعادة تضخيمها — وهو السبب الأشيع للتشوّه.
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: TextScaler.noScaling),
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            timePickerTheme: TimePickerThemeData(
+              hourMinuteTextStyle: TextStyle(
+                fontSize: 30.sp,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          child: child!,
+        ),
+      ),
     );
     if (time == null || !mounted) return;
 
@@ -125,7 +186,16 @@ class _MessageReminderDialogState extends State<_MessageReminderDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatBloc, ChatState>(
+    return BlocConsumer<ChatBloc, ChatState>(
+      listenWhen: (p, c) =>
+          p.setMessageReminderStatus != c.setMessageReminderStatus,
+      listener: (context, state) {
+        // انتهى الطلب (نجح أو فشل): يرفع المؤشّر عن العنصر الذي أطلقه.
+        if (state.setMessageReminderStatus !=
+            SetMessageReminderStatus.loading) {
+          if (_pendingTag != null) setState(() => _pendingTag = null);
+        }
+      },
       builder: (context, state) {
         final MessageReminderInfo? reminder = _reminderOf(state);
         final bool isBusy =
@@ -163,44 +233,22 @@ class _MessageReminderDialogState extends State<_MessageReminderDialog> {
                         context,
                         reminder!.remindAt!,
                       ),
-                      onCancel: isBusy
-                          ? null
-                          : () => BlocProvider.of<ChatBloc>(context).add(
-                              CancelMessageReminderEvent(
-                                reminderId: reminder.id,
-                                messageId: widget.messageId,
-                                channelId: widget.channelId,
-                              ),
-                            ),
+                      isLoading: _pendingTag == 'cancel',
+                      onCancel: isBusy ? null : () => _cancel(reminder.id),
                     ),
                     SizedBox(height: 10.h),
                   ],
-                  _QuickOption(
-                    label: LocaleKeys.after_20_minutes.tr(),
-                    onTap: isBusy
-                        ? null
-                        : () => _setAt(
-                            DateTime.now().add(const Duration(minutes: 20)),
-                          ),
-                  ),
-                  _QuickOption(
-                    label: LocaleKeys.after_an_hour.tr(),
-                    onTap: isBusy
-                        ? null
-                        : () =>
-                              _setAt(DateTime.now().add(const Duration(hours: 1))),
-                  ),
-                  _QuickOption(
-                    label: LocaleKeys.after_3_hours.tr(),
-                    onTap: isBusy
-                        ? null
-                        : () =>
-                              _setAt(DateTime.now().add(const Duration(hours: 3))),
-                  ),
-                  _QuickOption(
-                    label: LocaleKeys.tomorrow_morning.tr(),
-                    onTap: isBusy ? null : () => _setAt(_tomorrowMorning),
-                  ),
+                  ...List.generate(_quickOptions.length, (index) {
+                    final option = _quickOptions[index];
+                    final String tag = 'quick-$index';
+                    return _QuickOption(
+                      label: option.label,
+                      isLoading: _pendingTag == tag,
+                      onTap: isBusy
+                          ? null
+                          : () => _setAt(option.when(), tag),
+                    );
+                  }),
                   SizedBox(height: 10.h),
                   Text(
                     LocaleKeys.choose_date_and_time.tr(),
@@ -254,7 +302,9 @@ class _MessageReminderDialogState extends State<_MessageReminderDialog> {
                       ),
                       SizedBox(width: 10.w),
                       InkWell(
-                        onTap: canSet ? () => _setAt(_picked!) : null,
+                        onTap: canSet
+                            ? () => _setAt(_picked!, 'custom')
+                            : null,
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
                           height: 44.h,
@@ -309,10 +359,17 @@ class _MessageReminderDialogState extends State<_MessageReminderDialog> {
 
 /// شريط «التذكير مضبوط على …» مع زرّ الإلغاء.
 class _CurrentReminderBanner extends StatelessWidget {
-  const _CurrentReminderBanner({required this.moment, required this.onCancel});
+  const _CurrentReminderBanner({
+    required this.moment,
+    required this.onCancel,
+    this.isLoading = false,
+  });
 
   final String moment;
   final VoidCallback? onCancel;
+
+  /// طلب الإلغاء جارٍ: دائرة صغيرة مكان النصّ، فيعرف المستخدم أن ضغطته وصلت.
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -334,17 +391,29 @@ class _CurrentReminderBanner extends StatelessWidget {
             ),
           ),
           SizedBox(width: 8.w),
-          InkWell(
-            onTap: onCancel,
-            child: Text(
-              LocaleKeys.cancel_reminder.tr(),
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w600,
-                color: _MessageReminderDialogState._danger,
+          if (isLoading)
+            SizedBox(
+              width: 14.sp,
+              height: 14.sp,
+              child: const CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  _MessageReminderDialogState._danger,
+                ),
+              ),
+            )
+          else
+            InkWell(
+              onTap: onCancel,
+              child: Text(
+                LocaleKeys.cancel_reminder.tr(),
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w600,
+                  color: _MessageReminderDialogState._danger,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -353,13 +422,37 @@ class _CurrentReminderBanner extends StatelessWidget {
 
 /// خيار سريع (بعد 20 دقيقة، بعد ساعة، …).
 class _QuickOption extends StatelessWidget {
-  const _QuickOption({required this.label, required this.onTap});
+  const _QuickOption({
+    required this.label,
+    required this.onTap,
+    this.isLoading = false,
+  });
 
   final String label;
   final VoidCallback? onTap;
 
+  /// هذا الخيار بعينه ينتظر الخادم: يحلّ محلّه shimmer بنفس مقاسه، فلا يقفز
+  /// التخطيط ويعرف المستخدم أيّ خيار ضغطه.
+  final bool isLoading;
+
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Padding(
+        padding: EdgeInsets.only(bottom: 8.h),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            height: 46.h,
+            decoration: BoxDecoration(
+              color: _MessageReminderDialogState._disabled,
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+          ),
+        ),
+      );
+    }
     return Padding(
       padding: EdgeInsets.only(bottom: 8.h),
       child: InkWell(

@@ -27,11 +27,24 @@ class GetMyChatsParams{
   final DateTime? timeStamp;
   final int? limit;
   final int? messagesLimit;
-  const GetMyChatsParams({this.timeStamp , this.limit , this.messagesLimit});
+
+  /// `true` يجلب **المؤرشفة وحدها**، وغيابه يجلب غير المؤرشفة وحدها.
+  ///
+  /// **منطقي هنا** (`boolean`)، بعكس نقطة الأرشفة نفسها التي تأخذ `0|1`
+  /// رقماً. النوع الخطأ في أيّهما يعيد 400.
+  final bool? archived;
+
+  const GetMyChatsParams({
+    this.timeStamp,
+    this.limit,
+    this.messagesLimit,
+    this.archived,
+  });
 
   Map<String , dynamic> get map => {
    'limit' : limit.toString(),
    'messages_limit' : messagesLimit.toString(),
    'timestamp' : timeStamp?.toIso8601String(),
+   if (archived != null) 'archived' : archived,
   }..removeWhere((key, value) => value == 'null' || value == null);
 }

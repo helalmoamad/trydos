@@ -33,6 +33,24 @@ import 'dart:convert' as convert;
 import 'handling_market_notifications.dart';
 import 'package:trydos/common/helper/dev_log.dart';
 
+/// هل هذا الإشعار تذكيرٌ حان وقته؟
+///
+/// `MessageReminderEvent` هو الحدث الوحيد الذي **لا يضع `type` داخل جسمه** —
+/// نوعه في مظروف FCM الخارجي وحده. لذا يُفحص [envelope] أوّلاً.
+///
+/// والفحص الثاني على الشكل احتياط: جسمٌ يحمل `payload.reminder_id` لا يكون
+/// إلّا تذكيراً. فلو غاب النوع من المظروف أيضاً لا تسقط الحمولة في فرع «رسالة
+/// جديدة» — وهناك `remoteMessage['message']` معدوم فيرمي
+/// «Null is not a subtype of Map<String, dynamic>».
+///
+/// موضعها هنا لا في `base_page`: يستعملها معالج الخلفية في `main.dart` أيضاً،
+/// وهو لا يستورد `base_page` (بل العكس).
+bool isMessageReminderNotification(Map envelope, Map body) {
+  if (envelope['type'] == 'MessageReminderEvent') return true;
+  final dynamic payload = body['payload'];
+  return payload is Map && payload['reminder_id'] != null;
+}
+
 @pragma('vm:entry-point')
 class LocalNotificationService {
   static final _localNotificationPlugin = FlutterLocalNotificationsPlugin();

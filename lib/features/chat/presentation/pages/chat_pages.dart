@@ -43,6 +43,7 @@ import '../../../calls/presentation/pages/in_app_view.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
 import '../manager/chat_state.dart';
+import '../widgets/archived_section.dart';
 import '../widgets/reminders_section.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/common/helper/dev_log.dart';
@@ -67,6 +68,26 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   final ScrollController scrollController = ScrollController();
   late ChatBloc chatBloc;
   Timer? debounce;
+
+  /// هل قائمة التذكيرات مفتوحة؟ حين تُفتح تحلّ محلّ قائمة المحادثات.
+  ///
+  /// `ValueNotifier` لا `setState`: التبديل يمسّ سليفرين فقط، وإعادة بناء
+  /// الصفحة كاملة تعيد بناء قائمة المحادثات بلا سبب.
+  final ValueNotifier<bool> _remindersOpen = ValueNotifier(false);
+
+  /// وكذلك قائمة المؤرشفة. واحدة مفتوحة فقط — كلتاهما تستبدل قائمة المحادثات،
+  /// ففتحهما معاً يعني قائمتين فوق بعضهما.
+  final ValueNotifier<bool> _archivedOpen = ValueNotifier(false);
+
+  void _openReminders(bool open) {
+    if (open) _archivedOpen.value = false;
+    _remindersOpen.value = open;
+  }
+
+  void _openArchived(bool open) {
+    if (open) _remindersOpen.value = false;
+    _archivedOpen.value = open;
+  }
   List<Widget> chatPages = [
     const CallsPageContent(),
     const StoriesForChatPageContent(),
@@ -109,6 +130,13 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     saveUserContacts();
     _requestCallKitPermission();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _remindersOpen.dispose();
+    _archivedOpen.dispose();
+    super.dispose();
   }
 
   Future<void> _requestCallKitPermission() async {
@@ -383,12 +411,39 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                         ),
                       ),
                     },
-                    // فوق القائمة مباشرةً، ويختفي حين لا تذكيرات.
-                    const RemindersSection(),
-                    BlocBuilder<AppBloc, AppState>(
-                      buildWhen: (p, c) => p.tabIndexInChat != c.tabIndexInChat,
-                      builder: (context, state) {
-                        return chatPages[state.tabIndexInChat];
+                    // الصفّان فوق القائمة بالترتيب، وكلٌّ يختفي حين عدده صفر.
+                    RemindersHeaderSliver(
+                      isOpen: _remindersOpen,
+                      onToggle: _openReminders,
+                    ),
+                    ArchivedHeaderSliver(
+                      isOpen: _archivedOpen,
+                      onToggle: _openArchived,
+                    ),
+                    // كلتا القائمتين **تحلّ محلّ** المحادثات لا تتمدّد فوقها:
+                    // صفحة بذاتها، والرجوع بالضغط على الصفّ نفسه.
+                    ValueListenableBuilder<bool>(
+                      valueListenable: _remindersOpen,
+                      builder: (context, remindersOpen, _) {
+                        if (remindersOpen) return const RemindersListSliver();
+                        return ValueListenableBuilder<bool>(
+                          valueListenable: _archivedOpen,
+                          builder: (context, archivedOpen, _) {
+                            if (archivedOpen) {
+                              return ArchivedListSliver(
+                                onSendForwardMessage:
+                                    widget.onSendForwardMessage,
+                              );
+                            }
+                            return BlocBuilder<AppBloc, AppState>(
+                              buildWhen: (p, c) =>
+                                  p.tabIndexInChat != c.tabIndexInChat,
+                              builder: (context, state) {
+                                return chatPages[state.tabIndexInChat];
+                              },
+                            );
+                          },
+                        );
                       },
                     ),
 

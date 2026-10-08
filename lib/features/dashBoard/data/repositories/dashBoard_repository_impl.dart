@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/api.dart';
 import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/features/dashBoard/data/data_source/dashBoard_remote_data_source_model.dart';
+import 'package:trydos/features/dashBoard/data/models/boutique_edit_model.dart';
 import 'package:trydos/features/dashBoard/data/models/GetGalleryImagesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
@@ -326,6 +327,64 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   changeShopLocationStatus(int id, int status, String? sellerId) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.changeShopLocationStatus(id, status, sellerId),
+    );
+  }
+
+  // --- Boutiques (editor) ------------------------------------------------
+
+  @override
+  Future<Either<Failure, BoutiqueLanguagesResponseModel>>
+  getBoutiqueLanguages() {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getBoutiqueLanguages(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, BoutiqueLookupsResponseModel>> getBoutiqueLookups() {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getBoutiqueLookups(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, BoutiqueWriteResponseModel>> createBoutique(
+    Map<String, dynamic> params,
+    String sellerId,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.createBoutique(params, sellerId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, BoutiqueEditResponseModel>> getBoutiqueForEdit(
+    int id,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getBoutiqueForEdit(id),
+    );
+  }
+
+  @override
+  Future<Either<Failure, BoutiqueWriteResponseModel>> updateBoutique(
+    int id,
+    Map<String, dynamic> params,
+    String sellerId,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.updateBoutique(id, params, sellerId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, BoutiqueStatusResponseModel>> changeBoutiqueStatus(
+    int id,
+    int status,
+    String sellerId,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.changeBoutiqueStatus(id, status, sellerId),
     );
   }
 

@@ -31,6 +31,8 @@ import 'package:trydos/features/chat/domain/use_cases/send_error_to_server_useca
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/update_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/message_reminder_usecases.dart';
+import 'package:trydos/features/chat/domain/use_cases/archive_channel_usecase.dart';
+import 'package:trydos/features/chat/domain/use_cases/mark_chat_unread_usecase.dart';
 import 'package:trydos/features/chat/data/models/message_reminder_model.dart';
 import 'package:trydos/features/chat/domain/use_cases/share_product_on_social_app_count_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/update_profile_chat_usecase.dart';
@@ -89,6 +91,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     this.createMessageReminderUseCase,
     this.getMyRemindersUseCase,
     this.deleteMessageReminderUseCase,
+    this.archiveChannelUseCase,
+    this.markChatUnreadUseCase,
   ) : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
     on<UpdateChannelObjectFromNotificationEvent>(
@@ -115,6 +119,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<SetMessageReminderEvent>(_onSetMessageReminderEvent);
     on<CancelMessageReminderEvent>(_onCancelMessageReminderEvent);
     on<GetMyRemindersEvent>(_onGetMyRemindersEvent);
+    on<ArchiveChatEvent>(_onArchiveChatEvent);
+    on<GetArchivedChatsEvent>(_onGetArchivedChatsEvent);
+    on<MarkChatUnreadEvent>(_onMarkChatUnreadEvent);
     on<BlockOrDeleteBlockUserEvent>(_onBlockOrDeleteBlockUserEvent);
     on<ShareProductWithContactsOrChannelsEvent>(
       _onShareProductWithContactsOrChannelsEvent,
@@ -168,6 +175,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final CreateMessageReminderUseCase createMessageReminderUseCase;
   final GetMyRemindersUseCase getMyRemindersUseCase;
   final DeleteMessageReminderUseCase deleteMessageReminderUseCase;
+  final ArchiveChannelUseCase archiveChannelUseCase;
+  final MarkChatUnreadUseCase markChatUnreadUseCase;
   final GetMediaCountUseCase getMediaCountUseCase;
   final SaveContactsUseCase saveContactsUseCase;
   final GetContactsUseCase getContactsUseCase;
@@ -274,6 +283,218 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         showMessage(r.message ?? "");
       },
     );
+  }
+
+  /// يعلّم محادثة كغير مقروءة.
+  ///
+  /// عرض متفائل بـ«واحد» فوراً: العدّاد على البطاقة، ومجموع غير المقروء الذي
+  /// يظهر على أيقونة الدردشة وبجوار «المؤرشفة» — كلّها من نفس المصدر فتتحرّك
+  /// معاً في اللحظة نفسها.
+  ///
+  /// وعند النجاح نأخذ العدد **الذي أعاده الخادم** لا واحداً: المواصفة تقول
+  /// «واحد على الأقل»، فقد يعود أكبر إن كانت هناك رسائل غير مقروءة فعلاً.
+  FutureOr<void> _onMarkChatUnreadEvent(
+    MarkChatUnreadEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final String id = event.channelId;
+    // محادثة محلّية لم يؤكّدها الخادم لا عدّاد لها عنده.
+    if (int.tryParse(id) == null) return;
+
+    final List<Chat> previousChats = state.chats;
+    final List<Chat> previousPinned = state.pinnedChats;
+    final int previousUnread = state.unReadMessagesFromAllChats;
+
+    int currentOf(List<Chat> source) {
+      for (final Chat chat in source) {
+        if (chat.id == id) return chat.totalUnreadMessageCount ?? 0;
+      }
+      return 0;
+    }
+
+    final int before =
+        currentOf(state.chats) + currentOf(state.pinnedChats);
+
+    void apply(int count) {
+      List<Chat> setCount(List<Chat> source) => source
+          .map((chat) => chat.id == id
+              ? chat.copyWith(totalUnreadMessageCount: count)
+              : chat)
+          .toList();
+
+      final List<Chat> chats = setCount(state.chats);
+      final List<Chat> pinnedChats = setCount(state.pinnedChats);
+      emit(
+        state.copyWith(
+          chats: chats,
+          pinnedChats: pinnedChats,
+          // الفرق لا القيمة: المجموع يخصّ كل المحادثات، فنحرّكه بمقدار ما
+          // تغيّر في هذه وحدها.
+          unReadMessagesFromAllChats:
+              previousUnread - before + count,
+          newSortedChatsByDate: groupReceivedMessageOnDays(
+            chats: [...chats, ...pinnedChats],
+          ),
+        ),
+      );
+    }
+
+    apply(before > 0 ? before : 1);
+
+    final response = await markChatUnreadUseCase(
+      MarkChatUnreadParams(channelId: id),
+    );
+
+    response.fold(
+      (l) => emit(
+        state.copyWith(
+          chats: previousChats,
+          pinnedChats: previousPinned,
+          unReadMessagesFromAllChats: previousUnread,
+          newSortedChatsByDate: groupReceivedMessageOnDays(
+            chats: [...previousChats, ...previousPinned],
+          ),
+        ),
+      ),
+      (r) => apply(r.totalUnreadMessageCount),
+    );
+  }
+
+  /// يقلب علم الأرشفة على محادثة داخل قائمة، ويعيد القائمة بعد التعديل.
+  ///
+  /// المحادثة لا تغادر قائمتها: المؤرشفة تبقى حيث هي (`chats` أو `pinnedChats`)
+  /// ويتغيّر علمها فقط. فكل ما يبحث عنها — فتح المحادثة، البحث، ووصول رسالة
+  /// جديدة — يظل يجدها.
+  List<Chat> _chatsWithArchiveFlag(
+    List<Chat> source, {
+    required String channelId,
+    required bool archived,
+  }) {
+    return source.map((chat) {
+      if (chat.id != channelId) return chat;
+      // نحدّث المصدرين معاً: `is_archived` على القناة و`archived` على عضويّتي،
+      // لأن الشاشات القديمة ما زالت تقرأ الثاني.
+      final List<ChannelMember>? members = chat.channelMembers?.map((member) {
+        if (member.userId != _prefsRepository.myChatId) return member;
+        return member.copyWith(archived: archived ? 1 : 0);
+      }).toList();
+      return chat.copyWith(
+        isArchived: archived ? 1 : 0,
+        channelMembers: members,
+      );
+    }).toList();
+  }
+
+  /// يؤرشف محادثة أو يلغي أرشفتها.
+  ///
+  /// عرض متفائل: العلم يُقلب فوراً فتختفي المحادثة من القائمة (أو تعود إليها)
+  /// بلا انتظار، ويُعاد ما كان عند الفشل. والأرشفة فعل يتوقّع المستخدم أثره في
+  /// الحال.
+  ///
+  /// عند النجاح نعيد تطبيق ما **أعاده الخادم** لا ما طلبناه — فإن استقرّ على
+  /// قيمة أخرى تتبعها الواجهة بدل أن تكذب.
+  FutureOr<void> _onArchiveChatEvent(
+    ArchiveChatEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final List<Chat> previousChats = state.chats;
+    final List<Chat> previousPinned = state.pinnedChats;
+
+    void apply(bool archived, ArchiveChatStatus status) {
+      emit(
+        state.copyWith(
+          chats: _chatsWithArchiveFlag(
+            state.chats,
+            channelId: event.channelId,
+            archived: archived,
+          ),
+          pinnedChats: _chatsWithArchiveFlag(
+            state.pinnedChats,
+            channelId: event.channelId,
+            archived: archived,
+          ),
+          archiveChatStatus: status,
+        ),
+      );
+    }
+
+    apply(event.archived, ArchiveChatStatus.loading);
+
+    final response = await archiveChannelUseCase(
+      ArchiveChannelParams(
+        channelId: event.channelId,
+        archived: event.archived,
+      ),
+    );
+
+    response.fold(
+      (l) => emit(
+        state.copyWith(
+          chats: previousChats,
+          pinnedChats: previousPinned,
+          archiveChatStatus: ArchiveChatStatus.failure,
+        ),
+      ),
+      (r) => apply(r.archived == 1, ArchiveChatStatus.success),
+    );
+  }
+
+  /// يجلب المحادثات المؤرشفة ويدمجها في نفس قوائم الحالة.
+  ///
+  /// `my_channels` يستثني المؤرشفة افتراضياً، فبلا هذا الطلب تختفي من الحالة
+  /// بعد أوّل تحديث — ومعها تنكسر أي رسالة تصل إليها. الدمج (لا الاستبدال) هو
+  /// ما يُبقي القوائم كاملة.
+  FutureOr<void> _onGetArchivedChatsEvent(
+    GetArchivedChatsEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    if ((_prefsRepository.chatToken?.length ?? 0) < 10) return;
+
+    final response = await getMyChatsUseCase(
+      const GetMyChatsParams(limit: 50, messagesLimit: 20, archived: true),
+    );
+
+    response.fold((l) {}, (r) {
+      final List<Chat> archived = [
+        ...(r.data?.chats ?? []),
+        ...(r.data?.pinnedChats ?? []),
+      ];
+      if (archived.isEmpty) return;
+
+      // علمٌ صريح: الخادم قد لا يضع `is_archived` في هذا الرد، لكنّ كل ما فيه
+      // مؤرشف بحكم الطلب نفسه.
+      final List<Chat> incoming = archived
+          .map((chat) => chat.copyWith(isArchived: 1))
+          .toList();
+      final Set<String?> incomingIds = incoming.map((e) => e.id).toSet();
+
+      // دمج لا استبدال: تُزال النسخ القديمة لنفس المعرّفات ثم تُضاف الواردة،
+      // فلا تتكرّر محادثة ولا تُفقد غير المؤرشفة.
+      final List<Chat> chats = List.of(state.chats)
+        ..removeWhere((e) => incomingIds.contains(e.id))
+        ..addAll(incoming);
+      final List<Chat> pinnedChats = List.of(state.pinnedChats)
+        ..removeWhere((e) => incomingIds.contains(e.id));
+
+      // إعادة حساب المجموع كاملاً من القوائم بعد الدمج، لا إضافة نصيب
+      // المؤرشفة إلى الرقم السابق: إعادة تشغيل هذا الحدث مرّتين كانت ستضاعف
+      // العدّ. الحساب من الحالة لا من الردّ يجعله صحيحاً مهما تكرّر.
+      int unread = 0;
+      for (final Chat chat in [...chats, ...pinnedChats]) {
+        unread += chat.totalUnreadMessageCount ?? 0;
+      }
+
+      emit(
+        state.copyWith(
+          chats: sortChatsByTime(chats),
+          pinnedChats: pinnedChats,
+          unReadMessagesFromAllChats: unread,
+          newSortedChatsByDate: groupReceivedMessageOnDays(
+            chats: [...chats, ...pinnedChats],
+          ),
+        ),
+      );
+    });
   }
 
   /// يضبط تذكيراً على رسالة (أو يغيّر وقت تذكير قائم).
@@ -1148,6 +1369,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           }*/
 
           ErrorManager.resetRetry('GetChatsEvent');
+          // هذا الردّ يحمل غير المؤرشفة وحدها (الخادم يستثنيها)، فهذا مجموع
+          // **جزئي**. يكمله `GetArchivedChatsEvent` أدناه بإعادة الحساب على
+          // القوائم بعد دمج المؤرشفة — فالمؤرشفة تُحتسب في غير المقروء مثل أي
+          // محادثة، وتظهر على أيقونة الدردشة في الصفحة الرئيسية.
           int unReadMessagesFromAllChats = 0;
           r.data?.chats?.forEach((element) {
             unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
@@ -1185,6 +1410,21 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                     .toList()),
               ),
             );
+            // والمؤرشفة كذلك — بنفس منطق `isPrivate` أعلاه.
+            //
+            // هذا الردّ يستثنيها (الخادم يفلترها)، فاستبدال القائمة به كان
+            // يمحوها من الحالة: يختفي صفّ «المؤرشفة» عند كل عودة إلى الشاشة،
+            // ثم يعود بعد ثانية حين يردّ `GetArchivedChatsEvent`. الإبقاء
+            // عليها هنا يزيل الوميض، ويجعل الطلب الثاني **تحديثاً** لا
+            // **إحياءً**.
+            final Set<String?> incomingIds = newChats.map((e) => e.id).toSet();
+            newChats.addAll(
+              state.chats.where(
+                (element) =>
+                    element.isArchivedForMe(_prefsRepository.myChatId) &&
+                    !incomingIds.contains(element.id),
+              ),
+            );
             newPinnedChats = List.of(r.data?.pinnedChats ?? []);
           }
 
@@ -1214,6 +1454,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           devLog(e);
           devLog(st);
         }
+        // المؤرشفة تأتي بطلب ثانٍ لأن هذا الردّ لا يحويها. بلا هذا تختفي من
+        // الحالة بعد أوّل تحديث، فتنكسر أي رسالة تصل إليها ويبقى عدّاد
+        // «المؤرشفة» صفراً وإن وُجدت.
+        add(const GetArchivedChatsEvent());
         getContactsAfterSavingItAndGettingChannels();
       },
     );
@@ -2595,6 +2839,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           updateMessageStatus: UpdateMessageStatus.init,
           setMessageReminderStatus: SetMessageReminderStatus.init,
           getMyRemindersStatus: GetMyRemindersStatus.init,
+          archiveChatStatus: ArchiveChatStatus.init,
         )
         .toJson();
   }

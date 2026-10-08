@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+//import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' hide Category;
@@ -60,7 +60,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
-      log("${response.data}");
+      // log("${response.data}");
       _StatusType statusType;
       if (response.statusCode == StatusCode.operationSucceeded.code ||
           response.statusCode == StatusCode.createdSucceeded.code ||
