@@ -288,7 +288,16 @@ class _RdbPaymentDialogState extends State<RdbPaymentDialog>
           // التي تظهر عند تعديل السلة، ففيها متابعة الدفع أو إلغاؤه.
           if (state.phase == RdbPaymentPhase.blockedByPendingRequest) {
             final String? reference = RdbPendingPayment.requestReference;
-            Navigator.of(context).pop();
+            // إغلاق **هذه** النافذة تحديداً لا أعلى المكدّس: قد تكون فوقها
+            // نافذة أخرى فُتحت في هذه اللحظة، فـ`pop()` المطلق يُغلقها هي
+            // ويترك نافذة الدفع معلّقة.
+            final NavigatorState navigator = Navigator.of(context);
+            final ModalRoute<Object?>? route = ModalRoute.of(context);
+            if (route == null || route.isCurrent) {
+              navigator.pop();
+            } else {
+              navigator.removeRoute(route);
+            }
             if (reference != null) {
               showRdbCartLockedDialogGlobally(requestReference: reference);
             } else {

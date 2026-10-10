@@ -295,55 +295,46 @@ class HelperFunctions {
     devLog("📱 رقم المستخدم بدون رمز: $myPhoneNumberWithoutDial");
 
     var result = myContacts.map((e) {
-      String formattedNumber;
-      String cleanNumber = e.phones.first.number;
+      // كل ما ليس رقماً أو `+` تنسيقٌ يُحذف. و`+` **تبقى**: هي العلامة الوحيدة
+      // التي تقول إن الرقم دولي، وحذفها هو ما كان يُجبر الكود على التخمين.
+      final String raw = e.phones.first.number.replaceAll(
+        RegExp(r'[^0-9+]'),
+        '',
+      );
 
-      // إزالة جميع الرموز والمسافات من الرقم
-      cleanNumber = cleanNumber
-          .replaceAll('-', '')
-          .replaceAll(' ', '')
-          .replaceAll('(', '')
-          .replaceAll(')', '')
-          .replaceAll('+', '')
-          .replaceAll('.', '');
-
-      // إذا كان الرقم يبدأ بـ 00 (رمز الاتصال الدولي)، أضف +
-      if (cleanNumber.startsWith('00')) {
-        cleanNumber = '+' + cleanNumber.substring(2);
-      }
-      // إزالة الأصفار من بداية الرقم (بعد معالجة 00)
-      else if (cleanNumber.startsWith('0')) {
-        while (cleanNumber.startsWith('0')) {
-          cleanNumber = cleanNumber.substring(1);
-        }
-        cleanNumber = dialCode + cleanNumber;
-      }
-
-      devLog("🧹 تنظيف الرقم: ${e.phones.first.number} -> $cleanNumber");
-
-      if (!cleanNumber.contains('+')) {
-        int countryIndex = countries.indexWhere(
-          (element) =>
-              element.dialCode.length > 1 &&
-              cleanNumber.startsWith(element.dialCode.substring(1)),
-        );
-        if (countryIndex == -1) {
-          formattedNumber = dialCode + cleanNumber;
-          devLog("➕ إضافة رمز الدولة: $cleanNumber -> $formattedNumber");
-        } else {
-          formattedNumber = '+$cleanNumber';
-          devLog("✅ رقم مع رمز: $cleanNumber -> $formattedNumber");
-        }
+      final String formattedNumber;
+      if (raw.startsWith('+')) {
+        // دولي صريح.
+        formattedNumber = raw;
+      } else if (raw.startsWith('00')) {
+        // دولي صريح بالصيغة الأخرى.
+        formattedNumber = '+${raw.substring(2)}';
       } else {
-        formattedNumber = cleanNumber;
-        devLog("✅ رقم موجود: $formattedNumber");
+        // لا علامة دولية: الرقم **محلي**، فيُنسب إلى بلد صاحب الجهاز.
+        //
+        // الكود السابق كان يبحث عن أي دولة رمزُها يطابق بداية الرقم، فرقمٌ
+        // محلي يبدأ بـ `91` يصير `+91…` (الهند) و`1` يصير `+1…` (أمريكا).
+        // وهذا لا يُنتج رقماً خاطئاً فحسب، بل قد يطابق **مشتركاً حقيقياً
+        // آخر** على الخادم، فيظهر في جهات اتصالك شخصٌ لا تعرفه.
+        String local = raw;
+        while (local.startsWith('0')) {
+          local = local.substring(1);
+        }
+        formattedNumber = local.isEmpty ? '' : '$dialCode$local';
       }
+
+      devLog("🧹 ${e.phones.first.number} -> $formattedNumber");
 
       return {
         "mobile_phone": formattedNumber,
-        "name": e.displayName != "" ? e.displayName : "No Number",
+        // الاسم المعروض في دفتر الهاتف كما هو. جهةٌ بلا اسم تُرسل بسلسلة
+        // فارغة — لا بنصّ ثابت يظهر للمستخدم كأنه اسم.
+        "name": e.displayName,
       };
     }).toList();
+
+    // رقم فارغ بعد التنظيف لا يطابق أحداً، وإرساله ضجيج على الخادم.
+    result.removeWhere((element) => (element['mobile_phone'] ?? '').isEmpty);
 
     devLog("📋 قبل الاستبعاد: ${result.length}");
 
@@ -360,6 +351,33 @@ class HelperFunctions {
     devLog("✅ النتيجة النهائية: ${result.length}");
     GetIt.I<PrefsRepository>().setContactDetails(contactDetails);
     return result;
+  }
+
+  /// صيغ الفيديو التي يشغّلها نظاما التشغيل.
+  ///
+  /// التطبيق يعتمد `video_player` وحدها، وهي غلافٌ فوق مشغّل النظام:
+  /// `ExoPlayer/media3` على أندرويد و`AVFoundation` على iOS. و`AVFoundation`
+  /// لا تدعم `avi` ولا `mkv` ولا `wmv` ولا `flv` إطلاقاً، وأندرويد قد يقرأ
+  /// الحاوية لكنه يعجز غالباً عن فكّ ترميزها (DivX/Xvid/MJPEG).
+  ///
+  /// لذا نمنعها قبل الرفع: الملف كان يُرسَل بنجاح ثم يفشل تشغيله عند الطرفين،
+  /// وهو أسوأ من المنع لأن الرسالة تبدو ناجحة.
+  static const Set<String> supportedVideoExtensions = {
+    'mp4',
+    'mov',
+    'm4v',
+    '3gp',
+  };
+
+  /// هل امتداد هذا الملف من الصيغ التي تُشغَّل؟
+  ///
+  /// المقارنة بأحرف صغيرة: `AVI` و`avi` و`Avi` سواء — ونظام الملفات على
+  /// أندرويد حسّاس لحالة الأحرف فلا يكفي امتدادٌ واحد.
+  static bool isSupportedVideoFile(String path) {
+    final int dot = path.lastIndexOf('.');
+    if (dot == -1 || dot == path.length - 1) return false;
+    final String extension = path.substring(dot + 1).toLowerCase();
+    return supportedVideoExtensions.contains(extension);
   }
 
   static Future<AssetEntity?> getAssetFromGallery(BuildContext context) async {

@@ -102,6 +102,42 @@ class _SinglePageChatState extends State<SinglePageChat> {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   late ChatBloc chatBloc;
 
+  /// تهدئة البحث داخل المحادثة.
+  ///
+  /// `onChange` يُستدعى مع **كل حرف**، وكان كلٌّ منها يُطلق طلب شبكة إلى
+  /// `channelSearch`: كلمة من ستة أحرف = ستة طلبات، خمسة منها نتائجها لا تُعرض
+  /// أصلاً لأن حارس `currentRequestIdForAvoidPreRequest` في البلوك يُسقط ردّ
+  /// الطلب القديم. فالتهدئة توقف الحِمل الضائع ولا تغيّر ما يراه المستخدم.
+  Timer? _searchDebounce;
+
+  /// هل شريط البحث ظاهر؟
+  ///
+  /// يبدأ من `widget.fromSearch` ثم يصير قابلاً للإغلاق بزرّ ✕. حقل الـwidget
+  /// نفسه ثابت (`final`) فلا يصلح لحمل حالة تتغيّر.
+  late bool _searchOpen = widget.fromSearch ?? false;
+
+  /// يغلق البحث ويعيد المحادثة إلى حالتها الطبيعية.
+  void _closeSearch() {
+    _searchDebounce?.cancel();
+    controller.clear();
+    chatBloc.add(
+      SearchTextInChatEvent(
+        channel_id: widget.chatId,
+        searchText: "",
+        clearSearch: true,
+      ),
+    );
+    FocusScope.of(context).unfocus();
+    setState(() => _searchOpen = false);
+    // بعد الإغلاق نعود إلى آخر الرسائل: المستخدم قد يكون وسط المحادثة عند
+    // نتيجة بحث، وتركُه هناك بلا سياق بحث يُربك.
+    try {
+      _scrollToBottom();
+    } catch (e) {
+      devLog('single_page_chat.dart: ignored error', e);
+    }
+  }
+
   final ValueNotifier<int> rebuildMessage = ValueNotifier(-1);
   final ValueNotifier<int> currentFocusedIcon = ValueNotifier(-2);
 
@@ -308,6 +344,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     chatBloc.add(
       const AddUserConntctSatuseEvent(userConnectedStatuse: " ", chatId: " "),
     );
+    _searchDebounce?.cancel();
     autoScrollController.dispose();
     _audioPlayer.dispose();
     super.dispose();
@@ -389,7 +426,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         backgroundColor: const Color(0xffEBFFF8),
         resizeToAvoidBottomInset: true,
         appBar: TrydosAppBar(
-          heightAppBar: (widget.fromSearch ?? false) ? 120 : 56,
+          heightAppBar: _searchOpen ? 120 : 56,
           appBarParams: AppBarParams(
             hasLeading: false,
             surfaceTintColor: Colors.transparent,
@@ -875,7 +912,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       20.horizontalSpace,
                     ],
                   ),
-                  if ((widget.fromSearch ?? false)) ...{
+                  if (_searchOpen) ...{
                     const SizedBox(height: 5),
                     ValueListenableBuilder<Map<String, int>>(
                       valueListenable: currentIndextForEachMessage,
@@ -927,7 +964,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                     roundingCornersValue: 30,
                                     controller: controller,
                                     onChange: (String text) {
-                                      if (text.length == 0) {
+                                      _searchDebounce?.cancel();
+                                      if (text.isEmpty) {
+                                        // المسح فوري بلا تهدئة: إخفاء النتائج
+                                        // ردُّ فعلٍ على فعل المستخدم لا طلب
+                                        // شبكة، وتأخيره يُبقي نتائج ميّتة على
+                                        // الشاشة.
                                         rebuildForScrollFirstWord = false;
                                         chatBloc.add(
                                           SearchTextInChatEvent(
@@ -936,17 +978,22 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                             clearSearch: true,
                                           ),
                                         );
+                                        return;
                                       }
-                                      if (text.length > 0) {
-                                        rebuildForScrollFirstWord = true;
-                                        chatBloc.add(
-                                          SearchTextInChatEvent(
-                                            channel_id: widget.chatId,
-                                            searchText: text,
-                                          ),
-                                        );
-                                        indexForEveryTextInSearchResult = 0;
-                                      }
+                                      rebuildForScrollFirstWord = true;
+                                      indexForEveryTextInSearchResult = 0;
+                                      _searchDebounce = Timer(
+                                        const Duration(milliseconds: 400),
+                                        () {
+                                          if (!mounted) return;
+                                          chatBloc.add(
+                                            SearchTextInChatEvent(
+                                              channel_id: widget.chatId,
+                                              searchText: text,
+                                            ),
+                                          );
+                                        },
+                                      );
                                     },
                                     textStyle: context.textTheme.titleMedium?.lq
                                         .copyWith(
@@ -981,64 +1028,76 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                 GetMessagesBetweenStatus.loading
                                         ? const LoadingIndicator()
                                         : const SizedBox.shrink(),
-                                    suffixIcon:
-                                        (state
-                                                        .resultOfSearchTextInChat
-                                                        ?.paginationStatus ==
-                                                    PaginationStatus.loading &&
-                                                state
-                                                    .resultOfSearchTextInChat!
-                                                    .items
-                                                    .isEmpty) ||
-                                            state.getMessagesBetweenStatus ==
-                                                GetMessagesBetweenStatus.loading
-                                        ? const SizedBox.shrink()
-                                        : Container(
-                                            height: 15,
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                IconButton(
-                                                  onPressed: () {
-                                                    if (indexForEveryTextInSearchResult >
-                                                        0) {
-                                                      indexForEveryTextInSearchResult =
-                                                          indexForEveryTextInSearchResult -
-                                                          1;
-                                                    }
+                                    suffixIcon: Container(
+                                      height: 15,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          // سهما التنقّل بين النتائج
+                                          // يختفيان أثناء التحميل — لا
+                                          // نتائج بعدُ للتنقّل بينها.
+                                          // أمّا ✕ فتبقى دائماً: إغلاق
+                                          // البحث لا يتوقّف على حالته،
+                                          // والتحميل هو أكثر لحظة قد
+                                          // يريد المستخدم الخروج فيها.
+                                          if (!((state
+                                                          .resultOfSearchTextInChat
+                                                          ?.paginationStatus ==
+                                                      PaginationStatus
+                                                          .loading &&
+                                                  state
+                                                      .resultOfSearchTextInChat!
+                                                      .items
+                                                      .isEmpty) ||
+                                              state.getMessagesBetweenStatus ==
+                                                  GetMessagesBetweenStatus
+                                                      .loading)) ...[
+                                            IconButton(
+                                              onPressed: () {
+                                                if (indexForEveryTextInSearchResult >
+                                                    0) {
+                                                  indexForEveryTextInSearchResult =
+                                                      indexForEveryTextInSearchResult -
+                                                      1;
+                                                }
 
-                                                    scrollToIndex(
-                                                      currentIndextForMessages[searchResults[indexForEveryTextInSearchResult]] ??
-                                                          -1,
-                                                      currentId:
-                                                          currentIndextForMessages
-                                                              .keys
-                                                              .first,
-                                                      forSearchText: true,
-                                                      parentMessageId:
-                                                          searchResults[indexForEveryTextInSearchResult],
-                                                    );
-                                                  },
-                                                  icon: const Icon(
-                                                    Icons.arrow_downward,
-                                                  ),
-                                                ),
-                                                IconButton(
-                                                  onPressed: () {
-                                                    MoveToUpToScrollSearch(
-                                                      state
-                                                          .resultOfSearchTextInChat!
-                                                          .paginationStatus,
-                                                      currentIndextForMessages,
-                                                    );
-                                                  },
-                                                  icon: const Icon(
-                                                    Icons.arrow_upward,
-                                                  ),
-                                                ),
-                                              ],
+                                                scrollToIndex(
+                                                  currentIndextForMessages[searchResults[indexForEveryTextInSearchResult]] ??
+                                                      -1,
+                                                  currentId:
+                                                      currentIndextForMessages
+                                                          .keys
+                                                          .first,
+                                                  forSearchText: true,
+                                                  parentMessageId:
+                                                      searchResults[indexForEveryTextInSearchResult],
+                                                );
+                                              },
+                                              icon: const Icon(
+                                                Icons.arrow_downward,
+                                              ),
                                             ),
+                                            IconButton(
+                                              onPressed: () {
+                                                MoveToUpToScrollSearch(
+                                                  state
+                                                      .resultOfSearchTextInChat!
+                                                      .paginationStatus,
+                                                  currentIndextForMessages,
+                                                );
+                                              },
+                                              icon: const Icon(
+                                                Icons.arrow_upward,
+                                              ),
+                                            ),
+                                          ],
+                                          IconButton(
+                                            onPressed: _closeSearch,
+                                            icon: const Icon(Icons.close),
                                           ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -2291,6 +2350,20 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               senderName: widget.senderName,
                               senderUserImage: widget.senderPhoto,
                               onSendFile: (File file, String customPathType) {
+                                // صيغ فيديو لا يشغّلها النظام: تُمنع هنا قبل
+                                // الرفع. وبلا هذا يُرسَل الملف بنجاح ويفشل
+                                // تشغيله عند الطرفين معاً — وعدٌ كاذب أسوأ من
+                                // المنع.
+                                if (customPathType == 'video' &&
+                                    !HelperFunctions.isSupportedVideoFile(
+                                      file.path,
+                                    )) {
+                                  showWarningMessage(
+                                    context,
+                                    LocaleKeys.unsupported_video_format.tr(),
+                                  );
+                                  return;
+                                }
                                 String id = const Uuid().v4();
                                 FileSaving().saveFileToSpecificDirectory(file);
                                 ChannelMember? member =
@@ -2503,11 +2576,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   void _reminderDialog(Message message) {
     final String? id = message.id?.toString();
     if (id == null || int.tryParse(id) == null) return;
-    showMessageReminderDialog(
-      context,
-      messageId: id,
-      channelId: widget.chatId,
-    );
+    showMessageReminderDialog(context, messageId: id, channelId: widget.chatId);
   }
 
   /// يفتح نافذة تعديل النص.

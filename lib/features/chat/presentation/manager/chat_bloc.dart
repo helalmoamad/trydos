@@ -33,6 +33,7 @@ import 'package:trydos/features/chat/domain/use_cases/update_message_usecase.dar
 import 'package:trydos/features/chat/domain/use_cases/message_reminder_usecases.dart';
 import 'package:trydos/features/chat/domain/use_cases/archive_channel_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/mark_chat_unread_usecase.dart';
+import 'package:trydos/features/app/blocs/sensitive_connectivity/sensitive_connectivity_bloc.dart';
 import 'package:trydos/features/chat/data/models/message_reminder_model.dart';
 import 'package:trydos/features/chat/domain/use_cases/share_product_on_social_app_count_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/update_profile_chat_usecase.dart';
@@ -214,6 +215,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         currentFailedMessage: [],
         chats: [],
         pinnedChats: [],
+        // جهات الاتصال والتذكيرات بيانات **شخصية** بقدر المحادثات.
+        //
+        // `ChatBloc` مسجَّل `lazySingleton` فلا يُغلق ولا يُعاد إنشاؤه، وحالته
+        // في الذاكرة تبقى حيّة بعد الخروج. ومسار الخروج يمسح تخزين
+        // `hydrated_bloc` على القرص ثم يطلق هذا الحدث — فما لا يُصفَّر هنا
+        // يبقى معروضاً للحساب التالي، ثم يُعاد كتابته على القرص مع أوّل حفظ
+        // للحالة. وهذا سبب ظهور جهات اتصال حساب آخر على الجهاز نفسه.
+        contacts: [],
+        reminders: [],
         createAnewChat: false,
       ),
     );
@@ -312,14 +322,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       return 0;
     }
 
-    final int before =
-        currentOf(state.chats) + currentOf(state.pinnedChats);
+    final int before = currentOf(state.chats) + currentOf(state.pinnedChats);
 
     void apply(int count) {
       List<Chat> setCount(List<Chat> source) => source
-          .map((chat) => chat.id == id
-              ? chat.copyWith(totalUnreadMessageCount: count)
-              : chat)
+          .map(
+            (chat) => chat.id == id
+                ? chat.copyWith(totalUnreadMessageCount: count)
+                : chat,
+          )
           .toList();
 
       final List<Chat> chats = setCount(state.chats);
@@ -330,8 +341,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           pinnedChats: pinnedChats,
           // الفرق لا القيمة: المجموع يخصّ كل المحادثات، فنحرّكه بمقدار ما
           // تغيّر في هذه وحدها.
-          unReadMessagesFromAllChats:
-              previousUnread - before + count,
+          unReadMessagesFromAllChats: previousUnread - before + count,
           newSortedChatsByDate: groupReceivedMessageOnDays(
             chats: [...chats, ...pinnedChats],
           ),
@@ -507,7 +517,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     emit(
-      state.copyWith(setMessageReminderStatus: SetMessageReminderStatus.loading),
+      state.copyWith(
+        setMessageReminderStatus: SetMessageReminderStatus.loading,
+      ),
     );
 
     final response = await createMessageReminderUseCase(
@@ -809,7 +821,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     String? parentMessageId;
     if (kDebugMode)
       if (kDebugMode)
-        devLog("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD******///${chats[0].id}");
+        devLog(
+          "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD******///${chats[0].id}",
+        );
     if (kDebugMode)
       if (kDebugMode)
         devLog(
@@ -945,6 +959,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     );
     response.fold(
       (l) {
+        // فشل الإرسال: إن كان السبب انقطاع الشبكة تظهر نفس رسالة الانقطاع
+        // التي يعرضها مراقب الشبكة. بلا `await` — المستخدم لا ينتظر تنبيهاً.
+        showNoInternetMessageIfOffline();
         List<String> currentFailedMessage = List.of(state.currentFailedMessage);
         ids.remove(event.messageId);
         currentFailedMessage.add(event.messageId);
@@ -1173,6 +1190,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     );
     response.fold(
       (l) {
+        showNoInternetMessageIfOffline();
         List<String> currentFailedMessage = List.of(state.currentFailedMessage);
         ids.remove(messageId);
         currentFailedMessage.add(messageId);
@@ -1781,6 +1799,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     // }
     response.fold(
       (l) {
+        showNoInternetMessageIfOffline();
         List<String> currentFailedMessage = List.of(state.currentFailedMessage);
         List<String> currentFailedMediaMessage = List.of(
           state.currentFailedMediaMessage,
@@ -2301,7 +2320,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     final response = await changeChatPropertyUseCase(
       ChangeChatPropertyParams(
         channelId: event.channelId,
+        memberId: event.memberId,
         mute: event.mute,
+        userId: event.userId,
         pin: event.pin,
         archive: event.archive,
       ),
@@ -2469,9 +2490,25 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       null,
       event.watchedAt,
     );
+    // `ChannelWatchedEvent` يصل في حالتين مختلفتين تماماً:
+    //
+    // * **الطرف الآخر قرأ رسالتي** — لا علاقة لذلك بعدد رسائلي غير المقروءة،
+    //   فلا يُمسّ العدّاد. وإنقاصه هنا كان الخلل: كل إشعار قراءة يَخصم واحداً
+    //   من عدّادك، فينزلق إلى السالب، فتصل رسالة جديدة فتزيده من `-1` إلى `0`
+    //   — وشرط عرض الشارة `> 0` فلا يظهر شيء.
+    // * **أنا قرأتها من جهاز آخر** — هنا الإنقاص صحيح.
+    //
+    // و`clamp` عند الصفر حماية لازمة في الحالتين: عدّاد غير المقروء لا يكون
+    // سالباً بأي حال.
+    final bool watchedByMe = event.userId == _prefsRepository.myChatId;
+    final int previousUnread = state.unReadMessagesFromAllChats;
+    final int nextUnread = watchedByMe
+        ? (previousUnread > 0 ? previousUnread - 1 : 0)
+        : (previousUnread > 0 ? previousUnread : 0);
+
     emit(
       state.copyWith(
-        unReadMessagesFromAllChats: state.unReadMessagesFromAllChats - 1,
+        unReadMessagesFromAllChats: nextUnread,
         chats: chats,
         newSortedChatsByDate: groupReceivedMessageOnDays(
           chats: [...chats, ...pinnedChats],
@@ -2502,10 +2539,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             "-1"
         ? chats.map((e) {
             if (e.id == channelId) {
+              // نفس قاعدة العدّاد العام أعلاه: لا يُنقَص إلّا إذا كان القارئ
+              // أنا (من جهاز آخر)، ولا ينزل تحت الصفر أبداً.
+              final int currentUnread = e.totalUnreadMessageCount ?? 0;
+              final bool watchedByMe =
+                  watched != null && userId == _prefsRepository.myChatId;
               return e.copyWith(
-                totalUnreadMessageCount: watched != null
-                    ? (e.totalUnreadMessageCount ?? 1) - 1
-                    : e.totalUnreadMessageCount,
+                totalUnreadMessageCount: watchedByMe
+                    ? (currentUnread > 0 ? currentUnread - 1 : 0)
+                    : (currentUnread > 0 ? currentUnread : 0),
                 messages: (e.messages ?? []).map((m) {
                   return m.copyWith(
                     messageStatus: (m.messageStatus ?? []).map((s) {
@@ -2799,8 +2841,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   List<Chat> _trimPersistedMessages(List<Chat> chats) {
     return chats.map((Chat chat) {
       final List<Message>? messages = chat.messages;
-      if (messages == null ||
-          messages.length <= _maxPersistedMessagesPerChat) {
+      if (messages == null || messages.length <= _maxPersistedMessagesPerChat) {
         return chat;
       }
       return chat.copyWith(

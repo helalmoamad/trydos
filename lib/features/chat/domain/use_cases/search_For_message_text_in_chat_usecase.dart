@@ -8,15 +8,20 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class SearchForMessageTextInChatUseCase extends UseCase<
-    ResultOfSearchTextInChatModel, SearchForMessageTextInChatParams> {
+class SearchForMessageTextInChatUseCase
+    extends
+        UseCase<
+          ResultOfSearchTextInChatModel,
+          SearchForMessageTextInChatParams
+        > {
   final ChatRepository repository;
 
   SearchForMessageTextInChatUseCase(this.repository);
 
   @override
   Future<Either<Failure, ResultOfSearchTextInChatModel>> call(
-      SearchForMessageTextInChatParams params) {
+    SearchForMessageTextInChatParams params,
+  ) {
     return repository.searchForMessageTextInChat(params.map);
   }
 }
@@ -26,14 +31,15 @@ class SearchForMessageTextInChatParams {
   String searchText;
   String offset;
 
-  SearchForMessageTextInChatParams(
-      {required this.searchText,
-      required this.channeltId,
-      required this.offset});
+  SearchForMessageTextInChatParams({
+    required this.searchText,
+    required this.channeltId,
+    required this.offset,
+  });
   Map<String, dynamic> get map => {
-        "channel_id": channeltId,
-        "query": searchText,
-        "limit": 10,
-        "offset": offset
-      };
+    "channel_id": channeltId,
+    "query": searchText,
+    "limit": 100,
+    "offset": 0,
+  };
 }
