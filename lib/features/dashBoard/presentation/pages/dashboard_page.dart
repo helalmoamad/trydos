@@ -1522,6 +1522,7 @@ import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/data/models/get_shop_locations_model.dart';
 import '../widgets/display_text_sanitizer.dart';
 import '../widgets/location_form_sheet.dart';
+import 'boutique/boutique_editor_page.dart';
 
 /// -----------------------------------------------------------------------
 /// MAIN DASHBOARD PAGE
@@ -1571,8 +1572,14 @@ class _DashboardPageState extends State<DashboardPage> {
   void _loadDataFor(int index) {
     if (index == 0 && widget.canGetProducts) {
       _dashboardBloc.add(GetProductsEvent());
-    } else if (index == 1 && widget.canGetBoutiques) {
-      _dashboardBloc.add(GetBoutiquesEvent());
+    } else if (index == 1) {
+      // The clear always runs, so another shop's list is never shown; only
+      // the load is gated (AC-3, AC-5). A create-only member sees the empty
+      // state with Add instead of a refused list call.
+      _dashboardBloc.add(ClearBoutiquesEvent());
+      if (widget.canGetBoutiques && _permissionChecker.canReadBoutiques()) {
+        _dashboardBloc.add(GetBoutiquesEvent());
+      }
     } else if (index == 2 && widget.canGetOrders) {
       _dashboardBloc.add(NewGetOrdersEvent());
     } else if (index == 4 && widget.canAddUser) {
@@ -1889,6 +1896,8 @@ class DashboardContentPage extends StatefulWidget {
 
 class _DashboardContentPageState extends State<DashboardContentPage> {
   late DashboardBloc _dashboardBloc;
+  late final DashboardPermissionChecker _permissionChecker =
+      DashboardPermissionChecker(widget.permissions);
   final ValueNotifier<ConstOrderStatus> currentStatusOfOrder = ValueNotifier(
     ConstOrderStatus.all,
   );
@@ -1999,7 +2008,30 @@ class _DashboardContentPageState extends State<DashboardContentPage> {
     );
   }
 
+  /// Opens the New Boutique page ([boutiqueId] `null`) or a boutique's page.
+  /// The page returns `true` when it created or saved something; the list is
+  /// then reloaded from the first page (AC-37).
+  Future<void> _openBoutiqueEditor({int? boutiqueId}) async {
+    final bool? changed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BoutiqueEditorPage(
+          boutiqueId: boutiqueId,
+          permissions: widget.permissions,
+        ),
+      ),
+    );
+    if (!mounted || changed != true) return;
+    if (_permissionChecker.canReadBoutiques()) {
+      _dashboardBloc.add(GetBoutiquesEvent()); // page 1
+    }
+  }
+
   Widget _buildBoutiquesTab() {
+    final bool canRead = _permissionChecker.canReadBoutiques();
+    final bool canCreate = _permissionChecker.canCreateBoutique();
+    final bool canUpdate = _permissionChecker.canUpdateBoutique();
+
     return BlocBuilder<DashboardBloc, DashBoardState>(
       buildWhen: (previous, current) =>
           previous.getBoutiquesStatus != current.getBoutiquesStatus ||
@@ -2007,7 +2039,11 @@ class _DashboardContentPageState extends State<DashboardContentPage> {
           previous.boutiquesMeta?.currentPage !=
               current.boutiquesMeta?.currentPage,
       builder: (context, state) {
-        if (state.getBoutiquesStatus == GetBoutiquesStatus.loading &&
+        // `init` follows the clear on tab open; showing the spinner then keeps
+        // the empty state from flashing before the load starts.
+        if (canRead &&
+            (state.getBoutiquesStatus == GetBoutiquesStatus.loading ||
+                state.getBoutiquesStatus == GetBoutiquesStatus.init) &&
             (state.boutiques?.length ?? 0) == 0) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -2027,9 +2063,15 @@ class _DashboardContentPageState extends State<DashboardContentPage> {
                   BoutiquesGridWidget(
                     boutiques: state.boutiques!,
                     meta: state.boutiquesMeta,
-                    onAddBoutique: () {
-                      // TODO: Add onAddBoutique callback
-                    },
+                    onAddBoutique: canCreate
+                        ? () => _openBoutiqueEditor()
+                        : null,
+                    onBoutiqueTap: canUpdate
+                        ? (boutique) {
+                            final int? id = boutique.id;
+                            if (id != null) _openBoutiqueEditor(boutiqueId: id);
+                          }
+                        : null,
                     onPageChanged: (page) {
                       _dashboardBloc.add(GetBoutiquesEvent(page: page));
                     },
@@ -2049,8 +2091,8 @@ class _DashboardContentPageState extends State<DashboardContentPage> {
         return EmptyStateWidget(
           message: LocaleKeys.no_boutiques_found.tr(),
           icon: Icons.store_outlined,
-          actionText: LocaleKeys.add_boutique.tr(),
-          // TODO: Add onActionPressed callback
+          actionText: canCreate ? LocaleKeys.boutique_add_first.tr() : null,
+          onActionPressed: canCreate ? () => _openBoutiqueEditor() : null,
         );
       },
     );

@@ -11,8 +11,10 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
-import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
+import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
+    hide Icon;
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
@@ -283,7 +285,7 @@ class _ProductCollectionInCartPage1State
                                 color: const Color(0x707070),
                               ),
                               width: 110.w,
-                              height: 130.h,
+                              height: 160.h,
                               child: ProductDetailsImageWidget(
                                 withInnerShadow: false,
                                 imageFit: BoxFit.cover,
@@ -292,7 +294,7 @@ class _ProductCollectionInCartPage1State
                                     ? oldCartCollection![index].image
                                     : cartCollection![index].image,
                                 width: 116.w,
-                                height: 150.h,
+                                height: 170.h,
                                 radius: 15.r,
                               ),
                             ),
@@ -324,12 +326,16 @@ class _ProductCollectionInCartPage1State
                                             )
                                           : const SizedBox.shrink()
                                     : cartCollection![index].brand != null
-                                    ? SvgPicture.network(
-                                        cartCollection[index]
+                                    ? MyCachedNetworkImage(
+                                        imageUrl:
+                                            cartCollection[index]
                                                 .brand!
                                                 .icon
                                                 ?.filePath ??
                                             "",
+                                        height: 15.h,
+                                        width: 40.h,
+                                        imageFit: BoxFit.contain,
                                       )
                                     : const SizedBox.shrink()),
                               ),
@@ -738,7 +744,53 @@ class _ProductCollectionInCartPage1State
                                         ],
                                       ),
                                     ),
-                              const SizedBox(height: 14),
+                              SizedBox(height: 2.h),
+                              !isOldCart &&
+                                      (cartCollection![index].isActive ==
+                                              false ||
+                                          (cartCollection[index]
+                                                  .checkAvailability ==
+                                              false) ||
+                                          cartCollection[index]
+                                                  .isCountryRestricted ==
+                                              true)
+                                  ? Container(
+                                      width: 200.w,
+                                      height: 17.h,
+
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "التوفر : غير متوفر  في بلدك",
+                                            style: context
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.lq
+                                                .copyWith(
+                                                  fontSize: 13.sp,
+                                                  color: const Color.fromARGB(
+                                                    255,
+                                                    235,
+                                                    120,
+                                                    120,
+                                                  ),
+                                                  letterSpacing: 0.18,
+                                                  height: 1.1,
+                                                ),
+                                          ),
+                                          SizedBox(width: 5.w),
+                                          Icon(
+                                            Icons.warning,
+                                            color: Colors.red,
+                                            size: 12.w,
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : const SizedBox(height: 14),
+
                               Container(
                                 margin: EdgeInsets.only(
                                   left: LanguageService.languageCode == "ar"
@@ -749,9 +801,8 @@ class _ProductCollectionInCartPage1State
                                       : 10.w,
                                 ),
                                 height: 32.h,
+                                width: 250.w,
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Container(
                                       width: 70.w,
@@ -1236,7 +1287,7 @@ class _ProductCollectionInCartPage1State
                                                       .spaceBetween,
                                             ),
                                     ),
-                                    SizedBox(width: 15.w),
+                                    const Spacer(),
                                     Container(
                                       margin: EdgeInsets.symmetric(
                                         horizontal: 5.w,
@@ -1968,47 +2019,7 @@ class _ProductCollectionInCartPage1State
                         ),
 
                         ///////////////////////
-                        !isOldCart &&
-                                (cartCollection![index].isActive == false ||
-                                    (cartCollection[index].checkAvailability ==
-                                        false) ||
-                                    cartCollection[index].isCountryRestricted ==
-                                        true)
-                            ? Positioned(
-                                top: 0,
-                                right: LanguageService.languageCode != "ar"
-                                    ? null
-                                    : 0,
-                                left: LanguageService.languageCode != "ar"
-                                    ? 0
-                                    : null,
-                                child: Container(
-                                  width: 100.w,
-                                  height: 30.h,
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(255, 0, 0, 0),
-                                    borderRadius: BorderRadius.circular(10.h),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      " ${LocaleKeys.unavailable.tr()}",
-                                      style: context.textTheme.bodyMedium?.lq
-                                          .copyWith(
-                                            fontSize: 13.sp,
-                                            color: const Color.fromARGB(
-                                              255,
-                                              255,
-                                              255,
-                                              255,
-                                            ),
-                                            letterSpacing: 0.18,
-                                            height: 1.1,
-                                          ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : const SizedBox.shrink(),
+
                         // Positioned(
                         //   top: 5,
                         //   right:

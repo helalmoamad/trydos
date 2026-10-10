@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
+import 'package:trydos/features/dashBoard/data/models/boutique_edit_model.dart';
 import 'package:trydos/features/dashBoard/data/models/GetGalleryImagesModel.dart';
 import 'package:trydos/features/dashBoard/data/models/GetShopInfoModel.dart';
 import 'package:trydos/features/dashBoard/data/models/UploadedExcelFileModel.dart';
@@ -121,6 +122,35 @@ abstract class DashBoardRepository {
 
   Future<Either<Failure, ChangeLocationStatusResponseModel>>
   changeShopLocationStatus(int id, int status, String? sellerId);
+
+  // --- Boutiques (editor) ------------------------------------------------
+  //
+  // Writes take a non-null shop id: the use cases refuse to call these with an
+  // empty one, so no write can fall back to the prefs shop.
+
+  Future<Either<Failure, BoutiqueLanguagesResponseModel>>
+  getBoutiqueLanguages();
+
+  Future<Either<Failure, BoutiqueLookupsResponseModel>> getBoutiqueLookups();
+
+  Future<Either<Failure, BoutiqueWriteResponseModel>> createBoutique(
+    Map<String, dynamic> params,
+    String sellerId,
+  );
+
+  Future<Either<Failure, BoutiqueEditResponseModel>> getBoutiqueForEdit(int id);
+
+  Future<Either<Failure, BoutiqueWriteResponseModel>> updateBoutique(
+    int id,
+    Map<String, dynamic> params,
+    String sellerId,
+  );
+
+  Future<Either<Failure, BoutiqueStatusResponseModel>> changeBoutiqueStatus(
+    int id,
+    int status,
+    String sellerId,
+  );
 
   // --- Customer comments -------------------------------------------------
   // Four calls on the web server with the market token. The shop id is passed

@@ -19,12 +19,53 @@ class DashboardPermissionChecker {
         permissions.contains(DashBoardPermission.READ_PRODUCTS.value);
   }
 
+  // --- Boutiques ---------------------------------------------------------
+  //
+  // The tab follows the website: it shows for **any** boutique permission
+  // (AC-5), so a member who may only create still reaches the Add button.
+  // Each action then has its own check, read through these methods and never
+  // as a loose string compare at a call site. Hidden controls are UX only —
+  // the backend answers 403 for anything the member may not do (AC-10).
+
   /// Check if user can see Boutiques tab
-  /// Returns true if user has SUPER_ADMIN, READ_BOUTIQUES, or READ_BUTIKS permission
+  /// Returns true if user has SUPER_ADMIN or any of the six boutique
+  /// permissions
   bool canSeeBoutiques() {
     return isSuperAdmin ||
         permissions.contains(DashBoardPermission.READ_BOUTIQUES.value) ||
+        permissions.contains(DashBoardPermission.READ_BUTIKS.value) ||
+        permissions.contains(DashBoardPermission.CREATE_BUTIKS.value) ||
+        permissions.contains(DashBoardPermission.UPDATE_BUTIKS.value) ||
+        permissions.contains(DashBoardPermission.CHANGE_BOUTIQUE_STATUS.value) ||
+        permissions.contains(DashBoardPermission.DELETE_BUTIKS.value);
+  }
+
+  /// Load the list. Without it the tab shows the empty state (with Add when
+  /// [canCreateBoutique]) instead of calling a list it would be refused.
+  bool canReadBoutiques() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.READ_BOUTIQUES.value) ||
         permissions.contains(DashBoardPermission.READ_BUTIKS.value);
+  }
+
+  /// Show **+ Add Boutique** and the empty state's add action (AC-6).
+  bool canCreateBoutique() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.CREATE_BUTIKS.value);
+  }
+
+  /// Open a boutique, and show **Edit** / **Save Changes** (AC-7, AC-8). The
+  /// boutique page loads through `/edit`, which needs this permission, so
+  /// there is no read-only boutique page.
+  bool canUpdateBoutique() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.UPDATE_BUTIKS.value);
+  }
+
+  /// Show **Set active / Set inactive** in edit mode (AC-9).
+  bool canChangeBoutiqueStatus() {
+    return isSuperAdmin ||
+        permissions.contains(DashBoardPermission.CHANGE_BOUTIQUE_STATUS.value);
   }
 
   /// Check if user can see Orders tab

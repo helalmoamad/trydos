@@ -37,6 +37,13 @@ class GetBoutiquesEvent extends DashBoardEvent {
   GetBoutiquesEvent({this.page = 1});
 }
 
+/// Empties the Boutiques list on the shared bloc before a new load, so a list
+/// that belongs to another shop is never shown while the next one loads
+/// (AC-3). It always runs; only the load after it is permission-gated.
+class ClearBoutiquesEvent extends DashBoardEvent {
+  ClearBoutiquesEvent();
+}
+
 class GetOrdersEvent extends DashBoardEvent {
   final int page;
   GetOrdersEvent({this.page = 1});

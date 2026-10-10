@@ -69,6 +69,34 @@ abstract class DashBoardEndPoints {
 
   static String shopLocationChangeStatusEP(int id) =>
       'locations/$id/change-status'.shopScope();
+
+  // ---------------------------------------------------------------------------
+  // Boutiques — create, load for edit, update and change status.
+  //
+  // The list keeps using `getBoutiques` above. Same shape as Locations: every
+  // write is a `POST` (update included), so the shop id travels on the request
+  // through `RequestConfig.extraHeaders`, which only `post.dart` honours.
+  // There is no delete call: delete is switched off on the website too.
+  // ---------------------------------------------------------------------------
+
+  /// `POST` creates. The per-language list goes under `boutique_custom_data`
+  /// here — not `custom_data`, which the backend silently drops on create.
+  static final String shopBoutiquesEP = 'boutiques'.shopScope();
+
+  /// The create form's countries and availabilities. Needs `CREATE_BUTIKS`.
+  static final String shopBoutiqueLookupsEP = 'boutiques/lookups'.shopScope();
+
+  static String shopBoutiqueEditEP(int id) => 'boutiques/$id/edit'.shopScope();
+
+  static String shopBoutiqueUpdateEP(int id) =>
+      'boutiques/$id/update'.shopScope();
+
+  static String shopBoutiqueChangeStatusEP(int id) =>
+      'boutiques/$id/change-status'.shopScope();
+
+  /// The language list for the boutique form's tabs. Not shop-scoped; served
+  /// by the same core backend as every `/shop/*` call.
+  static const String languagesEP = 'api/v1/languages';
 }
 
 abstract class DashBoardUrls {

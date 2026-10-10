@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/dashBoard/data/models/get_seller_boutiques_model.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'pagination_widget.dart';
-import 'package:trydos/common/helper/dev_log.dart';
 
+/// The Boutiques list. [onAddBoutique] is passed only when the member may
+/// create (AC-6), and [onBoutiqueTap] only when they may open a boutique
+/// (AC-7) — a `null` callback hides the button / makes the card inert.
 class BoutiquesGridWidget extends StatelessWidget {
   final List<Boutique> boutiques;
   final Meta? meta;
   final VoidCallback? onAddBoutique;
+  final ValueChanged<Boutique>? onBoutiqueTap;
   final Function(int page)? onPageChanged;
 
   const BoutiquesGridWidget({
@@ -16,13 +21,47 @@ class BoutiquesGridWidget extends StatelessWidget {
     required this.boutiques,
     this.meta,
     this.onAddBoutique,
+    this.onBoutiqueTap,
     this.onPageChanged,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final int count = meta?.total ?? boutiques.length;
     return Column(
       children: [
+        // Header: "Boutiques (count)" and the add button
+        Padding(
+          padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  LocaleKeys.boutique_list_header.tr(args: ['$count']),
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF3C3C3C),
+                  ),
+                ),
+              ),
+              if (onAddBoutique != null)
+                TextButton.icon(
+                  onPressed: onAddBoutique,
+                  icon: const Icon(Icons.add, size: 18),
+                  label: Text(LocaleKeys.add_boutique.tr()),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color(0xFF5D5D5D),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+
         // Boutiques Grid
         Expanded(
           child: GridView.builder(
@@ -35,7 +74,13 @@ class BoutiquesGridWidget extends StatelessWidget {
             ),
             itemCount: boutiques.length,
             itemBuilder: (context, index) {
-              return BoutiqueCard(boutique: boutiques[index]);
+              final Boutique boutique = boutiques[index];
+              return BoutiqueCard(
+                boutique: boutique,
+                onTap: onBoutiqueTap == null
+                    ? null
+                    : () => onBoutiqueTap!(boutique),
+              );
             },
           ),
         ),
@@ -65,7 +110,11 @@ class BoutiquesGridWidget extends StatelessWidget {
 class BoutiqueCard extends StatelessWidget {
   final Boutique boutique;
 
-  const BoutiqueCard({Key? key, required this.boutique}) : super(key: key);
+  /// `null` when the member may not open a boutique: the card does nothing.
+  final VoidCallback? onTap;
+
+  const BoutiqueCard({Key? key, required this.boutique, this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -76,10 +125,7 @@ class BoutiqueCard extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {
-          // TODO: Navigate to boutique details
-          devLog('Boutique tapped: ${boutique.name}');
-        },
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12.r),
         child: Ink(
           decoration: BoxDecoration(

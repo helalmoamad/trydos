@@ -162,7 +162,11 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
     on<GetOrdersEvent>(_onGetOrdersEvent);
     on<NewGetOrdersEvent>(_onNewGetOrdersEvent);
     on<GetProductsEvent>(_onGetProductsEvent);
-    on<GetBoutiquesEvent>(_onGetBoutiquesEvent);
+    // Boutiques list. `restartable()` discards the answer of an earlier load
+    // when a newer one starts — after a shop switch (with the clear below) and
+    // also when pages are tapped quickly: only the newest page lands.
+    on<GetBoutiquesEvent>(_onGetBoutiquesEvent, transformer: restartable());
+    on<ClearBoutiquesEvent>(_onClearBoutiquesEvent);
     on<ChangeOrderStatusEvent>(_onChangeOrderStatusEvent);
     on<GetUserPermissionEvent>(_onGetUserPermissionEvent);
     on<ChangeOrderDetailStatusEvent>(_onChangeOrderDetailStatus);
@@ -672,6 +676,22 @@ class DashboardBloc extends Bloc<DashBoardEvent, DashBoardState> {
           )),
         );
       },
+    );
+  }
+
+  /// Resets the list and its status in one emit. `copyWith` cannot set
+  /// `null`, so an empty list and an empty `Meta` stand for "no list"; the
+  /// home card count reads 0 until the reload lands.
+  void _onClearBoutiquesEvent(
+    ClearBoutiquesEvent event,
+    Emitter<DashBoardState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        boutiques: const <boutiques_model.Boutique>[],
+        boutiquesMeta: boutiques_model.Meta(),
+        getBoutiquesStatus: GetBoutiquesStatus.init,
+      ),
     );
   }
 

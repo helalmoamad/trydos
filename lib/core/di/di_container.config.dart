@@ -158,6 +158,8 @@ import '../../features/dashBoard/data/repositories/dashBoard_repository_impl.dar
 import '../../features/dashBoard/domain/repositories/dashBoard_repository.dart'
     as _i70;
 import '../../features/dashBoard/domain/useCase/add_user_usecase.dart' as _i602;
+import '../../features/dashBoard/domain/useCase/change_boutique_status_usecase.dart'
+    as _i900;
 import '../../features/dashBoard/domain/useCase/change_order_detail_status.dart'
     as _i553;
 import '../../features/dashBoard/domain/useCase/change_order_status_usecase.dart'
@@ -166,6 +168,8 @@ import '../../features/dashBoard/domain/useCase/change_orderDetail_to_packed_use
     as _i288;
 import '../../features/dashBoard/domain/useCase/change_shop_location_status_usecase.dart'
     as _i4;
+import '../../features/dashBoard/domain/useCase/create_boutique_usecase.dart'
+    as _i956;
 import '../../features/dashBoard/domain/useCase/create_seller_story_usecase.dart'
     as _i129;
 import '../../features/dashBoard/domain/useCase/create_shop_location_usecase.dart'
@@ -182,8 +186,14 @@ import '../../features/dashBoard/domain/useCase/downloadExcelTemplate_usecase.da
     as _i921;
 import '../../features/dashBoard/domain/useCase/edit_comment_reply_usecase.dart'
     as _i679;
+import '../../features/dashBoard/domain/useCase/get_boutique_for_edit_usecase.dart'
+    as _i24;
+import '../../features/dashBoard/domain/useCase/get_boutique_lookups_usecase.dart'
+    as _i834;
 import '../../features/dashBoard/domain/useCase/get_boutiques_usecase.dart'
     as _i412;
+import '../../features/dashBoard/domain/useCase/get_languages_usecase.dart'
+    as _i924;
 import '../../features/dashBoard/domain/useCase/get_location_form_countries_usecase.dart'
     as _i1021;
 import '../../features/dashBoard/domain/useCase/get_orders_usecase.dart'
@@ -224,6 +234,8 @@ import '../../features/dashBoard/domain/useCase/reply_to_comment_usecase.dart'
     as _i439;
 import '../../features/dashBoard/domain/useCase/submit_vendor_request_usecase.dart'
     as _i916;
+import '../../features/dashBoard/domain/useCase/update_boutique_usecase.dart'
+    as _i871;
 import '../../features/dashBoard/domain/useCase/update_shop_location_usecase.dart'
     as _i750;
 import '../../features/dashBoard/domain/useCase/update_user_role_usecase.dart'
@@ -236,6 +248,8 @@ import '../../features/dashBoard/domain/useCase/upload_file_to_s3_usecase.dart'
     as _i282;
 import '../../features/dashBoard/presentation/bloc/dashBoard_bloc.dart'
     as _i976;
+import '../../features/dashBoard/presentation/pages/boutique/boutique_editor_bloc.dart'
+    as _i223;
 import '../../features/home/data/data_sources/home_remote_data_source.dart'
     as _i350;
 import '../../features/home/data/repositories/home_repository_implementation.dart'
@@ -949,6 +963,9 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i602.AddUserUseCase>(
     () => _i602.AddUserUseCase(gh<_i70.DashBoardRepository>()),
   );
+  gh.factory<_i900.ChangeBoutiqueStatusUseCase>(
+    () => _i900.ChangeBoutiqueStatusUseCase(gh<_i70.DashBoardRepository>()),
+  );
   gh.factory<_i288.ChangeOrderDetailStatusToPackedUseCase>(
     () => _i288.ChangeOrderDetailStatusToPackedUseCase(
       gh<_i70.DashBoardRepository>(),
@@ -964,6 +981,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i4.ChangeShopLocationStatusUseCase>(
     () => _i4.ChangeShopLocationStatusUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i956.CreateBoutiqueUseCase>(
+    () => _i956.CreateBoutiqueUseCase(gh<_i70.DashBoardRepository>()),
   );
   gh.factory<_i129.CreateSellerStoryUseCase>(
     () => _i129.CreateSellerStoryUseCase(gh<_i70.DashBoardRepository>()),
@@ -989,8 +1009,17 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i939.GetexcelcategoriesUsecase>(
     () => _i939.GetexcelcategoriesUsecase(gh<_i70.DashBoardRepository>()),
   );
+  gh.factory<_i24.GetBoutiqueForEditUseCase>(
+    () => _i24.GetBoutiqueForEditUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i834.GetBoutiqueLookupsUseCase>(
+    () => _i834.GetBoutiqueLookupsUseCase(gh<_i70.DashBoardRepository>()),
+  );
   gh.factory<_i412.GetBoutiquesUseCase>(
     () => _i412.GetBoutiquesUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i924.GetLanguagesUseCase>(
+    () => _i924.GetLanguagesUseCase(gh<_i70.DashBoardRepository>()),
   );
   gh.factory<_i1021.GetLocationFormCountriesUseCase>(
     () =>
@@ -1040,6 +1069,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i916.SubmitVendorRequestUseCase>(
     () => _i916.SubmitVendorRequestUseCase(gh<_i70.DashBoardRepository>()),
+  );
+  gh.factory<_i871.UpdateBoutiqueUseCase>(
+    () => _i871.UpdateBoutiqueUseCase(gh<_i70.DashBoardRepository>()),
   );
   gh.factory<_i750.UpdateShopLocationUseCase>(
     () => _i750.UpdateShopLocationUseCase(gh<_i70.DashBoardRepository>()),
@@ -1227,6 +1259,17 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i955.GetProductsWithFiltersUseCase>(),
       gh<_i889.GetRecommendProductsUseCase>(),
       gh<_i290.GetProductFiltersUseCase>(),
+    ),
+  );
+  gh.factory<_i223.BoutiqueEditorBloc>(
+    () => _i223.BoutiqueEditorBloc(
+      gh<_i924.GetLanguagesUseCase>(),
+      gh<_i834.GetBoutiqueLookupsUseCase>(),
+      gh<_i24.GetBoutiqueForEditUseCase>(),
+      gh<_i956.CreateBoutiqueUseCase>(),
+      gh<_i871.UpdateBoutiqueUseCase>(),
+      gh<_i900.ChangeBoutiqueStatusUseCase>(),
+      gh<_i318.UploadFileMediaServerUseCase>(),
     ),
   );
   gh.lazySingleton<_i243.ChatBloc>(
