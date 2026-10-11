@@ -249,15 +249,31 @@ class PhoneNumberFormatter extends TextInputFormatter {
     );
   }
 
+  /// يحذف الصفر أو الصفرين من **بداية** الرقم وحدها.
+  ///
+  /// `00963` و`0963` كلاهما يعني `963`. والحذف مقصورٌ على البداية: صفرٌ داخل
+  /// الرقم جزءٌ منه. الكود السابق كان يستعمل `replaceAll("00", '')` فيحذف كل
+  /// `00` أينما وقعت — فيشوّه رقماً مثل `963 900 123`.
+  String _stripLeadingZeros(String digits) {
+    if (digits.startsWith('00')) return digits.substring(2);
+    if (digits.startsWith('0')) return digits.substring(1);
+    return digits;
+  }
+
   String getFormattedText(String oldText, String newText) {
     if (newText.length < oldText.length) {
-      if (oldText[oldText.length - 1] == ' ') {
+      // حذف: إن كان المحذوف مسافةً أضافها التنسيق، نحذف الرقم الذي قبلها.
+      if (newText.isNotEmpty &&
+          oldText.isNotEmpty &&
+          oldText[oldText.length - 1] == ' ') {
         return newText.substring(0, newText.length - 1);
       }
       return newText;
     }
-    newText = newText.replaceAll(' ', '');
-    oldText = oldText.replaceAll(' ', '');
+    // أرقاماً فقط: لوحات T9 وبعض اللوحات ترسل رموزاً ومسافات وفواصل.
+    newText = _stripLeadingZeros(newText.replaceAll(RegExp(r'[^0-9]'), ''));
+    oldText = oldText.replaceAll(RegExp(r'[^0-9]'), '');
+    if (newText.isEmpty) return '';
     if (!validationRegex.hasMatch(newText)) {
       return oldText;
     }
@@ -289,6 +305,9 @@ class PhoneNumberFormatter extends TextInputFormatter {
       needEdit = oldText;
     }
     if (country.name == '') return needEdit;
+    // `needEdit` قد يكون أقصر من رمز الدولة حين يُرجَع إلى `oldText` أعلاه،
+    // و`substring` حينها ترمي `RangeError` داخل حقل تسجيل الدخول.
+    if (needEdit.length < country.dialCode.length - 1) return needEdit;
     String result = needEdit.substring(0, country.dialCode.length - 1) + ' ';
     for (int i = country.dialCode.length - 1; i < needEdit.length; i++) {
       result += needEdit[i];

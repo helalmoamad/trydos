@@ -250,33 +250,19 @@ class _InsertPhoneTabState extends State<InsertPhoneTab>
                   autoFocus: true,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChange: (String? text) {
-                    
-                    final cleaned = (text ?? '').replaceAll(
-                      RegExp(r'[^0-9]'),
-                      '',
-                    );
-
-                    if (cleaned == form.controllers[0].text) {
-                      return false; // No change, exit early
-                    }
-
-                    form.controllers[0].value = TextEditingValue(
-                      text: cleaned,
-                      selection: TextSelection.collapsed(
-                        offset: cleaned.length,
-                      ),
-                    );
-                    if ((text?.length ?? 0) > 3 &&
-                        countryChanged.value.code == "") {
-                      if (text!.startsWith("00")) {
-                        form.controllers[0].text = text.replaceAll("00", '');
-                      } else {
-                        form.controllers[0].text = text.replaceFirst(
-                          RegExp(r'0'),
-                          '',
-                        );
-                      }
-                    }
+                    // **لا تُعِد كتابة المتحكّم هنا.**
+                    //
+                    // كان هذا الموضع يضع `TextEditingValue` جديدة مع كل ضغطة،
+                    // وغياب `composing` فيها يمسح منطقة التأليف. ولوحات T9
+                    // (اثنا عشر مفتاحاً، حروف على الأرقام) ترسل الحرف **قيد
+                    // التأليف** قبل تثبيته — فتجد حالتها قد سُحبت من تحتها
+                    // فتُلغي الضغطة. النتيجة: لا يدخل رقم واحد، ولا تُحسب
+                    // الدولة، فلا يظهر العلم. ولا يظهر العطل على Gboard لأنها
+                    // تُثبّت الأرقام فوراً بلا تأليف.
+                    //
+                    // تنظيف النصّ وحذف الأصفار البادئة والتجميع كلّها الآن في
+                    // `PhoneNumberFormatter` — مالكٌ واحد للنصّ بدل ثلاثة
+                    // يتنازعون عليه. وهنا **قراءة** فقط.
                     Country newCountry = countries.firstWhere(
                       (element) => '+${form.controllers[0].text.toLowerCase()}'
                           .startsWith(element.dialCode.toLowerCase()),
