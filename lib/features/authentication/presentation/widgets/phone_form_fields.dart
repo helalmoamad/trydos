@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../common/constant/countries.dart';
+import '../../../../common/helper/phone_input_diagnostics.dart';
 import '../../../../core/utils/responsive_padding.dart';
 
 double offset = 0;
@@ -242,6 +243,15 @@ class PhoneNumberFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
+    // `composing` هي منطقة التأليف التي ترسلها لوحة المفاتيح قبل تثبيت الحرف.
+    // تسجيلها ضروري: لو كانت غير فارغة فاللوحة تؤلّف، وإعادة ضبط التحديد
+    // أدناه قد تقطع عليها التأليف.
+    PhoneInputDiagnostics.log(
+      'INPUT   oldSel=${oldValue.selection.start},${oldValue.selection.end} '
+      'oldComp=${oldValue.composing.start},${oldValue.composing.end}  '
+      'newSel=${newValue.selection.start},${newValue.selection.end} '
+      'newComp=${newValue.composing.start},${newValue.composing.end}',
+    );
     String result = getFormattedText(oldValue.text, newValue.text);
     return newValue.copyWith(
       text: result,
@@ -261,6 +271,16 @@ class PhoneNumberFormatter extends TextInputFormatter {
   }
 
   String getFormattedText(String oldText, String newText) {
+    final String result = _format(oldText, newText);
+    PhoneInputDiagnostics.log(
+      'FORMAT  old=${PhoneInputDiagnostics.describe(oldText)}  '
+      'new=${PhoneInputDiagnostics.describe(newText)}  '
+      '=> ${PhoneInputDiagnostics.describe(result)}',
+    );
+    return result;
+  }
+
+  String _format(String oldText, String newText) {
     if (newText.length < oldText.length) {
       // حذف: إن كان المحذوف مسافةً أضافها التنسيق، نحذف الرقم الذي قبلها.
       if (newText.isNotEmpty &&
@@ -295,14 +315,21 @@ class PhoneNumberFormatter extends TextInputFormatter {
         ),
       ),
     );
+    PhoneInputDiagnostics.log(
+      '  country=${country.code.isEmpty ? "(لا يوجد)" : country.code} '
+      'dial=${country.dialCode} min=${country.minLength} '
+      'max=${country.maxLength} digits=${newText.length}',
+    );
     String needEdit = newText;
     if (newText.length > (country.dialCode.length + country.maxLength + 1) &&
         country.name != '') {
       needEdit = oldText;
+      PhoneInputDiagnostics.log('  رُفضت: تجاوز الطول الأقصى');
     }
     if ((oldText.length + 1) == country.dialCode.length &&
         newText[newText.length - 1] == '0') {
       needEdit = oldText;
+      PhoneInputDiagnostics.log('  رُفضت: صفر بعد رمز الدولة');
     }
     if (country.name == '') return needEdit;
     // `needEdit` قد يكون أقصر من رمز الدولة حين يُرجَع إلى `oldText` أعلاه،
