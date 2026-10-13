@@ -8,7 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../common/constant/countries.dart';
-import '../../../../common/helper/phone_input_diagnostics.dart';
 import '../../../../core/utils/responsive_padding.dart';
 
 double offset = 0;
@@ -129,19 +128,12 @@ class PhoneFormField extends StatelessWidget {
   /// جعله ساكناً مع إلغاء السابق يضمن واحداً فقط في أي لحظة.
   static Timer? _cursorTimer;
 
-  /// عدّاد البناءات — يكشف عاصفة إعادة بناء إن وُجدت.
-  static int _buildCount = 0;
-
   @override
   Widget build(BuildContext context) {
-    _buildCount++;
     _cursorTimer?.cancel();
     _cursorTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       showCursor.value = !showCursor.value;
     });
-    PhoneInputDiagnostics.log(
-      'BUILD   #$_buildCount  نصّ=${controller?.text.length ?? 0} حرف',
-    );
     if (controller?.text.isEmpty ?? true) {
       offset = 0;
     }
@@ -259,15 +251,6 @@ class PhoneNumberFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    // `composing` هي منطقة التأليف التي ترسلها لوحة المفاتيح قبل تثبيت الحرف.
-    // تسجيلها ضروري: لو كانت غير فارغة فاللوحة تؤلّف، وإعادة ضبط التحديد
-    // أدناه قد تقطع عليها التأليف.
-    PhoneInputDiagnostics.log(
-      'INPUT   oldSel=${oldValue.selection.start},${oldValue.selection.end} '
-      'oldComp=${oldValue.composing.start},${oldValue.composing.end}  '
-      'newSel=${newValue.selection.start},${newValue.selection.end} '
-      'newComp=${newValue.composing.start},${newValue.composing.end}',
-    );
     // حرسٌ حول المنسّق كلّه.
     //
     // استثناءٌ يُرمى من هنا لا يُعالجه الإطار كخطأ بناء: هذا المسار يعمل أثناء
@@ -275,18 +258,22 @@ class PhoneNumberFormatter extends TextInputFormatter {
     // وقد يُسقط اتصال الحقل باللوحة. والنتيجة بالضبط ما يشكو منه الزبون: الرقم
     // الظاهر يتوقّف عند حدّ، ولا تُقبل أي ضغطة بعده، ولا شيء يُطبع.
     //
-    // فنُسجّله ونُعيد `oldValue` — الحقل يبقى حيّاً ويستمر القبول، ويبقى لدينا
-    // السطر الذي يسمّي السبب.
+    // فنُبلّغ الإطار — فيصل الخطأ إلى Sentry ولا يُدفَن — ونُعيد `oldValue`:
+    // الحقل يبقى حيّاً ويستمر في قبول الأرقام.
     try {
-      final String result = getFormattedText(oldValue.text, newValue.text);
+      final String result = _format(oldValue.text, newValue.text);
       return newValue.copyWith(
         text: result,
         selection: TextSelection.collapsed(offset: result.length),
       );
     } catch (e, s) {
-      PhoneInputDiagnostics.log('FORMATTER-THREW  $e');
-      PhoneInputDiagnostics.log(
-        '  ${s.toString().split('\n').take(3).join(' | ')}',
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: e,
+          stack: s,
+          library: 'phone_form_fields',
+          context: ErrorDescription('while formatting the phone number input'),
+        ),
       );
       return oldValue;
     }
@@ -301,16 +288,6 @@ class PhoneNumberFormatter extends TextInputFormatter {
     if (digits.startsWith('00')) return digits.substring(2);
     if (digits.startsWith('0')) return digits.substring(1);
     return digits;
-  }
-
-  String getFormattedText(String oldText, String newText) {
-    final String result = _format(oldText, newText);
-    PhoneInputDiagnostics.log(
-      'FORMAT  old=${PhoneInputDiagnostics.describe(oldText)}  '
-      'new=${PhoneInputDiagnostics.describe(newText)}  '
-      '=> ${PhoneInputDiagnostics.describe(result)}',
-    );
-    return result;
   }
 
   String _format(String oldText, String newText) {
@@ -348,21 +325,14 @@ class PhoneNumberFormatter extends TextInputFormatter {
         ),
       ),
     );
-    PhoneInputDiagnostics.log(
-      '  country=${country.code.isEmpty ? "(لا يوجد)" : country.code} '
-      'dial=${country.dialCode} min=${country.minLength} '
-      'max=${country.maxLength} digits=${newText.length}',
-    );
     String needEdit = newText;
     if (newText.length > (country.dialCode.length + country.maxLength + 1) &&
         country.name != '') {
       needEdit = oldText;
-      PhoneInputDiagnostics.log('  رُفضت: تجاوز الطول الأقصى');
     }
     if ((oldText.length + 1) == country.dialCode.length &&
         newText[newText.length - 1] == '0') {
       needEdit = oldText;
-      PhoneInputDiagnostics.log('  رُفضت: صفر بعد رمز الدولة');
     }
     if (country.name == '') return needEdit;
     // `needEdit` قد يكون أقصر من رمز الدولة حين يُرجَع إلى `oldText` أعلاه،

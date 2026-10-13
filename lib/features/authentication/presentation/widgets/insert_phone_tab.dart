@@ -15,7 +15,6 @@ import 'package:trydos/service/firebase_analytics_service/analytics_const/analyt
 import '../../../../common/constant/countries.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
-import '../../../../common/helper/phone_input_diagnostics.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -62,16 +61,6 @@ class _InsertPhoneTabState extends State<InsertPhoneTab>
   @override
   void initState() {
     super.initState();
-    // تشخيص مؤقّت لعطل إدخال الرقم على جهاز بعينه.
-    PhoneInputDiagnostics.installErrorHook();
-    PhoneInputDiagnostics.startSession();
-    // فقدان التركيز يقطع اتصال الحقل بلوحة المفاتيح، فلا تصل الضغطات ولا
-    // يُستدعى المنسِّق — وهو ما يُظهره السجلّ (توقّف تامّ بعد `963 `).
-    widget.focusNode.addListener(() {
-      PhoneInputDiagnostics.log(
-        'FOCUS   hasFocus=${widget.focusNode.hasFocus}',
-      );
-    });
   }
 
   bool _eventLogged = false;
@@ -305,12 +294,6 @@ class _InsertPhoneTabState extends State<InsertPhoneTab>
                       displaySubmit.value = false;
                     }
                     countryChanged.value = newCountry;
-                    PhoneInputDiagnostics.log(
-                      'ONCHANGE raw=${PhoneInputDiagnostics.describe(text)}  '
-                      'controller=${PhoneInputDiagnostics.describe(form.controllers[0].text)}  '
-                      'country=${newCountry.code.isEmpty ? "(فارغ ← لا علم)" : newCountry.code}  '
-                      'submit=${displaySubmit.value}',
-                    );
                     return form.controllers[0].text.isNotEmpty
                         ? form
                                   .controllers[0]
@@ -330,9 +313,6 @@ class _InsertPhoneTabState extends State<InsertPhoneTab>
                         ValueListenableBuilder<Country>(
                           valueListenable: countryChanged,
                           builder: (context, country, _) {
-                            PhoneInputDiagnostics.log(
-                              'FLAG    code=${country.code.isEmpty ? "(فارغ)" : country.code}',
-                            );
                             if (country.code == '')
                               return SizedBox(width: 22.w, height: 15.h);
                             else

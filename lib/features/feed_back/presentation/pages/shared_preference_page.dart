@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trydos/common/helper/phone_input_diagnostics.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -23,8 +20,6 @@ class SharedPreferencePage extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ListView(
           children: [
-            10.verticalSpace,
-            const _PrintProblemButton(),
             10.verticalSpace,
             SharedPreferenceCard(
               title: 'market user id',
@@ -98,72 +93,6 @@ class SharedPreferencePage extends StatelessWidget {
             10.verticalSpace,
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// زرّ يعرض سجلّ تشخيص حقل رقم الهاتف، مع نسخه ومسحه.
-///
-/// العطل يظهر على جهاز بعينه ولا يُرى في المحرّر، فنقرأ ما يصل من لوحة مفاتيح
-/// ذلك الجهاز: النصّ، ورموز محارفه، والدولة التي طابقها البحث، وسبب رفض أي
-/// ضغطة.
-class _PrintProblemButton extends StatelessWidget {
-  const _PrintProblemButton();
-
-  void _show(BuildContext context) {
-    final String report = PhoneInputDiagnostics.read();
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Print problem'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
-            child: SelectableText(
-              report,
-              style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              PhoneInputDiagnostics.clear();
-              Navigator.of(dialogContext).pop();
-            },
-            child: const Text('مسح السجل'),
-          ),
-          TextButton(
-            onPressed: () {
-              Clipboard.setData(ClipboardData(text: report));
-              showMessage(
-                'تم نسخ السجل',
-                showInRelease: true,
-                context: dialogContext,
-              );
-            },
-            child: const Text('نسخ'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('إغلاق'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: () => _show(context),
-      icon: const Icon(Icons.bug_report_outlined),
-      label: const Text('print problem'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xff1877F2),
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 14),
       ),
     );
   }
