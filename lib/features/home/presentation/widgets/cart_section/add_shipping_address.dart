@@ -2016,23 +2016,18 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           250.w,
                                                                       child: Row(
                                                                         children: [
-                                                                          country?.iso?.toUpperCase() ==
-                                                                                  "SY"
-                                                                              ? SvgPicture.asset(
-                                                                                  AppAssets.syriaFlagSvg,
-                                                                                  width: 18.w,
-                                                                                  height: 18.h,
-                                                                                )
-                                                                              : Container(
-                                                                                  width: 18.w,
-                                                                                  height: 18.h,
-                                                                                  child: CountryFlag.fromCountryCode(
-                                                                                    "${country?.iso}",
-                                                                                    height: 18.h,
-                                                                                    width: 18.w,
-                                                                                    borderRadius: 4.r,
-                                                                                  ),
-                                                                                ),
+                                                                          Container(
+                                                                            width: 18.w,
+                                                                            height: 18.h,
+                                                                            child: CountryFlag.fromCountryCode(
+                                                                              "${country?.iso}",
+                                                                              theme: ImageTheme(
+                                                                                height: 18.h,
+                                                                                width: 18.w,
+                                                                                shape: RoundedRectangle(4.r),
+                                                                              ),
+                                                                            ),
+                                                                          ),
                                                                           SizedBox(
                                                                             width:
                                                                                 8.w,
@@ -3183,26 +3178,19 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               width: 18.w,
                                                               height: 18.h,
                                                               child:
-                                                                  country?.iso
-                                                                          ?.toUpperCase() ==
-                                                                      "SY"
-                                                                  ? SvgPicture.asset(
-                                                                      AppAssets
-                                                                          .syriaFlagSvg,
-                                                                      width:
-                                                                          18.w,
-                                                                      height:
-                                                                          18.h,
-                                                                    )
-                                                                  : CountryFlag.fromCountryCode(
-                                                                      "${country?.iso}",
+                                                                  CountryFlag.fromCountryCode(
+                                                                    "${country?.iso}",
+                                                                    theme: ImageTheme(
                                                                       height:
                                                                           18.h,
                                                                       width:
                                                                           18.w,
-                                                                      borderRadius:
-                                                                          4.r,
+                                                                      shape:
+                                                                          RoundedRectangle(
+                                                                            4.r,
+                                                                          ),
                                                                     ),
+                                                                  ),
                                                             ),
                                                             Text(
                                                               " ${country?.name} ",

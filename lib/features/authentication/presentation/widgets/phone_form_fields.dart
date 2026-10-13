@@ -119,13 +119,29 @@ class PhoneFormField extends StatelessWidget {
 
   final ValueNotifier<bool> showCursor = ValueNotifier(true);
 
-  late Timer timer;
+  /// مؤقّت وميض المؤشّر — **ساكن ووحيد**.
+  ///
+  /// كان يُنشأ داخل `build` بلا إلغاء: الودجت عديمة الحالة وتُعاد إنشاؤها مع
+  /// كل ضغطة حرف، فيتراكم مؤقّت يعمل كل نصف ثانية **لكل ضغطة**، ولا يموت أبداً
+  /// لأن لا شيء يلغيه. عشرون رقماً تعني عشرين مؤقّتاً دائمين — عبءٌ لا يُلاحَظ
+  /// على جهاز قوي، وثقيل على جهاز اقتصادي.
+  ///
+  /// جعله ساكناً مع إلغاء السابق يضمن واحداً فقط في أي لحظة.
+  static Timer? _cursorTimer;
+
+  /// عدّاد البناءات — يكشف عاصفة إعادة بناء إن وُجدت.
+  static int _buildCount = 0;
 
   @override
   Widget build(BuildContext context) {
-    timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+    _buildCount++;
+    _cursorTimer?.cancel();
+    _cursorTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       showCursor.value = !showCursor.value;
     });
+    PhoneInputDiagnostics.log(
+      'BUILD   #$_buildCount  نصّ=${controller?.text.length ?? 0} حرف',
+    );
     if (controller?.text.isEmpty ?? true) {
       offset = 0;
     }
@@ -252,11 +268,28 @@ class PhoneNumberFormatter extends TextInputFormatter {
       'newSel=${newValue.selection.start},${newValue.selection.end} '
       'newComp=${newValue.composing.start},${newValue.composing.end}',
     );
-    String result = getFormattedText(oldValue.text, newValue.text);
-    return newValue.copyWith(
-      text: result,
-      selection: TextSelection.collapsed(offset: result.length),
-    );
+    // حرسٌ حول المنسّق كلّه.
+    //
+    // استثناءٌ يُرمى من هنا لا يُعالجه الإطار كخطأ بناء: هذا المسار يعمل أثناء
+    // معالجة رسالة من محرّك لوحة المفاتيح، فالاستثناء يصعد إلى تلك الرسالة
+    // وقد يُسقط اتصال الحقل باللوحة. والنتيجة بالضبط ما يشكو منه الزبون: الرقم
+    // الظاهر يتوقّف عند حدّ، ولا تُقبل أي ضغطة بعده، ولا شيء يُطبع.
+    //
+    // فنُسجّله ونُعيد `oldValue` — الحقل يبقى حيّاً ويستمر القبول، ويبقى لدينا
+    // السطر الذي يسمّي السبب.
+    try {
+      final String result = getFormattedText(oldValue.text, newValue.text);
+      return newValue.copyWith(
+        text: result,
+        selection: TextSelection.collapsed(offset: result.length),
+      );
+    } catch (e, s) {
+      PhoneInputDiagnostics.log('FORMATTER-THREW  $e');
+      PhoneInputDiagnostics.log(
+        '  ${s.toString().split('\n').take(3).join(' | ')}',
+      );
+      return oldValue;
+    }
   }
 
   /// يحذف الصفر أو الصفرين من **بداية** الرقم وحدها.

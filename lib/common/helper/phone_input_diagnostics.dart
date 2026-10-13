@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' show PlatformDispatcher;
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/widgets.dart';
@@ -109,6 +110,17 @@ class PhoneInputDiagnostics {
         log('  ${stack.split('\n').take(3).join(' | ')}');
       }
       previous?.call(details);
+    };
+
+    // `FlutterError.onError` لا يرى الأخطاء غير المتزامنة: فشل تحميل أصل،
+    // استثناء في `Future` بلا `catch`. وهذه بالضبط نوع ما قد يفشل عند تحميل
+    // صورة علم. نُعيد `false` فلا نبتلع الخطأ عن بقية المعالجات.
+    final bool Function(Object, StackTrace)? previousPlatform =
+        PlatformDispatcher.instance.onError;
+    PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+      log('ASYNC-ERROR  $error');
+      log('  ${stack.toString().split('\n').take(2).join(' | ')}');
+      return previousPlatform?.call(error, stack) ?? false;
     };
   }
 

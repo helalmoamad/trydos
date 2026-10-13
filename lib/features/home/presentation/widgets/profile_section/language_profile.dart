@@ -294,18 +294,20 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
           child: Row(
             children: [
               const SizedBox(width: 10),
-              code.toUpperCase() == "SY"
-                  ? SvgPicture.asset(AppAssets.syriaFlagSvg, height: 25.h)
-                  : code.toUpperCase() == "KU"
+              // يبقى استثناء الكردية: ليست دولة بمعيار ISO فلا علم لها في
+              // الحزمة. أمّا سوريا فصارت كبقية الدول بعد تحديث `country_flags`.
+              code.toUpperCase() == "KU"
                   ? SvgPicture.asset(AppAssets.kurdishFlagSvg, height: 25.h)
                   : Container(
                       width: 25.w,
                       height: 25.h,
                       child: CountryFlag.fromCountryCode(
                         code,
-                        height: 25.h,
-                        width: 25.w,
-                        borderRadius: 4.r,
+                        theme: ImageTheme(
+                          height: 25.h,
+                          width: 25.w,
+                          shape: RoundedRectangle(4.r),
+                        ),
                       ),
                     ),
               const SizedBox(width: 10),

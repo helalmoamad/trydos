@@ -487,14 +487,14 @@ extension _CountryRestrictionUI on _BasePageState {
             SizedBox(
               width: 25,
               height: 25,
-              child: code.toUpperCase() == "SY"
-                  ? SvgPicture.asset(AppAssets.syriaFlagSvg, width: 18.w)
-                  : CountryFlag.fromCountryCode(
-                      code.isEmpty ? 'US' : code,
-                      height: 25,
-                      width: 25,
-                      borderRadius: 4.r,
-                    ),
+              child: CountryFlag.fromCountryCode(
+                code.isEmpty ? 'US' : code,
+                theme: ImageTheme(
+                  height: 25,
+                  width: 25,
+                  shape: RoundedRectangle(4.r),
+                ),
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(

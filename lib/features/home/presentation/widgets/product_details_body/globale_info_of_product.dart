@@ -278,9 +278,11 @@ class GlobaleInfoProduct extends StatelessWidget {
                                 ?.product
                                 ?.iso ??
                             '',
-                        height: 10.h,
-                        width: 15.w,
-                        borderRadius: 4.r,
+                        theme: ImageTheme(
+                          height: 10.h,
+                          width: 15.w,
+                          shape: RoundedRectangle(4.r),
+                        ),
                       )
                     : const SizedBox.shrink(),
                 const SizedBox(width: 2),

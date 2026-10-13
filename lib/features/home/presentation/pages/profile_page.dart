@@ -555,14 +555,14 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       Container(
                         width: 25.w,
                         height: 25.h,
-                        child: country!.iso!.toUpperCase() == "SY"
-                            ? SvgPicture.asset(AppAssets.syriaFlagSvg)
-                            : CountryFlag.fromCountryCode(
-                                country!.iso!.toUpperCase(),
-                                width: 25.w,
-                                height: 25.h,
-                                borderRadius: 4.r,
-                              ),
+                        child: CountryFlag.fromCountryCode(
+                          country!.iso!.toUpperCase(),
+                          theme: ImageTheme(
+                            width: 25.w,
+                            height: 25.h,
+                            shape: RoundedRectangle(4.r),
+                          ),
+                        ),
                       ),
                       SizedBox(width: 10.w),
                       Text(

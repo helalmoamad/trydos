@@ -65,6 +65,13 @@ class _InsertPhoneTabState extends State<InsertPhoneTab>
     // تشخيص مؤقّت لعطل إدخال الرقم على جهاز بعينه.
     PhoneInputDiagnostics.installErrorHook();
     PhoneInputDiagnostics.startSession();
+    // فقدان التركيز يقطع اتصال الحقل بلوحة المفاتيح، فلا تصل الضغطات ولا
+    // يُستدعى المنسِّق — وهو ما يُظهره السجلّ (توقّف تامّ بعد `963 `).
+    widget.focusNode.addListener(() {
+      PhoneInputDiagnostics.log(
+        'FOCUS   hasFocus=${widget.focusNode.hasFocus}',
+      );
+    });
   }
 
   bool _eventLogged = false;
@@ -323,20 +330,34 @@ class _InsertPhoneTabState extends State<InsertPhoneTab>
                         ValueListenableBuilder<Country>(
                           valueListenable: countryChanged,
                           builder: (context, country, _) {
+                            PhoneInputDiagnostics.log(
+                              'FLAG    code=${country.code.isEmpty ? "(فارغ)" : country.code}',
+                            );
                             if (country.code == '')
                               return SizedBox(width: 22.w, height: 15.h);
                             else
-                              return country.code.toUpperCase() == "SY"
-                                  ? SvgPicture.asset(
-                                      AppAssets.syriaFlagSvg,
-                                      width: 22.w,
-                                    )
-                                  : CountryFlag.fromCountryCode(
-                                      country.code,
-                                      height: 15.h,
-                                      width: 22.w,
-                                      borderRadius: 4.r,
-                                    );
+                              // سوريا كبقية الدول: `country_flags` 4.1.2 تحمل
+                              // العلم الجديد، فلم يعد للاستثناء داعٍ.
+                              //
+                              // وزواله يزيل العطل من جذره: كان علم سوريا وحده
+                              // يُرسم بـ `SvgPicture.asset` الذي يحلّل الملف
+                              // **بشكل غير متزامن** — يرسم عنصراً بحجم صفر ثم
+                              // يُعيد البناء عند الاكتمال. ومع `width` بلا
+                              // `height` كان الارتفاع يُشتقّ من الملف بعد
+                              // تحليله، فيتغيّر حجم `prefixIcon` متأخّراً
+                              // وتُعاد هندسة الحقل بعد أن ثبّت اتصاله بلوحة
+                              // المفاتيح. على جهاز سريع يمرّ ذلك في إطار واحد؛
+                              // وعلى جهاز اقتصادي يقع بعد فوات الأوان — ولهذا
+                              // ظهر على جهاز واحد دون غيره.
+                              // الإصدار 4 نقل المقاس والشكل إلى `theme`.
+                              return CountryFlag.fromCountryCode(
+                                country.code,
+                                theme: ImageTheme(
+                                  height: 15.h,
+                                  width: 22.w,
+                                  shape: RoundedRectangle(4.r),
+                                ),
+                              );
                           },
                         ),
                         10.horizontalSpace,

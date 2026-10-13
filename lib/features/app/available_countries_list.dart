@@ -103,14 +103,14 @@ class _AvailableCountriesListState extends State<AvailableCountriesList> {
                   SizedBox(
                     width: 25,
                     height: 25,
-                    child: code.toUpperCase() == "SY"
-                        ? SvgPicture.asset(AppAssets.syriaFlagSvg)
-                        : CountryFlag.fromCountryCode(
-                            (code.isEmpty ? 'US' : code).toUpperCase(),
-                            height: 25,
-                            width: 25,
-                            borderRadius: 4.r,
-                          ),
+                    child: CountryFlag.fromCountryCode(
+                      (code.isEmpty ? 'US' : code).toUpperCase(),
+                      theme: ImageTheme(
+                        height: 25,
+                        width: 25,
+                        shape: RoundedRectangle(4.r),
+                      ),
+                    ),
                   ),
                   SizedBox(width: 10.w),
                   Expanded(
