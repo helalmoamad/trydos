@@ -28,6 +28,8 @@ enum DeleteMessageStatus { init, loading, success, failure }
 
 enum UpdateMessageStatus { init, loading, success, failure }
 
+enum ToggleMessageTagStatus { init, loading, success, failure }
+
 enum SetMessageReminderStatus { init, loading, success, failure }
 
 enum GetMyRemindersStatus { init, loading, success, failure }
@@ -87,6 +89,12 @@ class ChatState {
   /// الحالات العابرة، والحمولات القديمة لا تحوي المفتاح فيؤخذ الافتراضي.
   final UpdateMessageStatus updateMessageStatus;
 
+  /// حالة إضافة وسم أو إزالته. عابرة مثل أخواتها.
+  ///
+  /// لا تحمل **أي** وسم جارٍ: النافذة قد تعرض عدّة أسطر، فتتبّع السطر المنتظر
+  /// يبقى عندها — كما في نافذة التذكير.
+  final ToggleMessageTagStatus toggleMessageTagStatus;
+
   /// حالة ضبط/إلغاء تذكير. عابرة مثل أخواتها.
   final SetMessageReminderStatus setMessageReminderStatus;
   final GetMyRemindersStatus getMyRemindersStatus;
@@ -139,6 +147,7 @@ class ChatState {
     this.isSlpoing = false,
     this.deleteMessageStatus = DeleteMessageStatus.init,
     this.updateMessageStatus = UpdateMessageStatus.init,
+    this.toggleMessageTagStatus = ToggleMessageTagStatus.init,
     this.setMessageReminderStatus = SetMessageReminderStatus.init,
     this.getMyRemindersStatus = GetMyRemindersStatus.init,
     this.reminders = const [],
@@ -206,6 +215,7 @@ class ChatState {
     Map<String, List<Message>>? newSortedChatsByDate,
     final DeleteMessageStatus? deleteMessageStatus,
     final UpdateMessageStatus? updateMessageStatus,
+    final ToggleMessageTagStatus? toggleMessageTagStatus,
     final SetMessageReminderStatus? setMessageReminderStatus,
     final GetMyRemindersStatus? getMyRemindersStatus,
     final List<MessageReminderItem>? reminders,
@@ -280,6 +290,8 @@ class ChatState {
       fileCountInEachChat: fileCountInEachChat ?? this.fileCountInEachChat,
       deleteMessageStatus: deleteMessageStatus ?? this.deleteMessageStatus,
       updateMessageStatus: updateMessageStatus ?? this.updateMessageStatus,
+      toggleMessageTagStatus:
+          toggleMessageTagStatus ?? this.toggleMessageTagStatus,
       setMessageReminderStatus:
           setMessageReminderStatus ?? this.setMessageReminderStatus,
       getMyRemindersStatus: getMyRemindersStatus ?? this.getMyRemindersStatus,

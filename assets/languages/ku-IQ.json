@@ -1114,5 +1114,7 @@
   "boutique_missing_shop": "هیچ فرۆشگایەک هەڵنەبژێردراوە.",
   "boutique_shop_changed": "فرۆشگاکە گۆڕا، بۆیە ئەم پەڕەیە داخرا.",
   "boutique_list_header": "بوتیکەکان ({})",
-  "boutique_add_first": "یەکەم بوتیکەکەت زیاد بکە"
+  "boutique_add_first": "یەکەم بوتیکەکەت زیاد بکە",
+  "message_tag_title": "نیشانەی نامە",
+  "new_tag_hint": "نیشانەی نوێ"
 }

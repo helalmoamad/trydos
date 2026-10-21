@@ -14,8 +14,11 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
+import 'package:trydos/features/chat/presentation/utils/chat_search_match.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
+import 'package:trydos/features/chat/presentation/widgets/contact_card.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -42,6 +45,10 @@ class ChatPageContentState extends State<ChatPageContent> {
   @override
   void initState() {
     LastPagesTracker.push('ChatPageContent');
+    // نصّ البحث ساكن، وحقلُه يُنشأ مع هذه الصفحة فارغاً. فبلا تصفيرٍ هنا تعود
+    // الصفحة مفلترةً بنصٍّ لا يظهر في الحقل — قائمةٌ ناقصة بلا سبب مرئي.
+    _query = '';
+    searchContacts.value = const [];
     chatBloc = BlocProvider.of<ChatBloc>(context);
     differencetime = GetIt.I<PrefsRepository>().getdurtion ?? 0;
 
@@ -76,28 +83,71 @@ class ChatPageContentState extends State<ChatPageContent> {
   //    super.initState();
   //  }
   static ValueNotifier<List<Chat>> searchChats = ValueNotifier([]);
+
+  /// جهات اتصال طابقت البحث **ولا محادثة لها بعد**.
+  ///
+  /// تظهر تحت المحادثات، ومن لا تطبيق لديه يحمل زرّ الدعوة (يتكفّل به
+  /// [ContactCard]). فارغةٌ دائماً ما دام الحقل فارغاً: دفتر الهاتف كاملاً
+  /// تحت قائمة المحادثات ليس قائمة محادثات.
+  static ValueNotifier<List<Contact>> searchContacts = ValueNotifier([]);
   static List<Chat> initialChats = [];
 
+  /// نصّ البحث الحالي.
+  ///
+  /// تحتفظ به الحالة لأن القائمة تُعاد بناؤها مع كل رسالة واردة، وكانت تمسح
+  /// نتائج البحث معها. الآن تُعاد التصفية بنفس النصّ بدل إلغائها.
+  static String _query = '';
+
   static searchInChats(String? text) {
-    if (text?.isEmpty ?? true) {
+    _query = text ?? '';
+    final int? myId = GetIt.I<PrefsRepository>().myChatId;
+
+    if (_query.trim().isEmpty) {
       searchChats.value = initialChats;
-    } else {
-      List<Chat> search = [];
-      for (Chat chat in initialChats) {
-        ChannelMember member = chat.channelMembers!.firstWhere(
-          (element) => element.userId != GetIt.I<PrefsRepository>().myChatId,
-        );
-        if ((chat.channelName ?? LocaleKeys.unknown_user.tr())
-                .toLowerCase()
-                .contains(text?.toLowerCase() ?? '') ||
-            (member.user?.mobilePhone ?? LocaleKeys.no_num.tr())
-                .toLowerCase()
-                .contains(text?.toLowerCase() ?? '')) {
-          search.add(chat);
-        }
-      }
-      searchChats.value = search;
+      searchContacts.value = const [];
+      return;
     }
+
+    final List<Chat> chats = [];
+    // معرّفات من ظهروا كمحادثات، كي لا يتكرّر الشخص سطرين.
+    final Set<int> shownUserIds = {};
+
+    for (final Chat chat in initialChats) {
+      // `firstWhere` بلا `orElse` كانت ترمي `StateError` مع أوّل حرف يُكتب
+      // متى كانت القناة بلا عضوٍ غيري — أو `channelMembers` فارغة أو `null`.
+      final ChannelMember? member = chat.channelMembers
+          ?.where((element) => element.userId != myId)
+          .firstOrNull;
+
+      if (ChatSearchMatch.matches(
+        name: chat.channelName,
+        phone: member?.user?.mobilePhone,
+        query: _query,
+      )) {
+        chats.add(chat);
+        if (member?.userId != null) shownUserIds.add(member!.userId!);
+      }
+    }
+
+    // ثم جهات الاتصال: البحث شامل، فمن لم تراسله بعد يظهر أيضاً — ومن لا
+    // تطبيق لديه يظهر بزرّ دعوة.
+    final List<Contact> contacts = [];
+    for (final Contact contact in GetIt.I<ChatBloc>().state.contacts) {
+      if (contact.contactUserId != null &&
+          shownUserIds.contains(contact.contactUserId)) {
+        continue;
+      }
+      if (ChatSearchMatch.matches(
+        name: contact.name,
+        phone: contact.mobilePhone,
+        query: _query,
+      )) {
+        contacts.add(contact);
+      }
+    }
+
+    searchChats.value = chats;
+    searchContacts.value = contacts;
   }
 
   @override
@@ -160,8 +210,13 @@ class ChatPageContentState extends State<ChatPageContent> {
         // البحث يبقى على القائمة الكاملة — المؤرشفة تُخفى من العرض لا من
         // البحث، فمن يبحث عن محادثة أرشفها يجدها.
         initialChats = chats;
+        // تُعاد التصفية بنفس النصّ لا تُلغى.
+        //
+        // كان هنا `searchChats.value = [...chats]` فتعود القائمة كاملةً بعد
+        // كل بناء — ووصولُ رسالة أو تغيّر عدّاد غير المقروء منه. فبينما
+        // المستخدم يقرأ نتائج بحثه تصل رسالة فيضيع ما بحث عنه.
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          searchChats.value = [...chats];
+          searchInChats(_query);
         });
         return SlidableAutoCloseBehavior(
           child: BlocBuilder<AppBloc, AppState>(
@@ -229,6 +284,18 @@ class ChatPageContentState extends State<ChatPageContent> {
                                 searchedChats[index].messages?.first.id ?? "",
                           );
                         },
+                      );
+                    },
+                  ),
+                  // جهات الاتصال المطابِقة — تحت المحادثات، وعند البحث فقط.
+                  ValueListenableBuilder<List<Contact>>(
+                    valueListenable: searchContacts,
+                    builder: (context, contacts, _) {
+                      return sliverListSeparated(
+                        separator: const SizedBox.shrink(),
+                        childCount: contacts.length,
+                        itemBuilder: (_, index) =>
+                            ContactCard(index: index, contact: contacts[index]),
                       );
                     },
                   ),

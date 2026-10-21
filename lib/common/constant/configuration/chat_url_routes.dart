@@ -105,6 +105,12 @@ abstract class ChatEndPoints {
   /// الجسم `{id, content}` فقط — أي حقل زائد يعيد 400.
   static final updateMessageEP = 'update'.messagesScope();
 
+  /// إضافة وسم إلى رسالة أو إزالته. الجسم `{tag, action}` — و`action`
+  /// الافتراضي `toggle`، لكننا نرسلها صريحةً (`add`/`remove`) فالواجهة تعرف
+  /// أيّ الفعلين تريد، ولا داعي لترك الخادم يخمّن من الحالة.
+  static String toggleMessageTagEP(String messageId) =>
+      '$messageId/tags'.messagesScope();
+
   ///! ----< reminders >----
   ///
   /// إنشاء تذكير أو تحديث وقته. الجسم `{remind_at}` بصيغة ISO8601.

@@ -639,6 +639,29 @@ class GetArchivedChatsEvent extends ChatEvent {
   List<Object?> get props => [];
 }
 
+/// يضيف وسماً إلى رسالة أو يزيله.
+///
+/// [channelId] للعثور على الرسالة في الحالة المحلية؛ الخادم يكتفي
+/// بـ[messageId].
+class ToggleMessageTagEvent extends ChatEvent {
+  final String messageId;
+  final String channelId;
+  final String tag;
+
+  /// `true` إضافة، `false` إزالة.
+  final bool add;
+
+  const ToggleMessageTagEvent({
+    required this.messageId,
+    required this.channelId,
+    required this.tag,
+    required this.add,
+  });
+
+  @override
+  List<Object?> get props => [messageId, channelId, tag, add];
+}
+
 /// يضبط تذكيراً على رسالة، أو يغيّر وقت تذكير قائم عليها.
 class SetMessageReminderEvent extends ChatEvent {
   final String messageId;

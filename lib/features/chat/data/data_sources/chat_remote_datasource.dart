@@ -24,6 +24,7 @@ import '../models/ImageDetail.dart';
 import '../models/channel_archive_model.dart';
 import '../models/channel_unread_model.dart';
 import '../models/message_reminder_model.dart';
+import '../models/message_tag_model.dart';
 import '../models/media_count.dart';
 import '../models/my_chats_response_model.dart';
 import '../parsers/heavy_response_parsers.dart';
@@ -287,6 +288,29 @@ class ChatRemoteDataSource {
           ),
         );
     return archiveChannel();
+  }
+
+  /// يضيف وسماً إلى رسالة أو يزيله.
+  ///
+  /// `action` تُرسل صريحةً لا اعتماداً على `toggle` الافتراضي: الواجهة تعرف
+  /// أيّ الفعلين يريد المستخدم، وضغطتان سريعتان مع `toggle` قد تتسابقان
+  /// فينتهي الوسم إلى عكس ما قصده.
+  Future<MessageTagToggleResult> toggleMessageTag(Map<String, dynamic> params) {
+    PostClient<MessageTagToggleResult> toggleTag =
+        PostClient<MessageTagToggleResult>(
+          serverName: ServerName.chat,
+          requestPrams: RequestConfig<MessageTagToggleResult>(
+            endpoint: ChatEndPoints.toggleMessageTagEP(
+              params["message_id"].toString(),
+            ),
+            data: {"tag": params["tag"], "action": params["action"]},
+            response: ResponseValue<MessageTagToggleResult>(
+              fromJson: (response) =>
+                  MessageTagToggleResult.fromJson(response['data']),
+            ),
+          ),
+        );
+    return toggleTag();
   }
 
   /// ينشئ تذكيراً على رسالة، أو يحدّث وقت تذكير قائم (الخادم يبقي `id` نفسه).

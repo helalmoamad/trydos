@@ -52,6 +52,12 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
         json['updateMessageStatus'],
       ) ??
       UpdateMessageStatus.init,
+  toggleMessageTagStatus:
+      $enumDecodeNullable(
+        _$ToggleMessageTagStatusEnumMap,
+        json['toggleMessageTagStatus'],
+      ) ??
+      ToggleMessageTagStatus.init,
   setMessageReminderStatus:
       $enumDecodeNullable(
         _$SetMessageReminderStatusEnumMap,
@@ -275,6 +281,8 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       _$DeleteMessageStatusEnumMap[instance.deleteMessageStatus]!,
   'updateMessageStatus':
       _$UpdateMessageStatusEnumMap[instance.updateMessageStatus]!,
+  'toggleMessageTagStatus':
+      _$ToggleMessageTagStatusEnumMap[instance.toggleMessageTagStatus]!,
   'setMessageReminderStatus':
       _$SetMessageReminderStatusEnumMap[instance.setMessageReminderStatus]!,
   'getMyRemindersStatus':
@@ -347,6 +355,13 @@ const _$UpdateMessageStatusEnumMap = {
   UpdateMessageStatus.loading: 'loading',
   UpdateMessageStatus.success: 'success',
   UpdateMessageStatus.failure: 'failure',
+};
+
+const _$ToggleMessageTagStatusEnumMap = {
+  ToggleMessageTagStatus.init: 'init',
+  ToggleMessageTagStatus.loading: 'loading',
+  ToggleMessageTagStatus.success: 'success',
+  ToggleMessageTagStatus.failure: 'failure',
 };
 
 const _$SetMessageReminderStatusEnumMap = {

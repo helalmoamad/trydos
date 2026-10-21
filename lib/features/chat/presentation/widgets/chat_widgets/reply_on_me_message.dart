@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/features/chat/data/models/message_tag_model.dart';
 
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
 
@@ -37,6 +38,7 @@ class ReplayOnMeMessage extends StatefulWidget {
     this.messageDate,
     this.watchedaAt,
     this.isAnswerEdited = false,
+    this.tags = const [],
     required this.channalId,
   }) : super(key: key);
   final String message;
@@ -52,6 +54,9 @@ class ReplayOnMeMessage extends StatefulWidget {
 
   /// عُدِّل نصّ **الردّ** نفسه (لا الرسالة المقتبسة فوقه).
   final bool isAnswerEdited;
+
+  /// وسوم رسالة الردّ نفسها، تُمرَّر إلى الفقاعة الداخلية.
+  final List<MessageTag> tags;
   final DateTime? watchedaAt;
   final File? answeredFile;
   final String? answeredFilePath;
@@ -216,6 +221,7 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
                                     receivedAt: widget.receivedAt,
                                     createAt: widget.createAt!,
                                     isEdited: widget.isAnswerEdited,
+                                    tags: widget.tags,
                                     channalId: widget.channalId,
                                   )),
           ],

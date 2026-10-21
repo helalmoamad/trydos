@@ -20,23 +20,37 @@ import '../../../app/my_text_widget.dart';
 import '../../data/models/my_chats_response_model.dart';
 import 'chat_widgets/no_image_widget.dart';
 import 'invite_options_sheet.dart';
-import 'package:trydos/common/helper/dev_log.dart';
 
 class ContactCard extends StatelessWidget {
-  const ContactCard({Key? key, required this.index, required this.contact})
-    : super(key: key);
+  const ContactCard({
+    Key? key,
+    required this.index,
+    required this.contact,
+    this.nameOverride,
+  }) : super(key: key);
   final int index;
   final Contact contact;
 
+  /// اسمٌ يُعرض بدل `contact.name`.
+  ///
+  /// صفحة جهات الاتصال تمرّر الاسم من دفتر الهاتف — فهي تعرض دفترَ المستخدم
+  /// لا سجلّ الخادم. وما عداها يتركه `null` فلا يتغيّر شيء: نتائج البحث في
+  /// قائمة المحادثات تبقى على اسم الخادم كما هي.
+  final String? nameOverride;
+
   @override
   Widget build(BuildContext context) {
+    final String? name = (nameOverride?.trim().isNotEmpty ?? false)
+        ? nameOverride!.trim()
+        : contact.name;
+
     final String receiverName, fullReceiverName;
-    if (contact.name == null) {
+    if (name == null) {
       receiverName = LocaleKeys.uk.tr();
       fullReceiverName = contact.mobilePhone ?? 'UnKnown User';
     } else {
-      receiverName = HelperFunctions.getTheFirstTwoLettersOfName(contact.name!);
-      fullReceiverName = contact.name!;
+      receiverName = HelperFunctions.getTheFirstTwoLettersOfName(name);
+      fullReceiverName = name;
     }
 
     return Column(
@@ -55,20 +69,24 @@ class ContactCard extends StatelessWidget {
               if (contact.contactUserId == null) {
                 return;
               }
-              Chat? chat;
               User? receiver;
               List<Chat> chats = List.of(GetIt.I<ChatBloc>().state.chats);
-              debugPrint(chats.toString());
               chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
-              chat = chats.firstWhere(
-                (element) => element.channelMembers!.any(
-                  (element) => element.userId == contact.contactUserId,
-                ),
-              );
+              // `firstWhere` بلا `orElse` كانت ترمي `StateError` متى كانت
+              // الجهة تملك التطبيق ولا محادثة معها بعد — وهي الحالة الغالبة
+              // في نتائج البحث الشامل. و`channelMembers!` كانت ترمي بدورها
+              // على قناة بلا أعضاء.
+              final Chat? chat = chats
+                  .where(
+                    (element) =>
+                        element.channelMembers?.any(
+                          (member) => member.userId == contact.contactUserId,
+                        ) ??
+                        false,
+                  )
+                  .firstOrNull;
+              if (chat == null || chat.id == null) return;
               final preferences = GetIt.I<PrefsRepository>();
-              devLog(
-                "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${chat.id}",
-              );
               receiver = chat.channelMembers
                   ?.firstWhere(
                     (element) => element.userId != preferences.myChatId,

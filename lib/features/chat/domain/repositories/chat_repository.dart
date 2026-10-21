@@ -6,6 +6,7 @@ import 'package:trydos/features/chat/data/models/get_order_recipient_id_model.da
 import 'package:trydos/features/chat/data/models/channel_archive_model.dart';
 import 'package:trydos/features/chat/data/models/channel_unread_model.dart';
 import 'package:trydos/features/chat/data/models/message_reminder_model.dart';
+import 'package:trydos/features/chat/data/models/message_tag_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
@@ -48,6 +49,9 @@ abstract class ChatRepository {
   );
   Future<Either<Failure, Message>> sendMessage(Map<String, dynamic> params);
   Future<Either<Failure, Message>> updateMessage(Map<String, dynamic> params);
+  Future<Either<Failure, MessageTagToggleResult>> toggleMessageTag(
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, MessageReminderItem>> createMessageReminder(
     Map<String, dynamic> params,
   );

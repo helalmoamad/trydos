@@ -34,6 +34,7 @@ import 'package:trydos/features/chat/presentation/utils/firebase_presence.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_input_field.dart';
 import 'package:trydos/features/chat/presentation/widgets/edit_message_dialog.dart';
 import 'package:trydos/features/chat/presentation/widgets/message_reminder_dialog.dart';
+import 'package:trydos/features/chat/presentation/widgets/message_tag_dialog.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/document_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_messge.dart';
@@ -1006,13 +1007,27 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         .copyWith(
                                           color: const Color(0xff8D8D8D),
                                         ),
+                                    // بدونها يحصر `AppTextField` أيقونة البادئة
+                                    // في مربّع ٢×٢ بكسل (قيمته الافتراضية)،
+                                    // فتُرسم العدسة مسحوقةً إلى ما لا يُرى.
+                                    isPrefixIconConstraints: false,
                                     prefixIcon: Padding(
                                       padding: HWEdgeInsetsDirectional.only(
-                                        top: 15,
-                                        bottom: 15,
+                                        start: 14,
+                                        end: 12,
                                       ),
-                                      child: SvgPicture.asset(
-                                        AppAssets.searchOutlinedSvg,
+                                      // أيقونة Material لا ملفّ SVG.
+                                      //
+                                      // رسم العدسة داخل `search_outlined.svg`
+                                      // لا يملأ مربّعه: حوله فراغٌ في الملف،
+                                      // فتبدو أكبر من مقاسها المطلوب مهما
+                                      // صغّرناه. و`Icons.search` يرسم بنفس
+                                      // مقاييس السهمين و✕ المجاورين، فتتطابق
+                                      // الأربع بدل أن تُضبط كلٌّ على حدة.
+                                      child: Icon(
+                                        Icons.search,
+                                        size: 20.sp,
+                                        color: const Color(0xff388CFF),
                                       ),
                                     ),
                                     suffix:
@@ -1028,8 +1043,15 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                 GetMessagesBetweenStatus.loading
                                         ? const LoadingIndicator()
                                         : const SizedBox.shrink(),
+                                    // أيقونات اللاحقة ليست أصغر لأن `Container`
+                                    // ارتفاعه 15: `IconButton` يفرض على نفسه
+                                    // هدف لمسٍ أدناه 48×48 ومقاس أيقونةٍ 24
+                                    // وحشواً 8 من كل جهة، فيتجاهل الارتفاع
+                                    // المحيط ويتمدّد. ولا سبيل لتصغيره إلّا
+                                    // بإلغاء قيوده الثلاثة صراحةً — وهو ما
+                                    // تفعله `_SearchFieldIcon` أدناه.
                                     suffixIcon: Container(
-                                      height: 15,
+                                      height: 20,
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
@@ -1052,8 +1074,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                               state.getMessagesBetweenStatus ==
                                                   GetMessagesBetweenStatus
                                                       .loading)) ...[
-                                            IconButton(
-                                              onPressed: () {
+                                            _SearchFieldIcon(
+                                              icon: Icons.arrow_downward,
+                                              onTap: () {
                                                 if (indexForEveryTextInSearchResult >
                                                     0) {
                                                   indexForEveryTextInSearchResult =
@@ -1073,12 +1096,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                       searchResults[indexForEveryTextInSearchResult],
                                                 );
                                               },
-                                              icon: const Icon(
-                                                Icons.arrow_downward,
-                                              ),
                                             ),
-                                            IconButton(
-                                              onPressed: () {
+                                            _SearchFieldIcon(
+                                              icon: Icons.arrow_upward,
+                                              onTap: () {
                                                 MoveToUpToScrollSearch(
                                                   state
                                                       .resultOfSearchTextInChat!
@@ -1086,14 +1107,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                   currentIndextForMessages,
                                                 );
                                               },
-                                              icon: const Icon(
-                                                Icons.arrow_upward,
-                                              ),
                                             ),
                                           ],
-                                          IconButton(
-                                            onPressed: _closeSearch,
-                                            icon: const Icon(Icons.close),
+                                          _SearchFieldIcon(
+                                            icon: Icons.close,
+                                            onTap: _closeSearch,
                                           ),
                                         ],
                                       ),
@@ -1631,7 +1649,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                       focusedIndex: focusedIndex,
                                                                                     ),
                                                                                   MessageActionWidget(
-                                                                                    onTap: () {},
+                                                                                    onTap: () => _tagDialog(
+                                                                                      messages[index],
+                                                                                    ),
                                                                                     iconUrl: AppAssets.addToGroupSvg,
                                                                                     myIndex: lan
                                                                                         ? (messages[index].messageType?.name ==
@@ -2013,7 +2033,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                       focusedIndex: focusedIndex,
                                                                                     ),
                                                                                   MessageActionWidget(
-                                                                                    onTap: () {},
+                                                                                    onTap: () => _tagDialog(
+                                                                                      messages[index],
+                                                                                    ),
                                                                                     iconUrl: AppAssets.addToGroupSvg,
                                                                                     myIndex: lan
                                                                                         ? (messages[index].messageType?.name ==
@@ -2515,7 +2537,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           _copyMessage(message);
           break;
         case 2:
-          // Category
+          _tagDialog(message);
           break;
         case 3:
           _deleteMessageDialog(message);
@@ -2539,7 +2561,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           _deleteMessageDialog(message);
           break;
         case 3:
-          // Category
+          _tagDialog(message);
           break;
         case 4:
           _copyMessage(message);
@@ -2567,6 +2589,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
           duration: const Duration(seconds: 1),
         ),
       );
+  }
+
+  /// يفتح نافذة الوسم.
+  ///
+  /// الوسم يعمل على أي نوع رسالة وعلى المرسَلة والمستقبَلة سواء — يكفي أن
+  /// أكون عضواً في القناة. لكنه يحتاج معرّفاً يعرفه الخادم، فرسالة لم تُؤكَّد
+  /// بعد (معرّف محلي غير رقمي) لا وسم لها.
+  void _tagDialog(Message message) {
+    final String? id = message.id?.toString();
+    if (id == null || int.tryParse(id) == null) return;
+    showMessageTagDialog(context, messageId: id, channelId: widget.chatId);
   }
 
   /// يفتح نافذة التذكير.
@@ -2944,6 +2977,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           receivedAt: messageStatus?.receivedAt,
           messageAnswerId: message.id!,
           isAnswerEdited: message.isEdited == 1,
+          tags: message.tags,
           channalId: message.channelId!,
         );
       } else {
@@ -2993,6 +3027,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
               : parentMessage.messageContent!.content.toString(),
           messageAnswerId: message.id!,
           isAnswerEdited: message.isEdited == 1,
+          tags: message.tags,
           channalId: message.channelId!,
         );
       }
@@ -3020,6 +3055,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isForwarded: message.isForward == 1,
             isEdited: message.isEdited == 1,
             hasReminder: message.reminder != null,
+            tags: message.tags,
             channalId: message.channelId!,
           );
         case 'ImageMessage':
@@ -3054,6 +3090,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isForwarded: message.isForward == 1,
+            tags: message.tags,
           );
         case 'ShareProduct':
           return SharedProductMessage(
@@ -3090,6 +3127,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isForwarded: message.isForward == 1,
+            tags: message.tags,
             watchedAt: messageStatus?.watchedAt,
           );
 
@@ -3113,6 +3151,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isRead: messageStatus?.isWatched ?? false,
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isForwarded: message.isForward == 1,
+            tags: message.tags,
             watchedAt: messageStatus?.watchedAt,
           );
         case 'VoiceMessage':
@@ -3134,6 +3173,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isFirstMessage:
                 message.isFirstMessage! || message.isFirstMessageForThisDay!,
             isForwarded: message.isForward == 1,
+            tags: message.tags,
             channelId: message.channelId!,
           );
         case 'FileMessage':
@@ -3162,6 +3202,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isFirstMessage:
                 message.isFirstMessage! || message.isFirstMessageForThisDay!,
             isForwarded: message.isForward == 1,
+            tags: message.tags,
           );
         case 'VideoCall':
           return CallMessage(
@@ -3230,6 +3271,33 @@ class MessagesDate extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// أيقونة صغيرة داخل حقل البحث في المحادثة.
+///
+/// `IconButton` لا يصغر بوضعه في حاوية قصيرة: له ثلاثة قيود تعمل معاً —
+/// `iconSize` افتراضيّة 24، وحشوٌ 8 من كل جهة، و`constraints` بهدف لمسٍ أدناه
+/// 48×48 يفرضه Material. فيتجاهل ارتفاع الصفّ المحيط ويتمدّد.
+///
+/// فنُلغي الثلاثة صراحةً، ونستعمل `InkResponse` بنصف قطرٍ محدود بدل حشو
+/// `IconButton`: يبقى الهدف قابلاً للّمس دون أن يحجز 48 بكسلاً.
+class _SearchFieldIcon extends StatelessWidget {
+  const _SearchFieldIcon({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkResponse(
+      onTap: onTap,
+      radius: 18,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 4.w),
+        child: Icon(icon, size: 16.sp, color: const Color(0xff388CFF)),
+      ),
     );
   }
 }

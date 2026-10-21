@@ -1114,5 +1114,7 @@
   "boutique_missing_shop": "لم يتم اختيار متجر.",
   "boutique_shop_changed": "تغيّر المتجر، لذلك أُغلقت هذه الصفحة.",
   "boutique_list_header": "البوتيكات ({})",
-  "boutique_add_first": "أضف أول بوتيك لك"
+  "boutique_add_first": "أضف أول بوتيك لك",
+  "message_tag_title": "وسم الرسالة",
+  "new_tag_hint": "وسم جديد"
 }

@@ -1,7 +1,9 @@
 # Trydos — App Test Checklist
 
-Full app checklist. For the Chat tab use the separate file
-[chat-test-scenarios.md](chat-test-scenarios.md).
+Full app checklist. Two tabs have their own file:
+
+- Chat → [chat-test-scenarios.md](chat-test-scenarios.md)
+- Stories → [story-test-scenarios.md](story-test-scenarios.md)
 
 **Before you start**
 
@@ -145,6 +147,9 @@ Test every method that is enabled for your account:
 - [ ] Call while the internet is weak → a clear message, no freeze.
 
 ## 13. Stories
+
+Short pass only. The full list is in
+[story-test-scenarios.md](story-test-scenarios.md).
 
 - [ ] The stories list loads.
 - [ ] Add a story (photo and video).

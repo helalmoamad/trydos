@@ -13,7 +13,9 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
+import 'package:trydos/features/chat/data/models/message_tag_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/widgets/chat_widgets/message_tags_indicator.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
@@ -34,6 +36,7 @@ class TextMessage extends StatefulWidget {
     this.isForwarded = false,
     this.isEdited = false,
     this.hasReminder = false,
+    this.tags = const [],
     this.sendColor,
     this.receivedColor,
     this.userMessagePhoto,
@@ -67,6 +70,9 @@ class TextMessage extends StatefulWidget {
   /// على هذه الرسالة تذكير لم يحن وقته، فيظهر جرس بجوار الوقت. شخصي — لا
   /// يراه بقية الأعضاء.
   final bool hasReminder;
+
+  /// وسوم هذه الرسالة. فارغةً لا تظهر أيقونة أصلاً.
+  final List<MessageTag> tags;
   final String channalId;
   bool isreplay;
   final Color? sendColor;
@@ -450,6 +456,12 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                 AppAssets.notificationIconSvg,
                                                 width: 10.sp,
                                                 height: 10.sp,
+                                              ),
+                                            },
+                                            if (widget.tags.isNotEmpty) ...{
+                                              6.horizontalSpace,
+                                              MessageTagsIndicator(
+                                                tags: widget.tags,
                                               ),
                                             },
                                           ],

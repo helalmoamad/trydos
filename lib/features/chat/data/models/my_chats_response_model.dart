@@ -3,6 +3,7 @@ import 'dart:io';
 
 import '../../../../core/data/model/pagination_model.dart';
 import 'message_reminder_model.dart';
+import 'message_tag_model.dart';
 
 MyChatsResponseModel myChatsResponseModelFromJson(String str) =>
     MyChatsResponseModel.fromJson(json.decode(str));
@@ -122,6 +123,12 @@ class Message {
   /// لا يصل في إشعار `UpdatingMessageEvent`، فعند استبدال رسالة من إشعار
   /// يُحتفظ بالقيمة المحلية بدل مسحها.
   final MessageReminderInfo? reminder;
+
+  /// وسوم هذه الرسالة. تصل مع كل رسالة، وتكون فارغة في أغلبها.
+  ///
+  /// مشتركة بين الأعضاء في الاسم: السطر الواحد يحمل عدد من وسموا به
+  /// ومعرّفاتهم، فحالتي أنا تُعرف بـ `MessageTag.appliedBy(myChatId)`.
+  final List<MessageTag> tags;
   final MessageContent? messageContent;
   final ShareProductContent? shareProductContent;
   final List<MediaMessageContent>? mediaMessageContent;
@@ -161,6 +168,7 @@ class Message {
     this.isForward,
     this.isEdited,
     this.reminder,
+    this.tags = const [],
     this.shareProductContent,
     this.messageContent,
     this.messageStatus,
@@ -187,6 +195,7 @@ class Message {
     final int? isForward,
     final int? isEdited,
     final MessageReminderInfo? reminder,
+    final List<MessageTag>? tags,
     final int? durationInSeconds,
     int? deletedByUserId,
     final MessageContent? messageContent,
@@ -216,6 +225,7 @@ class Message {
       isForward: isForward ?? this.isForward,
       isEdited: isEdited ?? this.isEdited,
       reminder: reminder ?? this.reminder,
+      tags: tags ?? this.tags,
       messageContent: messageContent ?? this.messageContent,
       isFirstMessageForThisDay:
           isFirstMessageForThisDay ?? this.isFirstMessageForThisDay,
@@ -247,6 +257,7 @@ class Message {
     isForward: isForward,
     isEdited: isEdited,
     reminder: value,
+    tags: tags,
     messageContent: messageContent,
     shareProductContent: shareProductContent,
     mediaMessageContent: mediaMessageContent,
@@ -312,6 +323,7 @@ class Message {
           ? (json["is_edited"] ? 1 : 0)
           : int.tryParse(json["is_edited"].toString()),
       reminder: MessageReminderInfo.tryFromJson(json["reminder"]),
+      tags: MessageTag.listFrom(json["tags"]),
       mediaMessageContent:
           json['auth_message_status'] != null &&
               json['auth_message_status']['is_deleted'] == 1
@@ -386,6 +398,7 @@ class Message {
     "is_forward": isForward,
     "is_edited": isEdited,
     "reminder": reminder?.toJson(),
+    "tags": tags.map((e) => e.toJson()).toList(),
     "message_content": messageType == null ? null : messageContent?.toJson(),
     "message_status": messageStatus == null
         ? []

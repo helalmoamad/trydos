@@ -1096,5 +1096,7 @@
   "boutique_missing_shop": "Mağaza seçilmedi.",
   "boutique_shop_changed": "Mağaza değişti, bu yüzden bu sayfa kapatıldı.",
   "boutique_list_header": "Butikler ({})",
-  "boutique_add_first": "İlk butiğinizi ekleyin"
+  "boutique_add_first": "İlk butiğinizi ekleyin",
+  "message_tag_title": "Mesaj etiketi",
+  "new_tag_hint": "Yeni etiket"
 }

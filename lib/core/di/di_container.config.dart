@@ -143,6 +143,8 @@ import '../../features/chat/domain/use_cases/share_product_on_social_app_count_u
     as _i710;
 import '../../features/chat/domain/use_cases/share_product_with_contacts_or_channels_usecase.dart'
     as _i139;
+import '../../features/chat/domain/use_cases/toggle_message_tag_usecase.dart'
+    as _i315;
 import '../../features/chat/domain/use_cases/update_message_usecase.dart'
     as _i487;
 import '../../features/chat/domain/use_cases/update_profile_chat_usecase.dart'
@@ -1165,6 +1167,9 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i420.ChatRepository>(),
     ),
   );
+  gh.factory<_i315.ToggleMessageTagUseCase>(
+    () => _i315.ToggleMessageTagUseCase(gh<_i420.ChatRepository>()),
+  );
   gh.factory<_i487.UpdateMessageUseCase>(
     () => _i487.UpdateMessageUseCase(gh<_i420.ChatRepository>()),
   );
@@ -1272,6 +1277,17 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i318.UploadFileMediaServerUseCase>(),
     ),
   );
+  gh.lazySingleton<_i536.StoryBloc>(
+    () => _i536.StoryBloc(
+      gh<_i1043.UploadFileCloudinaryUseCase>(),
+      gh<_i804.GetStoryUseCase>(),
+      gh<_i912.GetWidthAndHeightUseCase>(),
+      gh<_i4.IncreaseViewersUseCase>(),
+      gh<_i737.AddStoryToOurServerUseCase>(),
+      gh<_i318.UploadFileMediaServerUseCase>(),
+      gh<_i176.DeleteStoryUseCase>(),
+    ),
+  );
   gh.lazySingleton<_i243.ChatBloc>(
     () => _i243.ChatBloc(
       gh<_i418.GetContactsUseCase>(),
@@ -1297,22 +1313,12 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i900.BlockOrDeleteBlockUserUseCase>(),
       gh<_i677.SendErrorToServerUseCase>(),
       gh<_i487.UpdateMessageUseCase>(),
+      gh<_i315.ToggleMessageTagUseCase>(),
       gh<_i397.CreateMessageReminderUseCase>(),
       gh<_i397.GetMyRemindersUseCase>(),
       gh<_i397.DeleteMessageReminderUseCase>(),
       gh<_i1007.ArchiveChannelUseCase>(),
       gh<_i118.MarkChatUnreadUseCase>(),
-    ),
-  );
-  gh.lazySingleton<_i536.StoryBloc>(
-    () => _i536.StoryBloc(
-      gh<_i1043.UploadFileCloudinaryUseCase>(),
-      gh<_i804.GetStoryUseCase>(),
-      gh<_i912.GetWidthAndHeightUseCase>(),
-      gh<_i4.IncreaseViewersUseCase>(),
-      gh<_i737.AddStoryToOurServerUseCase>(),
-      gh<_i318.UploadFileMediaServerUseCase>(),
-      gh<_i176.DeleteStoryUseCase>(),
     ),
   );
   gh.lazySingleton<_i903.HomeBloc>(

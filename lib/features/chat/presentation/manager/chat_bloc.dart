@@ -31,10 +31,12 @@ import 'package:trydos/features/chat/domain/use_cases/send_error_to_server_useca
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/update_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/message_reminder_usecases.dart';
+import 'package:trydos/features/chat/domain/use_cases/toggle_message_tag_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/archive_channel_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/mark_chat_unread_usecase.dart';
 import 'package:trydos/features/app/blocs/sensitive_connectivity/sensitive_connectivity_bloc.dart';
 import 'package:trydos/features/chat/data/models/message_reminder_model.dart';
+import 'package:trydos/features/chat/data/models/message_tag_model.dart';
 import 'package:trydos/features/chat/domain/use_cases/share_product_on_social_app_count_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/update_profile_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/upload_file_usecase.dart';
@@ -89,6 +91,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     this.blockOrDeleteBlockUserUseCase,
     this.sendErrorToServerUseCase,
     this.updateMessageUseCase,
+    this.toggleMessageTagUseCase,
     this.createMessageReminderUseCase,
     this.getMyRemindersUseCase,
     this.deleteMessageReminderUseCase,
@@ -117,6 +120,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<MessageUpdatedFromNotificationEvent>(
       _onMessageUpdatedFromNotificationEvent,
     );
+    on<ToggleMessageTagEvent>(_onToggleMessageTagEvent);
     on<SetMessageReminderEvent>(_onSetMessageReminderEvent);
     on<CancelMessageReminderEvent>(_onCancelMessageReminderEvent);
     on<GetMyRemindersEvent>(_onGetMyRemindersEvent);
@@ -173,6 +177,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   final SendMessageUseCase sendMessageUseCase;
   final UpdateMessageUseCase updateMessageUseCase;
+  final ToggleMessageTagUseCase toggleMessageTagUseCase;
   final CreateMessageReminderUseCase createMessageReminderUseCase;
   final GetMyRemindersUseCase getMyRemindersUseCase;
   final DeleteMessageReminderUseCase deleteMessageReminderUseCase;
@@ -339,9 +344,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         state.copyWith(
           chats: chats,
           pinnedChats: pinnedChats,
-          // الفرق لا القيمة: المجموع يخصّ كل المحادثات، فنحرّكه بمقدار ما
-          // تغيّر في هذه وحدها.
-          unReadMessagesFromAllChats: previousUnread - before + count,
+          unReadMessagesFromAllChats: unreadChatsCount(chats, pinnedChats),
           newSortedChatsByDate: groupReceivedMessageOnDays(
             chats: [...chats, ...pinnedChats],
           ),
@@ -486,25 +489,116 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       final List<Chat> pinnedChats = List.of(state.pinnedChats)
         ..removeWhere((e) => incomingIds.contains(e.id));
 
-      // إعادة حساب المجموع كاملاً من القوائم بعد الدمج، لا إضافة نصيب
+      // إعادة حساب العدّاد كاملاً من القوائم بعد الدمج، لا إضافة نصيب
       // المؤرشفة إلى الرقم السابق: إعادة تشغيل هذا الحدث مرّتين كانت ستضاعف
       // العدّ. الحساب من الحالة لا من الردّ يجعله صحيحاً مهما تكرّر.
-      int unread = 0;
-      for (final Chat chat in [...chats, ...pinnedChats]) {
-        unread += chat.totalUnreadMessageCount ?? 0;
-      }
-
       emit(
         state.copyWith(
           chats: sortChatsByTime(chats),
           pinnedChats: pinnedChats,
-          unReadMessagesFromAllChats: unread,
+          unReadMessagesFromAllChats: unreadChatsCount(chats, pinnedChats),
           newSortedChatsByDate: groupReceivedMessageOnDays(
             chats: [...chats, ...pinnedChats],
           ),
         ),
       );
     });
+  }
+
+  /// يضيف وسماً إلى رسالة أو يزيله.
+  ///
+  /// لا عرض متفائل: الخادم يعيد **القائمة كاملة بعد التغيير**، وفيها العدّاد
+  /// ومن وسموا — وهي أرقام لا نملك حسابها عندنا، فقد يكون عضوٌ آخر وسم نفس
+  /// الرسالة بينما النافذة مفتوحة. فننتظر ونأخذ ما عاد.
+  ///
+  /// والوسم مشترك لا شخصي، فالخادم يبثّ `UpdatingMessageEvent` إلى بقية
+  /// الأعضاء بنفسه — لا عمل علينا هنا تجاه الطرف الآخر.
+  FutureOr<void> _onToggleMessageTagEvent(
+    ToggleMessageTagEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    emit(state.copyWith(toggleMessageTagStatus: ToggleMessageTagStatus.loading));
+
+    final response = await toggleMessageTagUseCase(
+      ToggleMessageTagParams(
+        messageId: event.messageId,
+        tag: event.tag,
+        add: event.add,
+      ),
+    );
+
+    response.fold(
+      (l) => emit(
+        state.copyWith(toggleMessageTagStatus: ToggleMessageTagStatus.failure),
+      ),
+      (r) {
+        final List<Chat> chats = _chatsWithTags(
+          state.chats,
+          channelId: event.channelId,
+          messageId: event.messageId,
+          tags: r.tags,
+        );
+        final List<Chat> pinnedChats = _chatsWithTags(
+          state.pinnedChats,
+          channelId: event.channelId,
+          messageId: event.messageId,
+          tags: r.tags,
+        );
+
+        emit(
+          state.copyWith(
+            chats: chats,
+            pinnedChats: pinnedChats,
+            newSortedChatsByDate: groupReceivedMessageOnDays(
+              chats: [...chats, ...pinnedChats],
+            ),
+            toggleMessageTagStatus: ToggleMessageTagStatus.success,
+          ),
+        );
+      },
+    );
+  }
+
+  /// عدد المحادثات التي تنتظر القراءة — **لا عدد الرسائل**.
+  ///
+  /// محادثةٌ فيها خمس رسائل غير مقروءة تُحسب واحدة: العدّاد يجيب «كم محادثة
+  /// تنتظرك»، لا «كم رسالة وصلتك».
+  ///
+  /// ويُحسب من القوائم في كل مرّة بدل أن يُجمع ويُطرح. كانت سبعة مواضع
+  /// تحرّكه كلٌّ بحسابه الخاص، فيكفي أن يخطئ واحدٌ منها لتنزلق القيمة ولا
+  /// تعود — وقد وصلت إلى `-1` فاختفت الشارة عن أيقونة الدردشة. الحساب من
+  /// المصدر لا يَعرف الانزلاق.
+  ///
+  /// والمطابقة بالمعرّف تمنع عدّ محادثة مرّتين لو ظهرت في القائمتين معاً.
+  static int unreadChatsCount(List<Chat> chats, List<Chat> pinnedChats) {
+    final Set<String> seen = {};
+    int count = 0;
+    for (final Chat chat in [...chats, ...pinnedChats]) {
+      final String? id = chat.id;
+      if (id != null && !seen.add(id)) continue;
+      if ((chat.totalUnreadMessageCount ?? 0) > 0) count++;
+    }
+    return count;
+  }
+
+  /// يستبدل وسوم رسالة داخل قناتها بالقائمة التي أعادها الخادم.
+  List<Chat> _chatsWithTags(
+    List<Chat> source, {
+    required String? channelId,
+    required String? messageId,
+    required List<MessageTag> tags,
+  }) {
+    if (channelId == null || messageId == null) return source;
+    return source.map((chat) {
+      if (chat.id != channelId) return chat;
+      final List<Message> messages = List.of(chat.messages ?? []);
+      final int index = messages.indexWhere(
+        (element) => element.id == messageId || element.localId == messageId,
+      );
+      if (index == -1) return chat;
+      messages[index] = messages[index].copyWith(tags: tags);
+      return chat.copyWith(messages: messages);
+    }).toList();
   }
 
   /// يضبط تذكيراً على رسالة (أو يغيّر وقت تذكير قائم).
@@ -1387,18 +1481,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           }*/
 
           ErrorManager.resetRetry('GetChatsEvent');
-          // هذا الردّ يحمل غير المؤرشفة وحدها (الخادم يستثنيها)، فهذا مجموع
+          // هذا الردّ يحمل غير المؤرشفة وحدها (الخادم يستثنيها)، فهذا عددٌ
           // **جزئي**. يكمله `GetArchivedChatsEvent` أدناه بإعادة الحساب على
           // القوائم بعد دمج المؤرشفة — فالمؤرشفة تُحتسب في غير المقروء مثل أي
           // محادثة، وتظهر على أيقونة الدردشة في الصفحة الرئيسية.
-          int unReadMessagesFromAllChats = 0;
-          r.data?.chats?.forEach((element) {
-            unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
-          });
-
-          r.data?.pinnedChats?.forEach((element) {
-            unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
-          });
           // List<Chat> newChats = List.of(state.chats.isEmpty
           //     ? r.data!.chats!
           //     : MergeOldMessageWithNew(
@@ -1460,7 +1546,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               newSortedChatsByDate: groupReceivedMessageOnDays(
                 chats: [...newChats, ...newPinnedChats],
               ),
-              unReadMessagesFromAllChats: unReadMessagesFromAllChats,
+              unReadMessagesFromAllChats: unreadChatsCount(
+                newChats,
+                newPinnedChats,
+              ),
             ),
           );
           if (kDebugMode)
@@ -1946,15 +2035,14 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         (element) => element.id == event.prevMessageId,
       );
       chats[0] = chats[0].copyWith(messages: messages);
+      final List<Chat> nextChats = fromPinned ? state.chats : chats;
+      final List<Chat> nextPinned = !fromPinned ? state.pinnedChats : chats;
       emit(
         state.copyWith(
           receiveMessageStatus: ReceiveMessageStatus.success,
-          unReadMessagesFromAllChats: event.increaseUnReadMessages
-              ? (state.unReadMessagesFromAllChats +
-                    ((event.message.senderUserId! != _prefsRepository.myChatId)
-                        ? 1
-                        : 0))
-              : state.unReadMessagesFromAllChats,
+          // عدّاد المحادثات: الرسالة الثانية من نفس المحادثة لا تزيده، لأن
+          // عدّادها الخاص ارتفع أعلاه وهي محسوبةٌ أصلاً.
+          unReadMessagesFromAllChats: unreadChatsCount(nextChats, nextPinned),
           newSortedChatsByDate: groupReceivedMessageOnDays(
             chats: [
               ...chats,
@@ -1963,8 +2051,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           ),
           currentChannelReceivedMessage: chat.localId ?? chat.id,
           channelId: event.message.channelId,
-          chats: fromPinned ? state.chats : chats,
-          pinnedChats: !fromPinned ? state.pinnedChats : chats,
+          chats: nextChats,
+          pinnedChats: nextPinned,
         ),
       );
       // add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
@@ -2016,18 +2104,18 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       ),
     );
 
+    final List<Chat> nextChats = fromPinned ? state.chats : chats;
+    final List<Chat> nextPinned = !fromPinned ? state.pinnedChats : chats;
     emit(
       state.copyWith(
-        unReadMessagesFromAllChats: event.increaseUnReadMessages
-            ? (state.unReadMessagesFromAllChats + 1)
-            : state.unReadMessagesFromAllChats,
+        unReadMessagesFromAllChats: unreadChatsCount(nextChats, nextPinned),
         newSortedChatsByDate: groupReceivedMessageOnDays(
           chats: [...chats, ...(fromPinned ? state.chats : state.pinnedChats)],
         ),
         currentChannelReceivedMessage: chat.localId ?? chat.id,
         channelId: event.channelId,
-        chats: fromPinned ? state.chats : chats,
-        pinnedChats: !fromPinned ? state.pinnedChats : chats,
+        chats: nextChats,
+        pinnedChats: nextPinned,
       ),
     );
   }
@@ -2069,32 +2157,22 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       },
       (r) {
         ErrorManager.resetRetry('ReadAllMessagesEvent');
+        List<Chat> cleared(List<Chat> source) => source
+            .map(
+              (e) =>
+                  e.id == id ? e.copyWith(totalUnreadMessageCount: 0) : e,
+            )
+            .toList();
+        final List<Chat> readChats = cleared(state.chats);
+        final List<Chat> readPinned = cleared(state.pinnedChats);
         emit(
           state.copyWith(
             readMessagesStatus: ResetReadMessagesStatus.success,
-            unReadMessagesFromAllChats:
-                state.unReadMessagesFromAllChats -
-                (state.chats
-                        .firstWhere(
-                          (element) => element.id == id,
-                          orElse: () => state.pinnedChats.firstWhere(
-                            (element) => element.id == id,
-                          ),
-                        )
-                        .totalUnreadMessageCount ??
-                    0),
-            chats: state.chats.map((e) {
-              if (e.id == id) {
-                return e.copyWith(totalUnreadMessageCount: 0);
-              }
-              return e;
-            }).toList(),
-            pinnedChats: state.pinnedChats.map((e) {
-              if (e.id == id) {
-                return e.copyWith(totalUnreadMessageCount: 0);
-              }
-              return e;
-            }).toList(),
+            // تصفير عدّاد هذه المحادثة يُسقطها من العدّ تلقائياً — بلا طرحٍ
+            // يدوي كان يَخصم عدد رسائلها فينزلق المجموع.
+            unReadMessagesFromAllChats: unreadChatsCount(readChats, readPinned),
+            chats: readChats,
+            pinnedChats: readPinned,
           ),
         );
       },
@@ -2492,23 +2570,17 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     );
     // `ChannelWatchedEvent` يصل في حالتين مختلفتين تماماً:
     //
-    // * **الطرف الآخر قرأ رسالتي** — لا علاقة لذلك بعدد رسائلي غير المقروءة،
-    //   فلا يُمسّ العدّاد. وإنقاصه هنا كان الخلل: كل إشعار قراءة يَخصم واحداً
-    //   من عدّادك، فينزلق إلى السالب، فتصل رسالة جديدة فتزيده من `-1` إلى `0`
-    //   — وشرط عرض الشارة `> 0` فلا يظهر شيء.
-    // * **أنا قرأتها من جهاز آخر** — هنا الإنقاص صحيح.
+    // * **الطرف الآخر قرأ رسالتي** — لا علاقة لذلك بما ينتظرني أنا.
+    // * **أنا قرأتها من جهاز آخر** — هنا تُصبح المحادثة مقروءة.
     //
-    // و`clamp` عند الصفر حماية لازمة في الحالتين: عدّاد غير المقروء لا يكون
-    // سالباً بأي حال.
-    final bool watchedByMe = event.userId == _prefsRepository.myChatId;
-    final int previousUnread = state.unReadMessagesFromAllChats;
-    final int nextUnread = watchedByMe
-        ? (previousUnread > 0 ? previousUnread - 1 : 0)
-        : (previousUnread > 0 ? previousUnread : 0);
-
+    // التمييز بينهما يتمّ في [getChatsAfterEditPropertyOfMessage] على عدّاد
+    // المحادثة نفسها، فيكفي أن نشتقّ العدد من القوائم بعده. وهذا وحده يُغلق
+    // الخلل القديم: كان كل إشعار قراءة يَخصم واحداً من العدّاد العام فينزلق
+    // إلى السالب، ثم ترفعه رسالةٌ جديدة من `-1` إلى `0` — وشرط عرض الشارة
+    // `> 0` فلا يظهر شيء. والقيمة المشتقّة لا تكون سالبة أصلاً.
     emit(
       state.copyWith(
-        unReadMessagesFromAllChats: nextUnread,
+        unReadMessagesFromAllChats: unreadChatsCount(chats, pinnedChats),
         chats: chats,
         newSortedChatsByDate: groupReceivedMessageOnDays(
           chats: [...chats, ...pinnedChats],

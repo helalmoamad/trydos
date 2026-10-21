@@ -12,6 +12,8 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
+import 'package:trydos/features/chat/presentation/utils/chat_search_match.dart';
+import 'package:trydos/features/chat/presentation/utils/device_contact_names.dart';
 import 'package:trydos/features/chat/presentation/widgets/contact_card.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
@@ -44,12 +46,45 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
     GetIt.I<ChatBloc>().state.contacts,
   );
 
+  /// نصّ البحث الحالي — تُعاد التصفية به حين تصل قائمة جديدة من الخادم، بدل
+  /// أن تُلغى نتائج المستخدم.
+  String _query = '';
+
   @override
   void initState() {
     LastPagesTracker.push('MyContactsPage');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     chatBloc.add(const GetContactsEvent());
+    // قراءة الدفتر بالتوازي مع طلب الخادم. تُعاد البناء عند انتهائها فتُستبدل
+    // أسماء التطبيق بالأسماء المحفوظة — ولو تأخّرت أو تعذّرت بقيت أسماء
+    // الخادم وعملت الصفحة كما كانت.
+    DeviceContactNames.load().then((_) {
+      if (mounted) setState(() {});
+    });
     super.initState();
+  }
+
+  /// الاسم المعروض لهذه الجهة: من الدفتر إن عُرف، وإلّا اسم الخادم.
+  String? _displayName(Contact contact) =>
+      DeviceContactNames.nameFor(contact.mobilePhone);
+
+  /// يصفّي القائمة بنصّ البحث الحالي.
+  ///
+  /// يطابق الاسم **المعروض** أوّلاً: المستخدم يبحث بما يراه أمامه. ويبقى اسم
+  /// الخادم مطابَقاً أيضاً، فمن يعرف الشخص باسمه في التطبيق يجده كذلك.
+  List<Contact> _filter(List<Contact> source) {
+    return source
+        .where(
+          (contact) =>
+              ChatSearchMatch.matches(
+                name: _displayName(contact),
+                phone: contact.mobilePhone,
+                query: _query,
+              ) ||
+              // الرقم مطابَقٌ في الشرط الأوّل، فلا يُعاد هنا.
+              ChatSearchMatch.matches(name: contact.name, query: _query),
+        )
+        .toList();
   }
 
   @override
@@ -127,23 +162,11 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                     color: const Color(0xffD3D3D3),
                   ),
                   onChange: (String? text) {
-                    if (text?.isEmpty ?? true) {
-                      searchContacts.value = chatBloc.state.contacts;
-                    } else {
-                      List<Contact> search = [];
-                      for (Contact contact
-                          in GetIt.I<ChatBloc>().state.contacts) {
-                        if (contact.name!.toLowerCase().contains(
-                              text?.toLowerCase() ?? '',
-                            ) ||
-                            contact.mobilePhone!.toLowerCase().contains(
-                              text?.toLowerCase() ?? '',
-                            )) {
-                          search.add(contact);
-                        }
-                      }
-                      searchContacts.value = search;
-                    }
+                    _query = text ?? '';
+                    // `contact.name!` و`contact.mobilePhone!` كانا يُسقطان
+                    // البحث مع أوّل حرف متى وُجدت جهةٌ بلا اسم أو بلا رقم —
+                    // وكلاهما `String?` يأتي من JSON بلا ضمان.
+                    searchContacts.value = _filter(chatBloc.state.contacts);
                   },
                   contentPadding: HWEdgeInsetsDirectional.fromSTEB(
                     20.w,
@@ -166,7 +189,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
               buildWhen: (p, c) => p.getContactsStatus != c.getContactsStatus,
               listenWhen: (p, c) => p.getContactsStatus != c.getContactsStatus,
               listener: (context, state) {
-                searchContacts.value = state.contacts;
+                searchContacts.value = _filter(state.contacts);
               },
               builder: (context, state) {
                 if ((state.getContactsStatus == GetContactsStatus.loading ||
@@ -215,6 +238,9 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                                   : null,
                               index: index,
                               contact: searchedContacts[index],
+                              nameOverride: _displayName(
+                                searchedContacts[index],
+                              ),
                             );
                           },
                           separator: const SizedBox.shrink(),

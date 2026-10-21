@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:trydos/features/chat/data/models/message_tag_model.dart';
+import 'package:trydos/features/chat/presentation/widgets/chat_widgets/message_tags_indicator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_file/open_file.dart';
 import 'package:swipe_to/swipe_to.dart';
@@ -32,6 +34,7 @@ class DocumentMessage extends StatefulWidget {
   DocumentMessage({
     Key? key,
     this.isForwarded = false,
+    this.tags = const [],
     this.isLocalMessage = true,
     required this.isSent,
     required this.isRead,
@@ -54,6 +57,9 @@ class DocumentMessage extends StatefulWidget {
   final DateTime? receivedAt;
   final DateTime? createAt;
   final bool isForwarded;
+
+  /// وسوم هذه الرسالة. فارغةً لا تظهر أيقونة أصلاً.
+  final List<MessageTag> tags;
   final DateTime? watchedAt;
   final String messageId;
   File? documentFile;
@@ -409,6 +415,12 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                               AppAssets.forwardedSvg,
                                               width: 10.sp,
                                               height: 10.sp,
+                                            ),
+                                          },
+                                          if (widget.tags.isNotEmpty) ...{
+                                            6.horizontalSpace,
+                                            MessageTagsIndicator(
+                                              tags: widget.tags,
                                             ),
                                           },
                                         ],

@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trydos/features/chat/data/models/message_tag_model.dart';
+import 'package:trydos/features/chat/presentation/widgets/chat_widgets/message_tags_indicator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -40,6 +42,7 @@ class VoiceMessage extends StatefulWidget {
     this.file,
     this.fileUrl,
     this.isForwarded = false,
+    this.tags = const [],
     required this.isFirstMessage,
     this.receivedAt,
     this.createAt,
@@ -49,6 +52,9 @@ class VoiceMessage extends StatefulWidget {
   final bool isSent;
   final bool isFirstMessage;
   final bool isForwarded;
+
+  /// وسوم هذه الرسالة. فارغةً لا تظهر أيقونة أصلاً.
+  final List<MessageTag> tags;
   final String messageId;
   File? file;
   final String? fileUrl;
@@ -687,6 +693,14 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                     AppAssets.forwardedSvg,
                                                     width: 10.sp,
                                                     height: 10.sp,
+                                                  ),
+                                                },
+                                                if (widget
+                                                    .tags
+                                                    .isNotEmpty) ...{
+                                                  6.horizontalSpace,
+                                                  MessageTagsIndicator(
+                                                    tags: widget.tags,
                                                   ),
                                                 },
                                               ],

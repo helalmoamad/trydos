@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/features/chat/data/models/message_tag_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
 import '../../manager/chat_state.dart';
@@ -42,6 +43,7 @@ class ReplayMessage extends StatefulWidget {
     this.index = 0,
     this.watchedAt,
     this.isAnswerEdited = false,
+    this.tags = const [],
     required this.channalId,
   }) : super(key: key);
   final String message;
@@ -59,6 +61,9 @@ class ReplayMessage extends StatefulWidget {
 
   /// عُدِّل نصّ **الردّ** نفسه (لا الرسالة المقتبسة فوقه).
   final bool isAnswerEdited;
+
+  /// وسوم رسالة الردّ نفسها، تُمرَّر إلى الفقاعة الداخلية.
+  final List<MessageTag> tags;
   final String channalId;
   final DateTime messageDate;
   final File? answeredFile;
@@ -263,6 +268,7 @@ class _ReplayMessageState extends State<ReplayMessage> {
                                       receivedAt: widget.receivedAt,
                                       createAt: widget.createAt!,
                                       isEdited: widget.isAnswerEdited,
+                                      tags: widget.tags,
                                       channalId: widget.channalId,
                                     )),
             ],

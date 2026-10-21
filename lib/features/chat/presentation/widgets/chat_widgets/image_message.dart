@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/features/chat/data/models/message_tag_model.dart';
+import 'package:trydos/features/chat/presentation/widgets/chat_widgets/message_tags_indicator.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
@@ -35,6 +37,7 @@ class ImageMessage extends StatefulWidget {
   ImageMessage({
     Key? key,
     this.isForwarded = false,
+    this.tags = const [],
     this.isLocalMessage = true,
     required this.isSent,
     required this.isRead,
@@ -55,6 +58,9 @@ class ImageMessage extends StatefulWidget {
   final bool isSent;
   final bool isFirstMessage;
   final bool isForwarded;
+
+  /// وسوم هذه الرسالة. فارغةً لا تظهر أيقونة أصلاً.
+  final List<MessageTag> tags;
   bool isSlopRight;
   final String messageId;
   bool timer = false;
@@ -863,6 +869,10 @@ class _ImageMessageState extends State<ImageMessage> {
                   width: 10.sp,
                   height: 10.sp,
                 ),
+              },
+              if (widget.tags.isNotEmpty) ...{
+                6.horizontalSpace,
+                MessageTagsIndicator(tags: widget.tags),
               },
             ],
           ),
