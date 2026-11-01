@@ -154,7 +154,7 @@ class ChatRemoteDataSource {
       serverName: ServerName.chat,
       requestPrams: RequestConfig<List<Message>>(
         endpoint: ChatEndPoints.getMessagesForChatEP(params['params']),
-        data: params['data'],
+        queryParameters: params['data'],
         response: ResponseValue<List<Message>>(
           fromJson: (response) => List<Message>.from(
             response["data"]!.map((x) => Message.fromJson(x)),
@@ -460,7 +460,9 @@ class ChatRemoteDataSource {
     Map<String, dynamic> params,
   ) {
     if (kDebugMode)
-      devLog("/////////////////////////////////////////////////${params["id"]}");
+      devLog(
+        "/////////////////////////////////////////////////${params["id"]}",
+      );
     GetClient<GetSharedProductCountModel> getSharedProductCount =
         GetClient<GetSharedProductCountModel>(
           serverName: ServerName.chat,

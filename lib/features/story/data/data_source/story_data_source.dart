@@ -84,7 +84,9 @@ class StoriesDataSource {
             response: ResponseValue<Either<int, CollectionStoryModel>>(
               fromJson: (response) {
                 if (response['data']['id'] != null)
-                  return Left(response['data']['id']);
+                  return Left(
+                    int.tryParse(response['data']['id'].toString()) ?? 0,
+                  );
                 return Right(CollectionStoryModel.fromJson(response['data']));
               },
             ),

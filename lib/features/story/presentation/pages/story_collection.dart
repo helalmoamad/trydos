@@ -52,6 +52,7 @@ import '../../../home/presentation/manager/homeBloc/home_state.dart';
 import '../../data/models/get_stories_model.dart';
 import '../bloc/story_state.dart';
 import '../widget/animated_builder.dart';
+import '../widget/delete_story_confirm_dialog.dart';
 import 'dart:ui';
 import 'package:trydos/common/helper/dev_log.dart';
 
@@ -1018,24 +1019,40 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                   : Material(
                                       color: Colors.transparent,
                                       child: InkWell(
-                                        onTap: () {
+                                        onTap: () async {
                                           if (state.deleteStoryStatus ==
                                               DeleteStoryStatus.loading) {
                                             return;
                                           }
+                                          // مُعرّف الستوري يُقرأ قبل الانتظار،
+                                          // فحالة البلوك قد تتغيّر أثناء فتح
+                                          // النافذة.
+                                          final String storyId = state
+                                              .storiesCollections[widget
+                                                  .collectionIndex]
+                                              .stories![state
+                                                  .currentStoryInEachCollection[widget
+                                                  .collectionIndex]!]
+                                              .id
+                                              .toString();
+                                          // يُوقف العدّاد والفيديو بلا `reset`
+                                          // حتى يُكمل الستوري من موضعه إن ألغى
+                                          // المستخدم الحذف.
                                           widget.animatedController.stop();
+                                          _videoController?.pause();
+                                          final bool confirmed =
+                                              await showDeleteStoryConfirmDialog(
+                                                context,
+                                              );
+                                          if (!mounted) return;
+                                          if (!confirmed) {
+                                            widget.animatedController.forward();
+                                            _videoController?.play();
+                                            return;
+                                          }
                                           widget.animatedController.reset();
                                           GetIt.I<StoryBloc>().add(
-                                            DeleteStoryEvent(
-                                              storyId: state
-                                                  .storiesCollections[widget
-                                                      .collectionIndex]
-                                                  .stories![state
-                                                      .currentStoryInEachCollection[widget
-                                                      .collectionIndex]!]
-                                                  .id
-                                                  .toString(),
-                                            ),
+                                            DeleteStoryEvent(storyId: storyId),
                                           );
                                         },
                                         child:
@@ -1137,7 +1154,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                 bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
               child: Container(
-                height: MediaQuery.of(context).size.height, 
+                height: MediaQuery.of(context).size.height,
                 constraints: BoxConstraints(
                   maxHeight: MediaQuery.of(context).size.height * 0.8,
                 ),
