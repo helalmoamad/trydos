@@ -208,7 +208,7 @@ class Cart {
   final double? discount;
   final double? price;
   final double? offerPrice;
-  final int? tax;
+  final double? tax;
   final String? slug;
   final String? name;
   final int? countOfPieces;
@@ -288,7 +288,7 @@ class Cart {
     double? discount,
     double? price,
     double? offerPrice,
-    int? tax,
+    double? tax,
     String? slug,
     String? name,
     int? countOfPieces,
@@ -372,7 +372,7 @@ class Cart {
     discount: json["discount"]?.toDouble(),
     price: json["price"]?.toDouble(),
     offerPrice: json["offer_price"]?.toDouble(),
-    tax: json["tax"],
+    tax: double.tryParse(json["tax"].toString()),
     slug: json["slug"],
     name: json["name"],
     countOfPieces: json["count_of_pieces"],

@@ -17,7 +17,6 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/core/utils/media_display_url.dart';
 import 'package:trydos/features/home/presentation/widgets/order_report_panel.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -9918,379 +9917,478 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   width: 1.sw,
                                   child: Column(
                                     children: [
-                                      Container(
-                                        alignment: Alignment.center,
-                                        width: 1.sw,
-                                        height: 80.h,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xffF8F8F8),
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(12.r),
-                                          ),
-                                          border:
-                                              (_orderPhotos?.length ?? 0) > 0
-                                              ? null
-                                              : Border.all(
-                                                  color: const Color(
-                                                    0xff402CDD,
-                                                  ),
-                                                ),
-                                        ),
-                                        child:
-                                            (_orderPhotos?.length ?? 0) > 0 ||
-                                                (state.uploadImagesForReturnProductStatus ==
-                                                    UploadImagesForReturnProductStatus
-                                                        .loading)
-                                            ? Stack(
-                                                children: [
-                                                  (state.uploadImagesForReturnProductStatus ==
-                                                          UploadImagesForReturnProductStatus
-                                                              .loading)
-                                                      ? ListView.builder(
-                                                          scrollDirection:
-                                                              Axis.horizontal,
-                                                          itemCount:
-                                                              orderPhotos
-                                                                  .value
-                                                                  .length +
-                                                              1,
-                                                          itemBuilder: (context, index) {
-                                                            if (index ==
-                                                                orderPhotos
-                                                                    .value
-                                                                    .length) {
-                                                              return Shimmer.fromColors(
-                                                                baseColor: Colors
-                                                                    .grey
-                                                                    .shade300,
-                                                                highlightColor:
-                                                                    Colors
-                                                                        .grey
-                                                                        .shade50,
-                                                                child: Container(
-                                                                  decoration: BoxDecoration(
-                                                                    color: Colors
-                                                                        .grey
-                                                                        .shade600,
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                          15.r,
-                                                                        ),
-                                                                  ),
-                                                                  width: 57.w,
-                                                                  height: 80.h,
-                                                                ),
-                                                              );
-                                                            }
-                                                            return Container(
-                                                              width: 57.w,
+                                      InkWell(
+                                        onTap: () async {
+                                          void _showImagePreview(
+                                            File imageFile,
+                                          ) {
+                                            showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (BuildContext context) {
+                                                return SearchImagePreviewWidget(
+                                                  imageFile: imageFile,
+                                                  onSend: (File file) {
+                                                    orderBloc.add(
+                                                      UploadImagesForReturnProductEvent(
+                                                        file,
+                                                      ),
+                                                    );
+                                                  },
+                                                  onCancel: () => Navigator.of(
+                                                    context,
+                                                  ).pop(),
+                                                );
+                                              },
+                                            );
+                                          }
 
-                                                              height: 80.h,
-                                                              margin: EdgeInsets.only(
-                                                                right:
-                                                                    LanguageService
-                                                                            .languageCode ==
-                                                                        "ar"
-                                                                    ? 0
-                                                                    : 5,
-                                                                left:
-                                                                    LanguageService
-                                                                            .languageCode !=
-                                                                        "ar"
-                                                                    ? 0
-                                                                    : 5,
-                                                              ),
-                                                              child: Stack(
-                                                                children: [
-                                                                  ClipRRect(
-                                                                    borderRadius:
-                                                                        const BorderRadius.all(
-                                                                          Radius.circular(
-                                                                            12,
-                                                                          ),
-                                                                        ),
-                                                                    child: MyCachedNetworkImage(
-                                                                      imageUrl: mediaDisplayUrl(
-                                                                        _orderPhotos![index]!,
-                                                                        legacyFolder:
-                                                                            'return_request_products',
-                                                                        baseUrl:
-                                                                            dotenv.env['Images_Url'],
-                                                                      ),
-                                                                      imageFit:
-                                                                          BoxFit
-                                                                              .fill,
-                                                                      width:
-                                                                          57.w,
-                                                                      height:
-                                                                          80.h,
-                                                                    ),
-                                                                  ),
-                                                                  Positioned(
-                                                                    child: InkWell(
-                                                                      onTap: () {
-                                                                        orderBloc.add(
-                                                                          RemoveImagesForReturnProductEvent(
-                                                                            index,
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                      child: Container(
-                                                                        padding:
-                                                                            const EdgeInsets.all(
-                                                                              2,
-                                                                            ),
-                                                                        width:
-                                                                            15.w,
-                                                                        height:
-                                                                            15.h,
-                                                                        decoration: BoxDecoration(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          borderRadius: BorderRadius.circular(
-                                                                            12,
-                                                                          ),
-                                                                        ),
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return GalleryAndCameraDialogWidget(
+                                                fromChat:
+                                                    true, // تفعيل معاينة الصور
+                                                onChooseFileFromGalleryAction:
+                                                    (
+                                                      AssetEntity? assetEntity,
+                                                    ) async {
+                                                      if (assetEntity != null) {
+                                                        // originFile
+                                                        // يرجع
+                                                        // null
+                                                        // للملفات
+                                                        // غير
+                                                        // المقروءة.
+                                                        final File? pickedFile =
+                                                            await assetEntity
+                                                                .originFile;
+                                                        if (pickedFile ==
+                                                            null) {
+                                                          showWarningMessage(
+                                                            context,
+                                                            LocaleKeys
+                                                                .error_picking_file
+                                                                .tr(),
+                                                          );
+                                                          return;
+                                                        }
+                                                        File file = pickedFile;
+                                                        String mimeStr =
+                                                            lookupMimeType(
+                                                              file
+                                                                  .absolute
+                                                                  .path,
+                                                            ) ??
+                                                            '';
+                                                        var fileType = mimeStr
+                                                            .split('/');
 
-                                                                        child: SvgPicture.asset(
-                                                                          AppAssets
-                                                                              .cancelSvg,
-
-                                                                          // ignore: deprecated_member_use
-                                                                          height:
-                                                                              5.h,
-                                                                          width:
-                                                                              5.w,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    right: 0,
-                                                                    top: 0.h,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            );
-                                                          },
-                                                        )
-                                                      : ListView.builder(
-                                                          scrollDirection:
-                                                              Axis.horizontal,
-                                                          itemCount: orderPhotos
-                                                              .value
-                                                              .length,
-                                                          itemBuilder: (context, index) {
-                                                            return Container(
-                                                              width: 57.w,
-                                                              height: 80.h,
-                                                              margin: EdgeInsets.only(
-                                                                right:
-                                                                    LanguageService
-                                                                            .languageCode ==
-                                                                        "ar"
-                                                                    ? 0
-                                                                    : 5,
-                                                                left:
-                                                                    LanguageService
-                                                                            .languageCode !=
-                                                                        "ar"
-                                                                    ? 0
-                                                                    : 5,
-                                                              ),
-                                                              child: Stack(
-                                                                children: [
-                                                                  ClipRRect(
-                                                                    borderRadius:
-                                                                        const BorderRadius.all(
-                                                                          Radius.circular(
-                                                                            12,
-                                                                          ),
-                                                                        ),
-                                                                    child: MyCachedNetworkImage(
-                                                                      imageUrl: mediaDisplayUrl(
-                                                                        _orderPhotos![index]!,
-                                                                        legacyFolder:
-                                                                            'return_request_products',
-                                                                        baseUrl:
-                                                                            dotenv.env['Images_Url'],
-                                                                      ),
-                                                                      imageFit:
-                                                                          BoxFit
-                                                                              .fill,
-                                                                      width:
-                                                                          57.w,
-                                                                      height:
-                                                                          80.h,
-                                                                    ),
-                                                                  ),
-                                                                  Positioned(
-                                                                    child: InkWell(
-                                                                      onTap: () {
-                                                                        orderBloc.add(
-                                                                          RemoveImagesForReturnProductEvent(
-                                                                            index,
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                      child: Container(
-                                                                        padding:
-                                                                            const EdgeInsets.all(
-                                                                              2,
-                                                                            ),
-                                                                        decoration: BoxDecoration(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          borderRadius: BorderRadius.circular(
-                                                                            12,
-                                                                          ),
-                                                                        ),
-                                                                        width:
-                                                                            15.w,
-                                                                        height:
-                                                                            15.h,
-                                                                        child: SvgPicture.asset(
-                                                                          AppAssets
-                                                                              .cancelSvg,
-
-                                                                          // ignore: deprecated_member_use
-                                                                          height:
-                                                                              5.h,
-                                                                          width:
-                                                                              5.w,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    right: 0,
-                                                                    top: 0.h,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            );
-                                                          },
-                                                        ),
-                                                  Positioned(
-                                                    right:
-                                                        LanguageService
-                                                                .languageCode ==
-                                                            "ar"
-                                                        ? null
-                                                        : 20,
-                                                    left:
-                                                        LanguageService
-                                                                .languageCode !=
-                                                            "ar"
-                                                        ? null
-                                                        : 20,
-                                                    top: 30.h,
-                                                    child: InkWell(
-                                                      onTap: () async {
-                                                        void _showImagePreview(
-                                                          File imageFile,
-                                                        ) {
-                                                          showDialog(
-                                                            context: context,
-                                                            barrierDismissible:
-                                                                false,
-                                                            builder:
-                                                                (
-                                                                  BuildContext
-                                                                  context,
-                                                                ) {
-                                                                  return SearchImagePreviewWidget(
-                                                                    imageFile:
-                                                                        imageFile,
-                                                                    onSend: (File file) {
-                                                                      orderBloc.add(
-                                                                        UploadImagesForReturnProductEvent(
-                                                                          file,
-                                                                        ),
-                                                                      );
-                                                                    },
-                                                                    onCancel: () =>
-                                                                        Navigator.of(
-                                                                          context,
-                                                                        ).pop(),
-                                                                  );
-                                                                },
+                                                        if (fileType[0] !=
+                                                            'image') {
+                                                          showErrorMessage(
+                                                            context,
+                                                            LocaleKeys
+                                                                .video_file_not_supported
+                                                                .tr(),
+                                                          );
+                                                        } else {
+                                                          // إغلاق ديالوج الاختيار
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop();
+                                                          // تأخير صغير لضمان إغلاق الديالوج
+                                                          await Future.delayed(
+                                                            const Duration(
+                                                              milliseconds: 100,
+                                                            ),
+                                                          );
+                                                          // عرض معاينة الصورة
+                                                          _showImagePreview(
+                                                            file,
                                                           );
                                                         }
-
-                                                        showDialog(
-                                                          context: context,
-                                                          builder: (BuildContext context) {
-                                                            return GalleryAndCameraDialogWidget(
-                                                              fromChat:
-                                                                  true, // تفعيل معاينة الصور
-                                                              onChooseFileFromGalleryAction:
-                                                                  (
-                                                                    AssetEntity?
-                                                                    assetEntity,
-                                                                  ) async {
-                                                                    if (assetEntity !=
-                                                                        null) {
-                                                                      // originFile
-                                                                      // يرجع
-                                                                      // null
-                                                                      // للملفات
-                                                                      // غير
-                                                                      // المقروءة.
-                                                                      final File?
-                                                                      pickedFile =
-                                                                          await assetEntity
-                                                                              .originFile;
-                                                                      if (pickedFile ==
-                                                                          null) {
-                                                                        showWarningMessage(
-                                                                          context,
-                                                                          LocaleKeys
-                                                                              .error_picking_file
-                                                                              .tr(),
-                                                                        );
-                                                                        return;
-                                                                      }
-                                                                      File
-                                                                      file =
-                                                                          pickedFile;
-                                                                      String
-                                                                      mimeStr =
-                                                                          lookupMimeType(
-                                                                            file.absolute.path,
-                                                                          ) ??
-                                                                          '';
-                                                                      var fileType =
-                                                                          mimeStr.split(
-                                                                            '/',
-                                                                          );
-
-                                                                      if (fileType[0] !=
-                                                                          'image') {
-                                                                        showErrorMessage(
-                                                                          context,
-                                                                          LocaleKeys
-                                                                              .video_file_not_supported
-                                                                              .tr(),
-                                                                        );
-                                                                      } else {
-                                                                        // إغلاق ديالوج الاختيار
-                                                                        Navigator.of(
-                                                                          context,
-                                                                        ).pop();
-                                                                        // تأخير صغير لضمان إغلاق الديالوج
-                                                                        await Future.delayed(
-                                                                          const Duration(
-                                                                            milliseconds:
-                                                                                100,
+                                                      }
+                                                    },
+                                                onChooseFileFromCameraAction:
+                                                    (File? file) async {
+                                                      if (file != null) {
+                                                        String mimeStr =
+                                                            lookupMimeType(
+                                                              file
+                                                                  .absolute
+                                                                  .path,
+                                                            ) ??
+                                                            '';
+                                                        var fileType = mimeStr
+                                                            .split('/');
+                                                        if (fileType[0] !=
+                                                            'image') {
+                                                          showErrorMessage(
+                                                            context,
+                                                            LocaleKeys
+                                                                .video_file_not_supported
+                                                                .tr(),
+                                                          );
+                                                        } else {
+                                                          // إغلاق ديالوج الاختيار
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop();
+                                                          // تأخير صغير لضمان إغلاق الديالوج
+                                                          await Future.delayed(
+                                                            const Duration(
+                                                              milliseconds: 100,
+                                                            ),
+                                                          );
+                                                          // عرض معاينة الصورة
+                                                          _showImagePreview(
+                                                            file,
+                                                          );
+                                                        }
+                                                      }
+                                                    },
+                                                onImagePreviewAction: (File image) {
+                                                  // هذا سيتم استدعاؤه تلقائياً من GalleryAndCameraDialogWidget
+                                                  // عندما fromChat = true
+                                                  _showImagePreview(image);
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          width: 1.sw,
+                                          height: 80.h,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xffF8F8F8),
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(12.r),
+                                            ),
+                                            border:
+                                                (_orderPhotos?.length ?? 0) > 0
+                                                ? null
+                                                : Border.all(
+                                                    color: const Color(
+                                                      0xff402CDD,
+                                                    ),
+                                                  ),
+                                          ),
+                                          child:
+                                              (_orderPhotos?.length ?? 0) > 0 ||
+                                                  (state.uploadImagesForReturnProductStatus ==
+                                                      UploadImagesForReturnProductStatus
+                                                          .loading)
+                                              ? Stack(
+                                                  children: [
+                                                    (state.uploadImagesForReturnProductStatus ==
+                                                            UploadImagesForReturnProductStatus
+                                                                .loading)
+                                                        ? ListView.builder(
+                                                            scrollDirection:
+                                                                Axis.horizontal,
+                                                            itemCount:
+                                                                orderPhotos
+                                                                    .value
+                                                                    .length +
+                                                                1,
+                                                            itemBuilder: (context, index) {
+                                                              if (index ==
+                                                                  orderPhotos
+                                                                      .value
+                                                                      .length) {
+                                                                return Shimmer.fromColors(
+                                                                  baseColor: Colors
+                                                                      .grey
+                                                                      .shade300,
+                                                                  highlightColor:
+                                                                      Colors
+                                                                          .grey
+                                                                          .shade50,
+                                                                  child: Container(
+                                                                    decoration: BoxDecoration(
+                                                                      color: Colors
+                                                                          .grey
+                                                                          .shade600,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                            15.r,
                                                                           ),
-                                                                        );
-                                                                        // عرض معاينة الصورة
-                                                                        _showImagePreview(
-                                                                          file,
-                                                                        );
-                                                                      }
-                                                                    }
-                                                                  },
-                                                              onChooseFileFromCameraAction: (File? file) async {
-                                                                if (file !=
+                                                                    ),
+                                                                    width: 57.w,
+                                                                    height:
+                                                                        80.h,
+                                                                  ),
+                                                                );
+                                                              }
+                                                              return Container(
+                                                                width: 57.w,
+
+                                                                height: 80.h,
+                                                                margin: EdgeInsets.only(
+                                                                  right:
+                                                                      LanguageService
+                                                                              .languageCode ==
+                                                                          "ar"
+                                                                      ? 0
+                                                                      : 5,
+                                                                  left:
+                                                                      LanguageService
+                                                                              .languageCode !=
+                                                                          "ar"
+                                                                      ? 0
+                                                                      : 5,
+                                                                ),
+                                                                child: Stack(
+                                                                  children: [
+                                                                    ClipRRect(
+                                                                      borderRadius:
+                                                                          const BorderRadius.all(
+                                                                            Radius.circular(
+                                                                              12,
+                                                                            ),
+                                                                          ),
+                                                                      child: MyCachedNetworkImage(
+                                                                        imageUrl:
+                                                                            "${dotenv.env['Media_S3_Server']}/${_orderPhotos![index]!}",
+                                                                        imageFit:
+                                                                            BoxFit.cover,
+                                                                        width:
+                                                                            57.w,
+                                                                        height:
+                                                                            80.h,
+                                                                      ),
+                                                                    ),
+                                                                    Positioned(
+                                                                      child: InkWell(
+                                                                        onTap: () {
+                                                                          orderBloc.add(
+                                                                            RemoveImagesForReturnProductEvent(
+                                                                              index,
+                                                                            ),
+                                                                          );
+                                                                        },
+                                                                        child: Container(
+                                                                          padding:
+                                                                              const EdgeInsets.all(
+                                                                                2,
+                                                                              ),
+                                                                          width:
+                                                                              15.w,
+                                                                          height:
+                                                                              15.h,
+                                                                          decoration: BoxDecoration(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            borderRadius: BorderRadius.circular(
+                                                                              12,
+                                                                            ),
+                                                                          ),
+
+                                                                          child: SvgPicture.asset(
+                                                                            AppAssets.cancelSvg,
+
+                                                                            // ignore: deprecated_member_use
+                                                                            height:
+                                                                                5.h,
+                                                                            width:
+                                                                                5.w,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      right: 0,
+                                                                      top: 0.h,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            },
+                                                          )
+                                                        : ListView.builder(
+                                                            scrollDirection:
+                                                                Axis.horizontal,
+                                                            itemCount:
+                                                                orderPhotos
+                                                                    .value
+                                                                    .length,
+                                                            itemBuilder: (context, index) {
+                                                              return Container(
+                                                                width: 57.w,
+                                                                height: 80.h,
+                                                                margin: EdgeInsets.only(
+                                                                  right:
+                                                                      LanguageService
+                                                                              .languageCode ==
+                                                                          "ar"
+                                                                      ? 0
+                                                                      : 5,
+                                                                  left:
+                                                                      LanguageService
+                                                                              .languageCode !=
+                                                                          "ar"
+                                                                      ? 0
+                                                                      : 5,
+                                                                ),
+                                                                child: Stack(
+                                                                  children: [
+                                                                    ClipRRect(
+                                                                      borderRadius:
+                                                                          const BorderRadius.all(
+                                                                            Radius.circular(
+                                                                              12,
+                                                                            ),
+                                                                          ),
+                                                                      child: MyCachedNetworkImage(
+                                                                        imageUrl:
+                                                                            "${dotenv.env['Media_S3_Server']}/${_orderPhotos![index]!}",
+                                                                        imageFit:
+                                                                            BoxFit.cover,
+                                                                        width:
+                                                                            57.w,
+                                                                        height:
+                                                                            80.h,
+                                                                      ),
+                                                                    ),
+                                                                    Positioned(
+                                                                      child: InkWell(
+                                                                        onTap: () {
+                                                                          orderBloc.add(
+                                                                            RemoveImagesForReturnProductEvent(
+                                                                              index,
+                                                                            ),
+                                                                          );
+                                                                        },
+                                                                        child: Container(
+                                                                          padding:
+                                                                              const EdgeInsets.all(
+                                                                                2,
+                                                                              ),
+                                                                          decoration: BoxDecoration(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            borderRadius: BorderRadius.circular(
+                                                                              12,
+                                                                            ),
+                                                                          ),
+                                                                          width:
+                                                                              15.w,
+                                                                          height:
+                                                                              15.h,
+                                                                          child: SvgPicture.asset(
+                                                                            AppAssets.cancelSvg,
+
+                                                                            // ignore: deprecated_member_use
+                                                                            height:
+                                                                                5.h,
+                                                                            width:
+                                                                                5.w,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      right: 0,
+                                                                      top: 0.h,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                    Positioned(
+                                                      right:
+                                                          LanguageService
+                                                                  .languageCode ==
+                                                              "ar"
+                                                          ? null
+                                                          : 20,
+                                                      left:
+                                                          LanguageService
+                                                                  .languageCode !=
+                                                              "ar"
+                                                          ? null
+                                                          : 20,
+                                                      top: 30.h,
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          SvgPicture.asset(
+                                                            AppAssets
+                                                                .addPhotoSvg,
+                                                            // ignore: deprecated_member_use
+                                                            color: const Color(
+                                                              0xff402CDD,
+                                                            ),
+                                                            width: 20.w,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : InkWell(
+                                                  onTap: () async {
+                                                    void _showImagePreview(
+                                                      File imageFile,
+                                                    ) {
+                                                      showDialog(
+                                                        context: context,
+                                                        barrierDismissible:
+                                                            false,
+                                                        builder: (BuildContext context) {
+                                                          return SearchImagePreviewWidget(
+                                                            imageFile:
+                                                                imageFile,
+                                                            onSend: (File file) {
+                                                              orderBloc.add(
+                                                                UploadImagesForReturnProductEvent(
+                                                                  file,
+                                                                ),
+                                                              );
+                                                            },
+                                                            onCancel: () =>
+                                                                Navigator.of(
+                                                                  context,
+                                                                ).pop(),
+                                                          );
+                                                        },
+                                                      );
+                                                    }
+
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext context) {
+                                                        return GalleryAndCameraDialogWidget(
+                                                          fromChat:
+                                                              true, // تفعيل معاينة الصور
+                                                          onChooseFileFromGalleryAction:
+                                                              (
+                                                                AssetEntity?
+                                                                assetEntity,
+                                                              ) async {
+                                                                if (assetEntity !=
                                                                     null) {
+                                                                  // originFile
+                                                                  // يرجع null
+                                                                  // للملفات غير
+                                                                  // المقروءة.
+                                                                  final File?
+                                                                  pickedFile =
+                                                                      await assetEntity
+                                                                          .originFile;
+                                                                  if (pickedFile ==
+                                                                      null) {
+                                                                    showWarningMessage(
+                                                                      context,
+                                                                      LocaleKeys
+                                                                          .error_picking_file
+                                                                          .tr(),
+                                                                    );
+                                                                    return;
+                                                                  }
+                                                                  File file =
+                                                                      pickedFile;
                                                                   String
                                                                   mimeStr =
                                                                       lookupMimeType(
@@ -10304,6 +10402,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                           .split(
                                                                             '/',
                                                                           );
+
                                                                   if (fileType[0] !=
                                                                       'image') {
                                                                     showErrorMessage(
@@ -10331,223 +10430,95 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                                   }
                                                                 }
                                                               },
-                                                              onImagePreviewAction:
-                                                                  (File image) {
-                                                                    // هذا سيتم استدعاؤه تلقائياً من GalleryAndCameraDialogWidget
-                                                                    // عندما fromChat = true
-                                                                    _showImagePreview(
-                                                                      image,
-                                                                    );
-                                                                  },
-                                                            );
+                                                          onChooseFileFromCameraAction: (File? file) async {
+                                                            if (file != null) {
+                                                              String mimeStr =
+                                                                  lookupMimeType(
+                                                                    file
+                                                                        .absolute
+                                                                        .path,
+                                                                  ) ??
+                                                                  '';
+                                                              var fileType =
+                                                                  mimeStr.split(
+                                                                    '/',
+                                                                  );
+                                                              if (fileType[0] !=
+                                                                  'image') {
+                                                                showErrorMessage(
+                                                                  context,
+                                                                  LocaleKeys
+                                                                      .video_file_not_supported
+                                                                      .tr(),
+                                                                );
+                                                              } else {
+                                                                // إغلاق ديالوج الاختيار
+                                                                Navigator.of(
+                                                                  context,
+                                                                ).pop();
+                                                                // تأخير صغير لضمان إغلاق الديالوج
+                                                                await Future.delayed(
+                                                                  const Duration(
+                                                                    milliseconds:
+                                                                        100,
+                                                                  ),
+                                                                );
+                                                                // عرض معاينة الصورة
+                                                                _showImagePreview(
+                                                                  file,
+                                                                );
+                                                              }
+                                                            }
                                                           },
-                                                        );
-                                                      },
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          SvgPicture.asset(
-                                                            AppAssets
-                                                                .addPhotoSvg,
-                                                            // ignore: deprecated_member_use
-                                                            color: const Color(
-                                                              0xff402CDD,
-                                                            ),
-                                                            width: 20.w,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            : InkWell(
-                                                onTap: () async {
-                                                  void _showImagePreview(
-                                                    File imageFile,
-                                                  ) {
-                                                    showDialog(
-                                                      context: context,
-                                                      barrierDismissible: false,
-                                                      builder: (BuildContext context) {
-                                                        return SearchImagePreviewWidget(
-                                                          imageFile: imageFile,
-                                                          onSend: (File file) {
-                                                            orderBloc.add(
-                                                              UploadImagesForReturnProductEvent(
-                                                                file,
-                                                              ),
-                                                            );
-                                                          },
-                                                          onCancel: () =>
-                                                              Navigator.of(
-                                                                context,
-                                                              ).pop(),
+                                                          onImagePreviewAction:
+                                                              (File image) {
+                                                                // هذا سيتم استدعاؤه تلقائياً من GalleryAndCameraDialogWidget
+                                                                // عندما fromChat = true
+                                                                _showImagePreview(
+                                                                  image,
+                                                                );
+                                                              },
                                                         );
                                                       },
                                                     );
-                                                  }
-
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (BuildContext context) {
-                                                      return GalleryAndCameraDialogWidget(
-                                                        fromChat:
-                                                            true, // تفعيل معاينة الصور
-                                                        onChooseFileFromGalleryAction:
-                                                            (
-                                                              AssetEntity?
-                                                              assetEntity,
-                                                            ) async {
-                                                              if (assetEntity !=
-                                                                  null) {
-                                                                // originFile
-                                                                // يرجع null
-                                                                // للملفات غير
-                                                                // المقروءة.
-                                                                final File?
-                                                                pickedFile =
-                                                                    await assetEntity
-                                                                        .originFile;
-                                                                if (pickedFile ==
-                                                                    null) {
-                                                                  showWarningMessage(
-                                                                    context,
-                                                                    LocaleKeys
-                                                                        .error_picking_file
-                                                                        .tr(),
-                                                                  );
-                                                                  return;
-                                                                }
-                                                                File file =
-                                                                    pickedFile;
-                                                                String mimeStr =
-                                                                    lookupMimeType(
-                                                                      file
-                                                                          .absolute
-                                                                          .path,
-                                                                    ) ??
-                                                                    '';
-                                                                var fileType =
-                                                                    mimeStr
-                                                                        .split(
-                                                                          '/',
-                                                                        );
-
-                                                                if (fileType[0] !=
-                                                                    'image') {
-                                                                  showErrorMessage(
-                                                                    context,
-                                                                    LocaleKeys
-                                                                        .video_file_not_supported
-                                                                        .tr(),
-                                                                  );
-                                                                } else {
-                                                                  // إغلاق ديالوج الاختيار
-                                                                  Navigator.of(
-                                                                    context,
-                                                                  ).pop();
-                                                                  // تأخير صغير لضمان إغلاق الديالوج
-                                                                  await Future.delayed(
-                                                                    const Duration(
-                                                                      milliseconds:
-                                                                          100,
-                                                                    ),
-                                                                  );
-                                                                  // عرض معاينة الصورة
-                                                                  _showImagePreview(
-                                                                    file,
-                                                                  );
-                                                                }
-                                                              }
-                                                            },
-                                                        onChooseFileFromCameraAction: (File? file) async {
-                                                          if (file != null) {
-                                                            String mimeStr =
-                                                                lookupMimeType(
-                                                                  file
-                                                                      .absolute
-                                                                      .path,
-                                                                ) ??
-                                                                '';
-                                                            var fileType =
-                                                                mimeStr.split(
-                                                                  '/',
-                                                                );
-                                                            if (fileType[0] !=
-                                                                'image') {
-                                                              showErrorMessage(
-                                                                context,
-                                                                LocaleKeys
-                                                                    .video_file_not_supported
-                                                                    .tr(),
-                                                              );
-                                                            } else {
-                                                              // إغلاق ديالوج الاختيار
-                                                              Navigator.of(
-                                                                context,
-                                                              ).pop();
-                                                              // تأخير صغير لضمان إغلاق الديالوج
-                                                              await Future.delayed(
-                                                                const Duration(
-                                                                  milliseconds:
-                                                                      100,
-                                                                ),
-                                                              );
-                                                              // عرض معاينة الصورة
-                                                              _showImagePreview(
-                                                                file,
-                                                              );
-                                                            }
-                                                          }
-                                                        },
-                                                        onImagePreviewAction:
-                                                            (File image) {
-                                                              // هذا سيتم استدعاؤه تلقائياً من GalleryAndCameraDialogWidget
-                                                              // عندما fromChat = true
-                                                              _showImagePreview(
-                                                                image,
-                                                              );
-                                                            },
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    SvgPicture.asset(
-                                                      AppAssets.addPhotoSvg,
-                                                      // ignore: deprecated_member_use
-                                                      color: const Color(
-                                                        0xff402CDD,
+                                                  },
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      SvgPicture.asset(
+                                                        AppAssets.addPhotoSvg,
+                                                        // ignore: deprecated_member_use
+                                                        color: const Color(
+                                                          0xff402CDD,
+                                                        ),
+                                                        width: 20.w,
                                                       ),
-                                                      width: 20.w,
-                                                    ),
-                                                    SizedBox(height: 5.h),
-                                                    Text(
-                                                      "${LocaleKeys.add_photo.tr()}",
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: context
-                                                          .textTheme
-                                                          .bodyMedium
-                                                          ?.rq
-                                                          .copyWith(
-                                                            color: const Color(
-                                                              0xff402CDD,
+                                                      SizedBox(height: 5.h),
+                                                      Text(
+                                                        "${LocaleKeys.add_photo.tr()}",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: context
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.rq
+                                                            .copyWith(
+                                                              color:
+                                                                  const Color(
+                                                                    0xff402CDD,
+                                                                  ),
+                                                              letterSpacing:
+                                                                  0.18,
+                                                              fontSize: 10.sp,
+                                                              height: 1.3,
                                                             ),
-                                                            letterSpacing: 0.18,
-                                                            fontSize: 10.sp,
-                                                            height: 1.3,
-                                                          ),
-                                                    ),
-                                                  ],
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
+                                        ),
                                       ),
                                       SizedBox(height: 2.h),
                                       (_orderPhotos?.length ?? 0) > 0

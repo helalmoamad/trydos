@@ -786,7 +786,7 @@ class ChannelMember {
     channelId: json["channel_id"].toString(),
     userId: int.tryParse(json["user_id"].toString()),
     pin: json["pin"],
-    id: json["id"],
+    id: int.tryParse(json["id"].toString()),
     archived: json["archived"],
     mute: json["mute"],
     isBlocked: json["is_blocked"],
