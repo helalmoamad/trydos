@@ -65,7 +65,7 @@ class GetCartShippingItemsModel {
 
 class CartShipping {
   final double? subTotal;
-  final int? totalTax;
+  final double? totalTax;
   final double? totalShippingCost;
   final double? productsDiscount;
   final double? couponDiscount;
@@ -104,7 +104,7 @@ class CartShipping {
 
   CartShipping copyWith({
     double? subTotal,
-    int? totalTax,
+    double? totalTax,
     double? totalShippingCost,
     double? productsDiscount,
     double? couponDiscount,
@@ -144,7 +144,7 @@ class CartShipping {
 
   factory CartShipping.fromJson(Map<String, dynamic> json) => CartShipping(
     subTotal: json["sub_total"]?.toDouble(),
-    totalTax: json["total_tax"],
+    totalTax: double.tryParse(json["total_tax"].toString()),
     totalShippingCost: double.tryParse(json["total_shipping_cost"].toString()),
     productsDiscount: json["products_discount"]?.toDouble(),
     couponCode: json["coupon_code"]?.toString(),

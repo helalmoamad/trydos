@@ -400,7 +400,7 @@ Map<String, VideoPlayerController> videoProductInListingController = {};
   }*/
 }*/
 
-int applicationVersion = 180;
+int applicationVersion = 181;
 
 /// Initializes PostHog analytics / session replay from values stored in `.env`.
 /// Native auto-init is disabled (see AndroidManifest.xml / Info.plist) so the
