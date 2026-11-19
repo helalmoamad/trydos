@@ -31,8 +31,17 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <!--
+      Optional, not required. A `uses-feature` without `android:required`
+      defaults to true, which stopped Play from installing the app on devices
+      with no autofocus. And `ACCESS_WIFI_STATE` above makes Android imply
+      `android.hardware.wifi` as required; declaring it here overrides that.
+      The camera is a side door (profile photo, stories, QR scanner), never a
+      step the app cannot start without.
+    -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.wifi" android:required="false" />
        <application
         android:label="Trydos"
         android:usesCleartextTraffic="false"
