@@ -18,7 +18,9 @@ class PreloadingVideosBloc
   }
 
   FutureOr<void> _onPreloadInitialization(
-      PreloadInitialization event, Emitter<PreloadingVideosState> emit) async {
+    PreloadInitialization event,
+    Emitter<PreloadingVideosState> emit,
+  ) async {
     Map<int, VideoPlayerController> controllers;
 
     /// Initialize 1st video
@@ -34,7 +36,9 @@ class PreloadingVideosBloc
   }
 
   FutureOr<void> _onPreloadPreviousOrNext(
-      PreloadPreviousOrNext event, Emitter<PreloadingVideosState> emit) async {
+    PreloadPreviousOrNext event,
+    Emitter<PreloadingVideosState> emit,
+  ) async {
     if (event.index > state.focusedIndex) {
       _playNext(event.index);
     } else {
@@ -87,8 +91,9 @@ class PreloadingVideosBloc
     Map<int, VideoPlayerController> controllers = Map.of(state.controllers);
     if (state.urls.length > index && index >= 0) {
       /// Create new controller
-      final VideoPlayerController controller =
-          VideoPlayerController.networkUrl(Uri.parse(state.urls[index]));
+      final VideoPlayerController controller = VideoPlayerController.networkUrl(
+        Uri.parse(state.urls[index]),
+      );
 
       /// Add to [controllers] list
       controllers[index] = controller;

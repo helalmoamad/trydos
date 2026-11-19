@@ -2,9 +2,11 @@ import 'package:audio_wave/audio_wave.dart';
 import 'package:flutter/material.dart';
 
 class VoiceWaves extends StatefulWidget {
-  const VoiceWaves(
-      {Key? key, this.animation = true, this.animationDuration = Duration.zero})
-      : super(key: key);
+  const VoiceWaves({
+    Key? key,
+    this.animation = true,
+    this.animationDuration = Duration.zero,
+  }) : super(key: key);
   final bool animation;
   final Duration animationDuration;
   @override
@@ -19,8 +21,10 @@ class _VoiceWavesState extends State<VoiceWaves>
 
   @override
   void initState() {
-    animationController =
-        AnimationController(duration: const Duration(seconds: 3), vsync: this);
+    animationController = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    );
     animation = Tween<double>(begin: 0, end: 1).animate(animationController)
       ..addListener(() {
         setState(() {});

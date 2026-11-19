@@ -65,42 +65,12 @@ class ContactCard extends StatelessWidget {
           height: 100.h,
           width: 1.sw,
           child: GestureDetector(
-            onTap: () {
-              if (contact.contactUserId == null) {
-                return;
-              }
-              User? receiver;
-              List<Chat> chats = List.of(GetIt.I<ChatBloc>().state.chats);
-              chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
-              // `firstWhere` بلا `orElse` كانت ترمي `StateError` متى كانت
-              // الجهة تملك التطبيق ولا محادثة معها بعد — وهي الحالة الغالبة
-              // في نتائج البحث الشامل. و`channelMembers!` كانت ترمي بدورها
-              // على قناة بلا أعضاء.
-              final Chat? chat = chats
-                  .where(
-                    (element) =>
-                        element.channelMembers?.any(
-                          (member) => member.userId == contact.contactUserId,
-                        ) ??
-                        false,
-                  )
-                  .firstOrNull;
-              if (chat == null || chat.id == null) return;
-              final preferences = GetIt.I<PrefsRepository>();
-              receiver = chat.channelMembers
-                  ?.firstWhere(
-                    (element) => element.userId != preferences.myChatId,
-                    orElse: () => ChannelMember(
-                      userId: contact.contactUserId,
-                      user: User(id: contact.contactUserId, name: contact.name),
-                    ),
-                  )
-                  .user;
-              context.go(
-                GRouter.config.applicationRoutes.kSinglePageChatPagePath +
-                    '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}',
-              );
-            },
+            onTap: () => openChatWithContact(
+              context,
+              contact: contact,
+              receiverName: receiverName,
+              fullReceiverName: fullReceiverName,
+            ),
             child: Stack(
               children: [
                 Container(
@@ -195,11 +165,81 @@ class ContactCard extends StatelessWidget {
   ///
   /// أُخرج من [shareAppLink] كما هو حرفياً ليستخدمه المساران معاً: المشاركة
   /// (التي تضيف النص قبله) والنسخ إلى الحافظة (الذي يحتاجه نظيفاً ليُلصق وحده).
-  String get inviteLink =>
-      '${dotenv.env['WEB_APP']}/${(GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso : GetIt.I<PrefsRepository>().countryIso)?.toLowerCase()}-${LanguageService.isKurdish ? "ku" : LanguageService.languageCode}';
+  String get inviteLink => buildInviteLink();
 
-  void shareAppLink() {
-    // ignore: deprecated_member_use
-    Share.share('${LocaleKeys.download_the_app_here.tr()}:$inviteLink');
-  }
+  void shareAppLink() => shareInviteLink();
+}
+
+/// رابط دعوة التطبيق ببلد المستخدم ولغته.
+///
+/// مستخرَجٌ من [ContactCard] ليستعمله معها زرُّ الدعوة في نافذة «محادثة
+/// جديدة» — فالرابط واحدٌ لا نسختان تتباعدان.
+String buildInviteLink() {
+  final PrefsRepository prefs = GetIt.I<PrefsRepository>();
+  final String? iso = prefs.userCountryIsAvailable == 1
+      ? prefs.userChoosedCountryIso
+      : prefs.countryIso;
+  final String lang = LanguageService.isKurdish
+      ? 'ku'
+      : LanguageService.languageCode;
+  return '${dotenv.env['WEB_APP']}/${iso?.toLowerCase()}-$lang';
+}
+
+/// يفتح ورقة المشاركة بالرابط نفسه.
+void shareInviteLink() {
+  // ignore: deprecated_member_use
+  Share.share('${LocaleKeys.download_the_app_here.tr()}:${buildInviteLink()}');
+}
+
+/// يفتح المحادثة القائمة مع جهة اتصال.
+///
+/// مستخرَجٌ من نقرة [ContactCard] حرفاً بحرف ليستعمله معها زرُّ «محادثة
+/// جديدة» في قائمة المحادثات — فمسارُ الفتح واحدٌ لا نسختان تتباعدان.
+///
+/// **ولا يُنشئ قناةً جديدة**: جهةٌ تملك التطبيق ولا محادثة معها بعد لا يفعل
+/// النقر عليها شيئاً، كما كان. وإنشاء القناة يحتاج طرفاً من الخادم ليس هنا.
+void openChatWithContact(
+  BuildContext context, {
+  required Contact contact,
+  required String receiverName,
+  required String fullReceiverName,
+}) {
+  if (contact.contactUserId == null) return;
+
+  final List<Chat> chats = List.of(GetIt.I<ChatBloc>().state.chats)
+    ..addAll(GetIt.I<ChatBloc>().state.pinnedChats);
+
+  // `firstWhere` بلا `orElse` كانت ترمي `StateError` متى كانت الجهة تملك
+  // التطبيق ولا محادثة معها بعد — وهي الحالة الغالبة في نتائج البحث الشامل.
+  // و`channelMembers!` كانت ترمي بدورها على قناة بلا أعضاء.
+  final Chat? chat = chats
+      .where(
+        (element) =>
+            element.channelMembers?.any(
+              (member) => member.userId == contact.contactUserId,
+            ) ??
+            false,
+      )
+      .firstOrNull;
+  if (chat == null || chat.id == null) return;
+
+  final PrefsRepository preferences = GetIt.I<PrefsRepository>();
+  final User? receiver = chat.channelMembers
+      ?.firstWhere(
+        (element) => element.userId != preferences.myChatId,
+        orElse: () => ChannelMember(
+          userId: contact.contactUserId,
+          user: User(id: contact.contactUserId, name: contact.name),
+        ),
+      )
+      .user;
+
+  context.go(
+    '${GRouter.config.applicationRoutes.kSinglePageChatPagePath}'
+    '?chatId=${chat.id}'
+    '&receiverName=$receiverName'
+    '&fullReceiverName=$fullReceiverName'
+    '&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}'
+    '&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(preferences.myChatName!)}',
+  );
 }

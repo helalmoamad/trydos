@@ -21,7 +21,5 @@ class GetMediaCountParams {
   final String channelId;
 
   const GetMediaCountParams({required this.channelId});
-  Map<String, dynamic> get map => {
-        "id": channelId,
-      };
+  Map<String, dynamic> get map => {"id": channelId};
 }

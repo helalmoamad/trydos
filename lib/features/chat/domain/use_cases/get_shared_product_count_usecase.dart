@@ -14,7 +14,8 @@ class GetSharedProductCountUseCase
 
   @override
   Future<Either<Failure, GetSharedProductCountModel>> call(
-      GetSharedProductCountParams params) {
+    GetSharedProductCountParams params,
+  ) {
     return repository.getSharedProductCount(params.map);
   }
 }
@@ -23,7 +24,5 @@ class GetSharedProductCountParams {
   final String productId;
 
   const GetSharedProductCountParams({required this.productId});
-  Map<String, dynamic> get map => {
-        "id": productId,
-      };
+  Map<String, dynamic> get map => {"id": productId};
 }

@@ -1,43 +1,38 @@
-import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/media_registry_entry.dart';
 import 'package:posthog_flutter/posthog_flutter.dart';
-import 'package:trydos/common/test_utils/test_var.dart';
-import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/extensions/state_ext.dart';
-import 'package:trydos/features/app/vedio_player.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/chat/presentation/pages/media_in_profile.dart';
+import 'package:trydos/features/chat/presentation/pages/profile_page_body.dart';
+import 'package:trydos/features/chat/presentation/pages/profile_page_design.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/chat/presentation/widgets/delete_chat_confirm_dialog.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
-import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../../core/utils/responsive_padding.dart';
-import '../../../../service/language_service.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/my_cached_network_image.dart';
-import '../../../app/my_text_widget.dart';
 import '../../../calls/presentation/bloc/calls_bloc.dart';
 import '../../../calls/presentation/utils/caller_info.dart';
-import '../widgets/chat_widgets/no_image_widget.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/common/helper/dev_log.dart';
+
+// استيرادات الشاشة القديمة المعلَّقة أدناه. تُعاد مع إعادتها:
+// dart:io · flutter_svg · full_screen_image_null_safe · test_var ·
+// state_ext · vedio_player · assets_provider · widgets_keys ·
+// responsive_padding · language_service · my_text_widget
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({
@@ -106,7 +101,267 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  // ===========================================================================
+  // المنطق — مفصولٌ عن الشكل.
+  //
+  // كان كلّ نداءٍ من هذه مكتوباً داخل `onTap` في شجرة ودجتات عميقة، فاستبدال
+  // الشكل كان يعني إعادة كتابة المنطق معه. استخراجه هنا يجعل التصميم الجديد
+  // يستدعي نفس الكود حرفاً بحرف.
+  // ===========================================================================
+
+  /// مكالمة صوتية. تطلب الإذنين ثم تبثّ `MakeCallEvent`.
+  ///
+  /// `currentReceiver` يعني أن لا محادثة بعد، فيُرسَل معرّف المستقبِل؛ وغيابه
+  /// يعني أن المحادثة قائمة فيكفي معرّفها.
+  Future<void> startVoiceCall() async {
+    try {
+      final List<Map<String, dynamic>> info = callerInfo(
+        channelId: widget.chatId,
+      );
+      final PermissionStatus microphone = await Permission.microphone.request();
+      final status2 = await Permission.mediaLibrary.request();
+      if (microphone.isGranted && status2.isGranted) {
+        if (info[0].containsKey('currentReceiver')) {
+          GetIt.I<CallsBloc>().add(
+            MakeCallEvent(
+              receiverUserId: info[0]['currentReceiver'].toString(),
+              receiverCallName: widget.fullReceiverName,
+              chatId: info[1]['channelId'],
+              isVideo: false,
+              payload: info[1],
+            ),
+          );
+        } else {
+          GetIt.I<CallsBloc>().add(
+            MakeCallEvent(
+              isVideo: false,
+              receiverCallName: widget.fullReceiverName,
+              chatId: info[0]['channelId'],
+              payload: info[0],
+            ),
+          );
+        }
+      } else if (microphone.isDenied || status2.isDenied) {
+        if (!mounted) return;
+        showWarningMessage(context, LocaleKeys.permission_denied.tr());
+        openAppSettings();
+      }
+    } catch (e, st) {
+      devLog(e);
+      devLog(st);
+    }
+  }
+
+  /// مكالمة فيديو — كالصوتية ومعها إذن الكاميرا.
+  Future<void> startVideoCall() async {
+    final List<Map<String, dynamic>> info = callerInfo(
+      channelId: widget.chatId,
+    );
+    final PermissionStatus microphone = await Permission.microphone.request();
+    final status2 = await Permission.mediaLibrary.request();
+    final PermissionStatus camera = await Permission.camera.request();
+    if (microphone.isGranted && status2.isGranted && camera.isGranted) {
+      if (info[0].containsKey('currentReceiver')) {
+        GetIt.I<CallsBloc>().add(
+          MakeCallEvent(
+            receiverUserId: info[0]['currentReceiver'].toString(),
+            receiverCallName: widget.fullReceiverName,
+            chatId: info[1]['channelId'],
+            isVideo: true,
+            payload: info[1],
+          ),
+        );
+      } else {
+        GetIt.I<CallsBloc>().add(
+          MakeCallEvent(
+            isVideo: true,
+            receiverCallName: widget.fullReceiverName,
+            chatId: info[0]['channelId'],
+            payload: info[0],
+          ),
+        );
+      }
+    } else if (microphone.isDenied || status2.isDenied || camera.isDenied) {
+      if (!mounted) return;
+      showWarningMessage(context, LocaleKeys.permission_denied.tr());
+      openAppSettings();
+    }
+  }
+
+  /// يفتح المحادثة وبحثُها مفعَّل.
+  void openSearchInChat() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => SinglePageChat(
+          chatId: widget.chatId,
+          fullReceiverName: widget.fullReceiverName,
+          receiverName: widget.receiverName,
+          senderName: widget.senderName,
+          dataLength: widget.dataLength,
+          senderPhoto: widget.senderPhoto,
+          receiverPhoto: widget.receiverPhoto,
+          fromSearch: true,
+          receiverPhone: widget.receiverPhone,
+        ),
+      ),
+    );
+  }
+
+  /// يفتح صفحة الوسائط والملفات.
+  void openMediaAndFiles() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>
+            MediaInProfile(files: images ?? [], chatId: widget.chatId),
+      ),
+    );
+  }
+
+  /// يحذف المحادثة بعد تأكيد — الحذف من الخادم ولا رجعة فيه.
+  Future<void> deleteChat() async {
+    if (!await confirmDeleteChat(context)) return;
+    chatBloc.add(DeleteChatEvent(channelId: widget.chatId));
+  }
+
+  /// الطرف الآخر في هذه المحادثة، أو `null` إن لم تُوجَد.
+  ///
+  /// بـ`orElse` في الموضعين: `firstWhere` العارية كانت ترمي `StateError` متى
+  /// فُتحت الشاشة قبل أن تصل المحادثات.
+  ChannelMember? otherMember(ChatState state) {
+    final Chat? chat = [
+      ...state.chats,
+      ...state.pinnedChats,
+    ].where((element) => element.id == widget.chatId).firstOrNull;
+    return chat?.channelMembers
+        ?.where((element) => element.userId != _prefsRepository.myChatId)
+        .firstOrNull;
+  }
+
+  bool isBlocked(ChatState state) => otherMember(state)?.isBlocked == 1;
+
+  /// يحظر الطرف الآخر أو يرفع الحظر.
+  void toggleBlock(ChatState state) {
+    final ChannelMember? member = otherMember(state);
+    if (member == null) return;
+    chatBloc.add(
+      BlockOrDeleteBlockUserEvent(
+        receiverUserId: member.userId.toString(),
+        isBlock: member.isBlocked == 0,
+        channelId: widget.chatId,
+      ),
+    );
+  }
+
+  /// يشارك الاسم والرقم بورقة مشاركة النظام.
+  ///
+  /// الملف يرسم الكلمة ولا يعطيها فعلاً، لكن المشاركة لا تحتاج خادماً: ما
+  /// يلزمها الاسم والرقم وهما بين يدينا. فتعمل بلا انتظار الطرف الخلفي.
+  Future<void> shareContact() async {
+    final String phone = widget.receiverPhone;
+    await SharePlus.instance.share(
+      ShareParams(
+        text: phone.isEmpty
+            ? widget.fullReceiverName
+            : '${widget.fullReceiverName}\n$phone',
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      // أبيض كما في الويب (`ScreenPage`)، لا `#F8F8F8` القديم.
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: BlocBuilder<ChatBloc, ChatState>(
+          builder: (context, state) {
+            return ContactProfileBody(
+              photo: _photo(),
+              name: widget.fullReceiverName,
+              phone: widget.receiverPhone,
+              isBlocked: isBlocked(state),
+              // ثابتٌ كما في الديمو: لا طلب عندنا لتفعيل المكالمة أو
+              // تعطيلها، والويب نفسه يرسم السطر بلا فعل.
+              isCallEnabled: true,
+              onBack: () => Navigator.pop(context),
+              onCall: startVoiceCall,
+              onVideo: startVideoCall,
+              onSearch: openSearchInChat,
+              onMedia: openMediaAndFiles,
+              onDeleteChat: deleteChat,
+              onToggleBlock: () => toggleBlock(state),
+              onShare: shareContact,
+              // «دائماً» في الصفّين كلاهما قيمةٌ ثابتة في الملف أيضاً
+              // (`value="ALWAYS"` على الصفّين في `ContactScreen.tsx`)، لا
+              // إعدادٌ يُقرأ أو يُبدَّل. فتبقى كما هي حتى يصير لها إعداد.
+              saveToGalleryValue: LocaleKeys.always.tr(),
+              notificationValue: LocaleKeys.always.tr(),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  /// صورة الطرف الآخر، أو أوّل حرفين من اسمه حين لا صورة له.
+  /// الحرفان من اسمٍ — أوّل حرفٍ من أوّل كلمتين.
+  String _initials(String name) {
+    final List<String> words = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+    if (words.isEmpty) return '';
+    if (words.length == 1) {
+      return words.first.characters.take(1).toString().toUpperCase();
+    }
+    return (words[0].characters.take(1).toString() +
+            words[1].characters.take(1).toString())
+        .toUpperCase();
+  }
+
+  Widget _photo() {
+    if (widget.receiverPhoto == null) {
+      // الحرفان كما يرسمهما الملف: 28 Medium على خطّ أساس 85 بحبرٍ عاديّ على
+      // خلفيّة `C.field`. وكان `NoImageWidget` يرسمهما بنفسجيَّين بمقاس
+      // آخر — من التصميم القديم.
+      return Container(
+        color: const Color(0xFFF8F8F8),
+        alignment: Alignment.topCenter,
+        padding: EdgeInsets.only(top: ContactDesign.textTop(85, 28).h),
+        child: DesignText(
+          _initials(widget.receiverName),
+          size: 28,
+          family: 'Quicksand-Medium',
+          center: true,
+        ),
+      );
+    }
+    return MyCachedNetworkImage(
+      imageUrl:
+          (widget.receiverPhoto.toString().contains("media_server")
+              ? ""
+              : "${dotenv.env['Media_S3_Server']}") +
+          widget.receiverPhoto!,
+      imageFit: BoxFit.cover,
+      progressIndicatorBuilderWidget: TrydosLoader(),
+      height: 150.h,
+      width: 131.w,
+    );
+  }
+
+  // ===========================================================================
+  // الشاشة القديمة — معلَّقة لا محذوفة.
+  //
+  // استُبدلت بالتصميم الجديد المنقول من الويب. تبقى هنا لأن فيها عنصراً لا
+  // مقابل له في التصميم: معاينة الوسائط بالصور المصغّرة و«عرض الكل» داخل صفّ
+  // `Media & Files`. التصميم يكتفي بالصفّ وحده، والمعاينة ما زالت تعمل من
+  // صفحة `MediaInProfile` التي يفتحها الصفّ.
+  //
+  // منطقها كلّه مستخرَجٌ أعلاه في دوالّ مسمّاة، فلا شيء فيها إلّا الشكل.
+  // ===========================================================================
+  /*
+  Widget _legacyBuild(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),
       body: SafeArea(
@@ -917,5 +1172,9 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+        ),
+      ),
+    );
   }
+  */
 }

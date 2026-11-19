@@ -48,11 +48,7 @@ class ChatSearchMatch {
   ///
   /// استعلامٌ فارغ يطابق الجميع — فحقل بحث فارغ لا يُخفي شيئاً. وكلا الحقلين
   /// قد يكون `null` (النموذج يقرؤهما من JSON بلا ضمان)، فلا نفترض وجودهما.
-  static bool matches({
-    String? name,
-    String? phone,
-    required String? query,
-  }) {
+  static bool matches({String? name, String? phone, required String? query}) {
     final String text = normalizeText(query);
     if (text.isEmpty) return true;
 

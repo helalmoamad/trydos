@@ -4,16 +4,16 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../app/my_text_widget.dart';
 
 class NoImageWidget extends StatelessWidget {
-  const NoImageWidget(
-      {required this.name,
-      required this.width,
-      required this.textStyle,
-      this.thereActivity = false,
-      this.withImageShadow = false,
-      this.radius = 12,
-      required this.height,
-      Key? key})
-      : super(key: key);
+  const NoImageWidget({
+    required this.name,
+    required this.width,
+    required this.textStyle,
+    this.thereActivity = false,
+    this.withImageShadow = false,
+    this.radius = 12,
+    required this.height,
+    Key? key,
+  }) : super(key: key);
   final String name;
   final double width;
   final double height;
@@ -28,38 +28,36 @@ class NoImageWidget extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-          boxShadow: thereActivity
-              ? [
-                  BoxShadow(
-                      // ignore: deprecated_member_use
-                      color: const Color(0xff007CFF).withOpacity(0.16),
-                      offset: const Offset(0, 3),
-                      blurRadius: 6)
-                ]
-              : withImageShadow
-                  ? [
-                      BoxShadow(
-                        // ignore: deprecated_member_use
-                        color: context.colorScheme.black.withOpacity(0.16),
-                        offset: const Offset(0, 3),
-                        blurRadius: 6,
-                      ),
-                    ]
-                  : null,
-          border:
-              thereActivity ? Border.all(color: const Color(0xff007CFF)) : null,
-          borderRadius: BorderRadius.circular(radius),
-          gradient: const LinearGradient(
-            colors: [
-              Color(0xffacffe9),
-              Color(0xff80baff),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )),
-      child: Center(
-        child: MyTextWidget(name, style: textStyle),
+        boxShadow: thereActivity
+            ? [
+                BoxShadow(
+                  // ignore: deprecated_member_use
+                  color: const Color(0xff007CFF).withOpacity(0.16),
+                  offset: const Offset(0, 3),
+                  blurRadius: 6,
+                ),
+              ]
+            : withImageShadow
+            ? [
+                BoxShadow(
+                  // ignore: deprecated_member_use
+                  color: context.colorScheme.black.withOpacity(0.16),
+                  offset: const Offset(0, 3),
+                  blurRadius: 6,
+                ),
+              ]
+            : null,
+        border: thereActivity
+            ? Border.all(color: const Color(0xff007CFF))
+            : null,
+        borderRadius: BorderRadius.circular(radius),
+        gradient: const LinearGradient(
+          colors: [Color(0xffacffe9), Color(0xff80baff)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
       ),
+      child: Center(child: MyTextWidget(name, style: textStyle)),
     );
   }
 }

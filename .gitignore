@@ -56,3 +56,6 @@ android/app/upload-keystore.jks
 # Unit-test outputs (flutter test --coverage / the CI summary)
 coverage/
 test-results.json
+
+# نسخة مشروع الويب — مرجع تصميم فقط، لا تُودَع
+web_design/

@@ -218,14 +218,14 @@ class _ImageMessageState extends State<ImageMessage> {
     // داخل getOrDownloadMedia، وهي تُنهي الطلب دائماً بنجاح أو بـ null.
     // بلا CancelToken عمداً: الصور لا تُلغى عند مغادرة الشاشة (انظر dispose)،
     // وتمريره هنا كان يعني أن مُلغياً واحداً يُسقط تحميلاً تتشاركه ودجت أخرى.
-    FileSaving()
-        .getOrDownloadMedia(widget.imageUrl!, widget.channelId)
-        .then((File? file) {
-          debugPrint("✅ Download finished - file: ${file?.path}");
-          _isDownloading = false;
-          if (!mounted) return;
-          _applyDownloadResult(file);
-        });
+    FileSaving().getOrDownloadMedia(widget.imageUrl!, widget.channelId).then((
+      File? file,
+    ) {
+      debugPrint("✅ Download finished - file: ${file?.path}");
+      _isDownloading = false;
+      if (!mounted) return;
+      _applyDownloadResult(file);
+    });
   }
 
   /// الملف الموجود في المخزن يعود في microtask قد يقع **داخل إطار البناء**،
@@ -586,8 +586,8 @@ class _ImageMessageState extends State<ImageMessage> {
     // كاملةً (\u200E~48MB\u200E في الذاكرة) لتُعرض في فقاعة 250×200 — فتلتهم وحدها
     // ميزانية imageCache وقد يفشل فكّها، وهو ما يجعل صورة كبيرة بعينها
     // تضرب باستمرار بينما بقيّة الصور سليمة.
-    final int decodeWidth =
-        (250.w * MediaQuery.devicePixelRatioOf(context)).round();
+    final int decodeWidth = (250.w * MediaQuery.devicePixelRatioOf(context))
+        .round();
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -893,9 +893,10 @@ class _FullScreenImage extends StatelessWidget {
   Widget build(BuildContext context) {
     // فكّ الترميز بعرض الشاشة الفعلي: حادّ عند العرض الطبيعي، ويبقى بعيداً عن
     // فكّ الأصل كاملاً الذي قد يبلغ عشرات الميغابايتات لصورة عالية الدقّة.
-    final int decodeWidth = (MediaQuery.sizeOf(context).width *
-            MediaQuery.devicePixelRatioOf(context))
-        .round();
+    final int decodeWidth =
+        (MediaQuery.sizeOf(context).width *
+                MediaQuery.devicePixelRatioOf(context))
+            .round();
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(

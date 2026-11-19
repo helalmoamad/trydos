@@ -28,7 +28,6 @@ import 'package:trydos/common/helper/file_saving.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
-
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 
@@ -352,7 +351,10 @@ class _FilesInProfileState extends ThemeState<FilesInProfile> {
       //
       // ومؤشّر أثناء الاستعادة: بدونه تمرّ ثوانٍ صامتة بعد الضغط فتبدو
       // الضغطة بلا أثر — وهو ما يدفع المستخدم للضغط مراراً.
-      final NavigatorState navigator = Navigator.of(context, rootNavigator: true);
+      final NavigatorState navigator = Navigator.of(
+        context,
+        rootNavigator: true,
+      );
       showDialog<void>(
         context: context,
         barrierDismissible: false,

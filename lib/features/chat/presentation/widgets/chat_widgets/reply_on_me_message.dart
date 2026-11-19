@@ -124,111 +124,108 @@ class _ReplayOnMeMessageState extends State<ReplayOnMeMessage> {
               ),
             ),
             Transform.translate(
-                offset: const Offset(0, 25),
-                child: (widget.answeredFile != null ||
+              offset: const Offset(0, 25),
+              child:
+                  (widget.answeredFile != null ||
+                          widget.answeredFilePath != null) &&
+                      widget.messageType == "ImageMessage"
+                  ? ImageMessage(
+                      channelId: widget.channalId,
+                      isSent: widget.isSent,
+                      messageId: widget.messageId,
+                      isRead: widget.isAnswerMessageRead,
+                      senderId: GetIt.I<PrefsRepository>().myChatId!,
+                      isFirstMessage: widget.isFirstMessage,
+                      isReceived: widget.isAnswerMessageReceived,
+                      userMessageName: widget.senderAnswerName,
+                      userMessagePhoto: widget.senderAnswerPhoto,
+                      isLocalMessage: widget.answeredFilePath == null,
+                      imageFile: widget.answeredFile,
+                      imageUrl: widget.answeredFilePath,
+                      receivedAt: widget.receivedAt,
+                      createAt: widget.createAt!,
+                      watchedAt: widget.watchedaAt,
+                    )
+                  : (widget.answeredFile != null ||
                             widget.answeredFilePath != null) &&
-                        widget.messageType == "ImageMessage"
-                    ? ImageMessage(
-                        channelId: widget.channalId,
-                        isSent: widget.isSent,
-                        messageId: widget.messageId,
-                        isRead: widget.isAnswerMessageRead,
-                        senderId: GetIt.I<PrefsRepository>().myChatId!,
-                        isFirstMessage: widget.isFirstMessage,
-                        isReceived: widget.isAnswerMessageReceived,
-                        userMessageName: widget.senderAnswerName,
-                        userMessagePhoto: widget.senderAnswerPhoto,
-                        isLocalMessage: widget.answeredFilePath == null,
-                        imageFile: widget.answeredFile,
-                        imageUrl: widget.answeredFilePath,
-                        receivedAt: widget.receivedAt,
-                        createAt: widget.createAt!,
-                        watchedAt: widget.watchedaAt,
-                      )
-                    : (widget.answeredFile != null ||
-                                widget.answeredFilePath != null) &&
-                            widget.messageType == "VoiceMessage"
-                        ? VoiceMessage(
-                            receivedAt: widget.receivedAt,
-                            createAt: widget.createAt!,
-                            isSent: widget.isSent,
-                            file: widget.answeredFile,
-                            fileUrl: widget.answeredFilePath,
-                            messageId: widget.messageId.toString(),
-                            senderId: GetIt.I<PrefsRepository>().myChatId!,
-                            userMessageName: widget.senderAnswerName,
-                            userMessagePhoto: widget.senderAnswerPhoto,
-                            watchedAt: widget.watchedaAt,
-                            isRead: widget.isAnswerMessageRead,
-                            isFirstMessage: widget.isFirstMessage,
-                            isReceived: widget.isAnswerMessageReceived,
-                            channelId: widget.channalId,
-                          )
-                        : (widget.answeredFile != null ||
-                                    widget.answeredFilePath != null) &&
-                                widget.messageType == "FileMessage"
-                            ? DocumentMessage(
-                                createAt: widget.createAt!,
-                                isSent: widget.isSent,
-                                documentFile: widget.answeredFile,
-                                channelId: widget.channalId,
-                                receivedAt: widget.receivedAt,
-                                fileName:
-                                    widget.answeredFile!.path.split('/').last,
-                                documentFileUrl: widget.answeredFilePath,
-                                messageId: widget.messageId.toString(),
-                                senderId: GetIt.I<PrefsRepository>().myChatId!,
-                                userMessageName: widget.senderAnswerName,
-                                userMessagePhoto: widget.senderAnswerPhoto,
-                                watchedAt: widget.watchedaAt,
-                                isRead: widget.isAnswerMessageRead,
-                                isFirstMessage: widget.isFirstMessage,
-                                isReceived: widget.isAnswerMessageReceived,
-                              )
-                            : (widget.answeredFile != null ||
-                                        widget.answeredFilePath != null) &&
-                                    widget.messageType == "VideoMessage"
-                                ? VideoMessage(
-                                    createAt: widget.createAt!,
-                                    isSent: widget.isSent,
-                                    videoFile: widget.answeredFile,
-                                    channelId: widget.channalId,
-                                    receivedAt: widget.receivedAt,
-                                    videoUrl: widget.answeredFilePath,
-                                    messageId: widget.messageId.toString(),
-                                    senderId:
-                                        GetIt.I<PrefsRepository>().myChatId!,
-                                    userMessageName: widget.senderAnswerName,
-                                    userMessagePhoto: widget.senderAnswerPhoto,
-                                    watchedAt: widget.watchedaAt,
-                                    isRead: widget.isAnswerMessageRead,
-                                    isFirstMessage: widget.isFirstMessage,
-                                    isReceived: widget.isAnswerMessageReceived,
-                                  )
-                                : TextMessage(
-                                    message: widget.messageAnswer!,
-                                    index: widget.index,
-                                    senderId:
-                                        GetIt.I<PrefsRepository>().myChatId!,
-                                    isRead: widget.isAnswerMessageRead,
-                                    isReceived: widget.isAnswerMessageReceived,
-                                    messageId: widget.messageAnswerId,
-                                    userMessageName: widget.senderAnswerName,
-                                    userMessagePhoto: widget.senderAnswerPhoto,
-                                    isSent: widget.isSent,
-                                    watchedAt: widget.watchedaAt,
-                                    isFirstMessage: true,
-                                    receivedAt: widget.receivedAt,
-                                    createAt: widget.createAt!,
-                                    isEdited: widget.isAnswerEdited,
-                                    tags: widget.tags,
-                                    channalId: widget.channalId,
-                                  )),
+                        widget.messageType == "VoiceMessage"
+                  ? VoiceMessage(
+                      receivedAt: widget.receivedAt,
+                      createAt: widget.createAt!,
+                      isSent: widget.isSent,
+                      file: widget.answeredFile,
+                      fileUrl: widget.answeredFilePath,
+                      messageId: widget.messageId.toString(),
+                      senderId: GetIt.I<PrefsRepository>().myChatId!,
+                      userMessageName: widget.senderAnswerName,
+                      userMessagePhoto: widget.senderAnswerPhoto,
+                      watchedAt: widget.watchedaAt,
+                      isRead: widget.isAnswerMessageRead,
+                      isFirstMessage: widget.isFirstMessage,
+                      isReceived: widget.isAnswerMessageReceived,
+                      channelId: widget.channalId,
+                    )
+                  : (widget.answeredFile != null ||
+                            widget.answeredFilePath != null) &&
+                        widget.messageType == "FileMessage"
+                  ? DocumentMessage(
+                      createAt: widget.createAt!,
+                      isSent: widget.isSent,
+                      documentFile: widget.answeredFile,
+                      channelId: widget.channalId,
+                      receivedAt: widget.receivedAt,
+                      fileName: widget.answeredFile!.path.split('/').last,
+                      documentFileUrl: widget.answeredFilePath,
+                      messageId: widget.messageId.toString(),
+                      senderId: GetIt.I<PrefsRepository>().myChatId!,
+                      userMessageName: widget.senderAnswerName,
+                      userMessagePhoto: widget.senderAnswerPhoto,
+                      watchedAt: widget.watchedaAt,
+                      isRead: widget.isAnswerMessageRead,
+                      isFirstMessage: widget.isFirstMessage,
+                      isReceived: widget.isAnswerMessageReceived,
+                    )
+                  : (widget.answeredFile != null ||
+                            widget.answeredFilePath != null) &&
+                        widget.messageType == "VideoMessage"
+                  ? VideoMessage(
+                      createAt: widget.createAt!,
+                      isSent: widget.isSent,
+                      videoFile: widget.answeredFile,
+                      channelId: widget.channalId,
+                      receivedAt: widget.receivedAt,
+                      videoUrl: widget.answeredFilePath,
+                      messageId: widget.messageId.toString(),
+                      senderId: GetIt.I<PrefsRepository>().myChatId!,
+                      userMessageName: widget.senderAnswerName,
+                      userMessagePhoto: widget.senderAnswerPhoto,
+                      watchedAt: widget.watchedaAt,
+                      isRead: widget.isAnswerMessageRead,
+                      isFirstMessage: widget.isFirstMessage,
+                      isReceived: widget.isAnswerMessageReceived,
+                    )
+                  : TextMessage(
+                      message: widget.messageAnswer!,
+                      index: widget.index,
+                      senderId: GetIt.I<PrefsRepository>().myChatId!,
+                      isRead: widget.isAnswerMessageRead,
+                      isReceived: widget.isAnswerMessageReceived,
+                      messageId: widget.messageAnswerId,
+                      userMessageName: widget.senderAnswerName,
+                      userMessagePhoto: widget.senderAnswerPhoto,
+                      isSent: widget.isSent,
+                      watchedAt: widget.watchedaAt,
+                      isFirstMessage: true,
+                      receivedAt: widget.receivedAt,
+                      createAt: widget.createAt!,
+                      isEdited: widget.isAnswerEdited,
+                      tags: widget.tags,
+                      channalId: widget.channalId,
+                    ),
+            ),
           ],
         ),
-        const SizedBox(
-          height: 25,
-        ),
+        const SizedBox(height: 25),
       ],
     );
   }

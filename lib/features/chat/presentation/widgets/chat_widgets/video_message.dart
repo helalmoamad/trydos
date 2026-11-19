@@ -392,9 +392,7 @@ class _VideoMessageState extends State<VideoMessage> {
                                       },
                                       if (widget.tags.isNotEmpty) ...{
                                         6.horizontalSpace,
-                                        MessageTagsIndicator(
-                                          tags: widget.tags,
-                                        ),
+                                        MessageTagsIndicator(tags: widget.tags),
                                       },
                                     ],
                                   ),

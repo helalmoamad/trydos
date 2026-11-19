@@ -5,30 +5,26 @@
 import 'dart:convert';
 
 ResultOfSearchTextInChatModel resultOfSearchTextInChatModelFromJson(
-        String str) =>
-    ResultOfSearchTextInChatModel.fromJson(json.decode(str));
+  String str,
+) => ResultOfSearchTextInChatModel.fromJson(json.decode(str));
 
 String resultOfSearchTextInChatModelToJson(
-        ResultOfSearchTextInChatModel data) =>
-    json.encode(data.toJson());
+  ResultOfSearchTextInChatModel data,
+) => json.encode(data.toJson());
 
 class ResultOfSearchTextInChatModel {
   final List<String>? messagesIds;
   final String? offset;
 
-  ResultOfSearchTextInChatModel({
-    this.messagesIds,
-    this.offset,
-  });
+  ResultOfSearchTextInChatModel({this.messagesIds, this.offset});
 
   ResultOfSearchTextInChatModel copyWith({
     List<String>? messagesIds,
     String? offset,
-  }) =>
-      ResultOfSearchTextInChatModel(
-        messagesIds: messagesIds ?? this.messagesIds,
-        offset: offset ?? this.offset,
-      );
+  }) => ResultOfSearchTextInChatModel(
+    messagesIds: messagesIds ?? this.messagesIds,
+    offset: offset ?? this.offset,
+  );
 
   factory ResultOfSearchTextInChatModel.fromJson(Map<String, dynamic> json) =>
       ResultOfSearchTextInChatModel(
@@ -39,9 +35,9 @@ class ResultOfSearchTextInChatModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "messages_ids": messagesIds == null
-            ? []
-            : List<dynamic>.from(messagesIds!.map((x) => x.toString())),
-        "offset": offset == null ? null : offset.toString(),
-      };
+    "messages_ids": messagesIds == null
+        ? []
+        : List<dynamic>.from(messagesIds!.map((x) => x.toString())),
+    "offset": offset == null ? null : offset.toString(),
+  };
 }

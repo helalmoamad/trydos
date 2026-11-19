@@ -164,6 +164,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<ReceiveMissCallEvent>(_onReceiveMissCallEvent);
 
     on<GetContactsEvent>(_onGetContactsEvent);
+    on<AddContactEvent>(_onAddContactEvent);
 
     on<AddMediaCountEvent>(_onAddMediaCountEvent);
     on<SearchTextInChatEvent>(
@@ -517,7 +518,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     ToggleMessageTagEvent event,
     Emitter<ChatState> emit,
   ) async {
-    emit(state.copyWith(toggleMessageTagStatus: ToggleMessageTagStatus.loading));
+    emit(
+      state.copyWith(toggleMessageTagStatus: ToggleMessageTagStatus.loading),
+    );
 
     final response = await toggleMessageTagUseCase(
       ToggleMessageTagParams(
@@ -1375,6 +1378,46 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     );
   }
 
+  /// يضيف جهةً واحدة ثم يُحدِّث القائمة.
+  ///
+  /// بطرف `save_contacts` نفسه — فهو يقبل قائمةً أيّاً كان طولها — وبشكل
+  /// الخريطة نفسه الذي تُرسله مزامنةُ الدفتر: `mobile_phone` و`name`. ثم
+  /// [GetContactsEvent] لتظهر الجهة في النافذة من غير أن يُغلقها المستخدم.
+  FutureOr<void> _onAddContactEvent(
+    AddContactEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final String name = event.name.trim();
+    // رقمٌ بصيغة الخادم: أرقامٌ و«+» البادئة وحدها، كما يُرسل دفترُ الهاتف.
+    String phone = event.phone.replaceAll(RegExp(r'[^0-9+]'), '');
+    if (phone.startsWith('00')) phone = '+${phone.substring(2)}';
+    if (phone.isEmpty) {
+      devLog('AddContactEvent: رقمٌ فارغ بعد التنظيف — لا طلب');
+      return;
+    }
+
+    devLog('AddContactEvent → save_contacts  name="$name"  phone=$phone');
+    emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
+    final response = await saveContactsUseCase(
+      SaveContactsParams(
+        contacts: [
+          {'mobile_phone': phone, 'name': name},
+        ],
+      ),
+    );
+    response.fold(
+      (l) {
+        devLog('AddContactEvent ✗ ${l.statusCode} ${l.message}');
+        emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure));
+      },
+      (r) {
+        devLog('AddContactEvent ✓ — طلبُ GetContactsEvent لتحديث القائمة');
+        emit(state.copyWith(saveContactsStatus: SaveContactsStatus.success));
+        add(const GetContactsEvent());
+      },
+    );
+  }
+
   FutureOr<void> _onSaveContactsEvent(
     SaveContactsEvent event,
     Emitter<ChatState> emit,
@@ -2158,10 +2201,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       (r) {
         ErrorManager.resetRetry('ReadAllMessagesEvent');
         List<Chat> cleared(List<Chat> source) => source
-            .map(
-              (e) =>
-                  e.id == id ? e.copyWith(totalUnreadMessageCount: 0) : e,
-            )
+            .map((e) => e.id == id ? e.copyWith(totalUnreadMessageCount: 0) : e)
             .toList();
         final List<Chat> readChats = cleared(state.chats);
         final List<Chat> readPinned = cleared(state.pinnedChats);
@@ -2652,13 +2692,25 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     );
     if (chat.id == "-1") {
       fromPinned = true;
+      // بلا `orElse` كانت ترمي `StateError` حين لا تكون المحادثة في أيّ من
+      // القائمتين — وهي حالةٌ تقع مع المؤرشفة.
       chat = state.pinnedChats.firstWhere(
         (element) => element.id == event.channelId,
+        orElse: () => Chat(id: "-1"),
       );
+      if (chat.id == "-1") return;
     }
 
-    String lastMessageId = chat.messages!.last.id!;
     if (chat.hasReachedMax || chat.isLoading) {
+      return;
+    }
+
+    // لا رسائل بعدُ فلا مؤشّر للصفحة السابقة. وكان `messages!.last.id!` يرمي
+    // على قائمةٍ فارغة أو على رسالةٍ محليّة لم يؤكّدها الخادم بعد.
+    final String? lastMessageId = chat.messages?.isNotEmpty == true
+        ? chat.messages!.last.id
+        : null;
+    if (lastMessageId == null || int.tryParse(lastMessageId) == null) {
       return;
     }
     chat = chat.copyWith(paginationStatus: PaginationStatus.loading);
@@ -2717,12 +2769,16 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       (r) {
         List<Message> messages = List.of(chat.messages ?? []);
         messages.addAll(r);
-        debugPrint(
-          '////chat messages length//// ${messages.length} //////////',
-        );
         chat = chat.copyWith(
           messages: messages,
-          hasReachedMax: r.length < event.limit,
+          // النهاية صفحةٌ **فارغة**، لا صفحةٌ أقصر من المطلوب.
+          //
+          // كان الشرط `r.length < event.limit`، وهو يفترض أن الخادم يملأ كل
+          // صفحة حتى آخر رسالة. وهو لا يفعل: طلبُ عشرٍ يعيد خمساً أحياناً
+          // (يرشّح المحذوف بعد القصّ)، فكانت أوّل صفحةٍ قصيرة توقف التحميل
+          // إلى الأبد — فتبقى 15 رسالة من 40 خارج المتناول مهما سُحبت
+          // القائمة.
+          hasReachedMax: r.isEmpty,
           paginationStatus: PaginationStatus.success,
         );
 

@@ -1,3 +1,6 @@
+import 'package:trydos/features/chat/presentation/pages/chat_list_design.dart';
+import 'package:trydos/features/chat/presentation/pages/conversation_design.dart';
+import 'package:trydos/features/chat/presentation/widgets/chat_v2/call_row_v2.dart';
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -95,6 +98,51 @@ class _CallsCardState extends ThemeState<CallsCard> {
 
   @override
   Widget build(BuildContext context) {
+    // صفّ المكالمة بالتصميم الجديد — [CallRowFaceV2]. والقديم تحته.
+    //
+    // النبرات الثلاث مشتقّةٌ من الحقلين اللذين عند الصفّ القديم، لا من حقلٍ
+    // جديد: ما لم يُجَب وارداً فهو **فائتة**، وما جاوزت مدّتُه صفراً فهو
+    // **واردة** بسطر الدقائق تحته، وما عداه **بلا ردّ**.
+    if (kChatDesignV2) {
+      final CallRowKindV2 kind = widget.isMissing
+          ? CallRowKindV2.missed
+          : (widget.isIncome && widget.duration > 0
+                ? CallRowKindV2.incoming
+                : CallRowKindV2.noAnswer);
+      return CallRowFaceV2(
+        kind: kind,
+        name: widget.fullReceiverName,
+        time: widget.createAt == null
+            ? ''
+            : (!widget.createAt!.isUtc
+                  ? HelperFunctions.getDateInFormat(widget.createAt!)
+                  : HelperFunctions.getZonedDateInFormat(widget.createAt!)),
+        label: switch (kind) {
+          CallRowKindV2.missed =>
+            widget.isVoice
+                ? LocaleKeys.missed_voice_call.tr()
+                : LocaleKeys.missed_video_call.tr(),
+          CallRowKindV2.incoming =>
+            widget.isVoice
+                ? LocaleKeys.incoming_voice_call.tr()
+                : LocaleKeys.incoming_video_call.tr(),
+          CallRowKindV2.noAnswer => LocaleKeys.no_answer.tr(),
+        },
+        minutesLabel: kind == CallRowKindV2.incoming
+            ? LocaleKeys.n_min.tr(
+                namedArgs: {'n': '${(widget.duration / 60).ceil()}'},
+              )
+            : null,
+        photo: _photoV2(),
+        initials: widget.photoPath.isEmpty
+            ? HelperFunctions.getTheFirstTwoLettersOfName(
+                widget.fullReceiverName,
+              )
+            : null,
+        onTap: _startCallV2,
+      );
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -174,106 +222,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
             ],
           ),
           child: InkWell(
-            onTap: () async {
-              if (widget.isVoice) {
-                List<Map<String, dynamic>> info = callerInfo(
-                  channelId: widget.chatId,
-                );
-                PermissionStatus microphone = await Permission.microphone
-                    .request();
-                var status2 = await Permission.mediaLibrary.request();
-                if (microphone.isGranted && status2.isGranted) {
-                  //todo we have the receiver id so the chat dose not exist
-                  if (info[0].containsKey('currentReceiver')) {
-                    debugPrint('currentReceiver${info[0]['currentReceiver']}');
-
-                    GetIt.I<CallsBloc>().add(
-                      MakeCallEvent(
-                        receiverUserId: info[0]['currentReceiver'].toString(),
-                        isVideo: false,
-                        receiverCallName: widget.fullReceiverName,
-                        payload: info[1],
-                      ),
-                    );
-
-                    // GetIt.I<CallsBloc>().add(VideoCallEvent(
-                    //     receiverUserId: info[0]['currentReceiver'],
-                    //     payload: info[1]));
-                    //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
-                  }
-                  //todo else the chat already exist so we don't have the receiver id just the chat id
-                  else {
-                    debugPrint('widget.chatId${widget.chatId}');
-                    debugPrint('info[0]${info[0]}');
-
-                    GetIt.I<CallsBloc>().add(
-                      MakeCallEvent(
-                        isVideo: false,
-                        chatId: widget.chatId,
-                        receiverCallName: widget.fullReceiverName,
-                        payload: info[0],
-                      ),
-                    );
-                    //todo we have the id of the chat so we can move to the call immediately
-                  }
-                } else if (microphone.isDenied || status2.isDenied) {
-                  showWarningMessage(
-                    context,
-                    LocaleKeys.permission_denied.tr(),
-                  );
-                  openAppSettings();
-                }
-                ;
-              } else {
-                List<Map<String, dynamic>> info = callerInfo(
-                  channelId: widget.chatId,
-                );
-                PermissionStatus microphone = await Permission.microphone
-                    .request();
-                var status2 = await Permission.mediaLibrary.request();
-                if (microphone.isGranted && status2.isGranted) {
-                  //todo we have the receiver id so the chat dose not exist
-                  if (info[0].containsKey('currentReceiver')) {
-                    debugPrint('currentReceiver${info[0]['currentReceiver']}');
-
-                    GetIt.I<CallsBloc>().add(
-                      MakeCallEvent(
-                        receiverUserId: info[0]['currentReceiver'].toString(),
-                        isVideo: true,
-                        receiverCallName: widget.fullReceiverName,
-                        payload: info[1],
-                      ),
-                    );
-
-                    // GetIt.I<CallsBloc>().add(VideoCallEvent(
-                    //     receiverUserId: info[0]['currentReceiver'],
-                    //     payload: info[1]));
-                    //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
-                  }
-                  //todo else the chat already exist so we don't have the receiver id just the chat id
-                  else {
-                    debugPrint('widget.chatId${widget.chatId}');
-                    debugPrint('info[0]${info[0]}');
-
-                    GetIt.I<CallsBloc>().add(
-                      MakeCallEvent(
-                        isVideo: true,
-                        chatId: widget.chatId,
-                        receiverCallName: widget.fullReceiverName,
-                        payload: info[0],
-                      ),
-                    );
-                    //todo we have the id of the chat so we can move to the call immediately
-                  }
-                } else if (microphone.isDenied || status2.isDenied) {
-                  showWarningMessage(
-                    context,
-                    LocaleKeys.permission_denied.tr(),
-                  );
-                  openAppSettings();
-                }
-              }
-            },
+            onTap: _startCallV2,
             child: Container(
               height: 75,
               width: 1.sw,
@@ -462,6 +411,118 @@ class _CallsCardState extends ThemeState<CallsCard> {
           ),
         ),
       ],
+    );
+  }
+
+  /// يبدأ المكالمة — جسم نقرة الصفّ القديم حرفاً بحرف، مستخرَجاً
+  /// ليستعمله معه صفُّ التصميم الجديد.
+  ///
+  /// **وشاشةُ المكالمة نفسها لا تُنقَل عن الويب.** للملف شاشةٌ خاصّة بها
+  /// (`components/DemoApp1/screens/CallScreen.tsx`)، وقرّر المالك إبقاء
+  /// مكالماتنا كما هي: `MakeCallEvent` ثم `AgoraInAppWebView` — أي صفحةُ
+  /// ويبٍ داخل التطبيق. فالتصميم الجديد يمسّ **صفَّ السجلّ** وحده
+  /// ([CallRowFaceV2])، لا ما يحدث بعد النقر عليه.
+  Future<void> _startCallV2() async {
+    if (widget.isVoice) {
+      List<Map<String, dynamic>> info = callerInfo(channelId: widget.chatId);
+      PermissionStatus microphone = await Permission.microphone.request();
+      var status2 = await Permission.mediaLibrary.request();
+      if (microphone.isGranted && status2.isGranted) {
+        //todo we have the receiver id so the chat dose not exist
+        if (info[0].containsKey('currentReceiver')) {
+          debugPrint('currentReceiver${info[0]['currentReceiver']}');
+
+          GetIt.I<CallsBloc>().add(
+            MakeCallEvent(
+              receiverUserId: info[0]['currentReceiver'].toString(),
+              isVideo: false,
+              receiverCallName: widget.fullReceiverName,
+              payload: info[1],
+            ),
+          );
+
+          // GetIt.I<CallsBloc>().add(VideoCallEvent(
+          //     receiverUserId: info[0]['currentReceiver'],
+          //     payload: info[1]));
+          //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+        }
+        //todo else the chat already exist so we don't have the receiver id just the chat id
+        else {
+          debugPrint('widget.chatId${widget.chatId}');
+          debugPrint('info[0]${info[0]}');
+
+          GetIt.I<CallsBloc>().add(
+            MakeCallEvent(
+              isVideo: false,
+              chatId: widget.chatId,
+              receiverCallName: widget.fullReceiverName,
+              payload: info[0],
+            ),
+          );
+          //todo we have the id of the chat so we can move to the call immediately
+        }
+      } else if (microphone.isDenied || status2.isDenied) {
+        showWarningMessage(context, LocaleKeys.permission_denied.tr());
+        openAppSettings();
+      }
+      ;
+    } else {
+      List<Map<String, dynamic>> info = callerInfo(channelId: widget.chatId);
+      PermissionStatus microphone = await Permission.microphone.request();
+      var status2 = await Permission.mediaLibrary.request();
+      if (microphone.isGranted && status2.isGranted) {
+        //todo we have the receiver id so the chat dose not exist
+        if (info[0].containsKey('currentReceiver')) {
+          debugPrint('currentReceiver${info[0]['currentReceiver']}');
+
+          GetIt.I<CallsBloc>().add(
+            MakeCallEvent(
+              receiverUserId: info[0]['currentReceiver'].toString(),
+              isVideo: true,
+              receiverCallName: widget.fullReceiverName,
+              payload: info[1],
+            ),
+          );
+
+          // GetIt.I<CallsBloc>().add(VideoCallEvent(
+          //     receiverUserId: info[0]['currentReceiver'],
+          //     payload: info[1]));
+          //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+        }
+        //todo else the chat already exist so we don't have the receiver id just the chat id
+        else {
+          debugPrint('widget.chatId${widget.chatId}');
+          debugPrint('info[0]${info[0]}');
+
+          GetIt.I<CallsBloc>().add(
+            MakeCallEvent(
+              isVideo: true,
+              chatId: widget.chatId,
+              receiverCallName: widget.fullReceiverName,
+              payload: info[0],
+            ),
+          );
+          //todo we have the id of the chat so we can move to the call immediately
+        }
+      } else if (microphone.isDenied || status2.isDenied) {
+        showWarningMessage(context, LocaleKeys.permission_denied.tr());
+        openAppSettings();
+      }
+    }
+  }
+
+  /// صورة المتّصل في الصفّ الجديد، أو `null` فتُرسم حرفا اسمه.
+  Widget _photoV2() {
+    if (widget.photoPath.isEmpty) return const SizedBox.shrink();
+    return MyCachedNetworkImage(
+      imageUrl: widget.photoPath.contains('media_server')
+          ? widget.photoPath
+          : '${dotenv.env['Media_S3_Server']}${widget.photoPath}',
+      imageFit: BoxFit.cover,
+      width: ChatListDesign.callPhoto.w,
+      height: ChatListDesign.callPhoto.h,
+      // بلا تدويرٍ داخليّ: [RowPhotoV2] يقصّ بنصف قطر 15.
+      radius: 0,
     );
   }
 }

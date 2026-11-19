@@ -1,5 +1,15 @@
 import 'dart:async';
 
+import 'package:trydos/features/chat/presentation/widgets/chat_v2/new_chat_sheet_v2.dart';
+import 'package:trydos/features/chat/presentation/widgets/contact_card.dart';
+import 'package:trydos/features/chat/presentation/widgets/invite_options_sheet.dart';
+import 'package:trydos/features/chat/presentation/pages/chat_list_design.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
+
+import 'package:trydos/features/chat/presentation/pages/conversation_design.dart';
+import 'package:trydos/features/chat/presentation/widgets/chat_v2/chat_list_header_v2.dart';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +57,7 @@ import '../widgets/archived_section.dart';
 import '../widgets/reminders_section.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/common/helper/dev_log.dart';
+import 'package:trydos/features/app/app_widgets/nav_v2/nav_bar_design.dart';
 
 class ChatPages extends StatefulWidget {
   const ChatPages({
@@ -88,6 +99,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     if (open) _remindersOpen.value = false;
     _archivedOpen.value = open;
   }
+
   List<Widget> chatPages = [
     const CallsPageContent(),
     const StoriesForChatPageContent(),
@@ -246,24 +258,33 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
               );
             },
             child: Scaffold(
-              floatingActionButton: FloatingActionButton(
-                key: TestVariables.kTestMode
-                    ? const Key(WidgetsKeys.myContactsFloatingActionKey)
-                    : null,
-                onPressed: () {
-                  context.go(
-                    GRouter.config.applicationRoutes.kMyContactsPagePath,
-                  );
-                },
-                backgroundColor: const Color(0xff388cff),
-                child: Center(
-                  child: Icon(
-                    Icons.message_rounded,
-                    size: 25.sp,
-                    color: colorScheme.white,
-                  ),
-                ),
-              ),
+              // الزرّ الدائري الذي يبدأ محادثة.
+              //
+              // > 52 بكسلاً، على بعد 20 من الحافّة اليمنى و16 فوق شريط
+              // > التبويبات. وعلى تبويب المحادثات وحده.
+              //
+              // وهو في الملف يفتح **نافذة «محادثة جديدة»** لا صفحةً أخرى؛
+              // والانتقال القديم إلى صفحة جهات الاتصال معلَّقٌ أدناه.
+              floatingActionButton: kChatDesignV2
+                  ? _newChatButton()
+                  : FloatingActionButton(
+                      key: TestVariables.kTestMode
+                          ? const Key(WidgetsKeys.myContactsFloatingActionKey)
+                          : null,
+                      onPressed: () {
+                        context.go(
+                          GRouter.config.applicationRoutes.kMyContactsPagePath,
+                        );
+                      },
+                      backgroundColor: const Color(0xff388cff),
+                      child: Center(
+                        child: Icon(
+                          Icons.message_rounded,
+                          size: 25.sp,
+                          color: colorScheme.white,
+                        ),
+                      ),
+                    ),
               backgroundColor: const Color(0xffF8F8F8),
               appBar: widget.hideCallsAndStories
                   ? TrydosAppBar(
@@ -312,48 +333,105 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                   controller: scrollController,
                   scrollBehavior: const CupertinoScrollBehavior(),
                   slivers: [
-                    //todo search bar
-                    SliverToBoxAdapter(
-                      child: Container(
-                        width: 1.sw,
-                        height: 50,
-                        color: colorScheme.white,
-                        padding: HWEdgeInsets.symmetric(
-                          horizontal: 10.w,
-                          vertical: 5,
+                    // الترويسة بالتصميم الجديد: حقل البحث وشريط التبويبين
+                    // في ودجت واحدة — [ChatListHeaderV2]. والقديمة معلَّقة
+                    // أدناه بين `if (!kChatDesignV2)`.
+                    if (kChatDesignV2)
+                      SliverToBoxAdapter(
+                        child: BlocBuilder<AppBloc, AppState>(
+                          buildWhen: (p, c) =>
+                              p.tabIndexInChat != c.tabIndexInChat,
+                          builder: (context, app) {
+                            return BlocBuilder<ChatBloc, ChatState>(
+                              buildWhen: (p, c) =>
+                                  p.unReadMessagesFromAllChats !=
+                                  c.unReadMessagesFromAllChats,
+                              builder: (context, chat) {
+                                return BlocBuilder<CallsBloc, CallsState>(
+                                  buildWhen: (p, c) =>
+                                      p.missedCallCount != c.missedCallCount,
+                                  builder: (context, calls) {
+                                    return ChatListHeaderV2(
+                                      controller: form.controllers[0],
+                                      hint: LocaleKeys
+                                          .search_chat_contact_startNewChat
+                                          .tr(),
+                                      onQueryChanged:
+                                          ChatPageContentState.searchInChats,
+                                      tab: app.tabIndexInChat == 1
+                                          ? ChatListTabV2.calls
+                                          : ChatListTabV2.chats,
+                                      onTab: (t) =>
+                                          BlocProvider.of<AppBloc>(context).add(
+                                            ChangeTabInChat(
+                                              t == ChatListTabV2.calls ? 1 : 0,
+                                            ),
+                                          ),
+                                      chatsLabel: LocaleKeys.chats_tab.tr(),
+                                      callsLabel: LocaleKeys.calls_tab.tr(),
+                                      chatsCount:
+                                          '${chat.unReadMessagesFromAllChats}',
+                                      callsCount: '${calls.missedCallCount}',
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
                         ),
-                        child: AppTextField(
-                          controller: form.controllers[0],
-                          filledColor: colorScheme.grey50,
-                          bordersColor: colorScheme.grey50,
-                          hintText: LocaleKeys.search_chat_contact_startNewChat
-                              .tr(),
-                          hintTextStyle: textTheme.bodySmall?.lq.copyWith(
-                            color: const Color(0xffD3D3D3),
+                      ),
+                    //todo search bar
+                    if (!kChatDesignV2)
+                      SliverToBoxAdapter(
+                        child: Container(
+                          width: 1.sw,
+                          height: 50,
+                          color: colorScheme.white,
+                          padding: HWEdgeInsets.symmetric(
+                            horizontal: 10.w,
+                            vertical: 5,
                           ),
-                          onChange: ChatPageContentState.searchInChats,
-                          contentPadding: HWEdgeInsetsDirectional.fromSTEB(
-                            20.w,
-                            10,
-                            20.w,
-                            10,
-                          ),
-                          prefixIcon: Padding(
-                            padding: HWEdgeInsetsDirectional.only(
-                              top: 10,
-                              bottom: 10,
+                          child: AppTextField(
+                            controller: form.controllers[0],
+                            filledColor: colorScheme.grey50,
+                            bordersColor: colorScheme.grey50,
+                            hintText: LocaleKeys
+                                .search_chat_contact_startNewChat
+                                .tr(),
+                            hintTextStyle: textTheme.bodySmall?.lq.copyWith(
+                              color: const Color(0xffD3D3D3),
                             ),
-                            child: SvgPicture.asset(
-                              AppAssets.searchSvg,
-                              height: 20,
-                              width: 20.h,
+                            onChange: ChatPageContentState.searchInChats,
+                            contentPadding: HWEdgeInsetsDirectional.fromSTEB(
+                              20.w,
+                              10,
+                              20.w,
+                              10,
+                            ),
+                            prefixIcon: Padding(
+                              padding: HWEdgeInsetsDirectional.only(
+                                top: 10,
+                                bottom: 10,
+                              ),
+                              child: SvgPicture.asset(
+                                AppAssets.searchSvg,
+                                height: 20,
+                                width: 20.h,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
                     //todo appNavigationBar
-                    if (!widget.hideCallsAndStories) ...{
+                    //
+                    // شريط التبويبات القديم — الثلاثة بأيقوناتها. وفي التصميم
+                    // الجديد صار جزءاً من [ChatListHeaderV2] أعلاه، وتبويباته
+                    // **اثنان** كما في الملف: محادثات ومكالمات.
+                    //
+                    // وتبويب **الستوري** ليس في التصميم الجديد. ويبقى محتواه
+                    // (`StoriesForChatPageContent`، آخر `chatPages`) سليماً
+                    // ليُعاد بسطرٍ واحد متى عاد إلى التصميم.
+                    if (!kChatDesignV2 && !widget.hideCallsAndStories) ...{
                       SliverToBoxAdapter(
                         child: Container(
                           padding: HWEdgeInsets.symmetric(horizontal: 40.w),
@@ -411,11 +489,17 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                         ),
                       ),
                     },
-                    // الصفّان فوق القائمة بالترتيب، وكلٌّ يختفي حين عدده صفر.
-                    RemindersHeaderSliver(
-                      isOpen: _remindersOpen,
-                      onToggle: _openReminders,
-                    ),
+                    // صفّ الأرشيف وحده فوق القائمة، ويختفي حين لا مؤرشفة.
+                    //
+                    // وصفُّ **التذكيرات** ليس في التصميم الجديد: الملف يجعل
+                    // التذكير نافذةً داخل المحادثة (`ReminderSheet.tsx`) لا
+                    // صفّاً في القائمة. ومنطقُه ومحتواه (`RemindersListSliver`
+                    // و`_remindersOpen`) باقيان سليمين ليُعاد بسطرٍ واحد.
+                    if (!kChatDesignV2)
+                      RemindersHeaderSliver(
+                        isOpen: _remindersOpen,
+                        onToggle: _openReminders,
+                      ),
                     ArchivedHeaderSliver(
                       isOpen: _archivedOpen,
                       onToggle: _openArchived,
@@ -448,6 +532,8 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                     ),
 
                     SliverToBoxAdapter(child: 20.verticalSpace),
+                    // غرفة الشريط السفليّ: الصفحة تمتدّ تحته (extendBody).
+                    const SliverNavTabRoom(),
                   ],
                 ),
               ),
@@ -455,6 +541,140 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
           ),
         ),
       ),
+    );
+  }
+
+  /// الزرّ الدائري الذي يبدأ محادثة — `Home Page – 41`.
+  ///
+  /// > 52 بكسلاً بنصف قطر 26، بنفسجيّ بظلٍّ `0 4 12` من البنفسجي 35٪،
+  /// > وفيه علامةُ زائد 26 بيضاء. على بعد 20 من الحافّة اليمنى، و16 فوق
+  /// > شريط التبويبات.
+  ///
+  /// وهو يفتح نافذة «محادثة جديدة» ([NewChatSheetV2]) كما في الملف.
+  Widget _newChatButton() {
+    return Padding(
+      // `FloatingActionButton` يبعد 16 عن الحافّة افتراضاً، والملف 20.
+      padding: EdgeInsets.only(
+        right: (ChatListDesign.fabRight - 16).w,
+        // 16 فوق **أعلى** الشريط السفليّ، لا فوق أسفل الشاشة.
+        //
+        // الجسم يمتدّ تحت الشريط (`extendBody`)، فالزرّ بغير هذا يقع تحته.
+        // و[navTabRoom] هي غرفةُ الشريط (58 + 15 + الحافّة الآمنة)، ومنها
+        // يُطرح هامشُ `FloatingActionButton` الافتراضيّ كي لا يُحسب مرّتين.
+        bottom: kNavDesignV2
+            ? navTabRoom(context) +
+                  ChatListDesign.fabAboveBar.h -
+                  kFloatingActionButtonMargin
+            : ChatListDesign.fabAboveBar.h,
+      ),
+      child: SizedBox(
+        width: ChatListDesign.fabSize.w,
+        height: ChatListDesign.fabSize.w,
+        child: FloatingActionButton(
+          key: TestVariables.kTestMode
+              ? const Key(WidgetsKeys.myContactsFloatingActionKey)
+              : null,
+          onPressed: _openNewChatSheet,
+          backgroundColor: ChatListDesign.purple,
+          elevation: 0,
+          shape: const CircleBorder(),
+          child: Icon(
+            Icons.add_rounded,
+            size: 26.sp,
+            color: ChatListDesign.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// يفتح نافذة «محادثة جديدة» بجهات الاتصال التي في الحالة.
+  ///
+  /// **لا تُنشئ قناةً جديدة**: اختيارُ جهةٍ يفتح محادثتها القائمة عبر
+  /// [openChatWithContact] — وهو المسار نفسه الذي تسلكه صفحة جهات الاتصال.
+  /// وجهةٌ بلا قناةٍ بعد لا يفعل اختيارُها شيئاً، كما كان قبل التصميم الجديد.
+  void _openNewChatSheet() {
+    NewChatSheetV2.show(
+      context,
+      // تستمع للبلوك: إضافةُ جهةٍ أو سحبةُ تحديثٍ تُعيد بناء القائمة والنافذة
+      // مفتوحة، بدل أن تبقى على لقطة اللحظة التي فُتحت فيها.
+      sheet: BlocBuilder<ChatBloc, ChatState>(
+        bloc: chatBloc,
+        buildWhen: (p, c) =>
+            p.contacts != c.contacts ||
+            p.saveContactsStatus != c.saveContactsStatus ||
+            p.getContactsStatus != c.getContactsStatus,
+        builder: (context, state) => _newChatSheet(state.contacts),
+      ),
+    );
+  }
+
+  NewChatSheetV2 _newChatSheet(List<Contact> contacts) {
+    return NewChatSheetV2(
+      contacts: [
+        for (final Contact c in contacts)
+          (
+            id: '${c.contactUserId ?? c.id}',
+            name: c.name ?? LocaleKeys.uk.tr(),
+            phone: c.mobilePhone ?? '',
+            initials: HelperFunctions.getTheFirstTwoLettersOfName(
+              c.name ?? LocaleKeys.uk.tr(),
+            ),
+            photo: null,
+            // جهةٌ بلا `contactUserId` لا تملك التطبيق — وهو الشرط نفسه
+            // الذي تستعمله صفحة جهات الاتصال لإظهار زرّ الدعوة.
+            hasApp: c.contactUserId != null,
+          ),
+      ],
+      onPick: (id) {
+        Navigator.pop(context);
+        final Contact? picked = contacts
+            .where((c) => '${c.contactUserId ?? c.id}' == id)
+            .firstOrNull;
+        if (picked == null) return;
+        final String name = picked.name ?? LocaleKeys.uk.tr();
+        openChatWithContact(
+          context,
+          contact: picked,
+          receiverName: HelperFunctions.getTheFirstTwoLettersOfName(name),
+          fullReceiverName: name,
+        );
+      },
+      // إضافة جهةٍ جديدة: تمرّ بطرف `save_contacts` — وهو يقبل جهةً
+      // واحدة كما يقبل الدفتر كلَّه — ثم يطلب البلوكُ `GetContactsEvent`
+      // فتظهر الجهة في القائمة بلا أن يُغلق المستخدمُ النافذة.
+      onAdd: (name, phone) =>
+          chatBloc.add(AddContactEvent(name: name, phone: phone)),
+      // سحبةٌ إلى الأسفل تُحدِّث الجهات من الخادم.
+      onRefresh: () async {
+        chatBloc.add(const GetContactsEvent());
+        await chatBloc.stream.firstWhere(
+          (s) => s.getContactsStatus != GetContactsStatus.loading,
+        );
+      },
+      listTitle: LocaleKeys.new_chat_title.tr(),
+      formTitle: LocaleKeys.new_contact_title.tr(),
+      newContactLabel: LocaleKeys.new_contact_title.tr(),
+      nameLabel: LocaleKeys.full_name.tr(),
+      namePlaceholder: LocaleKeys.enter_full_name.tr(),
+      phoneLabel: LocaleKeys.phone_number.tr(),
+      phonePlaceholder: LocaleKeys.phone_number.tr(),
+      saveLabel: LocaleKeys.save.tr(),
+      cancelLabel: LocaleKeys.cancel.tr(),
+      // دعوةُ جهةٍ لا تملك التطبيق — نافذة الخيارات نفسها التي تفتحها
+      // صفحة جهات الاتصال.
+      inviteLabel: LocaleKeys.invite.tr(),
+      onInvite: () => showInviteOptions(
+        context,
+        inviteLink: buildInviteLink(),
+        onShare: shareInviteLink,
+      ),
+      // وميضُ زرّ الحفظ: يبقى ما دام الحفظ أو جلبُ الجهات جارياً.
+      busy:
+          chatBloc.state.saveContactsStatus == SaveContactsStatus.loading ||
+          chatBloc.state.getContactsStatus == GetContactsStatus.loading,
+      saveFailed:
+          chatBloc.state.saveContactsStatus == SaveContactsStatus.failure,
     );
   }
 

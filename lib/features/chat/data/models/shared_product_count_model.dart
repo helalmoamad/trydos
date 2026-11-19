@@ -34,15 +34,14 @@ class GetSharedProductCountModel {
     dynamic message,
     dynamic detailedError,
     Data? data,
-  }) =>
-      GetSharedProductCountModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => GetSharedProductCountModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory GetSharedProductCountModel.fromJson(Map<String, dynamic> json) =>
       GetSharedProductCountModel(
@@ -55,40 +54,31 @@ class GetSharedProductCountModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
   final String? productId;
   final int? sharedCount;
 
-  Data({
-    this.productId,
-    this.sharedCount,
-  });
+  Data({this.productId, this.sharedCount});
 
-  Data copyWith({
-    String? productId,
-    int? sharedCount,
-  }) =>
-      Data(
-        productId: productId ?? this.productId,
-        sharedCount: sharedCount ?? this.sharedCount,
-      );
+  Data copyWith({String? productId, int? sharedCount}) => Data(
+    productId: productId ?? this.productId,
+    sharedCount: sharedCount ?? this.sharedCount,
+  );
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        productId: json["product_id"],
-        sharedCount: json["shared_count"],
-      );
+  factory Data.fromJson(Map<String, dynamic> json) =>
+      Data(productId: json["product_id"], sharedCount: json["shared_count"]);
 
   Map<String, dynamic> toJson() => {
-        "product_id": productId,
-        "shared_count": sharedCount,
-      };
+    "product_id": productId,
+    "shared_count": sharedCount,
+  };
 }

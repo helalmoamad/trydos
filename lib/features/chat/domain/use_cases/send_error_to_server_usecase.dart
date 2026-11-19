@@ -23,6 +23,8 @@ class SendErrorParams {
   String pageName;
 
   SendErrorParams({required this.error, required this.pageName});
-  Map<String, dynamic> get map =>
-      {"error_description": error, "error_page": pageName};
+  Map<String, dynamic> get map => {
+    "error_description": error,
+    "error_page": pageName,
+  };
 }

@@ -35,7 +35,6 @@ class _StoriesForChatPageContentState
   bool thereIsAddStoryCard = false;
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<StoryBloc, StoryState>(
       // buildWhen: (previous, current) {
       //   return previous.getStoriesStatus != current.getStoriesStatus &&

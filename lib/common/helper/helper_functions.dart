@@ -74,6 +74,7 @@ class HelperFunctions {
       await controller.dispose();
     }
   }
+
   static changeAppStatus(ThemeMode theme) {
     final color = theme == ThemeMode.dark
         ? const Color(0xFF191C1D)

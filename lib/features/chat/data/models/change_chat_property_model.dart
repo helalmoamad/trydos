@@ -34,15 +34,14 @@ class ChangeChatPropertyModel {
     dynamic message,
     dynamic detailedError,
     Map<String, dynamic>? data,
-  }) =>
-      ChangeChatPropertyModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => ChangeChatPropertyModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory ChangeChatPropertyModel.fromJson(Map<String, dynamic> json) =>
       ChangeChatPropertyModel(
@@ -59,11 +58,11 @@ class ChangeChatPropertyModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": Map.from(data!).map((k, v) => MapEntry<String, dynamic>(k, v)),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": Map.from(data!).map((k, v) => MapEntry<String, dynamic>(k, v)),
+  };
 }

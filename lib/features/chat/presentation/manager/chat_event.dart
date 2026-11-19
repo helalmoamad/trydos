@@ -277,6 +277,25 @@ class SaveContactsEvent extends ChatEvent {
   List<Object?> get props => [];
 }
 
+/// إضافة جهة اتصالٍ واحدة من نافذة «محادثة جديدة».
+///
+/// تمرّ بطرف `save_contacts` نفسه الذي تمرّ به مزامنةُ دفتر الهاتف، لكن
+/// بجهةٍ واحدة بدل الدفتر كلّه — فالطرف يقبل قائمةً أيّاً كان طولها.
+///
+/// والويب لا يملك طرفاً لهذا: عنده `my_contacts` و`search` فقط
+/// (`utils/endpointConfig.tsx`)، فالمصدر تطبيقُنا لا الملف.
+class AddContactEvent extends ChatEvent {
+  const AddContactEvent({required this.name, required this.phone});
+
+  final String name;
+
+  /// الرقم كما كتبه المستخدم — يُنظَّف قبل الإرسال.
+  final String phone;
+
+  @override
+  List<Object?> get props => [name, phone];
+}
+
 class ReceiveMessageEvent extends ChatEvent {
   final Message message;
   final String? prevMessageId;

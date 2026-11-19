@@ -41,7 +41,6 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<CallsBloc, CallsState>(
       buildWhen: (previous, current) {
         return previous.callRegister != current.callRegister;
@@ -50,59 +49,67 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
         if (state.callRegister == null ||
             state.getMyCallsStatus != GetMyCallsStatus.success) {
           return SliverToBoxAdapter(
-              child: SizedBox(
-            height: 1.sh - 200,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TrydosLoader(),
-              ],
+            child: SizedBox(
+              height: 1.sh - 200,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [TrydosLoader()],
+              ),
             ),
-          ));
+          );
         }
-        return SliverMainAxisGroup(slivers: [
-          SliverToBoxAdapter(
+        return SliverMainAxisGroup(
+          slivers: [
+            SliverToBoxAdapter(
               child: Container(
-                  width: 1.sw,
-                  color: colorScheme.white,
-                  child: state.getMyCallsStatus != GetMyCallsStatus.success
-                      ? TrydosLoader()
-                      : const SizedBox.shrink())),
-          sliverListSeparated(
-            itemBuilder: (_, index) {
-              if (state.callRegister![index].authMessageStatus!.isDeleted ==
-                  1) {
-                return const SizedBox.shrink();
-              } else {
-                return CallsCard(
-                  isMissing:
-                      state.callRegister![index].durationInSeconds == -1 &&
-                          state.callRegister![index].senderUserId !=
-                              GetIt.I<PrefsRepository>().myChatId,
-                  createAt: state.callRegister![index].createdAt,
-                  isIncome: state.callRegister![index].senderUserId !=
-                      GetIt.I<PrefsRepository>().myChatId,
-                  index: index,
-                  fullReceiverName: state
-                      .callRegister![index].channel!.channelName
-                      .toString(),
-                  photoPath:
-                      state.callRegister![index].channel?.photoPath ?? "",
-                  chatId: state.callRegister![index].channelId.toString(),
-                  duration: state.callRegister![index].durationInSeconds == null
-                      ? 0
-                      : state.callRegister![index].durationInSeconds!,
-                  messageType: "",
-                  callRegId: state.callRegister![index].id!,
-                  isVoice: state.callRegister![index].messageType!.name ==
-                      "VoiceCall",
-                );
-              }
-            },
-            separator: const SizedBox.shrink(),
-            childCount: state.callRegister!.length,
-          )
-        ]);
+                width: 1.sw,
+                color: colorScheme.white,
+                child: state.getMyCallsStatus != GetMyCallsStatus.success
+                    ? TrydosLoader()
+                    : const SizedBox.shrink(),
+              ),
+            ),
+            sliverListSeparated(
+              itemBuilder: (_, index) {
+                if (state.callRegister![index].authMessageStatus!.isDeleted ==
+                    1) {
+                  return const SizedBox.shrink();
+                } else {
+                  return CallsCard(
+                    isMissing:
+                        state.callRegister![index].durationInSeconds == -1 &&
+                        state.callRegister![index].senderUserId !=
+                            GetIt.I<PrefsRepository>().myChatId,
+                    createAt: state.callRegister![index].createdAt,
+                    isIncome:
+                        state.callRegister![index].senderUserId !=
+                        GetIt.I<PrefsRepository>().myChatId,
+                    index: index,
+                    fullReceiverName: state
+                        .callRegister![index]
+                        .channel!
+                        .channelName
+                        .toString(),
+                    photoPath:
+                        state.callRegister![index].channel?.photoPath ?? "",
+                    chatId: state.callRegister![index].channelId.toString(),
+                    duration:
+                        state.callRegister![index].durationInSeconds == null
+                        ? 0
+                        : state.callRegister![index].durationInSeconds!,
+                    messageType: "",
+                    callRegId: state.callRegister![index].id!,
+                    isVoice:
+                        state.callRegister![index].messageType!.name ==
+                        "VoiceCall",
+                  );
+                }
+              },
+              separator: const SizedBox.shrink(),
+              childCount: state.callRegister!.length,
+            ),
+          ],
+        );
       },
     );
   }

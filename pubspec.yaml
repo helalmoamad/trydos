@@ -243,6 +243,7 @@ flutter:
     - assets/svg/order_svg/
     # أيقونات التصميم الجديد، مقصوصة من XD ومنقولة من مشروع الويب.
     - assets/svg/chat_v2/
+    - assets/svg/nav_v2/
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

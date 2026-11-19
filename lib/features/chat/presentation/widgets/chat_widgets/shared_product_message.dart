@@ -42,6 +42,7 @@ class SharedProductMessage extends StatefulWidget {
     required this.productDescription,
     this.userMessagePhoto,
     this.isSlopRight = true,
+    this.insideRowV2 = false,
     this.imageUrl,
     this.imageFile,
     required this.userMessageName,
@@ -60,6 +61,14 @@ class SharedProductMessage extends StatefulWidget {
   /// وسوم هذه الرسالة. فارغةً لا تظهر أيقونة أصلاً.
   final List<MessageTag> tags;
   bool isSlopRight;
+
+  /// البطاقة داخل [MessageRowV2]، فالصفّ يملك جهتَها وسحبَها وقائمتها.
+  ///
+  /// وبدونه يقع سحبان فوق بعضهما: سحبُ الصفّ وسحبُ البطاقة (`SwipeTo`) —
+  /// فتتحرّك في الاتجاهين، ويقع الردّ في الجهة المعاكسة لجهة الصفّ، ولا
+  /// تظهر علامةُ الردّ لأن `iconSize: 0`. وحشوُها الجانبي 25 مع عرضها
+  /// `1.sw - 100` يتجاوز صندوق الصفّ — وهو فيض الـ9.
+  final bool insideRowV2;
   final String messageId;
   final bool isLocalMessage;
   final String? imageUrl;
@@ -138,93 +147,39 @@ class _SharedProductMessageState extends State<SharedProductMessage>
           }
         },
         builder: (context, state) {
-          return Padding(
-            padding: HWEdgeInsets.only(
-              right: widget.isSent ? 25.w : 0,
-              left: widget.isSent ? 0 : 25.w,
-            ),
-            child: SwipeTo(
-              onLeftSwipe: () {
-                if (widget.senderId == widget._prefsRepository.myChatId) {
-                  if ((state.sendMessageStatus == SendMessageStatus.loading &&
-                      state.currentMessage.contains(widget.messageId))) {
-                    return;
-                  }
-                  BlocProvider.of<AppBloc>(context).add(
-                    RefreshChatInputField(
-                      true,
-                      'product',
-                      widget.isSent,
-                      senderParentMessageId: widget.senderId,
-                      imageUrl: widget.imageUrl,
-                      messageId: widget.messageId,
-                      time: widget.createAt,
-                      message: 'Product',
-                    ),
-                  );
-                } else {}
-              },
-              iconSize: 0,
-              animationDuration: const Duration(milliseconds: 100),
-              offsetDx: 0.15,
-              onRightSwipe: () {
-                if (widget.senderId == widget._prefsRepository.myChatId) {
-                  BlocProvider.of<ChatBloc>(
-                    context,
-                  ).add(ChangeSlop(messageId: widget.messageId));
-                } else {
-                  if ((state.sendMessageStatus == SendMessageStatus.loading &&
-                      state.currentMessage.contains(widget.messageId))) {
-                    return;
-                  }
-                  BlocProvider.of<AppBloc>(context).add(
-                    RefreshChatInputField(
-                      true,
-                      'image',
-                      widget.isSent,
-                      senderParentMessageId: widget.senderId,
-                      imageUrl: widget.imageUrl,
-                      messageId: widget.messageId,
-                      time: widget.createAt,
-                      message: 'Photo',
-                    ),
-                  );
-                }
-              },
-              child: Row(
-                mainAxisAlignment: widget.isSent
-                    ? MainAxisAlignment.end
-                    : MainAxisAlignment.start,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: widget.isSent
-                          ? const Color(0xffFFF9B4)
-                          : const Color(0xffB4FFD9),
-                      borderRadius: BorderRadius.circular(22.0),
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Transform.translate(
-                          offset:
-                              !(state.isSlpoing &&
-                                  state.slopMessageId!.contains(
-                                    widget.messageId,
-                                  ) &&
-                                  (widget.isReceived || widget.isRead))
-                              ? const Offset(0, 0)
-                              : widget.senderId ==
-                                    widget._prefsRepository.myChatId
-                              ? Offset(50.w, 0)
-                              : Offset(-50.w, 0),
-                          child: Stack(
-                            alignment: widget.isSent
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                            children: [
-                              /* if (widget.imageFile == null) ...{
+          // جسم البطاقة مرّةً واحدة: يُركَّب عليه سحبُها الخاصّ خارج الصفّ
+          // الجديد، ويُمرَّر كما هو داخله.
+          final Widget card = Row(
+            mainAxisAlignment: widget.isSent
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: widget.isSent
+                      ? const Color(0xffFFF9B4)
+                      : const Color(0xffB4FFD9),
+                  borderRadius: BorderRadius.circular(22.0),
+                ),
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Transform.translate(
+                      offset:
+                          !(state.isSlpoing &&
+                              state.slopMessageId!.contains(widget.messageId) &&
+                              (widget.isReceived || widget.isRead))
+                          ? const Offset(0, 0)
+                          : widget.senderId == widget._prefsRepository.myChatId
+                          ? Offset(50.w, 0)
+                          : Offset(-50.w, 0),
+                      child: Stack(
+                        alignment: widget.isSent
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        children: [
+                          /* if (widget.imageFile == null) ...{
                                 Container(
                                     width: 1.sw - 100,
                                     height: 464,
@@ -265,41 +220,40 @@ class _SharedProductMessageState extends State<SharedProductMessage>
                                               );
                                             }))),
                               } else ...{*/
-                              // FutureBuilder(
-                              //   future: loadWidthAndHeightForImage(
-                              //       ImageFile: widget.imageFile!),
-                              //   builder: (context, snapshot) {
-                              //     if (snapshot.connectionState ==
-                              //         ConnectionState.done)
-                              //       return
-                              Container(
-                                width: 1.sw - 100,
-                                height: 400,
-                                child: MyCachedNetworkImage(
-                                  imageUrl: (widget.imageUrl ?? ""),
-                                  imageFit: BoxFit.contain,
-                                  progressIndicatorBuilderWidget:
-                                      TrydosLoader(),
-                                  radius: 8,
-                                  width: 1.sw - 100,
-                                  height: 400,
-                                ),
-                                // (snapshot.data!.width.w < 200.w)
-                                //     ? snapshot.data!.width.toDouble()
-                                //     : 200.w
+                          // FutureBuilder(
+                          //   future: loadWidthAndHeightForImage(
+                          //       ImageFile: widget.imageFile!),
+                          //   builder: (context, snapshot) {
+                          //     if (snapshot.connectionState ==
+                          //         ConnectionState.done)
+                          //       return
+                          Container(
+                            width: 1.sw - 100,
+                            height: 400,
+                            child: MyCachedNetworkImage(
+                              imageUrl: (widget.imageUrl ?? ""),
+                              imageFit: BoxFit.contain,
+                              progressIndicatorBuilderWidget: TrydosLoader(),
+                              radius: 8,
+                              width: 1.sw - 100,
+                              height: 400,
+                            ),
+                            // (snapshot.data!.width.w < 200.w)
+                            //     ? snapshot.data!.width.toDouble()
+                            //     : 200.w
 
-                                // (snapshot.data!.width.w / 3 >
-                                //             200.w)
-                                //         ? 200.w.toDouble()
-                                //         : snapshot.data!.width / 3
-                                // (snapshot.data!.height.h <
-                                //         200.h)
-                                //     ? snapshot.data!.height.toDouble()
-                                //     : 200.h
+                            // (snapshot.data!.width.w / 3 >
+                            //             200.w)
+                            //         ? 200.w.toDouble()
+                            //         : snapshot.data!.width / 3
+                            // (snapshot.data!.height.h <
+                            //         200.h)
+                            //     ? snapshot.data!.height.toDouble()
+                            //     : 200.h
 
-                                // snapshot.data!.height / 3
+                            // snapshot.data!.height / 3
 
-                                /*    decoration: BoxDecoration(
+                            /*    decoration: BoxDecoration(
                                        /* image: DecorationImage(
                                           image: FileImage(widget.imageFile!),
                                           fit: BoxFit.fill,
@@ -313,222 +267,281 @@ class _SharedProductMessageState extends State<SharedProductMessage>
                                               : const Color(0xffB4FFD9),
                                         ),
                                       ),*/
-                              ),
+                          ),
 
-                              //     );
-                              //   return CircularProgressIndicator();
-                              // },
+                          //     );
+                          //   return CircularProgressIndicator();
+                          // },
 
-                              //  },
-                              //todo until i solve the translate
-                              widget.isFirstMessage
-                                  ? Transform.translate(
-                                      offset: Offset(
-                                        widget.isSent ? 30.w : -30.w,
-                                        0,
-                                      ),
-                                      child: Stack(
-                                        alignment: Alignment.center,
+                          //  },
+                          //todo until i solve the translate
+                          widget.isFirstMessage
+                              ? Transform.translate(
+                                  offset: Offset(
+                                    widget.isSent ? 30.w : -30.w,
+                                    0,
+                                  ),
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Stack(
+                                        alignment: widget.isSent
+                                            ? Alignment.centerRight
+                                            : Alignment.centerLeft,
                                         children: [
-                                          Stack(
-                                            alignment: widget.isSent
-                                                ? Alignment.centerRight
-                                                : Alignment.centerLeft,
-                                            children: [
-                                              Container(
-                                                width: 40.w,
-                                                height: 40,
-                                                decoration: BoxDecoration(
-                                                  color: const Color(
-                                                    0xffEBFFF8,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                              ),
-                                              Container(
-                                                width: 20.w,
-                                                height: 40,
-                                                decoration: BoxDecoration(
-                                                  color: const Color(
-                                                    0xffEBFFF8,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          widget.userMessagePhoto != null
-                                              ? MyCachedNetworkImage(
-                                                  imageUrl:
-                                                     widget.userMessagePhoto!
-                                                     ,
-                                                  imageFit: BoxFit.fitWidth,
-                                                  progressIndicatorBuilderWidget:
-                                                      TrydosLoader(),
-                                                  radius: 8,
-                                                  width: 30.w,
-                                                  height: 30,
-                                                )
-                                              : NoImageWidget(
-                                                  width: 30.w,
-                                                  height: 30,
-                                                  textStyle: context
-                                                      .textTheme
-                                                      .titleMedium
-                                                      ?.bq
-                                                      .copyWith(
-                                                        color: const Color(
-                                                          0xff6638FF,
-                                                        ),
-                                                        letterSpacing: 0.18,
-                                                        height: 1.33,
-                                                      ),
-                                                  radius: 8,
-                                                  name: widget.userMessageName,
-                                                ),
-                                        ],
-                                        //     );
-                                        //   return CircularProgressIndicator();
-                                        // },
-                                      ),
-                                    )
-                                  : const SizedBox.shrink(),
-                              state.isSlpoing &&
-                                      state.slopMessageId!.contains(
-                                        widget.messageId,
-                                      )
-                                  ? Transform.translate(
-                                      offset:
-                                          widget.senderId ==
-                                              widget._prefsRepository.myChatId
-                                          ? Offset(-220.w, 0)
-                                          : Offset(110.w, 0),
-                                      child: SendRecieveWatchTime(
-                                        isRead: widget.isRead,
-                                        isReceived: widget.isReceived,
-                                        receivedAt: widget.receivedAt,
-                                        watchedAt: widget.watchedAt,
-                                      ),
-                                    )
-                                  : const SizedBox.shrink(),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          constraints: BoxConstraints(maxWidth: 1.sw - 100),
-                          child: MyTextWidget(
-                            widget.productName,
-                            style: context.textTheme.labelSmall?.mq,
-                          ),
-                        ),
-                        10.verticalSpace,
-                        Container(
-                          constraints: BoxConstraints(maxWidth: 1.sw - 100),
-                          child: Html(
-                            shrinkWrap: true,
-                            data: widget.productDescription,
-                            style: {
-                              "body": Style(margin: Margins.all(0)),
-                              "p": Style(maxLines: 1, margin: Margins.all(0)),
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: 60,
-                          height: 20,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Row(
-                            children: [
-                              MyTextWidget(
-                                !widget.createAt!.isUtc
-                                    ? HelperFunctions.getDateInFormat(
-                                        widget.createAt!,
-                                      )
-                                    : HelperFunctions.getZonedDateInFormat(
-                                        widget.createAt!,
-                                      ),
-                                style: context.textTheme.titleSmall?.rq
-                                    .copyWith(color: const Color(0xff1D1D1D)),
-                              ),
-                              if (widget.isSent) ...{
-                                10.horizontalSpace,
-                                (state.currentFailedMessage.contains(
-                                      widget.messageId,
-                                    ))
-                                    ? Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          InkWell(
-                                            onTap: () {
-                                              chatBloc.add(
-                                                ResendMessageEvent(
-                                                  messageType: "image",
-                                                  channelId: widget.channelId,
-                                                  messageId: widget.messageId,
-                                                ),
-                                              );
-                                            },
-                                            child: Icon(
-                                              Icons.refresh,
-                                              size: 27.w,
+                                          Container(
+                                            width: 40.w,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xffEBFFF8),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
                                             ),
                                           ),
                                           Container(
-                                            margin: EdgeInsets.only(left: 5.w),
-                                            child: SvgPicture.asset(
-                                              AppAssets.messageFailedSvg,
-                                              width: 10.sp,
-                                              height: 10.sp,
+                                            width: 20.w,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xffEBFFF8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                           ),
                                         ],
-                                      )
-                                    : SvgPicture.asset(
-                                        widget.isRead
-                                            ? AppAssets.messageReadArrowSvg
-                                            : widget.isReceived
-                                            ? AppAssets.messageDeliveredArrowSvg
-                                            : (state.currentMessage.contains(
-                                                widget.messageId,
-                                              ))
-                                            ? timer
-                                                  ? (state.currentMessage
-                                                            .contains(
-                                                              widget.messageId,
-                                                            ))
-                                                        ? AppAssets.sandClockSvg
-                                                        : AppAssets
-                                                              .messageSentArrowSvg
-                                                  : AppAssets
-                                                        .messageSentArrowSvg
-                                            : AppAssets.messageSentArrowSvg,
-                                        width: 10.sp,
-                                        height: 10.sp,
                                       ),
-                              },
-                              if (widget.isForwarded) ...{
-                                10.horizontalSpace,
-                                SvgPicture.asset(
-                                  AppAssets.forwardedSvg,
-                                  width: 10.sp,
-                                  height: 10.sp,
-                                ),
-                              },
-                              if (widget.tags.isNotEmpty) ...{
-                                6.horizontalSpace,
-                                MessageTagsIndicator(tags: widget.tags),
-                              },
-                            ],
-                          ),
-                        ),
-                      ],
+                                      widget.userMessagePhoto != null
+                                          ? MyCachedNetworkImage(
+                                              imageUrl:
+                                                  widget.userMessagePhoto!,
+                                              imageFit: BoxFit.fitWidth,
+                                              progressIndicatorBuilderWidget:
+                                                  TrydosLoader(),
+                                              radius: 8,
+                                              width: 30.w,
+                                              height: 30,
+                                            )
+                                          : NoImageWidget(
+                                              width: 30.w,
+                                              height: 30,
+                                              textStyle: context
+                                                  .textTheme
+                                                  .titleMedium
+                                                  ?.bq
+                                                  .copyWith(
+                                                    color: const Color(
+                                                      0xff6638FF,
+                                                    ),
+                                                    letterSpacing: 0.18,
+                                                    height: 1.33,
+                                                  ),
+                                              radius: 8,
+                                              name: widget.userMessageName,
+                                            ),
+                                    ],
+                                    //     );
+                                    //   return CircularProgressIndicator();
+                                    // },
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                          state.isSlpoing &&
+                                  state.slopMessageId!.contains(
+                                    widget.messageId,
+                                  )
+                              ? Transform.translate(
+                                  offset:
+                                      widget.senderId ==
+                                          widget._prefsRepository.myChatId
+                                      ? Offset(-220.w, 0)
+                                      : Offset(110.w, 0),
+                                  child: SendRecieveWatchTime(
+                                    isRead: widget.isRead,
+                                    isReceived: widget.isReceived,
+                                    receivedAt: widget.receivedAt,
+                                    watchedAt: widget.watchedAt,
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 1.sw - 100),
+                      child: MyTextWidget(
+                        widget.productName,
+                        style: context.textTheme.labelSmall?.mq,
+                      ),
+                    ),
+                    10.verticalSpace,
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 1.sw - 100),
+                      child: Html(
+                        shrinkWrap: true,
+                        data: widget.productDescription,
+                        style: {
+                          "body": Style(margin: Margins.all(0)),
+                          "p": Style(maxLines: 1, margin: Margins.all(0)),
+                        },
+                      ),
+                    ),
+                    Container(
+                      width: 60,
+                      height: 20,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        children: [
+                          MyTextWidget(
+                            !widget.createAt!.isUtc
+                                ? HelperFunctions.getDateInFormat(
+                                    widget.createAt!,
+                                  )
+                                : HelperFunctions.getZonedDateInFormat(
+                                    widget.createAt!,
+                                  ),
+                            style: context.textTheme.titleSmall?.rq.copyWith(
+                              color: const Color(0xff1D1D1D),
+                            ),
+                          ),
+                          if (widget.isSent) ...{
+                            10.horizontalSpace,
+                            (state.currentFailedMessage.contains(
+                                  widget.messageId,
+                                ))
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          chatBloc.add(
+                                            ResendMessageEvent(
+                                              messageType: "image",
+                                              channelId: widget.channelId,
+                                              messageId: widget.messageId,
+                                            ),
+                                          );
+                                        },
+                                        child: Icon(Icons.refresh, size: 27.w),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(left: 5.w),
+                                        child: SvgPicture.asset(
+                                          AppAssets.messageFailedSvg,
+                                          width: 10.sp,
+                                          height: 10.sp,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : SvgPicture.asset(
+                                    widget.isRead
+                                        ? AppAssets.messageReadArrowSvg
+                                        : widget.isReceived
+                                        ? AppAssets.messageDeliveredArrowSvg
+                                        : (state.currentMessage.contains(
+                                            widget.messageId,
+                                          ))
+                                        ? timer
+                                              ? (state.currentMessage.contains(
+                                                      widget.messageId,
+                                                    ))
+                                                    ? AppAssets.sandClockSvg
+                                                    : AppAssets
+                                                          .messageSentArrowSvg
+                                              : AppAssets.messageSentArrowSvg
+                                        : AppAssets.messageSentArrowSvg,
+                                    width: 10.sp,
+                                    height: 10.sp,
+                                  ),
+                          },
+                          if (widget.isForwarded) ...{
+                            10.horizontalSpace,
+                            SvgPicture.asset(
+                              AppAssets.forwardedSvg,
+                              width: 10.sp,
+                              height: 10.sp,
+                            ),
+                          },
+                          if (widget.tags.isNotEmpty) ...{
+                            6.horizontalSpace,
+                            MessageTagsIndicator(tags: widget.tags),
+                          },
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
+          );
+          return Padding(
+            // داخل الصفّ الجديد: فراغٌ صغير عن حافّة الشاشة في جهة الرسالة
+            // وحدها — 12 كبقيّة الفقاعات (النقطة 9 وهامش الفقاعة 3). وكان
+            // صفراً فالتصقت البطاقة بالحافّة.
+            //
+            // وخارجه يبقى حشوُه القديم 25 كما كان.
+            padding: widget.insideRowV2
+                ? EdgeInsets.only(
+                    right: widget.isSent ? 12.w : 0,
+                    left: widget.isSent ? 0 : 12.w,
+                  )
+                : HWEdgeInsets.only(
+                    right: widget.isSent ? 25.w : 0,
+                    left: widget.isSent ? 0 : 25.w,
+                  ),
+            child: widget.insideRowV2
+                ? card
+                : SwipeTo(
+                    onLeftSwipe: () {
+                      if (widget.senderId == widget._prefsRepository.myChatId) {
+                        if ((state.sendMessageStatus ==
+                                SendMessageStatus.loading &&
+                            state.currentMessage.contains(widget.messageId))) {
+                          return;
+                        }
+                        BlocProvider.of<AppBloc>(context).add(
+                          RefreshChatInputField(
+                            true,
+                            'product',
+                            widget.isSent,
+                            senderParentMessageId: widget.senderId,
+                            imageUrl: widget.imageUrl,
+                            messageId: widget.messageId,
+                            time: widget.createAt,
+                            message: 'Product',
+                          ),
+                        );
+                      } else {}
+                    },
+                    iconSize: 0,
+                    animationDuration: const Duration(milliseconds: 100),
+                    offsetDx: 0.15,
+                    onRightSwipe: () {
+                      if (widget.senderId == widget._prefsRepository.myChatId) {
+                        BlocProvider.of<ChatBloc>(
+                          context,
+                        ).add(ChangeSlop(messageId: widget.messageId));
+                      } else {
+                        if ((state.sendMessageStatus ==
+                                SendMessageStatus.loading &&
+                            state.currentMessage.contains(widget.messageId))) {
+                          return;
+                        }
+                        BlocProvider.of<AppBloc>(context).add(
+                          RefreshChatInputField(
+                            true,
+                            'image',
+                            widget.isSent,
+                            senderParentMessageId: widget.senderId,
+                            imageUrl: widget.imageUrl,
+                            messageId: widget.messageId,
+                            time: widget.createAt,
+                            message: 'Photo',
+                          ),
+                        );
+                      }
+                    },
+                    child: card,
+                  ),
           );
         },
       ),

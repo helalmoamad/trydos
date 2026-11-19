@@ -54,97 +54,94 @@ class _ChatImagePreviewWidgetState extends State<ChatImagePreviewWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: widget.onCancel, // إلغاء عند الضغط على أي مكان
-        child: Container(
-          color: Colors.black,
-          child: Stack(
-            children: [
-              // معاينة الصورة
-              Center(
-                child: GestureDetector(
-                  onTap: () {}, // منع الإلغاء عند الضغط على الصورة
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.file(
-                        widget.imageFile,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              // زر القص
-              Positioned(
-                bottom: 100,
-                left: 20,
-                child: FloatingActionButton(
-                  backgroundColor: Colors.blue,
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Icon(Icons.crop, color: Colors.white),
-                  onPressed: _isLoading ? null : _cropImage,
-                ),
-              ),
-
-              // زر الإرسال
-              Positioned(
-                bottom: 100,
-                right: 20,
-                child: FloatingActionButton(
-                  backgroundColor: Colors.green,
-                  child: const Icon(Icons.send, color: Colors.white),
-                  onPressed: () => widget.onSend(widget.imageFile),
-                ),
-              ),
-
-              // نص التعليمات
-              Positioned(
-                top: 50,
+      onTap: widget.onCancel, // إلغاء عند الضغط على أي مكان
+      child: Container(
+        color: Colors.black,
+        child: Stack(
+          children: [
+            // معاينة الصورة
+            Center(
+              child: GestureDetector(
+                onTap: () {}, // منع الإلغاء عند الضغط على الصورة
                 child: Container(
-                  color: Colors.black,
-                  alignment: Alignment.center,
-                  width: 350,
-                  height: 50,
-                  child: MyTextWidget(
-                    LocaleKeys.image_preview_instructions.tr(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      height: 1.2,
-                    ),
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(widget.imageFile, fit: BoxFit.contain),
                   ),
                 ),
               ),
+            ),
 
-              // زر الإلغاء - في الزاوية العليا اليمنى بلون أحمر
-              Positioned(
-                top: 40,
-                right: 20,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(25),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: IconButton(
-                    icon:
-                        const Icon(Icons.close, color: Colors.white, size: 28),
-                    onPressed: widget.onCancel,
+            // زر القص
+            Positioned(
+              bottom: 100,
+              left: 20,
+              child: FloatingActionButton(
+                backgroundColor: Colors.blue,
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Icon(Icons.crop, color: Colors.white),
+                onPressed: _isLoading ? null : _cropImage,
+              ),
+            ),
+
+            // زر الإرسال
+            Positioned(
+              bottom: 100,
+              right: 20,
+              child: FloatingActionButton(
+                backgroundColor: Colors.green,
+                child: const Icon(Icons.send, color: Colors.white),
+                onPressed: () => widget.onSend(widget.imageFile),
+              ),
+            ),
+
+            // نص التعليمات
+            Positioned(
+              top: 50,
+              child: Container(
+                color: Colors.black,
+                alignment: Alignment.center,
+                width: 350,
+                height: 50,
+                child: MyTextWidget(
+                  LocaleKeys.image_preview_instructions.tr(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    height: 1.2,
                   ),
                 ),
               ),
-            ],
-          ),
-        ));
+            ),
+
+            // زر الإلغاء - في الزاوية العليا اليمنى بلون أحمر
+            Positioned(
+              top: 40,
+              right: 20,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                  onPressed: widget.onCancel,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -25,7 +25,18 @@ class AppBarParams {
     this.shape,
     this.scrolledUnderElevation,
     this.bottom,
+    this.fillHeight = false,
   });
+
+  /// يملأ `AppBar` ارتفاع `heightAppBar` كلَّه بدل 56 الافتراضية.
+  ///
+  /// `preferredSize` يُبلّغ `Scaffold` بـ`heightAppBar`، لكن `AppBar` بداخله
+  /// يرتفع بـ`toolbarHeight` — وهي 56 ما لم تُمرَّر. فشاشةٌ تطلب ارتفاعاً
+  /// أكبر ثم تضع ترويستها في `child` (أي `flexibleSpace`) تُرسم ترويستها
+  /// داخل 56 لا داخل ما طلبت، فتفيض عن الشريط وتركب أوّل ما تحته.
+  ///
+  /// افتراضُه `false` فلا يتغيّر شيءٌ لمن لا يطلبه.
+  final bool fillHeight;
 
   final double? scrolledUnderElevation;
   final String? title;

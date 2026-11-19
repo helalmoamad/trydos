@@ -28,6 +28,7 @@ import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 import 'text_message.dart';
 import 'package:trydos/common/helper/dev_log.dart';
+
 // ignore: must_be_immutable
 class VoiceMessage extends StatefulWidget {
   VoiceMessage({
@@ -695,9 +696,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                     height: 10.sp,
                                                   ),
                                                 },
-                                                if (widget
-                                                    .tags
-                                                    .isNotEmpty) ...{
+                                                if (widget.tags.isNotEmpty) ...{
                                                   6.horizontalSpace,
                                                   MessageTagsIndicator(
                                                     tags: widget.tags,

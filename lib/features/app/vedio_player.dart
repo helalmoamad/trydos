@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/helper/file_saving.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -19,10 +20,18 @@ class MYVideoPlayer extends StatefulWidget {
     this.videoUrl,
     this.videoFile,
     required this.chatId,
+    this.playGlyph,
   }) : super(key: key);
   final String? videoUrl;
   final File? videoFile;
   final String chatId;
+
+  /// اسم أيقونة التشغيل في `assets/svg/chat_v2/` — تصميم المحادثة الجديد.
+  ///
+  /// بطاقة الفيديو الجديدة ترسم الإطار والحبّات، ويبقى قرص التشغيل هنا لأن
+  /// المنطق تحته (تنزيلٌ ثم تشغيل) يخصّ هذا المشغّل وحده. وغيابه يُبقي
+  /// السهم القديم لبقية من يستدعي المشغّل.
+  final String? playGlyph;
 
   @override
   State<MYVideoPlayer> createState() => _MYVideoPlayerState();
@@ -156,8 +165,10 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
       maxHeightDiskCache: 300,
       maxWidthDiskCache: 200,
       imageUrl: imageUrl!,
-      width: 200,
-      height: 300,
+      // بلا مقاسٍ في التصميم الجديد: المصغَّر يملأ الإطار ويُغطّيه، فلا يبقى
+      // فراغ عند الأطراف. و200×300 الثابتة كانت تُبقيه أضيقَ من الإطار.
+      width: _fills ? null : 200,
+      height: _fills ? null : 300,
       fit: BoxFit.cover,
       // الخادم قد لا يملك مصغَّراً بجانب الفيديو؛ بدون هذين تبقى المساحة
       // بيضاء فارغة بلا أي دلالة.
@@ -169,11 +180,8 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
   /// خلفية سوداء صافية حين لا يوفّر الخادم مصغَّراً — بلا أيقونة كاميرا، لأن
   /// زرّ التشغيل يعلوها وهو الدلالة الكافية. كانت black26 فوق grey.shade200
   /// فتظهر بمظهر رمادي باهت.
-  Widget _thumbnailFallback() => Container(
-        width: 200,
-        height: 300,
-        color: Colors.black,
-      );
+  Widget _thumbnailFallback() =>
+      Container(width: 200, height: 300, color: Colors.black);
 
   Future<void> _startDownload() async {
     // رمز إلغاء جديد لكل محاولة: إعادة استخدام رمز مُلغى كانت تُفشل كل
@@ -204,6 +212,34 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
     });
   }
 
+  /// المشغّل يملأ إطاراً يرسمه من فوقه.
+  ///
+  /// التصميم الجديد يرسم الإطار (300×225 بزوايا الفقاعة) ويقصّه، فالمشغّل
+  /// يملؤه ولا يحمل مقاساً خاصّاً. والقديم يحمل مقاساته كما كانت.
+  bool get _fills => widget.playGlyph != null;
+
+  /// قرص التشغيل كما يرسمه تصميم المحادثة الجديد: 56 أبيض، وعلامةٌ 30
+  /// مزاحةٌ 3 إلى اليمين — مركز المثلّث البصري ليس مركزه الهندسي.
+  Widget _designPlayDisc(String glyph) {
+    return Container(
+      width: 56.w,
+      height: 56.w,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      child: Padding(
+        padding: EdgeInsetsDirectional.only(start: 3.w),
+        child: SvgPicture.asset(
+          'assets/svg/chat_v2/$glyph.svg',
+          width: 30.w,
+          height: 30.h,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // سياسة الفيديو كسياسة واتساب: لا تنزيل تلقائي — مصغَّر وزر تنزيل،
@@ -211,10 +247,14 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
     // لا ينتهي فيديو بلا مصغَّر إلى FutureBuilder بلا future.
     return _controller == null
         ? SizedBox(
-            width: 300,
-            height: 300,
+            // التصميم الجديد يرسم الإطار بنفسه (300×225 بزوايا الفقاعة)،
+            // فالمشغّل يملؤه. و300×300 الثابتة كانت تُبقيه غيرَ مالئ قبل
+            // التشغيل: أعرضَ من الإطار وأطولَ منه.
+            width: _fills ? double.infinity : 300,
+            height: _fills ? double.infinity : 300,
             child: Stack(
               alignment: Alignment.center,
+              fit: _fills ? StackFit.expand : StackFit.loose,
               children: [
                 _thumbnailImage(),
                 ValueListenableBuilder<bool>(
@@ -222,13 +262,16 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                   builder: (context, downloading, _) {
                     return !downloading
                         ? InkWell(
-                            onTap:
-                                widget.videoUrl == null ? null : _startDownload,
-                            child: const Icon(
-                              Icons.play_arrow,
-                              size: 60,
-                              color: Colors.white,
-                            ),
+                            onTap: widget.videoUrl == null
+                                ? null
+                                : _startDownload,
+                            child: widget.playGlyph == null
+                                ? const Icon(
+                                    Icons.play_arrow,
+                                    size: 60,
+                                    color: Colors.white,
+                                  )
+                                : _designPlayDisc(widget.playGlyph!),
                           )
                         : ValueListenableBuilder<double>(
                             valueListenable: downloadingProgress,
@@ -252,7 +295,9 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                                       // والتقدّم يبقى صفراً حتى يصل أول قياس
                                       // من الخادم (أو دائماً إن لم يرسل
                                       // content-length).
-                                      value: progress > 0 ? progress / 100 : null,
+                                      value: progress > 0
+                                          ? progress / 100
+                                          : null,
                                       strokeWidth: 5,
                                       backgroundColor: Colors.grey,
                                       color: const Color(0xff388CFF),
@@ -267,21 +312,20 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                                     if (progress < 0)
                                       Positioned(
                                         bottom: -22,
-                                        child:
-                                            ValueListenableBuilder<int>(
-                                              valueListenable: downloadedBytes,
-                                              builder: (context, bytes, _) =>
-                                                  MyTextWidget(
-                                                    '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB',
-                                                    style: context
-                                                        .textTheme
-                                                        .bodySmall
-                                                        ?.copyWith(
-                                                          color: Colors.white,
-                                                          fontSize: 10,
-                                                        ),
-                                                  ),
-                                            ),
+                                        child: ValueListenableBuilder<int>(
+                                          valueListenable: downloadedBytes,
+                                          builder: (context, bytes, _) =>
+                                              MyTextWidget(
+                                                '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB',
+                                                style: context
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.copyWith(
+                                                      color: Colors.white,
+                                                      fontSize: 10,
+                                                    ),
+                                              ),
+                                        ),
                                       ),
                                   ],
                                 ),
@@ -335,23 +379,41 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
                     ),
                   ),
                   child: SizedBox(
-                    height: 400.h,
-                    width: 250.w,
+                    // التصميم الجديد: المشغّل يملأ إطارَه. وكانت 250×400
+                    // ثابتة، و`AspectRatio` يُحيط الفيديو بفراغٍ عند
+                    // الأطراف، و`ClipRRect` بنصف قطر 12 داخل إطارٍ له نصفُ
+                    // قطرٍ آخر — فيبقى الفراغ عند الزوايا.
+                    height: _fills ? double.infinity : 400.h,
+                    width: _fills ? double.infinity : 250.w,
                     child: Stack(
                       alignment: Alignment.center,
+                      fit: _fills ? StackFit.expand : StackFit.loose,
                       children: [
-                        Container(
-                          width: 1.sw,
-                          height: 1.sh,
-                          child: AspectRatio(
-                            aspectRatio: _controller!.value.aspectRatio,
-                            // Use the VideoPlayer widget to display the video.
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12.0),
+                        if (_fills)
+                          // `cover` يملأ الإطار ويقصّ الزائد، فلا فراغ. وقصُّ
+                          // الزوايا يفعله الإطار نفسه.
+                          FittedBox(
+                            fit: BoxFit.cover,
+                            clipBehavior: Clip.hardEdge,
+                            child: SizedBox(
+                              width: _controller!.value.size.width,
+                              height: _controller!.value.size.height,
                               child: VideoPlayer(_controller!),
                             ),
+                          )
+                        else
+                          Container(
+                            width: 1.sw,
+                            height: 1.sh,
+                            child: AspectRatio(
+                              aspectRatio: _controller!.value.aspectRatio,
+                              // Use the VideoPlayer widget to display the video.
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12.0),
+                                child: VideoPlayer(_controller!),
+                              ),
+                            ),
                           ),
-                        ),
                         // هذان وحدهما يتغيّران مع تقدّم التشغيل، فيستمعان
                         // مباشرةً بدل إعادة بناء الشجرة كلها مع كل إطار.
                         ValueListenableBuilder<VideoPlayerValue>(

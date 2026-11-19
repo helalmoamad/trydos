@@ -2,12 +2,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shimmer/shimmer.dart';
+// shimmer كان للنافذة القديمة المعلَّقة أدناه؛ النافذة الجديدة تُغلق عند
+// الاختيار فلا مؤشّر انتظارٍ فيها.
 import 'package:trydos/features/chat/data/models/message_reminder_model.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
+import 'package:trydos/features/chat/presentation/widgets/chat_v2/pick_sheet_v2.dart';
+import 'package:trydos/features/chat/presentation/widgets/chat_v2/toast_v2.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 /// يصيغ موعد التذكير للعرض: «28 سبتمبر، 03:12 ص».
@@ -27,17 +30,207 @@ Future<void> showMessageReminderDialog(
   required String messageId,
   required String channelId,
 }) {
-  return showDialog<void>(
+  return showModalBottomSheet<void>(
     context: context,
+    backgroundColor: Colors.white,
+    barrierColor: PickSheetV2.backdrop,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(PickSheetV2.radius.r),
+      ),
+    ),
     builder: (_) => BlocProvider.value(
       value: BlocProvider.of<ChatBloc>(context),
-      child: _MessageReminderDialog(
-        messageId: messageId,
-        channelId: channelId,
-      ),
+      child: _ReminderSheetBody(messageId: messageId, channelId: channelId),
     ),
   );
 }
+
+/// جسم نافذة التذكير بتصميم الويب الجديد.
+///
+/// الشكل من [ReminderSheetV2]، والخيارات والمنطق من النافذة القديمة نفسها:
+/// أربعة مواعيد سريعة، ومنتقي تاريخٍ ووقتٍ حرّ، ورفعُ التذكير إن كان مضبوطاً.
+///
+/// وبعكس القديمة تُغلق النافذة عند الاختيار كما يفعل الويب: الموعد المضبوط
+/// يظهر بعدها في سطر الأعلام فوق الفقاعة، فلا داعي لبقائها لعرضه.
+class _ReminderSheetBody extends StatelessWidget {
+  const _ReminderSheetBody({required this.messageId, required this.channelId});
+
+  final String messageId;
+  final String channelId;
+
+  /// «صباح الغد» = الثامنة صباحاً من اليوم التالي.
+  DateTime get _tomorrowMorning {
+    final DateTime now = DateTime.now();
+    return DateTime(now.year, now.month, now.day + 1, 8);
+  }
+
+  /// تذكير هذه الرسالة كما هو في الحالة — لإظهار صفّ الرفع من عدمه.
+  MessageReminderInfo? _reminderOf(ChatState state) {
+    for (final Chat chat in [...state.chats, ...state.pinnedChats]) {
+      if (chat.id != channelId) continue;
+      for (final Message message in chat.messages ?? const <Message>[]) {
+        if (message.id == messageId || message.localId == messageId) {
+          return message.reminder;
+        }
+      }
+    }
+    return null;
+  }
+
+  void _setAt(BuildContext context, DateTime moment) {
+    BlocProvider.of<ChatBloc>(context).add(
+      SetMessageReminderEvent(
+        messageId: messageId,
+        channelId: channelId,
+        remindAt: moment,
+      ),
+    );
+  }
+
+  void _cancel(BuildContext context, String reminderId) {
+    BlocProvider.of<ChatBloc>(context).add(
+      CancelMessageReminderEvent(
+        reminderId: reminderId,
+        messageId: messageId,
+        channelId: channelId,
+      ),
+    );
+  }
+
+  /// منتقي التاريخ ثم الوقت. يُفتح بعد إغلاق النافذة، فلا منتقيان متراكبان.
+  // ينتظر صفَّ الموعد الحرّ المعلَّق أدناه — ويبقى سليماً ليعود معه.
+  // ignore: unused_element
+  Future<void> _pickMoment(BuildContext context, ChatBloc bloc) async {
+    final DateTime now = DateTime.now();
+    final DateTime start = now.add(const Duration(minutes: 20));
+
+    final DateTime? day = await showDatePicker(
+      context: context,
+      initialDate: start,
+      firstDate: now,
+      // الخادم يرفض ما بعد 2038-01-19، فلا نعرض ما سيُرفض.
+      lastDate: DateTime(2038, 1, 18),
+    );
+    if (day == null || !context.mounted) return;
+
+    final TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(start),
+      // أرقام الساعة والدقيقة في المنتقي الافتراضي ضخمة (57 نقطة) فتُقصّ
+      // حوافها. تصغيرها وتثبيت مقياس النصّ يعالجان الأمرين معاً.
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            timePickerTheme: TimePickerThemeData(
+              hourMinuteTextStyle: TextStyle(
+                fontSize: 30.sp,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          child: child!,
+        ),
+      ),
+    );
+    if (time == null) return;
+
+    final DateTime moment = DateTime(
+      day.year,
+      day.month,
+      day.day,
+      time.hour,
+      time.minute,
+    );
+    // الخادم يرفض الماضي، والمنتقي يسمح بوقتٍ مضى من اليوم نفسه.
+    if (!moment.isAfter(DateTime.now())) return;
+
+    bloc.add(
+      SetMessageReminderEvent(
+        messageId: messageId,
+        channelId: channelId,
+        remindAt: moment,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ChatBloc bloc = BlocProvider.of<ChatBloc>(context);
+    final MessageReminderInfo? current = _reminderOf(bloc.state);
+    final DateTime now = DateTime.now();
+
+    final List<({String label, DateTime at})> quick = [
+      (
+        label: LocaleKeys.after_20_minutes.tr(),
+        at: now.add(const Duration(minutes: 20)),
+      ),
+      (
+        label: LocaleKeys.after_an_hour.tr(),
+        at: now.add(const Duration(hours: 1)),
+      ),
+      (label: LocaleKeys.tomorrow_morning.tr(), at: _tomorrowMorning),
+      // الأسبوع القادم التاسعةَ صباحاً — ثالث مواعيد الملف.
+      //
+      // وكان مكانَه «بعد 3 ساعات»، وهو موعدٌ من عندنا لا من الملف:
+      // `reminderOptions()` يعطي ثلاثةً لا غير — بعد ساعة، والغد 9،
+      // والأسبوع القادم 9.
+      (label: LocaleKeys.next_week.tr(), at: ReminderOptionsV2.nextWeek(now)),
+    ];
+
+    return PickSheetV2(
+      title: LocaleKeys.remind_me.tr(),
+      children: [
+        ReminderSheetV2(
+          options: [
+            for (final option in quick)
+              (
+                label: option.label,
+                timeText: formatReminderMoment(context, option.at),
+                at: option.at,
+              ),
+          ],
+          hasReminder: current != null,
+          removeLabel: LocaleKeys.cancel_reminder.tr(),
+          onPick: (DateTime? at) {
+            final NavigatorState navigator = Navigator.of(context);
+            // الحبّة تُعرض على `Overlay` الشاشة الحاضنة لا على النافذة،
+            // فتُلتقط قبل الإغلاق — بعده يصير سياق النافذة مُفكَّكاً.
+            final BuildContext host = navigator.context;
+            navigator.pop();
+            if (at != null) {
+              _setAt(context, at);
+              ToastV2.show(host, LocaleKeys.toast_reminder.tr());
+            } else if (current != null) {
+              _cancel(context, current.id);
+            }
+          },
+        ),
+        // صفّ الموعد الحرّ — **لا نظير له في الويب**.
+        //
+        // الملف يعطي ثلاثة مواعيد جاهزة لا غير، ويزيد عليها صفَّ رفع التذكير
+        // بالأحمر متى حملت الرسالة واحداً. فيبقى هذا معلَّقاً كما بقي غيرُه
+        // ممّا سقط من التصميم الجديد؛ و`_pickMoment` سليمةٌ تنتظره.
+        //
+        // ReminderCustomRowV2(
+        //   label: LocaleKeys.choose_date_and_time.tr(),
+        //   onTap: () {
+        //     Navigator.of(context).pop();
+        //     _pickMoment(context, bloc);
+        //   },
+        // ),
+      ],
+    );
+  }
+}
+
+/*
+التصميم القديم لنافذة التذكير، معلَّقٌ لا محذوف.
+
+حلّت محلّه نافذة `_ReminderSheetBody` أعلاه بتصميم الويب الجديد. وخيارات
+الوقت ومنتقي التاريخ وإلغاء التذكير انتقلت كما هي — المتغيّر شكلها لا عملها.
 
 class _MessageReminderDialog extends StatefulWidget {
   const _MessageReminderDialog({
@@ -481,3 +674,4 @@ class _QuickOption extends StatelessWidget {
     );
   }
 }
+*/

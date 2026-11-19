@@ -8,7 +8,6 @@ import '../../../../core/use_case/use_case.dart';
 import '../../data/models/ImageDetail.dart';
 import '../repositories/chat_repository.dart';
 
-
 @injectable
 class GetWidthAndHeightUseCase
     extends UseCase<ChatImageDetail, widthAndHeightParams> {

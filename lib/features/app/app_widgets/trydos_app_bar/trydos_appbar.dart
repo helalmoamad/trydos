@@ -12,11 +12,8 @@ import '../../my_text_widget.dart';
 import 'app_bar_params.dart';
 
 class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const TrydosAppBar({
-    Key? key,
-    required this.appBarParams,
-    this.heightAppBar,
-  }) : super(key: key);
+  const TrydosAppBar({Key? key, required this.appBarParams, this.heightAppBar})
+    : super(key: key);
 
   final AppBarParams appBarParams;
   final double? heightAppBar;
@@ -27,17 +24,27 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-              boxShadow: appBarParams.withShadow
-                  ? [
-                      BoxShadow(
-                          // ignore: deprecated_member_use
-                          color: context.colorScheme.black.withOpacity(0.1),
-                          blurRadius: 6)
-                    ]
-                  : null),
+            boxShadow: appBarParams.withShadow
+                ? [
+                    BoxShadow(
+                      // ignore: deprecated_member_use
+                      color: context.colorScheme.black.withOpacity(0.1),
+                      blurRadius: 6,
+                    ),
+                  ]
+                : null,
+          ),
           child: AppBar(
+            // الشريط بارتفاع `heightAppBar` فعلاً حين يُطلب ذلك.
+            //
+            // `preferredSize` أدناه يُبلّغ `Scaffold` بـ`heightAppBar`، أمّا
+            // `AppBar` فيرتفع بـ`toolbarHeight` وهي 56 ما لم تُمرَّر — فشاشةٌ
+            // تطلب أكثر وتضع ترويستها في `flexibleSpace` تُرسم ترويستها داخل
+            // 56، فتفيض عن الشريط وتركب أوّل ما تحته.
+            toolbarHeight: appBarParams.fillHeight ? heightAppBar : null,
             scrolledUnderElevation: appBarParams.scrolledUnderElevation,
-            backgroundColor: appBarParams.backgroundColor ??
+            backgroundColor:
+                appBarParams.backgroundColor ??
                 Theme.of(context).colorScheme.surface,
             leading: LanguageService.rtl ? null : leadingAppBar(context),
             actions: [
@@ -58,7 +65,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         if (appBarParams.dividerBottom)
-          Divider(height: 0, endIndent: 25.w, indent: 25.w)
+          Divider(height: 0, endIndent: 25.w, indent: 25.w),
       ],
     );
   }
@@ -70,10 +77,11 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget title(BuildContext context) {
     return Transform.translate(
       offset: Offset(
-          (appBarParams.action?.isNotEmpty ?? true)
-              ? 0
-              : (LanguageService.rtl ? 30 : -30),
-          0),
+        (appBarParams.action?.isNotEmpty ?? true)
+            ? 0
+            : (LanguageService.rtl ? 30 : -30),
+        0,
+      ),
       child: Row(
         mainAxisAlignment: appBarParams.centerTitle
             ? MainAxisAlignment.center
@@ -87,10 +95,11 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
           if (appBarParams.title != null)
             MyTextWidget(
               appBarParams.title!,
-              style: appBarParams.tittleStyle ??
+              style:
+                  appBarParams.tittleStyle ??
                   Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: appBarParams.textColor,
-                      ),
+                    color: appBarParams.textColor,
+                  ),
             ),
         ],
       ),
@@ -99,41 +108,35 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget leadingAppBar(BuildContext context, {Widget? leading}) =>
       appBarParams.hasLeading
-          ? Row(
-              children: [
-                InkWell(
-                  key: TestVariables.kTestMode
-                      ? const Key(WidgetsKeys.appBarGoBackArrowKey)
-                      : null,
-                  onTap: () {
-                    appBarParams.onBack?.call();
-                    Navigator.pop(context);
-                    /////////////////////////////////
-                    // FirebaseAnalyticsService.logEventForSession(
-                    //   eventName: AnalyticsEventsConst.buttonClicked,
-                    //   executedEventName:
-                    //       AnalyticsButtonsEventNameConst.trydosAppbarBackIconButton,
-                    // );
-                  },
-                  child: Container(
-                    padding: EdgeInsets.only(left: 14.w, right: 14.w),
-                    child: SvgPicture.asset(
-                      AppAssets.backIconArrowSvg,
-                      matchTextDirection: true,
-                      width: 12.w,
-                      // ignore: deprecated_member_use
-                      color:
-                          appBarParams.backIconColor ?? const Color(0xff388CFF),
-                    ),
-                  ),
+      ? Row(
+          children: [
+            InkWell(
+              key: TestVariables.kTestMode
+                  ? const Key(WidgetsKeys.appBarGoBackArrowKey)
+                  : null,
+              onTap: () {
+                appBarParams.onBack?.call();
+                Navigator.pop(context);
+                /////////////////////////////////
+                // FirebaseAnalyticsService.logEventForSession(
+                //   eventName: AnalyticsEventsConst.buttonClicked,
+                //   executedEventName:
+                //       AnalyticsButtonsEventNameConst.trydosAppbarBackIconButton,
+                // );
+              },
+              child: Container(
+                padding: EdgeInsets.only(left: 14.w, right: 14.w),
+                child: SvgPicture.asset(
+                  AppAssets.backIconArrowSvg,
+                  matchTextDirection: true,
+                  width: 12.w,
+                  // ignore: deprecated_member_use
+                  color: appBarParams.backIconColor ?? const Color(0xff388CFF),
                 ),
-                if (leading != null) ...{
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  leading
-                }
-              ],
-            )
-          : const SizedBox();
+              ),
+            ),
+            if (leading != null) ...{const SizedBox(width: 10), leading},
+          ],
+        )
+      : const SizedBox();
 }

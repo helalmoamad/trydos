@@ -20,7 +20,6 @@ class AddStoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return SizedBox(
       height: 100.h,
       width: 1.sw,

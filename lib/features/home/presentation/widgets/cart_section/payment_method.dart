@@ -77,6 +77,12 @@ class _PaymentMethodState extends State<PaymentMethod> {
     widget.paymentMethods.value = List<String>.from([method]);
   }
 
+  /// تُخفى الطريقةُ إن لم يعرضها الباك، أو إن كنّا في مراجعة الطلب ولم تكن
+  /// هي المختارة — القاعدةُ نفسها التي للدفع عند الاستلام.
+  bool _hidden(String method, List<String> chosen) =>
+      (!chosen.contains(method) && widget.fromPalceOrder) ||
+      !widget.availablePaymentMethod.contains(method);
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -138,12 +144,11 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   ),
                   SizedBox(height: 10.h),
                   /////////////////////
-                  // المحفظة: أوّل خيار، ويمكن اختيارها كأي طريقة أخرى. لا رصيد
-                  // يُعرض ولا طلب يُرسل إلى سيرفر المحفظة (RDB) — إلى أن يُربط
-                  // السيناريو الجديد. لا تُخفى بحسب قائمة الباك لأنها طريقة
-                  // دفع معتمدة في التطبيق.
-                  (!PaymentMethods.listHasRdb(_paymentMethods) &&
-                          widget.fromPalceOrder)
+                  // محفظة Trydos: طريقة دفع كغيرها، تظهر متى عرضها الباك في
+                  // `available_payment_method`، وتُنشئ الطلب كما يُنشئه الدفع
+                  // عند الاستلام. ورصيدها لا يُعرض هنا بعد: لا مسار خادم له
+                  // (انظر `docs/wallet-endpoints.md`).
+                  _hidden(PaymentMethods.trydosWallet, _paymentMethods)
                       ? const SizedBox.shrink()
                       : InkWell(
                           onTap: () =>
@@ -154,7 +159,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             fromSuccessOrder: widget.fromSuccessOrder,
                             currentPaymentMethod: PaymentMethods.trydosWallet,
                             svg: AppAssets.trydosWalletSvg,
-                            title: LocaleKeys.wallet.tr(),
+                            title: LocaleKeys.trydos_wallet.tr(),
                             cardWidgets: buildTrydosWalletWidget(
                               context: context,
                               fromSuccessOrder: widget.fromSuccessOrder,
@@ -162,8 +167,30 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           ),
                         ),
                   /////////////////////
-                  (!PaymentMethods.listHasRdb(_paymentMethods) &&
-                          widget.fromPalceOrder)
+                  _hidden(PaymentMethods.trydosWallet, _paymentMethods)
+                      ? const SizedBox.shrink()
+                      : const SizedBox(height: 8),
+                  /////////////////////
+                  // Ramaaz Digital Bank: لا يُنشئ طلباً هنا، بل يفتح حوار
+                  // الدفع بكوده (`checkout/rdb`).
+                  _hidden(PaymentMethods.rdb, _paymentMethods)
+                      ? const SizedBox.shrink()
+                      : InkWell(
+                          onTap: () => _selectPaymentMethod(PaymentMethods.rdb),
+                          child: PaymentMethodCard(
+                            paymentMethod: _paymentMethods,
+                            fromPalceOrder: widget.fromPalceOrder,
+                            fromSuccessOrder: widget.fromSuccessOrder,
+                            currentPaymentMethod: PaymentMethods.rdb,
+                            svg: AppAssets.bankCardSvg,
+                            title: LocaleKeys.wallet.tr(),
+                            cardWidgets: buildRdbWidget(
+                              fromSuccessOrder: widget.fromSuccessOrder,
+                            ),
+                          ),
+                        ),
+                  /////////////////////
+                  _hidden(PaymentMethods.rdb, _paymentMethods)
                       ? const SizedBox.shrink()
                       : const SizedBox(height: 8),
                   /////////////////////
@@ -174,8 +201,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           )
                       ? const SizedBox.shrink()
                       : InkWell(
-                          onTap: () =>
-                              _selectPaymentMethod(PaymentMethods.cod),
+                          onTap: () => _selectPaymentMethod(PaymentMethods.cod),
                           child: PaymentMethodCard(
                             fromPalceOrder: widget.fromPalceOrder,
                             paymentMethod: _paymentMethods,
@@ -215,8 +241,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             try {
                               FirebaseAnalyticsService.logEventForSession(
                                 eventName: AnalyticsEventsConst.ADD_PAYMENT,
-                                executedEventName: AnalyticsButtonsEventNameConst
-                                    .CONFIRM_SHIPPING_AND_PAYMENT_BUTTON,
+                                executedEventName:
+                                    AnalyticsButtonsEventNameConst
+                                        .CONFIRM_SHIPPING_AND_PAYMENT_BUTTON,
                                 extraParams: {
                                   'payment_type': PaymentMethods.card,
                                 },
@@ -378,6 +405,11 @@ class _PaymentMethodState extends State<PaymentMethod> {
           );
   }
 
+  /// بطاقة Ramaaz Digital Bank: لا رصيد يُعرض، والمجموع في شاشة النجاح.
+  Widget buildRdbWidget({required bool fromSuccessOrder}) {
+    return fromSuccessOrder ? buildOrderTotal() : const SizedBox.shrink();
+  }
+
   Widget buildTrydosWalletWidget({
     required bool fromSuccessOrder,
     required BuildContext context,
@@ -409,11 +441,8 @@ class PaymentMethodCard extends StatelessWidget {
   final List<String> paymentMethod;
   final Widget cardWidgets;
 
-  /// بطاقة Ramaaz Digital Bank واحدة، والباك قد يسمّيها `rdb` أو
-  /// `trydos_wallet`، فالاسمان يختاران البطاقة نفسها.
-  bool get _isSelected => PaymentMethods.isRdb(currentPaymentMethod)
-      ? PaymentMethods.listHasRdb(paymentMethod)
-      : paymentMethod.contains(currentPaymentMethod);
+  /// لكلّ طريقةٍ بطاقتُها: محفظةُ Trydos وRamaaz Digital Bank طريقتان.
+  bool get _isSelected => paymentMethod.contains(currentPaymentMethod);
 
   @override
   Widget build(BuildContext context) {

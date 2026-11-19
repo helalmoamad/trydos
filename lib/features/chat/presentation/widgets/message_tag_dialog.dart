@@ -12,6 +12,7 @@ import 'package:trydos/features/chat/domain/use_cases/toggle_message_tag_usecase
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
+import 'package:trydos/features/chat/presentation/widgets/chat_v2/pick_sheet_v2.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 /// نافذة وسم رسالة.
@@ -23,8 +24,16 @@ Future<void> showMessageTagDialog(
   required String messageId,
   required String channelId,
 }) {
-  return showDialog<void>(
+  return showModalBottomSheet<void>(
     context: context,
+    backgroundColor: Colors.white,
+    barrierColor: PickSheetV2.backdrop,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(PickSheetV2.radius.r),
+      ),
+    ),
     builder: (_) => BlocProvider.value(
       value: BlocProvider.of<ChatBloc>(context),
       child: _MessageTagDialog(messageId: messageId, channelId: channelId),
@@ -43,12 +52,8 @@ class _MessageTagDialog extends StatefulWidget {
 }
 
 class _MessageTagDialogState extends State<_MessageTagDialog> {
-  static const Color _blue = Color(0xff1877F2);
-  static const Color _disabled = Color(0xffBCC0C4);
-  static const Color _cardBorder = Color(0xffE4E6EB);
-  static const Color _rowFill = Color(0xffF2F3F5);
-  static const Color _mutedText = Color(0xff8D8D8D);
-  static const Color _text = Color(0xff1D1D1D);
+  // ألوان النافذة القديمة انتقلت إلى كتلة التعليق أدناه مع بنائها؛ والنافذة
+  // الجديدة تأخذ ألوانها من `ContactDesign` كبقيّة التصميم.
 
   final TextEditingController _controller = TextEditingController();
 
@@ -161,50 +166,39 @@ class _MessageTagDialogState extends State<_MessageTagDialog> {
       child: BlocBuilder<ChatBloc, ChatState>(
         builder: (context, state) {
           final List<_TagRow> rows = _rows(state);
-          return Dialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            insetPadding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 16.h),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    LocaleKeys.message_tag_title.tr(),
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w700,
-                      color: _text,
+          // التمرير صار في `PickSheetV2` نفسها — وتمريرٌ فوق تمريرٍ بارتفاعٍ
+          // غير محدود يكسر التخطيط.
+          return PickSheetV2(
+            title: LocaleKeys.message_tag_title.tr(),
+            children: [
+              TagSheetV2(
+                rows: [
+                  for (final _TagRow row in rows)
+                    (
+                      name: row.name,
+                      count: row.count,
+                      applied: row.applied,
+                      pending: _pending == row.name,
                     ),
-                  ),
-                  SizedBox(height: 16.h),
-                  _field(),
-                  if (rows.isNotEmpty) SizedBox(height: 10.h),
-                  // قائمة قابلة للتمرير بسقف ارتفاع: الوسوم تتراكم مع الوقت،
-                  // وبلا سقف تخرج النافذة عن الشاشة.
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxHeight: 220.h),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      itemCount: rows.length,
-                      separatorBuilder: (_, _) => SizedBox(height: 8.h),
-                      itemBuilder: (context, index) => _row(rows[index]),
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  _closeButton(),
                 ],
+                onToggle: (name, add) => _toggle(name, add: add),
+                controller: _controller,
+                onAddTyped: _addTyped,
+                addPending: _addingTyped,
+                hintText: LocaleKeys.new_tag_hint.tr(),
+                addLabel: LocaleKeys.add.tr().trim(),
               ),
-            ),
+            ],
           );
         },
       ),
     );
   }
+
+  /*
+بناء النافذة القديم، معلَّقٌ لا محذوف — حلّ محلّه `TagSheetV2` أعلاه.
+المنطق فوقه بحاله: الصفوف والاقتراحات والتبديل وكتابة وسمٍ جديد. والمتغيّر
+شكلها وحده.
 
   Widget _field() {
     return Row(
@@ -377,8 +371,10 @@ class _MessageTagDialogState extends State<_MessageTagDialog> {
       ),
     );
   }
+*/
 }
 
+/*
 /// السهم الأزرق، منعكساً مع اتجاه اللغة.
 ///
 /// `Icons.reply` يشير يساراً دائماً ولا ينعكس من تلقائه، فيبدو في العربية
@@ -398,6 +394,7 @@ class _DirectionalArrow extends StatelessWidget {
     );
   }
 }
+*/
 
 /// سطرٌ في النافذة: وسمٌ على الرسالة، أو اقتراحٌ من المحادثة.
 class _TagRow {
@@ -410,6 +407,7 @@ class _TagRow {
   const _TagRow({required this.name, this.count = 0, this.applied = false});
 }
 
+/*
 class _TextButton extends StatelessWidget {
   const _TextButton({
     required this.label,
@@ -442,3 +440,4 @@ class _TextButton extends StatelessWidget {
     );
   }
 }
+*/

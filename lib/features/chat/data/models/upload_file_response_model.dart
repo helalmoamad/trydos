@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-UploadFileResponseModel uploadFileResponseModelFromJson(String str) => UploadFileResponseModel.fromJson(json.decode(str));
+UploadFileResponseModel uploadFileResponseModelFromJson(String str) =>
+    UploadFileResponseModel.fromJson(json.decode(str));
 
-String uploadFileResponseModelToJson(UploadFileResponseModel data) => json.encode(data.toJson());
+String uploadFileResponseModelToJson(UploadFileResponseModel data) =>
+    json.encode(data.toJson());
 
 class UploadFileResponseModel {
   const UploadFileResponseModel({
@@ -25,14 +27,15 @@ class UploadFileResponseModel {
   final dynamic detailedError;
   final Data? data;
 
-  factory UploadFileResponseModel.fromJson(Map<String, dynamic> json) => UploadFileResponseModel(
-    isSuccessful: json["isSuccessful"],
-    hasContent: json["hasContent"],
-    code: json["code"],
-    message: json["message"],
-    detailedError: json["detailed_error"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
-  );
+  factory UploadFileResponseModel.fromJson(Map<String, dynamic> json) =>
+      UploadFileResponseModel(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
+        message: json["message"],
+        detailedError: json["detailed_error"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {
     "isSuccessful": isSuccessful,
@@ -45,17 +48,12 @@ class UploadFileResponseModel {
 }
 
 class Data {
-  Data({
-    this.filePath,
-  });
+  Data({this.filePath});
 
   String? filePath;
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-    filePath: json["file_path"],
-  );
+  factory Data.fromJson(Map<String, dynamic> json) =>
+      Data(filePath: json["file_path"]);
 
-  Map<String, dynamic> toJson() => {
-    "file_path": filePath,
-  };
+  Map<String, dynamic> toJson() => {"file_path": filePath};
 }

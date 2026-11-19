@@ -38,6 +38,7 @@ import '../../../home/presentation/widgets/product_listing/product_listing_filte
 import '../widgets/search_history.dart';
 import '../widgets/search_result.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
+import 'package:trydos/features/app/app_widgets/nav_v2/nav_bar_design.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({
@@ -698,6 +699,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
                         );
                       },
                     ),
+                    // غرفة الشريط السفليّ: الصفحة تمتدّ تحته (extendBody).
+                    const SliverNavTabRoom(),
                   ],
                 ),
               );

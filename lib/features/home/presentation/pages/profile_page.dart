@@ -49,6 +49,7 @@ import '../../../../common/helper/helper_functions.dart';
 import '../manager/orderBloc/order_bloc.dart';
 import 'Order/orders_page.dart';
 import 'package:trydos/common/helper/dev_log.dart';
+import 'package:trydos/features/app/app_widgets/nav_v2/nav_bar_design.dart';
 
 class ProfileHomePage extends StatefulWidget {
   const ProfileHomePage({super.key});
@@ -151,6 +152,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          // غرفة الشريط السفليّ: الصفحة تمتدّ تحته (extendBody).
+          padding: EdgeInsets.only(bottom: navTabRoom(context)),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 12.w),
             child: Column(

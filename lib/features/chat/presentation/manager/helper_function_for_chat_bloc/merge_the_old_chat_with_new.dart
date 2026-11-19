@@ -2,8 +2,10 @@ import 'package:trydos/core/utils/extensions/list.dart';
 
 import '../../../data/models/my_chats_response_model.dart';
 
-MergeOldMessageWithNew(
-    {required List<Chat> newChats, required List<Chat> previousChats}) {
+MergeOldMessageWithNew({
+  required List<Chat> newChats,
+  required List<Chat> previousChats,
+}) {
   List<Message> currMessages;
   List<Message> prevMessages;
   List<Message> resultMessages = [];
@@ -15,15 +17,20 @@ MergeOldMessageWithNew(
     }
   });
   return (previousChats.isNotEmpty &&
-          previousChats
-              .any((element) => int.tryParse(element.id.toString()) != null))
+          previousChats.any(
+            (element) => int.tryParse(element.id.toString()) != null,
+          ))
       ? [
           ...newChats.map((chat) {
-            prevMessages = List.of(previousChats
-                    .firstWhere((element) => element.id == chat.id,
-                        orElse: () => Chat())
-                    .messages ??
-                []);
+            prevMessages = List.of(
+              previousChats
+                      .firstWhere(
+                        (element) => element.id == chat.id,
+                        orElse: () => Chat(),
+                      )
+                      .messages ??
+                  [],
+            );
             resultMessages = [];
             for (int i = 0; i < prevMessages.length; i++) {
               if (int.tryParse(prevMessages[i].id.toString()) == null) {
@@ -41,10 +48,10 @@ MergeOldMessageWithNew(
             }
             resultMessages.sort((a, b) {
               return b.createdAt!.compareTo(a.createdAt!);
-            },);
+            });
             return chat.copyWith(messages: resultMessages);
           }).toList(),
-          ...emptyChats
+          ...emptyChats,
         ]
       : newChats;
 }

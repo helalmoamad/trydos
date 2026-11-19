@@ -47,6 +47,7 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../story/presentation/widget/stories_list.dart';
+import 'package:trydos/features/app/app_widgets/nav_v2/nav_bar_design.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -656,6 +657,8 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           SliverToBoxAdapter(child: 20.verticalSpace),
+          // غرفة الشريط السفليّ: الصفحة تمتدّ تحته (extendBody).
+          const SliverNavTabRoom(),
         ],
       ),
     );

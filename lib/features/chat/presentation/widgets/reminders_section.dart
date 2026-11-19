@@ -43,7 +43,9 @@ class RemindersHeaderSliver extends StatelessWidget {
           // آخر تذكير غادر والقائمة مفتوحة: تُغلق نفسها وإلّا بقي المستخدم
           // أمام شاشة فارغة بلا طريق للرجوع.
           if (isOpen.value) {
-            WidgetsBinding.instance.addPostFrameCallback((_) => onToggle(false));
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => onToggle(false),
+            );
           }
           return const SliverToBoxAdapter();
         }

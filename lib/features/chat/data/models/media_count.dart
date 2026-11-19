@@ -33,33 +33,32 @@ class MediaCount {
     dynamic message,
     dynamic detailedError,
     Data? data,
-  }) =>
-      MediaCount(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => MediaCount(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory MediaCount.fromJson(Map<String, dynamic> json) => MediaCount(
-        isSuccessful: json["isSuccessful"],
-        hasContent: json["hasContent"],
-        code: json["code"],
-        message: json["message"],
-        detailedError: json["detailed_error"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
-      );
+    isSuccessful: json["isSuccessful"],
+    hasContent: json["hasContent"],
+    code: json["code"],
+    message: json["message"],
+    detailedError: json["detailed_error"],
+    data: json["data"] == null ? null : Data.fromJson(json["data"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
@@ -77,22 +76,21 @@ class Data {
     int? imageMessagesCount,
     int? videoMessagesCount,
     int? fileMessagesCount,
-  }) =>
-      Data(
-        imageMessagesCount: imageMessagesCount ?? this.imageMessagesCount,
-        videoMessagesCount: videoMessagesCount ?? this.videoMessagesCount,
-        fileMessagesCount: fileMessagesCount ?? this.fileMessagesCount,
-      );
+  }) => Data(
+    imageMessagesCount: imageMessagesCount ?? this.imageMessagesCount,
+    videoMessagesCount: videoMessagesCount ?? this.videoMessagesCount,
+    fileMessagesCount: fileMessagesCount ?? this.fileMessagesCount,
+  );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        imageMessagesCount: json["image_messages_count"],
-        videoMessagesCount: json["video_messages_count"],
-        fileMessagesCount: json["file_messages_count"],
-      );
+    imageMessagesCount: json["image_messages_count"],
+    videoMessagesCount: json["video_messages_count"],
+    fileMessagesCount: json["file_messages_count"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "image_messages_count": imageMessagesCount,
-        "video_messages_count": videoMessagesCount,
-        "file_messages_count": fileMessagesCount,
-      };
+    "image_messages_count": imageMessagesCount,
+    "video_messages_count": videoMessagesCount,
+    "file_messages_count": fileMessagesCount,
+  };
 }
