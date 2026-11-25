@@ -7,30 +7,35 @@ import 'package:trydos/features/calls/domain/repositories/calls_repository.dart'
 import '../../data/models/make_call_response_model.dart';
 
 @injectable
-class MakeCallUseCase extends UseCase<MakeCallRemoteResponseModel, MakeCallParams> {
+class MakeCallUseCase
+    extends UseCase<MakeCallRemoteResponseModel, MakeCallParams> {
   final CallsRepository repository;
 
   MakeCallUseCase(this.repository);
 
   @override
-  Future<Either<Failure, MakeCallRemoteResponseModel>> call(MakeCallParams  params) {
-    return repository.makeCall(params:params.map );
+  Future<Either<Failure, MakeCallRemoteResponseModel>> call(
+    MakeCallParams params,
+  ) {
+    return repository.makeCall(params: params.map);
   }
 }
 
-class MakeCallParams{
+class MakeCallParams {
   final String? chatId;
   final String? receiverUserId;
-  final Map<String,dynamic> payload;
+  final Map<String, dynamic> payload;
   final bool isVideo;
-  const MakeCallParams(  {
+  const MakeCallParams({
     this.chatId,
     this.receiverUserId,
     required this.isVideo,
-    required this.payload,});
+    required this.payload,
+  });
 
-  Map<String, dynamic> get map =>{
-    "data" : {"payload": payload,
+  Map<String, dynamic> get map => {
+    "data": {
+      "payload": payload,
       "channel_id": chatId,
       "receiver_user_id": receiverUserId,
     },

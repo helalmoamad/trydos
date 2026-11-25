@@ -17,7 +17,9 @@ class GetWidthAndHeightUseCase
   @override
   Future<Either<Failure, ImageDetail>> call(widthAndHeightParams params) {
     return repository.loadWidthAndHeight(
-        url: params.getUrl, collectionId: params.getCollectionId);
+      url: params.getUrl,
+      collectionId: params.getCollectionId,
+    );
   }
 }
 

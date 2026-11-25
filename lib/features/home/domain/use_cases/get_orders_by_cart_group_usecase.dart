@@ -12,11 +12,7 @@ class GetOrdersByCartGroupIDUsecase extends UseCase<OrdersGroupModel, String> {
   GetOrdersByCartGroupIDUsecase(this.repository);
 
   @override
-  Future<Either<Failure, OrdersGroupModel>> call(
-    String cartGroupID,
-  ) {
-    return repository.getOrdersByCartGroupID(
-      cartGroupID: cartGroupID,
-    );
+  Future<Either<Failure, OrdersGroupModel>> call(String cartGroupID) {
+    return repository.getOrdersByCartGroupID(cartGroupID: cartGroupID);
   }
 }

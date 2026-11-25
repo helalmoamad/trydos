@@ -12,7 +12,8 @@ class GetMyFirebaseSettingsUseCase
   final HomeRepository repository;
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>> call(
-      NoParams params) async {
+    NoParams params,
+  ) async {
     return repository.getMyFirebaseSettings();
   }
 }

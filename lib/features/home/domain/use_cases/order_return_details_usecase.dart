@@ -14,7 +14,8 @@ class OrderReturnDetailsUseCase
 
   @override
   Future<Either<Failure, GetOrderReturntDetailsModel>> call(
-      GetOrderReturntDetailsParams params) {
+    GetOrderReturntDetailsParams params,
+  ) {
     return _homeRepository.getOrderReturnDetails(params.map);
   }
 }
@@ -22,10 +23,6 @@ class OrderReturnDetailsUseCase
 class GetOrderReturntDetailsParams {
   final String orderGroupId;
 
-  GetOrderReturntDetailsParams({
-    required this.orderGroupId,
-  });
-  Map<String, dynamic> get map => {
-        "order_group_id": orderGroupId,
-      };
+  GetOrderReturntDetailsParams({required this.orderGroupId});
+  Map<String, dynamic> get map => {"order_group_id": orderGroupId};
 }

@@ -79,30 +79,29 @@ class GetUserCountryResponseModel {
     Flag? flag,
     Connection? connection,
     Timezone? timezone,
-  }) =>
-      GetUserCountryResponseModel(
-        aboutUs: aboutUs ?? this.aboutUs,
-        ip: ip ?? this.ip,
-        success: success ?? this.success,
-        type: type ?? this.type,
-        continent: continent ?? this.continent,
-        continentCode: continentCode ?? this.continentCode,
-        country: country ?? this.country,
-        countryCode: countryCode ?? this.countryCode,
-        region: region ?? this.region,
-        regionCode: regionCode ?? this.regionCode,
-        city: city ?? this.city,
-        latitude: latitude ?? this.latitude,
-        longitude: longitude ?? this.longitude,
-        isEu: isEu ?? this.isEu,
-        postal: postal ?? this.postal,
-        callingCode: callingCode ?? this.callingCode,
-        capital: capital ?? this.capital,
-        borders: borders ?? this.borders,
-        flag: flag ?? this.flag,
-        connection: connection ?? this.connection,
-        timezone: timezone ?? this.timezone,
-      );
+  }) => GetUserCountryResponseModel(
+    aboutUs: aboutUs ?? this.aboutUs,
+    ip: ip ?? this.ip,
+    success: success ?? this.success,
+    type: type ?? this.type,
+    continent: continent ?? this.continent,
+    continentCode: continentCode ?? this.continentCode,
+    country: country ?? this.country,
+    countryCode: countryCode ?? this.countryCode,
+    region: region ?? this.region,
+    regionCode: regionCode ?? this.regionCode,
+    city: city ?? this.city,
+    latitude: latitude ?? this.latitude,
+    longitude: longitude ?? this.longitude,
+    isEu: isEu ?? this.isEu,
+    postal: postal ?? this.postal,
+    callingCode: callingCode ?? this.callingCode,
+    capital: capital ?? this.capital,
+    borders: borders ?? this.borders,
+    flag: flag ?? this.flag,
+    connection: connection ?? this.connection,
+    timezone: timezone ?? this.timezone,
+  );
 
   factory GetUserCountryResponseModel.fromJson(Map<String, dynamic> json) =>
       GetUserCountryResponseModel(
@@ -134,28 +133,28 @@ class GetUserCountryResponseModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "About_Us": aboutUs,
-        "ip": ip,
-        "success": success,
-        "type": type,
-        "continent": continent,
-        "continent_code": continentCode,
-        "country": country,
-        "country_code": countryCode,
-        "region": region,
-        "region_code": regionCode,
-        "city": city,
-        "latitude": latitude,
-        "longitude": longitude,
-        "is_eu": isEu,
-        "postal": postal,
-        "calling_code": callingCode,
-        "capital": capital,
-        "borders": borders,
-        "flag": flag?.toJson(),
-        "connection": connection?.toJson(),
-        "timezone": timezone?.toJson(),
-      };
+    "About_Us": aboutUs,
+    "ip": ip,
+    "success": success,
+    "type": type,
+    "continent": continent,
+    "continent_code": continentCode,
+    "country": country,
+    "country_code": countryCode,
+    "region": region,
+    "region_code": regionCode,
+    "city": city,
+    "latitude": latitude,
+    "longitude": longitude,
+    "is_eu": isEu,
+    "postal": postal,
+    "calling_code": callingCode,
+    "capital": capital,
+    "borders": borders,
+    "flag": flag?.toJson(),
+    "connection": connection?.toJson(),
+    "timezone": timezone?.toJson(),
+  };
 }
 
 class Connection {
@@ -164,19 +163,9 @@ class Connection {
   final String? isp;
   final String? domain;
 
-  Connection({
-    this.asn,
-    this.org,
-    this.isp,
-    this.domain,
-  });
+  Connection({this.asn, this.org, this.isp, this.domain});
 
-  Connection copyWith({
-    int? asn,
-    String? org,
-    String? isp,
-    String? domain,
-  }) =>
+  Connection copyWith({int? asn, String? org, String? isp, String? domain}) =>
       Connection(
         asn: asn ?? this.asn,
         org: org ?? this.org,
@@ -185,18 +174,18 @@ class Connection {
       );
 
   factory Connection.fromJson(Map<String, dynamic> json) => Connection(
-        asn: json["asn"],
-        org: json["org"],
-        isp: json["isp"],
-        domain: json["domain"],
-      );
+    asn: json["asn"],
+    org: json["org"],
+    isp: json["isp"],
+    domain: json["domain"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "asn": asn,
-        "org": org,
-        "isp": isp,
-        "domain": domain,
-      };
+    "asn": asn,
+    "org": org,
+    "isp": isp,
+    "domain": domain,
+  };
 }
 
 class Flag {
@@ -204,34 +193,25 @@ class Flag {
   final String? emoji;
   final String? emojiUnicode;
 
-  Flag({
-    this.img,
-    this.emoji,
-    this.emojiUnicode,
-  });
+  Flag({this.img, this.emoji, this.emojiUnicode});
 
-  Flag copyWith({
-    String? img,
-    String? emoji,
-    String? emojiUnicode,
-  }) =>
-      Flag(
-        img: img ?? this.img,
-        emoji: emoji ?? this.emoji,
-        emojiUnicode: emojiUnicode ?? this.emojiUnicode,
-      );
+  Flag copyWith({String? img, String? emoji, String? emojiUnicode}) => Flag(
+    img: img ?? this.img,
+    emoji: emoji ?? this.emoji,
+    emojiUnicode: emojiUnicode ?? this.emojiUnicode,
+  );
 
   factory Flag.fromJson(Map<String, dynamic> json) => Flag(
-        img: json["img"],
-        emoji: json["emoji"],
-        emojiUnicode: json["emoji_unicode"],
-      );
+    img: json["img"],
+    emoji: json["emoji"],
+    emojiUnicode: json["emoji_unicode"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "img": img,
-        "emoji": emoji,
-        "emoji_unicode": emojiUnicode,
-      };
+    "img": img,
+    "emoji": emoji,
+    "emoji_unicode": emojiUnicode,
+  };
 }
 
 class Timezone {
@@ -258,33 +238,32 @@ class Timezone {
     int? offset,
     String? utc,
     DateTime? currentTime,
-  }) =>
-      Timezone(
-        id: id ?? this.id,
-        abbr: abbr ?? this.abbr,
-        isDst: isDst ?? this.isDst,
-        offset: offset ?? this.offset,
-        utc: utc ?? this.utc,
-        currentTime: currentTime ?? this.currentTime,
-      );
+  }) => Timezone(
+    id: id ?? this.id,
+    abbr: abbr ?? this.abbr,
+    isDst: isDst ?? this.isDst,
+    offset: offset ?? this.offset,
+    utc: utc ?? this.utc,
+    currentTime: currentTime ?? this.currentTime,
+  );
 
   factory Timezone.fromJson(Map<String, dynamic> json) => Timezone(
-        id: json["id"],
-        abbr: json["abbr"],
-        isDst: json["is_dst"],
-        offset: json["offset"],
-        utc: json["utc"],
-        currentTime: json["current_time"] == null
-            ? null
-            : DateTime.parse(json["current_time"]),
-      );
+    id: json["id"],
+    abbr: json["abbr"],
+    isDst: json["is_dst"],
+    offset: json["offset"],
+    utc: json["utc"],
+    currentTime: json["current_time"] == null
+        ? null
+        : DateTime.parse(json["current_time"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "abbr": abbr,
-        "is_dst": isDst,
-        "offset": offset,
-        "utc": utc,
-        "current_time": currentTime?.toIso8601String(),
-      };
+    "id": id,
+    "abbr": abbr,
+    "is_dst": isDst,
+    "offset": offset,
+    "utc": utc,
+    "current_time": currentTime?.toIso8601String(),
+  };
 }

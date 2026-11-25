@@ -34,15 +34,14 @@ class OrderCommentModel {
     String? message,
     dynamic detailedError,
     OrderCommentData? data,
-  }) =>
-      OrderCommentModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => OrderCommentModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory OrderCommentModel.fromJson(Map<String, dynamic> json) =>
       OrderCommentModel(
@@ -57,13 +56,13 @@ class OrderCommentModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class OrderCommentData {
@@ -71,17 +70,9 @@ class OrderCommentData {
   final String? comment;
   final double? starRating;
 
-  OrderCommentData({
-    this.id,
-    this.comment,
-    this.starRating,
-  });
+  OrderCommentData({this.id, this.comment, this.starRating});
 
-  OrderCommentData copyWith({
-    int? id,
-    String? comment,
-    double? starRating,
-  }) =>
+  OrderCommentData copyWith({int? id, String? comment, double? starRating}) =>
       OrderCommentData(
         id: id ?? this.id,
         comment: comment ?? this.comment,
@@ -98,8 +89,8 @@ class OrderCommentData {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "comment": comment,
-        "star_rating": starRating,
-      };
+    "id": id,
+    "comment": comment,
+    "star_rating": starRating,
+  };
 }

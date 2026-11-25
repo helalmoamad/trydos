@@ -14,7 +14,8 @@ class GetHomeBoutiqesUseCase
 
   @override
   Future<Either<Failure, GetHomeBoutiquesModel>> call(
-      GetHomeBoutiqesParams params) async {
+    GetHomeBoutiqesParams params,
+  ) async {
     return repository.getHomeBoutiqes(params.map);
   }
 }
@@ -22,7 +23,7 @@ class GetHomeBoutiqesUseCase
 class GetHomeBoutiqesParams {
   final String? offset;
   final int? page;
-//  final bool fromMarket;
+  //  final bool fromMarket;
   final String? categorySlug;
 
   GetHomeBoutiqesParams({
@@ -33,9 +34,9 @@ class GetHomeBoutiqesParams {
   });
 
   Map<String, dynamic> get map => {
-        'category_slugs': categorySlug == null ? null : '["$categorySlug"]',
-        'offset': offset,
-        'limit': "10",
-        //    "fromMarket": "$fromMarket"
-      }..removeWhere((key, value) => value == null || value == "Empty");
+    'category_slugs': categorySlug == null ? null : '["$categorySlug"]',
+    'offset': offset,
+    'limit': "10",
+    //    "fromMarket": "$fromMarket"
+  }..removeWhere((key, value) => value == null || value == "Empty");
 }

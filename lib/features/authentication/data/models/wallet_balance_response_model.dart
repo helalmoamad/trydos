@@ -54,19 +54,19 @@ class WalletBalanceResponseModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "accountId": accountId,
-        "assetType": assetType,
-        "assetId": assetId,
-        "assetSymbol": assetSymbol,
-        "available": available,
-        "locked": locked,
-        "reserved": reserved,
-        "createdAt": createdAt,
-        "updatedAt": updatedAt,
-        "asset": asset?.toJson(),
-        "accountSubtype": accountSubtype,
-      };
+    "id": id,
+    "accountId": accountId,
+    "assetType": assetType,
+    "assetId": assetId,
+    "assetSymbol": assetSymbol,
+    "available": available,
+    "locked": locked,
+    "reserved": reserved,
+    "createdAt": createdAt,
+    "updatedAt": updatedAt,
+    "asset": asset?.toJson(),
+    "accountSubtype": accountSubtype,
+  };
 }
 
 class WalletBalanceAsset {
@@ -74,11 +74,7 @@ class WalletBalanceAsset {
   final String? symbol;
   final String? name;
 
-  WalletBalanceAsset({
-    this.id,
-    this.symbol,
-    this.name,
-  });
+  WalletBalanceAsset({this.id, this.symbol, this.name});
 
   factory WalletBalanceAsset.fromJson(Map<String, dynamic> json) =>
       WalletBalanceAsset(
@@ -87,9 +83,5 @@ class WalletBalanceAsset {
         name: json["name"],
       );
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "symbol": symbol,
-        "name": name,
-      };
+  Map<String, dynamic> toJson() => {"id": id, "symbol": symbol, "name": name};
 }

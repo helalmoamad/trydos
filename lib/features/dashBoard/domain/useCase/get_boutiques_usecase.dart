@@ -11,13 +11,16 @@ class GetBoutiquesParams {
 }
 
 @injectable
-class GetBoutiquesUseCase extends UseCase<GetSellerBoutiquesModel, GetBoutiquesParams> {
+class GetBoutiquesUseCase
+    extends UseCase<GetSellerBoutiquesModel, GetBoutiquesParams> {
   final DashBoardRepository repository;
 
   GetBoutiquesUseCase(this.repository);
 
   @override
-  Future<Either<Failure, GetSellerBoutiquesModel>> call(GetBoutiquesParams params) {
+  Future<Either<Failure, GetSellerBoutiquesModel>> call(
+    GetBoutiquesParams params,
+  ) {
     return repository.getBoutiques(page: params.page);
   }
 }

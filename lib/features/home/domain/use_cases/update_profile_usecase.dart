@@ -31,25 +31,26 @@ class UpdateProfileParams {
   final String? gender;
   final String? alternative_phone;
 
-  UpdateProfileParams(
-      {this.name,
-      this.email,
-      this.image,
-      this.tall,
-      this.weight,
-      this.idToken,
-      this.gender,
-      this.alternative_phone,
-      this.phone});
+  UpdateProfileParams({
+    this.name,
+    this.email,
+    this.image,
+    this.tall,
+    this.weight,
+    this.idToken,
+    this.gender,
+    this.alternative_phone,
+    this.phone,
+  });
   Map<String, dynamic> get map => {
-        "name": name,
-        "phone": phone,
-        "email": email,
-        "image": (image ?? "").contains("/") ? image?.split("/").last : image,
-        "id_token": idToken,
-        "tall": tall,
-        "weight": weight,
-        "gender": gender,
-        "alternative_phone": alternative_phone,
-      }..removeWhere((key, value) => value == null || value == "");
+    "name": name,
+    "phone": phone,
+    "email": email,
+    "image": (image ?? "").contains("/") ? image?.split("/").last : image,
+    "id_token": idToken,
+    "tall": tall,
+    "weight": weight,
+    "gender": gender,
+    "alternative_phone": alternative_phone,
+  }..removeWhere((key, value) => value == null || value == "");
 }

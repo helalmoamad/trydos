@@ -15,9 +15,7 @@ class UploadedExcelFileModel {
 
   factory UploadedExcelFileModel.fromJson(Map<String, dynamic> json) {
     return UploadedExcelFileModel(
-      id: json['id'] is int
-          ? json['id']
-          : int.tryParse('${json['id'] ?? ''}'),
+      id: json['id'] is int ? json['id'] : int.tryParse('${json['id'] ?? ''}'),
       fileName:
           json['file_name'] ??
           json['fileName'] ??

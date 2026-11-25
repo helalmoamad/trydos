@@ -48,7 +48,8 @@ class SensitiveConnectivityBloc
     Emitter<SensitiveConnectivityState> emit,
   ) async {
     prettyPrinterI(
-        "***|| 🌐 ${event.connectivityResult.name.toUpperCase()} 🌐 ||***");
+      "***|| 🌐 ${event.connectivityResult.name.toUpperCase()} 🌐 ||***",
+    );
 
     if (event.connectivityResult == ConnectivityResult.mobile) {
       showMessage(LocaleKeys.internet_connected.tr(), showInRelease: true);

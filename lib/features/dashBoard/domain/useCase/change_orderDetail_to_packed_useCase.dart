@@ -7,19 +7,22 @@ import 'package:trydos/features/dashBoard/domain/repositories/dashBoard_reposito
 
 class ChangeOrderDetailStatusToPackedParams {
   final int orderDetailId;
-  ChangeOrderDetailStatusToPackedParams({
-    required this.orderDetailId,
-  });
+  ChangeOrderDetailStatusToPackedParams({required this.orderDetailId});
 }
 
 @injectable
-class ChangeOrderDetailStatusToPackedUseCase extends UseCase<NewOrdersResponse, ChangeOrderDetailStatusToPackedParams> {
+class ChangeOrderDetailStatusToPackedUseCase
+    extends UseCase<NewOrdersResponse, ChangeOrderDetailStatusToPackedParams> {
   final DashBoardRepository repository;
 
   ChangeOrderDetailStatusToPackedUseCase(this.repository);
 
   @override
-  Future<Either<Failure, NewOrdersResponse>> call(ChangeOrderDetailStatusToPackedParams params) {
-    return repository.ChangeOrderDetailStatusToPacked({'order_detail_id': params.orderDetailId});
+  Future<Either<Failure, NewOrdersResponse>> call(
+    ChangeOrderDetailStatusToPackedParams params,
+  ) {
+    return repository.ChangeOrderDetailStatusToPacked({
+      'order_detail_id': params.orderDetailId,
+    });
   }
 }

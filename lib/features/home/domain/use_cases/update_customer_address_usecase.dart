@@ -14,7 +14,8 @@ class UpdateCustomerAddressUseCase
 
   @override
   Future<Either<Failure, ResponseOnlyMessageModel>> call(
-      UpdateCustomerAddressParams params) {
+    UpdateCustomerAddressParams params,
+  ) {
     return repository.updateCustomerAddress(params.map);
   }
 }
@@ -38,41 +39,42 @@ class UpdateCustomerAddressParams {
   final String contactPersonName;
   final String iso;
 
-  UpdateCustomerAddressParams(
-      {required this.id,
-      required this.address,
-      required this.addressDetail,
-      required this.country,
-      required this.iso,
-      required this.city,
-      required this.district,
-      required this.town,
-      required this.street,
-      required this.zip,
-      required this.phone,
-      required this.alternativePhone,
-      required this.latitude,
-      required this.longitude,
-      required this.province,
-      required this.building,
-      required this.contactPersonName});
+  UpdateCustomerAddressParams({
+    required this.id,
+    required this.address,
+    required this.addressDetail,
+    required this.country,
+    required this.iso,
+    required this.city,
+    required this.district,
+    required this.town,
+    required this.street,
+    required this.zip,
+    required this.phone,
+    required this.alternativePhone,
+    required this.latitude,
+    required this.longitude,
+    required this.province,
+    required this.building,
+    required this.contactPersonName,
+  });
   Map<String, dynamic> get map => {
-        "id": id,
-        "address": address,
-        "iso": iso,
-        "address_detail": addressDetail,
-        "country": country,
-        "contact_person_name": contactPersonName,
-        "city": city == "" ? "null" : city,
-        "district": district == "" ? "null" : district,
-        "town": town == "" ? "null" : town,
-        "street": street == "" ? "null" : street,
-        "phone": phone,
-        "alternative_phone": alternativePhone == "" ? null : alternativePhone,
-        "latitude": latitude == "" ? null : latitude,
-        "longitude": longitude == "" ? null : longitude,
-        "zip": zip == "" ? "null" : zip,
-        "province": province == "" ? "null" : province,
-        "building": building == "" ? "null" : building,
-      };
+    "id": id,
+    "address": address,
+    "iso": iso,
+    "address_detail": addressDetail,
+    "country": country,
+    "contact_person_name": contactPersonName,
+    "city": city == "" ? "null" : city,
+    "district": district == "" ? "null" : district,
+    "town": town == "" ? "null" : town,
+    "street": street == "" ? "null" : street,
+    "phone": phone,
+    "alternative_phone": alternativePhone == "" ? null : alternativePhone,
+    "latitude": latitude == "" ? null : latitude,
+    "longitude": longitude == "" ? null : longitude,
+    "zip": zip == "" ? "null" : zip,
+    "province": province == "" ? "null" : province,
+    "building": building == "" ? "null" : building,
+  };
 }

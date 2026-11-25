@@ -7,14 +7,15 @@ import '../../../chat/presentation/manager/chat_bloc.dart';
 
 List<Map<String, dynamic>> callerInfo({required String channelId}) {
   Chat currentChat = GetIt.I<ChatBloc>().state.chats.firstWhere(
+    (element) => element.id == channelId || element.localId == channelId,
+    orElse: () => GetIt.I<ChatBloc>().state.pinnedChats.firstWhere(
       (element) => element.id == channelId || element.localId == channelId,
-      orElse: () => GetIt.I<ChatBloc>()
-          .state
-          .pinnedChats
-          .firstWhere((element) => element.id == channelId || element.localId == channelId,));
+    ),
+  );
 
   ChannelMember currentReceiver = currentChat.channelMembers!.firstWhere(
-      (element) => element.userId! != GetIt.I<PrefsRepository>().myChatId);
+    (element) => element.userId! != GetIt.I<PrefsRepository>().myChatId,
+  );
 
   debugPrint("myChatId${GetIt.I<PrefsRepository>().myChatId}");
   debugPrint("chatVideoEvent${currentChat.id}");
@@ -38,28 +39,31 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
   //         ? currentCaller.user!.contactUser!.mobilePhone!
   //         : currentCaller.user!.contactUser!.name!);
 
-  String callerName = GetIt.I<PrefsRepository>().myChatName ??
+  String callerName =
+      GetIt.I<PrefsRepository>().myChatName ??
       GetIt.I<PrefsRepository>().myPhoneNumber ??
       'Un Known';
-  String? callerPhoto = GetIt.I<PrefsRepository>().myChatPhoto ?? (GetIt.I<PrefsRepository>().myChatPhoto == 'null'
-      ? null
-      : GetIt.I<PrefsRepository>().myChatPhoto);
+  String? callerPhoto =
+      GetIt.I<PrefsRepository>().myChatPhoto ??
+      (GetIt.I<PrefsRepository>().myChatPhoto == 'null'
+          ? null
+          : GetIt.I<PrefsRepository>().myChatPhoto);
   // String? callerPhoto = currentCaller.user == null
   //     ? null
   //     : (currentCaller.user!.photoPath == null
   //         ? null
   //         : currentCaller.user!.photoPath);
   if (int.tryParse(currentChat.id!) == null) {
-//todo the chat dose not exist yet cause we generate the id for it
+    //todo the chat dose not exist yet cause we generate the id for it
     return [
       {"currentReceiver": currentReceiver.userId},
       {
         "callerName": callerName,
         "callerPhoto": callerPhoto,
-        "channelId" : currentChat.id.toString(),
+        "channelId": currentChat.id.toString(),
         "mobilePhone": GetIt.I<PrefsRepository>().myPhoneNumber,
-        "Target" : 'Application'
-      }
+        "Target": 'Application',
+      },
     ];
   }
 
@@ -67,9 +71,9 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
     {
       "callerName": callerName,
       "callerPhoto": callerPhoto,
-      "channelId" : currentChat.id.toString(),
+      "channelId": currentChat.id.toString(),
       "mobilePhone": GetIt.I<PrefsRepository>().myPhoneNumber,
-      "Target" : 'Application'
-    }
+      "Target": 'Application',
+    },
   ];
 }

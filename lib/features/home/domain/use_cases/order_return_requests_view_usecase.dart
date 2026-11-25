@@ -7,15 +7,17 @@ import 'package:trydos/features/home/data/models/get_only_message_from_api_model
 import 'package:trydos/features/home/domain/repositories/home_repository.dart';
 
 @injectable
-class OrderReturnRequestsViewUseCase extends UseCase<
-    ReadOnlyMessageFromApiModel, OrderReturnRequestsViewParams> {
+class OrderReturnRequestsViewUseCase
+    extends
+        UseCase<ReadOnlyMessageFromApiModel, OrderReturnRequestsViewParams> {
   final HomeRepository _homeRepository;
 
   OrderReturnRequestsViewUseCase(this._homeRepository);
 
   @override
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> call(
-      OrderReturnRequestsViewParams params) {
+    OrderReturnRequestsViewParams params,
+  ) {
     return _homeRepository.orderReturnRequestsView(params.map);
   }
 }
@@ -23,10 +25,6 @@ class OrderReturnRequestsViewUseCase extends UseCase<
 class OrderReturnRequestsViewParams {
   final String returnRequestId;
 
-  OrderReturnRequestsViewParams({
-    required this.returnRequestId,
-  });
-  Map<String, dynamic> get map => {
-        "return_request_id": returnRequestId,
-      };
+  OrderReturnRequestsViewParams({required this.returnRequestId});
+  Map<String, dynamic> get map => {"return_request_id": returnRequestId};
 }

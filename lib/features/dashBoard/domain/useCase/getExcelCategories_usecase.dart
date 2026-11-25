@@ -6,7 +6,8 @@ import 'package:trydos/features/dashBoard/data/models/getExcelCategoriesModel.da
 import 'package:trydos/features/dashBoard/domain/repositories/dashBoard_repository.dart';
 
 @injectable
-class GetexcelcategoriesUsecase extends UseCase<GetExcelCategoriesModel, NoParams> {
+class GetexcelcategoriesUsecase
+    extends UseCase<GetExcelCategoriesModel, NoParams> {
   final DashBoardRepository repository;
 
   GetexcelcategoriesUsecase(this.repository);

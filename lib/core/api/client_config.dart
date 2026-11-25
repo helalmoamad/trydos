@@ -20,7 +20,8 @@ class RequestConfig<T> {
     this.extraHeaders,
     this.receiveTimeout,
     this.sendTimeout,
-    this.responseType = ResponseType.json, // القيمة الافتراضية، ما تأثر على أي طلب موجود حالياً
+    this.responseType =
+        ResponseType.json, // القيمة الافتراضية، ما تأثر على أي طلب موجود حالياً
   });
 }
 

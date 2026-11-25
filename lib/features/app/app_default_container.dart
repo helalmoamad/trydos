@@ -1,19 +1,19 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class DefaultContainer extends StatelessWidget {
-  const DefaultContainer(
-      {Key? key,
-        this.width,
-        this.height,
-        this.backColor,
-        this.borderColor,
-        this.childWidget,
-        this.borderWidth,
-        // this.backGroundImageUrl,
-        this.radius,
-        this.withoutRadius})
-      : super(key: key);
+  const DefaultContainer({
+    Key? key,
+    this.width,
+    this.height,
+    this.backColor,
+    this.borderColor,
+    this.childWidget,
+    this.borderWidth,
+    // this.backGroundImageUrl,
+    this.radius,
+    this.withoutRadius,
+  }) : super(key: key);
 
   final double? width;
   final double? borderWidth;
@@ -35,9 +35,12 @@ class DefaultContainer extends StatelessWidget {
       decoration: BoxDecoration(
         color: backColor,
         borderRadius: BorderRadius.circular(
-            withoutRadius != null ? 0.0 : radius ?? 2.0.sp),
+          withoutRadius != null ? 0.0 : radius ?? 2.0.sp,
+        ),
         border: Border.all(
-            width: borderWidth ?? 1.0, color: borderColor ?? Colors.black),
+          width: borderWidth ?? 1.0,
+          color: borderColor ?? Colors.black,
+        ),
       ),
       child: childWidget,
     );

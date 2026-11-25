@@ -166,21 +166,21 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                 // what the field holds.
                                 final String? registeredPhone =
                                     ((((state.userInfo?.phone
-                                                        ?.split("+")
-                                                        .toList()) ??
-                                                    [])
-                                                .length >
-                                            1)
-                                        ? (state.userInfo?.phone
-                                              ?.split("+")
-                                              .toList()[1])
-                                        : state.userInfo?.phone);
+                                                    ?.split("+")
+                                                    .toList()) ??
+                                                [])
+                                            .length >
+                                        1)
+                                    ? (state.userInfo?.phone
+                                          ?.split("+")
+                                          .toList()[1])
+                                    : state.userInfo?.phone);
                                 final bool phoneChanged =
                                     widget.phoneController.text.replaceAll(
-                                          " ",
-                                          "",
-                                        ) !=
-                                        registeredPhone;
+                                      " ",
+                                      "",
+                                    ) !=
+                                    registeredPhone;
 
                                 if (phoneChanged) {
                                   // A new number has to be proven before it is
@@ -443,8 +443,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
             : null,
         idToken: prefsRepository.idToken,
         name: widget.fullNameController.text,
-        alternative_phone:
-            (widget.alternativePhoneController.text.length) > 0
+        alternative_phone: (widget.alternativePhoneController.text.length) > 0
             ? widget.alternativePhoneController.text.replaceAll(" ", "")
             : null,
         email: widget.emailController.text,

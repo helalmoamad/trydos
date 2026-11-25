@@ -34,59 +34,62 @@ class StoryState {
   Map<int, int?> currentStoryInEachCollection;
   List<Tuple2<String, String>> currentStoryToMakeItViewedInEachCollection;
 
-  StoryState(
-      {this.uploadStoryCloudinaryStatus = UploadStoryCloudinaryStatus.init,
-      this.uploadStoryStatus = UploadStoryStatus.init,
-      this.selectedVideoStatus = SelectedVideoStatus.init,
-      this.getStoriesStatus = GetStoriesStatus.init,
-      this.deleteStoryStatus = DeleteStoryStatus.init,
-      this.storiesCollections = const [],
-      this.currentStoryToMakeItViewedInEachCollection = const [],
-      this.currentPage = 0,
-      this.storyLink,
-      this.finishGetAllStory = false,
-      this.storyOffset = 0,
-      this.getStoryWithPagintionStatusLoading = false,
-      this.currentStoryInEachCollection = const {},
-      this.selectedCollection});
+  StoryState({
+    this.uploadStoryCloudinaryStatus = UploadStoryCloudinaryStatus.init,
+    this.uploadStoryStatus = UploadStoryStatus.init,
+    this.selectedVideoStatus = SelectedVideoStatus.init,
+    this.getStoriesStatus = GetStoriesStatus.init,
+    this.deleteStoryStatus = DeleteStoryStatus.init,
+    this.storiesCollections = const [],
+    this.currentStoryToMakeItViewedInEachCollection = const [],
+    this.currentPage = 0,
+    this.storyLink,
+    this.finishGetAllStory = false,
+    this.storyOffset = 0,
+    this.getStoryWithPagintionStatusLoading = false,
+    this.currentStoryInEachCollection = const {},
+    this.selectedCollection,
+  });
 
-  StoryState copyWith(
-      {UploadStoryCloudinaryStatus? uploadStoryCloudinaryStatus,
-      UploadStoryStatus? uploadStoryStatus,
-      SelectedVideoStatus? selectedVideoStatus,
-      DeleteStoryStatus? deleteStoryStatus,
-      List<Tuple2<String, String>>? currentStoryToMakeItViewedInEachCollection,
-      GetStoriesStatus? getStoriesStatus,
-      List<CollectionStoryModel>? storiesCollections,
-      String? storyLink,
-      int? storyOffset,
-      bool? finishGetAllStory,
-      bool? getStoryWithPagintionStatusLoading,
-      Map<int, int?>? currentStoryInEachCollection,
-      int? selectedCollection,
-      int? currentPage,
-      ImageDetail? imageDetail}) {
+  StoryState copyWith({
+    UploadStoryCloudinaryStatus? uploadStoryCloudinaryStatus,
+    UploadStoryStatus? uploadStoryStatus,
+    SelectedVideoStatus? selectedVideoStatus,
+    DeleteStoryStatus? deleteStoryStatus,
+    List<Tuple2<String, String>>? currentStoryToMakeItViewedInEachCollection,
+    GetStoriesStatus? getStoriesStatus,
+    List<CollectionStoryModel>? storiesCollections,
+    String? storyLink,
+    int? storyOffset,
+    bool? finishGetAllStory,
+    bool? getStoryWithPagintionStatusLoading,
+    Map<int, int?>? currentStoryInEachCollection,
+    int? selectedCollection,
+    int? currentPage,
+    ImageDetail? imageDetail,
+  }) {
     return StoryState(
-        uploadStoryCloudinaryStatus:
-            uploadStoryCloudinaryStatus ?? this.uploadStoryCloudinaryStatus,
-        ////    currentStoryToMakeItViewedInEachCollection:
-        //       currentStoryToMakeItViewedInEachCollection ??
-//this.currentStoryToMakeItViewedInEachCollection,
-        uploadStoryStatus: uploadStoryStatus ?? this.uploadStoryStatus,
-        selectedVideoStatus: selectedVideoStatus ?? this.selectedVideoStatus,
-        getStoriesStatus: getStoriesStatus ?? this.getStoriesStatus,
-        storyLink: storyLink ?? this.storyLink,
-        storiesCollections: storiesCollections ?? this.storiesCollections,
-        currentPage: currentPage ?? this.currentPage,
-        storyOffset: storyOffset ?? this.storyOffset,
-        finishGetAllStory: finishGetAllStory ?? this.finishGetAllStory,
-        getStoryWithPagintionStatusLoading:
-            getStoryWithPagintionStatusLoading ??
-                this.getStoryWithPagintionStatusLoading,
-        currentStoryInEachCollection:
-            currentStoryInEachCollection ?? this.currentStoryInEachCollection,
-        selectedCollection: selectedCollection ?? this.selectedCollection,
-        deleteStoryStatus: deleteStoryStatus ?? this.deleteStoryStatus);
+      uploadStoryCloudinaryStatus:
+          uploadStoryCloudinaryStatus ?? this.uploadStoryCloudinaryStatus,
+      ////    currentStoryToMakeItViewedInEachCollection:
+      //       currentStoryToMakeItViewedInEachCollection ??
+      //this.currentStoryToMakeItViewedInEachCollection,
+      uploadStoryStatus: uploadStoryStatus ?? this.uploadStoryStatus,
+      selectedVideoStatus: selectedVideoStatus ?? this.selectedVideoStatus,
+      getStoriesStatus: getStoriesStatus ?? this.getStoriesStatus,
+      storyLink: storyLink ?? this.storyLink,
+      storiesCollections: storiesCollections ?? this.storiesCollections,
+      currentPage: currentPage ?? this.currentPage,
+      storyOffset: storyOffset ?? this.storyOffset,
+      finishGetAllStory: finishGetAllStory ?? this.finishGetAllStory,
+      getStoryWithPagintionStatusLoading:
+          getStoryWithPagintionStatusLoading ??
+          this.getStoryWithPagintionStatusLoading,
+      currentStoryInEachCollection:
+          currentStoryInEachCollection ?? this.currentStoryInEachCollection,
+      selectedCollection: selectedCollection ?? this.selectedCollection,
+      deleteStoryStatus: deleteStoryStatus ?? this.deleteStoryStatus,
+    );
   }
 
   factory StoryState.fromJson(Map<String, dynamic> data) =>

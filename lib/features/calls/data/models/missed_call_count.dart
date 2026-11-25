@@ -34,15 +34,14 @@ class MissedCallCountModel {
     dynamic message,
     dynamic detailedError,
     Data? data,
-  }) =>
-      MissedCallCountModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => MissedCallCountModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory MissedCallCountModel.fromJson(Map<String, dynamic> json) =>
       MissedCallCountModel(
@@ -55,34 +54,25 @@ class MissedCallCountModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
   final int? missedCals;
 
-  Data({
-    this.missedCals,
-  });
+  Data({this.missedCals});
 
-  Data copyWith({
-    int? missedCals,
-  }) =>
-      Data(
-        missedCals: missedCals ?? this.missedCals,
-      );
+  Data copyWith({int? missedCals}) =>
+      Data(missedCals: missedCals ?? this.missedCals);
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        missedCals: json["missed_cals"],
-      );
+  factory Data.fromJson(Map<String, dynamic> json) =>
+      Data(missedCals: json["missed_cals"]);
 
-  Map<String, dynamic> toJson() => {
-        "missed_cals": missedCals,
-      };
+  Map<String, dynamic> toJson() => {"missed_cals": missedCals};
 }

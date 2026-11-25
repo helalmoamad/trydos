@@ -8,15 +8,20 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class UpdateEmailNotificationUseCase extends UseCase<
-    FirebaseSettingForNotificationModel, UpdateEmailNotificationParams> {
+class UpdateEmailNotificationUseCase
+    extends
+        UseCase<
+          FirebaseSettingForNotificationModel,
+          UpdateEmailNotificationParams
+        > {
   final HomeRepository repository;
 
   UpdateEmailNotificationUseCase(this.repository);
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>> call(
-      UpdateEmailNotificationParams params) {
+    UpdateEmailNotificationParams params,
+  ) {
     return repository.updateEmailNotification(params.map);
   }
 }

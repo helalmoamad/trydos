@@ -5,12 +5,12 @@
 import 'dart:convert';
 
 NotificationTypeForProductModel notificationTypeForProductModelFromJson(
-        String str) =>
-    NotificationTypeForProductModel.fromJson(json.decode(str));
+  String str,
+) => NotificationTypeForProductModel.fromJson(json.decode(str));
 
 String notificationTypeForProductModelToJson(
-        NotificationTypeForProductModel data) =>
-    json.encode(data.toJson());
+  NotificationTypeForProductModel data,
+) => json.encode(data.toJson());
 
 class NotificationTypeForProductModel {
   final bool? isSuccessful;
@@ -36,15 +36,14 @@ class NotificationTypeForProductModel {
     dynamic message,
     dynamic detailedError,
     Data? data,
-  }) =>
-      NotificationTypeForProductModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => NotificationTypeForProductModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory NotificationTypeForProductModel.fromJson(Map<String, dynamic> json) =>
       NotificationTypeForProductModel(
@@ -57,41 +56,38 @@ class NotificationTypeForProductModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
   final List<NotificationType>? notificationTypes;
 
-  Data({
-    this.notificationTypes,
-  });
+  Data({this.notificationTypes});
 
-  Data copyWith({
-    List<NotificationType>? notificationTypes,
-  }) =>
-      Data(
-        notificationTypes: notificationTypes ?? this.notificationTypes,
-      );
+  Data copyWith({List<NotificationType>? notificationTypes}) =>
+      Data(notificationTypes: notificationTypes ?? this.notificationTypes);
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        notificationTypes: json["notification_types"] == null
-            ? []
-            : List<NotificationType>.from(json["notification_types"]!
-                .map((x) => NotificationType.fromJson(x))),
-      );
+    notificationTypes: json["notification_types"] == null
+        ? []
+        : List<NotificationType>.from(
+            json["notification_types"]!.map(
+              (x) => NotificationType.fromJson(x),
+            ),
+          ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "notification_types": notificationTypes == null
-            ? []
-            : List<dynamic>.from(notificationTypes!.map((x) => x.toJson())),
-      };
+    "notification_types": notificationTypes == null
+        ? []
+        : List<dynamic>.from(notificationTypes!.map((x) => x.toJson())),
+  };
 }
 
 class NotificationType {
@@ -139,22 +135,21 @@ class NotificationType {
     DateTime? updatedAt,
     String? topic,
     String? showedName,
-  }) =>
-      NotificationType(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        title: title ?? this.title,
-        body: body ?? this.body,
-        entityType: entityType ?? this.entityType,
-        className: className ?? this.className,
-        whatsappLinkUrl: whatsappLinkUrl ?? this.whatsappLinkUrl,
-        isChosenByCustomer: isChosenByCustomer ?? this.isChosenByCustomer,
-        recommendationTime: recommendationTime ?? this.recommendationTime,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-        topic: topic ?? this.topic,
-        showedName: showedName ?? this.showedName,
-      );
+  }) => NotificationType(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    title: title ?? this.title,
+    body: body ?? this.body,
+    entityType: entityType ?? this.entityType,
+    className: className ?? this.className,
+    whatsappLinkUrl: whatsappLinkUrl ?? this.whatsappLinkUrl,
+    isChosenByCustomer: isChosenByCustomer ?? this.isChosenByCustomer,
+    recommendationTime: recommendationTime ?? this.recommendationTime,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    topic: topic ?? this.topic,
+    showedName: showedName ?? this.showedName,
+  );
 
   factory NotificationType.fromJson(Map<String, dynamic> json) =>
       NotificationType(
@@ -178,18 +173,18 @@ class NotificationType {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "title": title,
-        "body": body,
-        "entity_type": entityType,
-        "class_name": className,
-        "whatsapp_link_url": whatsappLinkUrl,
-        "is_chosen_by_customer": isChosenByCustomer,
-        "recommendation_time": recommendationTime,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-        "topic": topic,
-        "showed_name": showedName,
-      };
+    "id": id,
+    "name": name,
+    "title": title,
+    "body": body,
+    "entity_type": entityType,
+    "class_name": className,
+    "whatsapp_link_url": whatsappLinkUrl,
+    "is_chosen_by_customer": isChosenByCustomer,
+    "recommendation_time": recommendationTime,
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
+    "topic": topic,
+    "showed_name": showedName,
+  };
 }

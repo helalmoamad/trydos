@@ -762,6 +762,7 @@ class HomeState extends Equatable {
     final GetCurrencyForCountryModel? getCurrencyForCountryModel,
     final GetCurrencyForCountryStatus? getCurrencyForCountryStatus,
     final bool? awaitingCountryCurrency,
+
     /// تفريغ عملة البلد السابق: `copyWith` العادي لا يستطيع كتابة null.
     final bool clearCurrencyForCountryModel = false,
     final Map<String, GetProductDetailWithoutRelatedProductsModel>?

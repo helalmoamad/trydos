@@ -23,9 +23,13 @@ class AddLinkToStory extends StatefulWidget {
   void Function(AssetEntity? assetEntity) onChooseFileFromGalleryAction;
   File? vedioFile;
   AssetEntity? assetEntity;
-  AddLinkToStory(this.imageFile, this.assetEntity, this.vedioFile,
-      this.onChooseFileFromGalleryAction,
-      {super.key});
+  AddLinkToStory(
+    this.imageFile,
+    this.assetEntity,
+    this.vedioFile,
+    this.onChooseFileFromGalleryAction, {
+    super.key,
+  });
 
   @override
   _AddLinkToStory createState() => _AddLinkToStory();
@@ -61,75 +65,83 @@ class _AddLinkToStory extends State<AddLinkToStory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      child: Column(
-        children: [
-          widget.vedioFile != null
-              ? Container(
-                  width: double.infinity,
-                  height: MediaQuery.sizeOf(context).height * 0.76,
-                  child: VideoPlayerWidget(widget.vedioFile!),
-                )
-              : Stack(
-                  children: [
-                    Container(
-                      width: 1.sw,
-                      height: MediaQuery.sizeOf(context).height * 0.78,
-                      // خلفية سوداء: مع contain تظهر مساحة فارغة حول الصورة
-                      // حين تختلف نسبتها عن نسبة الحاوية.
-                      color: Colors.black,
-                      child: Image.file(
-                        // مسار الملف المقصوص جديد في كل قصّة، والمفتاح يمنع
-                        // إعادة استخدام الصورة القديمة من الكاش.
-                        key: ValueKey((croppedFile ?? widget.imageFile!).path),
-                        croppedFile ?? widget.imageFile!,
-                        // كان cover: يملأ الحاوية بقصّ الصورة وتكبيرها، فلا
-                        // يرى المستخدم ما سيرفعه فعلاً.
-                        fit: BoxFit.contain,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            widget.vedioFile != null
+                ? Container(
+                    width: double.infinity,
+                    height: MediaQuery.sizeOf(context).height * 0.76,
+                    child: VideoPlayerWidget(widget.vedioFile!),
+                  )
+                : Stack(
+                    children: [
+                      Container(
+                        width: 1.sw,
+                        height: MediaQuery.sizeOf(context).height * 0.78,
+                        // خلفية سوداء: مع contain تظهر مساحة فارغة حول الصورة
+                        // حين تختلف نسبتها عن نسبة الحاوية.
+                        color: Colors.black,
+                        child: Image.file(
+                          // مسار الملف المقصوص جديد في كل قصّة، والمفتاح يمنع
+                          // إعادة استخدام الصورة القديمة من الكاش.
+                          key: ValueKey(
+                            (croppedFile ?? widget.imageFile!).path,
+                          ),
+                          croppedFile ?? widget.imageFile!,
+                          // كان cover: يملأ الحاوية بقصّ الصورة وتكبيرها، فلا
+                          // يرى المستخدم ما سيرفعه فعلاً.
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                    ),
-                    PositionedDirectional(
-                      // الحاوية تبدأ من أعلى الشاشة (لا SafeArea)، فبدون إزاحة
-                      // شريط الحالة يقع الزر خلفه.
-                      top: MediaQuery.paddingOf(context).top + 16,
-                      end: 16,
-                      child: FloatingActionButton(
-                        heroTag: 'cropStoryImage',
-                        mini: true,
-                        backgroundColor: Colors.blue,
-                        tooltip: LocaleKeys.crop_image.tr(),
-                        onPressed: cropImage,
-                        child: const Icon(Icons.crop, color: Colors.white),
+                      PositionedDirectional(
+                        // الحاوية تبدأ من أعلى الشاشة (لا SafeArea)، فبدون إزاحة
+                        // شريط الحالة يقع الزر خلفه.
+                        top: MediaQuery.paddingOf(context).top + 16,
+                        end: 16,
+                        child: FloatingActionButton(
+                          heroTag: 'cropStoryImage',
+                          mini: true,
+                          backgroundColor: Colors.blue,
+                          tooltip: LocaleKeys.crop_image.tr(),
+                          onPressed: cropImage,
+                          child: const Icon(Icons.crop, color: Colors.white),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: AppTextField(
-              onChange: (val) {
-                link = val;
-                storyBloc.add(SetStoryLinkEvent(val));
-              },
-              textInputAction: TextInputAction.done,
-              onEditingComplete: () {
-                Future.delayed(const Duration(milliseconds: 300),
-                    () => FocusScope.of(context).unfocus());
-              },
-              onFieldSubmitted: (val) {
-                Future.delayed(const Duration(milliseconds: 300),
-                    () => FocusScope.of(context).unfocus());
-              },
-              hintText: '${LocaleKeys.add_link_to_story.tr()}',
+                    ],
+                  ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: AppTextField(
+                onChange: (val) {
+                  link = val;
+                  storyBloc.add(SetStoryLinkEvent(val));
+                },
+                textInputAction: TextInputAction.done,
+                onEditingComplete: () {
+                  Future.delayed(
+                    const Duration(milliseconds: 300),
+                    () => FocusScope.of(context).unfocus(),
+                  );
+                },
+                onFieldSubmitted: (val) {
+                  Future.delayed(
+                    const Duration(milliseconds: 300),
+                    () => FocusScope.of(context).unfocus(),
+                  );
+                },
+                hintText: '${LocaleKeys.add_link_to_story.tr()}',
+              ),
             ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color: Colors.green, borderRadius: BorderRadius.circular(40)),
-            width: 70,
-            height: 70,
-            child: InkWell(
+            Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.circular(40),
+              ),
+              width: 70,
+              height: 70,
+              child: InkWell(
                 onTap: () {
                   if (link?.contains("coupon") ?? false) {
                     showWarningMessage(context, "Coupon link is not allowed");
@@ -141,15 +153,18 @@ class _AddLinkToStory extends State<AddLinkToStory> {
                   if (croppedFile != null) {
                     storyBloc.add(UploadStoryCloudinaryEvent(croppedFile!));
                   } else {
-                    widget.onChooseFileFromGalleryAction
-                        .call(widget.assetEntity);
+                    widget.onChooseFileFromGalleryAction.call(
+                      widget.assetEntity,
+                    );
                   }
                   Navigator.of(context).pop();
                 },
-                child: Text("${LocaleKeys.send.tr()}")),
-          ),
-        ],
+                child: Text("${LocaleKeys.send.tr()}"),
+              ),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 }

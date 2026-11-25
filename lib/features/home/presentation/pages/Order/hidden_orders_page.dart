@@ -128,12 +128,12 @@ class _HiddenOrdersPageState extends State<HiddenOrdersPage> {
                         // double state to reconcile.
                         final bool blocTookOver =
                             state.restoreOrderVisibilityStatus ==
-                                    RestoreOrderVisibilityStatus.loading ||
-                                state.getHiddenOrdersStatus ==
-                                    GetHiddenOrdersStatus.loading;
+                                RestoreOrderVisibilityStatus.loading ||
+                            state.getHiddenOrdersStatus ==
+                                GetHiddenOrdersStatus.loading;
                         final bool failed =
                             state.restoreOrderVisibilityStatus ==
-                                RestoreOrderVisibilityStatus.failure;
+                            RestoreOrderVisibilityStatus.failure;
                         if (_restoring.value && (blocTookOver || failed)) {
                           _restoring.value = false;
                         }
@@ -359,9 +359,7 @@ class _HiddenOrdersPageState extends State<HiddenOrdersPage> {
                 body: LocaleKeys.are_you_sure_restore_this_order.tr(),
                 onConfirm: () => _restore(
                   () => orderBloc.add(
-                    RestoreOrderEvent(
-                      orderId: cell.order.id?.toString() ?? '',
-                    ),
+                    RestoreOrderEvent(orderId: cell.order.id?.toString() ?? ''),
                   ),
                 ),
               );

@@ -170,14 +170,14 @@ class _RdbPaymentDialogState extends State<RdbPaymentDialog>
     if (expiresAt == null) return '';
     final Duration left = expiresAt.difference(DateTime.now());
     if (left.isNegative) return '00:00';
-    final String minutes = left.inMinutes.remainder(60).toString().padLeft(
-      2,
-      '0',
-    );
-    final String seconds = left.inSeconds.remainder(60).toString().padLeft(
-      2,
-      '0',
-    );
+    final String minutes = left.inMinutes
+        .remainder(60)
+        .toString()
+        .padLeft(2, '0');
+    final String seconds = left.inSeconds
+        .remainder(60)
+        .toString()
+        .padLeft(2, '0');
     if (left.inHours > 0) {
       return '${left.inHours}:$minutes:$seconds';
     }
@@ -201,7 +201,8 @@ class _RdbPaymentDialogState extends State<RdbPaymentDialog>
   ///
   /// الرابط نفسه جاهز من طرف RDB، ونحن نعلّق عليه الحمولة نفسها التي يحملها
   /// رمز الـ QR في المعامل `code`، فلا يكون هناك عقدان مختلفان.
-  static const String _walletDeepLink = 'https://rdb-ms.yazan-adnof.workers.dev';
+  static const String _walletDeepLink =
+      'https://rdb-ms.yazan-adnof.workers.dev';
 
   String? _walletAppUrl(RdbPaymentRequestModel request) {
     final String? payload = _qrPayload(request);
@@ -317,7 +318,10 @@ class _RdbPaymentDialogState extends State<RdbPaymentDialog>
         builder: (context, state) {
           // نافذة منبثقة لا صفحة كاملة، مطابقةً لصفحة الدفع في الموقع.
           return Dialog(
-            insetPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+            insetPadding: EdgeInsets.symmetric(
+              horizontal: 20.w,
+              vertical: 24.h,
+            ),
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.r),

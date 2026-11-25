@@ -28,13 +28,12 @@ class CreateReturnReqestModel {
     int? code,
     String? message,
     Data? data,
-  }) =>
-      CreateReturnReqestModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        data: data ?? this.data,
-      );
+  }) => CreateReturnReqestModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    data: data ?? this.data,
+  );
 
   factory CreateReturnReqestModel.fromJson(Map<String, dynamic> json) =>
       CreateReturnReqestModel(
@@ -45,32 +44,23 @@ class CreateReturnReqestModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "code": code,
-        "message": message,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "code": code,
+    "message": message,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
   final int? returnRequestId;
 
-  Data({
-    this.returnRequestId,
-  });
+  Data({this.returnRequestId});
 
-  Data copyWith({
-    int? returnRequestId,
-  }) =>
-      Data(
-        returnRequestId: returnRequestId ?? this.returnRequestId,
-      );
+  Data copyWith({int? returnRequestId}) =>
+      Data(returnRequestId: returnRequestId ?? this.returnRequestId);
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        returnRequestId: json["return_request_id"],
-      );
+  factory Data.fromJson(Map<String, dynamic> json) =>
+      Data(returnRequestId: json["return_request_id"]);
 
-  Map<String, dynamic> toJson() => {
-        "return_request_id": returnRequestId,
-      };
+  Map<String, dynamic> toJson() => {"return_request_id": returnRequestId};
 }

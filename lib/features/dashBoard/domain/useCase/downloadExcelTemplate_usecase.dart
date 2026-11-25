@@ -5,7 +5,8 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class DownloadexceltemplateUsecase extends UseCase<String, DownloadexceltemplateParams> {
+class DownloadexceltemplateUsecase
+    extends UseCase<String, DownloadexceltemplateParams> {
   final DashBoardRepository repository;
 
   DownloadexceltemplateUsecase(this.repository);

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class MyTextWidget extends StatelessWidget {
-  const MyTextWidget(this.text,
-      {this.style,
-      this.textScaleFactor,
-      this.maxLines,
-      this.textDirection,
-      this.textAlign,
-      this.overflow,
-      super.key});
+  const MyTextWidget(
+    this.text, {
+    this.style,
+    this.textScaleFactor,
+    this.maxLines,
+    this.textDirection,
+    this.textAlign,
+    this.overflow,
+    super.key,
+  });
 
   final String text;
   final TextStyle? style;

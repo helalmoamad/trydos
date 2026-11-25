@@ -6,15 +6,17 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class GetAddressByCoordinatesUsecase extends UseCase<
-    GetAddressByCoordinatesModel, GetAddressByCoordinatesParams> {
+class GetAddressByCoordinatesUsecase
+    extends
+        UseCase<GetAddressByCoordinatesModel, GetAddressByCoordinatesParams> {
   final HomeRepository repository;
 
   GetAddressByCoordinatesUsecase(this.repository);
 
   @override
   Future<Either<Failure, GetAddressByCoordinatesModel>> call(
-      GetAddressByCoordinatesParams params) {
+    GetAddressByCoordinatesParams params,
+  ) {
     return repository.getAddressByCoordinates(params.map);
   }
 }
@@ -23,6 +25,8 @@ class GetAddressByCoordinatesParams {
   double? latitude;
   double? longitude;
   GetAddressByCoordinatesParams({this.longitude, this.latitude});
-  Map<String, dynamic> get map =>
-      {"longitude": longitude, "latitude": latitude};
+  Map<String, dynamic> get map => {
+    "longitude": longitude,
+    "latitude": latitude,
+  };
 }

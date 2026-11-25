@@ -22,7 +22,5 @@ class IncreaseViewersParams {
 
   final String storyId;
 
-  Map<String, dynamic> get map => {
-        'storyId': storyId,
-      };
+  Map<String, dynamic> get map => {'storyId': storyId};
 }

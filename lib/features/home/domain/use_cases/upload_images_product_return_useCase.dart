@@ -55,8 +55,5 @@ class UpdateImagesForReturnProductParams {
 
   final File image;
 
-  UpdateImagesForReturnProductParams({
-    required this.path,
-    required this.image,
-  });
+  UpdateImagesForReturnProductParams({required this.path, required this.image});
 }

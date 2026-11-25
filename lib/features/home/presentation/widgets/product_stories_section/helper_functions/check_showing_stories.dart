@@ -18,8 +18,8 @@ int firstWhereNotShowed(List<Story> stories) {
     if (element.isSeen!) {
       index++;
     }
-//    todo  remember to break when meat first story not seen
-//    else break;
+    //    todo  remember to break when meat first story not seen
+    //    else break;
   });
 
   if (stories.length == index) return 0;
@@ -33,8 +33,8 @@ int lastWhereNotShowed(List<Story> stories) {
     if (element.isSeen!) {
       index++;
     }
-//    todo  remember to break when meat first story not seen
-//    else break;
+    //    todo  remember to break when meat first story not seen
+    //    else break;
   });
 
   if (stories.length == index) return index - 1;
@@ -47,8 +47,8 @@ int firstWhereNotShowedStoryCollection(List<Story> stories) {
     if (element.isSeen!) {
       index++;
     }
-//    todo  remember to break when meat first story not seen
-//    else break;
+    //    todo  remember to break when meat first story not seen
+    //    else break;
   });
 
   if (stories.length == index) return index;

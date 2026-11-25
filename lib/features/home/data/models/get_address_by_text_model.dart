@@ -14,19 +14,15 @@ class GetAddressByTextModel {
   final String? status;
   final List<ResultSearch>? results;
 
-  GetAddressByTextModel({
-    this.status,
-    this.results,
-  });
+  GetAddressByTextModel({this.status, this.results});
 
   GetAddressByTextModel copyWith({
     String? status,
     List<ResultSearch>? results,
-  }) =>
-      GetAddressByTextModel(
-        status: status ?? this.status,
-        results: results ?? this.results,
-      );
+  }) => GetAddressByTextModel(
+    status: status ?? this.status,
+    results: results ?? this.results,
+  );
 
   factory GetAddressByTextModel.fromJson(Map<String, dynamic> json) =>
       GetAddressByTextModel(
@@ -34,15 +30,16 @@ class GetAddressByTextModel {
         results: json["results"] == null
             ? []
             : List<ResultSearch>.from(
-                json["results"]!.map((x) => ResultSearch.fromJson(x))),
+                json["results"]!.map((x) => ResultSearch.fromJson(x)),
+              ),
       );
 
   Map<String, dynamic> toJson() => {
-        "status": status,
-        "results": results == null
-            ? []
-            : List<dynamic>.from(results!.map((x) => x.toJson())),
-      };
+    "status": status,
+    "results": results == null
+        ? []
+        : List<dynamic>.from(results!.map((x) => x.toJson())),
+  };
 }
 
 class ResultSearch {
@@ -75,71 +72,57 @@ class ResultSearch {
     String? building,
     String? zip,
     List<Coordinates>? coordinates,
-  }) =>
-      ResultSearch(
-        country: country ?? this.country,
-        province: province ?? this.province,
-        city: city ?? this.city,
-        zip: zip ?? this.zip,
-        town: town ?? this.town,
-        street: street ?? this.street,
-        building: building ?? this.building,
-        coordinates: coordinates ?? this.coordinates,
-      );
+  }) => ResultSearch(
+    country: country ?? this.country,
+    province: province ?? this.province,
+    city: city ?? this.city,
+    zip: zip ?? this.zip,
+    town: town ?? this.town,
+    street: street ?? this.street,
+    building: building ?? this.building,
+    coordinates: coordinates ?? this.coordinates,
+  );
 
   factory ResultSearch.fromJson(Map<String, dynamic> json) => ResultSearch(
-        country: json["country"],
-        province: json["province"],
-        city: json["city"],
-        town: json["town"],
-        zip: json["zip"],
-        street: json["street"],
-        building: json["building"],
-        coordinates: json["coordinates"] == null
-            ? []
-            : List<Coordinates>.from(
-                json["coordinates"]!.map((x) => Coordinates.fromJson(x))),
-      );
+    country: json["country"],
+    province: json["province"],
+    city: json["city"],
+    town: json["town"],
+    zip: json["zip"],
+    street: json["street"],
+    building: json["building"],
+    coordinates: json["coordinates"] == null
+        ? []
+        : List<Coordinates>.from(
+            json["coordinates"]!.map((x) => Coordinates.fromJson(x)),
+          ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "country": country,
-        "province": province,
-        "city": city,
-        "town": town,
-        "street": street,
-        "zip": zip,
-        "building": building,
-        "coordinates": coordinates == null
-            ? []
-            : List<dynamic>.from(coordinates!.map((x) => x.toJson())),
-      };
+    "country": country,
+    "province": province,
+    "city": city,
+    "town": town,
+    "street": street,
+    "zip": zip,
+    "building": building,
+    "coordinates": coordinates == null
+        ? []
+        : List<dynamic>.from(coordinates!.map((x) => x.toJson())),
+  };
 }
 
 class Coordinates {
   final double? lat;
   final double? lon;
 
-  Coordinates({
-    this.lat,
-    this.lon,
-  });
+  Coordinates({this.lat, this.lon});
 
-  Coordinates copyWith({
-    double? lat,
-    double? lon,
-  }) =>
-      Coordinates(
-        lat: lat ?? this.lat,
-        lon: lon ?? this.lon,
-      );
+  Coordinates copyWith({double? lat, double? lon}) =>
+      Coordinates(lat: lat ?? this.lat, lon: lon ?? this.lon);
 
-  factory Coordinates.fromJson(Map<String, dynamic> json) => Coordinates(
-        lat: json["lat"]?.toDouble(),
-        lon: json["lon"]?.toDouble(),
-      );
+  factory Coordinates.fromJson(Map<String, dynamic> json) =>
+      Coordinates(lat: json["lat"]?.toDouble(), lon: json["lon"]?.toDouble());
 
-  Map<String, dynamic> toJson() => {
-        "lat": lat,
-        "lon": lon,
-      };
+  Map<String, dynamic> toJson() => {"lat": lat, "lon": lon};
 }

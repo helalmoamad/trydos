@@ -7,13 +7,16 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class UpdateUserRoleUseCase extends UseCase<ReadOnlyMessageFromApiModel, UpdateUserRoleParams> {
+class UpdateUserRoleUseCase
+    extends UseCase<ReadOnlyMessageFromApiModel, UpdateUserRoleParams> {
   final DashBoardRepository repository;
 
   UpdateUserRoleUseCase(this.repository);
 
   @override
-  Future<Either<Failure, ReadOnlyMessageFromApiModel>> call(UpdateUserRoleParams params) {
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> call(
+    UpdateUserRoleParams params,
+  ) {
     return repository.updateUserRole({
       'user_id': params.userId,
       'role_id': params.roleId,
@@ -25,8 +28,5 @@ class UpdateUserRoleParams {
   final String userId;
   final String roleId;
 
-  UpdateUserRoleParams({
-    required this.userId,
-    required this.roleId,
-  });
+  UpdateUserRoleParams({required this.userId, required this.roleId});
 }

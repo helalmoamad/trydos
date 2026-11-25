@@ -14,7 +14,8 @@ class GetColorsAndSizesForSearchUseCase
 
   @override
   Future<Either<Failure, GeColorsAndSizesForSearchModel>> call(
-      NoParams params) async {
+    NoParams params,
+  ) async {
     return repository.getColorsAndSizesForSearch();
   }
 }

@@ -21,7 +21,5 @@ class RemoveITemToCartParams {
   String? id;
 
   RemoveITemToCartParams({this.id});
-  Map<String, dynamic> get map => {
-        "key": int.tryParse(id!),
-      };
+  Map<String, dynamic> get map => {"key": int.tryParse(id!)};
 }

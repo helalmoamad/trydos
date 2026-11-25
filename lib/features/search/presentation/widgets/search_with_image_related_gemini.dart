@@ -17,18 +17,24 @@ import 'search_image_preview_widget.dart';
 import 'package:trydos/common/helper/dev_log.dart';
 
 class SearchWithImageRelatedGemini {
-  static void SelecteImageForSearch(
-      {required BuildContext context, required bool fromSearch}) async {
+  static void SelecteImageForSearch({
+    required BuildContext context,
+    required bool fromSearch,
+  }) async {
     void _sendImageForSearch(File image) {
-      GetIt.I<CategoryBloc>()
-          .add(ReplyFromGeminiEvent(fromSearch: fromSearch, image: image));
+      GetIt.I<CategoryBloc>().add(
+        ReplyFromGeminiEvent(fromSearch: fromSearch, image: image),
+      );
     }
 
     void _showImagePreview(File imageFile) {
       devLog('SearchWithImageRelatedGemini: _showImagePreview called');
-      devLog('SearchWithImageRelatedGemini: imageFile path = ${imageFile.path}');
       devLog(
-          'SearchWithImageRelatedGemini: imageFile exists = ${imageFile.existsSync()}');
+        'SearchWithImageRelatedGemini: imageFile path = ${imageFile.path}',
+      );
+      devLog(
+        'SearchWithImageRelatedGemini: imageFile exists = ${imageFile.existsSync()}',
+      );
 
       showDialog(
         context: context,
@@ -50,24 +56,27 @@ class SearchWithImageRelatedGemini {
           fromChat: true, // إضافة هذا لتفعيل معاينة الصور
           onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
             devLog(
-                'SearchWithImageRelatedGemini: onChooseFileFromGalleryAction called');
+              'SearchWithImageRelatedGemini: onChooseFileFromGalleryAction called',
+            );
             if (assetEntity != null) {
               // originFile يرجع null للملفات غير المقروءة.
               final File? pickedFile = await assetEntity.originFile;
               if (pickedFile == null) {
-                showWarningMessage(
-                    context, LocaleKeys.error_picking_file.tr());
+                showWarningMessage(context, LocaleKeys.error_picking_file.tr());
                 return;
               }
               File file = pickedFile;
               devLog(
-                  'SearchWithImageRelatedGemini: gallery file path = ${file.path}');
+                'SearchWithImageRelatedGemini: gallery file path = ${file.path}',
+              );
               String mimeStr = lookupMimeType(file.absolute.path) ?? '';
               var fileType = mimeStr.split('/');
 
               if (fileType[0] != 'image') {
                 showErrorMessage(
-                    context, LocaleKeys.video_file_not_supported.tr());
+                  context,
+                  LocaleKeys.video_file_not_supported.tr(),
+                );
               } else {
                 // إغلاق ديالوج الاختيار
                 Navigator.of(context).pop();
@@ -80,15 +89,19 @@ class SearchWithImageRelatedGemini {
           },
           onChooseFileFromCameraAction: (File? file) async {
             devLog(
-                'SearchWithImageRelatedGemini: onChooseFileFromCameraAction called');
+              'SearchWithImageRelatedGemini: onChooseFileFromCameraAction called',
+            );
             if (file != null) {
               devLog(
-                  'SearchWithImageRelatedGemini: camera file path = ${file.path}');
+                'SearchWithImageRelatedGemini: camera file path = ${file.path}',
+              );
               String mimeStr = lookupMimeType(file.absolute.path) ?? '';
               var fileType = mimeStr.split('/');
               if (fileType[0] != 'image') {
                 showErrorMessage(
-                    context, LocaleKeys.video_file_not_supported.tr());
+                  context,
+                  LocaleKeys.video_file_not_supported.tr(),
+                );
               } else {
                 // إغلاق ديالوج الاختيار
                 Navigator.of(context).pop();
@@ -102,7 +115,8 @@ class SearchWithImageRelatedGemini {
           onImagePreviewAction: (File image) {
             devLog('SearchWithImageRelatedGemini: onImagePreviewAction called');
             devLog(
-                'SearchWithImageRelatedGemini: preview image path = ${image.path}');
+              'SearchWithImageRelatedGemini: preview image path = ${image.path}',
+            );
             // هذا سيتم استدعاؤه تلقائياً من GalleryAndCameraDialogWidget
             // عندما fromChat = true
             _showImagePreview(image);

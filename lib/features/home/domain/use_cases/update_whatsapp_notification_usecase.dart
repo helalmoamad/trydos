@@ -8,15 +8,20 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class UpdateWhatsappNotificationUseCase extends UseCase<
-    FirebaseSettingForNotificationModel, UpdateWhatsappNotificationParams> {
+class UpdateWhatsappNotificationUseCase
+    extends
+        UseCase<
+          FirebaseSettingForNotificationModel,
+          UpdateWhatsappNotificationParams
+        > {
   final HomeRepository repository;
 
   UpdateWhatsappNotificationUseCase(this.repository);
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>> call(
-      UpdateWhatsappNotificationParams params) {
+    UpdateWhatsappNotificationParams params,
+  ) {
     return repository.updateWhatsappNotification(params.map);
   }
 }

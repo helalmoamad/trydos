@@ -34,15 +34,14 @@ class UploadUserPhotoModel {
     String? message,
     dynamic detailedError,
     Data? data,
-  }) =>
-      UploadUserPhotoModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => UploadUserPhotoModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory UploadUserPhotoModel.fromJson(Map<String, dynamic> json) =>
       UploadUserPhotoModel(
@@ -55,34 +54,24 @@ class UploadUserPhotoModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
   final String? subPath;
 
-  Data({
-    this.subPath,
-  });
+  Data({this.subPath});
 
-  Data copyWith({
-    String? subPath,
-  }) =>
-      Data(
-        subPath: subPath ?? this.subPath,
-      );
+  Data copyWith({String? subPath}) => Data(subPath: subPath ?? this.subPath);
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        subPath: json["sub_path"],
-      );
+  factory Data.fromJson(Map<String, dynamic> json) =>
+      Data(subPath: json["sub_path"]);
 
-  Map<String, dynamic> toJson() => {
-        "sub_path": subPath,
-      };
+  Map<String, dynamic> toJson() => {"sub_path": subPath};
 }

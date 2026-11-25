@@ -14,15 +14,9 @@ class GetCountViewOfProductModel {
   final int? viewCount;
   final String? message;
 
-  GetCountViewOfProductModel({
-    this.viewCount,
-    this.message,
-  });
+  GetCountViewOfProductModel({this.viewCount, this.message});
 
-  GetCountViewOfProductModel copyWith({
-    int? viewCount,
-    String? message,
-  }) =>
+  GetCountViewOfProductModel copyWith({int? viewCount, String? message}) =>
       GetCountViewOfProductModel(
         viewCount: viewCount ?? this.viewCount,
         message: message ?? this.message,
@@ -35,7 +29,7 @@ class GetCountViewOfProductModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "view_count": viewCount,
-        "message": message,
-      };
+    "view_count": viewCount,
+    "message": message,
+  };
 }

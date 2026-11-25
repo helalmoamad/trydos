@@ -34,15 +34,14 @@ class VerifyOtpInProfileResponseModel {
     dynamic message,
     dynamic detailedError,
     Data? data,
-  }) =>
-      VerifyOtpInProfileResponseModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => VerifyOtpInProfileResponseModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory VerifyOtpInProfileResponseModel.fromJson(Map<String, dynamic> json) =>
       VerifyOtpInProfileResponseModel(
@@ -55,40 +54,26 @@ class VerifyOtpInProfileResponseModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
   final String? phone;
   final String? idToken;
 
-  Data({
-    this.phone,
-    this.idToken,
-  });
+  Data({this.phone, this.idToken});
 
-  Data copyWith({
-    String? phone,
-    String? idToken,
-  }) =>
-      Data(
-        phone: phone ?? this.phone,
-        idToken: idToken ?? this.idToken,
-      );
+  Data copyWith({String? phone, String? idToken}) =>
+      Data(phone: phone ?? this.phone, idToken: idToken ?? this.idToken);
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        phone: json["phone"],
-        idToken: json["id_token"],
-      );
+  factory Data.fromJson(Map<String, dynamic> json) =>
+      Data(phone: json["phone"], idToken: json["id_token"]);
 
-  Map<String, dynamic> toJson() => {
-        "phone": phone,
-        "id_token": idToken,
-      };
+  Map<String, dynamic> toJson() => {"phone": phone, "id_token": idToken};
 }

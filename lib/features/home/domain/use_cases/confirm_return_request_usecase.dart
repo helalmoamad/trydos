@@ -7,15 +7,17 @@ import 'package:trydos/features/home/data/models/confirm_return_request_model.da
 import 'package:trydos/features/home/domain/repositories/home_repository.dart';
 
 @injectable
-class ConfirmReturnRequestUseCase extends UseCase<
-    ConfirmCancelReturnRequestModel, ConfirmReturnRequestParams> {
+class ConfirmReturnRequestUseCase
+    extends
+        UseCase<ConfirmCancelReturnRequestModel, ConfirmReturnRequestParams> {
   final HomeRepository _homeRepository;
 
   ConfirmReturnRequestUseCase(this._homeRepository);
 
   @override
   Future<Either<Failure, ConfirmCancelReturnRequestModel>> call(
-      ConfirmReturnRequestParams params) {
+    ConfirmReturnRequestParams params,
+  ) {
     return _homeRepository.confirmReturnRequest(params.map);
   }
 }
@@ -23,10 +25,8 @@ class ConfirmReturnRequestUseCase extends UseCase<
 class ConfirmReturnRequestParams {
   final List<String> returnRequestId;
 
-  ConfirmReturnRequestParams({
-    required this.returnRequestId,
-  });
+  ConfirmReturnRequestParams({required this.returnRequestId});
   Map<String, dynamic> get map => {
-        "return_request_ids": returnRequestId.toSet().toList(),
-      };
+    "return_request_ids": returnRequestId.toSet().toList(),
+  };
 }

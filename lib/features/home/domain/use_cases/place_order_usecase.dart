@@ -12,9 +12,7 @@ class PlaceOrderUsecase extends UseCase<OrdersGroupModel, PlaceOrderParams> {
   PlaceOrderUsecase(this.repository);
 
   @override
-  Future<Either<Failure, OrdersGroupModel>> call(
-    PlaceOrderParams params,
-  ) {
+  Future<Either<Failure, OrdersGroupModel>> call(PlaceOrderParams params) {
     return repository.placeOrder(
       params: params.map,
       paymentMethod: params.paymentMethod,
@@ -35,8 +33,8 @@ class PlaceOrderParams {
     required this.payByWallet,
   });
   Map<String, dynamic> get map => {
-        "address_id": addressId,
-        "order_note": orderNote,
-        "pay_by_wallet": payByWallet,
-      };
+    "address_id": addressId,
+    "order_note": orderNote,
+    "pay_by_wallet": payByWallet,
+  };
 }

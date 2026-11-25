@@ -5,12 +5,12 @@
 import 'dart:convert';
 
 ConfirmCancelReturnRequestModel storeReturnRequestProductModelFromJson(
-        String str) =>
-    ConfirmCancelReturnRequestModel.fromJson(json.decode(str));
+  String str,
+) => ConfirmCancelReturnRequestModel.fromJson(json.decode(str));
 
 String storeReturnRequestProductModelToJson(
-        ConfirmCancelReturnRequestModel data) =>
-    json.encode(data.toJson());
+  ConfirmCancelReturnRequestModel data,
+) => json.encode(data.toJson());
 
 class ConfirmCancelReturnRequestModel {
   final bool? isSuccessful;
@@ -33,14 +33,13 @@ class ConfirmCancelReturnRequestModel {
     int? code,
     String? message,
     dynamic detailedError,
-  }) =>
-      ConfirmCancelReturnRequestModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-      );
+  }) => ConfirmCancelReturnRequestModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+  );
 
   factory ConfirmCancelReturnRequestModel.fromJson(Map<String, dynamic> json) =>
       ConfirmCancelReturnRequestModel(
@@ -52,10 +51,10 @@ class ConfirmCancelReturnRequestModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+  };
 }

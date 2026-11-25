@@ -302,9 +302,8 @@ class _CustomerCommentsState extends State<CustomerComments> {
         title: LocaleKeys.comments_generic_error.tr(),
         message: '',
         actionText: LocaleKeys.comments_retry.tr(),
-        onActionPressed: () => _bloc.add(
-          GetSellerCommentsEvent(type: _tab, canRead: _canRead),
-        ),
+        onActionPressed: () =>
+            _bloc.add(GetSellerCommentsEvent(type: _tab, canRead: _canRead)),
       );
     }
 
@@ -516,11 +515,7 @@ class _CommentCard extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Icon(
-          Icons.favorite_border,
-          size: 14.r,
-          color: Colors.grey.shade500,
-        ),
+        Icon(Icons.favorite_border, size: 14.r, color: Colors.grey.shade500),
         SizedBox(width: 4.w),
         Text(
           '$count',
@@ -559,19 +554,13 @@ class _CommentCard extends StatelessWidget {
             Expanded(
               child: Text(
                 item.sellerName,
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600),
               ),
             ),
             if (item.replyCreatedAt.isNotEmpty)
               Text(
                 item.replyCreatedAt,
-                style: TextStyle(
-                  fontSize: 11.sp,
-                  color: Colors.grey.shade500,
-                ),
+                style: TextStyle(fontSize: 11.sp, color: Colors.grey.shade500),
               ),
           ],
         ),

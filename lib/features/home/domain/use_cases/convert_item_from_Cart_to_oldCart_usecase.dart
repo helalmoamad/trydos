@@ -8,15 +8,20 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class ConvertItemFromcartToOldCartUsecase extends UseCase<
-    ConvertItemFromCartToOldCartModel, ConvertItemFromcartToOldCartParams> {
+class ConvertItemFromcartToOldCartUsecase
+    extends
+        UseCase<
+          ConvertItemFromCartToOldCartModel,
+          ConvertItemFromcartToOldCartParams
+        > {
   final HomeRepository repository;
 
   ConvertItemFromcartToOldCartUsecase(this.repository);
 
   @override
   Future<Either<Failure, ConvertItemFromCartToOldCartModel>> call(
-      ConvertItemFromcartToOldCartParams params) {
+    ConvertItemFromcartToOldCartParams params,
+  ) {
     return repository.convertItemInCartToOldCart(params.map);
   }
 }
@@ -25,7 +30,7 @@ class ConvertItemFromcartToOldCartParams {
   String? CartId;
 
   ConvertItemFromcartToOldCartParams({this.CartId});
-  Map<String, dynamic> get map => {
-        "key": int.tryParse(CartId!),
-      }..removeWhere((key, value) => value == null);
+  Map<String, dynamic> get map =>
+      {"key": int.tryParse(CartId!)}
+        ..removeWhere((key, value) => value == null);
 }

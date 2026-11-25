@@ -14,7 +14,8 @@ class CheckAvailabilityProductCartUsecase
 
   @override
   Future<Either<Failure, CheckAvailabilityProductCartModel>> call(
-      NoParams params) {
+    NoParams params,
+  ) {
     return repository.checkAvailabilityProductCart();
   }
 }

@@ -11,11 +11,12 @@ class EditedSpinKitThreeBounce extends StatefulWidget {
     this.itemBuilder,
     this.duration = const Duration(milliseconds: 1400),
     this.controller,
-  })  : assert(
-            !(itemBuilder is IndexedWidgetBuilder && color is Color) &&
-                !(itemBuilder == null && color == null),
-            'You should specify either a itemBuilder or a color'),
-        super(key: key);
+  }) : assert(
+         !(itemBuilder is IndexedWidgetBuilder && color is Color) &&
+             !(itemBuilder == null && color == null),
+         'You should specify either a itemBuilder or a color',
+       ),
+       super(key: key);
 
   final Color? color;
   final double size;
@@ -36,9 +37,10 @@ class _EditedSpinKitThreeBounceState extends State<EditedSpinKitThreeBounce>
   void initState() {
     super.initState();
 
-    _controller = (widget.controller ??
-        AnimationController(vsync: this, duration: widget.duration))
-      ..repeat();
+    _controller =
+        (widget.controller ??
+              AnimationController(vsync: this, duration: widget.duration))
+          ..repeat();
   }
 
   @override
@@ -58,10 +60,15 @@ class _EditedSpinKitThreeBounceState extends State<EditedSpinKitThreeBounce>
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(3, (i) {
             return ScaleTransition(
-              scale: _DelayTween(begin: 0.0, end: 1.0, delay: i * .2)
-                  .animate(_controller),
+              scale: _DelayTween(
+                begin: 0.0,
+                end: 1.0,
+                delay: i * .2,
+              ).animate(_controller),
               child: SizedBox.fromSize(
-                  size: Size.square(widget.size * 0.4), child: _itemBuilder(i)),
+                size: Size.square(widget.size * 0.4),
+                child: _itemBuilder(i),
+              ),
             );
           }),
         ),
@@ -73,14 +80,16 @@ class _EditedSpinKitThreeBounceState extends State<EditedSpinKitThreeBounce>
       ? widget.itemBuilder!(context, index)
       : DecoratedBox(
           decoration: BoxDecoration(
-              color: widget.color,
-              shape: BoxShape.circle,
-              border: Border.all(color: context.theme.colorScheme.primary)));
+            color: widget.color,
+            shape: BoxShape.circle,
+            border: Border.all(color: context.theme.colorScheme.primary),
+          ),
+        );
 }
 
 class _DelayTween extends Tween<double> {
   _DelayTween({double? begin, double? end, required this.delay})
-      : super(begin: begin, end: end);
+    : super(begin: begin, end: end);
 
   final double delay;
 

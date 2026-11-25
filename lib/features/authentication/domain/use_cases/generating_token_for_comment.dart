@@ -26,8 +26,14 @@ class GeneratingTokenForCommentParams {
   final String? userId;
   final String? mobilePhone;
   final String? otpIdToken;
-  GeneratingTokenForCommentParams(
-      {this.userId, this.mobilePhone, this.otpIdToken});
-  Map<String, dynamic> get map =>
-      {"user_id": userId, "phone": mobilePhone, "id_token": otpIdToken};
+  GeneratingTokenForCommentParams({
+    this.userId,
+    this.mobilePhone,
+    this.otpIdToken,
+  });
+  Map<String, dynamic> get map => {
+    "user_id": userId,
+    "phone": mobilePhone,
+    "id_token": otpIdToken,
+  };
 }

@@ -15,7 +15,8 @@ class GetNotificationTypeProductUseCase
 
   @override
   Future<Either<Failure, NotificationTypeForProductModel>> call(
-      NoParams params) async {
+    NoParams params,
+  ) async {
     return repository.getNotificationTypeForProduct();
   }
 }

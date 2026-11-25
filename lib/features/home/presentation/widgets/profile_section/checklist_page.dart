@@ -43,7 +43,6 @@ class _ChecklistPageState extends State<ChecklistPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: TrydosAppBar(
         appBarParams: AppBarParams(

@@ -129,38 +129,39 @@ class StoriesTokenUser {
     this.refreshToken,
   });
 
-  factory StoriesTokenUser.fromJson(Map<String, dynamic> json) =>
-      StoriesTokenUser(
-        id: json["id"] is int
-            ? json["id"]
-            : int.tryParse((json["id"] ?? '').toString()),
-        name: json["name"]?.toString(),
-        username: json["username"],
-        email: json["email"],
-        mobilePhone: json["mobile_phone"]?.toString(),
-        originalUserId: json["original_user_id"],
-        referenceType: json["reference_type"]?.toString(),
-        isAllowedToUploadStory: json["is_allowed_to_upload_story"] is int
-            ? json["is_allowed_to_upload_story"] == 1
-            : json["is_allowed_to_upload_story"] as bool?,
-        photoPath: json["photo_path"],
-        isLockedByAdminForDelete: json["is_locked_by_admin_for_delete"] as bool?,
-        isLockedByAdminForUpdate: json["is_locked_by_admin_for_update"] as bool?,
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.tryParse(json["created_at"].toString()),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.tryParse(json["updated_at"].toString()),
-        deletedAt: json["deleted_at"] == null
-            ? null
-            : DateTime.tryParse(json["deleted_at"].toString()),
-        roles: json["roles"] == null
-            ? null
-            : List<dynamic>.from(json["roles"].map((x) => x)),
-        accessToken: json["accessToken"]?.toString(),
-        refreshToken: json["refreshToken"]?.toString(),
-      );
+  factory StoriesTokenUser.fromJson(
+    Map<String, dynamic> json,
+  ) => StoriesTokenUser(
+    id: json["id"] is int
+        ? json["id"]
+        : int.tryParse((json["id"] ?? '').toString()),
+    name: json["name"]?.toString(),
+    username: json["username"],
+    email: json["email"],
+    mobilePhone: json["mobile_phone"]?.toString(),
+    originalUserId: json["original_user_id"],
+    referenceType: json["reference_type"]?.toString(),
+    isAllowedToUploadStory: json["is_allowed_to_upload_story"] is int
+        ? json["is_allowed_to_upload_story"] == 1
+        : json["is_allowed_to_upload_story"] as bool?,
+    photoPath: json["photo_path"],
+    isLockedByAdminForDelete: json["is_locked_by_admin_for_delete"] as bool?,
+    isLockedByAdminForUpdate: json["is_locked_by_admin_for_update"] as bool?,
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.tryParse(json["created_at"].toString()),
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.tryParse(json["updated_at"].toString()),
+    deletedAt: json["deleted_at"] == null
+        ? null
+        : DateTime.tryParse(json["deleted_at"].toString()),
+    roles: json["roles"] == null
+        ? null
+        : List<dynamic>.from(json["roles"].map((x) => x)),
+    accessToken: json["accessToken"]?.toString(),
+    refreshToken: json["refreshToken"]?.toString(),
+  );
 
   Map<String, dynamic> toJson() => {
     "id": id,

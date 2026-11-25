@@ -1,5 +1,3 @@
-
-
 import 'package:dartz/dartz.dart';
 import 'package:trydos/core/error/failures.dart';
 
@@ -8,4 +6,3 @@ abstract class UseCase<T, Params> {
 }
 
 class NoParams {}
-

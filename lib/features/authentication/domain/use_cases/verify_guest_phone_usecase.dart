@@ -15,7 +15,8 @@ class VerifyOtpFromGuestUseCase
 
   @override
   Future<Either<Failure, VerifyOtpFromGuestResponseModel>> call(
-      VerifyOtpFromGuestParams params) async {
+    VerifyOtpFromGuestParams params,
+  ) async {
     return repository.verifyOtpFromGuest(params.map);
   }
 }
@@ -23,11 +24,10 @@ class VerifyOtpFromGuestUseCase
 class VerifyOtpFromGuestParams {
   String verificationId;
   String otp;
-  VerifyOtpFromGuestParams({
-    required this.verificationId,
-    required this.otp,
-  });
+  VerifyOtpFromGuestParams({required this.verificationId, required this.otp});
 
-  Map<String, dynamic> get map =>
-      {"verificationId": verificationId, "otp": otp};
+  Map<String, dynamic> get map => {
+    "verificationId": verificationId,
+    "otp": otp,
+  };
 }

@@ -186,8 +186,9 @@ class BoutiqueForm {
 
   /// Replaces one language, sharing every other entry.
   BoutiqueForm withTranslation(TranslationForm translation) {
-    final Map<String, TranslationForm> next =
-        Map<String, TranslationForm>.of(translations);
+    final Map<String, TranslationForm> next = Map<String, TranslationForm>.of(
+      translations,
+    );
     next[translation.languageCode] = translation;
     return copyWith(translations: next);
   }
@@ -238,9 +239,9 @@ BoutiqueForm buildFormFromEdit(
       continue;
     }
     final String? iconSource = t.icon ?? boutique.icon;
-    final List<BoutiqueBannerModel> banners =
-        List<BoutiqueBannerModel>.of(t.banners)
-          ..sort((a, b) => a.sequence.compareTo(b.sequence));
+    final List<BoutiqueBannerModel> banners = List<BoutiqueBannerModel>.of(
+      t.banners,
+    )..sort((a, b) => a.sequence.compareTo(b.sequence));
     translations[language.code] = TranslationForm(
       id: t.id,
       languageCode: language.code,
@@ -354,8 +355,7 @@ Map<String, Set<BoutiqueField>> validateForm(
   BoutiqueForm form,
   List<BoutiqueLanguage> languages,
 ) {
-  final Map<String, Set<BoutiqueField>> errors =
-      <String, Set<BoutiqueField>>{};
+  final Map<String, Set<BoutiqueField>> errors = <String, Set<BoutiqueField>>{};
   for (final BoutiqueLanguage language in languages) {
     final TranslationForm t =
         form.translations[language.code] ??

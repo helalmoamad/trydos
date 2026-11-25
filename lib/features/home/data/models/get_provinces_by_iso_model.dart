@@ -14,15 +14,9 @@ class GetProvincesByIsoModel {
   final String? status;
   final List<String>? data;
 
-  GetProvincesByIsoModel({
-    this.status,
-    this.data,
-  });
+  GetProvincesByIsoModel({this.status, this.data});
 
-  GetProvincesByIsoModel copyWith({
-    String? status,
-    List<String>? data,
-  }) =>
+  GetProvincesByIsoModel copyWith({String? status, List<String>? data}) =>
       GetProvincesByIsoModel(
         status: status ?? this.status,
         data: data ?? this.data,
@@ -37,7 +31,7 @@ class GetProvincesByIsoModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "status": status,
-        "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x)),
-      };
+    "status": status,
+    "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x)),
+  };
 }

@@ -31,12 +31,15 @@ class _CropImageScreenState extends State<CropImageScreen> {
   }
 
   Future<ui.Image> convertImageProviderToUiImage(
-      ImageProvider imageProvider) async {
+    ImageProvider imageProvider,
+  ) async {
     final ImageStream stream = imageProvider.resolve(ImageConfiguration.empty);
     final Completer<ui.Image> completer = Completer();
-    stream.addListener(ImageStreamListener((image, _) {
-      completer.complete(image.image);
-    }));
+    stream.addListener(
+      ImageStreamListener((image, _) {
+        completer.complete(image.image);
+      }),
+    );
     return completer.future;
   }
 
@@ -50,11 +53,8 @@ class _CropImageScreenState extends State<CropImageScreen> {
       // then land outside the temp directory. Keep it only when it looks like
       // a real extension.
       final String rawFormat = widget.imageFile.path.split('.').last;
-      final String fileFormat = RegExp(
-        r'^[A-Za-z0-9]{1,5}$',
-      ).hasMatch(rawFormat)
-          ? rawFormat
-          : 'png';
+      final String fileFormat =
+          RegExp(r'^[A-Za-z0-9]{1,5}$').hasMatch(rawFormat) ? rawFormat : 'png';
       int currentUnix = DateTime.now().millisecondsSinceEpoch;
       // nosemgrep: trydos-sec-path-from-interpolation -- fileFormat is checked against ^[A-Za-z0-9]{1,5}$ above; currentUnix is a timestamp
       final file = File('${directory.path}/$currentUnix.$fileFormat');
@@ -88,8 +88,9 @@ class _CropImageScreenState extends State<CropImageScreen> {
         onPressed: () async {
           Image? image = await cropKey.currentState?.cropImage();
           if (image == null) return;
-          final ui.Image uiImage =
-              await convertImageProviderToUiImage(image.image);
+          final ui.Image uiImage = await convertImageProviderToUiImage(
+            image.image,
+          );
           final File file = await convertImageToFile(uiImage);
           if (!context.mounted) return;
           Navigator.pop(context, file);

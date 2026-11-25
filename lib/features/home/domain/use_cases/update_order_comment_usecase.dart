@@ -14,7 +14,8 @@ class UpdateOrderCommentUseCase
 
   @override
   Future<Either<Failure, OrderCommentModel>> call(
-      UpdateOrderCommentParams params) {
+    UpdateOrderCommentParams params,
+  ) {
     return repository.updateOrderComment(params.map);
   }
 }
@@ -37,11 +38,11 @@ class UpdateOrderCommentParams {
   });
 
   Map<String, dynamic> get map => {
-        "comment": comment,
-        "customer_id": customerId,
-        "id": id,
-        "order_details_id": orderDetailsId,
-        "product_id": productId,
-        "star_rating": starRating,
-      };
+    "comment": comment,
+    "customer_id": customerId,
+    "id": id,
+    "order_details_id": orderDetailsId,
+    "product_id": productId,
+    "star_rating": starRating,
+  };
 }

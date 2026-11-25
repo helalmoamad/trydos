@@ -26,42 +26,64 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     switchLabels.add("Firebase Notification");
-    switchValues.add(homeBloc.state.firebaseSettingForNotificationModel?.data
-            ?.firebaseSettings?.firebase ==
-        "1");
+    switchValues.add(
+      homeBloc
+              .state
+              .firebaseSettingForNotificationModel
+              ?.data
+              ?.firebaseSettings
+              ?.firebase ==
+          "1",
+    );
     switchTopics.add("firebase_notification");
     switchLabels.add("Whatsapp Notification");
-    switchValues.add(homeBloc.state.firebaseSettingForNotificationModel?.data
-            ?.firebaseSettings?.whatsapp ==
-        "1");
+    switchValues.add(
+      homeBloc
+              .state
+              .firebaseSettingForNotificationModel
+              ?.data
+              ?.firebaseSettings
+              ?.whatsapp ==
+          "1",
+    );
     switchTopics.add("whatsapp_notification");
     switchLabels.add("Email Notification");
-    switchValues.add(homeBloc.state.firebaseSettingForNotificationModel?.data
-            ?.firebaseSettings?.email ==
-        "1");
+    switchValues.add(
+      homeBloc
+              .state
+              .firebaseSettingForNotificationModel
+              ?.data
+              ?.firebaseSettings
+              ?.email ==
+          "1",
+    );
     switchTopics.add("email_notification");
-    homeBloc.state.firebaseSettingForNotificationModel?.data?.firebaseSettings
+    homeBloc
+        .state
+        .firebaseSettingForNotificationModel
+        ?.data
+        ?.firebaseSettings
         ?.subscribedTopics
-        ?.forEach(
-      (element) {
-        if (!switchLabels.contains(element.showedName)) {
-          switchLabels.add(element.showedName ?? "");
-          switchValues.add(true);
-          switchTopics.add(element.topic ?? "");
-        }
-      },
-    );
-    homeBloc.state.firebaseSettingForNotificationModel?.data?.firebaseSettings
+        ?.forEach((element) {
+          if (!switchLabels.contains(element.showedName)) {
+            switchLabels.add(element.showedName ?? "");
+            switchValues.add(true);
+            switchTopics.add(element.topic ?? "");
+          }
+        });
+    homeBloc
+        .state
+        .firebaseSettingForNotificationModel
+        ?.data
+        ?.firebaseSettings
         ?.unsubscribedTopics
-        ?.forEach(
-      (element) {
-        if (!switchLabels.contains(element.showedName)) {
-          switchLabels.add(element.showedName ?? "");
-          switchValues.add(false);
-          switchTopics.add(element.topic ?? "");
-        }
-      },
-    );
+        ?.forEach((element) {
+          if (!switchLabels.contains(element.showedName)) {
+            switchLabels.add(element.showedName ?? "");
+            switchValues.add(false);
+            switchTopics.add(element.topic ?? "");
+          }
+        });
 
     super.initState();
   }
@@ -75,8 +97,9 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
       } else if (switchTopics[index] == "firebase_notification") {
         homeBloc.add(const UpdateFirebaseNotificationEvent(firebase: 1));
       } else {
-        SubsecribeOrUnSubsecribeToTopic()
-            .subsecribeToOtherTopic(switchTopics[index]);
+        SubsecribeOrUnSubsecribeToTopic().subsecribeToOtherTopic(
+          switchTopics[index],
+        );
       }
       ;
     } else {
@@ -87,8 +110,9 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
       } else if (switchTopics[index] == "fireBase_notification") {
         homeBloc.add(const UpdateFirebaseNotificationEvent(firebase: 0));
       } else {
-        SubsecribeOrUnSubsecribeToTopic()
-            .unSubsecribeToOtherTopic(switchTopics[index]);
+        SubsecribeOrUnSubsecribeToTopic().unSubsecribeToOtherTopic(
+          switchTopics[index],
+        );
       }
     }
 
@@ -103,12 +127,11 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
     return Scaffold(
       appBar: AppBar(
         title: const Center(
-            child: Text(
-          ' Notification Setting                 ',
-          style: TextStyle(
-            fontSize: 18,
+          child: Text(
+            ' Notification Setting                 ',
+            style: TextStyle(fontSize: 18),
           ),
-        )),
+        ),
       ),
       body: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
@@ -118,7 +141,8 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
                 previous.updateWhatsappNotificationStatus,
         builder: (context, state) {
           devLog(
-              "sxxxxxxxxxxxxxxxxxxxx${state.updateEmailappNotificationStatus}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxssssssssssssssssssssssssssssssssssssssss");
+            "sxxxxxxxxxxxxxxxxxxxx${state.updateEmailappNotificationStatus}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxssssssssssssssssssssssssssssssssssssssss",
+          );
 
           if (state.updateWhatsappNotificationStatus ==
               UpdateWhatsappNotificationStatus.failure) {
@@ -136,32 +160,34 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
             child: Column(
               children: [
                 Container(
-                    margin: const EdgeInsets.all(20),
-                    height: 50.h,
-                    width: 1.sw - 40,
-                    child: Row(
-                      children: [
-                        const Text(
-                          "Ntification Frequency :",
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        const Spacer(),
-                        NotificationFrequencyDropdown(
-                          notificationFrequency: const [
+                  margin: const EdgeInsets.all(20),
+                  height: 50.h,
+                  width: 1.sw - 40,
+                  child: Row(
+                    children: [
+                      const Text(
+                        "Ntification Frequency :",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      const Spacer(),
+                      NotificationFrequencyDropdown(
+                        notificationFrequency: const [
+                          "daily",
+                          "weekly",
+                          "monthly",
+                        ],
+                        selectedNotificationFrequency:
+                            homeBloc
+                                .state
+                                .firebaseSettingForNotificationModel
+                                ?.data
+                                ?.firebaseSettings
+                                ?.notificationFrequency ??
                             "daily",
-                            "weekly",
-                            "monthly"
-                          ],
-                          selectedNotificationFrequency: homeBloc
-                                  .state
-                                  .firebaseSettingForNotificationModel
-                                  ?.data
-                                  ?.firebaseSettings
-                                  ?.notificationFrequency ??
-                              "daily",
-                        )
-                      ],
-                    )),
+                      ),
+                    ],
+                  ),
+                ),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   height: 20,

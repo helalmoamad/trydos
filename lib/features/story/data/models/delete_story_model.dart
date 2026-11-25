@@ -34,15 +34,14 @@ class DeleteStoryModel {
     dynamic message,
     dynamic detailedError,
     Data? data,
-  }) =>
-      DeleteStoryModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => DeleteStoryModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory DeleteStoryModel.fromJson(Map<String, dynamic> json) =>
       DeleteStoryModel(
@@ -55,40 +54,26 @@ class DeleteStoryModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
   final int? success;
   final String? message;
 
-  Data({
-    this.success,
-    this.message,
-  });
+  Data({this.success, this.message});
 
-  Data copyWith({
-    int? success,
-    String? message,
-  }) =>
-      Data(
-        success: success ?? this.success,
-        message: message ?? this.message,
-      );
+  Data copyWith({int? success, String? message}) =>
+      Data(success: success ?? this.success, message: message ?? this.message);
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        success: json["success"],
-        message: json["message"],
-      );
+  factory Data.fromJson(Map<String, dynamic> json) =>
+      Data(success: json["success"], message: json["message"]);
 
-  Map<String, dynamic> toJson() => {
-        "success": success,
-        "message": message,
-      };
+  Map<String, dynamic> toJson() => {"success": success, "message": message};
 }

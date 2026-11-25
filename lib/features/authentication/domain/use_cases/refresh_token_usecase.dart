@@ -16,7 +16,8 @@ class RefreshTokenUseCase
 
   @override
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> call(
-      RefreshTokenParams params) async {
+    RefreshTokenParams params,
+  ) async {
     return repository.refreshToken(params.map);
   }
 }

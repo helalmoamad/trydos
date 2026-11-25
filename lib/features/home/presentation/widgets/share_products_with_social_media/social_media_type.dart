@@ -17,12 +17,13 @@ enum SocialMediaType {
   telegram,
 }
 
-Future share(
-    {required SocialMediaType socialPlatform,
-    required String text,
-    required String productId,
-    required Products product,
-    required String urlShare}) async {
+Future share({
+  required SocialMediaType socialPlatform,
+  required String text,
+  required String productId,
+  required Products product,
+  required String urlShare,
+}) async {
   text = parseFragment(text).text ?? "";
 
   final urlShares = Uri.encodeComponent(urlShare);
@@ -42,19 +43,24 @@ Future share(
   };
   final url = urls[socialPlatform];
   if (await canLaunchUrlString(url!)) {
-    await launchUrlString(url).then(
-      (value) {
-        GetIt.I<ChatBloc>().add(IncreaseSharedProductCountOnSocialAppEvent(
-            socialMediaName: socialPlatform.name,
-            productId: productId,
-            product: product,
-            sharedCount: 1));
-        devLog(
-            "___________________________________________________________________${value}");
-      },
-    ).catchError((value) {
-      devLog(
-          "___________________________________________________________________${value}");
-    });
+    await launchUrlString(url)
+        .then((value) {
+          GetIt.I<ChatBloc>().add(
+            IncreaseSharedProductCountOnSocialAppEvent(
+              socialMediaName: socialPlatform.name,
+              productId: productId,
+              product: product,
+              sharedCount: 1,
+            ),
+          );
+          devLog(
+            "___________________________________________________________________${value}",
+          );
+        })
+        .catchError((value) {
+          devLog(
+            "___________________________________________________________________${value}",
+          );
+        });
   }
 }

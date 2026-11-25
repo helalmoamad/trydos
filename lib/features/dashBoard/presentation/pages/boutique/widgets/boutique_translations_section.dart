@@ -102,7 +102,8 @@ class BoutiqueTranslationsSection extends StatelessWidget {
                   ),
                   child: BoutiquePreviewImage(
                     localPath: translation.iconLocalPath,
-                    storedValue: translation.iconPreviewUrl ??
+                    storedValue:
+                        translation.iconPreviewUrl ??
                         (translation.icon.isEmpty ? null : translation.icon),
                     legacyFolder: 'boutiques/boutiques/icon',
                     decodeWidth: 72,

@@ -14,7 +14,8 @@ class DeleteOrderCommentRatingUseCase
 
   @override
   Future<Either<Failure, ResponseOnlyMessageModel>> call(
-      DeleteOrderCommentRatingParams params) {
+    DeleteOrderCommentRatingParams params,
+  ) {
     return repository.deleteOrderCommentRating(params.map);
   }
 }
@@ -22,8 +23,6 @@ class DeleteOrderCommentRatingUseCase
 class DeleteOrderCommentRatingParams {
   final String? commentId;
 
-  DeleteOrderCommentRatingParams({
-    this.commentId,
-  });
+  DeleteOrderCommentRatingParams({this.commentId});
   Map<String, dynamic> get map => {"id": commentId};
 }

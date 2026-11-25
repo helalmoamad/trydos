@@ -15,7 +15,8 @@ class SendErrorToMobileErrorLogUseCase
 
   @override
   Future<Either<Failure, bool>> call(
-      SendErrorToMobileErrorLogParams params) async {
+    SendErrorToMobileErrorLogParams params,
+  ) async {
     return repository.sendErrorToMobileErrorLog(params.map);
   }
 }
@@ -25,7 +26,5 @@ class SendErrorToMobileErrorLogParams {
 
   SendErrorToMobileErrorLogParams({required this.errorDescription});
 
-  Map<String, dynamic> get map => {
-        "error_description": errorDescription,
-      };
+  Map<String, dynamic> get map => {"error_description": errorDescription};
 }

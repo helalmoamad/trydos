@@ -13,11 +13,7 @@ class GetDeliveredOrdersResponseUseCase
   final HomeRepository repository;
 
   @override
-  Future<Either<Failure, DeliveredOrdersResponse>> call(
-    int productId,
-  ) async {
+  Future<Either<Failure, DeliveredOrdersResponse>> call(int productId) async {
     return repository.getDeliveredOrdersResponse(productId: productId);
   }
 }
-
-

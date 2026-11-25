@@ -152,28 +152,25 @@ class BoutiqueEditorBloc
       if (isClosed) return;
       if (!_shopUnchanged) return _closeForShopChange(emit);
 
-      result.fold(
-        (failure) => _emitLoadFailure(emit, failure),
-        (response) {
-          _log('load-create', 'success');
-          final BoutiqueForm form = emptyForm(languages);
-          emit(
-            state.copyWith(
-              loadStatus: BoutiqueEditorLoadStatus.ready,
-              languages: languages,
-              countries: response.lookups.countries,
-              availabilities: response.lookups.availabilities.isEmpty
-                  ? BoutiqueAvailability.all
-                  : response.lookups.availabilities,
-              form: form,
-              saved: form,
-              editing: true,
-              activeLanguage: languages.first.code,
-              formRevision: state.formRevision + 1,
-            ),
-          );
-        },
-      );
+      result.fold((failure) => _emitLoadFailure(emit, failure), (response) {
+        _log('load-create', 'success');
+        final BoutiqueForm form = emptyForm(languages);
+        emit(
+          state.copyWith(
+            loadStatus: BoutiqueEditorLoadStatus.ready,
+            languages: languages,
+            countries: response.lookups.countries,
+            availabilities: response.lookups.availabilities.isEmpty
+                ? BoutiqueAvailability.all
+                : response.lookups.availabilities,
+            form: form,
+            saved: form,
+            editing: true,
+            activeLanguage: languages.first.code,
+            formRevision: state.formRevision + 1,
+          ),
+        );
+      });
       return;
     }
 
@@ -555,7 +552,9 @@ class BoutiqueEditorBloc
     emit(
       state.copyWith(
         form: form.withTranslation(
-          t.copyWith(banners: List<BannerItem>.of(t.banners)..removeAt(event.index)),
+          t.copyWith(
+            banners: List<BannerItem>.of(t.banners)..removeAt(event.index),
+          ),
         ),
       ),
     );

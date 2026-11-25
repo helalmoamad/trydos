@@ -218,7 +218,6 @@ class UpdateShopInfoEvent extends DashBoardEvent {
   });
 }
 
-
 // ---------------------------------------------------------------------------
 // Locations — a shop's warehouses and pickup points
 //

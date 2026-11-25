@@ -118,7 +118,8 @@ class CommonUseRemoteDataSource {
             data: params['data'],
             extraHeaders: _ticketHeader(params['ticket']),
             response: ResponseValue<BulkUploadResponseModel>(
-              fromJson: (response) => BulkUploadResponseModel.fromJson(response),
+              fromJson: (response) =>
+                  BulkUploadResponseModel.fromJson(response),
             ),
           ),
           serverName: ServerName.mediaServer,
@@ -169,7 +170,8 @@ class CommonUseRemoteDataSource {
             data: params['data'],
             extraHeaders: _ticketHeader(params['ticket']),
             response: ResponseValue<UploadFileResponseModel>(
-              fromJson: (response) => UploadFileResponseModel.fromJson(response),
+              fromJson: (response) =>
+                  UploadFileResponseModel.fromJson(response),
             ),
           ),
           serverName: ServerName.mediaServer,

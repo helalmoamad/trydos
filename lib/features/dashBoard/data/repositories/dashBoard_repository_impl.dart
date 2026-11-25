@@ -305,7 +305,9 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   }
 
   @override
-  Future<Either<Failure, ShopLocationEditModel>> getShopLocationForEdit(int id) {
+  Future<Either<Failure, ShopLocationEditModel>> getShopLocationForEdit(
+    int id,
+  ) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getShopLocationForEdit(id),
     );
@@ -438,7 +440,8 @@ class DashBoardRepositoryImpl extends DashBoardRepository
   }
 
   @override
-  Future<Either<Failure, ReadOnlyMessageFromApiModel>> deleteSellerCommentReply({
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>>
+  deleteSellerCommentReply({
     required String sellerId,
     required String commentId,
   }) {

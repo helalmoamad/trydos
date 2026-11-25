@@ -36,7 +36,9 @@ class DashboardPermissionChecker {
         permissions.contains(DashBoardPermission.READ_BUTIKS.value) ||
         permissions.contains(DashBoardPermission.CREATE_BUTIKS.value) ||
         permissions.contains(DashBoardPermission.UPDATE_BUTIKS.value) ||
-        permissions.contains(DashBoardPermission.CHANGE_BOUTIQUE_STATUS.value) ||
+        permissions.contains(
+          DashBoardPermission.CHANGE_BOUTIQUE_STATUS.value,
+        ) ||
         permissions.contains(DashBoardPermission.DELETE_BUTIKS.value);
   }
 

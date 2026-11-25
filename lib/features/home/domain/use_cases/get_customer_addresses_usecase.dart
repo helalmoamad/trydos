@@ -13,7 +13,8 @@ class GetCustomerAddressesUseCase
   final HomeRepository repository;
   @override
   Future<Either<Failure, GetListOfCustomerAddressesInfoModel>> call(
-      NoParams params) async {
+    NoParams params,
+  ) async {
     return repository.getCustomerAddresses();
   }
 }

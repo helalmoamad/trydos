@@ -12,9 +12,7 @@ class CancelOrderUsecase extends UseCase<CancelOrderModel, CancelOrderParams> {
   CancelOrderUsecase(this.repository);
 
   @override
-  Future<Either<Failure, CancelOrderModel>> call(
-    CancelOrderParams params,
-  ) {
+  Future<Either<Failure, CancelOrderModel>> call(CancelOrderParams params) {
     return repository.cancelOrder(params.map);
   }
 }
@@ -22,11 +20,7 @@ class CancelOrderUsecase extends UseCase<CancelOrderModel, CancelOrderParams> {
 class CancelOrderParams {
   final String orderId;
 
-  CancelOrderParams({
-    required this.orderId,
-  });
+  CancelOrderParams({required this.orderId});
 
-  Map<String, dynamic> get map => {
-        "order_id": orderId,
-      };
+  Map<String, dynamic> get map => {"order_id": orderId};
 }

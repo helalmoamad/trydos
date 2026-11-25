@@ -8,15 +8,20 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class SubscribeTopicFornotificationUseCase extends UseCase<
-    FirebaseSettingForNotificationModel, SubscribeTopicForNotificationParams> {
+class SubscribeTopicFornotificationUseCase
+    extends
+        UseCase<
+          FirebaseSettingForNotificationModel,
+          SubscribeTopicForNotificationParams
+        > {
   final HomeRepository repository;
 
   SubscribeTopicFornotificationUseCase(this.repository);
 
   @override
   Future<Either<Failure, FirebaseSettingForNotificationModel>> call(
-      SubscribeTopicForNotificationParams params) {
+    SubscribeTopicForNotificationParams params,
+  ) {
     return repository.subscribeTopicFornotification(params.map);
   }
 }

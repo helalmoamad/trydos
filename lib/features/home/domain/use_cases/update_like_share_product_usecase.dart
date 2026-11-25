@@ -8,25 +8,26 @@ import 'package:trydos/features/home/domain/repositories/home_repository.dart';
 class UpdateLikeSocialSharedProductParams {
   final String productId;
 
-  UpdateLikeSocialSharedProductParams({
-    required this.productId,
-  });
+  UpdateLikeSocialSharedProductParams({required this.productId});
 
-  Map<String, dynamic> toMap() => {
-        'pid': productId,
-      };
+  Map<String, dynamic> toMap() => {'pid': productId};
 }
 
 @injectable
-class UpdateLikeSocialSharedProductsUsecase extends UseCase<
-    ReadOnlyMessageFromApiModel, UpdateLikeSocialSharedProductParams> {
+class UpdateLikeSocialSharedProductsUsecase
+    extends
+        UseCase<
+          ReadOnlyMessageFromApiModel,
+          UpdateLikeSocialSharedProductParams
+        > {
   final HomeRepository repository;
 
   UpdateLikeSocialSharedProductsUsecase(this.repository);
 
   @override
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> call(
-      UpdateLikeSocialSharedProductParams params) {
+    UpdateLikeSocialSharedProductParams params,
+  ) {
     return repository.updateLikeSocialSharedProducts(params.toMap());
   }
 }

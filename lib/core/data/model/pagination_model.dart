@@ -33,13 +33,14 @@ class PaginationModel<T> {
   final String? offset;
   final bool hasReachedMax;
 
-  PaginationModel<T> copyWith(
-      {List<T>? items,
-      PaginationStatus? paginationStatus,
-      int? page,
-      String? offset,
-      int? total,
-      bool? hasReachedMax}) {
+  PaginationModel<T> copyWith({
+    List<T>? items,
+    PaginationStatus? paginationStatus,
+    int? page,
+    String? offset,
+    int? total,
+    bool? hasReachedMax,
+  }) {
     return PaginationModel(
       items: items ?? this.items,
       offset: offset ?? this.offset,
@@ -51,8 +52,9 @@ class PaginationModel<T> {
   }
 
   factory PaginationModel.fromJson(
-          Map<String, dynamic> json, T Function(Object? json) fromJsonT) =>
-      _$PaginationModelFromJson<T>(json, fromJsonT);
+    Map<String, dynamic> json,
+    T Function(Object? json) fromJsonT,
+  ) => _$PaginationModelFromJson<T>(json, fromJsonT);
 
   Map<String, dynamic> toJson(Object Function(T) toJsonT) =>
       _$PaginationModelToJson<T>(this, toJsonT);

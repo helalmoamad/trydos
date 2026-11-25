@@ -15,7 +15,8 @@ class StoreReturnRequestUseCase
 
   @override
   Future<Either<Failure, CreateReturnReqestModel>> call(
-      ReturnRequestParams params) {
+    ReturnRequestParams params,
+  ) {
     return _homeRepository.storeReturnRequest(params.map);
   }
 }
@@ -31,8 +32,8 @@ class ReturnRequestParams {
     required this.isDraft,
   });
   Map<String, dynamic> get map => {
-        "order_id": orderId,
-        "is_for_exchange": isForExchange,
-        "is_draft": isDraft,
-      };
+    "order_id": orderId,
+    "is_for_exchange": isForExchange,
+    "is_draft": isDraft,
+  };
 }

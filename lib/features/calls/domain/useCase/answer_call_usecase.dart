@@ -14,12 +14,4 @@ class AnswerCallUseCase extends UseCase<bool, String> {
   Future<Either<Failure, bool>> call(String messageId) {
     return repository.answerCall(messageId);
   }
-
-
-
-
-
-
 }
-
-

@@ -8,11 +8,8 @@ abstract class ThemeState<T extends StatefulWidget> extends State<T> {
 
 // ignore: must_be_immutable
 abstract class ThemeStateless extends StatelessWidget {
-  ThemeStateless({
-    Key? key,
-    required this.child,
-    this.onBuild,
-  }) : super(key: key);
+  ThemeStateless({Key? key, required this.child, this.onBuild})
+    : super(key: key);
 
   ColorScheme? colorScheme;
   ThemeData? theme;

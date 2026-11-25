@@ -1,42 +1,40 @@
 import 'package:form_field_validator/form_field_validator.dart';
 
+TextFieldValidator requiredValidator({
+  String? errorMessage,
+  bool trim = true,
+}) =>
+    RequiredValidator(errorText: errorMessage ?? 'هذا الحقل مطلوب', trim: trim);
 
-TextFieldValidator requiredValidator(
-        {String? errorMessage, bool trim = true}) =>
-    RequiredValidator(
-      errorText: errorMessage ?? 'هذا الحقل مطلوب',
-      trim: trim,
-    );
-
-MultiValidator emailValidator( {String? errorMessage, bool trim = false}) =>
+MultiValidator emailValidator({String? errorMessage, bool trim = false}) =>
     MultiValidator([
       requiredValidator(
-          errorMessage: errorMessage ?? 'هذا الحقل مطلوب', trim: trim),
+        errorMessage: errorMessage ?? 'هذا الحقل مطلوب',
+        trim: trim,
+      ),
       EmailValidator(
-          errorText: errorMessage ?? 'الرجاء ادخال ايميل صحيح', trim: trim),
+        errorText: errorMessage ?? 'الرجاء ادخال ايميل صحيح',
+        trim: trim,
+      ),
     ]);
 
 MultiOptionalValidator userNameOrEmailValidator({bool trim = false}) =>
-    MultiOptionalValidator(
-      [
-        userNameValidator(errorMessage: '', trim: trim),
-        emailValidator(errorMessage: '', trim: trim),
-      ],
-      "",
-    );
-
+    MultiOptionalValidator([
+      userNameValidator(errorMessage: '', trim: trim),
+      emailValidator(errorMessage: '', trim: trim),
+    ], "");
 
 MultiValidator cvvNumberValidator() => MultiValidator([
-      requiredValidator(errorMessage: 'هذا الحقل مطلوب', trim: false),
-      LengthRangeValidator(
-          min: 3, max: 4, errorText: 'ادخل 3 محارف على الأقل.'),
-    ]);
+  requiredValidator(errorMessage: 'هذا الحقل مطلوب', trim: false),
+  LengthRangeValidator(min: 3, max: 4, errorText: 'ادخل 3 محارف على الأقل.'),
+]);
 
 MultiValidator userNameValidator({String? errorMessage, bool trim = false}) =>
     MultiValidator([
       requiredValidator(
-          errorMessage: errorMessage ?? 'msg_error_username_validate',
-          trim: trim),
+        errorMessage: errorMessage ?? 'msg_error_username_validate',
+        trim: trim,
+      ),
       PatternValidator(
         r'^[A-Za-z](?=.*?[A-Za-z0-9_]).{3,32}$',
         errorText: errorMessage ?? '',
@@ -44,22 +42,25 @@ MultiValidator userNameValidator({String? errorMessage, bool trim = false}) =>
       ),
     ]);
 
-MultiValidator fullNameValidator() => MultiValidator([
-      requiredValidator(),
-    ]);
+MultiValidator fullNameValidator() => MultiValidator([requiredValidator()]);
 
 TextFieldValidator passwordValidator() =>
     LengthRangeValidator(min: 8, max: 20, errorText: 'ادخل 8 محارف على الأقل.');
 
 TextFieldValidator phoneValidator(int min, int max) => LengthRangeValidator(
-    min: min, max: max, errorText: 'enter a valid phone number');
+  min: min,
+  max: max,
+  errorText: 'enter a valid phone number',
+);
 
-TextFieldValidator minValidator([int? min]) => MinLengthValidator(min ?? 2,
-    errorText: 'ادخل ${min ?? 2} محارف على الأقل.');
+TextFieldValidator minValidator([int? min]) => MinLengthValidator(
+  min ?? 2,
+  errorText: 'ادخل ${min ?? 2} محارف على الأقل.',
+);
 
 class RequiredValidator extends TextFieldValidator {
   RequiredValidator({required String errorText, this.trim = false})
-      : super(errorText);
+    : super(errorText);
   final bool trim;
 
   @override
@@ -76,7 +77,6 @@ class RequiredValidator extends TextFieldValidator {
   }
 }
 
-
 class PatternValidator extends TextFieldValidator {
   PatternValidator(
     this.pattern, {
@@ -91,15 +91,15 @@ class PatternValidator extends TextFieldValidator {
 
   @override
   bool isValid(String? value) => hasMatch(
-        pattern.toString(),
-        trim ? value!.trim() : value!,
-        caseSensitive: caseSensitive,
-      );
+    pattern.toString(),
+    trim ? value!.trim() : value!,
+    caseSensitive: caseSensitive,
+  );
 }
 
 class EmailValidator extends TextFieldValidator {
   EmailValidator({required String errorText, this.trim = false})
-      : super(errorText);
+    : super(errorText);
 
   final bool trim;
 

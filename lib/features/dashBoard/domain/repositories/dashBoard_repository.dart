@@ -103,7 +103,9 @@ abstract class DashBoardRepository {
   // The writes take the shop id captured when the action started; it travels
   // on the request itself. The read does not — the bloc re-checks on arrival.
 
-  Future<Either<Failure, GetShopLocationsModel>> getShopLocations({int? status});
+  Future<Either<Failure, GetShopLocationsModel>> getShopLocations({
+    int? status,
+  });
 
   Future<Either<Failure, LocationFormLookupsModel>> getLocationFormCountries();
 
@@ -176,7 +178,8 @@ abstract class DashBoardRepository {
     required String replyText,
   });
 
-  Future<Either<Failure, ReadOnlyMessageFromApiModel>> deleteSellerCommentReply({
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>>
+  deleteSellerCommentReply({
     required String sellerId,
     required String commentId,
   });

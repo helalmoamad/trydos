@@ -16,7 +16,8 @@ class DeleteCustomerAddressUseCase
 
   @override
   Future<Either<Failure, ResponseOnlyMessageModel>> call(
-      DeleteCustomerAddressParams params) {
+    DeleteCustomerAddressParams params,
+  ) {
     return repository.deleteCustomerAddress(params.map);
   }
 }
@@ -25,7 +26,5 @@ class DeleteCustomerAddressParams {
   final int addressId;
 
   DeleteCustomerAddressParams({required this.addressId});
-  Map<String, dynamic> get map => {
-        "address_id": addressId,
-      };
+  Map<String, dynamic> get map => {"address_id": addressId};
 }

@@ -257,7 +257,8 @@ class UserOrder {
     couponCode: couponCode ?? this.couponCode,
     shippingCost: shippingCost ?? this.shippingCost,
     details: details ?? this.details,
-    availableOrderStatusChange: availableOrderStatusChange ?? this.availableOrderStatusChange,
+    availableOrderStatusChange:
+        availableOrderStatusChange ?? this.availableOrderStatusChange,
   );
 
   factory UserOrder.fromJson(Map<String, dynamic> json) => UserOrder(
@@ -280,15 +281,13 @@ class UserOrder {
     couponCode: json["coupon_code"],
     shippingCost: double.tryParse(json["shipping_cost"].toString()),
     details: json["details"] == null
-    ? []
-    : List<Detail>.from(
-        json["details"].map(
-          (x) => Detail.fromJson(x),
-        ),
-      ),
+        ? []
+        : List<Detail>.from(json["details"].map((x) => Detail.fromJson(x))),
     availableOrderStatusChange: json["available_order_status_change"] == null
         ? []
-        : List<String>.from(json["available_order_status_change"]!.map((x) => x)),
+        : List<String>.from(
+            json["available_order_status_change"]!.map((x) => x),
+          ),
   );
 
   Map<String, dynamic> toJson() => {
@@ -312,15 +311,12 @@ class UserOrder {
     "shipping_cost": shippingCost,
     "details": details == null
         ? []
-        : List<dynamic>.from(
-            details!.map((x) => x.toJson()),
-          ),
+        : List<dynamic>.from(details!.map((x) => x.toJson())),
     "available_order_status_change": availableOrderStatusChange == null
         ? []
         : List<dynamic>.from(availableOrderStatusChange!.map((x) => x)),
   };
 }
-
 
 enum Type { EXTERNAL_SHIPPING_COMPANY, PRODUCT_WISE }
 
@@ -328,8 +324,6 @@ final typeValues = EnumValues({
   "external_shipping_company": Type.EXTERNAL_SHIPPING_COMPANY,
   "product_wise": Type.PRODUCT_WISE,
 });
-
-
 
 class Detail {
   final int? id;

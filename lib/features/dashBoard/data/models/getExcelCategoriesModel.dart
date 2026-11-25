@@ -53,12 +53,10 @@ class GetExcelCategoriesModel {
 
       data: rawData is List
           ? rawData
-              .map(
-                (e) => ExcelCategories.fromJson(
-                  Map<String, dynamic>.from(e),
-                ),
-              )
-              .toList()
+                .map(
+                  (e) => ExcelCategories.fromJson(Map<String, dynamic>.from(e)),
+                )
+                .toList()
           : [],
     );
   }
@@ -81,12 +79,7 @@ class ExcelCategories {
   final String? displayName;
   final int? level;
 
-  ExcelCategories({
-    this.id,
-    this.name,
-    this.displayName,
-    this.level,
-  });
+  ExcelCategories({this.id, this.name, this.displayName, this.level});
 
   ExcelCategories copyWith({
     int? id,
@@ -104,15 +97,12 @@ class ExcelCategories {
 
   factory ExcelCategories.fromJson(Map<String, dynamic> json) {
     return ExcelCategories(
-      id: json['id'] is int
-          ? json['id']
-          : int.tryParse('${json['id']}'),
+      id: json['id'] is int ? json['id'] : int.tryParse('${json['id']}'),
 
       name: json['name']?.toString(),
 
       displayName:
-          json['display_name']?.toString() ??
-          json['title']?.toString(),
+          json['display_name']?.toString() ?? json['title']?.toString(),
 
       level: json['level'] is int
           ? json['level']

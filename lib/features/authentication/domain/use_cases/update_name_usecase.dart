@@ -19,11 +19,7 @@ class UpdateNameUseCase implements UseCase<bool, UpdateNameParams> {
 class UpdateNameParams {
   String? name;
 
-  UpdateNameParams({
-    this.name,
-  });
+  UpdateNameParams({this.name});
 
-  Map<String, dynamic> get map => {
-        "name": name,
-      };
+  Map<String, dynamic> get map => {"name": name};
 }

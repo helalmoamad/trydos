@@ -12,13 +12,16 @@ class GetProductsParams {
 }
 
 @injectable
-class GetProductsUseCase extends UseCase<GetSellerProductsModel, GetProductsParams> {
+class GetProductsUseCase
+    extends UseCase<GetSellerProductsModel, GetProductsParams> {
   final DashBoardRepository repository;
 
   GetProductsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, GetSellerProductsModel>> call(GetProductsParams params) {
+  Future<Either<Failure, GetSellerProductsModel>> call(
+    GetProductsParams params,
+  ) {
     return repository.getProducts(page: params.page);
   }
 }

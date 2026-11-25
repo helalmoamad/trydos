@@ -1,4 +1,3 @@
-
 /*class FiltersLoadingListPage extends StatefulWidget {
   const FiltersLoadingListPage({super.key, required this.countOfListInPage,
   required this.currentColor,

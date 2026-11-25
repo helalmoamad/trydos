@@ -41,9 +41,7 @@ class DeliveredOrdersResponse {
 class DeliveredOrdersData {
   final List<DeliveredOrder> deliveredOrders;
 
-  DeliveredOrdersData({
-    required this.deliveredOrders,
-  });
+  DeliveredOrdersData({required this.deliveredOrders});
 
   factory DeliveredOrdersData.fromJson(Map<String, dynamic> json) {
     return DeliveredOrdersData(
@@ -64,10 +62,7 @@ class DeliveredOrder {
   final int daysCount;
   final int ordersCount;
 
-  DeliveredOrder({
-    required this.daysCount,
-    required this.ordersCount,
-  });
+  DeliveredOrder({required this.daysCount, required this.ordersCount});
 
   factory DeliveredOrder.fromJson(Map<String, dynamic> json) {
     return DeliveredOrder(
@@ -77,9 +72,6 @@ class DeliveredOrder {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'days_count': daysCount,
-      'orders_count': ordersCount,
-    };
+    return {'days_count': daysCount, 'orders_count': ordersCount};
   }
 }

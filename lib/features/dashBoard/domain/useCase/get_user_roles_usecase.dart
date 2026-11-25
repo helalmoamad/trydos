@@ -7,7 +7,8 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class GetUserRolesUseCase extends UseCase<GetUserRolesModel, GetUserRolesParams> {
+class GetUserRolesUseCase
+    extends UseCase<GetUserRolesModel, GetUserRolesParams> {
   final DashBoardRepository repository;
 
   GetUserRolesUseCase(this.repository);

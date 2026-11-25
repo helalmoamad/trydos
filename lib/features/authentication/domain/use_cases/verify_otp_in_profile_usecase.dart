@@ -16,7 +16,8 @@ class VerifyOtpInProfileUseCase
 
   @override
   Future<Either<Failure, VerifyOtpInProfileResponseModel>> call(
-      VerifyOtpInProfileParams params) async {
+    VerifyOtpInProfileParams params,
+  ) async {
     return repository.verifyOtpInProfile(params.map);
   }
 }
@@ -25,12 +26,9 @@ class VerifyOtpInProfileParams {
   String verificationId;
   String otp;
 
-  VerifyOtpInProfileParams({
-    required this.verificationId,
-    required this.otp,
-  });
+  VerifyOtpInProfileParams({required this.verificationId, required this.otp});
   Map<String, dynamic> get map => {
-        "otp": otp,
-        "verificationId": verificationId,
-      };
+    "otp": otp,
+    "verificationId": verificationId,
+  };
 }

@@ -1,9 +1,10 @@
-
 import 'dart:convert';
 
-CreateUserResponseModel createUserResponseModelFromJson(String str) => CreateUserResponseModel.fromJson(json.decode(str));
+CreateUserResponseModel createUserResponseModelFromJson(String str) =>
+    CreateUserResponseModel.fromJson(json.decode(str));
 
-String createUserResponseModelToJson(CreateUserResponseModel data) => json.encode(data.toJson());
+String createUserResponseModelToJson(CreateUserResponseModel data) =>
+    json.encode(data.toJson());
 
 class CreateUserResponseModel {
   String mobilePhone;
@@ -22,14 +23,19 @@ class CreateUserResponseModel {
     required this.id,
   });
 
-  factory CreateUserResponseModel.fromJson(Map<String, dynamic> json) => CreateUserResponseModel(
-    mobilePhone: json["mobile_phone"],
-    name: json["name"],
-    username: json["username"],
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    id: json["id"],
-  );
+  factory CreateUserResponseModel.fromJson(Map<String, dynamic> json) =>
+      CreateUserResponseModel(
+        mobilePhone: json["mobile_phone"],
+        name: json["name"],
+        username: json["username"],
+        updatedAt: json["updated_at"] == null
+            ? null
+            : DateTime.parse(json["updated_at"]),
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+        id: json["id"],
+      );
 
   Map<String, dynamic> toJson() => {
     "mobile_phone": mobilePhone,

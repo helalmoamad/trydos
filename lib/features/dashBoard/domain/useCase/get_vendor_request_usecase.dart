@@ -6,8 +6,7 @@ import 'package:trydos/features/dashBoard/data/models/get_vendor_request_model.d
 import 'package:trydos/features/dashBoard/domain/repositories/dashBoard_repository.dart';
 
 @injectable
-class GetVendorRequestUseCase
-    extends UseCase<GetVendorRequestModel, NoParams> {
+class GetVendorRequestUseCase extends UseCase<GetVendorRequestModel, NoParams> {
   final DashBoardRepository repository;
 
   GetVendorRequestUseCase(this.repository);

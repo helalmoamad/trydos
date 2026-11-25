@@ -8,33 +8,27 @@ import '../../../../common/test_utils/widgets_keys.dart';
 import 'edited_spinkit_three_bounce.dart';
 
 class TrydosLoader extends StatelessWidget {
-  TrydosLoader({
-    Key? key,
-    double? size,
-    Color? color,
-  })  : _widget = _TripperLoaderCircle(
-          size: size,
-          color: color,
-          key: TestVariables.kTestMode
-              ? const Key(WidgetsKeys.loadingAfterSearchKey)
-              : null,
-        ),
-        super(key: key);
+  TrydosLoader({Key? key, double? size, Color? color})
+    : _widget = _TripperLoaderCircle(
+        size: size,
+        color: color,
+        key: TestVariables.kTestMode
+            ? const Key(WidgetsKeys.loadingAfterSearchKey)
+            : null,
+      ),
+      super(key: key);
 
-  TrydosLoader.spinKitThreeBounce({
-    Key? key,
-    double? size,
-    Color? color,
-  })  : _widget = _TripperLoaderThreeBounce(size: size, color: color, key: key),
-        super(key: key);
+  TrydosLoader.spinKitThreeBounce({Key? key, double? size, Color? color})
+    : _widget = _TripperLoaderThreeBounce(size: size, color: color, key: key),
+      super(key: key);
 
-  TrydosLoader.spinKitThreeBounceEditing({
-    Key? key,
-    double? size,
-    Color? color,
-  })  : _widget = _TripperLoaderThreeBounceEditing(
-            size: size, color: color, key: key),
-        super(key: key);
+  TrydosLoader.spinKitThreeBounceEditing({Key? key, double? size, Color? color})
+    : _widget = _TripperLoaderThreeBounceEditing(
+        size: size,
+        color: color,
+        key: key,
+      ),
+      super(key: key);
 
   final Widget _widget;
 
@@ -45,11 +39,8 @@ class TrydosLoader extends StatelessWidget {
 }
 
 class _TripperLoaderCircle extends StatelessWidget {
-  const _TripperLoaderCircle({
-    Key? key,
-    this.size,
-    this.color,
-  }) : super(key: key);
+  const _TripperLoaderCircle({Key? key, this.size, this.color})
+    : super(key: key);
 
   final double? size;
   final Color? color;
@@ -64,11 +55,8 @@ class _TripperLoaderCircle extends StatelessWidget {
 }
 
 class _TripperLoaderThreeBounce extends StatelessWidget {
-  const _TripperLoaderThreeBounce({
-    Key? key,
-    this.size,
-    this.color,
-  }) : super(key: key);
+  const _TripperLoaderThreeBounce({Key? key, this.size, this.color})
+    : super(key: key);
 
   final double? size;
   final Color? color;
@@ -83,11 +71,8 @@ class _TripperLoaderThreeBounce extends StatelessWidget {
 }
 
 class _TripperLoaderThreeBounceEditing extends StatelessWidget {
-  const _TripperLoaderThreeBounceEditing({
-    Key? key,
-    this.size,
-    this.color,
-  }) : super(key: key);
+  const _TripperLoaderThreeBounceEditing({Key? key, this.size, this.color})
+    : super(key: key);
 
   final double? size;
   final Color? color;

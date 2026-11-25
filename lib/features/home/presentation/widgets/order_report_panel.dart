@@ -215,7 +215,8 @@ class _OrderReportPanelState extends State<OrderReportPanel> {
       listenWhen: (p, c) =>
           p.reportOrderProductStatus != c.reportOrderProductStatus,
       listener: (context, state) {
-        if (state.reportOrderProductStatus == ReportOrderProductStatus.success) {
+        if (state.reportOrderProductStatus ==
+            ReportOrderProductStatus.success) {
           widget.onReported();
           widget.onClose();
         }

@@ -84,9 +84,8 @@ class _CopperImageState extends State<CopperImage> {
         // then land outside the temp directory. Keep it only when it looks like
         // a real extension.
         final String rawFormat = widget.image.path.split('.').last;
-        final String fileFormat = RegExp(
-          r'^[A-Za-z0-9]{1,5}$',
-        ).hasMatch(rawFormat)
+        final String fileFormat =
+            RegExp(r'^[A-Za-z0-9]{1,5}$').hasMatch(rawFormat)
             ? rawFormat
             : 'png';
         int currentUnix = DateTime.now().millisecondsSinceEpoch;

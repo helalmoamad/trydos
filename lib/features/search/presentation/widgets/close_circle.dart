@@ -3,12 +3,13 @@ import 'package:flutter_svg/svg.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 
 class CloseCircle extends StatelessWidget {
-  const CloseCircle(
-      {super.key,
-      required this.width,
-      required this.height,
-      required this.borderColor,
-      required this.closeSvgColor});
+  const CloseCircle({
+    super.key,
+    required this.width,
+    required this.height,
+    required this.borderColor,
+    required this.closeSvgColor,
+  });
 
   final double width;
   final double height;
@@ -21,9 +22,10 @@ class CloseCircle extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: const Color(0xffF8F8F8),
-          border: Border.all(width: 0.5, color: borderColor)),
+        shape: BoxShape.circle,
+        color: const Color(0xffF8F8F8),
+        border: Border.all(width: 0.5, color: borderColor),
+      ),
       child: Center(
         child: SvgPicture.asset(
           AppAssets.closeSvg,

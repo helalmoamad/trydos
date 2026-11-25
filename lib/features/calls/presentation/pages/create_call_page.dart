@@ -53,7 +53,6 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
 
   @override
   Widget build(BuildContext context) {
-
     GetIt.I<CallsBloc>().add(InitResponseRejectVideoCallEvent());
 
     return Scaffold(

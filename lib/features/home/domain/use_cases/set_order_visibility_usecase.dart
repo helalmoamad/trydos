@@ -5,7 +5,8 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class SetOrderVisibilityUseCase extends UseCase<bool, SetOrderVisibilityParams> {
+class SetOrderVisibilityUseCase
+    extends UseCase<bool, SetOrderVisibilityParams> {
   final HomeRepository repository;
 
   SetOrderVisibilityUseCase(this.repository);
@@ -42,7 +43,10 @@ class SetOrderDetailVisibilityParams {
   final String detailId;
   final bool isHidden;
 
-  SetOrderDetailVisibilityParams({required this.detailId, this.isHidden = true});
+  SetOrderDetailVisibilityParams({
+    required this.detailId,
+    this.isHidden = true,
+  });
 
   Map<String, dynamic> get map => {"is_hidden": isHidden};
 }

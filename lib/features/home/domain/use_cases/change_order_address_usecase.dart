@@ -30,7 +30,7 @@ class ChangeOrderAddressParams {
   });
 
   Map<String, dynamic> get map => {
-        "order_group_id": orderGroupId,
-        "new_shipping_address_id": newShippingAddressId,
-      };
+    "order_group_id": orderGroupId,
+    "new_shipping_address_id": newShippingAddressId,
+  };
 }

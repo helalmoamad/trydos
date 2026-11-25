@@ -14,7 +14,8 @@ class RegisterGuestUseCase
 
   @override
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> call(
-      RegisterGuestParams params) async {
+    RegisterGuestParams params,
+  ) async {
     return repository.registerGuest(params.map);
   }
 }
@@ -22,13 +23,9 @@ class RegisterGuestUseCase
 class RegisterGuestParams {
   String deviceId;
   String? oldGuestUserId;
-  RegisterGuestParams({
-    required this.deviceId,
-    this.oldGuestUserId,
-  });
-  Map<String, dynamic> get map => {
-        "device_id": deviceId,
-        "old_guest_user_id": oldGuestUserId,
-      }..removeWhere(
-          (key, value) => value == null || value == "null" || value == "");
+  RegisterGuestParams({required this.deviceId, this.oldGuestUserId});
+  Map<String, dynamic> get map =>
+      {"device_id": deviceId, "old_guest_user_id": oldGuestUserId}..removeWhere(
+        (key, value) => value == null || value == "null" || value == "",
+      );
 }

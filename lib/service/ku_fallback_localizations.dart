@@ -20,8 +20,8 @@ class KuMaterialLocalizationsDelegate
 
   @override
   bool shouldReload(
-          covariant LocalizationsDelegate<MaterialLocalizations> old) =>
-      false;
+    covariant LocalizationsDelegate<MaterialLocalizations> old,
+  ) => false;
 }
 
 class KuWidgetsLocalizationsDelegate
@@ -39,8 +39,8 @@ class KuWidgetsLocalizationsDelegate
 
   @override
   bool shouldReload(
-          covariant LocalizationsDelegate<WidgetsLocalizations> old) =>
-      false;
+    covariant LocalizationsDelegate<WidgetsLocalizations> old,
+  ) => false;
 }
 
 class KuCupertinoLocalizationsDelegate
@@ -57,6 +57,6 @@ class KuCupertinoLocalizationsDelegate
 
   @override
   bool shouldReload(
-          covariant LocalizationsDelegate<CupertinoLocalizations> old) =>
-      false;
+    covariant LocalizationsDelegate<CupertinoLocalizations> old,
+  ) => false;
 }

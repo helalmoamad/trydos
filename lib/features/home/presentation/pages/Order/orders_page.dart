@@ -809,11 +809,7 @@ class _HiddenOrdersSheetState extends State<_HiddenOrdersSheet> {
             ),
           ),
           SizedBox(height: 10.h),
-          Container(
-            width: 1.sw,
-            height: 0.5,
-            color: const Color(0xffC4C2C2),
-          ),
+          Container(width: 1.sw, height: 0.5, color: const Color(0xffC4C2C2)),
           SizedBox(height: 16.h),
           BlocConsumer<OrderBloc, OrderState>(
             bloc: widget.orderBloc,
@@ -827,9 +823,7 @@ class _HiddenOrdersSheetState extends State<_HiddenOrdersSheet> {
                 final navigator = Navigator.of(context);
                 navigator.pop();
                 navigator.push(
-                  MaterialPageRoute(
-                    builder: (_) => const HiddenOrdersPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const HiddenOrdersPage()),
                 );
               } else if (state.getHiddenOrdersStatus ==
                   GetHiddenOrdersStatus.failure) {
@@ -837,7 +831,8 @@ class _HiddenOrdersSheetState extends State<_HiddenOrdersSheet> {
               }
             },
             builder: (context, state) {
-              final bool loading = _requested &&
+              final bool loading =
+                  _requested &&
                   state.getHiddenOrdersStatus == GetHiddenOrdersStatus.loading;
               final Widget tile = _buildTileContent();
               return Padding(

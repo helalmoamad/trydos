@@ -20,10 +20,9 @@ class DeleteMessageUseCase extends UseCase<bool, DeleteMessageParams> {
 class DeleteMessageParams {
   final String messageId;
   final int deleteFromAll;
-  DeleteMessageParams({
-    required this.deleteFromAll,
-    required this.messageId,
-  });
-  Map<String, dynamic> get map =>
-      {"id": messageId, "delete_for_all": deleteFromAll};
+  DeleteMessageParams({required this.deleteFromAll, required this.messageId});
+  Map<String, dynamic> get map => {
+    "id": messageId,
+    "delete_for_all": deleteFromAll,
+  };
 }

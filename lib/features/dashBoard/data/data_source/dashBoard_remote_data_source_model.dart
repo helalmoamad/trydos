@@ -518,7 +518,7 @@ class DashBoardRemoteDataSource {
   //   return parseMainCategoriesInBackground(raw);
   // }
 
-   Future<GetGalleryImagesModel> getGalleryImages({
+  Future<GetGalleryImagesModel> getGalleryImages({
     int page = 1,
     int perPage = 20,
     String? search,
@@ -995,7 +995,8 @@ class DashBoardRemoteDataSource {
         DeleteClient<ReadOnlyMessageFromApiModel>(
           serverName: ServerName.dashBoard,
           requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
-            endpoint: DashBoardEndPoints.getGalleryImagesEP, // نفس المسار — DELETE بجسم { ids }
+            endpoint: DashBoardEndPoints
+                .getGalleryImagesEP, // نفس المسار — DELETE بجسم { ids }
             data: {'ids': ids},
             response: ResponseValue<ReadOnlyMessageFromApiModel>(
               fromJson: (response) =>

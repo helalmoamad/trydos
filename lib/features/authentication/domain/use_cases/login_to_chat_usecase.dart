@@ -34,9 +34,9 @@ class LoginToChatParams {
   });
 
   Map<String, dynamic> get map => {
-        "mobile_phone": mobilePhone,
-        "otp_id_token": otpIdToken,
-        "name": name,
-        "original_user_id": originalUserId,
-      };
+    "mobile_phone": mobilePhone,
+    "otp_id_token": otpIdToken,
+    "name": name,
+    "original_user_id": originalUserId,
+  };
 }

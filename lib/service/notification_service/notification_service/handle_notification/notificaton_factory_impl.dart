@@ -4,7 +4,6 @@ import 'i_notification_factory.dart';
 import 'notification_type.dart';
 
 class NotificationFactoryImpl extends INotificationFactory {
-
   final typesNotification = <NotificationTypeName, NotificationType>{
     NotificationTypeName.delivery: DeliveryNotification(),
   };

@@ -34,8 +34,8 @@ class AnimatedBar extends StatelessWidget {
                     _buildContainer(
                       double.infinity,
                       position <
-                              state.currentStoryInEachCollection[
-                                  collectionIndex]!
+                              state
+                                  .currentStoryInEachCollection[collectionIndex]!
                           ? Colors.white
                           // ignore: deprecated_member_use
                           : Colors.white.withOpacity(0.5),
@@ -69,10 +69,7 @@ Container _buildContainer(double width, Color color) {
     width: width,
     decoration: BoxDecoration(
       color: color,
-      border: Border.all(
-        color: Colors.black26,
-        width: 0.8,
-      ),
+      border: Border.all(color: Colors.black26, width: 0.8),
       borderRadius: BorderRadius.circular(3.0),
     ),
   );

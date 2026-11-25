@@ -37,13 +37,13 @@ class GetVendorRequestModel {
   }
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class VendorRequestData {
@@ -105,32 +105,33 @@ class VendorRequestData {
       documents: json["documents"] == null
           ? null
           : List<VendorDocument>.from(
-              json["documents"].map((x) => VendorDocument.fromJson(x))),
+              json["documents"].map((x) => VendorDocument.fromJson(x)),
+            ),
       status: json["status"],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "l_name": lName,
-        "email": email,
-        "phone": phone,
-        "currency_code": currencyCode,
-        "language_code": languageCode,
-        "country_iso": countryIso,
-        "shop_name": shopName,
-        "shop_address": shopAddress,
-        "location_country_iso": locationCountryIso,
-        "location_name": locationName,
-        "location_address": locationAddress,
-        "latitude": latitude,
-        "longitude": longitude,
-        "documents": documents == null
-            ? null
-            : List<dynamic>.from(documents!.map((x) => x.toJson())),
-        "status": status,
-      };
+    "id": id,
+    "name": name,
+    "l_name": lName,
+    "email": email,
+    "phone": phone,
+    "currency_code": currencyCode,
+    "language_code": languageCode,
+    "country_iso": countryIso,
+    "shop_name": shopName,
+    "shop_address": shopAddress,
+    "location_country_iso": locationCountryIso,
+    "location_name": locationName,
+    "location_address": locationAddress,
+    "latitude": latitude,
+    "longitude": longitude,
+    "documents": documents == null
+        ? null
+        : List<dynamic>.from(documents!.map((x) => x.toJson())),
+    "status": status,
+  };
 }
 
 class VendorDocument {
@@ -159,10 +160,10 @@ class VendorDocument {
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "vendor_request_id": vendorRequestId,
-        "type": type,
-        "path": path,
-        "url": url,
-      };
+    "id": id,
+    "vendor_request_id": vendorRequestId,
+    "type": type,
+    "path": path,
+    "url": url,
+  };
 }

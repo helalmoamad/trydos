@@ -49,13 +49,13 @@ class GetUserNotificationsModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'isSuccessful': isSuccessful,
-        'hasContent': hasContent,
-        'code': code,
-        'message': message,
-        'detailed_error': detailedError,
-        'data': data?.toJson(),
-      };
+    'isSuccessful': isSuccessful,
+    'hasContent': hasContent,
+    'code': code,
+    'message': message,
+    'detailed_error': detailedError,
+    'data': data?.toJson(),
+  };
 }
 
 class GetUserNotificationsDataModel {
@@ -81,8 +81,8 @@ class GetUserNotificationsDataModel {
       notifications: json['data'] == null
           ? []
           : (json['data'] as List)
-              .map((e) => NotificationItemModel.fromJson(e))
-              .toList(),
+                .map((e) => NotificationItemModel.fromJson(e))
+                .toList(),
       firstPageUrl: json['first_page_url'] ?? '',
       from: json['from'] ?? 0,
       lastPage: json['last_page'] ?? 0,
@@ -109,13 +109,13 @@ class GetUserNotificationsDataModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'current_page': currentPage,
-        'data': notifications?.map((e) => e.toJson()).toList(),
-        'first_page_url': firstPageUrl,
-        'from': from,
-        'last_page': lastPage,
-        'last_page_url': lastPageUrl,
-      };
+    'current_page': currentPage,
+    'data': notifications?.map((e) => e.toJson()).toList(),
+    'first_page_url': firstPageUrl,
+    'from': from,
+    'last_page': lastPage,
+    'last_page_url': lastPageUrl,
+  };
 }
 
 class NotificationItemModel {
@@ -152,7 +152,8 @@ class NotificationItemModel {
       description: json['description'] == null
           ? null
           : NotificationDescriptionModel.fromJson(
-              jsonDecode(json['description'])),
+              jsonDecode(json['description']),
+            ),
       isWatched: json['is_watched'] ?? 0,
       isPublic: json['is_public'] ?? 0,
     );
@@ -174,7 +175,8 @@ class NotificationItemModel {
     return NotificationItemModel(
       id: id ?? this.id,
       userId: userId ?? this.userId,
-      descriptionToHandleNotification: descriptionToHandleNotification ??
+      descriptionToHandleNotification:
+          descriptionToHandleNotification ??
           this.descriptionToHandleNotification,
       title: title ?? this.title,
       notificationTypeId: notificationTypeId ?? this.notificationTypeId,
@@ -186,16 +188,16 @@ class NotificationItemModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'user_id': userId,
-        'title': title,
-        'notification_type_id': notificationTypeId,
-        'body': body,
-        'description': jsonEncode(description?.toJson()),
-        'is_watched': isWatched,
-        "descriptionToHandleNotification": descriptionToHandleNotification,
-        'is_public': isPublic,
-      };
+    'id': id,
+    'user_id': userId,
+    'title': title,
+    'notification_type_id': notificationTypeId,
+    'body': body,
+    'description': jsonEncode(description?.toJson()),
+    'is_watched': isWatched,
+    "descriptionToHandleNotification": descriptionToHandleNotification,
+    'is_public': isPublic,
+  };
 }
 
 class Banner {
@@ -203,34 +205,29 @@ class Banner {
   final String? originalWidth;
   final String? originalHeight;
 
-  Banner({
-    this.filePath,
-    this.originalWidth,
-    this.originalHeight,
-  });
+  Banner({this.filePath, this.originalWidth, this.originalHeight});
 
   Banner copyWith({
     String? filePath,
     String? originalWidth,
     String? originalHeight,
-  }) =>
-      Banner(
-        filePath: filePath ?? this.filePath,
-        originalWidth: originalWidth ?? this.originalWidth,
-        originalHeight: originalHeight ?? this.originalHeight,
-      );
+  }) => Banner(
+    filePath: filePath ?? this.filePath,
+    originalWidth: originalWidth ?? this.originalWidth,
+    originalHeight: originalHeight ?? this.originalHeight,
+  );
 
   factory Banner.fromJson(Map<String, dynamic> json) => Banner(
-        filePath: json["file_path"],
-        originalWidth: json["original_width"],
-        originalHeight: json["original_height"],
-      );
+    filePath: json["file_path"],
+    originalWidth: json["original_width"],
+    originalHeight: json["original_height"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "file_path": filePath,
-        "original_width": originalWidth,
-        "original_height": originalHeight,
-      };
+    "file_path": filePath,
+    "original_width": originalWidth,
+    "original_height": originalHeight,
+  };
 }
 
 class NotificationDescriptionModel {
@@ -317,20 +314,20 @@ class NotificationDescriptionModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'type': type,
-        'showed_type': showedType,
-        'description': description,
-        'product_name': productName,
-        'product_slug': productSlug,
-        "banner": banner == null
-            ? []
-            : List<dynamic>.from(banner!.map((x) => x.toJson())),
-        'variant': variant,
-        'image': image,
-        'customer_name': customerName,
-        'cart_id': cartId,
-        'time_left_in_minutes': timeLeftInMinutes,
-        'order_group_id': orderGroupId,
-        'user_id': userId,
-      };
+    'type': type,
+    'showed_type': showedType,
+    'description': description,
+    'product_name': productName,
+    'product_slug': productSlug,
+    "banner": banner == null
+        ? []
+        : List<dynamic>.from(banner!.map((x) => x.toJson())),
+    'variant': variant,
+    'image': image,
+    'customer_name': customerName,
+    'cart_id': cartId,
+    'time_left_in_minutes': timeLeftInMinutes,
+    'order_group_id': orderGroupId,
+    'user_id': userId,
+  };
 }

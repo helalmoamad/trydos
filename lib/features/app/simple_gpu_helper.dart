@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 class SimpleGPUHelper {
   /// 🔧 الحصول على إعدادات محسنة للصور
   static Map<String, dynamic> getOptimizedImageSettings(
-      double width, double height, context) {
+    double width,
+    double height,
+    context,
+  ) {
     // إعدادات بسيطة حسب حجم الشاشة
     final screenWidth = MediaQuery.of(context).size.width;
     final isHighResDevice = screenWidth > 400;

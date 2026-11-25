@@ -50,7 +50,6 @@ class GlobalScreenConst {
   static const TAGS_SCREEN = "tags_filters_screen";
 }
 
-
 // FirebaseAnalyticsService.logEventForSession(
 //       eventName: AnalyticsEventsConst.SCREEN_VIEW,
 //       extraParams: {

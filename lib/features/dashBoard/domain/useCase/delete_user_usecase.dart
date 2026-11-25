@@ -7,13 +7,16 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class DeleteUserUseCase extends UseCase<ReadOnlyMessageFromApiModel, DeleteUserParams> {
+class DeleteUserUseCase
+    extends UseCase<ReadOnlyMessageFromApiModel, DeleteUserParams> {
   final DashBoardRepository repository;
 
   DeleteUserUseCase(this.repository);
 
   @override
-  Future<Either<Failure, ReadOnlyMessageFromApiModel>> call(DeleteUserParams params) {
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>> call(
+    DeleteUserParams params,
+  ) {
     return repository.deleteUser(params.userId);
   }
 }

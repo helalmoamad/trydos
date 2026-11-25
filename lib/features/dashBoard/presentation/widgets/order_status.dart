@@ -1,11 +1,4 @@
-enum ConstOrderStatus {
-  all,
-  in_progress,
-  collected,
-  returned,
-  canceled,
-  
-}
+enum ConstOrderStatus { all, in_progress, collected, returned, canceled }
 
 String getStatusLabel(ConstOrderStatus status) {
   switch (status) {

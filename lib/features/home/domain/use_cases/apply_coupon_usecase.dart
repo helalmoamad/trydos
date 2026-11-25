@@ -12,11 +12,7 @@ class ApplyCouponUsecase extends UseCase<ApplyCouponModel, String> {
   ApplyCouponUsecase(this.repository);
 
   @override
-  Future<Either<Failure, ApplyCouponModel>> call(
-    String code,
-  ) {
-    return repository.applyCoupon(
-      code: code,
-    );
+  Future<Either<Failure, ApplyCouponModel>> call(String code) {
+    return repository.applyCoupon(code: code);
   }
 }

@@ -4,9 +4,13 @@
 
 import 'dart:convert';
 
-UploadStoryCloudinaryResponseModel uploadStoryCloudinaryResponseModelFromJson(String str) => UploadStoryCloudinaryResponseModel.fromJson(json.decode(str));
+UploadStoryCloudinaryResponseModel uploadStoryCloudinaryResponseModelFromJson(
+  String str,
+) => UploadStoryCloudinaryResponseModel.fromJson(json.decode(str));
 
-String uploadStoryCloudinaryResponseModelToJson(UploadStoryCloudinaryResponseModel data) => json.encode(data.toJson());
+String uploadStoryCloudinaryResponseModelToJson(
+  UploadStoryCloudinaryResponseModel data,
+) => json.encode(data.toJson());
 
 class UploadStoryCloudinaryResponseModel {
   String? assetId;
@@ -74,31 +78,32 @@ class UploadStoryCloudinaryResponseModel {
     String? folder,
     String? accessMode,
     String? originalFilename,
-  }) =>
-      UploadStoryCloudinaryResponseModel(
-        assetId: assetId ?? this.assetId,
-        publicId: publicId ?? this.publicId,
-        version: version ?? this.version,
-        versionId: versionId ?? this.versionId,
-        signature: signature ?? this.signature,
-        width: width ?? this.width,
-        height: height ?? this.height,
-        format: format ?? this.format,
-        resourceType: resourceType ?? this.resourceType,
-        createdAt: createdAt ?? this.createdAt,
-        tags: tags ?? this.tags,
-        bytes: bytes ?? this.bytes,
-        type: type ?? this.type,
-        etag: etag ?? this.etag,
-        placeholder: placeholder ?? this.placeholder,
-        url: url ?? this.url,
-        secureUrl: secureUrl ?? this.secureUrl,
-        folder: folder ?? this.folder,
-        accessMode: accessMode ?? this.accessMode,
-        originalFilename: originalFilename ?? this.originalFilename,
-      );
+  }) => UploadStoryCloudinaryResponseModel(
+    assetId: assetId ?? this.assetId,
+    publicId: publicId ?? this.publicId,
+    version: version ?? this.version,
+    versionId: versionId ?? this.versionId,
+    signature: signature ?? this.signature,
+    width: width ?? this.width,
+    height: height ?? this.height,
+    format: format ?? this.format,
+    resourceType: resourceType ?? this.resourceType,
+    createdAt: createdAt ?? this.createdAt,
+    tags: tags ?? this.tags,
+    bytes: bytes ?? this.bytes,
+    type: type ?? this.type,
+    etag: etag ?? this.etag,
+    placeholder: placeholder ?? this.placeholder,
+    url: url ?? this.url,
+    secureUrl: secureUrl ?? this.secureUrl,
+    folder: folder ?? this.folder,
+    accessMode: accessMode ?? this.accessMode,
+    originalFilename: originalFilename ?? this.originalFilename,
+  );
 
-  factory UploadStoryCloudinaryResponseModel.fromJson(Map<String, dynamic> json) => UploadStoryCloudinaryResponseModel(
+  factory UploadStoryCloudinaryResponseModel.fromJson(
+    Map<String, dynamic> json,
+  ) => UploadStoryCloudinaryResponseModel(
     assetId: json["asset_id"],
     publicId: json["public_id"],
     version: json["version"],
@@ -108,8 +113,12 @@ class UploadStoryCloudinaryResponseModel {
     height: json["height"],
     format: json["format"],
     resourceType: json["resource_type"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    tags: json["tags"] == null ? [] : List<dynamic>.from(json["tags"]!.map((x) => x)),
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
+    tags: json["tags"] == null
+        ? []
+        : List<dynamic>.from(json["tags"]!.map((x) => x)),
     bytes: json["bytes"],
     type: json["type"],
     etag: json["etag"],

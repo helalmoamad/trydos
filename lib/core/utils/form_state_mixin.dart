@@ -3,8 +3,13 @@ import 'package:tuple/tuple.dart';
 
 import 'form_utils.dart';
 
-mixin FormStateMinxin <T extends StatefulWidget> on State<T> {
-  late final Tuple3<GlobalKey<FormState>, List<TextEditingController>, List<FocusNode>> form;
+mixin FormStateMinxin<T extends StatefulWidget> on State<T> {
+  late final Tuple3<
+    GlobalKey<FormState>,
+    List<TextEditingController>,
+    List<FocusNode>
+  >
+  form;
 
   int get numberOfFields;
 

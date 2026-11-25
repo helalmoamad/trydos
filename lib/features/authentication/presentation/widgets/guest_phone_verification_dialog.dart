@@ -331,7 +331,9 @@ class _GuestPhoneVerificationDialogState
     // Slides up from the bottom edge and rides above the keyboard, which the
     // phone step and the OTP step both open.
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         width: 1.sw,
         clipBehavior: Clip.antiAlias,

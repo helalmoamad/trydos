@@ -31,14 +31,13 @@ class CreateFqaCommentsModel {
     String? message,
     Data? data,
     DateTime? createdAt,
-  }) =>
-      CreateFqaCommentsModel(
-        commentId: commentId ?? this.commentId,
-        status: status ?? this.status,
-        message: message ?? this.message,
-        data: data ?? this.data,
-        createdAt: createdAt ?? this.createdAt,
-      );
+  }) => CreateFqaCommentsModel(
+    commentId: commentId ?? this.commentId,
+    status: status ?? this.status,
+    message: message ?? this.message,
+    data: data ?? this.data,
+    createdAt: createdAt ?? this.createdAt,
+  );
 
   factory CreateFqaCommentsModel.fromJson(Map<String, dynamic> json) =>
       CreateFqaCommentsModel(
@@ -52,12 +51,12 @@ class CreateFqaCommentsModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "comment_id": commentId,
-        "status": status,
-        "message": message,
-        "data": data?.toJson(),
-        "created_at": createdAt?.toIso8601String(),
-      };
+    "comment_id": commentId,
+    "status": status,
+    "message": message,
+    "data": data?.toJson(),
+    "created_at": createdAt?.toIso8601String(),
+  };
 }
 
 class Data {
@@ -105,56 +104,55 @@ class Data {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? verifiedPhone,
-  }) =>
-      Data(
-        commentId: commentId ?? this.commentId,
-        productId: productId ?? this.productId,
-        userId: userId ?? this.userId,
-        userName: userName ?? this.userName,
-        userAvatar: userAvatar ?? this.userAvatar,
-        text: text ?? this.text,
-        rating: rating ?? this.rating,
-        variant: variant ?? this.variant,
-        userType: userType ?? this.userType,
-        status: status ?? this.status,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-        verifiedPhone: verifiedPhone ?? this.verifiedPhone,
-      );
+  }) => Data(
+    commentId: commentId ?? this.commentId,
+    productId: productId ?? this.productId,
+    userId: userId ?? this.userId,
+    userName: userName ?? this.userName,
+    userAvatar: userAvatar ?? this.userAvatar,
+    text: text ?? this.text,
+    rating: rating ?? this.rating,
+    variant: variant ?? this.variant,
+    userType: userType ?? this.userType,
+    status: status ?? this.status,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    verifiedPhone: verifiedPhone ?? this.verifiedPhone,
+  );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        commentId: json["comment_id"],
-        productId: json["product_id"],
-        userId: json["user_id"],
-        userName: json["user_name"],
-        userAvatar: json["user_avatar"],
-        text: json["text"],
-        rating: json["rating"],
-        variant: json["variant"],
-        userType: json["user_type"],
-        status: json["status"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
-        verifiedPhone: json["verified_phone"],
-      );
+    commentId: json["comment_id"],
+    productId: json["product_id"],
+    userId: json["user_id"],
+    userName: json["user_name"],
+    userAvatar: json["user_avatar"],
+    text: json["text"],
+    rating: json["rating"],
+    variant: json["variant"],
+    userType: json["user_type"],
+    status: json["status"],
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
+    verifiedPhone: json["verified_phone"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "comment_id": commentId,
-        "product_id": productId,
-        "user_id": userId,
-        "user_name": userName,
-        "user_avatar": userAvatar,
-        "text": text,
-        "rating": rating,
-        "variant": variant,
-        "user_type": userType,
-        "status": status,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-        "verified_phone": verifiedPhone,
-      };
+    "comment_id": commentId,
+    "product_id": productId,
+    "user_id": userId,
+    "user_name": userName,
+    "user_avatar": userAvatar,
+    "text": text,
+    "rating": rating,
+    "variant": variant,
+    "user_type": userType,
+    "status": status,
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
+    "verified_phone": verifiedPhone,
+  };
 }

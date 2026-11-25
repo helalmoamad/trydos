@@ -36,9 +36,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
     LastPagesTracker.push("PaymentWebview Page");
     //////////////////////////
     pullToRefreshController = PullToRefreshController(
-      settings: PullToRefreshSettings(
-        color: Colors.blue,
-      ),
+      settings: PullToRefreshSettings(color: Colors.blue),
       onRefresh: () async {
         await _reloadPage();
       },
@@ -50,17 +48,13 @@ class _PaymentWebviewState extends State<PaymentWebview> {
       await webViewController?.reload();
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       webViewController?.loadUrl(
-        urlRequest: URLRequest(
-          url: await webViewController?.getUrl(),
-        ),
+        urlRequest: URLRequest(url: await webViewController?.getUrl()),
       );
     }
-    setState(
-      () {
-        _isLoading = true;
-        _hasError = false;
-      },
-    );
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
   }
 
   @override
@@ -69,88 +63,82 @@ class _PaymentWebviewState extends State<PaymentWebview> {
       child:
           // ignore: deprecated_member_use
           WillPopScope(
-        onWillPop: () async {
-          if (Navigator.canPop(context)) {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-              /////////////////////////////////////////////
+            onWillPop: () async {
+              if (Navigator.canPop(context)) {
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                  /////////////////////////////////////////////
+                  BlocProvider.of<OrderBloc>(context).add(
+                    GetOrdersByCartGroupIDEvent(
+                      cartGroupId: widget.cartGroupId,
+                    ),
+                  );
+
+                  return false;
+                }
+              }
+              //////////////////
               BlocProvider.of<OrderBloc>(context).add(
-                GetOrdersByCartGroupIDEvent(
-                  cartGroupId: widget.cartGroupId,
-                ),
+                GetOrdersByCartGroupIDEvent(cartGroupId: widget.cartGroupId),
               );
 
-              return false;
-            }
-          }
-          //////////////////
-          BlocProvider.of<OrderBloc>(context).add(
-            GetOrdersByCartGroupIDEvent(
-              cartGroupId: widget.cartGroupId,
-            ),
-          );
-
-          return true;
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            elevation: 1,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: () async {
-                  await _reloadPage();
-                },
-              ),
-            ],
-          ),
-          body: Stack(
-            alignment: Alignment.center,
-            children: [
-              if (!_hasError) buildWebView(),
-              ///////////////
-              if (_isLoading)
-                TrydosShimmerLoading(
-                  width: 1.sw,
-                  logoTextWidth: 30,
-                  height: 1.sh,
-                  logoTextHeight: 30,
-                  circleDimensions: 30,
-                  radius: 0,
-                ),
-              ///////////////
-              if (_hasError && !_isLoading)
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error, color: Colors.red, size: 60),
-                      const SizedBox(height: 10),
-                      Text(LocaleKeys.failed_to_load_page_try_again.tr()),
-                      const SizedBox(height: 30),
-                      ElevatedButton(
-                        onPressed: () async {
-                          await _reloadPage();
-                        },
-                        child: const Text("Retry"),
-                      ),
-                    ],
+              return true;
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                elevation: 1,
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.refresh),
+                    onPressed: () async {
+                      await _reloadPage();
+                    },
                   ),
-                ),
-            ],
+                ],
+              ),
+              body: Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (!_hasError) buildWebView(),
+                  ///////////////
+                  if (_isLoading)
+                    TrydosShimmerLoading(
+                      width: 1.sw,
+                      logoTextWidth: 30,
+                      height: 1.sh,
+                      logoTextHeight: 30,
+                      circleDimensions: 30,
+                      radius: 0,
+                    ),
+                  ///////////////
+                  if (_hasError && !_isLoading)
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error, color: Colors.red, size: 60),
+                          const SizedBox(height: 10),
+                          Text(LocaleKeys.failed_to_load_page_try_again.tr()),
+                          const SizedBox(height: 30),
+                          ElevatedButton(
+                            onPressed: () async {
+                              await _reloadPage();
+                            },
+                            child: const Text("Retry"),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
   Widget buildWebView() {
     return InAppWebView(
-      initialUrlRequest: URLRequest(
-        url: WebUri(
-          widget.url,
-        ),
-      ),
+      initialUrlRequest: URLRequest(url: WebUri(widget.url)),
       onWebViewCreated: (controller) {
         webViewController = controller;
         ////////////////////////////////////
@@ -164,9 +152,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
               Navigator.of(context).pop();
               /////////////////////////////////////////////
               BlocProvider.of<OrderBloc>(context).add(
-                GetOrdersByCartGroupIDEvent(
-                  cartGroupId: widget.cartGroupId,
-                ),
+                GetOrdersByCartGroupIDEvent(cartGroupId: widget.cartGroupId),
               );
             }
             ///////////////////////////////////
@@ -182,33 +168,31 @@ class _PaymentWebviewState extends State<PaymentWebview> {
         iframeAllowFullscreen: true,
       ),
       onLoadStart: (controller, url) {
-        setState(
-          () {
-            _isLoading = true;
-            _hasError = false;
-          },
-        );
+        setState(() {
+          _isLoading = true;
+          _hasError = false;
+        });
       },
       onLoadStop: (controller, url) async {
         setState(() {
           _isLoading = false;
         });
         /////////////////
-        await controller.evaluateJavascript(source: """
+        await controller.evaluateJavascript(
+          source: """
             window.addEventListener('message', (event) => {
               if (event.data === 'close-iframe') {
                 window.flutter_inappwebview.callHandler('closeIframe');
               }
             });
-          """);
+          """,
+        );
       },
       onReceivedError: (controller, request, error) {
-        setState(
-          () {
-            _hasError = true;
-            _isLoading = false;
-          },
-        );
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
       },
     );
   }

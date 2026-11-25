@@ -16,7 +16,8 @@ class GetProductDetailWithoutRelatedProductsUseCase
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>> call(
     String productSlug,
   ) async {
-    return repository
-        .getProductDetailWithoutSimilarRelatedProducts(productSlug);
+    return repository.getProductDetailWithoutSimilarRelatedProducts(
+      productSlug,
+    );
   }
 }

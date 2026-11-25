@@ -14,7 +14,8 @@ class GetProductsListInCartUseCase
 
   @override
   Future<Either<Failure, ListOfProductsFoundedInCartModel>> call(
-      NoParams params) async {
+    NoParams params,
+  ) async {
     return repository.getProductsListInCart();
   }
 }

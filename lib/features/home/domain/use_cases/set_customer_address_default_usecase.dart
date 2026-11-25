@@ -24,7 +24,5 @@ class SetCustomerAddressDefaultParams {
   final int addressId;
 
   SetCustomerAddressDefaultParams({required this.addressId});
-  Map<String, dynamic> get map => {
-        "address_id": addressId,
-      };
+  Map<String, dynamic> get map => {"address_id": addressId};
 }

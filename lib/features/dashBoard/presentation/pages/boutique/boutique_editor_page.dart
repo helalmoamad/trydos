@@ -212,7 +212,8 @@ class _BoutiqueEditorViewState extends State<_BoutiqueEditorView> {
         BlocListener<BoutiqueEditorBloc, BoutiqueEditorState>(
           listenWhen: (p, c) =>
               c.bannerWarning != null && p.bannerWarning != c.bannerWarning,
-          listener: (context, state) => _showBannerWarning(state.bannerWarning!),
+          listener: (context, state) =>
+              _showBannerWarning(state.bannerWarning!),
         ),
       ],
       child: BlocBuilder<BoutiqueEditorBloc, BoutiqueEditorState>(
@@ -387,7 +388,8 @@ class _BoutiqueEditorViewState extends State<_BoutiqueEditorView> {
                 ),
                 child: BoutiquePreviewImage(
                   localPath: header?.iconLocalPath,
-                  storedValue: header?.iconPreviewUrl ??
+                  storedValue:
+                      header?.iconPreviewUrl ??
                       (header == null || header.icon.isEmpty
                           ? null
                           : header.icon),

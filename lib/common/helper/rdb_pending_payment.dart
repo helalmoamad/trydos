@@ -17,7 +17,6 @@ class RdbPendingPayment {
   static final ValueNotifier<RdbCartLockModel?> pending =
       ValueNotifier<RdbCartLockModel?>(null);
 
-
   static PrefsRepository get _prefs => GetIt.I<PrefsRepository>();
 
   static String? get requestReference => pending.value?.requestReference;
@@ -73,9 +72,7 @@ class RdbPendingPayment {
     restore();
   }
 
-  static bool wasJustRejected({
-    Duration within = const Duration(seconds: 8),
-  }) {
+  static bool wasJustRejected({Duration within = const Duration(seconds: 8)}) {
     final DateTime? at = _lastRejectionAt;
     if (at == null) return false;
     return DateTime.now().difference(at) <= within;

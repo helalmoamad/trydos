@@ -87,9 +87,7 @@ class _CountryChip extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color: selected
-                    ? BoutiqueColors.text
-                    : BoutiqueColors.muted,
+                color: selected ? BoutiqueColors.text : BoutiqueColors.muted,
               ),
             ),
           ),

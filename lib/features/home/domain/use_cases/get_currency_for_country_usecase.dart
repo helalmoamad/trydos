@@ -12,7 +12,8 @@ class GetCurrencyForCountryUseCase
   final HomeRepository repository;
   @override
   Future<Either<Failure, GetCurrencyForCountryModel>> call(
-      NoParams params) async {
+    NoParams params,
+  ) async {
     return repository.getCurrencyForCountry();
   }
 }

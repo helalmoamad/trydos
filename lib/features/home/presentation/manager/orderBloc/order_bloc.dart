@@ -188,8 +188,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     on<StoreReturnRequestProductEvent>(_onStoreReturnRequestProductEvent);
     on<ReportOrderProductEvent>(_onReportOrderProductEvent);
     on<ResetReportOrderProductStatusEvent>(
-      (event, emit) =>
-          emit(state.copyWith(reportOrderProductStatus: ReportOrderProductStatus.init)),
+      (event, emit) => emit(
+        state.copyWith(reportOrderProductStatus: ReportOrderProductStatus.init),
+      ),
     );
     on<CancelReturnRequestEvent>(_onCancelReturnRequestEvent);
     on<CancelReturnRequestProductEvent>(_onCancelReturnRequestProductEvent);
@@ -296,7 +297,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     Emitter<OrderState> emit,
   ) async {
     emit(
-      state.copyWith(reportOrderProductStatus: ReportOrderProductStatus.loading),
+      state.copyWith(
+        reportOrderProductStatus: ReportOrderProductStatus.loading,
+      ),
     );
 
     final response = await reportOrderProductUseCase(event.params);

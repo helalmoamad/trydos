@@ -14,7 +14,8 @@ class SendOtpUseCase implements UseCase<SendOtpResponseModel, SendOtpParams> {
 
   @override
   Future<Either<Failure, SendOtpResponseModel>> call(
-      SendOtpParams params) async {
+    SendOtpParams params,
+  ) async {
     return repository.sendOtp(params.map);
   }
 }
@@ -23,12 +24,9 @@ class SendOtpParams {
   int isViaWhatsApp;
   String phone; // start with +
 
-  SendOtpParams({
-    required this.phone,
-    required this.isViaWhatsApp,
-  });
-  Map<String, dynamic> get map =>{
-    "phone" :'${phone}',
-    "is_via_whatsapp" :isViaWhatsApp.toString(),
+  SendOtpParams({required this.phone, required this.isViaWhatsApp});
+  Map<String, dynamic> get map => {
+    "phone": '${phone}',
+    "is_via_whatsapp": isViaWhatsApp.toString(),
   };
 }

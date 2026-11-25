@@ -3,7 +3,13 @@ part of 'boutique_editor_bloc.dart';
 /// A plain `Bloc` state — not hydrated. Nothing here is stored on the device,
 /// and the bloc lives only as long as its page.
 
-enum BoutiqueEditorLoadStatus { loading, ready, accessDenied, notFound, failure }
+enum BoutiqueEditorLoadStatus {
+  loading,
+  ready,
+  accessDenied,
+  notFound,
+  failure,
+}
 
 /// What the page must do next. The page acts, then sends
 /// [BoutiqueEditorNavigationHandled].

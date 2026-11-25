@@ -5,12 +5,12 @@
 import 'dart:convert';
 
 StoreReturnRequestProductModel storeReturnRequestProductModelFromJson(
-        String str) =>
-    StoreReturnRequestProductModel.fromJson(json.decode(str));
+  String str,
+) => StoreReturnRequestProductModel.fromJson(json.decode(str));
 
 String storeReturnRequestProductModelToJson(
-        StoreReturnRequestProductModel data) =>
-    json.encode(data.toJson());
+  StoreReturnRequestProductModel data,
+) => json.encode(data.toJson());
 
 class StoreReturnRequestProductModel {
   final bool? isSuccessful;
@@ -33,14 +33,13 @@ class StoreReturnRequestProductModel {
     int? code,
     String? message,
     dynamic detailedError,
-  }) =>
-      StoreReturnRequestProductModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-      );
+  }) => StoreReturnRequestProductModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+  );
 
   factory StoreReturnRequestProductModel.fromJson(Map<String, dynamic> json) =>
       StoreReturnRequestProductModel(
@@ -51,10 +50,10 @@ class StoreReturnRequestProductModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "detailed_error": detailedError,
-        "data": message
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "detailed_error": detailedError,
+    "data": message,
+  };
 }

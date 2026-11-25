@@ -26,12 +26,11 @@ QuillController boutiqueQuillFromHtml(String html, {required bool readOnly}) {
     final List<Map<String, dynamic>> ops = html.trim().isEmpty
         ? const <Map<String, dynamic>>[]
         : _sanitizeOps(
-            HtmlToDelta()
-                .convert(html)
-                .toJson()
-                .cast<Map<String, dynamic>>(),
+            HtmlToDelta().convert(html).toJson().cast<Map<String, dynamic>>(),
           );
-    document = ops.isEmpty ? Document() : Document.fromJson(_ensureTrailingNewline(ops));
+    document = ops.isEmpty
+        ? Document()
+        : Document.fromJson(_ensureTrailingNewline(ops));
   } catch (_) {
     document = Document();
   }
@@ -129,7 +128,9 @@ class BoutiqueRichTextField extends StatelessWidget {
                 color: BoutiqueColors.field,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: hasError ? BoutiqueColors.error : BoutiqueColors.border,
+                  color: hasError
+                      ? BoutiqueColors.error
+                      : BoutiqueColors.border,
                 ),
               ),
               child: QuillEditor.basic(
@@ -158,8 +159,9 @@ class _Toolbar extends StatelessWidget {
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) {
-        final Map<String, Attribute> style =
-            controller.getSelectionStyle().attributes;
+        final Map<String, Attribute> style = controller
+            .getSelectionStyle()
+            .attributes;
         final bool isH2 = style[Attribute.header.key]?.value == 2;
         return Wrap(
           spacing: 6,

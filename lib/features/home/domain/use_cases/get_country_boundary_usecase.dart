@@ -17,7 +17,8 @@ class CountryBoundaryByIsoUseCase
 
   @override
   Future<Either<Failure, CountryBoundaryByIsoModel>> call(
-      NoParams params) async {
+    NoParams params,
+  ) async {
     String? iso = prefsRepository.userCountryIsAvailable == 1
         ? prefsRepository.userChoosedCountryIso
         : prefsRepository.countryIso;

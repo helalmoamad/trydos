@@ -30,9 +30,7 @@ class NetworkBlocSensitive extends StatelessWidget {
             curve: Curves.ease,
             duration: const Duration(milliseconds: 300),
             opacity: 0.3,
-            child: IgnorePointer(
-              child: child,
-            ),
+            child: IgnorePointer(child: child),
           );
         }
       },

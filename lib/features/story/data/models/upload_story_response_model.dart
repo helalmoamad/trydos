@@ -36,18 +36,17 @@ class UploadStoryResponseModel {
     dynamic message,
     dynamic detailedError,
     Story? data,
-  }) =>
-      UploadStoryResponseModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => UploadStoryResponseModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory UploadStoryResponseModel.fromJson(Map<String, dynamic> json) {
-//    Fluttertoast.showToast(msg: json.toString());
+    //    Fluttertoast.showToast(msg: json.toString());
     return UploadStoryResponseModel(
       isSuccessful: json["isSuccessful"],
       hasContent: json["hasContent"],
@@ -59,11 +58,11 @@ class UploadStoryResponseModel {
   }
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }

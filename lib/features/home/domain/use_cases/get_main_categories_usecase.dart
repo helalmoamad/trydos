@@ -14,7 +14,8 @@ class GetMainCategoriesUseCase
 
   @override
   Future<Either<Failure, MainCategoriesResponseModel>> call(
-      GetMainCategoryParams params) async {
+    GetMainCategoryParams params,
+  ) async {
     return repository.getMainCategories(params.map);
   }
 }
@@ -22,8 +23,9 @@ class GetMainCategoriesUseCase
 class GetMainCategoryParams {
   //final bool fromMarket;
 
-  GetMainCategoryParams(//{required this.fromMarket}
-      );
+  GetMainCategoryParams(
+    //{required this.fromMarket}
+  );
 
   Map<String, dynamic> get map => {/*"fromMarket": "$fromMarket"*/};
 }

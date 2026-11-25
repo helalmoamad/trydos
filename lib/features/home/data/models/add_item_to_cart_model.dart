@@ -16,15 +16,9 @@ class AddItemToCartModel {
   final String? message;
   final Data? data;
 
-  AddItemToCartModel({
-    this.message,
-    this.data,
-  });
+  AddItemToCartModel({this.message, this.data});
 
-  AddItemToCartModel copyWith({
-    String? message,
-    Data? data,
-  }) =>
+  AddItemToCartModel copyWith({String? message, Data? data}) =>
       AddItemToCartModel(
         message: message ?? this.message,
         data: data ?? this.data,
@@ -38,38 +32,20 @@ class AddItemToCartModel {
             : Data.fromJson(json["data"]),
       );
 
-  Map<String, dynamic> toJson() => {
-        "message": message,
-        "data": data?.toJson(),
-      };
+  Map<String, dynamic> toJson() => {"message": message, "data": data?.toJson()};
 }
 
 class Data {
   final int? idCart;
   final int? status;
 
-  Data({
-    this.idCart,
-    this.status,
-  });
+  Data({this.idCart, this.status});
 
-  Data copyWith({
-    int? idCart,
-    int? status,
-    CartShipping? cartShipping,
-  }) =>
-      Data(
-        idCart: idCart ?? this.idCart,
-        status: status ?? this.status,
-      );
+  Data copyWith({int? idCart, int? status, CartShipping? cartShipping}) =>
+      Data(idCart: idCart ?? this.idCart, status: status ?? this.status);
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        idCart: json["id_cart"],
-        status: json["status"],
-      );
+  factory Data.fromJson(Map<String, dynamic> json) =>
+      Data(idCart: json["id_cart"], status: json["status"]);
 
-  Map<String, dynamic> toJson() => {
-        "id_cart": idCart,
-        "status": status,
-      };
+  Map<String, dynamic> toJson() => {"id_cart": idCart, "status": status};
 }

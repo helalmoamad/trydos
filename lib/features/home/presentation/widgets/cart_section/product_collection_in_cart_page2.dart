@@ -973,4 +973,4 @@ class productCollectionInCartPage2 extends StatelessWidget {
     );
   }
 }
-*/ 
+*/

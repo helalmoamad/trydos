@@ -40,7 +40,6 @@ class BuyersProductRatePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     String productId = productFirstId;
     return SlidingUpPanel(
       borderRadius: BorderRadius.only(

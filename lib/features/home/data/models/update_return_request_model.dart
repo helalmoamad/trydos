@@ -31,14 +31,13 @@ class UpdateReturnRequestModel {
     int? code,
     String? message,
     dynamic detailedError,
-  }) =>
-      UpdateReturnRequestModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-      );
+  }) => UpdateReturnRequestModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+  );
 
   factory UpdateReturnRequestModel.fromJson(Map<String, dynamic> json) =>
       UpdateReturnRequestModel(
@@ -50,10 +49,10 @@ class UpdateReturnRequestModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "data": message,
-        "detailed_error": detailedError,
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "data": message,
+    "detailed_error": detailedError,
+  };
 }

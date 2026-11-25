@@ -317,4 +317,4 @@ class CartPage2 extends StatelessWidget {
     );
   }
 }
-*/ 
+*/

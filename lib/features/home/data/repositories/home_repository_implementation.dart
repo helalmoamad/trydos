@@ -370,7 +370,9 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, GetHiddenOrdersModel>> getHiddenOrders() {
-    return handlingExceptionRequest(tryCall: () => dataSource.getHiddenOrders());
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getHiddenOrders(),
+    );
   }
 
   Future<Either<Failure, ConvertItemFromCartToOldCartModel>>
@@ -693,7 +695,9 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   Future<Either<Failure, RdbPaymentRequestResponseModel>> checkoutRdb(
     Map<String, dynamic> params,
   ) {
-    return handlingExceptionRequest(tryCall: () => dataSource.checkoutRdb(params));
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.checkoutRdb(params),
+    );
   }
 
   @override

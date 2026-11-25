@@ -22,15 +22,14 @@ class ApplyCouponModel {
     String? message,
     dynamic detailedError,
     ApplyCouponDataModel? data,
-  }) =>
-      ApplyCouponModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => ApplyCouponModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory ApplyCouponModel.fromJson(Map<String, dynamic> json) =>
       ApplyCouponModel(
@@ -45,28 +44,22 @@ class ApplyCouponModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class ApplyCouponDataModel {
   final int? status;
   final double? discount;
 
-  ApplyCouponDataModel({
-    required this.status,
-    required this.discount,
-  });
+  ApplyCouponDataModel({required this.status, required this.discount});
 
-  ApplyCouponDataModel copyWith({
-    int? status,
-    double? discount,
-  }) =>
+  ApplyCouponDataModel copyWith({int? status, double? discount}) =>
       ApplyCouponDataModel(
         status: status ?? this.status,
         discount: discount ?? this.discount,
@@ -80,8 +73,5 @@ class ApplyCouponDataModel {
             : double.parse(json["discount"].toString()),
       );
 
-  Map<String, dynamic> toJson() => {
-        "status": status,
-        "discount": discount,
-      };
+  Map<String, dynamic> toJson() => {"status": status, "discount": discount};
 }

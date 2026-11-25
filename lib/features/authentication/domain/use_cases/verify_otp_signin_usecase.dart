@@ -6,14 +6,17 @@ import '../../data/models/verify_otp_sign_up_and_in_response_model.dart';
 import '../repositories/auth_repository.dart';
 
 @injectable
-class VerifyOtpSignInUseCase implements UseCase<VerifyOtpSignUpAndInResponseModel, VerifyOtpSignInParams> {
+class VerifyOtpSignInUseCase
+    implements
+        UseCase<VerifyOtpSignUpAndInResponseModel, VerifyOtpSignInParams> {
   VerifyOtpSignInUseCase(this.repository);
 
   final AuthRepository repository;
 
   @override
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> call(
-      VerifyOtpSignInParams params) async {
+    VerifyOtpSignInParams params,
+  ) async {
     return repository.verifyOtpSignIn(params.map);
   }
 }
@@ -22,12 +25,9 @@ class VerifyOtpSignInParams {
   String verificationId;
   String otp;
 
-  VerifyOtpSignInParams({
-    required this.verificationId,
-    required this.otp,
-  });
-  Map<String, dynamic> get map =>{
-    "otp" :otp,
-    "verificationId" :verificationId,
+  VerifyOtpSignInParams({required this.verificationId, required this.otp});
+  Map<String, dynamic> get map => {
+    "otp": otp,
+    "verificationId": verificationId,
   };
 }

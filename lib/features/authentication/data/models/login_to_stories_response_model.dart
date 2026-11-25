@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-LoginToStoriesResponseModel loginToStoriesResponseModelFromJson(String str) => LoginToStoriesResponseModel.fromJson(json.decode(str));
+LoginToStoriesResponseModel loginToStoriesResponseModelFromJson(String str) =>
+    LoginToStoriesResponseModel.fromJson(json.decode(str));
 
-String loginToStoriesResponseModelToJson(LoginToStoriesResponseModel data) => json.encode(data.toJson());
+String loginToStoriesResponseModelToJson(LoginToStoriesResponseModel data) =>
+    json.encode(data.toJson());
 
 class LoginToStoriesResponseModel {
   final bool? isSuccessful;
@@ -32,24 +34,24 @@ class LoginToStoriesResponseModel {
     dynamic message,
     dynamic detailedError,
     Data? data,
-  }) =>
-      LoginToStoriesResponseModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
-
-  factory LoginToStoriesResponseModel.fromJson(Map<String, dynamic> json) => LoginToStoriesResponseModel(
-    isSuccessful: json["isSuccessful"],
-    hasContent: json["hasContent"],
-    code: json["code"],
-    message: json["message"],
-    detailedError: json["detailed_error"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
+  }) => LoginToStoriesResponseModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
   );
+
+  factory LoginToStoriesResponseModel.fromJson(Map<String, dynamic> json) =>
+      LoginToStoriesResponseModel(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
+        message: json["message"],
+        detailedError: json["detailed_error"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {
     "isSuccessful": isSuccessful,
@@ -97,19 +99,18 @@ class Data {
     int? id,
     String? accessToken,
     String? refreshToken,
-  }) =>
-      Data(
-        mobilePhone: mobilePhone ?? this.mobilePhone,
-        name: name ?? this.name,
-        username: username ?? this.username,
-        originalUserId: originalUserId ?? this.originalUserId,
-        photoPath: photoPath ?? this.photoPath,
-        updatedAt: updatedAt ?? this.updatedAt,
-        createdAt: createdAt ?? this.createdAt,
-        id: id ?? this.id,
-        accessToken: accessToken ?? this.accessToken,
-        refreshToken: refreshToken ?? this.refreshToken,
-      );
+  }) => Data(
+    mobilePhone: mobilePhone ?? this.mobilePhone,
+    name: name ?? this.name,
+    username: username ?? this.username,
+    originalUserId: originalUserId ?? this.originalUserId,
+    photoPath: photoPath ?? this.photoPath,
+    updatedAt: updatedAt ?? this.updatedAt,
+    createdAt: createdAt ?? this.createdAt,
+    id: id ?? this.id,
+    accessToken: accessToken ?? this.accessToken,
+    refreshToken: refreshToken ?? this.refreshToken,
+  );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     mobilePhone: json["mobile_phone"],
@@ -117,8 +118,12 @@ class Data {
     username: json["username"],
     originalUserId: json["original_user_id"],
     photoPath: json["photo_path"],
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
     id: json["id"],
     accessToken: json["access_token"],
     refreshToken: json["refresh_token"],

@@ -93,7 +93,10 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                               ),
                             );
                           } catch (e) {
-                            devLog('profile_address_info_page.dart: ignored error', e);
+                            devLog(
+                              'profile_address_info_page.dart: ignored error',
+                              e,
+                            );
                           }
                           Navigator.pop(context);
                         },

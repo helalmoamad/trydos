@@ -116,8 +116,10 @@ class FileSaving {
 
       if (entity.path.endsWith('.part')) {
         // بقايا انهيار أو إنهاء مفاجئ. الجارية منها محميّة بـ busy.
-        final String owner =
-            entity.path.substring(0, entity.path.length - '.part'.length);
+        final String owner = entity.path.substring(
+          0,
+          entity.path.length - '.part'.length,
+        );
         if (!busy.contains(owner) &&
             now.difference(stat.modified) > _orphanPartMaxAge) {
           await entity.delete().catchError((Object e) {
@@ -221,8 +223,8 @@ class FileSaving {
 
   /// مستمعو التقدّم لكل رابط: (نسبة، بايتات مستلمة). النسبة `-1` حين يتعذّر
   /// حسابها لغياب `Content-Length`.
-  static final Map<String, List<void Function(double, int)>> _progressListeners =
-      {};
+  static final Map<String, List<void Function(double, int)>>
+  _progressListeners = {};
 
   static void _notifyProgress(String fileUrl, double percent, int received) {
     final List<void Function(double, int)>? listeners =
@@ -324,11 +326,7 @@ class FileSaving {
           // الفيديو. كان الشرط `if (total > 0)` يعني **صمتاً تاماً** حينها:
           // لا تقدّم يصل، فيبقى المؤشّر جامداً وإن كانت البايتات تتدفّق.
           // نبلّغ دائماً: نسبة إن أمكنت، و`-1` مع البايتات إن تعذّرت.
-          _notifyProgress(
-            fileUrl,
-            total > 0 ? (rec / total) * 100 : -1,
-            rec,
-          );
+          _notifyProgress(fileUrl, total > 0 ? (rec / total) * 100 : -1, rec);
         },
       );
       if (!part.existsSync() || part.lengthSync() == 0) {
@@ -366,16 +364,19 @@ class FileSaving {
   static final Map<String, Future<File?>> _inFlightDownloads = {};
   static final Map<String, File> _completedDownloads = {};
 
-  downloadFileToLocalStorage(String fileUrl, String chatId,
-      {void Function(File file)? action}) async {
+  downloadFileToLocalStorage(
+    String fileUrl,
+    String chatId, {
+    void Function(File file)? action,
+  }) async {
     final File? done = _completedDownloads[fileUrl];
     if (done != null && done.existsSync()) {
       action?.call(done);
       return done.path;
     }
 
-    final Future<File?> pending =
-        _inFlightDownloads[fileUrl] ??= _startDownload(fileUrl, chatId);
+    final Future<File?> pending = _inFlightDownloads[fileUrl] ??=
+        _startDownload(fileUrl, chatId);
     final File? file = await pending;
     // كما في السابق: لا يُستدعى action إلا عند النجاح.
     if (file != null) action?.call(file);
@@ -421,9 +422,13 @@ class FileSaving {
 
   /// ينزّل بتقدّم قابل للإلغاء (سياسة الفيديو: تنزيل عند الطلب فقط).
   /// يرجع الملف عند النجاح و`null` عند الفشل أو الإلغاء.
-  Future<File?> downloadFileUsingDio(String fileUrl, CancelToken cancelToken,
-      String chatId, void Function(double progress) onProgress,
-      {void Function(File file)? action}) async {
+  Future<File?> downloadFileUsingDio(
+    String fileUrl,
+    CancelToken cancelToken,
+    String chatId,
+    void Function(double progress) onProgress, {
+    void Function(File file)? action,
+  }) async {
     final String fileName = fileUrl.split('/').last;
     final Dio dio = Dio();
     final Directory dir = await getApplicationDocumentsDirectory();
@@ -455,8 +460,12 @@ class FileSaving {
     }
   }
 
-  Future<File?> checkExistence(String? fileUrl, String chatId,
-      {bool download = true, void Function(File? file)? action}) async {
+  Future<File?> checkExistence(
+    String? fileUrl,
+    String chatId, {
+    bool download = true,
+    void Function(File? file)? action,
+  }) async {
     if (fileUrl == null) {
       return null;
     }

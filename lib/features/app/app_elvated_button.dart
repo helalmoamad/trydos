@@ -8,10 +8,7 @@ import 'app_text_view.dart';
 import 'loading_indicator.dart';
 import 'network_bloc_widget.dart';
 
-enum AppButtonStyle {
-  primary,
-  secondary,
-}
+enum AppButtonStyle { primary, secondary }
 
 class AppElevatedButton extends StatefulWidget {
   const AppElevatedButton({
@@ -71,7 +68,8 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
       child: ElevatedButton(
         onPressed: onTap,
         style: widget.style ?? _buttonTheme?.style,
-        child: widget.child ??
+        child:
+            widget.child ??
             AnimatedCrossFade(
               firstChild: firstChild,
               secondChild: secondChild,
@@ -90,29 +88,22 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
   }
 
   Widget get secondChild => FittedBox(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const AppTextView(
-              text: ' ',
-              style: null,
-              adaptiveColor: false,
-            ),
-            if (widget.isLoading) ...{
-              8.horizontalSpace,
-              const LoadingIndicator(),
-              4.horizontalSpace,
-            },
-          ],
-        ),
-      );
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const AppTextView(text: ' ', style: null, adaptiveColor: false),
+        if (widget.isLoading) ...{
+          8.horizontalSpace,
+          const LoadingIndicator(),
+          4.horizontalSpace,
+        },
+      ],
+    ),
+  );
 
   Widget get firstChild => FittedBox(
-        child: AppTextView(
-          text: widget.text!.tr(),
-          style: widget.textStyle,
-        ),
-      );
+    child: AppTextView(text: widget.text!.tr(), style: widget.textStyle),
+  );
 
   void setButtonStyle() {
     final defaultElevatedTheme = theme.elevatedButtonTheme;
@@ -136,7 +127,7 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
     _buttonTheme = widget.isLoading
         ? loadingElevatedTheme
         : widget.appButtonStyle == AppButtonStyle.secondary
-            ? secondaryElevatedTheme
-            : defaultElevatedTheme;
+        ? secondaryElevatedTheme
+        : defaultElevatedTheme;
   }
 }

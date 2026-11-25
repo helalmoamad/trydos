@@ -66,12 +66,14 @@ class _SearchResultState extends ThemeState<SearchResult> {
 
     // اتجاه النص حسب لغة اسم المنتج: عربي → RTL، غير ذلك → LTR.
     final bool isArabic = RegExp(r'[؀-ۿ]').hasMatch(name);
-    final ui.TextDirection direction =
-        isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr;
+    final ui.TextDirection direction = isArabic
+        ? ui.TextDirection.rtl
+        : ui.TextDirection.ltr;
 
     // موضع النص المكتوب داخل اسم المنتج (غير حسّاس لحالة الأحرف).
-    final int matchIndex =
-        query.isEmpty ? -1 : name.toLowerCase().indexOf(query.toLowerCase());
+    final int matchIndex = query.isEmpty
+        ? -1
+        : name.toLowerCase().indexOf(query.toLowerCase());
 
     final InlineSpan span;
     if (matchIndex < 0) {
@@ -79,8 +81,10 @@ class _SearchResultState extends ThemeState<SearchResult> {
       span = TextSpan(text: name, style: baseStyle);
     } else {
       final String before = name.substring(0, matchIndex);
-      final String matched =
-          name.substring(matchIndex, matchIndex + query.length);
+      final String matched = name.substring(
+        matchIndex,
+        matchIndex + query.length,
+      );
       final String after = name.substring(matchIndex + query.length);
       span = TextSpan(
         children: [

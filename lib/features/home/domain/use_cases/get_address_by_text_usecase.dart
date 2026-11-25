@@ -17,7 +17,8 @@ class GetAddressByTextUsecase
 
   @override
   Future<Either<Failure, GetAddressByTextModel>> call(
-      GetAddressByTextParams params) {
+    GetAddressByTextParams params,
+  ) {
     return repository.getAddressByText(params.map);
   }
 }
@@ -25,7 +26,5 @@ class GetAddressByTextUsecase
 class GetAddressByTextParams {
   String? query;
   GetAddressByTextParams({this.query});
-  Map<String, dynamic> get map => {
-        "query": query,
-      };
+  Map<String, dynamic> get map => {"query": query};
 }

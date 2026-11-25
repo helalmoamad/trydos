@@ -14,7 +14,8 @@ class GetCartItemUseCase
 
   @override
   Future<Either<Failure, GetCartShippingItemsModel>> call(
-      NoParams params) async {
+    NoParams params,
+  ) async {
     return repository.getCartShippingItem();
   }
 }

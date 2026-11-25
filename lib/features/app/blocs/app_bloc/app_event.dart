@@ -81,24 +81,28 @@ class RefreshChatInputField extends AppEvent {
   final String? imageUrl;
   final DateTime? time;
   final int? senderParentMessageId;
-  RefreshChatInputField(this.thereIsReply, this.replyType, this.replyOnMe,
-      {this.senderParentMessageId,
-      this.messageId,
-      this.message,
-      this.imageUrl,
-      this.time});
+  RefreshChatInputField(
+    this.thereIsReply,
+    this.replyType,
+    this.replyOnMe, {
+    this.senderParentMessageId,
+    this.messageId,
+    this.message,
+    this.imageUrl,
+    this.time,
+  });
   @override
   // TODO: implement props
   List<Object?> get props => [
-        thereIsReply,
-        replyType,
-        replyOnMe,
-        senderParentMessageId,
-        messageId,
-        message,
-        imageUrl,
-        time
-      ];
+    thereIsReply,
+    replyType,
+    replyOnMe,
+    senderParentMessageId,
+    messageId,
+    message,
+    imageUrl,
+    time,
+  ];
 }
 
 class AddUserToTypingList extends AppEvent {

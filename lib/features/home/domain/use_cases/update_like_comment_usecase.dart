@@ -16,7 +16,8 @@ class UpdateLikeCommentUseCase
 
   @override
   Future<Either<Failure, ResponseOnlyMessageModel>> call(
-      UpdateLikeCommentParams params) {
+    UpdateLikeCommentParams params,
+  ) {
     return repository.updateLikeComment(params.map);
   }
 }
@@ -35,9 +36,9 @@ class UpdateLikeCommentParams {
     this.commentId,
   });
   Map<String, dynamic> get map => {
-        "target_id": commentId,
-        "target_type": type,
-        "product_id": productId,
-        "to_like": toLike
-      };
+    "target_id": commentId,
+    "target_type": type,
+    "product_id": productId,
+    "to_like": toLike,
+  };
 }

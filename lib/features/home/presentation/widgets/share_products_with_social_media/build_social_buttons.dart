@@ -7,19 +7,23 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/presentation/widgets/share_products_with_social_media/social_media_type.dart';
 import 'package:trydos/service/language_service.dart';
 
-
-Widget buildSocialButtons(
-    {required String text,
-    required String productSlugForULr,
-    required String productId,
-    required String currentColor,
-    required String currentSize,
-    required product.Products product}) {
+Widget buildSocialButtons({
+  required String text,
+  required String productSlugForULr,
+  required String productId,
+  required String currentColor,
+  required String currentSize,
+  required product.Products product,
+}) {
   String urlProductToShare =
-      "${dotenv.env['WEB_CALLS_URL']!}/tr-${LanguageService.languageCode == "ar" ? "ar" : LanguageService.languageCode == "tr" ? "tr" : "en"}/products/$productSlugForULr" +
-          (currentColor.length > 1 || currentSize.length > 1 ? "?" : "") +
-          (currentColor.length > 1 ? "color=$currentColor" : "") +
-          (currentSize.length > 1 ? "&size=$currentSize" : "");
+      "${dotenv.env['WEB_CALLS_URL']!}/tr-${LanguageService.languageCode == "ar"
+          ? "ar"
+          : LanguageService.languageCode == "tr"
+          ? "tr"
+          : "en"}/products/$productSlugForULr" +
+      (currentColor.length > 1 || currentSize.length > 1 ? "?" : "") +
+      (currentColor.length > 1 ? "color=$currentColor" : "") +
+      (currentSize.length > 1 ? "&size=$currentSize" : "");
   return Card(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -153,15 +157,14 @@ Widget buildSocialButtons(
   );
 }
 
-Widget buildSocialButton(
-        {required FaIcon icon, required VoidCallback onClick}) =>
-    InkWell(
-      child: Container(
-        width: 64.w,
-        height: 64.h,
-        child: Center(
-          child: icon,
-        ),
-      ),
-      onTap: onClick,
-    );
+Widget buildSocialButton({
+  required FaIcon icon,
+  required VoidCallback onClick,
+}) => InkWell(
+  child: Container(
+    width: 64.w,
+    height: 64.h,
+    child: Center(child: icon),
+  ),
+  onTap: onClick,
+);

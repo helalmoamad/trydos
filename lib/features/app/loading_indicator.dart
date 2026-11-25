@@ -5,11 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 
 class LoadingIndicator extends StatelessWidget {
-  const LoadingIndicator({
-    Key? key,
-    this.color,
-    this.dimension,
-  }) : super(key: key);
+  const LoadingIndicator({Key? key, this.color, this.dimension})
+    : super(key: key);
 
   final Color? color;
   final double? dimension;
@@ -19,7 +16,8 @@ class LoadingIndicator extends StatelessWidget {
       dimension: dimension ?? 16.r,
       child: Platform.isAndroid
           ? CircularProgressIndicator(
-              backgroundColor: color ??
+              backgroundColor:
+                  color ??
                   // ignore: deprecated_member_use
                   context.theme.colorScheme.primary.withOpacity(0.6),
               strokeWidth: 1.8,
@@ -27,7 +25,8 @@ class LoadingIndicator extends StatelessWidget {
             )
           : CupertinoActivityIndicator(
               // ignore: deprecated_member_use
-              color: color ?? context.colorScheme.primary.withOpacity(0.6)),
+              color: color ?? context.colorScheme.primary.withOpacity(0.6),
+            ),
     );
   }
 }

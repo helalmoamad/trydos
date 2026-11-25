@@ -6,7 +6,8 @@ import 'package:trydos/features/home/data/models/getRelatedProducts.dart';
 import 'package:trydos/features/home/domain/repositories/home_repository.dart';
 
 @injectable
-class GetRelatedProductsUseCase extends UseCase<RelatedProductsResponse, GetRelatedProductsParams> {
+class GetRelatedProductsUseCase
+    extends UseCase<RelatedProductsResponse, GetRelatedProductsParams> {
   final HomeRepository repository;
 
   GetRelatedProductsUseCase(this.repository);
@@ -26,8 +27,5 @@ class GetRelatedProductsParams {
   final int productSlug;
   final String color;
 
-  GetRelatedProductsParams({
-    required this.productSlug,
-    required this.color,
-  });
+  GetRelatedProductsParams({required this.productSlug, required this.color});
 }

@@ -15,22 +15,17 @@ class CancelOrderItemModel {
   final bool? success;
   final int? statusCode;
 
-  CancelOrderItemModel({
-    this.message,
-    this.success,
-    this.statusCode,
-  });
+  CancelOrderItemModel({this.message, this.success, this.statusCode});
 
   CancelOrderItemModel copyWith({
     String? message,
     bool? success,
     int? statusCode,
-  }) =>
-      CancelOrderItemModel(
-        message: message ?? this.message,
-        success: success ?? this.success,
-        statusCode: statusCode ?? this.statusCode,
-      );
+  }) => CancelOrderItemModel(
+    message: message ?? this.message,
+    success: success ?? this.success,
+    statusCode: statusCode ?? this.statusCode,
+  );
 
   factory CancelOrderItemModel.fromJson(Map<String, dynamic> json) =>
       CancelOrderItemModel(
@@ -40,8 +35,8 @@ class CancelOrderItemModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "message": message,
-        "success": success,
-        "status_code": statusCode,
-      };
+    "message": message,
+    "success": success,
+    "status_code": statusCode,
+  };
 }

@@ -112,8 +112,7 @@ class SellerStoryModel {
     productImage: productImage ?? this.productImage,
     viewersCount: viewersCount ?? this.viewersCount,
     createdAt: createdAt ?? this.createdAt,
-    videoDurationInSecond:
-        videoDurationInSecond ?? this.videoDurationInSecond,
+    videoDurationInSecond: videoDurationInSecond ?? this.videoDurationInSecond,
   );
 
   factory SellerStoryModel.fromJson(Map<String, dynamic> json) {
@@ -136,7 +135,9 @@ class SellerStoryModel {
       productSlug: _toStringOrNull(
         json["product_slug"] ?? productJson?["slug"],
       ),
-      productName: _toStringOrNull(json["product_name"] ?? productJson?["name"]),
+      productName: _toStringOrNull(
+        json["product_name"] ?? productJson?["name"],
+      ),
       productImage: _toStringOrNull(
         json["product_image"] ?? productJson?["image"],
       ),
@@ -183,7 +184,8 @@ class SellerStoryModel {
       if (data is List) return _flatten(data);
 
       if (data is Map<String, dynamic>) {
-        final dynamic stories = data["data"] ?? data["stories"] ?? data["items"];
+        final dynamic stories =
+            data["data"] ?? data["stories"] ?? data["items"];
         if (stories is List) return _flatten(stories);
         // A single story returned directly under `data`.
         if (data["id"] != null) return [SellerStoryModel.fromJson(data)];

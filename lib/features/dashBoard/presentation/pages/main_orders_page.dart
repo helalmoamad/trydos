@@ -108,7 +108,9 @@ class _MainOrdersPageState extends State<MainOrdersPage> {
                         final ordersList = state.new_orders ?? [];
 
                         if (ordersList.isEmpty) {
-                          return Center(child: Text(LocaleKeys.no_orders_found.tr()));
+                          return Center(
+                            child: Text(LocaleKeys.no_orders_found.tr()),
+                          );
                         }
 
                         return Padding(

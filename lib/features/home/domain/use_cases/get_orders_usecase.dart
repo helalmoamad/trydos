@@ -13,10 +13,9 @@ class GetOrdersUseCase implements UseCase<OrderModel, GetOrdersParams> {
 
   @override
   Future<Either<Failure, OrderModel>> call(
-      GetOrdersParams getOrdersParams) async {
-    return repository.getOrders(
-      params: getOrdersParams.map,
-    );
+    GetOrdersParams getOrdersParams,
+  ) async {
+    return repository.getOrders(params: getOrdersParams.map);
   }
 }
 
@@ -24,15 +23,9 @@ class GetOrdersParams {
   final int offset;
   final String status;
 
-  GetOrdersParams({
-    required this.offset,
-    required this.status,
-  });
+  GetOrdersParams({required this.offset, required this.status});
   Map<String, dynamic> get map {
-    final result = {
-      "offset": offset.toString(),
-      "limit": '10',
-    };
+    final result = {"offset": offset.toString(), "limit": '10'};
 
     if (status != '') {
       result["order_group_status"] = status;

@@ -12,14 +12,16 @@ class TryAgainWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Column(
-      children: [
-        ElevatedButton(
+      child: Column(
+        children: [
+          ElevatedButton(
             onPressed: () {
               tryAgain();
             },
-            child: MyTextWidget(LocaleKeys.try_again.tr()))
-      ],
-    ));
+            child: MyTextWidget(LocaleKeys.try_again.tr()),
+          ),
+        ],
+      ),
+    );
   }
 }

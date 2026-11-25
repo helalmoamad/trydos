@@ -695,8 +695,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     );
   }
 
- 
-
   FutureOr<void> _onDeleteStoryEvent(
     DeleteStoryEvent event,
     Emitter<StoryState> emit,

@@ -84,7 +84,9 @@ class GetShopInfoModel {
       currency: record['currency'] is Map
           ? ShopCurrency.fromJson(record['currency'] as Map)
           : null,
-      isNewProductsApproval: _readApprovalFlag(record['is_new_products_approval']),
+      isNewProductsApproval: _readApprovalFlag(
+        record['is_new_products_approval'],
+      ),
     );
   }
 
@@ -174,10 +176,9 @@ class UpdateShopInfoResponseModel {
   factory UpdateShopInfoResponseModel.fromJson(dynamic response) {
     if (response is! Map) return const UpdateShopInfoResponseModel();
     return UpdateShopInfoResponseModel(
-      success: response['success'] is bool
-          ? response['success'] as bool
-          : null,
-      message: response['message']?.toString() ?? response['detail']?.toString(),
+      success: response['success'] is bool ? response['success'] as bool : null,
+      message:
+          response['message']?.toString() ?? response['detail']?.toString(),
     );
   }
 }

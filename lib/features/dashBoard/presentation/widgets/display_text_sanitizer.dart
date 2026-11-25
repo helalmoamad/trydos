@@ -79,7 +79,10 @@ String stripDirectionControls(String? raw) {
 /// `maxLines` / `overflow` on a `Text` widget stay a *visual* guard only — they
 /// do not bound work, because the text engine still measures and shapes the
 /// whole string. This does bound it.
-String sanitizeForDisplay(String? raw, {int maxLength = kDisplayTextMaxLength}) {
+String sanitizeForDisplay(
+  String? raw, {
+  int maxLength = kDisplayTextMaxLength,
+}) {
   final String stripped = stripDirectionControls(raw);
   if (stripped.length <= maxLength) return stripped;
   return stripped.substring(0, maxLength);

@@ -13,23 +13,13 @@ String responseOnlyMessageModelToJson(ResponseOnlyMessageModel data) =>
 class ResponseOnlyMessageModel {
   final String? message;
 
-  ResponseOnlyMessageModel({
-    this.message,
-  });
+  ResponseOnlyMessageModel({this.message});
 
-  ResponseOnlyMessageModel copyWith({
-    String? message,
-  }) =>
-      ResponseOnlyMessageModel(
-        message: message ?? this.message,
-      );
+  ResponseOnlyMessageModel copyWith({String? message}) =>
+      ResponseOnlyMessageModel(message: message ?? this.message);
 
   factory ResponseOnlyMessageModel.fromJson(Map<String, dynamic> json) =>
-      ResponseOnlyMessageModel(
-        message: json["message"],
-      );
+      ResponseOnlyMessageModel(message: json["message"]);
 
-  Map<String, dynamic> toJson() => {
-        "message": message,
-      };
+  Map<String, dynamic> toJson() => {"message": message};
 }

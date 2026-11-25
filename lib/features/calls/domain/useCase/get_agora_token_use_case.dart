@@ -13,8 +13,7 @@ class GetAgoraTokenUseCase extends UseCase<GetAgoraTokenResponseModel, String> {
   GetAgoraTokenUseCase(this.repository);
 
   @override
-  Future<Either<Failure, GetAgoraTokenResponseModel>> call(String  ChatId) {
+  Future<Either<Failure, GetAgoraTokenResponseModel>> call(String ChatId) {
     return repository.getAgoraToken(ChatId: ChatId);
   }
 }
-

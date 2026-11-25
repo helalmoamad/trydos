@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum WindowSize {
-  compact,
-  medium,
-  expanded,
-}
+enum WindowSize { compact, medium, expanded }
 
 enum ScreenSize { small, medium, large, xlarge }
 
@@ -30,13 +26,15 @@ class ScreenService {
 
   static ScreenType get widthBasedScreenType => _widthBasedScreenType;
   static ScreenType get heightBasedScreenType => _heightBasedScreenType;
-  static ScreenType get targetScreenType =>
-      _orientation == Orientation.portrait ? widthBasedScreenType : heightBasedScreenType;
+  static ScreenType get targetScreenType => _orientation == Orientation.portrait
+      ? widthBasedScreenType
+      : heightBasedScreenType;
 
   static WindowSize get widthBasedWindowSize => _widthBasedWindowSize;
   static WindowSize get heightBasedWindowSize => _heightBasedWindowSize;
-  static WindowSize get targetWindowSize =>
-      _orientation == Orientation.portrait ? widthBasedWindowSize : heightBasedWindowSize;
+  static WindowSize get targetWindowSize => _orientation == Orientation.portrait
+      ? widthBasedWindowSize
+      : heightBasedWindowSize;
 
   late double _screenWidth;
   late double _screenHeight;
@@ -61,7 +59,8 @@ class ScreenService {
     _computeScreenType();
   }
 
-  factory ScreenService(BuildContext context) => ScreenService._singleton(context);
+  factory ScreenService(BuildContext context) =>
+      ScreenService._singleton(context);
 
   _setDimensions() {
     _screenWidth = _mediaQueryData.size.width;

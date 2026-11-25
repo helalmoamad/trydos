@@ -5,8 +5,10 @@ part 'pre_caching_image_state.g.dart';
 class PreCachingImageState {
   final Map<String, bool> cachedImages;
   final Map<String, bool> cachehSvgs;
-  const PreCachingImageState(
-      {this.cachedImages = const {}, this.cachehSvgs = const {}});
+  const PreCachingImageState({
+    this.cachedImages = const {},
+    this.cachehSvgs = const {},
+  });
 
   /// تحديث خريطة واحدة مع الإبقاء على الأخرى.
   ///
@@ -18,11 +20,10 @@ class PreCachingImageState {
   PreCachingImageState copyWith({
     Map<String, bool>? cachedImages,
     Map<String, bool>? cachehSvgs,
-  }) =>
-      PreCachingImageState(
-        cachedImages: cachedImages ?? this.cachedImages,
-        cachehSvgs: cachehSvgs ?? this.cachehSvgs,
-      );
+  }) => PreCachingImageState(
+    cachedImages: cachedImages ?? this.cachedImages,
+    cachehSvgs: cachehSvgs ?? this.cachehSvgs,
+  );
 
   factory PreCachingImageState.fromJson(Map<String, dynamic> data) =>
       _$PreCachingImageStateFromJson(data);

@@ -21,11 +21,14 @@ class RejectCallParams {
   final Map<String, dynamic>? payload;
   final int duration;
 
-  const RejectCallParams(
-      {required this.messageId, this.payload, required this.duration});
+  const RejectCallParams({
+    required this.messageId,
+    this.payload,
+    required this.duration,
+  });
 
   Map<String, dynamic> get map => {
-        'messageId': messageId,
-        'payload': {'payload': payload, "duration_in_seconds": duration}
-      };
+    'messageId': messageId,
+    'payload': {'payload': payload, "duration_in_seconds": duration},
+  };
 }

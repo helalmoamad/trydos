@@ -32,8 +32,8 @@ class CancelOrderItemParams {
   });
 
   Map<String, dynamic> get map => {
-        "order_id": orderId,
-        "detail_id": detailId,
-        "qty": qty,
-      };
+    "order_id": orderId,
+    "detail_id": detailId,
+    "qty": qty,
+  };
 }

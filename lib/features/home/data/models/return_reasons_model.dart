@@ -34,15 +34,14 @@ class ReturnReasonsModel {
     String? message,
     dynamic detailedError,
     ReturnReasonsDataModel? data,
-  }) =>
-      ReturnReasonsModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
+  }) => ReturnReasonsModel(
+    isSuccessful: isSuccessful ?? this.isSuccessful,
+    hasContent: hasContent ?? this.hasContent,
+    code: code ?? this.code,
+    message: message ?? this.message,
+    detailedError: detailedError ?? this.detailedError,
+    data: data ?? this.data,
+  );
 
   factory ReturnReasonsModel.fromJson(Map<String, dynamic> json) =>
       ReturnReasonsModel(
@@ -57,53 +56,55 @@ class ReturnReasonsModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class ReturnReasonsDataModel {
   final List<ReturnReasonModel>? returnReasons;
   final List<ExchangeReasonModel>? exchangeReasons;
 
-  ReturnReasonsDataModel({
-    this.returnReasons,
-    this.exchangeReasons,
-  });
+  ReturnReasonsDataModel({this.returnReasons, this.exchangeReasons});
 
   ReturnReasonsDataModel copyWith({
     List<ReturnReasonModel>? returnReasons,
     List<ExchangeReasonModel>? exchangeReasons,
-  }) =>
-      ReturnReasonsDataModel(
-        returnReasons: returnReasons ?? this.returnReasons,
-        exchangeReasons: exchangeReasons ?? this.exchangeReasons,
-      );
+  }) => ReturnReasonsDataModel(
+    returnReasons: returnReasons ?? this.returnReasons,
+    exchangeReasons: exchangeReasons ?? this.exchangeReasons,
+  );
 
   factory ReturnReasonsDataModel.fromJson(Map<String, dynamic> json) =>
       ReturnReasonsDataModel(
         returnReasons: json["return_reasons"] == null
             ? []
             : List<ReturnReasonModel>.from(
-                json["return_reasons"]!.map((x) => ReturnReasonModel.fromJson(x))),
+                json["return_reasons"]!.map(
+                  (x) => ReturnReasonModel.fromJson(x),
+                ),
+              ),
         exchangeReasons: json["exchange_reasons"] == null
             ? []
             : List<ExchangeReasonModel>.from(
-                json["exchange_reasons"]!.map((x) => ExchangeReasonModel.fromJson(x))),
+                json["exchange_reasons"]!.map(
+                  (x) => ExchangeReasonModel.fromJson(x),
+                ),
+              ),
       );
 
   Map<String, dynamic> toJson() => {
-        "return_reasons": returnReasons == null
-            ? []
-            : List<dynamic>.from(returnReasons!.map((x) => x.toJson())),
-        "exchange_reasons": exchangeReasons == null
-            ? []
-            : List<dynamic>.from(exchangeReasons!.map((x) => x.toJson())),
-      };
+    "return_reasons": returnReasons == null
+        ? []
+        : List<dynamic>.from(returnReasons!.map((x) => x.toJson())),
+    "exchange_reasons": exchangeReasons == null
+        ? []
+        : List<dynamic>.from(exchangeReasons!.map((x) => x.toJson())),
+  };
 }
 
 class ReturnReasonModel {
@@ -133,16 +134,15 @@ class ReturnReasonModel {
     double? cost,
     int? isCostBySystem,
     int? isForExchange,
-  }) =>
-      ReturnReasonModel(
-        id: id ?? this.id,
-        reasonAeEn: reasonAeEn ?? this.reasonAeEn,
-        reason: reason ?? this.reason,
-        reasonDetailsAeEn: reasonDetailsAeEn ?? this.reasonDetailsAeEn,
-        cost: cost ?? this.cost,
-        isCostBySystem: isCostBySystem ?? this.isCostBySystem,
-        isForExchange: isForExchange ?? this.isForExchange,
-      );
+  }) => ReturnReasonModel(
+    id: id ?? this.id,
+    reasonAeEn: reasonAeEn ?? this.reasonAeEn,
+    reason: reason ?? this.reason,
+    reasonDetailsAeEn: reasonDetailsAeEn ?? this.reasonDetailsAeEn,
+    cost: cost ?? this.cost,
+    isCostBySystem: isCostBySystem ?? this.isCostBySystem,
+    isForExchange: isForExchange ?? this.isForExchange,
+  );
 
   factory ReturnReasonModel.fromJson(Map<String, dynamic> json) =>
       ReturnReasonModel(
@@ -156,14 +156,14 @@ class ReturnReasonModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "reason_ae_en": reasonAeEn,
-        "reason": reason,
-        "reason_details_ae_en": reasonDetailsAeEn,
-        "cost": cost,
-        "is_cost_by_system": isCostBySystem,
-        "is_for_exchange": isForExchange,
-      };
+    "id": id,
+    "reason_ae_en": reasonAeEn,
+    "reason": reason,
+    "reason_details_ae_en": reasonDetailsAeEn,
+    "cost": cost,
+    "is_cost_by_system": isCostBySystem,
+    "is_for_exchange": isForExchange,
+  };
 }
 
 class ExchangeReasonModel {
@@ -193,16 +193,15 @@ class ExchangeReasonModel {
     double? cost,
     int? isCostBySystem,
     int? isForExchange,
-  }) =>
-      ExchangeReasonModel(
-        id: id ?? this.id,
-        reasonAeEn: reasonAeEn ?? this.reasonAeEn,
-        reason: reason ?? this.reason,
-        reasonDetailsAeEn: reasonDetailsAeEn ?? this.reasonDetailsAeEn,
-        cost: cost ?? this.cost,
-        isCostBySystem: isCostBySystem ?? this.isCostBySystem,
-        isForExchange: isForExchange ?? this.isForExchange,
-      );
+  }) => ExchangeReasonModel(
+    id: id ?? this.id,
+    reasonAeEn: reasonAeEn ?? this.reasonAeEn,
+    reason: reason ?? this.reason,
+    reasonDetailsAeEn: reasonDetailsAeEn ?? this.reasonDetailsAeEn,
+    cost: cost ?? this.cost,
+    isCostBySystem: isCostBySystem ?? this.isCostBySystem,
+    isForExchange: isForExchange ?? this.isForExchange,
+  );
 
   factory ExchangeReasonModel.fromJson(Map<String, dynamic> json) =>
       ExchangeReasonModel(
@@ -216,12 +215,12 @@ class ExchangeReasonModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "reason_ae_en": reasonAeEn,
-        "reason": reason,
-        "reason_details_ae_en": reasonDetailsAeEn,
-        "cost": cost,
-        "is_cost_by_system": isCostBySystem,
-        "is_for_exchange": isForExchange,
-      };
-} 
+    "id": id,
+    "reason_ae_en": reasonAeEn,
+    "reason": reason,
+    "reason_details_ae_en": reasonDetailsAeEn,
+    "cost": cost,
+    "is_cost_by_system": isCostBySystem,
+    "is_for_exchange": isForExchange,
+  };
+}

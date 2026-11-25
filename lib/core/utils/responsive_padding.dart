@@ -3,23 +3,16 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 extension EdgeInsetsExtension on EdgeInsets {
-  EdgeInsets get hw => copyWith(
-        top: top.h,
-        bottom: bottom.h,
-        right: right.w,
-        left: left.w,
-      );
+  EdgeInsets get hw =>
+      copyWith(top: top.h, bottom: bottom.h, right: right.w, left: left.w);
 }
 
 class HWPadding extends SingleChildRenderObjectWidget {
   /// Creates a adapt widget that insets its child.
   ///
   /// The [padding] argument must not be null.
-  const HWPadding({
-    Key? key,
-    required Widget child,
-    required this.padding,
-  }) : super(key: key, child: child);
+  const HWPadding({Key? key, required Widget child, required this.padding})
+    : super(key: key, child: child);
 
   /// The amount of space by which to inset the child.
   final EdgeInsets padding;
@@ -36,7 +29,7 @@ class HWPadding extends SingleChildRenderObjectWidget {
 class HWEdgeInsets extends EdgeInsets {
   /// Creates adapt insets from offsets from the left, top, right, and bottom.
   HWEdgeInsets.fromLTRB(double left, double top, double right, double bottom)
-      : super.fromLTRB(left.w, top.h, right.w, bottom.h);
+    : super.fromLTRB(left.w, top.h, right.w, bottom.h);
 
   /// Creates adapt insets where all the offsets are `value`.
   ///
@@ -60,10 +53,8 @@ class HWEdgeInsets extends EdgeInsets {
   /// const REdgeInsets.symmetric(vertical: 8.0)
   /// ```
   /// {@end-tool}
-  HWEdgeInsets.symmetric({
-    double vertical = 0,
-    double horizontal = 0,
-  }) : super.symmetric(vertical: vertical.h, horizontal: horizontal.w);
+  HWEdgeInsets.symmetric({double vertical = 0, double horizontal = 0})
+    : super.symmetric(vertical: vertical.h, horizontal: horizontal.w);
 
   /// Creates adapt insets with only the given values non-zero.
   ///
@@ -80,12 +71,7 @@ class HWEdgeInsets extends EdgeInsets {
     double right = 0,
     double left = 0,
     double top = 0,
-  }) : super.only(
-          bottom: bottom.h,
-          right: right.w,
-          left: left.w,
-          top: top.h,
-        );
+  }) : super.only(bottom: bottom.h, right: right.w, left: left.w, top: top.h);
 }
 
 class HWEdgeInsetsDirectional extends EdgeInsetsDirectional {
@@ -116,12 +102,7 @@ class HWEdgeInsetsDirectional extends EdgeInsetsDirectional {
     double end = 0,
     double start = 0,
     double top = 0,
-  }) : super.only(
-          bottom: bottom.h,
-          start: start.w,
-          end: end.w,
-          top: top.h,
-        );
+  }) : super.only(bottom: bottom.h, start: start.w, end: end.w, top: top.h);
 
   /// Creates adapt insets from offsets from the start, top, end, and bottom.
   HWEdgeInsetsDirectional.fromSTEB(
@@ -129,10 +110,5 @@ class HWEdgeInsetsDirectional extends EdgeInsetsDirectional {
     double top,
     double end,
     double bottom,
-  ) : super.fromSTEB(
-          start.w,
-          top.h,
-          end.w,
-          bottom.h,
-        );
+  ) : super.fromSTEB(start.w, top.h, end.w, bottom.h);
 }

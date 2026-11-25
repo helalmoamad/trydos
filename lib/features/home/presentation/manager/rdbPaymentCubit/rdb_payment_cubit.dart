@@ -96,31 +96,28 @@ class RdbPaymentCubit extends Cubit<RdbPaymentState> {
       'address_id': addressId,
       'order_note': orderNote,
     });
-    await result.fold(
-      (failure) async {
-        // 409 = للزبون دفعة معلّقة. لا نفتحها هنا بصمت: نُعلم الشاشة لتغلق
-        // نفسها وتعرض رسالة التنبيه، كما يحدث تماماً عند تعديل السلة.
-        //
-        // لا نكتفي برمز الحالة: طبقة الشبكة تبتلع خطأ Dio في بعض المسارات
-        // فيصل 400 مكان 409، لذلك نسأل أيضاً إن كان المعترض قد رأى القفل للتوّ.
-        if (failure.statusCode == 409 || RdbPendingPayment.wasJustRejected()) {
-          emit(
-            state.copyWith(
-              phase: RdbPaymentPhase.blockedByPendingRequest,
-              errorMessage: failure.message,
-            ),
-          );
-          return;
-        }
+    await result.fold((failure) async {
+      // 409 = للزبون دفعة معلّقة. لا نفتحها هنا بصمت: نُعلم الشاشة لتغلق
+      // نفسها وتعرض رسالة التنبيه، كما يحدث تماماً عند تعديل السلة.
+      //
+      // لا نكتفي برمز الحالة: طبقة الشبكة تبتلع خطأ Dio في بعض المسارات
+      // فيصل 400 مكان 409، لذلك نسأل أيضاً إن كان المعترض قد رأى القفل للتوّ.
+      if (failure.statusCode == 409 || RdbPendingPayment.wasJustRejected()) {
         emit(
           state.copyWith(
-            phase: RdbPaymentPhase.error,
+            phase: RdbPaymentPhase.blockedByPendingRequest,
             errorMessage: failure.message,
           ),
         );
-      },
-      (response) async => _applyResponse(response),
-    );
+        return;
+      }
+      emit(
+        state.copyWith(
+          phase: RdbPaymentPhase.error,
+          errorMessage: failure.message,
+        ),
+      );
+    }, (response) async => _applyResponse(response));
   }
 
   /// يفتح طلباً معلّقاً موجوداً (من شريط السلة أو بعد خطأ 409).
@@ -187,15 +184,11 @@ class RdbPaymentCubit extends Cubit<RdbPaymentState> {
     switch (request.status) {
       case RdbPaymentStatus.paid:
         _stopPolling();
-        emit(
-          RdbPaymentState(phase: RdbPaymentPhase.paid, request: request),
-        );
+        emit(RdbPaymentState(phase: RdbPaymentPhase.paid, request: request));
         return;
       case RdbPaymentStatus.expired:
         _stopPolling();
-        emit(
-          RdbPaymentState(phase: RdbPaymentPhase.expired, request: request),
-        );
+        emit(RdbPaymentState(phase: RdbPaymentPhase.expired, request: request));
         return;
       case RdbPaymentStatus.cancelled:
         _stopPolling();
@@ -205,9 +198,7 @@ class RdbPaymentCubit extends Cubit<RdbPaymentState> {
         return;
       case RdbPaymentStatus.failed:
         _stopPolling();
-        emit(
-          RdbPaymentState(phase: RdbPaymentPhase.failed, request: request),
-        );
+        emit(RdbPaymentState(phase: RdbPaymentPhase.failed, request: request));
         return;
       case RdbPaymentStatus.awaitingPayment:
       case RdbPaymentStatus.unknown:

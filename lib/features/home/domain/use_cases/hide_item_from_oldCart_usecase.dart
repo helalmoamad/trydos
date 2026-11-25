@@ -22,7 +22,7 @@ class HideItemsInOldCartParams {
   bool hideAll;
 
   HideItemsInOldCartParams({this.oLdCartId, this.hideAll = false});
-  Map<String, dynamic> get map => {
-        "id": hideAll ? null : "${oLdCartId}",
-      }..removeWhere((key, value) => value == null);
+  Map<String, dynamic> get map =>
+      {"id": hideAll ? null : "${oLdCartId}"}
+        ..removeWhere((key, value) => value == null);
 }

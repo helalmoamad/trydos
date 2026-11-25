@@ -2500,9 +2500,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             -1;
         currentSelectedColorAfterChangeVariant = index;
         devLog(
-            "DFDFEDFEWFEFEFEWFEWF++++.........******//////${currentSelectedColorAfterChangeVariant}");
+            "DFDFEDFEWFEFEFEWFEWF++++.........******/ /////${currentSelectedColorAfterChangeVariant}");
 
-      /*  await Future.delayed(
+/*  await Future.delayed(
             const Duration(milliseconds: 50),
             () => homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: index != -1 ? index : 0,

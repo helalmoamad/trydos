@@ -32,10 +32,9 @@ class ReportAboutStoryParams {
   final String? notes;
 
   Map<String, dynamic> get map => {
-        'reporter_user_id': userId,
-        'story_id': storyId,
-        'reasons': reasons,
-        if (notes != null && notes!.trim().isNotEmpty)
-          'notes': notes!.trim(),
-      };
+    'reporter_user_id': userId,
+    'story_id': storyId,
+    'reasons': reasons,
+    if (notes != null && notes!.trim().isNotEmpty) 'notes': notes!.trim(),
+  };
 }

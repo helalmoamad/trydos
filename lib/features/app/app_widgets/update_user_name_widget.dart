@@ -16,9 +16,7 @@ import '../../authentication/presentation/widgets/name_from_field.dart';
 import '../my_text_widget.dart';
 
 class UpdateUserNameWidget extends StatelessWidget {
-  UpdateUserNameWidget({
-    super.key,
-  });
+  UpdateUserNameWidget({super.key});
 
   final ValueNotifier<bool> displaySubmit = ValueNotifier(false);
   final TextEditingController controller = TextEditingController();
@@ -36,7 +34,7 @@ class UpdateUserNameWidget extends StatelessWidget {
         },
         listenWhen: (p, c) =>
             (p.updateStoriesUserStatus != c.updateStoriesUserStatus &&
-                c.updateStoriesUserStatus == UpdateStoriesUserStatus.success),
+            c.updateStoriesUserStatus == UpdateStoriesUserStatus.success),
         buildWhen: (p, c) {
           return (p.updateStoriesUserStatus != c.updateStoriesUserStatus);
         },
@@ -59,63 +57,65 @@ class UpdateUserNameWidget extends StatelessWidget {
                   Form(
                     key: _formKey,
                     child: Padding(
-                        padding: HWEdgeInsets.symmetric(horizontal: 20.0),
-                        child: ValueListenableBuilder<bool>(
-                            valueListenable: displaySubmit,
-                            builder: (context, display, _) {
-                              return NameFormField(
-                                validator: ((value) {
-                                  if (value!.length < 8) {
-                                    return LocaleKeys
-                                        .must_be_at_least_8_characters
-                                        .tr();
-                                  }
-                                  return null;
-                                }),
-                                autoFocus: false,
-                                ready: display,
-                                onChange: (String? text) {
-                                  _formKey.currentState!.validate();
-                                  displaySubmit.value = text!.length >= 8;
-                                },
-                                controller: controller,
-                                suffixIcon: Padding(
-                                  padding:
-                                      HWEdgeInsets.only(right: 20.0, top: 22),
-                                  child: !display
-                                      ? const SizedBox(
-                                          width: 22,
-                                          height: 15,
-                                        )
-                                      : InkWell(
-                                          onTap: () {
-                                            BlocProvider.of<AuthBloc>(context)
-                                                .add(UpdateStoriesUserEvent(
-                                                    name: controller.text));
-                                          },
-                                          child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                SvgPicture.asset(
-                                                  AppAssets.submitArrowSvg,
-                                                  width: 10,
-                                                  height: 20,
-                                                ),
-                                              ]),
-                                        ),
-                                ),
-                              );
-                            })),
+                      padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+                      child: ValueListenableBuilder<bool>(
+                        valueListenable: displaySubmit,
+                        builder: (context, display, _) {
+                          return NameFormField(
+                            validator: ((value) {
+                              if (value!.length < 8) {
+                                return LocaleKeys.must_be_at_least_8_characters
+                                    .tr();
+                              }
+                              return null;
+                            }),
+                            autoFocus: false,
+                            ready: display,
+                            onChange: (String? text) {
+                              _formKey.currentState!.validate();
+                              displaySubmit.value = text!.length >= 8;
+                            },
+                            controller: controller,
+                            suffixIcon: Padding(
+                              padding: HWEdgeInsets.only(right: 20.0, top: 22),
+                              child: !display
+                                  ? const SizedBox(width: 22, height: 15)
+                                  : InkWell(
+                                      onTap: () {
+                                        BlocProvider.of<AuthBloc>(context).add(
+                                          UpdateStoriesUserEvent(
+                                            name: controller.text,
+                                          ),
+                                        );
+                                      },
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SvgPicture.asset(
+                                            AppAssets.submitArrowSvg,
+                                            width: 10,
+                                            height: 20,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),
               Transform.translate(
-                  offset: const Offset(10, -10),
-                  child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(Icons.cancel_outlined)))
+                offset: const Offset(10, -10),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(Icons.cancel_outlined),
+                ),
+              ),
             ],
           );
         },

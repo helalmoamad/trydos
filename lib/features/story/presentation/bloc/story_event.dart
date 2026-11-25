@@ -137,4 +137,3 @@ class DeleteStoryEvent extends StoryEvent {
 /// Removes a single story (e.g. after it has been reported) from a given
 /// collection. If the collection becomes empty it is dropped entirely and the
 /// per-collection index map is re-keyed.
-

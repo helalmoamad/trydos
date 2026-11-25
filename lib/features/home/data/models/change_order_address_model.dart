@@ -15,22 +15,17 @@ class ChangeOrderAddressModel {
   final bool? success;
   final int? statusCode;
 
-  ChangeOrderAddressModel({
-    this.message,
-    this.success,
-    this.statusCode,
-  });
+  ChangeOrderAddressModel({this.message, this.success, this.statusCode});
 
   ChangeOrderAddressModel copyWith({
     String? message,
     bool? success,
     int? statusCode,
-  }) =>
-      ChangeOrderAddressModel(
-        message: message ?? this.message,
-        success: success ?? this.success,
-        statusCode: statusCode ?? this.statusCode,
-      );
+  }) => ChangeOrderAddressModel(
+    message: message ?? this.message,
+    success: success ?? this.success,
+    statusCode: statusCode ?? this.statusCode,
+  );
 
   factory ChangeOrderAddressModel.fromJson(Map<String, dynamic> json) =>
       ChangeOrderAddressModel(
@@ -40,8 +35,8 @@ class ChangeOrderAddressModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "message": message,
-        "success": success,
-        "status_code": statusCode,
-      };
+    "message": message,
+    "success": success,
+    "status_code": statusCode,
+  };
 }

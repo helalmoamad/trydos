@@ -8,15 +8,17 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 
 @injectable
-class GetAndAddCountViewOfProductUsecase extends UseCase<
-    GetCountViewOfProductModel, getAndAddCountViewOfProductParams> {
+class GetAndAddCountViewOfProductUsecase
+    extends
+        UseCase<GetCountViewOfProductModel, getAndAddCountViewOfProductParams> {
   final HomeRepository repository;
 
   GetAndAddCountViewOfProductUsecase(this.repository);
 
   @override
   Future<Either<Failure, GetCountViewOfProductModel>> call(
-      getAndAddCountViewOfProductParams params) {
+    getAndAddCountViewOfProductParams params,
+  ) {
     return repository.getAndAddCountViewOfProduct(params.map);
   }
 }

@@ -7,14 +7,16 @@ import '../../../../core/use_case/use_case.dart';
 import '../repositories/auth_repository.dart';
 
 @injectable
-class LoginToMarketUseCase implements UseCase<VerifyOtpSignUpAndInResponseModel, LoginToMarketParams> {
+class LoginToMarketUseCase
+    implements UseCase<VerifyOtpSignUpAndInResponseModel, LoginToMarketParams> {
   LoginToMarketUseCase(this.repository);
 
   final AuthRepository repository;
 
   @override
   Future<Either<Failure, VerifyOtpSignUpAndInResponseModel>> call(
-      LoginToMarketParams params) async {
+    LoginToMarketParams params,
+  ) async {
     return repository.loginToMarket(params.map);
   }
 }
@@ -24,15 +26,11 @@ class LoginToMarketParams {
   String? deviceId;
   String? password;
 
-  LoginToMarketParams({
-    this.phone,
-    this.password,
-    this.deviceId,
-  });
-  Map<String, dynamic> get map =>{
-    "phone" :phone,
-    "password" :password,
-    "device_id" :deviceId,
+  LoginToMarketParams({this.phone, this.password, this.deviceId});
+  Map<String, dynamic> get map => {
+    "phone": phone,
+    "password": password,
+    "device_id": deviceId,
     //"password" :password,x
   };
 }

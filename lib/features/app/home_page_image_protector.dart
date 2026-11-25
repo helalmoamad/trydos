@@ -41,7 +41,8 @@ class HomePageImageProtector {
       // with it.
       if (kDebugMode) {
         debugPrint(
-            '🛡️ Protected home page image: ${_getShortUrl(imageUrl)} from $imageSource');
+          '🛡️ Protected home page image: ${_getShortUrl(imageUrl)} from $imageSource',
+        );
       }
 
       // إذا تجاوز العدد المسموح، احذف الأقدم
@@ -81,7 +82,7 @@ class HomePageImageProtector {
       'home_page_card2',
       'features_products_widget',
       'flash_deal_products_widget',
-      'home_banner'
+      'home_banner',
     ].contains(source);
   }
 
@@ -102,20 +103,23 @@ class HomePageImageProtector {
 
     if (kDebugMode) {
       debugPrint(
-          '🗑️ Removed $imagesToRemove old home page images to maintain limit');
+        '🗑️ Removed $imagesToRemove old home page images to maintain limit',
+      );
     }
   }
 
   /// فلترة الصور للحذف (استبعاد المحمية)
   static List<String> filterImagesForDeletion(List<String> imagesToDelete) {
-    final filteredImages =
-        imagesToDelete.where((url) => !_protectedImages.contains(url)).toList();
+    final filteredImages = imagesToDelete
+        .where((url) => !_protectedImages.contains(url))
+        .toList();
 
     final protectedCount = imagesToDelete.length - filteredImages.length;
 
     if (protectedCount > 0 && kDebugMode) {
       debugPrint(
-          '🛡️ Protected $protectedCount home page images from deletion');
+        '🛡️ Protected $protectedCount home page images from deletion',
+      );
     }
 
     return filteredImages;
@@ -144,7 +148,8 @@ class HomePageImageProtector {
 
       if (kDebugMode) {
         debugPrint(
-            '🧹 Maintenance cleanup: removed $imagesToRemove old protected images');
+          '🧹 Maintenance cleanup: removed $imagesToRemove old protected images',
+        );
       }
     }
   }
@@ -199,7 +204,8 @@ class HomePageImageProtector {
 
     if (kDebugMode) {
       debugPrint(
-          '🚨 Emergency protection applied to ${criticalImages.length} critical images');
+        '🚨 Emergency protection applied to ${criticalImages.length} critical images',
+      );
     }
   }
 
@@ -215,7 +221,8 @@ class HomePageImageProtector {
 
   /// فحص سلامة النظام
   static bool validateSystem() {
-    final isValid = _isInitialized &&
+    final isValid =
+        _isInitialized &&
         _protectedImages.length <= _maxHomePageImages &&
         _homePageImages.every((image) => _protectedImages.contains(image));
 

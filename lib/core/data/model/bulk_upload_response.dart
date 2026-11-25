@@ -11,7 +11,10 @@ String bulkUploadResponseModelToJson(BulkUploadResponseModel data) =>
 /// الخادم يعيد `url` مفرداً عند تخزين صورة واحدة، و`urls` عند تخزين أكثر من
 /// صورة — ولذلك يوحّد هذا النموذج الحالتين في [urls].
 class BulkUploadResponseModel {
-  const BulkUploadResponseModel({this.urls = const [], this.skipped = const []});
+  const BulkUploadResponseModel({
+    this.urls = const [],
+    this.skipped = const [],
+  });
 
   final List<String> urls;
   final List<SkippedUploadFile> skipped;
@@ -52,10 +55,7 @@ class SkippedUploadFile {
   final String? reason;
 
   factory SkippedUploadFile.fromJson(Map<String, dynamic> json) =>
-      SkippedUploadFile(
-        filename: json["filename"],
-        reason: json["reason"],
-      );
+      SkippedUploadFile(filename: json["filename"], reason: json["reason"]);
 
   Map<String, dynamic> toJson() => {"filename": filename, "reason": reason};
 }

@@ -9,10 +9,11 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 class NotificationFrequencyDropdown extends StatefulWidget {
   final List<String> notificationFrequency;
   String selectedNotificationFrequency;
-  NotificationFrequencyDropdown(
-      {super.key,
-      required this.notificationFrequency,
-      required this.selectedNotificationFrequency});
+  NotificationFrequencyDropdown({
+    super.key,
+    required this.notificationFrequency,
+    required this.selectedNotificationFrequency,
+  });
   @override
   _CountryDropdownState createState() => _CountryDropdownState();
 }
@@ -46,8 +47,11 @@ class _CountryDropdownState extends State<NotificationFrequencyDropdown> {
             widget.selectedNotificationFrequency = newValue ?? "";
 
             setState(() {});
-            homeBloc.add(UpdateNotificationFrequencyEvent(
-                notificationFrequency: newValue ?? ''));
+            homeBloc.add(
+              UpdateNotificationFrequencyEvent(
+                notificationFrequency: newValue ?? '',
+              ),
+            );
           },
           // buttonHeight: 40,
           // buttonWidth: 1.sw / 2,

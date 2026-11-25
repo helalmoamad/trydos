@@ -3762,7 +3762,9 @@ class _OrderDetails1State extends State<OrderDetailsNew> {
                                     String? recipientUserId =
                                         state.recipientUserId;
                                     if (kDebugMode)
-                                      devLog("recipientUserId $recipientUserId");
+                                      devLog(
+                                        "recipientUserId $recipientUserId",
+                                      );
                                     if (recipientUserId == null) {
                                       return;
                                     }

@@ -466,7 +466,8 @@ void _showCustomToast(
 
   // المحاولة الأولى: الحصول على Overlay من الـ context الحالي (إن كان حياً)
   overlayState = context.mounted
-      ? (Overlay.maybeOf(context) ?? Overlay.maybeOf(context, rootOverlay: true))
+      ? (Overlay.maybeOf(context) ??
+            Overlay.maybeOf(context, rootOverlay: true))
       : null;
 
   // المحاولة الثانية: استخدام navigatorKey إذا فشلت الأولى
