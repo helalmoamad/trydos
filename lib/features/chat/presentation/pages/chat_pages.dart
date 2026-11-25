@@ -7,7 +7,6 @@ import 'package:trydos/features/chat/presentation/pages/chat_list_design.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 
-import 'package:trydos/features/chat/presentation/pages/conversation_design.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_v2/chat_list_header_v2.dart';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -21,14 +20,12 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/form_state_mixin.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
-import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
@@ -45,7 +42,6 @@ import 'package:trydos/service/firebase_analytics_service/firebase_analytics_ser
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../../routes/router.dart';
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../app/my_text_widget.dart';
@@ -89,11 +85,6 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   /// وكذلك قائمة المؤرشفة. واحدة مفتوحة فقط — كلتاهما تستبدل قائمة المحادثات،
   /// ففتحهما معاً يعني قائمتين فوق بعضهما.
   final ValueNotifier<bool> _archivedOpen = ValueNotifier(false);
-
-  void _openReminders(bool open) {
-    if (open) _archivedOpen.value = false;
-    _remindersOpen.value = open;
-  }
 
   void _openArchived(bool open) {
     if (open) _remindersOpen.value = false;
@@ -265,26 +256,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
               //
               // وهو في الملف يفتح **نافذة «محادثة جديدة»** لا صفحةً أخرى؛
               // والانتقال القديم إلى صفحة جهات الاتصال معلَّقٌ أدناه.
-              floatingActionButton: kChatDesignV2
-                  ? _newChatButton()
-                  : FloatingActionButton(
-                      key: TestVariables.kTestMode
-                          ? const Key(WidgetsKeys.myContactsFloatingActionKey)
-                          : null,
-                      onPressed: () {
-                        context.go(
-                          GRouter.config.applicationRoutes.kMyContactsPagePath,
-                        );
-                      },
-                      backgroundColor: const Color(0xff388cff),
-                      child: Center(
-                        child: Icon(
-                          Icons.message_rounded,
-                          size: 25.sp,
-                          color: colorScheme.white,
-                        ),
-                      ),
-                    ),
+              floatingActionButton: _newChatButton(),
               backgroundColor: const Color(0xffF8F8F8),
               appBar: widget.hideCallsAndStories
                   ? TrydosAppBar(
@@ -333,95 +305,53 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                   controller: scrollController,
                   scrollBehavior: const CupertinoScrollBehavior(),
                   slivers: [
-                    // الترويسة بالتصميم الجديد: حقل البحث وشريط التبويبين
-                    // في ودجت واحدة — [ChatListHeaderV2]. والقديمة معلَّقة
-                    // أدناه بين `if (!kChatDesignV2)`.
-                    if (kChatDesignV2)
-                      SliverToBoxAdapter(
-                        child: BlocBuilder<AppBloc, AppState>(
-                          buildWhen: (p, c) =>
-                              p.tabIndexInChat != c.tabIndexInChat,
-                          builder: (context, app) {
-                            return BlocBuilder<ChatBloc, ChatState>(
-                              buildWhen: (p, c) =>
-                                  p.unReadMessagesFromAllChats !=
-                                  c.unReadMessagesFromAllChats,
-                              builder: (context, chat) {
-                                return BlocBuilder<CallsBloc, CallsState>(
-                                  buildWhen: (p, c) =>
-                                      p.missedCallCount != c.missedCallCount,
-                                  builder: (context, calls) {
-                                    return ChatListHeaderV2(
-                                      controller: form.controllers[0],
-                                      hint: LocaleKeys
-                                          .search_chat_contact_startNewChat
-                                          .tr(),
-                                      onQueryChanged:
-                                          ChatPageContentState.searchInChats,
-                                      tab: app.tabIndexInChat == 1
-                                          ? ChatListTabV2.calls
-                                          : ChatListTabV2.chats,
-                                      onTab: (t) =>
-                                          BlocProvider.of<AppBloc>(context).add(
-                                            ChangeTabInChat(
-                                              t == ChatListTabV2.calls ? 1 : 0,
-                                            ),
+                    // الترويسة: حقل البحث وشريط التبويبين في ودجت واحدة
+                    // — [ChatListHeaderV2]. والترويسة القديمة في تاريخ
+                    // المستودع، على فرع `dev_new`.
+                    SliverToBoxAdapter(
+                      child: BlocBuilder<AppBloc, AppState>(
+                        buildWhen: (p, c) =>
+                            p.tabIndexInChat != c.tabIndexInChat,
+                        builder: (context, app) {
+                          return BlocBuilder<ChatBloc, ChatState>(
+                            buildWhen: (p, c) =>
+                                p.unReadMessagesFromAllChats !=
+                                c.unReadMessagesFromAllChats,
+                            builder: (context, chat) {
+                              return BlocBuilder<CallsBloc, CallsState>(
+                                buildWhen: (p, c) =>
+                                    p.missedCallCount != c.missedCallCount,
+                                builder: (context, calls) {
+                                  return ChatListHeaderV2(
+                                    controller: form.controllers[0],
+                                    hint: LocaleKeys
+                                        .search_chat_contact_startNewChat
+                                        .tr(),
+                                    onQueryChanged:
+                                        ChatPageContentState.searchInChats,
+                                    tab: app.tabIndexInChat == 1
+                                        ? ChatListTabV2.calls
+                                        : ChatListTabV2.chats,
+                                    onTab: (t) =>
+                                        BlocProvider.of<AppBloc>(context).add(
+                                          ChangeTabInChat(
+                                            t == ChatListTabV2.calls ? 1 : 0,
                                           ),
-                                      chatsLabel: LocaleKeys.chats_tab.tr(),
-                                      callsLabel: LocaleKeys.calls_tab.tr(),
-                                      chatsCount:
-                                          '${chat.unReadMessagesFromAllChats}',
-                                      callsCount: '${calls.missedCallCount}',
-                                    );
-                                  },
-                                );
-                              },
-                            );
-                          },
-                        ),
+                                        ),
+                                    chatsLabel: LocaleKeys.chats_tab.tr(),
+                                    callsLabel: LocaleKeys.calls_tab.tr(),
+                                    chatsCount:
+                                        '${chat.unReadMessagesFromAllChats}',
+                                    callsCount: '${calls.missedCallCount}',
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
                       ),
+                    ),
                     //todo search bar
-                    if (!kChatDesignV2)
-                      SliverToBoxAdapter(
-                        child: Container(
-                          width: 1.sw,
-                          height: 50,
-                          color: colorScheme.white,
-                          padding: HWEdgeInsets.symmetric(
-                            horizontal: 10.w,
-                            vertical: 5,
-                          ),
-                          child: AppTextField(
-                            controller: form.controllers[0],
-                            filledColor: colorScheme.grey50,
-                            bordersColor: colorScheme.grey50,
-                            hintText: LocaleKeys
-                                .search_chat_contact_startNewChat
-                                .tr(),
-                            hintTextStyle: textTheme.bodySmall?.lq.copyWith(
-                              color: const Color(0xffD3D3D3),
-                            ),
-                            onChange: ChatPageContentState.searchInChats,
-                            contentPadding: HWEdgeInsetsDirectional.fromSTEB(
-                              20.w,
-                              10,
-                              20.w,
-                              10,
-                            ),
-                            prefixIcon: Padding(
-                              padding: HWEdgeInsetsDirectional.only(
-                                top: 10,
-                                bottom: 10,
-                              ),
-                              child: SvgPicture.asset(
-                                AppAssets.searchSvg,
-                                height: 20,
-                                width: 20.h,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
                     //todo appNavigationBar
                     //
                     // شريط التبويبات القديم — الثلاثة بأيقوناتها. وفي التصميم
@@ -431,75 +361,12 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
                     // وتبويب **الستوري** ليس في التصميم الجديد. ويبقى محتواه
                     // (`StoriesForChatPageContent`، آخر `chatPages`) سليماً
                     // ليُعاد بسطرٍ واحد متى عاد إلى التصميم.
-                    if (!kChatDesignV2 && !widget.hideCallsAndStories) ...{
-                      SliverToBoxAdapter(
-                        child: Container(
-                          padding: HWEdgeInsets.symmetric(horizontal: 40.w),
-                          height: 50,
-                          width: 1.sw,
-                          decoration: const BoxDecoration(
-                            color: Color(0xffffffff),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0x1a000000),
-                                blurRadius: 6,
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                BlocBuilder<ChatBloc, ChatState>(
-                                  buildWhen: (p, c) =>
-                                      p.unReadMessagesFromAllChats !=
-                                      c.unReadMessagesFromAllChats,
-                                  builder: (context, state) {
-                                    return ChatTabItem(
-                                      iconUrl:
-                                          AppAssets.singleChatOutlinedActiveSvg,
-                                      activeIconUrl: AppAssets.singleChatSvg,
-                                      index: 0,
-                                      notificationCount:
-                                          state.unReadMessagesFromAllChats,
-                                    );
-                                  },
-                                ),
-                                BlocBuilder<CallsBloc, CallsState>(
-                                  buildWhen: (p, c) =>
-                                      p.missedCallCount != c.missedCallCount,
-                                  builder: (context, state) {
-                                    return ChatTabItem(
-                                      iconUrl: AppAssets.callsOutlinedActiveSvg,
-                                      activeIconUrl: AppAssets.callsSvg,
-                                      index: 1,
-                                      notificationCount: state.missedCallCount,
-                                    );
-                                  },
-                                ),
-                                ChatTabItem(
-                                  iconUrl: AppAssets.storyOutlinedSvg,
-                                  activeIconUrl: AppAssets.storyFilledSvg,
-                                  index: 2,
-                                  notificationCount: 9,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    },
                     // صفّ الأرشيف وحده فوق القائمة، ويختفي حين لا مؤرشفة.
                     //
                     // وصفُّ **التذكيرات** ليس في التصميم الجديد: الملف يجعل
                     // التذكير نافذةً داخل المحادثة (`ReminderSheet.tsx`) لا
                     // صفّاً في القائمة. ومنطقُه ومحتواه (`RemindersListSliver`
                     // و`_remindersOpen`) باقيان سليمين ليُعاد بسطرٍ واحد.
-                    if (!kChatDesignV2)
-                      RemindersHeaderSliver(
-                        isOpen: _remindersOpen,
-                        onToggle: _openReminders,
-                      ),
                     ArchivedHeaderSliver(
                       isOpen: _archivedOpen,
                       onToggle: _openArchived,
@@ -561,11 +428,10 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
         // الجسم يمتدّ تحت الشريط (`extendBody`)، فالزرّ بغير هذا يقع تحته.
         // و[navTabRoom] هي غرفةُ الشريط (58 + 15 + الحافّة الآمنة)، ومنها
         // يُطرح هامشُ `FloatingActionButton` الافتراضيّ كي لا يُحسب مرّتين.
-        bottom: kNavDesignV2
-            ? navTabRoom(context) +
-                  ChatListDesign.fabAboveBar.h -
-                  kFloatingActionButtonMargin
-            : ChatListDesign.fabAboveBar.h,
+        bottom:
+            navTabRoom(context) +
+            ChatListDesign.fabAboveBar.h -
+            kFloatingActionButtonMargin,
       ),
       child: SizedBox(
         width: ChatListDesign.fabSize.w,

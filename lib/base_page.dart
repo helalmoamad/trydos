@@ -79,7 +79,6 @@ import 'features/home/presentation/manager/homeBloc/home_state.dart';
 import 'service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:trydos/common/helper/dev_log.dart';
-import 'package:trydos/features/app/app_widgets/nav_v2/nav_bar_design.dart';
 
 Widget get logo {
   return Stack(
@@ -1594,7 +1593,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                       // المحتوى حقّاً ولا تبقى غرفةٌ فارغة حين يصغر وينزل.
                       // وكلّ شاشة تبويبٍ تُضيف [navTabRoom] أسفلها كي لا يبقى
                       // صفُّها الأخير تحت الشريط — `TAB_ROOM` في الويب.
-                      extendBody: kNavDesignV2,
+                      extendBody: true,
                       bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
                         buildWhen: (p, c) =>
                             p.showBars != c.showBars ||

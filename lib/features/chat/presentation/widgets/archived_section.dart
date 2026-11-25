@@ -8,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
-import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
@@ -19,9 +18,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_list_design.dart';
-import 'package:trydos/features/chat/presentation/pages/conversation_design.dart';
 import 'package:trydos/features/chat/presentation/pages/profile_page_design.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 /// المحادثات المؤرشفة كما هي في الحالة.
 ///
@@ -87,123 +84,63 @@ class ArchivedHeaderSliver extends StatelessWidget {
               // > عليه تفتح نافذة المؤرشفة.
               //
               // والصفّ القديم — بالشيفرون وخطّه — معلَّقٌ أدناه.
-              if (kChatDesignV2) {
-                return GestureDetector(
-                  // **نافذةٌ لا قائمة**: الملف يفتح `ArchivedSheet` فوق
-                  // الشاشة، ونحن كنّا نستبدل قائمةَ المحادثات بقائمة
-                  // المؤرشفة والرجوعُ بالضغط على الصفّ نفسه.
-                  //
-                  // و`onToggle` و`ArchivedListSliver` باقيان سليمين خلف
-                  // `kChatDesignV2` في الصفحة، فالقائمة تعود بسطرٍ واحد.
-                  onTap: () => _openArchivedSheetV2(context),
-                  behavior: HitTestBehavior.opaque,
-                  child: Directionality(
-                    // جهاتٌ مطلقة كالملف: العلامة يساراً والعدد يميناً.
-                    textDirection: ui.TextDirection.ltr,
-                    child: Container(
-                      height: ChatListDesign.archivedHeight.h,
-                      margin: EdgeInsets.only(top: ChatListDesign.rowGap.h),
-                      color: ChatListDesign.page,
-                      child: Row(
-                        children: [
-                          // العلامة في وسط عمود الصورة: 12 ثم نصف (66-25).
-                          Padding(
-                            padding: EdgeInsets.only(
-                              left:
-                                  (ChatListDesign.photoX +
-                                          (ChatListDesign.photoW - 25) / 2)
-                                      .w,
-                            ),
-                            child: const XdIcon('swipeArchive', width: 25),
+              return GestureDetector(
+                // **نافذةٌ لا قائمة**: الملف يفتح `ArchivedSheet` فوق
+                // الشاشة، ونحن كنّا نستبدل قائمةَ المحادثات بقائمة
+                // المؤرشفة والرجوعُ بالضغط على الصفّ نفسه.
+                //
+                // و`onToggle` و`ArchivedListSliver` في تاريخ المستودع، على
+                // فرع `dev_new`.
+                onTap: () => _openArchivedSheetV2(context),
+                behavior: HitTestBehavior.opaque,
+                child: Directionality(
+                  // جهاتٌ مطلقة كالملف: العلامة يساراً والعدد يميناً.
+                  textDirection: ui.TextDirection.ltr,
+                  child: Container(
+                    height: ChatListDesign.archivedHeight.h,
+                    margin: EdgeInsets.only(top: ChatListDesign.rowGap.h),
+                    color: ChatListDesign.page,
+                    child: Row(
+                      children: [
+                        // العلامة في وسط عمود الصورة: 12 ثم نصف (66-25).
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left:
+                                (ChatListDesign.photoX +
+                                        (ChatListDesign.photoW - 25) / 2)
+                                    .w,
                           ),
-                          Padding(
-                            // الكلمة عند x=90، والعلامة تنتهي عند موضعها + 25.
-                            padding: EdgeInsets.only(
-                              left:
-                                  (ChatListDesign.textX -
-                                          (ChatListDesign.photoX +
-                                              (ChatListDesign.photoW - 25) / 2 +
-                                              25))
-                                      .w,
-                            ),
-                            child: DesignText(
-                              LocaleKeys.archived.tr(),
-                              size: 14,
-                              family: 'Quicksand-Medium',
-                            ),
+                          child: const XdIcon('swipeArchive', width: 25),
+                        ),
+                        Padding(
+                          // الكلمة عند x=90، والعلامة تنتهي عند موضعها + 25.
+                          padding: EdgeInsets.only(
+                            left:
+                                (ChatListDesign.textX -
+                                        (ChatListDesign.photoX +
+                                            (ChatListDesign.photoW - 25) / 2 +
+                                            25))
+                                    .w,
                           ),
-                          const Spacer(),
-                          Padding(
-                            padding: EdgeInsets.only(right: 13.w),
-                            child: DesignText(
-                              '$count',
-                              size: 14,
-                              family: 'Quicksand-Regular',
-                              color: ChatListDesign.grey,
-                            ),
+                          child: DesignText(
+                            LocaleKeys.archived.tr(),
+                            size: 14,
+                            family: 'Quicksand-Medium',
                           ),
-                        ],
-                      ),
+                        ),
+                        const Spacer(),
+                        Padding(
+                          padding: EdgeInsets.only(right: 13.w),
+                          child: DesignText(
+                            '$count',
+                            size: 14,
+                            family: 'Quicksand-Regular',
+                            color: ChatListDesign.grey,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              }
-
-              return Container(
-                color: Colors.white,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    InkWell(
-                      onTap: () => onToggle(!open),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16.w,
-                          vertical: 14.h,
-                        ),
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(
-                              AppAssets.archiveSvg,
-                              width: 14.sp,
-                              height: 14.sp,
-                            ),
-                            SizedBox(width: 8.w),
-                            Expanded(
-                              child: Text(
-                                LocaleKeys.archived.tr(),
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xff1D1D1D),
-                                ),
-                              ),
-                            ),
-                            // عدد المحادثات المؤرشفة، كعدّاد صفّ التذكيرات.
-                            // يُخفى عند الفتح لأن القائمة أمام المستخدم حينها.
-                            if (!open) ...[
-                              Text(
-                                '$count',
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  color: const Color(0xff8D8D8D),
-                                ),
-                              ),
-                              SizedBox(width: 6.w),
-                            ],
-                            Icon(
-                              Icons.chevron_right_rounded,
-                              size: 22.sp,
-                              color: open
-                                  ? const Color(0xff388cff)
-                                  : const Color(0xff8D8D8D),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(height: 0.5, color: const Color(0xffE4E6EB)),
-                  ],
                 ),
               );
             },

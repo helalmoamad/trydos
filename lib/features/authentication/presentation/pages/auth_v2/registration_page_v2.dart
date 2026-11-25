@@ -144,7 +144,8 @@ class _RegistrationPageV2State extends State<RegistrationPageV2> {
   );
 
   Country get _country => countries.firstWhere(
-    (Country c) => '+$_typed'.toLowerCase().startsWith(c.dialCode.toLowerCase()),
+    (Country c) =>
+        '+$_typed'.toLowerCase().startsWith(c.dialCode.toLowerCase()),
     orElse: () => _noCountry,
   );
 
@@ -184,7 +185,9 @@ class _RegistrationPageV2State extends State<RegistrationPageV2> {
   void _resumeWindowOrStart() {
     final int now = DateTime.now().millisecondsSinceEpoch;
     final int? saved = _prefs.otpTimerEndTime;
-    if ((_prefs.isTimerForOtpRunning ?? false) && saved != null && saved > now) {
+    if ((_prefs.isTimerForOtpRunning ?? false) &&
+        saved != null &&
+        saved > now) {
       _attemptsLeft = _prefs.otpAttemptsLeft ?? _maxAttemptsPerWindow;
       _runClock(saved);
       return;
@@ -233,15 +236,13 @@ class _RegistrationPageV2State extends State<RegistrationPageV2> {
   /// نفدت المحاولاتُ: يُقفل الإدخالُ حتّى ينتهي الوقتُ ويُطلب رمزٌ جديد.
   bool get _locked => _attemptsLeft <= 0;
 
-
   // ── التحليلات: الأحداثُ نفسُها بأسمائها وحقولها، في مواضعها نفسِها ─────
 
   /// «login» أو «signup» — `mission_name` في كلّ حقيبةٍ قديمة.
   String get _mission => _flow == AuthFlow.signIn ? 'login' : 'signup';
 
   /// «whatsapp» أو «sms» — `method`.
-  String get _methodWord =>
-      _method == AuthMethod.whatsapp ? 'whatsapp' : 'sms';
+  String get _methodWord => _method == AuthMethod.whatsapp ? 'whatsapp' : 'sms';
 
   void _log(
     String screen,
@@ -298,12 +299,9 @@ class _RegistrationPageV2State extends State<RegistrationPageV2> {
         deviceId: deviceId!,
       ),
     );
-    Future<void>.delayed(
-      const Duration(microseconds: 300),
-      () {
-        if (mounted) context.go(GRouter.config.applicationRoutes.kBasePage);
-      },
-    );
+    Future<void>.delayed(const Duration(microseconds: 300), () {
+      if (mounted) context.go(GRouter.config.applicationRoutes.kBasePage);
+    });
   }
 
   void _toBase() => context.go(GRouter.config.applicationRoutes.kBasePage);
@@ -371,10 +369,7 @@ class _RegistrationPageV2State extends State<RegistrationPageV2> {
     _log(
       AuthScreenConst.OTP_INPUT_SCREEN,
       AnalyticsEventsConst.VERIFY_OTP_SIGNUP,
-      extra: <String, String>{
-        'mission_name': _mission,
-        'method': _methodWord,
-      },
+      extra: <String, String>{'mission_name': _mission, 'method': _methodWord},
     );
   }
 

@@ -12,11 +12,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/file_saving.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
@@ -36,12 +34,7 @@ import 'package:trydos/features/chat/presentation/widgets/chat_input_field.dart'
 import 'package:trydos/features/chat/presentation/widgets/edit_message_dialog.dart';
 import 'package:trydos/features/chat/presentation/widgets/message_reminder_dialog.dart';
 import 'package:trydos/features/chat/presentation/widgets/message_tag_dialog.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_widgets/document_message.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_messge.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/shared_product_message.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page_new.dart';
@@ -51,7 +44,6 @@ import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../../routes/router.dart';
 import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -63,10 +55,7 @@ import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
 import '../manager/chat_state.dart';
-import '../widgets/chat_widgets/call_message.dart';
 import '../widgets/chat_widgets/no_image_widget.dart';
-import '../widgets/chat_widgets/text_message.dart';
-import '../widgets/chat_widgets/voice_message.dart';
 import 'conversation_design.dart';
 import '../widgets/chat_v2/chat_bubble_v2.dart';
 import '../widgets/chat_v2/message_adapter_v2.dart';
@@ -74,16 +63,12 @@ import '../widgets/chat_v2/message_row_v2.dart';
 import '../widgets/chat_v2/conversation_header.dart';
 import '../widgets/chat_v2/message_menu_v2.dart';
 import '../widgets/chat_v2/chat_messages_v2.dart';
-import '../widgets/chat_v2/voice_message_host.dart';
-import '../widgets/chat_v2/document_message_host.dart';
 import '../widgets/chat_v2/message_flags_v2.dart';
 import '../widgets/chat_v2/toast_v2.dart';
 import '../widgets/chat_v2/reaction_fly_v2.dart';
 import '../widgets/chat_v2/reaction_sheet_v2.dart';
 import '../widgets/chat_v2/pick_sheet_v2.dart';
 import 'profile_page_design.dart';
-import '../widgets/chat_v2/file_location_messages_v2.dart';
-import '../../../app/vedio_player.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import 'package:trydos/common/helper/dev_log.dart';
 
@@ -256,53 +241,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
   }
 
   final ValueNotifier<int> currentFocusedIcon = ValueNotifier(-2);
-
-  /// شريط خيارات الرسالة المفتوح حالياً.
-  ///
-  /// واحد فقط يكون في الشجرة في أي لحظة (`currentIndex == index`)، فمفتاح عام
-  /// واحد يكفي. نحتاجه لنسأل الشريط عن إحداثياته بدل تقديرها — انظر
-  /// [_focusedActionIndex].
-  final GlobalKey _actionStripKey = GlobalKey();
-
-  /// يحوّل موضع الإصبع إلى رقم الأيقونة في شريط خيارات الرسالة.
-  ///
-  /// الحساب السابق كان **يقدّر** أين يقع الشريط: عرض الشاشة ناقص حشوات ثابتة
-  /// (60) ناقص عرض محسوب (maxIndex*30+45)، ثم يعتبر أوّل أيقونة على بعد 40 من
-  /// بداية الشريط. وهذه التقديرات تعتمد على اتجاه ثلاثة صفوف متداخلة وعلى
-  /// مقاسات مكتوبة يدوياً، فكانت النتيجة مزاحة بأيقونة كاملة: الإصبع على
-  /// «حذف» والفعل «تعديل».
-  ///
-  /// هنا نسأل الشريط نفسه عن إحداثياته عبر [_actionStripKey]، فلا يبقى أي
-  /// تقدير: لا اتجاه، ولا حشوة خارجية، ولا عرض شاشة.
-  ///
-  /// الترتيب الفيزيائي (من اليسار) يساوي `myIndex` في اللغتين: في RTL يُقلب
-  /// ترتيب الأبناء ويُقلب معه توزيع `myIndex`، فيتطابقان.
-  int _focusedActionIndex(
-    Offset globalPosition, {
-    required bool isText,
-    required bool isSent,
-  }) {
-    final int maxIndex = isText ? (isSent ? 5 : 4) : 3;
-    final RenderBox? box =
-        _actionStripKey.currentContext?.findRenderObject() as RenderBox?;
-    // الشريط لم يُركَّب بعد: لا تركيز على شيء.
-    if (box == null || !box.hasSize) return -2;
-
-    final double localX = box.globalToLocal(globalPosition).dx;
-    // يسار الشريط كلّه = ردّ على الرسالة.
-    if (localX < 0) return -1;
-
-    final double horizontalPadding = 10.w;
-    final double inner = box.size.width - horizontalPadding * 2;
-    if (inner <= 0) return -1;
-
-    // الأيقونات موزّعة بـ spaceBetween داخل عرض ثابت، فنصيب كل واحدة متساوٍ.
-    final double slot = inner / (maxIndex + 1);
-    final int index = ((localX - horizontalPadding) / slot).floor();
-    if (index < 0) return -1;
-    if (index > maxIndex) return maxIndex;
-    return index;
-  }
 
   final ValueNotifier<Map<String, int>> currentIndextForEachMessage =
       ValueNotifier({});
@@ -512,8 +450,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
   @override
   Widget build(BuildContext context) {
     // `duration` انتقل إلى `buildStatusLine` مع سطر الحالة الذي يستعمله.
-    Locale locale = Localizations.localeOf(context);
-    bool lan = !locale.languageCode.contains("ar");
     // النزول إلى آخر الرسائل **مرّةً واحدة عند الفتح** لا مع كل إعادة بناء.
     //
     // كان بلا شرط، و`build` يُعاد مع كل تغيّرٍ في الشاشة — فتفاعلٌ على رسالة،
@@ -558,9 +494,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       },
       child: Scaffold(
         // `bg={C.page}` في الملف. وكانت `#EBFFF8` الخضراء من التصميم القديم.
-        backgroundColor: kChatDesignV2
-            ? ChatDesign.page
-            : const Color(0xffEBFFF8),
+        backgroundColor: ChatDesign.page,
         resizeToAvoidBottomInset: true,
         appBar: TrydosAppBar(
           // الترويسة الجديدة 50 كما في الملف، ويزيدها سطر الحالة نحو 18.
@@ -570,9 +504,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           // ترويسة البحث محلّها كما في الملف، فلا سطر حالة ولا اسم.
           // الترويسة والشريط بارتفاعٍ واحد — [kHeaderHeight] — ومعهما
           // `fillHeight`، فلا يفضل تحتها شيءٌ ولا تفيض هي عنه.
-          heightAppBar: _searchOpen
-              ? (kChatDesignV2 ? 60 : 120)
-              : (kChatDesignV2 ? kHeaderHeight : 56),
+          heightAppBar: _searchOpen ? (60) : (kHeaderHeight),
           appBarParams: AppBarParams(
             hasLeading: false,
             surfaceTintColor: Colors.transparent,
@@ -595,33 +527,28 @@ class _SinglePageChatState extends State<SinglePageChat> {
             // خلفية الشريط بلون صفحة الرسائل لا الأبيض الافتراضي
             // (`colorScheme.surface`): الترويسة أقصر من الشريط، وما يفضل
             // تحتها كان يظهر شريطاً أبيض بين الترويسة وأوّل الرسائل.
-            backgroundColor: kChatDesignV2 ? ChatDesign.page : null,
+            backgroundColor: ChatDesign.page,
             child: SafeArea(
               child: Column(
                 children: [
-                  // الترويسة بالتصميم الجديد. القديمة معلَّقة أدناه.
+                  // الترويسة. وفي البحث تغيب: الملف يضع حقل البحث مكانها
+                  // لا تحتها.
+                  // تملأ الشريط كلَّه — [kHeaderHeight] نفسها.
                   //
-                  // وفي البحث تغيب: الملف يضع حقل البحث مكانها لا تحتها.
-                  if (kChatDesignV2) ...{
-                    // تملأ الشريط كلَّه — [kHeaderHeight] نفسها.
-                    //
-                    // محتواها نحو 53 (الصورة 38 بهامش 6، والاسم وسطرُ الحالة
-                    // تحته)، فبارتفاعها الطبيعي يفضل تحتها من الشريط نحو 15
-                    // — فتبعد صورتا الطرفين عن الترويسة بقدرٍ لا وجود له في
-                    // الملف: هناك الترويسة 50 (من 50 إلى 100) وصفُّ الصورتين
-                    // عند 104، أي بعدها بأربعة لا أكثر.
-                    //
-                    // و`SizedBox` لا `Expanded`: `AppBar` يضع `flexibleSpace`
-                    // في `Stack` بارتفاعٍ غير محدود، فـ`Expanded` هنا تُسقط
-                    // التخطيط كلَّه (`RenderFlex children have non-zero flex
-                    // but incoming height constraints are unbounded`) فتبيضّ
-                    // الشاشة.
-                    if (!_searchOpen)
-                      SizedBox(height: kHeaderHeight, child: buildHeaderV2()),
-                  } else
-                    buildLegacyHeader(),
+                  // محتواها نحو 53 (الصورة 38 بهامش 6، والاسم وسطرُ الحالة
+                  // تحته)، فبارتفاعها الطبيعي يفضل تحتها من الشريط نحو 15
+                  // — فتبعد صورتا الطرفين عن الترويسة بقدرٍ لا وجود له في
+                  // الملف: هناك الترويسة 50 (من 50 إلى 100) وصفُّ الصورتين
+                  // عند 104، أي بعدها بأربعة لا أكثر.
+                  //
+                  // و`SizedBox` لا `Expanded`: `AppBar` يضع `flexibleSpace`
+                  // في `Stack` بارتفاعٍ غير محدود، فـ`Expanded` هنا تُسقط
+                  // التخطيط كلَّه (`RenderFlex children have non-zero flex
+                  // but incoming height constraints are unbounded`) فتبيضّ
+                  // الشاشة.
+                  if (!_searchOpen)
+                    SizedBox(height: kHeaderHeight, child: buildHeaderV2()),
                   if (_searchOpen) ...{
-                    if (!kChatDesignV2) const SizedBox(height: 5),
                     ValueListenableBuilder<Map<String, int>>(
                       valueListenable: currentIndextForEachMessage,
                       builder: (context, currentIndextForMessages, _) {
@@ -667,42 +594,35 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                     // شيفرون الإغلاق عند 18.5، كترويسة
                                     // المحادثة تماماً — فلا يقفز موضعه حين
                                     // يُفتح البحث.
-                                    if (kChatDesignV2)
-                                      Padding(
-                                        padding: HWEdgeInsetsDirectional.only(
-                                          start: 18.5,
-                                          top: 13.5,
-                                        ),
-                                        child: GestureDetector(
-                                          onTap: _closeSearch,
-                                          behavior: HitTestBehavior.opaque,
-                                          child: const XdIcon(
-                                            'chatBackPurple',
-                                            width: 11,
-                                            height: 23,
-                                          ),
+                                    Padding(
+                                      padding: HWEdgeInsetsDirectional.only(
+                                        start: 18.5,
+                                        top: 13.5,
+                                      ),
+                                      child: GestureDetector(
+                                        onTap: _closeSearch,
+                                        behavior: HitTestBehavior.opaque,
+                                        child: const XdIcon(
+                                          'chatBackPurple',
+                                          width: 11,
+                                          height: 23,
                                         ),
                                       ),
+                                    ),
                                     Expanded(
                                       child: Padding(
-                                        padding: kChatDesignV2
-                                            ? HWEdgeInsetsDirectional.only(
-                                                // الحقل يبدأ عند x=40 في الملف.
-                                                start: 40 - (18.5 + 11),
-                                                end: 12,
-                                                top: 6,
-                                              )
-                                            : HWEdgeInsets.symmetric(
-                                                horizontal: 20.0,
-                                              ).copyWith(bottom: 10),
+                                        padding: HWEdgeInsetsDirectional.only(
+                                          // الحقل يبدأ عند x=40 في الملف.
+                                          start: 40 - (18.5 + 11),
+                                          end: 12,
+                                          top: 6,
+                                        ),
                                         child: AppTextField(
                                           filledColor: const Color(0xffF8F8F8),
                                           bordersColor: const Color(0xffF8F8F8),
                                           hintText: 'Search',
                                           // 12 في الملف لا 30.
-                                          roundingCornersValue: kChatDesignV2
-                                              ? 12
-                                              : 30,
+                                          roundingCornersValue: 12,
                                           controller: controller,
                                           onChange: (String text) {
                                             _searchDebounce?.cancel();
@@ -814,19 +734,18 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                 // شريطٍ مكان حقل الكتابة
                                                 // (`buildSearchNavBar`)،
                                                 // والترويسة فيها الحقل و✕.
-                                                if (!kChatDesignV2 &&
-                                                    !((state
-                                                                    .resultOfSearchTextInChat
-                                                                    ?.paginationStatus ==
-                                                                PaginationStatus
-                                                                    .loading &&
-                                                            state
-                                                                .resultOfSearchTextInChat!
-                                                                .items
-                                                                .isEmpty) ||
-                                                        state.getMessagesBetweenStatus ==
-                                                            GetMessagesBetweenStatus
-                                                                .loading)) ...[
+                                                if (!((state
+                                                                .resultOfSearchTextInChat
+                                                                ?.paginationStatus ==
+                                                            PaginationStatus
+                                                                .loading &&
+                                                        state
+                                                            .resultOfSearchTextInChat!
+                                                            .items
+                                                            .isEmpty) ||
+                                                    state.getMessagesBetweenStatus ==
+                                                        GetMessagesBetweenStatus
+                                                            .loading)) ...[
                                                   _SearchFieldIcon(
                                                     icon: Icons.arrow_downward,
                                                     onTap: () {
@@ -964,7 +883,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                       // صفّ الصورتين عند y=104 — أعلى جسم
                                       // المحادثة لا داخل القائمة: القائمة
                                       // مقلوبة (`reverse: true`) فأعلاها آخرُها.
-                                      if (kChatDesignV2) buildSidePhotosRow(),
+                                      buildSidePhotosRow(),
                                       chat.paginationStatus ==
                                               PaginationStatus.loading
                                           ? TrydosLoader()
@@ -984,8 +903,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                           // مفتوحة، كما في الويب
                                           // (`preventDefault`): سحبةٌ حقيقية
                                           // تُغلق القائمة ولا تُمرّر.
-                                          physics:
-                                              kChatDesignV2 && currentIndex >= 0
+                                          physics: currentIndex >= 0
                                               ? const NeverScrollableScrollPhysics()
                                               : const ClampingScrollPhysics(),
                                           // لا حشوَ هنا.
@@ -1027,27 +945,15 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                   children: [
                                                     // 12 فوق فاصل اليوم
                                                     // وتحته، كما في الملف.
-                                                    if (kChatDesignV2)
-                                                      SizedBox(height: 12.h)
-                                                    else
-                                                      10.verticalSpace,
-                                                    if (kChatDesignV2)
-                                                      ChatDayPill(
-                                                        label: messages[index]
-                                                            .dateValue!,
-                                                      )
-                                                    else
-                                                      MessagesDate(
-                                                        date: messages[index]
-                                                            .dateValue!,
-                                                      ),
+                                                    SizedBox(height: 12.h),
+                                                    ChatDayPill(
+                                                      label: messages[index]
+                                                          .dateValue!,
+                                                    ),
                                                   ],
                                                 ),
                                               );
                                             }
-                                            bool isSent =
-                                                messages[index].senderUserId ==
-                                                _prefsRepository.myChatId;
                                             String? messageId =
                                                 messages[index].id;
                                             messagesIndexes = {};
@@ -1141,30 +1047,24 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                   // والقائمة مقلوبة، فالرسالة
                                                   // التي **فوق** هذه على
                                                   // الشاشة هي `index + 1`.
-                                                  if (kChatDesignV2)
-                                                    SizedBox(
-                                                      height:
-                                                          (index + 1 >=
-                                                                      messages
-                                                                          .length
-                                                                  ? 16.0
-                                                                  : MessageAdapterV2.gapBetween(
-                                                                      previous:
-                                                                          messages[index +
-                                                                              1],
-                                                                      current:
-                                                                          messages[index],
-                                                                      myChatId:
-                                                                          _prefsRepository
-                                                                              .myChatId,
-                                                                    ))
-                                                              .h,
-                                                    )
-                                                  else
-                                                    messages[index]
-                                                            .isFirstMessage!
-                                                        ? 30.verticalSpace
-                                                        : 10.verticalSpace,
+                                                  SizedBox(
+                                                    height:
+                                                        (index + 1 >=
+                                                                    messages
+                                                                        .length
+                                                                ? 16.0
+                                                                : MessageAdapterV2.gapBetween(
+                                                                    previous:
+                                                                        messages[index +
+                                                                            1],
+                                                                    current:
+                                                                        messages[index],
+                                                                    myChatId:
+                                                                        _prefsRepository
+                                                                            .myChatId,
+                                                                  ))
+                                                            .h,
+                                                  ),
                                                   ////////////////
                                                   GestureDetector(
                                                     key: TestVariables.kTestMode
@@ -1180,73 +1080,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                       // وبقاءُ هذه معه يجعل
                                                       // كاشفَين متداخلين
                                                       // يتنازعان الإيماءة.
-                                                      if (kChatDesignV2) {
-                                                        return;
-                                                      }
-                                                      if (messages[index]
-                                                              .authMessageStatus!
-                                                              .isDeleted ==
-                                                          1) {
-                                                        /*    showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder: (context) => AlertDialog(
-                                                                    title:
-                                                                        Text(" حذف هذه الرسالة  "),
-                                                                    actions: [
-                                                                      MaterialButton(
-                                                                        onPressed: () {
-                                                                          callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
-                                                                          Navigator.of(context).pop();
-                                                                          rebuildMessage.value = -1;
-                                                                        },
-                                                                        child: Text("نعم"),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width: 20.w,
-                                                                      ),
-                                                                      MaterialButton(
-                                                                          child: Text("إغلاق"),
-                                                                          onPressed: () {
-                                                                            Navigator.of(context).pop();
-                                                                            rebuildMessage.value = -1;
-                                                                          })
-                                                                    ]),
-                                                                                                                                      );
-                                                                                                                                      */
-                                                        return;
-                                                      }
-
-                                                      if ((chatState
-                                                                  .sendMessageStatus ==
-                                                              SendMessageStatus
-                                                                  .loading &&
-                                                          chatState
-                                                              .currentMessage
-                                                              .contains(
-                                                                messageId,
-                                                              ))) {
-                                                        return;
-                                                      }
-                                                      // بطاقات المكالمات كانت
-                                                      // مستثناةً من القائمة،
-                                                      // والملف يعطيها قائمةً
-                                                      // كبقيّة الرسائل — بلا
-                                                      // «تحويل» وبلا «ردّ».
-                                                      // فالاستثناء يبقى على
-                                                      // التصميم القديم وحده.
-                                                      if (!kChatDesignV2 &&
-                                                          (messages[index]
-                                                                  .messageType
-                                                                  ?.name
-                                                                  ?.contains(
-                                                                    'Call',
-                                                                  ) ??
-                                                              false)) {
-                                                        return;
-                                                      }
-                                                      rebuildMessage.value =
-                                                          index;
+                                                      return;
                                                     },
                                                     onTap: () {
                                                       if (messages[index]
@@ -1312,838 +1146,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                   index == 0
                                                       ? 10.verticalSpace
                                                       : const SizedBox.shrink(),
-                                                  !kChatDesignV2 &&
-                                                          currentIndex == index
-                                                      ? Padding(
-                                                          padding:
-                                                              HWEdgeInsets.only(
-                                                                left: isSent
-                                                                    ? 40.w
-                                                                    : 20.w,
-                                                                top: 10,
-                                                                right: isSent
-                                                                    ? 20.w
-                                                                    : 40.w,
-                                                              ),
-                                                          child: GestureDetector(
-                                                            onPanDown: (details) {
-                                                              currentFocusedIcon
-                                                                  .value = _focusedActionIndex(
-                                                                details
-                                                                    .globalPosition,
-                                                                isText:
-                                                                    messages[index]
-                                                                        .messageType
-                                                                        ?.name ==
-                                                                    "TextMessage",
-                                                                isSent: isSent,
-                                                              );
-                                                            },
-                                                            onPanEnd: (details) {
-                                                              debugPrint('end');
-                                                              rebuildMessage
-                                                                      .value =
-                                                                  -1;
-                                                              dealWithMessageOptions(
-                                                                currentFocusedIcon
-                                                                    .value,
-                                                                messageId,
-                                                              );
-                                                            },
-                                                            onPanUpdate: (details) {
-                                                              currentFocusedIcon
-                                                                  .value = _focusedActionIndex(
-                                                                details
-                                                                    .globalPosition,
-                                                                isText:
-                                                                    messages[index]
-                                                                        .messageType
-                                                                        ?.name ==
-                                                                    "TextMessage",
-                                                                isSent: isSent,
-                                                              );
-                                                            },
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  isSent
-                                                                  ? lan
-                                                                        ? MainAxisAlignment
-                                                                              .end
-                                                                        : MainAxisAlignment
-                                                                              .start
-                                                                  : lan
-                                                                  ? MainAxisAlignment
-                                                                        .start
-                                                                  : MainAxisAlignment
-                                                                        .end,
-                                                              children: !lan
-                                                                  ? [
-                                                                      Column(
-                                                                        mainAxisSize:
-                                                                            MainAxisSize.min,
-                                                                        crossAxisAlignment:
-                                                                            !lan
-                                                                            ? CrossAxisAlignment.end
-                                                                            : CrossAxisAlignment.start,
-                                                                        children: [
-                                                                          Row(
-                                                                            mainAxisAlignment:
-                                                                                !lan
-                                                                                ? MainAxisAlignment.end
-                                                                                : MainAxisAlignment.start,
-                                                                            children: [
-                                                                              Container(
-                                                                                key: _actionStripKey,
-                                                                                width:
-                                                                                    (messages[index].messageType?.name ==
-                                                                                                "TextMessage"
-                                                                                            ? (isSent
-                                                                                                  ? 185
-                                                                                                  : 155)
-                                                                                            : 125)
-                                                                                        .w,
-                                                                                height: 40,
-                                                                                padding: HWEdgeInsets.symmetric(
-                                                                                  vertical: 12,
-                                                                                  horizontal: 10,
-                                                                                ),
-                                                                                decoration: BoxDecoration(
-                                                                                  color: const Color(
-                                                                                    0xfffafafa,
-                                                                                  ),
-                                                                                  borderRadius: BorderRadius.circular(
-                                                                                    12.0,
-                                                                                  ),
-                                                                                  boxShadow: const [
-                                                                                    BoxShadow(
-                                                                                      color: Color(
-                                                                                        0x29000000,
-                                                                                      ),
-                                                                                      offset: Offset(
-                                                                                        0,
-                                                                                        2,
-                                                                                      ),
-                                                                                      blurRadius: 10,
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                                child: Row(
-                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                  children: [
-                                                                                    MessageActionWidget(
-                                                                                      key: TestVariables.kTestMode
-                                                                                          ? Key(
-                                                                                              '${WidgetsKeys.forWardMessageKey}$index',
-                                                                                            )
-                                                                                          : null,
-                                                                                      onTap: () => forwardMessageMethod(
-                                                                                        messages.firstWhere(
-                                                                                          (
-                                                                                            element,
-                                                                                          ) =>
-                                                                                              element.id ==
-                                                                                              messageId,
-                                                                                        ),
-                                                                                      ),
-                                                                                      iconUrl: AppAssets.goBackIconSvg,
-                                                                                      myIndex: lan
-                                                                                          ? 0
-                                                                                          : (messages[index].messageType?.name ==
-                                                                                                    "TextMessage"
-                                                                                                ? (isSent
-                                                                                                      ? 5
-                                                                                                      : 4)
-                                                                                                : 3),
-                                                                                      focusedIndex: focusedIndex,
-                                                                                    ),
-                                                                                    if (messages[index].messageType?.name ==
-                                                                                        "TextMessage")
-                                                                                      MessageActionWidget(
-                                                                                        onTap: () {
-                                                                                          final messageContent = messages[index].messageContent?.content?.toString();
-                                                                                          if (messageContent ==
-                                                                                                  null ||
-                                                                                              (messageContent.trim().isEmpty) ||
-                                                                                              messages[index].messageType?.name !=
-                                                                                                  "TextMessage") {
-                                                                                            return;
-                                                                                          }
-                                                                                          Clipboard.setData(
-                                                                                            ClipboardData(
-                                                                                              text: messageContent,
-                                                                                            ),
-                                                                                          );
-                                                                                          ScaffoldMessenger.of(
-                                                                                              context,
-                                                                                            )
-                                                                                            ..clearSnackBars()
-                                                                                            ..showSnackBar(
-                                                                                              SnackBar(
-                                                                                                content: Text(
-                                                                                                  LocaleKeys.copied.tr(),
-                                                                                                ),
-                                                                                                duration: const Duration(
-                                                                                                  seconds: 1,
-                                                                                                ),
-                                                                                              ),
-                                                                                            );
-                                                                                        },
-                                                                                        iconUrl: AppAssets.copyIconSvg,
-                                                                                        myIndex: lan
-                                                                                            ? 1
-                                                                                            : (isSent
-                                                                                                  ? 4
-                                                                                                  : 3),
-                                                                                        focusedIndex: focusedIndex,
-                                                                                      ),
-                                                                                    MessageActionWidget(
-                                                                                      onTap: () => _tagDialog(
-                                                                                        messages[index],
-                                                                                      ),
-                                                                                      iconUrl: AppAssets.addToGroupSvg,
-                                                                                      myIndex: lan
-                                                                                          ? (messages[index].messageType?.name ==
-                                                                                                    "TextMessage"
-                                                                                                ? 2
-                                                                                                : 1)
-                                                                                          : (messages[index].messageType?.name ==
-                                                                                                    "TextMessage"
-                                                                                                ? (isSent
-                                                                                                      ? 3
-                                                                                                      : 2)
-                                                                                                : 2),
-                                                                                      focusedIndex: focusedIndex,
-                                                                                    ),
-                                                                                    MessageActionWidget(
-                                                                                      key: TestVariables.kTestMode
-                                                                                          ? Key(
-                                                                                              '${WidgetsKeys.deleteMessageKey}$index',
-                                                                                            )
-                                                                                          : null,
-                                                                                      onTap: () {
-                                                                                        showDialog(
-                                                                                          context: context,
-                                                                                          builder:
-                                                                                              (
-                                                                                                context,
-                                                                                              ) => AlertDialog(
-                                                                                                title: Text(
-                                                                                                  LocaleKeys.delete_message.tr(),
-                                                                                                ),
-                                                                                                actions: [
-                                                                                                  MaterialButton(
-                                                                                                    key: TestVariables.kTestMode
-                                                                                                        ? Key(
-                                                                                                            '${WidgetsKeys.deleteOnlyMeButtonKey}$index',
-                                                                                                          )
-                                                                                                        : null,
-                                                                                                    onPressed: () {
-                                                                                                      callsBloc.add(
-                                                                                                        DeleteMessageEvent(
-                                                                                                          type: "message",
-                                                                                                          deleteFromBoth: 0,
-                                                                                                          messageId: messages[index].id!,
-                                                                                                          channelId: widget.chatId,
-                                                                                                          deleteFromId: _prefsRepository.myChatId!,
-                                                                                                        ),
-                                                                                                      );
-                                                                                                      Navigator.of(
-                                                                                                        context,
-                                                                                                      ).pop();
-                                                                                                      rebuildMessage.value = -1;
-                                                                                                    },
-                                                                                                    child: Text(
-                                                                                                      chatState.currentFailedMessage.contains(
-                                                                                                            messages[index].id!,
-                                                                                                          )
-                                                                                                          ? LocaleKeys.yes.tr()
-                                                                                                          : LocaleKeys.only_me.tr(),
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  SizedBox(
-                                                                                                    width: 20.w,
-                                                                                                  ),
-                                                                                                  chatState.currentFailedMessage.contains(
-                                                                                                            messages[index].id!,
-                                                                                                          ) ||
-                                                                                                          (!isSent)
-                                                                                                      ? MaterialButton(
-                                                                                                          child: Text(
-                                                                                                            LocaleKeys.cancel.tr(),
-                                                                                                          ),
-                                                                                                          onPressed: () {
-                                                                                                            Navigator.of(
-                                                                                                              context,
-                                                                                                            ).pop();
-                                                                                                            rebuildMessage.value = -1;
-                                                                                                          },
-                                                                                                        )
-                                                                                                      : MaterialButton(
-                                                                                                          onPressed: () {
-                                                                                                            callsBloc.add(
-                                                                                                              DeleteMessageEvent(
-                                                                                                                deleteFromId: _prefsRepository.myChatId!,
-                                                                                                                type: "message",
-                                                                                                                deleteFromBoth: 1,
-                                                                                                                messageId: messages[index].id!,
-                                                                                                                channelId: widget.chatId,
-                                                                                                              ),
-                                                                                                            );
-                                                                                                            Navigator.of(
-                                                                                                              context,
-                                                                                                            ).pop();
-                                                                                                            rebuildMessage.value = -1;
-                                                                                                          },
-                                                                                                          child: Text(
-                                                                                                            LocaleKeys.everyone.tr(),
-                                                                                                          ),
-                                                                                                        ),
-                                                                                                ],
-                                                                                              ),
-                                                                                        );
-                                                                                      },
-                                                                                      iconUrl: AppAssets.removeIconSvg,
-                                                                                      myIndex: lan
-                                                                                          ? (messages[index].messageType?.name ==
-                                                                                                    "TextMessage"
-                                                                                                ? 3
-                                                                                                : 2)
-                                                                                          : ((messages[index].messageType?.name ==
-                                                                                                        "TextMessage" &&
-                                                                                                    isSent)
-                                                                                                ? 2
-                                                                                                : 1),
-                                                                                      focusedIndex: focusedIndex,
-                                                                                    ),
-                                                                                    if (isSent &&
-                                                                                        messages[index].messageType?.name ==
-                                                                                            "TextMessage")
-                                                                                      MessageActionWidget(
-                                                                                        // زرّ حقيقي كجيرانه (تحويل/نسخ/حذف). كان فارغاً،
-                                                                                        // فكان التعديل يصل فقط عبر مسار السحب.
-                                                                                        onTap: () {
-                                                                                          rebuildMessage.value = -1;
-                                                                                          _editMessageDialog(
-                                                                                            messages[index],
-                                                                                          );
-                                                                                        },
-                                                                                        iconUrl: AppAssets.editIconSvg,
-                                                                                        myIndex: lan
-                                                                                            ? 4
-                                                                                            : 1,
-                                                                                        focusedIndex: focusedIndex,
-                                                                                      ),
-                                                                                    MessageActionWidget(
-                                                                                      onTap: () {
-                                                                                        rebuildMessage.value = -1;
-                                                                                        _reminderDialog(
-                                                                                          messages[index],
-                                                                                        );
-                                                                                      },
-                                                                                      iconUrl: AppAssets.notificationIconSvg,
-                                                                                      myIndex: lan
-                                                                                          ? (messages[index].messageType?.name ==
-                                                                                                    "TextMessage"
-                                                                                                ? (isSent
-                                                                                                      ? 5
-                                                                                                      : 4)
-                                                                                                : 3)
-                                                                                          : 0,
-                                                                                      focusedIndex: focusedIndex,
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                          10.verticalSpace,
-                                                                          focusedIndex >=
-                                                                                  0
-                                                                              ? Transform.translate(
-                                                                                  offset: Offset(
-                                                                                    focusedIndex *
-                                                                                        30.w,
-                                                                                    0,
-                                                                                  ),
-                                                                                  child: MessageSubtitleWidget(
-                                                                                    focusedIndex: focusedIndex,
-                                                                                    isSent: isSent,
-                                                                                    isText:
-                                                                                        messages[index].messageType?.name ==
-                                                                                        "TextMessage",
-                                                                                  ),
-                                                                                )
-                                                                              : const SizedBox.shrink(),
-                                                                        ],
-                                                                      ),
-                                                                      5.horizontalSpace,
-                                                                      Column(
-                                                                        children: [
-                                                                          InkWell(
-                                                                            highlightColor: const Color(
-                                                                              0xfffafafa,
-                                                                            ),
-                                                                            splashColor: const Color(
-                                                                              0xfffafafa,
-                                                                            ),
-                                                                            onTap: () {
-                                                                              currentFocusedIcon.value = -1;
-                                                                            },
-                                                                            child: InkWell(
-                                                                              onTap: () {
-                                                                                dealWithMessageOptions(
-                                                                                  -1,
-                                                                                  messageId,
-                                                                                );
-                                                                              },
-                                                                              child: Container(
-                                                                                height: 40,
-                                                                                width: 35.w,
-                                                                                decoration: BoxDecoration(
-                                                                                  color: const Color(
-                                                                                    0xfffafafa,
-                                                                                  ),
-                                                                                  borderRadius: BorderRadius.circular(
-                                                                                    12.0,
-                                                                                  ),
-                                                                                  boxShadow: const [
-                                                                                    BoxShadow(
-                                                                                      color: Color(
-                                                                                        0x29000000,
-                                                                                      ),
-                                                                                      offset: Offset(
-                                                                                        0,
-                                                                                        2,
-                                                                                      ),
-                                                                                      blurRadius: 10,
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                                child: Center(
-                                                                                  child: SvgPicture.asset(
-                                                                                    AppAssets.replyButtonLogoSvg,
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                          10.verticalSpace,
-                                                                          focusedIndex ==
-                                                                                  -1
-                                                                              ? Container(
-                                                                                  width: 50.w,
-                                                                                  height: 22,
-                                                                                  decoration: BoxDecoration(
-                                                                                    color: const Color(
-                                                                                      0xff404040,
-                                                                                    ),
-                                                                                    borderRadius: BorderRadius.circular(
-                                                                                      8.0,
-                                                                                    ),
-                                                                                    boxShadow: const [
-                                                                                      BoxShadow(
-                                                                                        color: Color(
-                                                                                          0x34000000,
-                                                                                        ),
-                                                                                        offset: Offset(
-                                                                                          0,
-                                                                                          3,
-                                                                                        ),
-                                                                                        blurRadius: 6,
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                  child: Center(
-                                                                                    child: MyTextWidget(
-                                                                                      LocaleKeys.replay.tr(),
-                                                                                      style: textTheme.titleSmall?.rq.copyWith(
-                                                                                        color: colorScheme.white,
-                                                                                        height: 1.4,
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                )
-                                                                              : const SizedBox.shrink(),
-                                                                        ],
-                                                                      ),
-                                                                    ]
-                                                                  : [
-                                                                      Column(
-                                                                        mainAxisSize:
-                                                                            MainAxisSize.min,
-                                                                        crossAxisAlignment:
-                                                                            !lan
-                                                                            ? CrossAxisAlignment.end
-                                                                            : CrossAxisAlignment.start,
-                                                                        children: [
-                                                                          Row(
-                                                                            mainAxisAlignment:
-                                                                                !lan
-                                                                                ? MainAxisAlignment.end
-                                                                                : MainAxisAlignment.start,
-                                                                            children: [
-                                                                              Container(
-                                                                                key: _actionStripKey,
-                                                                                width:
-                                                                                    (isSent
-                                                                                            ? 185
-                                                                                            : 155)
-                                                                                        .w,
-                                                                                height: 40,
-                                                                                padding: HWEdgeInsets.symmetric(
-                                                                                  vertical: 12,
-                                                                                  horizontal: 10,
-                                                                                ),
-                                                                                decoration: BoxDecoration(
-                                                                                  color: const Color(
-                                                                                    0xfffafafa,
-                                                                                  ),
-                                                                                  borderRadius: BorderRadius.circular(
-                                                                                    12.0,
-                                                                                  ),
-                                                                                  boxShadow: const [
-                                                                                    BoxShadow(
-                                                                                      color: Color(
-                                                                                        0x29000000,
-                                                                                      ),
-                                                                                      offset: Offset(
-                                                                                        0,
-                                                                                        2,
-                                                                                      ),
-                                                                                      blurRadius: 10,
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                                child: Row(
-                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                  children: [
-                                                                                    MessageActionWidget(
-                                                                                      onTap: () => forwardMessageMethod(
-                                                                                        messages.firstWhere(
-                                                                                          (
-                                                                                            element,
-                                                                                          ) =>
-                                                                                              element.id ==
-                                                                                              messageId,
-                                                                                        ),
-                                                                                      ),
-                                                                                      iconUrl: AppAssets.goBackIconSvg,
-                                                                                      myIndex: lan
-                                                                                          ? 0
-                                                                                          : (messages[index].messageType?.name ==
-                                                                                                    "TextMessage"
-                                                                                                ? (isSent
-                                                                                                      ? 5
-                                                                                                      : 4)
-                                                                                                : 3),
-                                                                                      focusedIndex: focusedIndex,
-                                                                                    ),
-                                                                                    if (messages[index].messageType?.name ==
-                                                                                        "TextMessage")
-                                                                                      MessageActionWidget(
-                                                                                        onTap: () {
-                                                                                          final messageContent = messages[index].messageContent?.content?.toString();
-                                                                                          if (messageContent ==
-                                                                                                  null ||
-                                                                                              messageContent.trim().isEmpty ||
-                                                                                              messages[index].messageType?.name !=
-                                                                                                  "TextMessage") {
-                                                                                            return;
-                                                                                          }
-                                                                                          Clipboard.setData(
-                                                                                            ClipboardData(
-                                                                                              text: messageContent,
-                                                                                            ),
-                                                                                          );
-                                                                                          ScaffoldMessenger.of(
-                                                                                              context,
-                                                                                            )
-                                                                                            ..clearSnackBars()
-                                                                                            ..showSnackBar(
-                                                                                              SnackBar(
-                                                                                                content: Text(
-                                                                                                  LocaleKeys.copied.tr(),
-                                                                                                ),
-                                                                                                duration: const Duration(
-                                                                                                  seconds: 1,
-                                                                                                ),
-                                                                                              ),
-                                                                                            );
-                                                                                        },
-                                                                                        iconUrl: AppAssets.copyIconSvg,
-                                                                                        myIndex: lan
-                                                                                            ? 1
-                                                                                            : (isSent
-                                                                                                  ? 4
-                                                                                                  : 3),
-                                                                                        focusedIndex: focusedIndex,
-                                                                                      ),
-                                                                                    MessageActionWidget(
-                                                                                      onTap: () => _tagDialog(
-                                                                                        messages[index],
-                                                                                      ),
-                                                                                      iconUrl: AppAssets.addToGroupSvg,
-                                                                                      myIndex: lan
-                                                                                          ? (messages[index].messageType?.name ==
-                                                                                                    "TextMessage"
-                                                                                                ? 2
-                                                                                                : 1)
-                                                                                          : (messages[index].messageType?.name ==
-                                                                                                    "TextMessage"
-                                                                                                ? (isSent
-                                                                                                      ? 3
-                                                                                                      : 2)
-                                                                                                : 2),
-                                                                                      focusedIndex: focusedIndex,
-                                                                                    ),
-                                                                                    MessageActionWidget(
-                                                                                      onTap: () {
-                                                                                        showDialog(
-                                                                                          context: context,
-                                                                                          builder:
-                                                                                              (
-                                                                                                context,
-                                                                                              ) => AlertDialog(
-                                                                                                title: Text(
-                                                                                                  LocaleKeys.delete_message.tr(),
-                                                                                                ),
-                                                                                                actions: [
-                                                                                                  MaterialButton(
-                                                                                                    onPressed: () {
-                                                                                                      callsBloc.add(
-                                                                                                        DeleteMessageEvent(
-                                                                                                          type: "message",
-                                                                                                          deleteFromBoth: 0,
-                                                                                                          messageId: messages[index].id!,
-                                                                                                          channelId: widget.chatId,
-                                                                                                          deleteFromId: _prefsRepository.myChatId!,
-                                                                                                        ),
-                                                                                                      );
-                                                                                                      Navigator.of(
-                                                                                                        context,
-                                                                                                      ).pop();
-                                                                                                      rebuildMessage.value = -1;
-                                                                                                    },
-                                                                                                    child: Text(
-                                                                                                      chatState.currentFailedMessage.contains(
-                                                                                                            messages[index].id!,
-                                                                                                          )
-                                                                                                          ? LocaleKeys.yes.tr()
-                                                                                                          : LocaleKeys.only_me.tr(),
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  SizedBox(
-                                                                                                    width: 20.w,
-                                                                                                  ),
-                                                                                                  chatState.currentFailedMessage.contains(
-                                                                                                            messages[index].id!,
-                                                                                                          ) ||
-                                                                                                          (!isSent)
-                                                                                                      ? MaterialButton(
-                                                                                                          child: Text(
-                                                                                                            LocaleKeys.cancel.tr(),
-                                                                                                          ),
-                                                                                                          onPressed: () {
-                                                                                                            Navigator.of(
-                                                                                                              context,
-                                                                                                            ).pop();
-                                                                                                            rebuildMessage.value = -1;
-                                                                                                          },
-                                                                                                        )
-                                                                                                      : MaterialButton(
-                                                                                                          onPressed: () {
-                                                                                                            callsBloc.add(
-                                                                                                              DeleteMessageEvent(
-                                                                                                                deleteFromId: _prefsRepository.myChatId!,
-                                                                                                                type: "message",
-                                                                                                                deleteFromBoth: 1,
-                                                                                                                messageId: messages[index].id!,
-                                                                                                                channelId: widget.chatId,
-                                                                                                              ),
-                                                                                                            );
-                                                                                                            Navigator.of(
-                                                                                                              context,
-                                                                                                            ).pop();
-                                                                                                            rebuildMessage.value = -1;
-                                                                                                          },
-                                                                                                          child: Text(
-                                                                                                            LocaleKeys.everyone.tr(),
-                                                                                                          ),
-                                                                                                        ),
-                                                                                                ],
-                                                                                              ),
-                                                                                        );
-                                                                                      },
-                                                                                      iconUrl: AppAssets.removeIconSvg,
-                                                                                      myIndex: lan
-                                                                                          ? (messages[index].messageType?.name ==
-                                                                                                    "TextMessage"
-                                                                                                ? 3
-                                                                                                : 2)
-                                                                                          : (messages[index].messageType?.name ==
-                                                                                                    "TextMessage"
-                                                                                                ? (isSent
-                                                                                                      ? 2
-                                                                                                      : 1)
-                                                                                                : 1),
-                                                                                      focusedIndex: focusedIndex,
-                                                                                    ),
-                                                                                    if (isSent &&
-                                                                                        messages[index].messageType?.name ==
-                                                                                            "TextMessage")
-                                                                                      MessageActionWidget(
-                                                                                        // زرّ حقيقي كجيرانه (تحويل/نسخ/حذف). كان فارغاً،
-                                                                                        // فكان التعديل يصل فقط عبر مسار السحب.
-                                                                                        onTap: () {
-                                                                                          rebuildMessage.value = -1;
-                                                                                          _editMessageDialog(
-                                                                                            messages[index],
-                                                                                          );
-                                                                                        },
-                                                                                        iconUrl: AppAssets.editIconSvg,
-                                                                                        myIndex: lan
-                                                                                            ? 4
-                                                                                            : 1,
-                                                                                        focusedIndex: focusedIndex,
-                                                                                      ),
-                                                                                    MessageActionWidget(
-                                                                                      onTap: () {
-                                                                                        rebuildMessage.value = -1;
-                                                                                        _reminderDialog(
-                                                                                          messages[index],
-                                                                                        );
-                                                                                      },
-                                                                                      iconUrl: AppAssets.notificationIconSvg,
-                                                                                      myIndex: lan
-                                                                                          ? (messages[index].messageType?.name ==
-                                                                                                    "TextMessage"
-                                                                                                ? (isSent
-                                                                                                      ? 5
-                                                                                                      : 4)
-                                                                                                : 3)
-                                                                                          : 0,
-                                                                                      focusedIndex: focusedIndex,
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                          10.verticalSpace,
-                                                                          focusedIndex >=
-                                                                                  0
-                                                                              ? Transform.translate(
-                                                                                  offset: Offset(
-                                                                                    focusedIndex *
-                                                                                        30.w,
-                                                                                    0,
-                                                                                  ),
-                                                                                  child: MessageSubtitleWidget(
-                                                                                    focusedIndex: focusedIndex,
-                                                                                    isSent: isSent,
-                                                                                    isText:
-                                                                                        messages[index].messageType?.name ==
-                                                                                        "TextMessage",
-                                                                                  ),
-                                                                                )
-                                                                              : const SizedBox.shrink(),
-                                                                        ],
-                                                                      ),
-                                                                      5.horizontalSpace,
-                                                                      Column(
-                                                                        children: [
-                                                                          InkWell(
-                                                                            highlightColor: const Color(
-                                                                              0xfffafafa,
-                                                                            ),
-                                                                            splashColor: const Color(
-                                                                              0xfffafafa,
-                                                                            ),
-                                                                            onTap: () {
-                                                                              currentFocusedIcon.value = -1;
-                                                                            },
-                                                                            child: InkWell(
-                                                                              onTap: () {
-                                                                                dealWithMessageOptions(
-                                                                                  -1,
-                                                                                  messageId,
-                                                                                );
-                                                                              },
-                                                                              child: Container(
-                                                                                height: 40,
-                                                                                width: 35.w,
-                                                                                decoration: BoxDecoration(
-                                                                                  color: const Color(
-                                                                                    0xfffafafa,
-                                                                                  ),
-                                                                                  borderRadius: BorderRadius.circular(
-                                                                                    12.0,
-                                                                                  ),
-                                                                                  boxShadow: const [
-                                                                                    BoxShadow(
-                                                                                      color: Color(
-                                                                                        0x29000000,
-                                                                                      ),
-                                                                                      offset: Offset(
-                                                                                        0,
-                                                                                        2,
-                                                                                      ),
-                                                                                      blurRadius: 10,
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                                child: Center(
-                                                                                  child: SvgPicture.asset(
-                                                                                    AppAssets.replyButtonLogoSvg,
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                          10.verticalSpace,
-                                                                          focusedIndex ==
-                                                                                  -1
-                                                                              ? Container(
-                                                                                  width: 50.w,
-                                                                                  height: 22,
-                                                                                  decoration: BoxDecoration(
-                                                                                    color: const Color(
-                                                                                      0xff404040,
-                                                                                    ),
-                                                                                    borderRadius: BorderRadius.circular(
-                                                                                      8.0,
-                                                                                    ),
-                                                                                    boxShadow: const [
-                                                                                      BoxShadow(
-                                                                                        color: Color(
-                                                                                          0x34000000,
-                                                                                        ),
-                                                                                        offset: Offset(
-                                                                                          0,
-                                                                                          3,
-                                                                                        ),
-                                                                                        blurRadius: 6,
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                  child: Center(
-                                                                                    child: MyTextWidget(
-                                                                                      LocaleKeys.replay.tr(),
-                                                                                      style: textTheme.titleSmall?.rq.copyWith(
-                                                                                        color: colorScheme.white,
-                                                                                        height: 1.4,
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                )
-                                                                              : const SizedBox.shrink(),
-                                                                        ],
-                                                                      ),
-                                                                    ].reversed.toList(),
-                                                            ),
-                                                          ),
-                                                        )
-                                                      : const SizedBox.shrink(),
+                                                  const SizedBox.shrink(),
                                                 ],
                                               ),
                                             );
@@ -2168,7 +1171,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                       // الويب. وسطر الحالة في الترويسة يبقى —
                                       // هو إضافةٌ عندنا لا يحويها الملف، ولا
                                       // يمنع الفقاعة التي يحويها.
-                                      if (kChatDesignV2) buildTypingBubble(),
+                                      buildTypingBubble(),
                                     ],
                                   );
                                 },
@@ -2193,7 +1196,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                       // أثناء البحث يحلّ شريط التنقّل **مكان حقل الكتابة**،
                       // كما في الويب — لا في الترويسة. والترويسة فيها الحقل
                       // وحده.
-                      if (kChatDesignV2 && _searchOpen) {
+                      if (_searchOpen) {
                         return buildSearchNavBar();
                       }
                       //                flutterToast.s
@@ -2446,18 +1449,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
     }
     Clipboard.setData(ClipboardData(text: messageContent));
     // حبّةُ التصميم الداكنة بدل `SnackBar` العريض.
-    if (kChatDesignV2) {
-      ToastV2.show(context, LocaleKeys.copied.tr());
-      return;
-    }
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(LocaleKeys.copied.tr()),
-          duration: const Duration(seconds: 1),
-        ),
-      );
+    ToastV2.show(context, LocaleKeys.copied.tr());
+    return;
   }
 
   /// يفتح نافذة الوسم.
@@ -2526,9 +1519,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
               );
               Navigator.of(context).pop();
               rebuildMessage.value = -1;
-              if (kChatDesignV2) {
-                ToastV2.show(context, LocaleKeys.toast_deleted.tr());
-              }
+              ToastV2.show(context, LocaleKeys.toast_deleted.tr());
             },
             child: Text(LocaleKeys.only_me.tr()),
           ),
@@ -2554,9 +1545,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                     );
                     Navigator.of(context).pop();
                     rebuildMessage.value = -1;
-                    if (kChatDesignV2) {
-                      ToastV2.show(context, LocaleKeys.toast_deleted.tr());
-                    }
+                    ToastV2.show(context, LocaleKeys.toast_deleted.tr());
                   },
                   child: Text(LocaleKeys.everyone.tr()),
                 ),
@@ -2571,45 +1560,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
     // التصميم الجديد يختار المحادثة من نافذةٍ سفلية لا من صفحةٍ كاملة. وما
     // يُرسَل بعد الاختيار هو نفسه حرفاً بحرف — `sendForwardTo` أدناه هي جسم
     // `extra` القديم بلا تغيير.
-    if (kChatDesignV2) {
-      showForwardSheetV2(message, id);
-      return;
-    }
-
-    context.push(
-      GRouter.config.applicationRoutes.kChatPage +
-          '?hideCallsAndStories=true&description=Forward To...',
-      extra: (int receiverId, String channelId) {
-        if (message.messageType!.name == 'TextMessage') {
-          chatBloc.add(
-            SendMessageEvent(
-              messageType: message.messageType!.name,
-              channelId: channelId,
-              isForward: true,
-              content: message.messageContent!.content,
-              messageId: id,
-              receiverUserId: receiverId,
-            ),
-          );
-        } else {
-          chatBloc.add(
-            SendMessageEvent(
-              channelId: channelId,
-              mediaContent: [
-                {
-                  'file_path': message.mediaMessageContent?[0].filePath,
-                  'file_name': message.mediaMessageContent?[0].fileName,
-                },
-              ],
-              messageType: message.messageType!.name,
-              isForward: true,
-              messageId: id,
-              receiverUserId: receiverId,
-            ),
-          );
-        }
-      },
-    );
+    showForwardSheetV2(message, id);
+    return;
   }
 
   /// يفتح نافذة «تحويل إلى» بالتصميم الجديد.
@@ -2836,19 +1788,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
   /// فتح القائمة**: فالقفزة كانت تفتح قائمة الرسالة بغشاوتها لثانيتين بدل
   /// أن تُضيئها. الومضة تفصل الأمرين.
   void highlightAfterJump(int index, bool? forSearchText) {
-    if (kChatDesignV2) {
-      flashedIndex = index;
-      flashSeq.value = flashSeq.value + 1;
-      return;
-    }
-    currentScrolledIndex = index;
-    rebuildMessage.value = index;
-    if (!(forSearchText ?? false)) {
-      Future.delayed(const Duration(seconds: 2), () {
-        currentScrolledIndex = -1;
-        rebuildMessage.value = -1;
-      });
-    }
+    flashedIndex = index;
+    flashSeq.value = flashSeq.value + 1;
+    return;
   }
 
   void _loadMoreMessages() {
@@ -2976,502 +1918,50 @@ class _SinglePageChatState extends State<SinglePageChat> {
       // الاقتباس في الملف **صفٌّ مستقلّ فوق الرسالة**، لا غلافٌ حولها: نفس
       // شكله دائماً (نقطةٌ بنفسجية وفقاعةٌ بزوايا الوارد في جهته) مهما كانت
       // جهة الردّ. والرسالة تحته تُرسم كأيّ رسالة.
-      if (kChatDesignV2) {
-        return buildReplyV2(
-          message: message,
-          listIndex: listIndex,
-          menuIndex: menuIndex,
-          senderName: senderName,
-          receiverName: receiverName,
-          senderPhoto: senderPhoto,
-          receiverPhoto: receiverPhoto,
-        );
-      }
-
-      Message parentMessage = message.parentMessage!;
-
-      index =
-          parentMessage.messageStatus?.indexWhere(
-            (e) => e.userId != _prefsRepository.myChatId,
-          ) ??
-          -1;
-      MessageStatus? parentMessageStatus = index == -1
-          ? null
-          : parentMessage.messageStatus![index];
-
-      if (parentMessage.senderUserId != message.senderUserId) {
-        return ReplayMessage(
-          index: listIndex,
-          messageType: message.messageType?.name ?? "",
-          watchedAt: messageStatus?.watchedAt,
-          messageDate: parentMessage.createdAt ?? DateTime.now(),
-          createAt: message.createdAt,
-          scrollToMessage: () {
-            scrollToIndex(
-              currentIndextForEachMessage.value[parentMessage.id.toString()] ??
-                  -1,
-              currentId: message.id!,
-              parentMessageId: message.parentMessageId!,
-            );
-          },
-          messageId: message.parentMessageId!,
-          answeredFilePath: message.mediaMessageContent?[0].filePath,
-          messageAnswer: message.messageContent?.content,
-          isFirstMessage: message.isFirstMessage!,
-          replayedPhoto:
-              parentMessage.senderUserId == _prefsRepository.myChatId.toString()
-              ? senderPhoto
-              : receiverPhoto,
-          replayedName:
-              parentMessage.senderUserId == _prefsRepository.myChatId.toString()
-              ? senderName
-              : receiverName,
-          senderAnswerName: senderName,
-          senderAnswerPhoto: senderPhoto,
-          isISentFirstMessage:
-              parentMessage.senderUserId == _prefsRepository.myChatId,
-          isSent: isSentMessage,
-          parentSenderId: parentMessage.senderUserId!,
-          isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
-          isReplayedMessageReceived:
-              (parentMessageStatus?.isReceived ?? 0) == 1,
-          isAnswerMessageRead: messageStatus?.isWatched ?? false,
-          isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
-          answeredFile: message.file,
-          message: parentMessage.messageType?.name == 'ShareProduct'
-              ? LocaleKeys.product.tr()
-              : parentMessage.messageContent?.content == null
-              ? parentMessage.messageType!.name == 'ImageMessage'
-                    ? LocaleKeys.photo.tr()
-                    : parentMessage.messageType!.name == 'FileMessage'
-                    ? LocaleKeys.file.tr()
-                    : parentMessage.messageType!.name == 'VideoMessage'
-                    ? LocaleKeys.vvideo.tr()
-                    : LocaleKeys.voice.tr()
-              : parentMessage.messageContent!.content.toString(),
-          receivedAt: messageStatus?.receivedAt,
-          messageAnswerId: message.id!,
-          isAnswerEdited: message.isEdited == 1,
-          tags: message.tags,
-          channalId: message.channelId!,
-        );
-      } else {
-        return ReplayOnMeMessage(
-          messageType: message.messageType?.name ?? "",
-          key: TestVariables.kTestMode
-              ? Key('${WidgetsKeys.replayOnMeMessageKey}$listIndex')
-              : null,
-          index: listIndex,
-          messageId: message.parentMessageId!,
-          receivedAt: messageStatus?.receivedAt,
-          messageDate: parentMessage.createdAt ?? DateTime.now(),
-          createAt: message.createdAt,
-          watchedaAt: messageStatus?.watchedAt,
-          answeredFilePath: message.mediaMessageContent.isNullOrEmpty
-              ? null
-              : message.mediaMessageContent![0].filePath,
-          messageAnswer: message.messageContent?.content,
-          answeredFile: message.file,
-          scrollToMessage: () => scrollToIndex(
-            currentIndextForEachMessage.value[parentMessage.id.toString()] ??
-                -1,
-            currentId: message.id!,
-            parentMessageId: message.parentMessageId!,
-          ),
-          isISentFirstMessage:
-              parentMessage.senderUserId == _prefsRepository.myChatId,
-          isSent: isSentMessage,
-          isFirstMessage: message.isFirstMessage!,
-          senderAnswerName: senderName,
-          senderAnswerPhoto: senderPhoto,
-          isReplayedMessageRead: parentMessageStatus?.isWatched ?? false,
-          isReplayedMessageReceived:
-              (parentMessageStatus?.isReceived ?? 0) == 1,
-          isAnswerMessageRead: messageStatus?.isWatched ?? false,
-          isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
-          message: parentMessage.messageType?.name == 'ShareProduct'
-              ? LocaleKeys.product.tr()
-              : parentMessage.messageContent?.content == null
-              ? parentMessage.messageType?.name == 'ImageMessage'
-                    ? LocaleKeys.photo.tr()
-                    : parentMessage.messageType?.name == 'FileMessage'
-                    ? LocaleKeys.file.tr()
-                    : parentMessage.messageType?.name == 'VideoMessage'
-                    ? LocaleKeys.vvideo.tr()
-                    : LocaleKeys.voice.tr()
-              : parentMessage.messageContent!.content.toString(),
-          messageAnswerId: message.id!,
-          isAnswerEdited: message.isEdited == 1,
-          tags: message.tags,
-          channalId: message.channelId!,
-        );
-      }
+      return buildReplyV2(
+        message: message,
+        listIndex: listIndex,
+        menuIndex: menuIndex,
+        senderName: senderName,
+        receiverName: receiverName,
+        senderPhoto: senderPhoto,
+        receiverPhoto: receiverPhoto,
+      );
     } else {
       switch (message.messageType?.name) {
         case 'TextMessage':
-          if (kChatDesignV2) {
-            return MessageRowV2(
-              isMine: isSentMessage,
-              onReply: () => replayMessage(message, _prefsRepository.myChatId),
-              onHold: () => openMessageMenu(listIndex, message),
-              menuCanEdit:
-                  isSentMessage && message.messageType?.name == 'TextMessage',
-              isLifted: isLifted(listIndex),
-              flash: flashOf(listIndex),
-              menuBuilder: isLifted(listIndex)
-                  ? (hole, w) => buildMenuFor(message, isSentMessage, hole, w)
-                  : null,
-              onCloseMenu: () => rebuildMessage.value = -1,
-              // النقطة أختُ الفقاعة هنا، فتُقتطع مع هامشها من الثقب.
-              holeInset: MessageMenuV2.edge,
-              flags: buildMessageFlags(message),
-              reaction: buildReactionChip(message, isSentMessage),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                textDirection: TextDirection.ltr,
-                children: [
-                  if (!isSentMessage) const BubbleDot(isMine: false),
-                  Flexible(
-                    child: MessageAdapterV2.textBubble(
-                      message: message,
-                      isMine: isSentMessage,
-                      status: messageStatus,
-                    ),
-                  ),
-                  if (isSentMessage) const BubbleDot(isMine: true),
-                ],
-              ),
-            );
-          }
-          return TextMessage(
-            key: TestVariables.kTestMode
-                ? Key('${WidgetsKeys.textMessageCardKey}$listIndex')
+          return MessageRowV2(
+            isMine: isSentMessage,
+            onReply: () => replayMessage(message, _prefsRepository.myChatId),
+            onHold: () => openMessageMenu(listIndex, message),
+            menuCanEdit:
+                isSentMessage && message.messageType?.name == 'TextMessage',
+            isLifted: isLifted(listIndex),
+            flash: flashOf(listIndex),
+            menuBuilder: isLifted(listIndex)
+                ? (hole, w) => buildMenuFor(message, isSentMessage, hole, w)
                 : null,
-            index: listIndex,
-            receivedAt: messageStatus?.receivedAt,
-            createAt: message.createdAt,
-            message: message.messageContent?.content.toString() ?? "",
-            messageId: message.id!,
-            senderId: message.senderUserId!,
-            isSent: isSentMessage,
-            isRead: messageStatus?.isWatched ?? false,
-            userMessageName: isSentMessage ? senderName : receiverName,
-            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
-            isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isFirstMessage:
-                message.isFirstMessage! || message.isFirstMessageForThisDay!,
-            watchedAt: messageStatus?.watchedAt,
-            isForwarded: message.isForward == 1,
-            isEdited: message.isEdited == 1,
-            hasReminder: message.reminder != null,
-            tags: message.tags,
-            channalId: message.channelId!,
-          );
-        case 'ImageMessage':
-          if (kChatDesignV2) {
-            return buildPhotoMessageV2(
-              listIndex: listIndex,
-              message: message,
-              isMine: isSentMessage,
-              status: messageStatus,
-            );
-          }
-          return ImageMessage(
-            channelId: message.channelId!,
-            receivedAt: messageStatus?.receivedAt,
-            createAt: message.createdAt,
-            isSent: isSentMessage,
-            imageFile: message.file,
-            messageId: message.id.toString(),
-            senderId: message.senderUserId!,
-            imageUrl: message.mediaMessageContent.isNullOrEmpty
-                ? null
-                : message.mediaMessageContent?[0].filePath == null
-                ? null
-                : addSuitableWidthAndHeightToImage(
-                    imageUrl: message.mediaMessageContent![0].filePath!,
-                    width: 200.w,
-                    // the width of the image in the ui
-                    height: 400.h,
-                    // the height of the image in the ui
-
-                    //double.tryParse(image.originalHeight.toString())
+            onCloseMenu: () => rebuildMessage.value = -1,
+            // النقطة أختُ الفقاعة هنا، فتُقتطع مع هامشها من الثقب.
+            holeInset: MessageMenuV2.edge,
+            flags: buildMessageFlags(message),
+            reaction: buildReactionChip(message, isSentMessage),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              textDirection: TextDirection.ltr,
+              children: [
+                if (!isSentMessage) const BubbleDot(isMine: false),
+                Flexible(
+                  child: MessageAdapterV2.textBubble(
+                    message: message,
+                    isMine: isSentMessage,
+                    status: messageStatus,
                   ),
-            userMessageName: message.receiverUserId != _prefsRepository.myChatId
-                ? senderName
-                : receiverName,
-            watchedAt: messageStatus?.watchedAt,
-            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
-            isFirstMessage:
-                message.isFirstMessage! || message.isFirstMessageForThisDay!,
-            isRead: messageStatus?.isWatched ?? false,
-            isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isForwarded: message.isForward == 1,
-            tags: message.tags,
-          );
-        case 'ShareProduct':
-          // بطاقة المنتج تُلفّ بالصفّ الجديد كبقيّة الرسائل.
-          //
-          // **لا نظير لها في الويب**: `messages.tsx` فيه الصورة والفيديو
-          // والملفّ والموقع والصوت والمكالمة والملاحظة — ولا منتج. فالبطاقة
-          // تبقى كما هي شكلاً، ويأتيها من الصفّ ما يأتي غيرَها: السحب للردّ
-          // بعلامته، والضغط المطوّل بقائمته، وسطرُ الأعلام، وحبّة التفاعل.
-          //
-          // وبلا هذا اللفّ كانت تتبع اتجاه اللغة فتنزاح يميناً ويساراً —
-          // وجهةُ الرسالة مطلقةٌ لا لغويّة — ولم تكن تستجيب للسحب أصلاً.
-          if (kChatDesignV2) {
-            return MessageRowV2(
-              isMine: isSentMessage,
-              onReply: () => replayMessage(message, _prefsRepository.myChatId),
-              onHold: () => openMessageMenu(listIndex, message),
-              isLifted: isLifted(listIndex),
-              flash: flashOf(listIndex),
-              menuBuilder: isLifted(listIndex)
-                  ? (hole, w) => buildMenuFor(message, isSentMessage, hole, w)
-                  : null,
-              onCloseMenu: () => rebuildMessage.value = -1,
-              flags: buildMessageFlags(message),
-              reaction: buildReactionChip(message, isSentMessage),
-              child: buildSharedProductCard(
-                message: message,
-                isSentMessage: isSentMessage,
-                messageStatus: messageStatus,
-                senderName: senderName,
-                receiverName: receiverName,
-                senderPhoto: senderPhoto,
-                receiverPhoto: receiverPhoto,
-                insideRowV2: true,
-              ),
-            );
-          }
-          return buildSharedProductCard(
-            message: message,
-            isSentMessage: isSentMessage,
-            messageStatus: messageStatus,
-            senderName: senderName,
-            receiverName: receiverName,
-            senderPhoto: senderPhoto,
-            receiverPhoto: receiverPhoto,
-          );
-
-        case 'VideoMessage':
-          if (kChatDesignV2) {
-            return MessageRowV2(
-              isMine: isSentMessage,
-              onReply: () => replayMessage(message, _prefsRepository.myChatId),
-              onHold: () => openMessageMenu(listIndex, message),
-              menuCanEdit:
-                  isSentMessage && message.messageType?.name == 'TextMessage',
-              isLifted: isLifted(listIndex),
-              flash: flashOf(listIndex),
-              menuBuilder: isLifted(listIndex)
-                  ? (hole, w) => buildMenuFor(message, isSentMessage, hole, w)
-                  : null,
-              onCloseMenu: () => rebuildMessage.value = -1,
-              flags: buildMessageFlags(message),
-              reaction: buildReactionChip(message, isSentMessage),
-              child: VideoMessageV2(
-                // الإطار والحبّات من التصميم، وقرص التشغيل من المشغّل نفسه:
-                // تحته تنزيلٌ وتقدّمٌ وإلغاء، وهو منطقٌ يخصّه وحده. ولذلك
-                // يُمرَّر `isPlaying: true` — فتُسلَّم البطاقة قرصها له.
-                isPlaying: true,
-                onTogglePlay: () {},
-                preview: MYVideoPlayer(
-                  key: ValueKey(message.id),
-                  chatId: message.channelId!,
-                  videoUrl: message.mediaMessageContent.isNullOrEmpty
-                      ? null
-                      : message.mediaMessageContent![0].filePath,
-                  videoFile: message.file,
-                  playGlyph: isSentMessage ? 'playMagenta' : 'playPurple',
                 ),
-                durationText: MessageAdapterV2.clockOf(
-                  message.durationInSeconds,
-                ),
-                time: MessageAdapterV2.timeOf(message.createdAt),
-                isMine: isSentMessage,
-                status: MessageAdapterV2.statusOf(
-                  isMine: isSentMessage,
-                  status: messageStatus,
-                ),
-              ),
-            );
-          }
-          return VideoMessage(
-            channelId: message.channelId!,
-            receivedAt: messageStatus?.receivedAt,
-            createAt: message.createdAt,
-            key: ValueKey(message.id),
-            isSent: isSentMessage,
-            videoFile: message.file,
-            videoUrl: message.mediaMessageContent?[0].filePath,
-            messageId: message.id.toString(),
-            senderId: message.senderUserId!,
-            userMessageName: message.receiverUserId != _prefsRepository.myChatId
-                ? senderName
-                : receiverName,
-            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
-            isFirstMessage:
-                message.isFirstMessage! || message.isFirstMessageForThisDay!,
-            isRead: messageStatus?.isWatched ?? false,
-            isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isForwarded: message.isForward == 1,
-            tags: message.tags,
-            watchedAt: messageStatus?.watchedAt,
-          );
-        case 'VoiceMessage':
-          if (kChatDesignV2) {
-            return MessageRowV2(
-              isMine: isSentMessage,
-              isWide: true,
-              onReply: () => replayMessage(message, _prefsRepository.myChatId),
-              onHold: () => openMessageMenu(listIndex, message),
-              menuCanEdit:
-                  isSentMessage && message.messageType?.name == 'TextMessage',
-              isLifted: isLifted(listIndex),
-              flash: flashOf(listIndex),
-              menuBuilder: isLifted(listIndex)
-                  ? (hole, w) => buildMenuFor(message, isSentMessage, hole, w)
-                  : null,
-              onCloseMenu: () => rebuildMessage.value = -1,
-              flags: buildMessageFlags(message),
-              reaction: buildReactionChip(message, isSentMessage),
-              child: VoiceMessageHost(
-                isMine: isSentMessage,
-                time: MessageAdapterV2.timeOf(message.createdAt),
-                label: LocaleKeys.voice.tr(),
-                file: message.file,
-                fileUrl: message.mediaMessageContent.isNullOrEmpty
-                    ? null
-                    : message.mediaMessageContent![0].filePath,
-                status: MessageAdapterV2.statusOf(
-                  isMine: isSentMessage,
-                  status: messageStatus,
-                ),
-                totalSeconds: message.durationInSeconds ?? 0,
-              ),
-            );
-          }
-          return VoiceMessage(
-            receivedAt: messageStatus?.receivedAt,
-            createAt: message.createdAt,
-            isSent: isSentMessage,
-            file: message.file,
-            fileUrl: !message.mediaMessageContent.isNullOrEmpty
-                ? message.mediaMessageContent![0].filePath
-                : null,
-            messageId: message.id.toString(),
-            senderId: message.senderUserId!,
-            userMessageName: isSentMessage ? senderName : receiverName,
-            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
-            watchedAt: messageStatus?.watchedAt,
-            isRead: messageStatus?.isWatched ?? false,
-            isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isFirstMessage:
-                message.isFirstMessage! || message.isFirstMessageForThisDay!,
-            isForwarded: message.isForward == 1,
-            tags: message.tags,
-            channelId: message.channelId!,
-          );
-        case 'FileMessage':
-          String fileName =
-              message.file?.path.split('/').last ??
-              (message.mediaMessageContent.isNullOrEmpty
-                  ? ""
-                  : message.mediaMessageContent![0].filePath!.split('/').last);
-          if (kChatDesignV2) {
-            return MessageRowV2(
-              isMine: isSentMessage,
-              onReply: () => replayMessage(message, _prefsRepository.myChatId),
-              onHold: () => openMessageMenu(listIndex, message),
-              menuCanEdit:
-                  isSentMessage && message.messageType?.name == 'TextMessage',
-              isLifted: isLifted(listIndex),
-              flash: flashOf(listIndex),
-              menuBuilder: isLifted(listIndex)
-                  ? (hole, w) => buildMenuFor(message, isSentMessage, hole, w)
-                  : null,
-              onCloseMenu: () => rebuildMessage.value = -1,
-              flags: buildMessageFlags(message),
-              reaction: buildReactionChip(message, isSentMessage),
-              child: DocumentMessageHost(
-                name: fileName,
-                isMine: isSentMessage,
-                time: MessageAdapterV2.timeOf(message.createdAt),
-                channelId: message.channelId!,
-                file: message.file,
-                fileUrl: message.mediaMessageContent.isNullOrEmpty
-                    ? null
-                    : message.mediaMessageContent![0].filePath,
-                status: MessageAdapterV2.statusOf(
-                  isMine: isSentMessage,
-                  status: messageStatus,
-                ),
-              ),
-            );
-          }
-          return DocumentMessage(
-            channelId: message.channelId!,
-            receivedAt: messageStatus?.receivedAt,
-            createAt: message.createdAt,
-            isSent: isSentMessage,
-            documentFile: message.file,
-            fileName: fileName,
-            watchedAt: messageStatus?.watchedAt,
-            documentFileUrl: message.mediaMessageContent.isNullOrEmpty
-                ? ""
-                : message.mediaMessageContent?[0].filePath,
-            messageId: message.id.toString(),
-            senderId: message.senderUserId!,
-            userMessageName: isSentMessage ? senderName : receiverName,
-            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
-            isRead: messageStatus?.isWatched ?? false,
-            isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isFirstMessage:
-                message.isFirstMessage! || message.isFirstMessageForThisDay!,
-            isForwarded: message.isForward == 1,
-            tags: message.tags,
-          );
-        case 'VideoCall':
-          if (kChatDesignV2) {
-            return buildCallCardV2(
-              listIndex: listIndex,
-              message: message,
-              isMine: isSentMessage,
-              status: messageStatus,
-              title: LocaleKeys.video_call_at.tr(),
-            );
-          }
-          return CallMessage(
-            isVideo: true,
-            message: LocaleKeys.video_call_at.tr(),
-            time: message.createdAt!,
-            isSent: isSentMessage,
-            durationInSeconds: message.durationInSeconds ?? 0,
-            isMessageForMe: isSentMessage,
-            userMessageName: isSentMessage ? senderName : receiverName,
-            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
-          );
-        case 'VoiceCall':
-          if (kChatDesignV2) {
-            return buildCallCardV2(
-              listIndex: listIndex,
-              message: message,
-              isMine: isSentMessage,
-              status: messageStatus,
-              title: LocaleKeys.voice_call_at.tr(),
-            );
-          }
-          return CallMessage(
-            isVideo: false,
-            message: LocaleKeys.voice_call_at.tr(),
-            isSent: isSentMessage,
-            time: message.createdAt!,
-            durationInSeconds: message.durationInSeconds ?? 0,
-            isMessageForMe: isSentMessage,
-            userMessageName: isSentMessage ? senderName : receiverName,
-            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
+                if (isSentMessage) const BubbleDot(isMine: true),
+              ],
+            ),
           );
       }
     }
@@ -3537,8 +2027,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   /// بطاقة المنتج المشارَك.
   ///
-  /// مستخرَجةٌ كما هي ليستعملها المساران: الصفّ الجديد الذي يلفّها، والمسار
-  /// القديم خلف `kChatDesignV2` — فالبطاقة واحدةٌ لا نسختان تتباعدان.
+  /// مستخرَجةٌ كما هي ليستعملها الصفُّ الذي يلفّها — فالبطاقة واحدةٌ لا
+  /// نسختان تتباعدان.
   Widget buildSharedProductCard({
     required Message message,
     required bool isSentMessage,

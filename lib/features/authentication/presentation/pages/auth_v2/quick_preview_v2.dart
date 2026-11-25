@@ -94,10 +94,7 @@ class _QuickPreviewV2State extends State<QuickPreviewV2> {
       widget.onComplete();
       return;
     }
-    _pages.nextPage(
-      duration: XdTransition.duration,
-      curve: XdTransition.ease,
-    );
+    _pages.nextPage(duration: XdTransition.duration, curve: XdTransition.ease);
   }
 
   @override
@@ -110,9 +107,7 @@ class _QuickPreviewV2State extends State<QuickPreviewV2> {
           // نفسِه على كلّ شاشة. وتُقاس **من الأسفل** عن قصد: إزاحةٌ ثابتةٌ من
           // الأعلى لا تصحّ إلّا على شاشةٍ طولُها 932 بالضبط.
           final double collapsedY =
-              box.maxHeight -
-              PreviewXd.collapsedTail.h -
-              PreviewXd.abovePill.h;
+              box.maxHeight - PreviewXd.collapsedTail.h - PreviewXd.abovePill.h;
 
           return ClipRect(
             child: Stack(
@@ -373,9 +368,7 @@ class _QuickPreviewV2State extends State<QuickPreviewV2> {
         borderRadius: BorderRadius.circular(AuthXd.boxRadius.r),
       ),
       child: XdText(
-        _last
-            ? LocaleKeys.get_started_plain.tr()
-            : LocaleKeys.next.tr(),
+        _last ? LocaleKeys.get_started_plain.tr() : LocaleKeys.next.tr(),
         size: 16,
         color: _last ? XdColors.white : AuthColors.dash,
       ),
@@ -435,8 +428,10 @@ class _SloganPillState extends State<_SloganPill> {
   }
 
   /// النقطةُ البنفسجيّةُ التي يضعها التصميمُ حول كلّ شعار.
-  static TextSpan _stop() =>
-      TextSpan(text: '.', style: xdTextStyle(size: 14, color: XdColors.purple));
+  static TextSpan _stop() => TextSpan(
+    text: '.',
+    style: xdTextStyle(size: 14, color: XdColors.purple),
+  );
 
   /// شعارٌ بين نقطتين، كلماتُه كلُّها بوزنٍ واحد.
   static List<TextSpan> _plain(String key) => <TextSpan>[

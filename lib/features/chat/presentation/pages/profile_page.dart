@@ -15,8 +15,8 @@ import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/chat/presentation/pages/media_in_profile.dart';
 import 'package:trydos/features/chat/presentation/pages/profile_page_body.dart';
+import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/chat/presentation/pages/profile_page_design.dart';
-import 'single_page_chat_host.dart';
 import 'package:trydos/features/chat/presentation/widgets/delete_chat_confirm_dialog.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
@@ -192,7 +192,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void openSearchInChat() {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => singlePageChat(
+        builder: (context) => SinglePageChat(
           chatId: widget.chatId,
           fullReceiverName: widget.fullReceiverName,
           receiverName: widget.receiverName,
@@ -589,7 +589,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           onTap: () {
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                builder: (context) => singlePageChat(
+                                builder: (context) => SinglePageChat(
                                   chatId: widget.chatId,
                                   fullReceiverName: widget.fullReceiverName,
                                   receiverName: widget.receiverName,

@@ -224,8 +224,8 @@ class _SignInSlidesState extends State<_SignInSlides> {
           ),
         ),
         SizedBox(
-          height: (SignInXd.dotsTop - (SignInXd.cardTop + SignInXd.cardHeight))
-              .h,
+          height:
+              (SignInXd.dotsTop - (SignInXd.cardTop + SignInXd.cardHeight)).h,
         ),
         Center(child: _dots()),
       ],

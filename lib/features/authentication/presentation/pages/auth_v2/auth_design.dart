@@ -24,7 +24,6 @@ library;
 import 'package:flutter/material.dart';
 
 import 'package:trydos/common/constant/design/xd_design.dart';
-import 'package:trydos/main.dart' show kDesignV2;
 
 /// أرقامُ اللوح — `XD` في `authLayout.ts`.
 abstract class AuthXd {
@@ -231,13 +230,6 @@ abstract class AuthIconGap {
 /// XD يضعه على ثلاث كلماتٍ لا غير: «ادخل وتابع»، و«أنشئ حساباً جديداً وتابع»،
 /// و«ألغِ وألقِ نظرةً على التطبيق». وXD يعدّ بالألف من الـem، فالعشرةُ 0.01em.
 const double kAuthWideTracking = 0.01;
-
-/// شاشاتُ الدخول بالتصميم الجديد — من مفتاح التصميم الواحد في `main.dart`
-/// ([kDesignV2]).
-///
-/// يُطفأ فتعود `RegistrationPage` القديمةُ بسبع صفحاتها كما هي — لم تُحذف،
-/// والاختيارُ في `registration_host.dart`.
-const bool kAuthDesignV2 = kDesignV2;
 
 /// الانزلاقُ بين شاشتي دخول: الجديدةُ تدخل من اليمين والقديمةُ تخرج يساراً،
 /// وكلتاهما تخبو — `AUTH_SLIDE`.

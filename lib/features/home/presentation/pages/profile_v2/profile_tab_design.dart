@@ -19,15 +19,6 @@ library;
 
 import 'package:flutter/material.dart';
 
-import 'package:trydos/main.dart' show kDesignV2;
-
-/// تبويب الملفّ بالتصميم الجديد — من مفتاح التصميم الواحد في `main.dart`
-/// ([kDesignV2]). يُطفأ فتعود الصفحة القديمة كما هي — لم تُحذف، بل بقي
-/// الفرع الآخر في `profile_page.dart`.
-///
-/// وتغيب معها بطاقةُ المحفظة، فمدخلُ `WalletPageV2` فيها وحدَها.
-const bool kProfileDesignV2 = kDesignV2;
-
 /// مجلّد أيقونات هذه الشاشة تحت `assets/svg/`.
 const String kProfileSvg = 'profile_v2';
 

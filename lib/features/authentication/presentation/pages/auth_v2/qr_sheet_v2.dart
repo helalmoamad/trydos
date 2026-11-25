@@ -409,14 +409,15 @@ class _QrSheetV2State extends State<QrSheetV2>
             SizedBox(height: AuthXd.qrRetryGap.h),
             Text(
               LocaleKeys.try_again.tr(),
-              style: xdTextStyle(
-                size: 13,
-                weight: XdWeight.medium,
-                color: AuthColors.termsLink,
-              ).copyWith(
-                decoration: TextDecoration.underline,
-                decorationColor: AuthColors.termsLink,
-              ),
+              style:
+                  xdTextStyle(
+                    size: 13,
+                    weight: XdWeight.medium,
+                    color: AuthColors.termsLink,
+                  ).copyWith(
+                    decoration: TextDecoration.underline,
+                    decorationColor: AuthColors.termsLink,
+                  ),
             ),
           ],
         ),
@@ -468,10 +469,7 @@ class _QrFramePainter extends CustomPainter {
     ]) {
       canvas.save();
       // كلُّ ركنٍ هو الركنُ الأعلى الأيسرُ نفسُه، معكوساً.
-      canvas.translate(
-        corner.$1 ? size.width : 0,
-        corner.$2 ? size.height : 0,
-      );
+      canvas.translate(corner.$1 ? size.width : 0, corner.$2 ? size.height : 0);
       canvas.scale(corner.$1 ? -1 : 1, corner.$2 ? -1 : 1);
       canvas.drawPath(
         Path()

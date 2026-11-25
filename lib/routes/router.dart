@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:trydos/features/authentication/presentation/pages/registration_host.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/authentication/presentation/pages/register_completed.dart';
-import 'package:trydos/features/chat/presentation/pages/single_page_chat_host.dart';
 import 'package:trydos/splash_page.dart';
 import '../base_page.dart';
 import '../features/authentication/presentation/pages/already_exist_account.dart';
@@ -15,6 +13,8 @@ import '../features/authentication/presentation/pages/number_not_registered.dart
 import '../features/calls/presentation/pages/agora_webview.dart';
 import '../features/calls/presentation/pages/answer_call.dart';
 import '../features/chat/presentation/pages/chat_pages.dart';
+import 'package:trydos/features/authentication/presentation/pages/auth_v2/registration_page_v2.dart';
+import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import '../features/chat/presentation/pages/contacts_page.dart';
 import '../main.dart';
 import 'error_screen.dart';
@@ -107,11 +107,7 @@ class GRouter {
       GoRoute(
         path: _config.applicationRoutes.kRegistrationPage,
         pageBuilder: (BuildContext context, GoRouterState state) {
-          return _builderPage(
-            // نسخةُ التصميم تُختار في [registrationPage].
-            child: registrationPage(),
-            state: state,
-          );
+          return _builderPage(child: const RegistrationPageV2(), state: state);
         },
       ),
       GoRoute(
@@ -143,8 +139,7 @@ class GRouter {
             pageBuilder: (BuildContext context, GoRouterState state) {
               debugPrint(state.uri.queryParameters.toString());
               return _builderPage(
-                // نسخةُ التصميم تُختار في [singlePageChat].
-                child: singlePageChat(
+                child: SinglePageChat(
                   chatId: state.uri.queryParameters['chatId']!,
                   fullReceiverName:
                       state.uri.queryParameters['fullReceiverName']!,
@@ -170,7 +165,7 @@ class GRouter {
             path: _config.applicationRoutes.kRegistrationPageName,
             pageBuilder: (BuildContext context, GoRouterState state) {
               return _builderPage(
-                child: registrationPage(),
+                child: const RegistrationPageV2(),
                 state: state,
               );
             },

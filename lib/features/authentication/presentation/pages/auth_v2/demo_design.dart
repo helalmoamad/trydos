@@ -75,11 +75,7 @@ abstract class SignInXd {
   /// رأسُ النافذة، وظلُّ حافّتها العليا.
   static const double top = 285;
   static const List<BoxShadow> shadow = <BoxShadow>[
-    BoxShadow(
-      color: Color(0x1A000000),
-      offset: Offset(0, -3),
-      blurRadius: 10,
-    ),
+    BoxShadow(color: Color(0x1A000000), offset: Offset(0, -3), blurRadius: 10),
   ];
 
   /// الشعارُ كلُّه داكنٌ، 150×150 على (140، 327).

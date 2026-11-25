@@ -128,7 +128,9 @@ class AuthLogoLayer extends StatelessWidget {
                   top: topFor(stop, box.maxHeight),
                   left: 0,
                   right: 0,
-                  child: Center(child: AuthBadge(tone: tone, slot: slot)),
+                  child: Center(
+                    child: AuthBadge(tone: tone, slot: slot),
+                  ),
                 ),
               ],
             );

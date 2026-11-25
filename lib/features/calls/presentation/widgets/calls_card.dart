@@ -1,5 +1,4 @@
 import 'package:trydos/features/chat/presentation/pages/chat_list_design.dart';
-import 'package:trydos/features/chat/presentation/pages/conversation_design.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_v2/call_row_v2.dart';
 import 'dart:async';
 
@@ -8,25 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/core/utils/theme_state.dart';
-import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/calls/presentation/utils/caller_info.dart';
-import 'package:trydos/features/calls/presentation/widgets/no_image_widget.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 class CallsCard extends StatefulWidget {
@@ -63,7 +55,6 @@ class CallsCard extends StatefulWidget {
 
 class _CallsCardState extends ThemeState<CallsCard> {
   late CallsBloc callsBloc;
-  final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   ValueNotifier<int> typingIndicator = ValueNotifier(0);
   Timer? _typingTimer;
 
@@ -103,314 +94,40 @@ class _CallsCardState extends ThemeState<CallsCard> {
     // النبرات الثلاث مشتقّةٌ من الحقلين اللذين عند الصفّ القديم، لا من حقلٍ
     // جديد: ما لم يُجَب وارداً فهو **فائتة**، وما جاوزت مدّتُه صفراً فهو
     // **واردة** بسطر الدقائق تحته، وما عداه **بلا ردّ**.
-    if (kChatDesignV2) {
-      final CallRowKindV2 kind = widget.isMissing
-          ? CallRowKindV2.missed
-          : (widget.isIncome && widget.duration > 0
-                ? CallRowKindV2.incoming
-                : CallRowKindV2.noAnswer);
-      return CallRowFaceV2(
-        kind: kind,
-        name: widget.fullReceiverName,
-        time: widget.createAt == null
-            ? ''
-            : (!widget.createAt!.isUtc
-                  ? HelperFunctions.getDateInFormat(widget.createAt!)
-                  : HelperFunctions.getZonedDateInFormat(widget.createAt!)),
-        label: switch (kind) {
-          CallRowKindV2.missed =>
-            widget.isVoice
-                ? LocaleKeys.missed_voice_call.tr()
-                : LocaleKeys.missed_video_call.tr(),
-          CallRowKindV2.incoming =>
-            widget.isVoice
-                ? LocaleKeys.incoming_voice_call.tr()
-                : LocaleKeys.incoming_video_call.tr(),
-          CallRowKindV2.noAnswer => LocaleKeys.no_answer.tr(),
-        },
-        minutesLabel: kind == CallRowKindV2.incoming
-            ? LocaleKeys.n_min.tr(
-                namedArgs: {'n': '${(widget.duration / 60).ceil()}'},
-              )
-            : null,
-        photo: _photoV2(),
-        initials: widget.photoPath.isEmpty
-            ? HelperFunctions.getTheFirstTwoLettersOfName(
-                widget.fullReceiverName,
-              )
-            : null,
-        onTap: _startCallV2,
-      );
-    }
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          height: widget.index == 0 ? 0 : 0.4,
-          color: const Color(0xffC8C7CC),
-          margin: HWEdgeInsetsDirectional.only(start: 94),
-        ),
-        Slidable(
-          startActionPane: ActionPane(
-            motion: const ScrollMotion(),
-            extentRatio: 0.25,
-            children: [
-              SlidableActionWidget(
-                text: LocaleKeys.delete.tr(),
-                backgroundColor: const Color(0xffFFE8E8),
-                foregroundColor: const Color(0xffFA6868),
-                iconUrl: AppAssets.binSvg,
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text(LocaleKeys.delete_message.tr()),
-                      actions: [
-                        MaterialButton(
-                          onPressed: () {
-                            callsBloc.add(
-                              DeleteMessageEvent(
-                                deleteFromId: _prefsRepository.myChatId!,
-                                type: "call",
-                                deleteFromBoth: 0,
-                                messageId: widget.callRegId,
-                              ),
-                            );
-                            callsBloc.add(
-                              DeleteMessageEvent(
-                                deleteFromId: _prefsRepository.myChatId!,
-                                type: "message",
-                                deleteFromBoth: 0,
-                                channelId: widget.chatId,
-                                messageId: widget.callRegId,
-                              ),
-                            );
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(LocaleKeys.only_me.tr()),
-                        ),
-                        SizedBox(width: 20.w),
-                        MaterialButton(
-                          onPressed: () {
-                            callsBloc.add(
-                              DeleteMessageEvent(
-                                type: "call",
-                                deleteFromBoth: 1,
-                                messageId: widget.callRegId,
-                                deleteFromId: _prefsRepository.myChatId!,
-                              ),
-                            );
-                            callsBloc.add(
-                              DeleteMessageEvent(
-                                deleteFromId: _prefsRepository.myChatId!,
-                                type: "message",
-                                deleteFromBoth: 1,
-                                channelId: widget.chatId,
-                                messageId: widget.callRegId,
-                              ),
-                            );
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(LocaleKeys.everyone.tr()),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          child: InkWell(
-            onTap: _startCallV2,
-            child: Container(
-              height: 75,
-              width: 1.sw,
-              padding: HWEdgeInsets.only(left: 15.w, right: 30.w, top: 8),
-              color: widget.isMissing
-                  ? const Color(0xFFFFFCFC)
-                  : colorScheme.white,
-              child: Row(
-                children: [
-                  Container(
-                    height: 55,
-                    width: 55.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.0),
-                      border: Border.all(
-                        color: widget.isMissing
-                            ? const Color(0xffff5f61)
-                            : widget.isIncome
-                            ? const Color(0xff388CFF)
-                            : const Color(0xffFFC05C),
-                      ),
-                    ),
-                    child: widget.photoPath != ""
-                        ?
-                          /* decoration: BoxDecoration(
-                            border: Border.all(
-                                width: 1.0, color: const Color(0xff388cff)),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x29388cff),
-                                offset: Offset(0, 3),
-                                blurRadius: 6,
-                              ),
-                            ],
-                          ),*/
-                          MyCachedNetworkImage(
-                            imageUrl:
-                                (widget.photoPath.toString().contains(
-                                      "cloudinary",
-                                    )
-                                    ? ""
-                                    : "${dotenv.env['Images_Url']}") +
-                                widget.photoPath,
-                            imageFit: BoxFit.cover,
-                            progressIndicatorBuilderWidget: TrydosLoader(),
-                            height: 55,
-                            width: 55.w,
-                          )
-                        : NoImageWidget(
-                            height: 40,
-                            width: 40.w,
-                            textStyle: context.textTheme.bodyMedium?.bq
-                                .copyWith(
-                                  color: const Color(0xff6638FF),
-                                  letterSpacing: 0.18,
-                                  height: 1.33,
-                                ),
-                            name: HelperFunctions.getTheFirstTwoLettersOfName(
-                              widget.fullReceiverName,
-                            ),
-                          ),
-                  ),
-                  24.horizontalSpace,
-                  Flexible(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  widget.fullReceiverName,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: textTheme.bodyMedium?.rq.copyWith(
-                                    color: const Color(0xff505050),
-                                  ),
-                                ),
-                                30.horizontalSpace,
-                              ],
-                            ),
-                            10.verticalSpace,
-                            Row(
-                              children: [
-                                SvgPicture.asset(
-                                  widget.isMissing
-                                      ? AppAssets.callMissingSvg
-                                      : widget.isIncome
-                                      ? AppAssets.callIncomeSvg
-                                      : AppAssets.callOutgoingSvg,
-                                  height: 15.sp,
-                                  width: 15.sp,
-                                ),
-                                10.horizontalSpace,
-                                Text(
-                                  widget.isMissing
-                                      ? LocaleKeys.missed_call.tr()
-                                      : widget.isIncome
-                                      ? LocaleKeys.income.tr()
-                                      : LocaleKeys.Outcome.tr(),
-                                  maxLines: 1,
-                                  style: textTheme.titleLarge?.lq.copyWith(
-                                    color: Color(
-                                      widget.isMissing
-                                          ? 0xffFF5F61
-                                          : 0xff8E8D92,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  HelperFunctions.replaceArabicNumber(
-                                    HelperFunctions.getDatesInFormat(
-                                      widget.createAt!,
-                                    ).toString(),
-                                  ),
-                                  maxLines: 1,
-                                  style: textTheme.bodySmall?.rq.copyWith(
-                                    color: const Color(0xff8E8D92),
-                                  ),
-                                ),
-                                Text(
-                                  " ، ",
-                                  maxLines: 1,
-                                  style: textTheme.bodySmall?.rq.copyWith(
-                                    color: const Color(0xff8E8D92),
-                                    fontSize: 20,
-                                  ),
-                                ),
-                                Text(
-                                  HelperFunctions.replaceArabicNumber(
-                                    !widget.createAt!.isUtc
-                                        ? HelperFunctions.gettimesInFormat(
-                                            widget.createAt!,
-                                          ).toString()
-                                        : HelperFunctions.gettimesInFormat(
-                                            widget.createAt!,
-                                          ).toString(),
-                                  ),
-                                  maxLines: 2,
-                                  style: textTheme.bodySmall?.rq.copyWith(
-                                    color: const Color(0xff8E8D92),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            widget.duration > 0
-                                ? Row(
-                                    children: [
-                                      const Text(
-                                        "المدة : ",
-                                        style: TextStyle(
-                                          color: Color(0xff8E8D92),
-                                        ),
-                                      ),
-                                      Text(
-                                        fromSecond(widget.duration),
-                                        maxLines: 1,
-                                        style: textTheme.bodySmall?.rq.copyWith(
-                                          color: const Color(0xff8E8D92),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : const SizedBox.shrink(),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
+    final CallRowKindV2 kind = widget.isMissing
+        ? CallRowKindV2.missed
+        : (widget.isIncome && widget.duration > 0
+              ? CallRowKindV2.incoming
+              : CallRowKindV2.noAnswer);
+    return CallRowFaceV2(
+      kind: kind,
+      name: widget.fullReceiverName,
+      time: widget.createAt == null
+          ? ''
+          : (!widget.createAt!.isUtc
+                ? HelperFunctions.getDateInFormat(widget.createAt!)
+                : HelperFunctions.getZonedDateInFormat(widget.createAt!)),
+      label: switch (kind) {
+        CallRowKindV2.missed =>
+          widget.isVoice
+              ? LocaleKeys.missed_voice_call.tr()
+              : LocaleKeys.missed_video_call.tr(),
+        CallRowKindV2.incoming =>
+          widget.isVoice
+              ? LocaleKeys.incoming_voice_call.tr()
+              : LocaleKeys.incoming_video_call.tr(),
+        CallRowKindV2.noAnswer => LocaleKeys.no_answer.tr(),
+      },
+      minutesLabel: kind == CallRowKindV2.incoming
+          ? LocaleKeys.n_min.tr(
+              namedArgs: {'n': '${(widget.duration / 60).ceil()}'},
+            )
+          : null,
+      photo: _photoV2(),
+      initials: widget.photoPath.isEmpty
+          ? HelperFunctions.getTheFirstTwoLettersOfName(widget.fullReceiverName)
+          : null,
+      onTap: _startCallV2,
     );
   }
 

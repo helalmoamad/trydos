@@ -264,10 +264,7 @@ List<_Beat> _fullCycle(List<_Beat> first, List<_Beat> second) {
 
 ({LogoTrack x, LogoTrack sx, LogoTrack sy}) _dotTracks(List<_Beat> beats) {
   final List<double> times = beats.map((_Beat b) => b.t).toList();
-  final List<Curve> eases = beats
-      .sublist(1)
-      .map((_Beat b) => b.ease)
-      .toList();
+  final List<Curve> eases = beats.sublist(1).map((_Beat b) => b.ease).toList();
   return (
     x: LogoTrack(times, beats.map((_Beat b) => b.x).toList(), eases),
     sx: LogoTrack(times, beats.map((_Beat b) => b.sx).toList(), eases),
@@ -420,7 +417,11 @@ class RevealPattern {
       const <Curve>[Curves.linear, _wipeIn, Curves.linear],
     );
 
-    _leftDrop = _dropTracks(at(dropStart), at(dropStart + _overshoot), at(dropStart + _drop));
+    _leftDrop = _dropTracks(
+      at(dropStart),
+      at(dropStart + _overshoot),
+      at(dropStart + _drop),
+    );
     _rightDrop = _dropTracks(
       at(dropStart + 0.08),
       at(dropStart + 0.08 + _overshoot),
@@ -428,11 +429,10 @@ class RevealPattern {
     );
 
     _ringDraw = isBadge
-        ? LogoTrack(
-            <double>[0, at(1), 1],
-            <double>[0, 1, 1],
-            const <Curve>[_ringEase, Curves.linear],
-          )
+        ? LogoTrack(<double>[0, at(1), 1], <double>[0, 1, 1], const <Curve>[
+            _ringEase,
+            Curves.linear,
+          ])
         : null;
   }
 
@@ -602,8 +602,9 @@ class _AuthLogoMarkState extends State<AuthLogoMark>
   /// الخطوةُ الأخيرةُ في قائمةٍ تُكرّر لا تنتهي، فلا ساعةَ لها.
   bool get _endless => widget.slot.loop && _index == _steps.length - 1;
 
-  LogoStep get _step =>
-      _index >= _steps.length ? const LogoStep(LogoPattern.none, 0) : _steps[_index];
+  LogoStep get _step => _index >= _steps.length
+      ? const LogoStep(LogoPattern.none, 0)
+      : _steps[_index];
 
   @override
   void initState() {
@@ -680,7 +681,8 @@ class _AuthLogoMarkState extends State<AuthLogoMark>
         animation: _run,
         builder: (BuildContext context, Widget? _) {
           final double t = _run.value;
-          final LogoFrame f = relay?.frameAt(t) ?? reveal?.frameAt(t) ?? const LogoFrame();
+          final LogoFrame f =
+              relay?.frameAt(t) ?? reveal?.frameAt(t) ?? const LogoFrame();
           return Stack(
             clipBehavior: Clip.none,
             children: <Widget>[
@@ -719,10 +721,7 @@ class _AuthLogoMarkState extends State<AuthLogoMark>
   Widget _ring(LogoGeometry geo, double k, LogoFrame f) {
     Widget ring = SvgPicture.asset(
       'assets/svg/$kAuthSvg/badge_ring.svg',
-      colorFilter: ColorFilter.mode(
-        LogoInk.ring(widget.tone),
-        BlendMode.srcIn,
-      ),
+      colorFilter: ColorFilter.mode(LogoInk.ring(widget.tone), BlendMode.srcIn),
     );
     final double? drawn = f.ringReveal;
     if (drawn != null && drawn < 1) {
@@ -753,33 +752,29 @@ class _AuthLogoMarkState extends State<AuthLogoMark>
 
   /// النقطةُ دائرةٌ تُرسم رسماً، لا صورةً تُحمَّل — ونصفُ قطرها ومركزُها من
   /// الهندسة.
-  Widget _dot(
-    LogoGeometry geo,
-    double k,
-    Offset centre,
-    DotFrame d,
-  ) => Positioned(
-    left: (centre.dx - geo.dotR) * k,
-    top: (centre.dy - geo.dotR) * k,
-    child: Transform.translate(
-      offset: Offset(d.x * k, d.y * k),
-      child: Transform(
-        alignment: Alignment.center,
-        transform: Matrix4.diagonal3Values(d.scaleX, d.scaleY, 1),
-        child: Opacity(
-          opacity: d.opacity.clamp(0.0, 1.0),
-          child: Container(
-            width: geo.dotR * 2 * k,
-            height: geo.dotR * 2 * k,
-            decoration: BoxDecoration(
-              color: LogoInk.dots(widget.tone),
-              shape: BoxShape.circle,
+  Widget _dot(LogoGeometry geo, double k, Offset centre, DotFrame d) =>
+      Positioned(
+        left: (centre.dx - geo.dotR) * k,
+        top: (centre.dy - geo.dotR) * k,
+        child: Transform.translate(
+          offset: Offset(d.x * k, d.y * k),
+          child: Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.diagonal3Values(d.scaleX, d.scaleY, 1),
+            child: Opacity(
+              opacity: d.opacity.clamp(0.0, 1.0),
+              child: Container(
+                width: geo.dotR * 2 * k,
+                height: geo.dotR * 2 * k,
+                decoration: BoxDecoration(
+                  color: LogoInk.dots(widget.tone),
+                  shape: BoxShape.circle,
+                ),
+              ),
             ),
           ),
         ),
-      ),
-    ),
-  );
+      );
 }
 
 /// قصُّ الكلمة: مستطيلٌ ينمو من اليسار. والويبُ يبدؤه 3 قبل حرفها و4 فوقه

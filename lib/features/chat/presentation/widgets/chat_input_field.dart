@@ -313,7 +313,6 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
   /// يُلغي بالسحب ويُرسل بالإفلات، وتسجيلُنا لا يعرف هذه الإيماءة، فتبديلُ
   /// الزرّين بها تغييرُ سلوكٍ لا تلوينُ شكل — يُترك لمهمّةٍ على حدة.
   Widget _recordingShell(Widget child) {
-    if (!kChatDesignV2) return child;
     return Container(
       height: 38.h,
       decoration: BoxDecoration(
@@ -454,7 +453,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                 // حبّة الاقتباس فوق الحقل بالتصميم الجديد: بنفسجيةٌ من خارج
                 // و`#EFEBFF` من داخل، فيها الاسم والحروف وعلامة الإغلاق.
                 // وكانت شريطاً أخضر بارتفاع 103.
-                if (!kChatDesignV2 && state.thereIsReply)
+                if (state.thereIsReply)
                   Container(
                     height: 103,
                     width: 1.sw,
@@ -1003,7 +1002,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (kChatDesignV2 && state.thereIsReply) _replyPill(state),
+                    if (state.thereIsReply) _replyPill(state),
                     ValueListenableBuilder<bool>(
                       valueListenable: thereTextNotifier,
                       builder: (context, thereText, _) {
@@ -1016,29 +1015,21 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                               // الأرقام من `composer_v2.dart`.
                               // 54 حدٌّ أدنى لا ثابت: الحقل يكبر إلى خمسة أسطر
                               // فيكبر الشريط معه، كما في الويب.
-                              constraints: kChatDesignV2
-                                  ? BoxConstraints(
-                                      minHeight: ComposerV2.height.h,
-                                    )
-                                  : const BoxConstraints.tightFor(height: 50),
+                              constraints: BoxConstraints(
+                                minHeight: ComposerV2.height.h,
+                              ),
                               width: 1.sw,
-                              decoration: kChatDesignV2
-                                  ? const BoxDecoration(
-                                      color: Colors.white,
-                                      boxShadow: ChatDesign.headerShadow,
-                                    )
-                                  : const BoxDecoration(
-                                      color: Color(0xffF6F6F6),
-                                    ),
-                              padding: kChatDesignV2
-                                  ? EdgeInsets.symmetric(
-                                      horizontal: 8.w,
-                                      vertical: 8.h,
-                                    )
-                                  : EdgeInsets.zero,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: ChatDesign.headerShadow,
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.w,
+                                vertical: 8.h,
+                              ),
                               // شريط التصميم الجديد يظهر بإيماءة الإمساك، وشريط
                               // التصميم القديم بـ`recordingNotifier`.
-                              child: kChatDesignV2 && _recordingState != null
+                              child: _recordingState != null
                                   ? RecordingStripV2(
                                       recording: _recordingState!,
                                       slideToCancelText: LocaleKeys
@@ -1236,77 +1227,50 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           },
                                           // علامة الجمع 38×38 كما في الملف، بدل
                                           // أيقونة الملصقات 43×40.
-                                          child: kChatDesignV2
-                                              ? SizedBox(
-                                                  width: 38.w,
-                                                  height: 38.h,
-                                                  child: Center(
-                                                    child: ChatIconsV2.plus(
-                                                      color:
-                                                          ContactDesign.purple,
-                                                    ),
-                                                  ),
-                                                )
-                                              : SvgPicture.asset(
-                                                  AppAssets.addStickersSvg,
-                                                  width: 43.w,
-                                                  height: 40,
-                                                ),
+                                          child: SizedBox(
+                                            width: 38.w,
+                                            height: 38.h,
+                                            child: Center(
+                                              child: ChatIconsV2.plus(
+                                                color: ContactDesign.purple,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                         // 4 بين الجمع والحقل في الملف، لا 5.
-                                        if (kChatDesignV2)
-                                          SizedBox(width: 4.w)
-                                        else
-                                          5.horizontalSpace,
+                                        SizedBox(width: 4.w),
                                         Expanded(
                                           child: Padding(
                                             // الحقل في الملف يملأ ارتفاع الشريط
                                             // الداخلي (38) بلا هامشٍ عمودي.
-                                            padding: kChatDesignV2
-                                                ? EdgeInsets.zero
-                                                : HWEdgeInsets.symmetric(
-                                                    vertical: 7.0,
-                                                  ),
+                                            padding: EdgeInsets.zero,
                                             child: AppTextField(
                                               // حقل الملف: 38 بنصف قطر 12 ولون
                                               // `#F8F8F8`، ونصّه 14 Regular
                                               // وشبحُه `#8D8D8D`. ويكبر إلى خمسة
                                               // أسطر كما في الويب.
-                                              filledColor: kChatDesignV2
-                                                  ? const Color(0xFFF8F8F8)
-                                                  : null,
-                                              bordersColor: kChatDesignV2
-                                                  ? const Color(0xFFF8F8F8)
-                                                  : null,
-                                              roundingCornersValue:
-                                                  kChatDesignV2 ? 12 : null,
-                                              minLines: kChatDesignV2
-                                                  ? 1
-                                                  : null,
-                                              maxLines: kChatDesignV2
-                                                  ? 5
-                                                  : null,
-                                              textStyle: kChatDesignV2
-                                                  ? TextStyle(
-                                                      fontFamily:
-                                                          'Quicksand-Regular',
-                                                      fontSize: 14.sp,
-                                                      height:
-                                                          ContactDesign.lineBox(
-                                                            14,
-                                                          ) /
-                                                          14,
-                                                      color: ContactDesign.ink,
-                                                    )
-                                                  : null,
-                                              hintTextStyle: kChatDesignV2
-                                                  ? TextStyle(
-                                                      fontFamily:
-                                                          'Quicksand-Regular',
-                                                      fontSize: 14.sp,
-                                                      color: ContactDesign.grey,
-                                                    )
-                                                  : null,
+                                              filledColor: const Color(
+                                                0xFFF8F8F8,
+                                              ),
+                                              bordersColor: const Color(
+                                                0xFFF8F8F8,
+                                              ),
+                                              roundingCornersValue: 12,
+                                              minLines: 1,
+                                              maxLines: 5,
+                                              textStyle: TextStyle(
+                                                fontFamily: 'Quicksand-Regular',
+                                                fontSize: 14.sp,
+                                                height:
+                                                    ContactDesign.lineBox(14) /
+                                                    14,
+                                                color: ContactDesign.ink,
+                                              ),
+                                              hintTextStyle: TextStyle(
+                                                fontFamily: 'Quicksand-Regular',
+                                                fontSize: 14.sp,
+                                                color: ContactDesign.grey,
+                                              ),
                                               key: TestVariables.kTestMode
                                                   ? const Key(
                                                       WidgetsKeys
@@ -1344,8 +1308,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               },
                                               // الكاميرا داخل الحقل في النهاية:
                                               // 36×38 على بعد 4، كما في الملف.
-                                              suffixIcon:
-                                                  kChatDesignV2 && !thereText
+                                              suffixIcon: !thereText
                                                   ? GestureDetector(
                                                       onTap: _pickPhotoOrVideo,
                                                       behavior: HitTestBehavior
@@ -1376,79 +1339,31 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           ),
                                         ),
                                         // 8 بين الحقل والقرص في الملف، لا 5.
-                                        if (kChatDesignV2)
-                                          SizedBox(width: 8.w)
-                                        else
-                                          5.horizontalSpace,
+                                        SizedBox(width: 8.w),
                                         if (!thereText) ...{
                                           // الكاميرا في التصميم الجديد داخل
                                           // الحقل لا بجانبه، فتُرسم هناك
                                           // (`suffixIcon`) وتُحذف من الصفّ.
-                                          if (!kChatDesignV2) ...[
-                                            InkWell(
-                                              focusColor: Colors.transparent,
-                                              splashColor: Colors.transparent,
-                                              onTap: _pickPhotoOrVideo,
-                                              child: SvgPicture.asset(
-                                                AppAssets.takePictureSvg,
-                                                width: 50.w,
-                                                height: 40,
-                                              ),
-                                            ),
-                                            10.horizontalSpace,
-                                          ],
                                           // الميكروفون: يُمسَك فيسجّل، ويُفلَت
                                           // فيُرسل، ويُسحب نحو البداية فيُلغي.
                                           // والإيماءة على الزرّ نفسه كما في
                                           // الويب — `Listener` لا `GestureDetector`
                                           // لأن الثاني يسلّم السحب الأفقي إلى
                                           // المحادثة فينفلت الإصبع من الزرّ.
-                                          if (kChatDesignV2)
-                                            Listener(
-                                              onPointerDown: (e) =>
-                                                  _onRecordDown(e.position),
-                                              onPointerMove: (e) =>
-                                                  _onRecordMove(e.position),
-                                              onPointerUp: (_) => _onRecordUp(),
-                                              onPointerCancel: (_) =>
-                                                  _discardRecording(),
-                                              child: _roundPurpleButton(
-                                                ChatIconsV2.mic(
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            )
-                                          else
-                                            InkWell(
-                                              focusColor: Colors.transparent,
-                                              splashColor: Colors.transparent,
-                                              onTap: () async {
-                                                if (!recorderReady) {
-                                                  bool isInitialized =
-                                                      await initializeRecorder();
-                                                  if (!isInitialized) return;
-                                                }
-                                                if (recorder.isRecording) {
-                                                  return;
-                                                }
-                                                FirebasePresence.sendUserTransaction(
-                                                  channelId: widget.channelId,
-                                                  description: LocaleKeys
-                                                      .recording
-                                                      .tr(),
-                                                );
-                                                await recorder.startRecorder(
-                                                  toFile:
-                                                      'audio${const Uuid().v4()}.aac',
-                                                );
-                                                recordingNotifier.value = true;
-                                              },
-                                              child: SvgPicture.asset(
-                                                AppAssets.recordVoiceSvg,
-                                                width: 70.w,
-                                                height: 40,
+                                          Listener(
+                                            onPointerDown: (e) =>
+                                                _onRecordDown(e.position),
+                                            onPointerMove: (e) =>
+                                                _onRecordMove(e.position),
+                                            onPointerUp: (_) => _onRecordUp(),
+                                            onPointerCancel: (_) =>
+                                                _discardRecording(),
+                                            child: _roundPurpleButton(
+                                              ChatIconsV2.mic(
+                                                color: Colors.white,
                                               ),
                                             ),
+                                          ),
                                         } else ...{
                                           InkWell(
                                             key: TestVariables.kTestMode
@@ -1467,22 +1382,15 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 message,
                                               );
                                             },
-                                            child: kChatDesignV2
-                                                ? _roundPurpleButton(
-                                                    ChatIconsV2.send(
-                                                      color: Colors.white,
-                                                    ),
-                                                  )
-                                                : SvgPicture.asset(
-                                                    AppAssets.sendMessageSvg,
-                                                    width: 58.w,
-                                                    height: 40,
-                                                  ),
+                                            child: _roundPurpleButton(
+                                              ChatIconsV2.send(
+                                                color: Colors.white,
+                                              ),
+                                            ),
                                           ),
                                         },
                                         // 8 بين الحقل والقرص في الملف، ولا فراغ
                                         // بعده: حشو الشريط يكفيه.
-                                        if (!kChatDesignV2) 5.horizontalSpace,
                                       ],
                                     ),
                             );
