@@ -22,7 +22,15 @@ class CameraProfile extends StatefulWidget {
     this.visibleNewImage,
     this.visibleSave, {
     super.key,
+    this.fullScreen = false,
   });
+
+  /// تملأ الشاشة بدل صندوق 406.
+  ///
+  /// الصفحة القديمة تضع هذه الشاشة **داخل** مربّع الصورة (406 طولاً)،
+  /// فارتفاعُها ثابتٌ عندها. وشاشةُ الصورة الجديدة تفتحها صفحةً كاملة،
+  /// فتحتاج طولَ الشاشة — وإلّا ظهرت في طرفها الأعلى وحده.
+  final bool fullScreen;
 
   @override
   _CameraProfileState createState() => _CameraProfileState();
@@ -149,7 +157,7 @@ class _CameraProfileState extends State<CameraProfile>
       body: _isCameraInitialized
           ? Container(
               width: 1.sw,
-              height: 406.h,
+              height: widget.fullScreen ? double.infinity : 406.h,
               //        aspectRatio: 1 / controller!.value.aspectRatio,
               child: Stack(
                 children: [

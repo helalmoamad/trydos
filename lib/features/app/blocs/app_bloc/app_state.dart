@@ -1,22 +1,23 @@
 class AppState {
-  AppState(
-      {required this.currentIndex,
-      required this.replyType,
-      required this.replyOnMe,
-      required this.thereIsReply,
-      required this.tabIndex,
-      required this.tabIndexInChat,
-      required this.showBars,
-      this.currentIndexForSearch,
-      required this.hideBottomNavigationBar,
-      this.isFromForGroundNotification,
-      this.messageId,
-      this.pusherActivityIds = const {},
-      this.pusherActivityDescription = const {},
-      this.senderParentMessageId,
-      this.time,
-      this.message,
-      this.imageUrl}) {}
+  AppState({
+    required this.currentIndex,
+    required this.replyType,
+    required this.replyOnMe,
+    required this.thereIsReply,
+    required this.tabIndex,
+    required this.tabIndexInChat,
+    required this.showBars,
+    this.currentIndexForSearch,
+    required this.hideBottomNavigationBar,
+    this.isFromForGroundNotification,
+    this.messageId,
+    this.pusherActivityIds = const {},
+    this.pusherActivityDescription = const {},
+    this.senderParentMessageId,
+    this.time,
+    this.message,
+    this.imageUrl,
+  }) {}
 
   final int currentIndex;
   final bool? isFromForGroundNotification;

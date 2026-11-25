@@ -398,8 +398,7 @@ class LocalNotificationService {
     // معرّف ثابت لكل تذكير: إعادة إرسال الحدث تُحدّث الإشعار نفسه بدل أن
     // تكدّس نسخاً، ولا يصطدم بإشعارات رسائل القناة لأنه مشتقّ من معرّف التذكير.
     final int notificationId =
-        (payload['reminder_id']?.toString() ?? messageId).hashCode &
-        0x7fffffff;
+        (payload['reminder_id']?.toString() ?? messageId).hashCode & 0x7fffffff;
 
     await _localNotificationPlugin.show(
       notificationId,

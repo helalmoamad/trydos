@@ -44,6 +44,7 @@ import 'package:flutter/material.dart' as positioned;
 import '../widget/animated_builder.dart';
 import 'dart:ui';
 import 'package:trydos/common/helper/dev_log.dart';
+
 // ignore: must_be_immutable
 class StoryCollection extends StatefulWidget {
   final int collectionIndex;
@@ -107,7 +108,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
   @override
   Widget build(BuildContext context) {
-
     return Hero(
       tag: widget.collectionIndex,
       createRectTween: HeroAnimationAsset.customTweenRect,

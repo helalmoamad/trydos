@@ -225,7 +225,10 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
                                               Directionality.of(context),
                                             );
                                       } catch (e) {
-                                        devLog('animated_search_bar.dart: ignored error', e);
+                                        devLog(
+                                          'animated_search_bar.dart: ignored error',
+                                          e,
+                                        );
                                       }
                                     }
 

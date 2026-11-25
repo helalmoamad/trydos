@@ -5,10 +5,8 @@ import '../app_text_view.dart';
 import '../app_widgets/trydos_app_bar/app_bar_params.dart';
 
 class FeedBackAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const FeedBackAppBar({
-    Key? key,
-    required this.appBarParams,
-  }) : super(key: key);
+  const FeedBackAppBar({Key? key, required this.appBarParams})
+    : super(key: key);
 
   final AppBarParams appBarParams;
   @override
@@ -17,7 +15,8 @@ class FeedBackAppBar extends StatelessWidget implements PreferredSizeWidget {
       children: [
         AppBar(
           title: title(context),
-          backgroundColor: appBarParams.backgroundColor ??
+          backgroundColor:
+              appBarParams.backgroundColor ??
               Theme.of(context).colorScheme.surface,
           leading: leadingAppBar(context),
           actions: appBarParams.action,
@@ -28,7 +27,7 @@ class FeedBackAppBar extends StatelessWidget implements PreferredSizeWidget {
           shape: appBarParams.shape,
         ),
         if (appBarParams.dividerBottom)
-          Divider(height: 0, endIndent: 25.w, indent: 25.w)
+          Divider(height: 0, endIndent: 25.w, indent: 25.w),
       ],
     );
   }
@@ -39,10 +38,11 @@ class FeedBackAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget title(BuildContext context) {
     return Transform.translate(
       offset: Offset(
-          (appBarParams.action?.isNotEmpty ?? true)
-              ? 0
-              : (LanguageService.rtl ? 30 : -30),
-          0),
+        (appBarParams.action?.isNotEmpty ?? true)
+            ? 0
+            : (LanguageService.rtl ? 30 : -30),
+        0,
+      ),
       child: Row(
         mainAxisAlignment: appBarParams.centerTitle
             ? MainAxisAlignment.center
@@ -56,10 +56,11 @@ class FeedBackAppBar extends StatelessWidget implements PreferredSizeWidget {
           if (appBarParams.title != null)
             AppTextView(
               text: appBarParams.title!,
-              style: appBarParams.tittleStyle ??
+              style:
+                  appBarParams.tittleStyle ??
                   Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: appBarParams.textColor,
-                      ),
+                    color: appBarParams.textColor,
+                  ),
             ),
         ],
       ),

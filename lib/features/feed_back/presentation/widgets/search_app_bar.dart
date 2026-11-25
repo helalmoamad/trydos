@@ -10,7 +10,7 @@ import 'back_button.dart';
 
 class SearchRequestsAppBar extends StatefulWidget {
   const SearchRequestsAppBar({Key? key, required this.onSearch})
-      : super(key: key);
+    : super(key: key);
 
   final void Function(String text) onSearch;
 
@@ -35,17 +35,13 @@ class _SearchRequestsAppBarState extends ThemeState<SearchRequestsAppBar> {
       backgroundColor: Colors.grey.shade200,
       systemOverlayStyle: SystemUiOverlayStyle.light,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(17.sp),
-        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(17.sp)),
       ),
       elevation: 0,
       leadingWidth: 50.w,
       leading: Row(
         children: [
-          SizedBox(
-            width: 7.w,
-          ),
+          SizedBox(width: 7.w),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 2.0.w),
             child: const DefaultBackButton(),
@@ -67,8 +63,9 @@ class _SearchRequestsAppBarState extends ThemeState<SearchRequestsAppBar> {
               borderColor: Colors.transparent,
               childWidget: Center(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 7.w)
-                      .copyWith(bottom: 10.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 7.w,
+                  ).copyWith(bottom: 10.h),
                   child: TextFormField(
                     cursorColor: colorScheme.tertiary,
                     controller: searchController,
@@ -91,15 +88,17 @@ class _SearchRequestsAppBarState extends ThemeState<SearchRequestsAppBar> {
                     radius: 18.h,
                     backgroundColor: colorScheme.tertiary,
                     child: Center(
-                      child: SvgPicture.asset(AppAssets.searchSvg,
-                          // ignore: deprecated_member_use
-                          color: colorScheme.primary,
-                          height: 14.h),
+                      child: SvgPicture.asset(
+                        AppAssets.searchSvg,
+                        // ignore: deprecated_member_use
+                        color: colorScheme.primary,
+                        height: 14.h,
+                      ),
                     ),
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

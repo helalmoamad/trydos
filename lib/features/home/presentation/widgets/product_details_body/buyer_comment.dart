@@ -77,7 +77,6 @@ class _BuyerCommentState extends ThemeState<BuyerComment> {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.getBuyersCommentsPaginationModel?['all']?.paginationStatus !=

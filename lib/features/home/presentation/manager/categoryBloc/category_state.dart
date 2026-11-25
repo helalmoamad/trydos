@@ -27,7 +27,7 @@ class CategoryState extends Equatable {
   });
   final Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch;
   final Map<String, PaginationModel<boutiques_model.HomeBoutiques>>
-      getHomeBoutiquesPaginationObjectByMainCategory;
+  getHomeBoutiquesPaginationObjectByMainCategory;
 
   final GetMainCategoriesStatus getMainCategoriesStatus;
   final int currentIndexForMainCategoryEvent;
@@ -38,20 +38,20 @@ class CategoryState extends Equatable {
 
   @override
   List<Object?> get props => [
-        boutiquesForEveryMainCategoryThatDidPrefetch,
-        getHomeBoutiquesPaginationObjectByMainCategory,
-        getMainCategoriesStatus,
-        sendRequestToGeminiStatus,
-        theReplyFromGemini,
-        currentIndexForMainCategoryEvent,
-        fromSearchForSearchWithGemini,
-        mainCategoriesResponseModel,
-      ];
+    boutiquesForEveryMainCategoryThatDidPrefetch,
+    getHomeBoutiquesPaginationObjectByMainCategory,
+    getMainCategoriesStatus,
+    sendRequestToGeminiStatus,
+    theReplyFromGemini,
+    currentIndexForMainCategoryEvent,
+    fromSearchForSearchWithGemini,
+    mainCategoriesResponseModel,
+  ];
 
   CategoryState copyWith({
     final Map<String, bool>? boutiquesForEveryMainCategoryThatDidPrefetch,
     final Map<String, PaginationModel<boutiques_model.HomeBoutiques>>?
-        getHomeBoutiquesPaginationObjectByMainCategory,
+    getHomeBoutiquesPaginationObjectByMainCategory,
     final SendRequestToGeminiStatus? sendRequestToGeminiStatus,
     final GetMainCategoriesStatus? getMainCategoriesStatus,
     final bool? fromSearchForSearchWithGemini,
@@ -62,10 +62,10 @@ class CategoryState extends Equatable {
     return CategoryState(
       boutiquesForEveryMainCategoryThatDidPrefetch:
           boutiquesForEveryMainCategoryThatDidPrefetch ??
-              this.boutiquesForEveryMainCategoryThatDidPrefetch,
+          this.boutiquesForEveryMainCategoryThatDidPrefetch,
       getHomeBoutiquesPaginationObjectByMainCategory:
           getHomeBoutiquesPaginationObjectByMainCategory ??
-              this.getHomeBoutiquesPaginationObjectByMainCategory,
+          this.getHomeBoutiquesPaginationObjectByMainCategory,
       sendRequestToGeminiStatus:
           sendRequestToGeminiStatus ?? this.sendRequestToGeminiStatus,
       currentIndexForMainCategoryEvent:

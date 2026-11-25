@@ -471,6 +471,19 @@ import '../../features/story/domain/useCases/increase_viewers_usecase.dart'
 import '../../features/story/domain/useCases/report_about_story_usecase.dart'
     as _i905;
 import '../../features/story/presentation/bloc/story_bloc.dart' as _i536;
+import '../../features/wallet/data/data_sources/wallet_remote_data_source.dart'
+    as _i102;
+import '../../features/wallet/data/repositories/wallet_repository_impl.dart'
+    as _i690;
+import '../../features/wallet/domain/repositories/wallet_repository.dart'
+    as _i571;
+import '../../features/wallet/domain/use_cases/get_wallet_balance_usecase.dart'
+    as _i227;
+import '../../features/wallet/domain/use_cases/get_wallet_currencies_usecase.dart'
+    as _i334;
+import '../../features/wallet/domain/use_cases/get_wallet_entries_usecase.dart'
+    as _i793;
+import '../../features/wallet/presentation/manager/wallet_bloc.dart' as _i210;
 import '../data/data_source/common_use_repo_data_source.dart' as _i672;
 import '../data/repository/common_use_repository_impl.dart' as _i77;
 import '../domin/repositories/common_use_repository.dart' as _i702;
@@ -506,6 +519,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.factory<_i350.HomeRemoteDatasource>(() => _i350.HomeRemoteDatasource());
   gh.factory<_i777.StoriesDataSource>(() => _i777.StoriesDataSource());
+  gh.factory<_i102.WalletRemoteDataSource>(
+    () => _i102.WalletRemoteDataSource(),
+  );
   gh.singleton<_i974.Logger>(() => appModule.logger);
   await gh.singletonAsync<_i460.SharedPreferences>(
     () => appModule.sharedPreferences,
@@ -917,6 +933,9 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.lazySingleton<_i1032.CallsRepository>(
     () => _i722.CallsRepositoryImpl(gh<_i1061.CallsRemoteDataSource>()),
+  );
+  gh.lazySingleton<_i571.WalletRepository>(
+    () => _i690.WalletRepositoryImpl(gh<_i102.WalletRemoteDataSource>()),
   );
   gh.lazySingleton<_i420.ChatRepository>(
     () => _i504.ChatRepositoryImpl(gh<_i375.ChatRemoteDataSource>()),
@@ -1442,6 +1461,22 @@ Future<_i174.GetIt> $initGetIt(
       gh<_i600.SetOrderVisibilityUseCase>(),
       gh<_i600.SetOrderDetailVisibilityUseCase>(),
       gh<_i415.GetHiddenOrdersUseCase>(),
+    ),
+  );
+  gh.factory<_i227.GetWalletBalanceUseCase>(
+    () => _i227.GetWalletBalanceUseCase(gh<_i571.WalletRepository>()),
+  );
+  gh.factory<_i334.GetWalletCurrenciesUseCase>(
+    () => _i334.GetWalletCurrenciesUseCase(gh<_i571.WalletRepository>()),
+  );
+  gh.factory<_i793.GetWalletEntriesUseCase>(
+    () => _i793.GetWalletEntriesUseCase(gh<_i571.WalletRepository>()),
+  );
+  gh.factory<_i210.WalletBloc>(
+    () => _i210.WalletBloc(
+      gh<_i334.GetWalletCurrenciesUseCase>(),
+      gh<_i227.GetWalletBalanceUseCase>(),
+      gh<_i793.GetWalletEntriesUseCase>(),
     ),
   );
   return getIt;

@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
+import 'package:trydos/features/authentication/presentation/pages/registration_host.dart';
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/authentication/presentation/pages/register_completed.dart';
-import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
+import 'package:trydos/features/chat/presentation/pages/single_page_chat_host.dart';
 import 'package:trydos/splash_page.dart';
 import '../base_page.dart';
 import '../features/authentication/presentation/pages/already_exist_account.dart';
@@ -38,28 +38,27 @@ class GRouter {
     navigatorKey: navigatorKey,
     routes: <RouteBase>[
       GoRoute(
-          path: _config.kRootRoute,
-          pageBuilder: (BuildContext context, GoRouterState state) {
-            return _builderPage(
-              child: const SplashPage(),
-              state: state,
-            );
-          }),
+        path: _config.kRootRoute,
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return _builderPage(child: const SplashPage(), state: state);
+        },
+      ),
       GoRoute(
-          path: _config.applicationRoutes.kWebView,
-          pageBuilder: (BuildContext context, GoRouterState state) {
-            return _builderPage(
-              child: AgoraWebView(
-                type: 'video',
-                channelId: '155',
-                uId: '6',
-                message_id: '',
-                action: '',
-                auth_token: '',
-              ),
-              state: state,
-            );
-          }),
+        path: _config.applicationRoutes.kWebView,
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return _builderPage(
+            child: AgoraWebView(
+              type: 'video',
+              channelId: '155',
+              uId: '6',
+              message_id: '',
+              action: '',
+              auth_token: '',
+            ),
+            state: state,
+          );
+        },
+      ),
 
       // GoRoute(
       //     path: _config.applicationRoutes.kRoomCallPage,
@@ -70,24 +69,26 @@ class GRouter {
       //       );
       //     }),
       GoRoute(
-          path: _config.applicationRoutes.kAnswerCall,
-          pageBuilder: (BuildContext context, GoRouterState state) {
-            return _builderPage(
-              child: AnswerCall(
-                channelName: state.uri.queryParameters['channelName']!,
-                messageId: state.uri.queryParameters['messageId']!,
-                callerName: state.uri.queryParameters['callerName']!,
-                callerPhoto: state.uri.queryParameters['callerPhoto']!,
-              ),
-              state: state,
-            );
-          }),
+        path: _config.applicationRoutes.kAnswerCall,
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return _builderPage(
+            child: AnswerCall(
+              channelName: state.uri.queryParameters['channelName']!,
+              messageId: state.uri.queryParameters['messageId']!,
+              callerName: state.uri.queryParameters['callerName']!,
+              callerPhoto: state.uri.queryParameters['callerPhoto']!,
+            ),
+            state: state,
+          );
+        },
+      ),
       GoRoute(
         path: _config.applicationRoutes.kRegistrationCompletedPage,
         pageBuilder: (BuildContext context, GoRouterState state) {
           return _builderPage(
             child: RegisterCompleted(
-                userName: state.uri.queryParameters['userName']!),
+              userName: state.uri.queryParameters['userName']!,
+            ),
             state: state,
           );
         },
@@ -97,7 +98,8 @@ class GRouter {
         pageBuilder: (BuildContext context, GoRouterState state) {
           return _builderPage(
             child: LoginSuccessfully(
-                phoneNumber: state.uri.queryParameters['phoneNumber']!),
+              phoneNumber: state.uri.queryParameters['phoneNumber']!,
+            ),
             state: state,
           );
         },
@@ -106,114 +108,114 @@ class GRouter {
         path: _config.applicationRoutes.kRegistrationPage,
         pageBuilder: (BuildContext context, GoRouterState state) {
           return _builderPage(
-            child: const RegistrationPage(),
+            // نسخةُ التصميم تُختار في [registrationPage].
+            child: registrationPage(),
             state: state,
           );
         },
       ),
       GoRoute(
-          path: _config.applicationRoutes.kChatPage,
-          pageBuilder: (BuildContext context, GoRouterState state) {
-            void Function(int, String) onSendForwardMessage =
-                state.extra as void Function(int, String);
-            return _builderPage(
-              child: ChatPages(
-                description: state.uri.queryParameters['description']!,
-                // ignore: sdk_version_since
-                hideCallsAndStories: bool.parse(
-                    state.uri.queryParameters['hideCallsAndStories']!),
-                onSendForwardMessage: onSendForwardMessage,
+        path: _config.applicationRoutes.kChatPage,
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          void Function(int, String) onSendForwardMessage =
+              state.extra as void Function(int, String);
+          return _builderPage(
+            child: ChatPages(
+              description: state.uri.queryParameters['description']!,
+              // ignore: sdk_version_since
+              hideCallsAndStories: bool.parse(
+                state.uri.queryParameters['hideCallsAndStories']!,
               ),
-              state: state,
-            );
-          }),
-      GoRoute(
-          path: _config.applicationRoutes.kBasePage,
-          pageBuilder: (BuildContext context, GoRouterState state) {
-            return _builderPage(
-              child: const BasePage(),
-              state: state,
-            );
-          },
-          routes: [
-            GoRoute(
-              path: _config.applicationRoutes.kSinglePageChatPageName,
-              pageBuilder: (BuildContext context, GoRouterState state) {
-                debugPrint(state.uri.queryParameters.toString());
-                return _builderPage(
-                  child: SinglePageChat(
-                    chatId: state.uri.queryParameters['chatId']!,
-                    fullReceiverName:
-                        state.uri.queryParameters['fullReceiverName']!,
-                    receiverName: state.uri.queryParameters['receiverName']!,
-                    fromOrder: state.uri.queryParameters['fromOrder'],
-                    receiverPhone: state.uri.queryParameters['receiverPhone']!,
-                    senderName: state.uri.queryParameters['senderName']!,
-                    receiverPhoto:
-                        state.uri.queryParameters['receiverPhoto'] == 'null'
-                            ? null
-                            : state.uri.queryParameters['receiverPhoto'],
-                    senderPhoto:
-                        state.uri.queryParameters['senderPhoto'] == 'null'
-                            ? null
-                            : state.uri.queryParameters['senderPhoto'],
-                  ),
-                  state: state,
-                );
-              },
+              onSendForwardMessage: onSendForwardMessage,
             ),
+            state: state,
+          );
+        },
+      ),
+      GoRoute(
+        path: _config.applicationRoutes.kBasePage,
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return _builderPage(child: const BasePage(), state: state);
+        },
+        routes: [
+          GoRoute(
+            path: _config.applicationRoutes.kSinglePageChatPageName,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              debugPrint(state.uri.queryParameters.toString());
+              return _builderPage(
+                // نسخةُ التصميم تُختار في [singlePageChat].
+                child: singlePageChat(
+                  chatId: state.uri.queryParameters['chatId']!,
+                  fullReceiverName:
+                      state.uri.queryParameters['fullReceiverName']!,
+                  receiverName: state.uri.queryParameters['receiverName']!,
+                  fromOrder: state.uri.queryParameters['fromOrder'],
+                  receiverPhone: state.uri.queryParameters['receiverPhone']!,
+                  senderName: state.uri.queryParameters['senderName']!,
+                  receiverPhoto:
+                      state.uri.queryParameters['receiverPhoto'] == 'null'
+                      ? null
+                      : state.uri.queryParameters['receiverPhoto'],
+                  senderPhoto:
+                      state.uri.queryParameters['senderPhoto'] == 'null'
+                      ? null
+                      : state.uri.queryParameters['senderPhoto'],
+                ),
+                state: state,
+              );
+            },
+          ),
 
-            GoRoute(
-                path: _config.applicationRoutes.kRegistrationPageName,
+          GoRoute(
+            path: _config.applicationRoutes.kRegistrationPageName,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return _builderPage(
+                child: registrationPage(),
+                state: state,
+              );
+            },
+            routes: [
+              GoRoute(
+                path: _config.applicationRoutes.kNumberNotRegisteredName,
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   return _builderPage(
-                    child: const RegistrationPage(),
+                    child: NumberNotRegistered(
+                      phoneNumber: state.uri.queryParameters['phoneNumber']!,
+                    ),
                     state: state,
                   );
                 },
-                routes: [
-                  GoRoute(
-                      path: _config.applicationRoutes.kNumberNotRegisteredName,
-                      pageBuilder: (BuildContext context, GoRouterState state) {
-                        return _builderPage(
-                          child: NumberNotRegistered(
-                            phoneNumber:
-                                state.uri.queryParameters['phoneNumber']!,
-                          ),
-                          state: state,
-                        );
-                      }),
-                  GoRoute(
-                      path: _config.applicationRoutes.kUserExistName,
-                      pageBuilder: (BuildContext context, GoRouterState state) {
-                        return _builderPage(
-                          child: AlreadyExistAccount(
-                            phoneNumber:
-                                state.uri.queryParameters['phoneNumber']!,
-                          ),
-                          state: state,
-                        );
-                      }),
-                ]),
-            GoRoute(
-              path: _config.applicationRoutes.kMyContactsPageName,
-              pageBuilder: (BuildContext context, GoRouterState state) {
-                return _builderPage(
-                  child: const MyContactsPage(),
-                  state: state,
-                );
-              },
-            ),
-            // GoRoute(
-            //   path: _config.applicationRoutes.kPageViewStoryCollectionsPageName,
-            //   pageBuilder: (BuildContext context, GoRouterState state) {
-            //     return _builderPage(
-            //       child:  StoryCollectionPageView(initialPage: int.parse(state.uri.queryParameters['initialPage']!),),
-            //       state: state,
-            //     );
-            //   },
-            // ),
-          ]),
+              ),
+              GoRoute(
+                path: _config.applicationRoutes.kUserExistName,
+                pageBuilder: (BuildContext context, GoRouterState state) {
+                  return _builderPage(
+                    child: AlreadyExistAccount(
+                      phoneNumber: state.uri.queryParameters['phoneNumber']!,
+                    ),
+                    state: state,
+                  );
+                },
+              ),
+            ],
+          ),
+          GoRoute(
+            path: _config.applicationRoutes.kMyContactsPageName,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return _builderPage(child: const MyContactsPage(), state: state);
+            },
+          ),
+          // GoRoute(
+          //   path: _config.applicationRoutes.kPageViewStoryCollectionsPageName,
+          //   pageBuilder: (BuildContext context, GoRouterState state) {
+          //     return _builderPage(
+          //       child:  StoryCollectionPageView(initialPage: int.parse(state.uri.queryParameters['initialPage']!),),
+          //       state: state,
+          //     );
+          //   },
+          // ),
+        ],
+      ),
       // StatefulShellRoute.indexedStack(
       //   branches: [
       //     StatefulShellBranch(
@@ -267,8 +269,10 @@ class GRouter {
     errorBuilder: (context, state) => ErrorScreen(exception: state.error),
   );
 
-  static Page<dynamic> _builderPage<T>(
-      {required Widget child, required GoRouterState state}) {
+  static Page<dynamic> _builderPage<T>({
+    required Widget child,
+    required GoRouterState state,
+  }) {
     //if (Platform.isIOS) {
     return MaterialPage<T>(child: child, key: state.pageKey);
     // } else {

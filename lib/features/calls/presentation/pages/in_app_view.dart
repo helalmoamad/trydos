@@ -13,11 +13,12 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
+import 'package:trydos/features/chat/presentation/pages/single_page_chat_host.dart';
 import 'package:vibration/vibration.dart';
 import 'package:trydos/core/utils/last_pages_tracker.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/common/helper/dev_log.dart';
+
 // ignore: must_be_immutable
 class AgoraInAppWebView extends StatefulWidget {
   String type;
@@ -362,7 +363,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                           controller.dispose();
                           if (mounted &&
                               context.canPop() &&
-                              context.widget is! SinglePageChat) {
+                              !isSinglePageChat(context.widget)) {
                             Navigator.of(context).pop();
                           }
                           // GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
@@ -385,7 +386,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                         controller.dispose();
                         if (mounted &&
                             context.canPop() &&
-                            context.widget is! SinglePageChat) {
+                            !isSinglePageChat(context.widget)) {
                           Navigator.of(context).pop();
                         }
                         //    Navigator.of(context).pop();

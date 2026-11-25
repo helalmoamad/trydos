@@ -17,7 +17,7 @@ enum GetFiltersForNavigatorFromLinkToListingPageStatus {
   init,
   loading,
   success,
-  failure
+  failure,
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -45,7 +45,7 @@ class BoutiqueState extends Equatable {
     this.currentMainCategoryTaped,
     this.boutiquesThatDidPrefetch = const {},
     this.countOfProductExpectedByFiltering,
-        this.suggestion,
+    this.suggestion,
     this.sortKey = "",
     this.compareSearchResults = const {},
     this.compareSearchStatus = const {},
@@ -67,7 +67,7 @@ class BoutiqueState extends Equatable {
   final String sortKey;
 
   ///final Map<String, PaginationModel<product.Products>?>
-//getProductListingWithFiltersPaginationWithPrefetchModels;
+  //getProductListingWithFiltersPaginationWithPrefetchModels;
   final Map<String, int>? countOfProductExpectedByFiltering;
   final get_filters.Filter? prefAppliedFilterForExtendFilter;
   final Map<String, bool> boutiquesThatDidPrefetch;
@@ -77,7 +77,7 @@ class BoutiqueState extends Equatable {
   final Map<String, get_filters.GetProductFiltersModel?> choosedFiltersByUser;
   final bool cashedOrginalBoutique;
   final GetFiltersForNavigatorFromLinkToListingPageStatus?
-      getFiltersForNavigatorFromLinkToListingPageStatus;
+  getFiltersForNavigatorFromLinkToListingPageStatus;
   final List<Boutique>? boutiquesToNavigatorFromLink;
   final bool finishGetAllFilter;
   final bool isGettingProductListingWithPagination;
@@ -85,46 +85,46 @@ class BoutiqueState extends Equatable {
   final bool? isExpandedForListingPage;
   final String? currentMainCategoryTaped;
   final Map<String, PaginationModel<product.Products>?>
-      getProductListingWithFiltersPaginationModels;
+  getProductListingWithFiltersPaginationModels;
   final bool isGettingProductListingWithPaginationForAppearProduct;
   // final Map<String, get_filters.GetProductFiltersModel?>
   //   getProductFiltersWithPrefetchModel;
   final int? filterOffset;
   final Map<String, List<double>>? searchWithFilterOffset;
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
-    final String? suggestion;
+  final String? suggestion;
 
   @override
   List<Object?> get props => [
-        sizeAndColorFilterinTextToSearch,
-        countOfProductExpectedByFiltering,
-        boutiquesToNavigatorFromLink,
-        //   getProductFiltersWithPrefetchModel,
-        prefAppliedFilterForExtendFilter,
-        cashedOrginalBoutique,
-        isExpandedForListingPage,
-        currentMainCategoryTaped,
-        getFiltersForNavigatorFromLinkToListingPageStatus,
-        filterOffset,
-        getProductFiltersStatus,
-        finishGetAllFilter,
-        getProductFiltersModel,
-        isGettingProductListingWithPaginationForAppearProduct,
-        getProductListingWithFiltersPaginationModels,
-        suggestion,
-        boutiquesThatDidPrefetch,
-        isGettingProductListingWithPagination,
-        appliedFiltersByUser,
-        choosedFiltersByUser,
-        sortKey,
-        // كان غائباً عن props: أي انبعاث يغيّر عامل الترقيم وحده كان يُسقَط
-        // بصمت. يُبعث اليوم دائماً مرفقاً بحقول أخرى فلم يظهر أثره، لكنه
-        // يبقى فخّاً لأول انبعاث مستقبلي يمسّه منفرداً.
-        searchWithFilterOffset,
-        compareSearchResults,
-        compareSearchStatus,
-        //   getProductListingWithFiltersPaginationWithPrefetchModels,
-      ];
+    sizeAndColorFilterinTextToSearch,
+    countOfProductExpectedByFiltering,
+    boutiquesToNavigatorFromLink,
+    //   getProductFiltersWithPrefetchModel,
+    prefAppliedFilterForExtendFilter,
+    cashedOrginalBoutique,
+    isExpandedForListingPage,
+    currentMainCategoryTaped,
+    getFiltersForNavigatorFromLinkToListingPageStatus,
+    filterOffset,
+    getProductFiltersStatus,
+    finishGetAllFilter,
+    getProductFiltersModel,
+    isGettingProductListingWithPaginationForAppearProduct,
+    getProductListingWithFiltersPaginationModels,
+    suggestion,
+    boutiquesThatDidPrefetch,
+    isGettingProductListingWithPagination,
+    appliedFiltersByUser,
+    choosedFiltersByUser,
+    sortKey,
+    // كان غائباً عن props: أي انبعاث يغيّر عامل الترقيم وحده كان يُسقَط
+    // بصمت. يُبعث اليوم دائماً مرفقاً بحقول أخرى فلم يظهر أثره، لكنه
+    // يبقى فخّاً لأول انبعاث مستقبلي يمسّه منفرداً.
+    searchWithFilterOffset,
+    compareSearchResults,
+    compareSearchStatus,
+    //   getProductListingWithFiltersPaginationWithPrefetchModels,
+  ];
 
   BoutiqueState copyWith({
     final Map<String, List<String>>? sizeAndColorFilterinTextToSearch,
@@ -133,21 +133,21 @@ class BoutiqueState extends Equatable {
     final Map<String, GetProductFiltersStatus>? getProductFiltersStatus,
     Map<String, int>? countOfProductExpectedByFiltering,
     final Map<String, get_filters.GetProductFiltersModel?>?
-        appliedFiltersByUser,
+    appliedFiltersByUser,
     final List<Boutique>? boutiquesToNavigatorFromLink,
     final bool? isGettingProductListingWithPaginationForAppearProduct,
     final Map<String, get_filters.GetProductFiltersModel?>?
-        choosedFiltersByUser,
+    choosedFiltersByUser,
     bool? isExpandedForListingPage,
     final String? currentMainCategoryTaped,
     final bool? isGettingProductListingWithPagination,
     Map<String, PaginationModel<product.Products>?>?
-        getProductListingWithFiltersPaginationModels,
+    getProductListingWithFiltersPaginationModels,
     final Map<String, bool>? boutiquesThatDidPrefetch,
     final GetFiltersForNavigatorFromLinkToListingPageStatus?
-        getFiltersForNavigatorFromLinkToListingPageStatus,
+    getFiltersForNavigatorFromLinkToListingPageStatus,
     final Map<String, get_filters.GetProductFiltersModel?>?
-        getProductFiltersModel,
+    getProductFiltersModel,
     get_filters.Filter? prefAppliedFilterForExtendFilter,
     bool? cashedOrginalBoutique,
     final bool? finishGetAllFilter,
@@ -155,59 +155,63 @@ class BoutiqueState extends Equatable {
     //  final Map<String, get_filters.GetProductFiltersModel?>?
     //  getProductFiltersWithPrefetchModel,
     final Map<String, List<double>>? searchWithFilterOffset,
-        final String? suggestion,
+    final String? suggestion,
     final String? sortKey,
     final Map<int, List<product.Products>>? compareSearchResults,
     final Map<int, SearchProductsForCompareStatus>? compareSearchStatus,
   }) {
     return BoutiqueState(
-        sizeAndColorFilterinTextToSearch: sizeAndColorFilterinTextToSearch ??
-            this.sizeAndColorFilterinTextToSearch,
-        //  getProductListingWithFiltersPaginationWithPrefetchModels:
-        //    getProductListingWithFiltersPaginationWithPrefetchModels ??
-        //      this.getProductListingWithFiltersPaginationWithPrefetchModels,
-        getProductFiltersModel:
-            getProductFiltersModel ?? this.getProductFiltersModel,
-        prefAppliedFilterForExtendFilter: prefAppliedFilterForExtendFilter ??
-            this.prefAppliedFilterForExtendFilter,
-        boutiquesThatDidPrefetch:
-            boutiquesThatDidPrefetch ?? this.boutiquesThatDidPrefetch,
-        countOfProductExpectedByFiltering: countOfProductExpectedByFiltering ??
-            this.countOfProductExpectedByFiltering,
-        searchWithFilterOffset:
-            searchWithFilterOffset ?? this.searchWithFilterOffset,
-        choosedFiltersByUser: choosedFiltersByUser ?? this.choosedFiltersByUser,
-        isExpandedForListingPage:
-            isExpandedForListingPage ?? this.isExpandedForListingPage,
-        currentMainCategoryTaped:
-            currentMainCategoryTaped ?? this.currentMainCategoryTaped,
-        getFiltersForNavigatorFromLinkToListingPageStatus:
-            getFiltersForNavigatorFromLinkToListingPageStatus ??
-                this.getFiltersForNavigatorFromLinkToListingPageStatus,
-        appliedFiltersByUser: appliedFiltersByUser ?? this.appliedFiltersByUser,
-        boutiquesToNavigatorFromLink:
-            boutiquesToNavigatorFromLink ?? this.boutiquesToNavigatorFromLink,
-        isGettingProductListingWithPagination:
-            isGettingProductListingWithPagination ??
-                this.isGettingProductListingWithPagination,
-        finishGetAllFilter: finishGetAllFilter ?? this.finishGetAllFilter,
-        cashedOrginalBoutique:
-            cashedOrginalBoutique ?? this.cashedOrginalBoutique,
-        getProductFiltersStatus:
-            getProductFiltersStatus ?? this.getProductFiltersStatus,
-        // getProductFiltersWithPrefetchModel:
-//getProductFiltersWithPrefetchModel ??
-        //        this.getProductFiltersWithPrefetchModel,
-        getProductListingWithFiltersPaginationModels:
-            getProductListingWithFiltersPaginationModels ??
-                this.getProductListingWithFiltersPaginationModels,
-        isGettingProductListingWithPaginationForAppearProduct:
-            isGettingProductListingWithPaginationForAppearProduct ??
-                this.isGettingProductListingWithPaginationForAppearProduct,
-        suggestion: suggestion ?? this.suggestion,
-        sortKey: sortKey ?? this.sortKey,
-        compareSearchResults: compareSearchResults ?? this.compareSearchResults,
-        compareSearchStatus: compareSearchStatus ?? this.compareSearchStatus,
-        filterOffset: filterOffset ?? this.filterOffset);
+      sizeAndColorFilterinTextToSearch:
+          sizeAndColorFilterinTextToSearch ??
+          this.sizeAndColorFilterinTextToSearch,
+      //  getProductListingWithFiltersPaginationWithPrefetchModels:
+      //    getProductListingWithFiltersPaginationWithPrefetchModels ??
+      //      this.getProductListingWithFiltersPaginationWithPrefetchModels,
+      getProductFiltersModel:
+          getProductFiltersModel ?? this.getProductFiltersModel,
+      prefAppliedFilterForExtendFilter:
+          prefAppliedFilterForExtendFilter ??
+          this.prefAppliedFilterForExtendFilter,
+      boutiquesThatDidPrefetch:
+          boutiquesThatDidPrefetch ?? this.boutiquesThatDidPrefetch,
+      countOfProductExpectedByFiltering:
+          countOfProductExpectedByFiltering ??
+          this.countOfProductExpectedByFiltering,
+      searchWithFilterOffset:
+          searchWithFilterOffset ?? this.searchWithFilterOffset,
+      choosedFiltersByUser: choosedFiltersByUser ?? this.choosedFiltersByUser,
+      isExpandedForListingPage:
+          isExpandedForListingPage ?? this.isExpandedForListingPage,
+      currentMainCategoryTaped:
+          currentMainCategoryTaped ?? this.currentMainCategoryTaped,
+      getFiltersForNavigatorFromLinkToListingPageStatus:
+          getFiltersForNavigatorFromLinkToListingPageStatus ??
+          this.getFiltersForNavigatorFromLinkToListingPageStatus,
+      appliedFiltersByUser: appliedFiltersByUser ?? this.appliedFiltersByUser,
+      boutiquesToNavigatorFromLink:
+          boutiquesToNavigatorFromLink ?? this.boutiquesToNavigatorFromLink,
+      isGettingProductListingWithPagination:
+          isGettingProductListingWithPagination ??
+          this.isGettingProductListingWithPagination,
+      finishGetAllFilter: finishGetAllFilter ?? this.finishGetAllFilter,
+      cashedOrginalBoutique:
+          cashedOrginalBoutique ?? this.cashedOrginalBoutique,
+      getProductFiltersStatus:
+          getProductFiltersStatus ?? this.getProductFiltersStatus,
+      // getProductFiltersWithPrefetchModel:
+      //getProductFiltersWithPrefetchModel ??
+      //        this.getProductFiltersWithPrefetchModel,
+      getProductListingWithFiltersPaginationModels:
+          getProductListingWithFiltersPaginationModels ??
+          this.getProductListingWithFiltersPaginationModels,
+      isGettingProductListingWithPaginationForAppearProduct:
+          isGettingProductListingWithPaginationForAppearProduct ??
+          this.isGettingProductListingWithPaginationForAppearProduct,
+      suggestion: suggestion ?? this.suggestion,
+      sortKey: sortKey ?? this.sortKey,
+      compareSearchResults: compareSearchResults ?? this.compareSearchResults,
+      compareSearchStatus: compareSearchStatus ?? this.compareSearchStatus,
+      filterOffset: filterOffset ?? this.filterOffset,
+    );
   }
 }

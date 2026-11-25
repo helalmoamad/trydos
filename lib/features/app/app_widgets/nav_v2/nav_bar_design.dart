@@ -14,9 +14,12 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// الشريط السفليّ الجديد مُشغَّل. أطفئه فيعود شريط الأربع خاناتٍ القديم
-/// كما هو — لم يُحذف، بل بقي الفرع الآخر في `app_bottom_navigation_bar.dart`.
-const bool kNavDesignV2 = true;
+import 'package:trydos/main.dart' show kDesignV2;
+
+/// الشريط السفليّ الجديد. يُطفئه مفتاحُ التصميم الواحد في `main.dart`
+/// ([kDesignV2]) فيعود شريط الأربع خاناتٍ القديم كما هو — لم يُحذف، بل بقي
+/// الفرع الآخر في `app_bottom_navigation_bar.dart`.
+const bool kNavDesignV2 = kDesignV2;
 
 /// شكل الشريط ومادّته — `TAB_BAR` في `demoLayout.ts`.
 class NavBarDesign {
@@ -96,17 +99,19 @@ class NavBarDesign {
 /// ولازمةٌ لأنّ `Scaffold` عندنا `extendBody: true`، فالصفحة تمتدّ تحت
 /// الشريط — وهذا ما يجعل زجاجه يُموّه المحتوى حقّاً ولا تظهر غرفةٌ فارغة حين
 /// يصغر الشريط.
-double navTabRoom(BuildContext context) =>
-    NavBarDesign.top.h + MediaQuery.paddingOf(context).bottom;
+/// وهي صفرٌ مع التصميم القديم: شريطُه القديم يشغل مكانَه في الصفحة ولا
+/// يطفو، فلا غرفةَ تُحجز تحته.
+double navTabRoom(BuildContext context) => kNavDesignV2
+    ? NavBarDesign.top.h + MediaQuery.paddingOf(context).bottom
+    : 0;
 
 /// [navTabRoom] سليفراً، يُضاف آخر `slivers` في شاشة تبويب.
 class SliverNavTabRoom extends StatelessWidget {
   const SliverNavTabRoom({super.key});
 
   @override
-  Widget build(BuildContext context) => SliverToBoxAdapter(
-    child: SizedBox(height: kNavDesignV2 ? navTabRoom(context) : 0),
-  );
+  Widget build(BuildContext context) =>
+      SliverToBoxAdapter(child: SizedBox(height: navTabRoom(context)));
 }
 
 /// مربّع أيقونةٍ على اللوح: زاويته العليا اليسرى وعرضه.

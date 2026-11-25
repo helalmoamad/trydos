@@ -24,19 +24,18 @@ class AppDraggableSheet<T> extends StatelessWidget {
     final double? minChildSize,
     final double? maxChildSize,
     final double? initialChildSize,
-  }) =>
-      showModalBottomSheet<T>(
-        context: context ?? navigatorKey.currentContext!,
-        isScrollControlled: true,
-        backgroundColor:
-            (context ?? navigatorKey.currentContext!).theme.colorScheme.surface,
-        builder: (_) => AppDraggableSheet._(
-          builder: builder,
-          initialChildSize: initialChildSize,
-          maxChildSize: maxChildSize,
-          minChildSize: minChildSize,
-        ),
-      );
+  }) => showModalBottomSheet<T>(
+    context: context ?? navigatorKey.currentContext!,
+    isScrollControlled: true,
+    backgroundColor:
+        (context ?? navigatorKey.currentContext!).theme.colorScheme.surface,
+    builder: (_) => AppDraggableSheet._(
+      builder: builder,
+      initialChildSize: initialChildSize,
+      maxChildSize: maxChildSize,
+      minChildSize: minChildSize,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {

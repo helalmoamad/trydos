@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 
 extension MyColorScheme on ColorScheme {
-  static const MaterialColor _grey = MaterialColor(
-    _primaryGreyValue,
-    <int, Color>{
-      50: Color(0xffF8F8F8),
-      100: Color(0xffDBDBDB),
-      200: Color(0xff8D8D8D),
-      300: Color(0xff989898),
-      400: Color(_primaryGreyValue),
-      500: Color(0xff707070),
-      600: Color(0xff383838),
-      700: Color(0xFFBFBFBF),
-      800: Color(0xff848484),
-    },
-  );
+  static const MaterialColor _grey =
+      MaterialColor(_primaryGreyValue, <int, Color>{
+        50: Color(0xffF8F8F8),
+        100: Color(0xffDBDBDB),
+        200: Color(0xff8D8D8D),
+        300: Color(0xff989898),
+        400: Color(_primaryGreyValue),
+        500: Color(0xff707070),
+        600: Color(0xff383838),
+        700: Color(0xFFBFBFBF),
+        800: Color(0xff848484),
+      });
 
   static const int _primaryGreyValue = 0xff585858;
 
@@ -22,9 +20,7 @@ extension MyColorScheme on ColorScheme {
 
   static const MaterialColor _hint = MaterialColor(
     _primaryHintValue,
-    <int, Color>{
-      100: Color(0xffF2F3F3),
-    },
+    <int, Color>{100: Color(0xffF2F3F3)},
   );
 
   static const int _primaryHintValue = 0xffADADAD;

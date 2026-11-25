@@ -15,43 +15,51 @@ class NotificationService {
     //todo initialize ios settings
     var initializationSettingIos = const DarwinInitializationSettings();
     var initializeSettings = InitializationSettings(
-        iOS: initializationSettingIos, android: initializationSettingsAndroid);
+      iOS: initializationSettingIos,
+      android: initializationSettingsAndroid,
+    );
 
-    notificationsPlugin.initialize(initializeSettings,
-        onDidReceiveBackgroundNotificationResponse: (details) {
-      if (kDebugMode) {
-        devLog(
-            "111111111111111fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${details.payload}");
-      }
-    }, onDidReceiveNotificationResponse:
-            (NotificationResponse notificationResponse) async {});
-    notificationsPlugin.getNotificationAppLaunchDetails().then(
-      (value) {
+    notificationsPlugin.initialize(
+      initializeSettings,
+      onDidReceiveBackgroundNotificationResponse: (details) {
         if (kDebugMode) {
           devLog(
-              "fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${value?.notificationResponse?.payload}");
+            "111111111111111fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${details.payload}",
+          );
         }
       },
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) async {},
     );
+    notificationsPlugin.getNotificationAppLaunchDetails().then((value) {
+      if (kDebugMode) {
+        devLog(
+          "fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${value?.notificationResponse?.payload}",
+        );
+      }
+    });
   }
 
   Future<void> uploadingNotification(maxProgress, progress, isUploading) async {
     if (isUploading) {
       final AndroidNotificationDetails androidPlatformChannelSpecifics =
           AndroidNotificationDetails(
-              "uploading files", "Uploading Files Notifications",
-              channelDescription: "show to user progress for uploading files",
-              channelShowBadge: false,
-              importance: Importance.max,
-              priority: Priority.max,
-              onlyAlertOnce: true,
-              showProgress: true,
-              maxProgress: maxProgress,
-              progress: progress,
-              autoCancel: false);
+            "uploading files",
+            "Uploading Files Notifications",
+            channelDescription: "show to user progress for uploading files",
+            channelShowBadge: false,
+            importance: Importance.max,
+            priority: Priority.max,
+            onlyAlertOnce: true,
+            showProgress: true,
+            maxProgress: maxProgress,
+            progress: progress,
+            autoCancel: false,
+          );
 
-      NotificationDetails platformChannelSpecifics =
-          NotificationDetails(android: androidPlatformChannelSpecifics);
+      NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+      );
       await notificationsPlugin.show(
         5,
         'Uploading story',
@@ -62,17 +70,18 @@ class NotificationService {
       notificationsPlugin.cancel(5);
       AndroidNotificationDetails androidPlatformChannelSpecifics =
           const AndroidNotificationDetails(
-        "files",
-        "Files Notifications",
-        channelDescription: "Inform user files uploaded",
-        channelShowBadge: false,
-        importance: Importance.max,
-        priority: Priority.max,
-        onlyAlertOnce: true,
-      );
+            "files",
+            "Files Notifications",
+            channelDescription: "Inform user files uploaded",
+            channelShowBadge: false,
+            importance: Importance.max,
+            priority: Priority.max,
+            onlyAlertOnce: true,
+          );
 
-      NotificationDetails platformChannelSpecifics =
-          NotificationDetails(android: androidPlatformChannelSpecifics);
+      NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+      );
       await notificationsPlugin.show(
         Random().nextInt(1000000),
         'upload story success',
@@ -84,14 +93,27 @@ class NotificationService {
 
   NotificationDetails? notificationDetails() {
     return const NotificationDetails(
-        iOS: DarwinNotificationDetails(),
-        android: AndroidNotificationDetails('channelId', 'channelName',
-            priority: Priority.max, importance: Importance.max));
+      iOS: DarwinNotificationDetails(),
+      android: AndroidNotificationDetails(
+        'channelId',
+        'channelName',
+        priority: Priority.max,
+        importance: Importance.max,
+      ),
+    );
   }
 
-  Future showNotification(
-      {int id = 0, String? title, String? body, String? payload}) async {
+  Future showNotification({
+    int id = 0,
+    String? title,
+    String? body,
+    String? payload,
+  }) async {
     return notificationsPlugin.show(
-        id, title, body, await notificationDetails());
+      id,
+      title,
+      body,
+      await notificationDetails(),
+    );
   }
 }

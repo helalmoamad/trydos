@@ -22,7 +22,8 @@ class SearchByImageFromGeminiUseCase
 
   @override
   Future<Either<Failure, ReadOnlyMessageFromApiModel>> call(
-      SearchByImagesParams params) async {
+    SearchByImagesParams params,
+  ) async {
     final Map<String, dynamic> map = await params.map();
     return repository.searchByImageFromGemini(map);
   }
@@ -31,9 +32,7 @@ class SearchByImageFromGeminiUseCase
 class SearchByImagesParams {
   final File image;
 
-  SearchByImagesParams({
-    required this.image,
-  });
+  SearchByImagesParams({required this.image});
   Future<Map<String, dynamic>> map() async {
     String fileName = image.path.split('/').last;
     String mimeType = mime(fileName) ?? '';
@@ -49,7 +48,7 @@ class SearchByImagesParams {
         "custom_file_path": image.path,
         "prompt":
             "Describe the product most clearly shown in this picture with no more than 5 words like: T-shirt black xxl",
-        "language": LanguageService.languageCode
+        "language": LanguageService.languageCode,
       }),
     };
   }

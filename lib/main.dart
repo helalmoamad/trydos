@@ -42,6 +42,36 @@ import 'dart:convert' as convert;
 import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
 
+// ══════════════════════════════════════════════════════════════════════
+//  مفتاحُ التصميم — بدّل هذا السطرَ وحدَه، وابنِ النسخة.
+// ══════════════════════════════════════════════════════════════════════
+//
+//   true  →  التصميمُ الجديد (ألواح XD المنقولةُ من الويب)
+//   false →  التصميمُ القديم
+//
+// ومنه تُشتقّ راياتُ الأقسام كلُّها، فلا يُبدَّل رقمان:
+//
+//   kNavDesignV2      ← الشريطُ السفليّ   (nav_v2/nav_bar_design.dart)
+//   kChatDesignV2     ← الدردشة           (chat/pages/conversation_design.dart)
+//   kProfileDesignV2  ← الملفُّ الشخصيّ    (profile_v2/profile_tab_design.dart)
+//   kAuthDesignV2     ← تسجيلُ الدخول     (auth_v2/auth_design.dart)
+//
+// وهو `const`، فالفرعُ الآخرُ يُحذف من النسخة المبنيّة ولا يزيد حجمَها.
+//
+// حالةُ الأقسام عند `false`:
+//   • الشريطُ السفليّ · الملفُّ الشخصيّ · قائمةُ الدردشات · حقلُ الكتابة
+//     → تعود كما كانت: فروعُها القديمةُ قائمةٌ في ملفّاتها.
+//   • شاشةُ المحادثة وصفحةُ معلوماتها وحواري التذكير والوسم → تعود، من
+//     ملفّاتٍ مجاورةٍ تحمل القديمَ حرفاً بحرف (`*_v1.dart`)، أُخرجت من
+//     `11a612ac`. والاختيارُ في `single_page_chat_host.dart`، وهي حلقةٌ
+//     مُغلقةٌ على نفسها: القديمُ لا يُنادي جديداً.
+//   • **المحفظة** → تغيب، وهذا صحيح: قسمٌ جديدٌ لا تصميمَ قديمَ له، ومدخلُه
+//     بطاقةٌ في الملفّ الشخصيّ الجديد.
+//   • **تسجيلُ الدخول** → تعود `RegistrationPage` القديمةُ بسبع صفحاتها كما
+//     هي؛ والجديدةُ `RegistrationPageV2` تُدير شاشاتَ `auth_v2` على المنطق
+//     نفسِه. والاختيارُ في `registration_host.dart`.
+const bool kDesignV2 = false;
+
 @pragma('vm:entry-point')
 showCallKitIncoming(
   Map<String, dynamic> data,

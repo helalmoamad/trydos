@@ -85,6 +85,7 @@ import '../widgets/product_stories_section/story/widget/stories_list.dart';
 
 import 'dart:async';
 import 'package:trydos/common/helper/dev_log.dart';
+
 // ignore: must_be_immutable
 class ProductDetailsPageNew extends StatefulWidget {
   ProductDetailsPageNew({

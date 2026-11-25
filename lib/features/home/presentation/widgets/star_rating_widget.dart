@@ -368,12 +368,11 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                                                                     ),
                                                                   ),
                                                               child: MyCachedNetworkImage(
-                                                                imageUrl:
-                                                                    mediaDisplayUrl(
-                                                                      _orderPhotos![index]!,
-                                                                      legacyFolder:
-                                                                          'rating_orders',
-                                                                    ),
+                                                                imageUrl: mediaDisplayUrl(
+                                                                  _orderPhotos![index]!,
+                                                                  legacyFolder:
+                                                                      'rating_orders',
+                                                                ),
                                                                 imageFit:
                                                                     BoxFit.fill,
                                                                 width: 57,
@@ -458,12 +457,11 @@ class _StarRatingWidgetState extends State<StarRatingWidget> {
                                                                     ),
                                                                   ),
                                                               child: MyCachedNetworkImage(
-                                                                imageUrl:
-                                                                    mediaDisplayUrl(
-                                                                      _orderPhotos![index]!,
-                                                                      legacyFolder:
-                                                                          'rating_orders',
-                                                                    ),
+                                                                imageUrl: mediaDisplayUrl(
+                                                                  _orderPhotos![index]!,
+                                                                  legacyFolder:
+                                                                      'rating_orders',
+                                                                ),
                                                                 imageFit:
                                                                     BoxFit.fill,
                                                                 width: 57,

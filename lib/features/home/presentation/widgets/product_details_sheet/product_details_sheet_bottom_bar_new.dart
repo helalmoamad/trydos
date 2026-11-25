@@ -1167,14 +1167,14 @@ class _ProductDetailsSheetBottomBarNewState
                                                                         ),
                                                                       );
                                                                     } else {
-                                                                      BlocProvider.of<
-                                                                            HomeBloc
-                                                                          >(context)
-                                                                          .add(
-                                                                            GetFullProductDetailsEvent(
-                                                                              productSlug: widget.productSlug,
-                                                                            ),
-                                                                          );
+                                                                      BlocProvider.of<HomeBloc>(
+                                                                        context,
+                                                                      ).add(
+                                                                        GetFullProductDetailsEvent(
+                                                                          productSlug:
+                                                                              widget.productSlug,
+                                                                        ),
+                                                                      );
                                                                     }
                                                                   },
                                                                 ),
@@ -2019,7 +2019,7 @@ class BarWidget extends StatelessWidget {
       ),
     );
   }
-}/*
+} /*
 
 class ImageForAddToCart {
   final String? colorName;

@@ -109,10 +109,9 @@ class BoutiqueRecordModel {
       icon: _readString(json['icon']),
       status: _readInt(json['status']) ?? 0,
       availability: _readInt(json['availability']),
-      restrictedCountriesIso: _readList(json['restricted_countries_iso'])
-          .map(_readString)
-          .whereType<String>()
-          .toList(),
+      restrictedCountriesIso: _readList(
+        json['restricted_countries_iso'],
+      ).map(_readString).whereType<String>().toList(),
       relatedProductIds: _readList(
         json['related_product_ids'],
       ).map(_readInt).whereType<int>().toList(),

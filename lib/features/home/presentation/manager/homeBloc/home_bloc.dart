@@ -6311,25 +6311,25 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             (getFqaCommentsPaginationModel["all"] ??
                     const PaginationModel<FqaComment>.init())
                 .copyWith(
-              total: (getFqaCommentsPaginationModel["all"]?.total ?? 0) + 1,
-              paginationStatus: PaginationStatus.success,
-              items: [
-                FqaComment(
-                  comment: r.data?.text,
-                  createdAt: r.data?.createdAt,
-                  hasReply: false,
-                  variant: r.data?.variant,
-                  id: r.data?.commentId,
-                  productId: r.data?.productId,
-                  customer: CommentCustomer(
-                    id: r.data?.userId,
-                    image: r.data?.userAvatar,
-                    name: r.data?.userName,
-                  ),
-                ),
-                ...getFqaCommentsPaginationModel["all"]?.items ?? [],
-              ],
-            );
+                  total: (getFqaCommentsPaginationModel["all"]?.total ?? 0) + 1,
+                  paginationStatus: PaginationStatus.success,
+                  items: [
+                    FqaComment(
+                      comment: r.data?.text,
+                      createdAt: r.data?.createdAt,
+                      hasReply: false,
+                      variant: r.data?.variant,
+                      id: r.data?.commentId,
+                      productId: r.data?.productId,
+                      customer: CommentCustomer(
+                        id: r.data?.userId,
+                        image: r.data?.userAvatar,
+                        name: r.data?.userName,
+                      ),
+                    ),
+                    ...getFqaCommentsPaginationModel["all"]?.items ?? [],
+                  ],
+                );
         emit(
           state.copyWith(
             getFqaCommentsPaginationModel: getFqaCommentsPaginationModel,

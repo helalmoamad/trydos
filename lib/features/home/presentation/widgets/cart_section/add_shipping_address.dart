@@ -1747,142 +1747,131 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                       >(
                                                         valueListenable:
                                                             validateBox,
-                                                        builder: (context, isValidateBox, _) {
-                                                          return Container(
-                                                            width: 1.sw,
-                                                            margin:
-                                                                EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      15.w,
-                                                                ),
-                                                            decoration: BoxDecoration(
-                                                              borderRadius:
-                                                                  BorderRadius.circular(
-                                                                    15.r,
-                                                                  ),
-                                                              border: Border.all(
-                                                                color:
-                                                                    const Color(
+                                                        builder:
+                                                            (
+                                                              context,
+                                                              isValidateBox,
+                                                              _,
+                                                            ) {
+                                                              return Container(
+                                                                width: 1.sw,
+                                                                margin:
+                                                                    EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          15.w,
+                                                                    ),
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                        15.r,
+                                                                      ),
+                                                                  border: Border.all(
+                                                                    color: const Color(
                                                                       0xffD3D3D3,
                                                                     ),
-                                                              ),
-                                                            ),
-                                                            height: 118.h,
-                                                            child: Column(
-                                                              children: [
-                                                                Stack(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
+                                                                  ),
+                                                                ),
+                                                                height: 118.h,
+                                                                child: Column(
                                                                   children: [
-                                                                    Container(
-                                                                      clipBehavior:
-                                                                          Clip.antiAlias,
-                                                                      height:
-                                                                          80.h,
-                                                                      margin:
-                                                                          EdgeInsets.all(
+                                                                    Stack(
+                                                                      alignment:
+                                                                          Alignment
+                                                                              .center,
+                                                                      children: [
+                                                                        Container(
+                                                                          clipBehavior:
+                                                                              Clip.antiAlias,
+                                                                          height:
+                                                                              80.h,
+                                                                          margin: EdgeInsets.all(
                                                                             10.w,
                                                                           ),
-                                                                      decoration: BoxDecoration(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(
+                                                                          decoration: BoxDecoration(
+                                                                            borderRadius: BorderRadius.circular(
                                                                               15.r,
                                                                             ),
-                                                                        border: Border.all(
-                                                                          color: const Color(
-                                                                            0xffD3D3D3,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      child: IgnorePointer(
-                                                                        child: GoogleMap(
-                                                                          zoomControlsEnabled:
-                                                                              false,
-                                                                          compassEnabled:
-                                                                              false,
-                                                                          markers:
-                                                                              _markersInSmallMap.toSet(),
-                                                                          zoomGesturesEnabled:
-                                                                              false,
-                                                                          initialCameraPosition:
-                                                                              _kinitialPosition,
-                                                                          onMapCreated:
-                                                                              (
-                                                                                GoogleMapController
-                                                                                controller,
-                                                                              ) {
-                                                                                mapController = controller;
-                                                                              },
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    InkWell(
-                                                                      onTap: () {
-                                                                        if ((_locationFromSearch?.latitude !=
-                                                                                null &&
-                                                                            _locationFromSearch?.longitude !=
-                                                                                null)) {
-                                                                          _goToCurrentLocation(
-                                                                            latlng:
-                                                                                _locationFromSearch,
-                                                                          );
-                                                                        }
-
-                                                                        showFulMap.value =
-                                                                            true;
-                                                                      },
-                                                                      child: Container(
-                                                                        child: Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceEvenly,
-                                                                          children: [
-                                                                            Text(
-                                                                              "${LocaleKeys.locate_your_location_on_map.tr()} ",
-                                                                              style: context.textTheme.bodyMedium?.mq.copyWith(
-                                                                                color: const Color(
-                                                                                  0xffF4F4F4,
-                                                                                ),
-                                                                                letterSpacing: 0.18,
-                                                                                fontSize: 12.sp,
-                                                                                height: 0.8,
+                                                                            border: Border.all(
+                                                                              color: const Color(
+                                                                                0xffD3D3D3,
                                                                               ),
                                                                             ),
-                                                                            SvgPicture.asset(
-                                                                              AppAssets.navigationSvg,
+                                                                          ),
+                                                                          child: IgnorePointer(
+                                                                            child: GoogleMap(
+                                                                              zoomControlsEnabled: false,
+                                                                              compassEnabled: false,
+                                                                              markers: _markersInSmallMap.toSet(),
+                                                                              zoomGesturesEnabled: false,
+                                                                              initialCameraPosition: _kinitialPosition,
+                                                                              onMapCreated:
+                                                                                  (
+                                                                                    GoogleMapController controller,
+                                                                                  ) {
+                                                                                    mapController = controller;
+                                                                                  },
                                                                             ),
-                                                                          ],
+                                                                          ),
                                                                         ),
-                                                                        height:
-                                                                            35.h,
-                                                                        width:
-                                                                            210.w,
-                                                                        margin:
-                                                                            EdgeInsets.all(
+                                                                        InkWell(
+                                                                          onTap: () {
+                                                                            if ((_locationFromSearch?.latitude !=
+                                                                                    null &&
+                                                                                _locationFromSearch?.longitude !=
+                                                                                    null)) {
+                                                                              _goToCurrentLocation(
+                                                                                latlng: _locationFromSearch,
+                                                                              );
+                                                                            }
+
+                                                                            showFulMap.value =
+                                                                                true;
+                                                                          },
+                                                                          child: Container(
+                                                                            child: Row(
+                                                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                              children: [
+                                                                                Text(
+                                                                                  "${LocaleKeys.locate_your_location_on_map.tr()} ",
+                                                                                  style: context.textTheme.bodyMedium?.mq.copyWith(
+                                                                                    color: const Color(
+                                                                                      0xffF4F4F4,
+                                                                                    ),
+                                                                                    letterSpacing: 0.18,
+                                                                                    fontSize: 12.sp,
+                                                                                    height: 0.8,
+                                                                                  ),
+                                                                                ),
+                                                                                SvgPicture.asset(
+                                                                                  AppAssets.navigationSvg,
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                            height:
+                                                                                35.h,
+                                                                            width:
+                                                                                210.w,
+                                                                            margin: EdgeInsets.all(
                                                                               10.w,
                                                                             ),
-                                                                        decoration: BoxDecoration(
-                                                                          color: const Color.fromRGBO(
-                                                                            43,
-                                                                            44,
-                                                                            44,
-                                                                            0.7,
-                                                                          ),
-                                                                          borderRadius: BorderRadius.circular(
-                                                                            15.r,
+                                                                            decoration: BoxDecoration(
+                                                                              color: const Color.fromRGBO(
+                                                                                43,
+                                                                                44,
+                                                                                44,
+                                                                                0.7,
+                                                                              ),
+                                                                              borderRadius: BorderRadius.circular(
+                                                                                15.r,
+                                                                              ),
+                                                                            ),
                                                                           ),
                                                                         ),
-                                                                      ),
+                                                                      ],
                                                                     ),
-                                                                  ],
-                                                                ),
-                                                                Text(
-                                                                  "${LocaleKeys.location_is_accurate_making_it_easy_to_receive_shipments.tr()} ",
-                                                                  style: context
-                                                                      .textTheme
-                                                                      .bodyMedium
-                                                                      ?.mq
-                                                                      .copyWith(
+                                                                    Text(
+                                                                      "${LocaleKeys.location_is_accurate_making_it_easy_to_receive_shipments.tr()} ",
+                                                                      style: context.textTheme.bodyMedium?.mq.copyWith(
                                                                         color: const Color(
                                                                           0xff505050,
                                                                         ),
@@ -1893,11 +1882,11 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                         height:
                                                                             0.8,
                                                                       ),
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                              ],
-                                                            ),
-                                                          );
-                                                        },
+                                                              );
+                                                            },
                                                       ),
                                                 isShowFulMap
                                                     ? SizedBox.fromSize()
@@ -2017,14 +2006,18 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       child: Row(
                                                                         children: [
                                                                           Container(
-                                                                            width: 18.w,
-                                                                            height: 18.h,
+                                                                            width:
+                                                                                18.w,
+                                                                            height:
+                                                                                18.h,
                                                                             child: CountryFlag.fromCountryCode(
                                                                               "${country?.iso}",
                                                                               theme: ImageTheme(
                                                                                 height: 18.h,
                                                                                 width: 18.w,
-                                                                                shape: RoundedRectangle(4.r),
+                                                                                shape: RoundedRectangle(
+                                                                                  4.r,
+                                                                                ),
                                                                               ),
                                                                             ),
                                                                           ),
@@ -3177,20 +3170,17 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                             Container(
                                                               width: 18.w,
                                                               height: 18.h,
-                                                              child:
-                                                                  CountryFlag.fromCountryCode(
-                                                                    "${country?.iso}",
-                                                                    theme: ImageTheme(
-                                                                      height:
-                                                                          18.h,
-                                                                      width:
-                                                                          18.w,
-                                                                      shape:
-                                                                          RoundedRectangle(
-                                                                            4.r,
-                                                                          ),
-                                                                    ),
-                                                                  ),
+                                                              child: CountryFlag.fromCountryCode(
+                                                                "${country?.iso}",
+                                                                theme: ImageTheme(
+                                                                  height: 18.h,
+                                                                  width: 18.w,
+                                                                  shape:
+                                                                      RoundedRectangle(
+                                                                        4.r,
+                                                                      ),
+                                                                ),
+                                                              ),
                                                             ),
                                                             Text(
                                                               " ${country?.name} ",

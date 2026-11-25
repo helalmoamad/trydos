@@ -244,6 +244,12 @@ flutter:
     # أيقونات التصميم الجديد، مقصوصة من XD ومنقولة من مشروع الويب.
     - assets/svg/chat_v2/
     - assets/svg/nav_v2/
+    - assets/svg/profile_v2/
+    - assets/svg/wallet_v2/
+    - assets/svg/auth_v2/
+    - assets/svg/demo_v2/
+    # صورُ طرق الإيداع ومحافظ العملات الرقميّة، منقولةٌ من مشروع الويب.
+    - assets/images/wallet_v2/
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

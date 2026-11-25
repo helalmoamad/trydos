@@ -1,17 +1,10 @@
-import 'dart:convert';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/helper/show_message.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/authentication/presentation/pages/qr_account_import.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/notification_service/notification_service/handle_notification/notification_process.dart';
 
 class QrLoginScannerPage extends StatefulWidget {
   const QrLoginScannerPage({super.key});
@@ -21,7 +14,6 @@ class QrLoginScannerPage extends StatefulWidget {
 }
 
 class _QrLoginScannerPageState extends State<QrLoginScannerPage> {
-  final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   late final MobileScannerController _controller;
   bool _isProcessing = false;
   bool _permissionDenied = false;
@@ -70,116 +62,20 @@ class _QrLoginScannerPageState extends State<QrLoginScannerPage> {
 
     setState(() => _isProcessing = true);
 
-    try {
-      final decoded = jsonDecode(rawValue);
-      if (decoded is! Map<String, dynamic>) {
-        throw const FormatException('invalid payload');
-      }
-      await _persistAccountData(decoded);
-      if (!mounted) return;
+    // المنطقُ نفسُه، في `qr_account_import.dart` — تتقاسمه هذه الصفحةُ
+    // ونافذةُ QR في التصميم الجديد.
+    final bool imported = await importQrAccount(rawValue);
+    if (!mounted) return;
+    if (imported) {
       showSuccessMessage(
         context,
         LocaleKeys.account_import_success_message.tr(),
       );
       Navigator.of(context).pop(true);
-    } catch (error) {
-      if (mounted) {
-        showWarningMessage(context, LocaleKeys.qr_invalid_code_message.tr());
-      }
-      setState(() => _isProcessing = false);
+      return;
     }
-  }
-
-  Future<void> _persistAccountData(Map<String, dynamic> data) async {
-    final futures = <Future>[];
-
-    final userMarketId = _parseString(data['userMarketId']);
-    if (userMarketId != null) {
-      futures.add(_prefsRepository.setMyMarketId(userMarketId));
-    }
-    final phone = _parseString(data['userMarketPhone']);
-    if (phone != null) {
-      futures.add(_prefsRepository.setPhoneNumber(phone));
-    }
-    final countryIso = _parseString(data['userCountryIso']);
-    if (countryIso != null) {
-      futures.add(_prefsRepository.setCountryIso(countryIso));
-    }
-
-    final userCountryIsAvailable = _parseInt(data['userCountryIsAvailable']);
-    if (userCountryIsAvailable != null) {
-      futures.add(
-        _prefsRepository.setUserCountryIsAvailable(userCountryIsAvailable),
-      );
-    }
-
-    final choosedCountry = _parseString(data['userUserChoosedCountryIso']);
-    if (choosedCountry != null) {
-      futures.add(_prefsRepository.setUserChoosedCountryIso(choosedCountry));
-    }
-    final name = _parseString(data['name']);
-    if (name != null) {
-      futures.add(_prefsRepository.setMyMarketName(name));
-    }
-    final marketToken = _parseString(data['userMarketToken']);
-    if (marketToken != null) {
-      futures.add(_prefsRepository.setMarketToken(marketToken));
-    }
-
-    final idToken = _parseString(data['idToken']);
-    if (idToken != null) {
-      futures.add(_prefsRepository.setIdToken(idToken));
-    }
-    final language = _parseString(data['language']);
-    if (language != null) {
-      futures.add(_prefsRepository.setLanguage(language));
-    }
-    GetIt.I<AuthBloc>().add(GetCustomerInfoEvent());
-    GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-    //GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
-
-    GetIt.I<AuthBloc>().add(
-      LoginToStoriesEvent(
-        name: name,
-        originalUserId: userMarketId,
-        otpIdToken: idToken,
-        phone: phone,
-      ),
-    );
-    GetIt.I<AuthBloc>().add(
-      GenerateTokenForCommentEvent(
-        mobilePhone: phone,
-        otpIdToken: idToken,
-        userId: userMarketId,
-      ),
-    );
-
-    NotificationProcess().fcmToken(
-      phone,
-      name,
-      userMarketId.toString(),
-      idToken.toString(),
-    );
-    await Future.wait(futures);
-  }
-
-  String? _parseString(dynamic value) {
-    if (value == null) return null;
-    if (value is String) {
-      final normalized = value.trim();
-      return normalized.isEmpty ? null : normalized;
-    }
-    return value.toString();
-  }
-
-  int? _parseInt(dynamic value) {
-    if (value == null) return null;
-    if (value is int) return value;
-    if (value is num) return value.toInt();
-    if (value is String) {
-      return int.tryParse(value.trim());
-    }
-    return null;
+    showWarningMessage(context, LocaleKeys.qr_invalid_code_message.tr());
+    setState(() => _isProcessing = false);
   }
 
   Future<bool> _ensureCameraPermission() async {
